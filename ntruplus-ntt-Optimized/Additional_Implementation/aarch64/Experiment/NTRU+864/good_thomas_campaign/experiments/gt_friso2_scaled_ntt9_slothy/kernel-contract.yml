@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_friso2_scaled_ntt9_slothy
+  name: GT864 witness-specific Slothy-sized scaled NTT9 block replacement
+  source: gt864_friso2_scaled_ntt9_variants.sym.S
+  scheme: NTRU+864
+  operation: one_eight_lane_oriented_NTT9_block_with_FRISO2_scale
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_validated_via_neoverse_n1_schedule_proxy
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+slothy:
+  workflow: RA_first_no_reorder_then_split_window_schedule_for_138_to_154_real_instructions
+  driver: optimize.py
+  expected_outputs: [four_allocated_S, four_optimized_S, four_RA_logs, four_schedule_logs]
+  allow_spills: false
+region:
+  start_label: gt864_friso2_scaled_t0c1_slothy_start_case_specific
+  end_label: gt864_friso2_scaled_t0c1_slothy_end_case_specific
+  expected_instruction_count: t0_cases_154_t1_cases_138
+  live_in: [f0_raw-f8_raw, packed_common_constants, x3, v31_as_q, v16-v24_as_held_other_block]
+  live_out: [out0-out8, x3]
+abi:
+  inputs: [nine_NTT16_column_vectors, witness_specific_composite_constant_table, packed_common_constants, nine_held_other_block_vectors]
+  outputs: [nine_FRISO2_vectors_for_one_fixed_top_component_block]
+  clobbers: [v0-v15, v25-v30, x3]
+  concrete_gprs_allowed: [x3]
+  fixed_vector_registers: [v16-v24, v31]
+  reserved_registers: [x0-x2, x4-x30, sp, v16-v24, v31]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: replace_one_exact_M5R-D_NTT9_block_under_nine_vector_other_block_pressure_with_one_CF1_affine_scale_witness
+layout:
+  input_representation: nine_M5R-D_NTT16_column_vectors
+  output_representation: same_physical_rows_with_FRISO2_component_scale
+  vector_lanes: eight_public_GT_columns_per_vector
+  packing: one_eight_lane_block_with_the_other_nine_vectors_reserved
+memory_contract:
+  loads: [independent_ldr_for_each_lane_varying_b_and_bprime]
+  stores: [none_inside_region]
+  aliasing: read_only_input_and_public_tables_no_store_inside_region
+  alignment: main_and_tables_16_byte_tail_halfword
+  public_offsets_only: true
+  pointer_updates: [x3_plus_544_for_top0_or_plus_288_for_top1]
+constant_contract:
+  constants: [q, bit_reverse, M5R-D_NTT16_roots, exact_CF1_composite_Algorithm10_pairs]
+  modulus: 3457
+  representation: R0_bounded_FRISO2
+  reduction_method: Algorithm10_mul_sqrdmulh_mls_with_two_independent_ldr_for_lane_varying_pairs
+range_contract:
+  input_ranges: [NTT16_abs_at_most_9342]
+  intermediate_ranges: [witness_max_abs_at_most_19427]
+  output_ranges: [signed_int16_FRISO2_bounded_representatives]
+  narrowing_points: []
+constant_time_contract:
+  secret_inputs: [coefficient_values]
+  public_inputs: [pointers, witness_specific_tables, fixed_region_shape]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 verify_candidates.py
+  test_command: make static-check
+  full_path_benchmark_command: deferred_until_symbolic_allocation_and_integration_pass
+  benchmark_metric: cycles_p50
+  lower_is_better: true

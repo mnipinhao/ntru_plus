@@ -1,0 +1,38 @@
+dag:
+  id: gt864_friso2_scaled_ntt9_witness_dag
+  kernel_contract: kernel-contract.yml
+  description: one_exact_CF1_affine_label_NTT9_block_under_frozen_other_block_register_pressure
+inputs:
+  - nine NTT16 column vectors for the active eight-lane NTT9 block
+  - nine reserved physical vectors representing the held sibling block or prior outputs
+  - one of four fixed CF1 top-component witness assignments
+constants:
+  - q=3457
+  - public packed scalar Algorithm-10 pairs for uniform effective factors
+  - public independent vector b and bprime loads for lane-varying effective factors
+nodes:
+  - id: scaled_NTT9_block
+    op: CF1_exact_affine_rescaling_of_complete_one_product_oriented_NTT9
+    inputs: [nine_active_column_vectors]
+    outputs: [rows_0_through_8]
+    instruction_shape: 42_add_sub_plus_26_Algorithm10_mulmods_plus_case_specific_constant_loads
+    tied_operands: [each_mul_result_is_read_write_input_of_mls]
+    range_before: exact_NTT16_top_column_intervals
+    range_after: witness_specific_int16_safe
+    may_reorder_with: [independent_constant_loads, independent_B3_branches]
+    must_precede: [matching_nine_live_outputs]
+memory:
+  loads:
+    - packed-uniform constants are live-ins loaded once outside the two-block region
+    - two independent public ldr instructions per lane-varying mulmod
+  stores: []
+  ordering_constraints:
+    - preserve secret coefficient load addresses and count
+    - preserve public postincrement order within each table stream
+outputs: [same_nine_physical_row_slots_as_M5R-D_with_FRISO2_scale]
+live_out: [out0-out8, x3]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

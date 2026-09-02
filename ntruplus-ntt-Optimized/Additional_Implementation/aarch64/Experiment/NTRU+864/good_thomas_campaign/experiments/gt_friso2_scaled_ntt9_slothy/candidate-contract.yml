@@ -1,0 +1,47 @@
+mode: existing_region_replacement
+candidate:
+  id: M5U-CF2_symbolic_variants
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: gt864_friso2_scaled_ntt9_variants.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: false
+  approved_changes: true
+  approval_basis: user_requested_FRISO2_representation_and_continuation_of_the_hard_gate
+  unchanged: [nine_NTT16_inputs, physical_output_row_slots, no_coefficient_load_or_store, outer_d8_d15_save_policy]
+  changed: [FR0_to_FRISO2_output_scale, public_x3_table_contents_and_final_pointer, public_constant_load_count]
+region:
+  start_label: case_specific_gt864_friso2_scaled_tXcY_slothy_start
+  end_label: case_specific_gt864_friso2_scaled_tXcY_slothy_end
+  live_in: [f0_raw-f8_raw, packed_common_constants, x3, v31_as_q, v16-v24_as_held_other_block]
+  live_out: [out0-out8, x3]
+abi:
+  inputs: [nine_NTT16_column_vectors, witness_specific_composite_constant_table, packed_common_constants, nine_held_other_block_vectors]
+  outputs: [nine_FRISO2_vectors]
+  clobbers: [v0-v15, v25-v30, x3]
+  concrete_gprs_allowed: [x3]
+  fixed_vector_registers: [v16-v24, v31]
+  reserved_registers: [x0-x2, x4-x30, sp, v16-v24, v31]
+memory_contract:
+  loads: [case_specific_public_composite_constant_loads]
+  stores: [none_inside_region]
+  aliasing: read_only_input_and_public_tables_no_store_inside_region
+  alignment: main_and_tables_16_byte_tail_halfword
+  public_offsets_only: true
+  pointer_updates: [x3_plus_544_for_top0_or_plus_288_for_top1]
+constant_contract:
+  constants: [q, bit_reverse, M5R-D_NTT16_roots, exact_CF1_composite_Algorithm10_pairs]
+  modulus: 3457
+  representation: R0_bounded_FRISO2
+  reduction_method: Algorithm10_mul_sqrdmulh_mls_with_two_independent_ldr_for_lane_varying_pairs
+range_contract:
+  input_ranges: [NTT16_abs_at_most_9342]
+  intermediate_ranges: [witness_max_abs_at_most_19427]
+  output_ranges: [signed_int16_FRISO2_bounded_representatives]
+  narrowing_points: []
+constant_time_contract:
+  secret_inputs: [coefficient_values]
+  public_inputs: [pointers, witness_specific_tables, fixed_region_shape]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

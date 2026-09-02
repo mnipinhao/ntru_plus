@@ -1,0 +1,49 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: M5R-D_one_NTT9_block
+  source: ../gt_forward_level2_one_mul_b3/gt864_forward_one_bank_all_one_mul_b3.sym.S
+  extracted_region: baseline-region.S
+  function: extracted_first_NTT9_block_of_gt864_forward_one_bank_all_one_mul_b3
+  start_label: gt864_m5rd_ntt9_block_slothy_start
+  end_label: gt864_m5rd_ntt9_block_slothy_end
+  source_commit: 7fc550144fdefea674c763eb388eadf77aa40945
+region:
+  instruction_count: 112
+  live_in: [f0_raw-f7_raw, v17_as_f8_raw, x3, v14, v15]
+  live_out: [out0-out8, x3]
+  clobbers: [allocatable_vector_temporaries]
+abi:
+  inputs: [nine_NTT16_column_vectors, M5R-D_NTT9_table, q_and_root_constants, nine_held_other_block_vectors]
+  outputs: [nine_FR0_vectors]
+  clobbers: [allocatable_vector_temporaries]
+  concrete_gprs_allowed: [x3]
+  fixed_vector_registers: [v14, v15, v17]
+  reserved_registers: [all_GPR_except_x3, nine_held_other_block_vectors]
+memory_contract:
+  loads: [sixteen_public_NTT9_constant_vectors]
+  stores: [none_inside_region]
+  aliasing: read_only_input_and_public_tables_no_store_inside_region
+  alignment: main_and_tables_16_byte_tail_halfword
+  public_offsets_only: true
+  pointer_updates: [x3_plus_256]
+constant_contract:
+  constants: [q, bit_reverse, rho, rho_prime, eta, eta_prime, eta_inv, eta_inv_prime, NTT16_roots, NTT9_twists]
+  modulus: 3457
+  representation: R0_bounded_FR0
+  reduction_method: Algorithm10_mul_sqrdmulh_mls
+range_contract:
+  input_ranges: [NTT16_abs_at_most_9342]
+  intermediate_ranges: [NTT9_abs_at_most_26306]
+  output_ranges: [signed_int16_FR0_bounded_representatives]
+  narrowing_points: []
+constant_time_contract:
+  secret_inputs: [coefficient_values]
+  public_inputs: [pointers, tables, fixed_region_shape]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 112
+  slothy_expected_cycles: not_used_block_extracted_from_prior_569_instruction_bank
+  full_path_benchmark: 4229.9409_cycles_p50_for_M5R-D_full_Forward
+  benchmark_command: python3 ../gt_forward_level2_one_mul_b3/run_pi5.py
