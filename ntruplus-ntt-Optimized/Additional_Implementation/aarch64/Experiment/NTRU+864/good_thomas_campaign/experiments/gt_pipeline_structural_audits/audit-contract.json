@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "experiment": "M5A-E2E-AUDIT0",
+  "parameter_set": "NTRU+864",
+  "scope": "research_control_plane_before_CF5_B",
+  "pipelines": {
+    "executable_control": "CF4: CF0 Forward x2 + direct-wide FR-ISO2 BaseMul + direct FR-ISO2 Inverse",
+    "forward_candidate": "CF5-A: shared NTT16 producer boundary plus fused scaled-NTT9 consumers; Forward-only gate"
+  },
+  "status_vocabulary": {
+    "complete": "the requested audit and its comparison evidence exist",
+    "partial": "some exact evidence exists, but the end-to-end pass condition is not met",
+    "open": "the alternative or measurement required by the pass condition does not exist",
+    "rejected": "the tested candidate is correct but loses the stated cost gate"
+  },
+  "hard_rule": "A technique counts only when it removes real instructions, memory traffic, or end-to-end cycles; source-code presence is not a pass."
+}

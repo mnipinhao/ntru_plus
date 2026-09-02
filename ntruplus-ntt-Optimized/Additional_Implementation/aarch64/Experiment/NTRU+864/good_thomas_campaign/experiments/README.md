@@ -37,5 +37,7 @@ Current experiments:
 | `gt_forward_ntt16_ntt9_handoff_slothy` | Can the real NTT16 column output transpose, twist, and enter one complete NTT9 while preserving the other block without coefficient traffic? | passed; RA OPTIMAL and split-window full OK with fixed held-tail `v16` | no |
 | `gt_forward_two_ntt9_blocks_slothy` | Can both eight-column NTT9 blocks complete while the first nine outputs and fixed second tail have their real long lifetimes? | passed; 333 instructions, RA OPTIMAL and split-window full OK using all 24 caller-saved vectors | no |
 | `gt_forward_full_register_pass2_dag` | Can opening v8-v15 remove copies and repeated constants after paying one outer ABI save/restore? | passed; 91 full-path instructions and 25.90 Pi5 cycles removed; still slower than Official | no |
+| `gt_friso2_ntt16_producer_pair_link` | Can the frozen NTT16 producer feed each fused scaled-NTT9 pair directly with no boundary copy, spill, or coefficient traffic? | passed Forward boundary/correctness gate; CF5-A not yet code-size-faithful or timed | no |
+| `gt_pipeline_structural_audits` | Which of axis order, twist absorption, inverse liveness, weighted BaseMul, layout/serializer co-design, and reduction placement are actually closed end to end? | audit executes; 2 open and 4 partial; no principle yet passes its end-to-end condition | no |
 
 See `optimization_scoreboard.md` for decisions and reopen conditions.

@@ -1,0 +1,306 @@
+{
+  "audit_execution": "pass",
+  "audits": {
+    "axis_order": {
+      "alternative": {
+        "end_to_end_cycles_measured": false,
+        "exact_layout_map_found": false,
+        "forward_order": [
+          "top_split",
+          "NTT9",
+          "NTT16"
+        ],
+        "full_product_correctness_measured": false,
+        "implementation_found": false
+      },
+      "current": {
+        "executable_full_product": true,
+        "forward_order": [
+          "top_split",
+          "NTT16",
+          "NTT9"
+        ],
+        "full_product_correctness_cases": 117,
+        "full_product_modq_mismatches": 0,
+        "inverse_order": [
+          "inverse_NTT9",
+          "transpose_to_P8",
+          "inverse_NTT16",
+          "top_recombine"
+        ],
+        "layout_reason": "LD3 top split emits main[top][component][t][lane=s], so t=0..15 is directly available to lane-wise NTT16 without an input transpose."
+      },
+      "pass_condition_met": false,
+      "question": "NTT16-first versus NTT9-first for the complete 2F+BaseMul+Inverse path",
+      "reason": "The current order is structurally justified, but the alternative has neither an exact boundary implementation nor end-to-end timing. Therefore axis order is not yet empirically settled.",
+      "status": "open"
+    },
+    "inverse_backward_liveness": {
+      "actual_API_output_coefficients": 864,
+      "current_passes": [
+        {
+          "input": "FR-ISO2 SoA",
+          "operation": "row correction + inverse NTT9 + inverse twist + 8x8 transpose",
+          "output": "P8+tail",
+          "pass": 1
+        },
+        {
+          "input": "P8+tail",
+          "operation": "packed alpha/beta inverse NTT16 + top recombine",
+          "output": "natural 864 coefficients",
+          "pass": 2
+        }
+      ],
+      "cyclic_shift_or_permutation_search_exists": false,
+      "dead_API_output_coefficients": 0,
+      "deletable_internal_nodes_proven": 0,
+      "internal_DAG_backward_liveness_model_exists": false,
+      "live_API_output_coefficients": 864,
+      "pass_condition_met": false,
+      "reason": "The polynomial-multiplication API consumes all 864 natural coefficients. Output-level pruning is impossible; only a node-level inverse DAG plus a real downstream serializer contract could reveal dead internal work, and neither exists yet.",
+      "status": "open"
+    },
+    "layout_serializer_codesign": {
+      "boundaries": [
+        {
+          "boundary": "caller -> Forward",
+          "consumer": "LD3 top split",
+          "conversion": "fused top split/deinterleave",
+          "full_buffer_conversion_passes": 0,
+          "materialized_intermediate": "P8+tail (896 halfwords)",
+          "producer": "natural 864 R0"
+        },
+        {
+          "boundary": "Forward -> BaseMul",
+          "consumer": "direct two-constant BaseMul",
+          "conversion": "none",
+          "full_buffer_conversion_passes": 0,
+          "producer": "FR-ISO2 SoA leaves"
+        },
+        {
+          "boundary": "BaseMul -> Inverse",
+          "consumer": "direct FR-ISO2 inverse NTT9",
+          "conversion": "none",
+          "full_buffer_conversion_passes": 0,
+          "producer": "FR-ISO2 SoA leaves"
+        },
+        {
+          "boundary": "Inverse pass 1 -> pass 2",
+          "consumer": "packed-top inverse NTT16",
+          "conversion": "8x8 transpose fused before store",
+          "full_buffer_conversion_passes": 0,
+          "materialized_intermediate": "P8+tail (896 halfwords)",
+          "producer": "P8+tail"
+        },
+        {
+          "boundary": "Inverse -> polynomial caller",
+          "consumer": "full polynomial product test",
+          "conversion": "none in current complete-operation harness",
+          "full_buffer_conversion_passes": 0,
+          "producer": "natural 864 R0 bounded noncanonical"
+        },
+        {
+          "boundary": "polynomial caller -> KEM serializer",
+          "consumer": "SUPERCOP NTRU+ serializer",
+          "conversion": "not connected/audited",
+          "full_buffer_conversion_passes": null,
+          "producer": "natural 864 R0 bounded noncanonical"
+        }
+      ],
+      "known_layout_debt": {
+        "algorithmic_P8_materializations": 2,
+        "coefficient_load_store_contract": "Forward 2 loads+2 stores per coefficient; Inverse 2 loads+2 stores per coefficient",
+        "representation_only_full_buffer_passes": 0,
+        "serializer_debt_known": false
+      },
+      "pass_condition_met": false,
+      "reason": "The internal FR-ISO2 boundaries are zero-conversion, but the real SUPERCOP serializer/caller boundary is not linked. Layout co-design cannot be declared complete before that consumer is explicit.",
+      "status": "partial"
+    },
+    "reduction_placement": {
+      "pass_condition_met": false,
+      "proved_movement": {
+        "measured_cycles_saved_p50": 334.19405000000006,
+        "range_and_scale_proof": true,
+        "tiles": 36,
+        "widening_reductions_deleted_per_BaseMul": 72,
+        "widening_reductions_deleted_per_tile": 2
+      },
+      "reason": "Reduction placement has one successful measured result in BaseMul, but no transform-wide placement search or end-to-end timing exists.",
+      "sites": [
+        {
+          "instructions": [
+            "mul",
+            "sqrdmulh",
+            "mls"
+          ],
+          "lane_width": 16,
+          "method": "Algorithm-10 Barrett-Shoup",
+          "site": "Forward/Inverse fixed public multiplications"
+        },
+        {
+          "method": "widening Montgomery",
+          "reductions": 8,
+          "site": "staged BaseMul per tile"
+        },
+        {
+          "method": "widening Montgomery",
+          "reductions": 6,
+          "site": "direct two-constant BaseMul per tile"
+        }
+      ],
+      "status": "partial",
+      "unresolved": [
+        "whether inverse row corrections can be folded into a different inverse DAG",
+        "whether CF5-A fused Forward lowers Cortex-A76 cycles despite its constant-load pressure",
+        "port-pressure and range effects for any further delayed reductions"
+      ]
+    },
+    "twist_absorption": {
+      "CF5_A_forward_post_transform_mulmods": 0,
+      "executable_CF4_standalone_representation_mulmods": 208,
+      "ledger": [
+        {
+          "absorbed_into": null,
+          "count": "part of frozen top-split kernel",
+          "kind": "fixed Barrett-Shoup ring split",
+          "site": "top split",
+          "standalone": false
+        },
+        {
+          "kind": "input twist plus rho/eta internal roots",
+          "note": "12 blocks; 18 relevant fixed multiplications per unscaled block",
+          "site": "ordinary Forward NTT9",
+          "standalone": false,
+          "vector_mulmods": 216
+        },
+        {
+          "kind": "post-NTT9 basis scale",
+          "site": "CF0 FR-ISO2 output correction",
+          "standalone": true,
+          "vector_mulmods_per_forward": 72,
+          "whole_product_vector_mulmods": 144
+        },
+        {
+          "deleted_versus_CF0_per_forward": 8,
+          "extra_over_FR0_per_forward": 64,
+          "kind": "composite constants on input/internal DAG edges",
+          "post_transform_correction_mulmods": 0,
+          "scaled_blocks": 8,
+          "site": "CF5-A scaled NTT9",
+          "standalone": false,
+          "vector_mulmods_per_scaled_block": 26
+        },
+        {
+          "kind": "pre-inverse-NTT9 gamma^(-j*row)",
+          "site": "direct FR-ISO2 inverse row correction",
+          "standalone": true,
+          "whole_product_vector_mulmods": 64
+        },
+        {
+          "absorbed_into": "existing inverse-NTT9 twist table",
+          "kind": "delta^(-j)",
+          "site": "direct FR-ISO2 inverse column correction",
+          "standalone": false,
+          "whole_product_vector_mulmods": 0
+        },
+        {
+          "absorbed_into": "two constant leaf moduli Y^3-9 and Y^3-3",
+          "kind": "tau basis isomorphism",
+          "site": "BaseMul leaf-basis correction",
+          "standalone": false,
+          "whole_product_vector_mulmods": 0
+        }
+      ],
+      "pass_condition_met": false,
+      "reason": "CF5-A proves eight fewer Algorithm-10 mulmods per Forward and removes the separate post-transform stage, but it has not been integrated and timed with BaseMul+Inverse; 64 standalone inverse row corrections remain.",
+      "scope": "all known fixed-root multiplication sites relevant to FR-ISO2 representation cost",
+      "status": "partial"
+    },
+    "weighted_basemul": {
+      "kernel_families": [
+        {
+          "name": "staged widening Montgomery",
+          "reductions_per_tile": 8
+        },
+        {
+          "name": "direct two-constant",
+          "reductions_per_tile": 6
+        }
+      ],
+      "leaf_count": 288,
+      "measured": {
+        "BaseMulAdd_cycles_saved_p50": 503.14937499999996,
+        "BaseMul_cycles_saved_p50": 334.19405000000006,
+        "BaseMul_instructions_saved": 361,
+        "BaseMul_percent_faster": 12.955235308350899,
+        "target": "Raspberry Pi 5 Cortex-A76 core 3"
+      },
+      "pass_condition_met": false,
+      "reason": "The complete 288-leaf weight census and isolated specialized-kernel timing pass. The whole-product win does not: CF4 is already +463.162 cycles before inverse correction.",
+      "status": "partial",
+      "weights": [
+        {
+          "implementation_class": "cheap_small_public_int32_scale",
+          "inverse_mod_q": 3073,
+          "is_plus_or_minus_one": false,
+          "is_unit": true,
+          "leaf_count": 144,
+          "quadratic_character": "square",
+          "top": 0,
+          "value_R0": 9,
+          "vector_tiles": 18
+        },
+        {
+          "implementation_class": "cheap_small_public_int32_scale",
+          "inverse_mod_q": 2305,
+          "is_plus_or_minus_one": false,
+          "is_unit": true,
+          "leaf_count": 144,
+          "quadratic_character": "square",
+          "top": 1,
+          "value_R0": 3,
+          "vector_tiles": 18
+        }
+      ],
+      "whole_product_result": "rejected for CF0 composition before a new target run"
+    }
+  },
+  "evidence_sanity": {
+    "all_scaled_witnesses_delete_one_mulmod": true,
+    "full_product_result_present": true,
+    "inverse_contract_present": true,
+    "scaled_witnesses_checked": 4
+  },
+  "experiment": "M5A-E2E-AUDIT0",
+  "next_hard_gate": {
+    "action": "Build an exact NTT9-first Forward boundary/layout model before assembly.",
+    "id": "M5A-E2E-AUDIT1-axis-order-layout-model",
+    "required_outputs": [
+      "coefficient-to-register map immediately after LD3 for NTT9-first",
+      "shuffle/transpose/load/store count to expose nine-point rows",
+      "resulting NTT16 consumer layout and register budget",
+      "static whole-Forward and Forward-to-BaseMul boundary ledger",
+      "kill rule if the alternative adds a coefficient memory pass or cannot plausibly beat the current order"
+    ],
+    "why_first": "Axis order is the only requested structural choice for which no alternative implementation evidence exists; a map-level gate is cheaper and safer than immediately writing another large assembly kernel."
+  },
+  "pipeline_lock": {
+    "CF0_static_dynamic_instructions": 4738,
+    "executable_control": "CF4",
+    "executable_control_complete_product": true,
+    "executable_control_correctness": "117/117 cases; zero modulo-q mismatches",
+    "forward_candidate": "CF5-A",
+    "forward_candidate_complete_product": false,
+    "forward_candidate_static_dynamic_estimate": 4726,
+    "production_or_SUPERCOP_linked": false
+  },
+  "schema_version": 1,
+  "summary": {
+    "complete": 0,
+    "open": 2,
+    "partial": 4,
+    "principle_pass_conditions_met": 0,
+    "rejected": 0
+  }
+}
