@@ -1,0 +1,20 @@
+id: M5U-FR-ISO2
+ring: F_3457[x]/(x^864-x^432+1)
+leaf_count: 288
+leaf_algebra:
+  alpha: F_3457[Y]/(Y^3-9)
+  beta: F_3457[Y]/(Y^3-3)
+leaf_basis: [1, Y, Y^2]
+basis_map: [a0, tau*a1, tau^2*a2]
+tau:
+  alpha: theta^(2*column+32*row)
+  beta: 27*theta^(2*column+32*row)
+physical_layout: unchanged_FR0_36_tiles_component_SoA_eight_leaves
+scale: algebra_reference_R0; optimized_Montgomery_schedule_open
+forward: must_directly_produce_FRISO2_without_conversion_pass
+basemul: two_branch_constant_cubic_product_closed_in_FRISO2
+inverse: must_directly_consume_FRISO2_without_conversion_pass
+memory_coefficients: 864
+reference_conversion_passes: 2_oracle_only_forbidden_in_optimized_path
+baseinv_and_serialization: production_veto_pending_consumer_audit
+production_linked: false
