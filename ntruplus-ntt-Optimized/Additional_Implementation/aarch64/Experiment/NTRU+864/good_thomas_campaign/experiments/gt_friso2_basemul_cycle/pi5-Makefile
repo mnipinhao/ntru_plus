@@ -1,0 +1,21 @@
+CC ?= gcc
+CFLAGS ?= -O3 -std=c11 -Wall -Wextra -Wpedantic -Werror -march=armv8-a+simd
+BUILD := build
+
+.PHONY: all clean
+
+all: $(BUILD)/bench_pmu
+
+$(BUILD):
+	mkdir -p $@
+
+$(BUILD)/kernel.o: gt864_friso2_basemul_neon.c \
+		gt864_friso2_basemul_neon.h | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(BUILD)/bench_pmu: bench_pmu.c gt864_friso2_basemul_neon.h \
+		$(BUILD)/kernel.o
+	$(CC) $(CFLAGS) -o $@ bench_pmu.c $(BUILD)/kernel.o
+
+clean:
+	rm -f -r $(BUILD)

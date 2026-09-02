@@ -1,0 +1,30 @@
+#ifndef GT864_FRISO2_BASEMUL_NEON_H
+#define GT864_FRISO2_BASEMUL_NEON_H
+
+#include <stdint.h>
+
+#define GT864_FRISO2_BASEMUL_COEFFICIENTS 864
+
+void gt864_friso2_basemul_staged(
+    int16_t out[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t a[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t b[GT864_FRISO2_BASEMUL_COEFFICIENTS]);
+
+void gt864_friso2_basemul_direct(
+    int16_t out[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t a[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t b[GT864_FRISO2_BASEMUL_COEFFICIENTS]);
+
+void gt864_friso2_basemul_add_staged(
+    int16_t out[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t a[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t b[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t c[GT864_FRISO2_BASEMUL_COEFFICIENTS]);
+
+void gt864_friso2_basemul_add_direct(
+    int16_t out[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t a[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t b[GT864_FRISO2_BASEMUL_COEFFICIENTS],
+    const int16_t c[GT864_FRISO2_BASEMUL_COEFFICIENTS]);
+
+#endif

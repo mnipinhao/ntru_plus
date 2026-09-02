@@ -1,0 +1,16 @@
+id: M5U-B1-direct-wide
+operation: isolated_FRISO2_BaseMul_and_BaseMulAdd
+ring: F_3457[Y]/(Y^3-z0)
+branch_constants:
+  alpha: 9
+  beta: 3
+input_layout: unchanged_FR0_36_tiles_component_SoA_eight_leaves
+input_scale: R0
+input_bounds:
+  component0: 26306
+  component12: 5185
+arithmetic: accumulate_complete_cubic_product_in_int32_then_reduce_once_per_output
+intermediate_widening_montgomery_reductions_per_tile: 0
+memory_boundary: unchanged_one_load_and_one_store_per_coefficient
+compiler: GCC_14.2.0_O3_march_armv8_a_simd
+production_linked: false

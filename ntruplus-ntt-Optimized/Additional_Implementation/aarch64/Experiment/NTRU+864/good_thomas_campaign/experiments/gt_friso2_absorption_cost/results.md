@@ -1,6 +1,7 @@
 # Results
 
-Status: **M5U-B rejected before code generation; Production unchanged.**
+Status: **explicit static fallback rejected; cycle viability open; Production
+unchanged.**
 
 - All 288 FR-ISO2 factorizations and the 18-/32-modulus comparison families
   pass exact finite-field identities.
@@ -20,5 +21,7 @@ Status: **M5U-B rejected before code generation; Production unchanged.**
 - The less aggressive 18-modulus column-only family is also +30 instructions
   in its optimistic ledger; the 32-modulus row-only family is +544.
 
-The representation remains a valid C oracle, but it does not pass the required
-whole-path instruction-reduction gate.  No assembly or Slothy run was started.
+The representation remains a valid C oracle, but the explicit fallback does not
+pass the whole-path instruction-reduction gate.  M5U-B1 later showed that the
+BaseMul portion saves 334 actual A76 cycles, so this ledger must not be read as
+a cycle-level rejection.  No transform assembly or Slothy run was started.

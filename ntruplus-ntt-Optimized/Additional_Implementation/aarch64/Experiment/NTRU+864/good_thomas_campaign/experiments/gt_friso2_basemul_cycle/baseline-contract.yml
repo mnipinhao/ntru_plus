@@ -1,0 +1,16 @@
+id: M5U-B1-staged
+operation: isolated_FRISO2_BaseMul_and_BaseMulAdd
+ring: F_3457[Y]/(Y^3-z0)
+branch_constants:
+  alpha: 9
+  beta: 3
+input_layout: FR0_36_tiles_component_SoA_eight_leaves
+input_scale: R0
+input_bounds:
+  component0: 26306
+  component12: 5185
+arithmetic: reduce_cross_terms_to_R_minus_1_then_multiply_by_z0_R1
+intermediate_widening_montgomery_reductions_per_tile: 2
+memory_boundary: one_load_and_one_store_per_coefficient
+compiler: GCC_14.2.0_O3_march_armv8_a_simd
+production_linked: false
