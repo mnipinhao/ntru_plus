@@ -1,0 +1,19 @@
+id: M5U-CF1
+action: search_exact_scaled_NTT9_DAG
+baseline: M5U-CF0_explicit_liveout_scaling
+candidate: affine_node_scale_fusion
+oracle: exact_M5R-D_oriented_NTT9_linear_map_plus_FRISO2_leaf_factors
+host: local_static_math_gate
+decision: pass_static_arithmetic_existence
+evidence:
+  feasible_witnesses: 4
+  vector_mulmods_per_scaled_block: 26
+  extra_mulmods_over_M5R-D_per_scaled_block: 8
+  mulmods_deleted_vs_CF0_per_scaled_block: 1
+  mulmods_deleted_per_forward: 8
+  arithmetic_instructions_deleted_per_forward: 24
+  maximum_abs_across_witnesses: 19427
+  new_coefficient_memory_boundaries: 0
+optimality: open_four_HiGHS_runs_reached_240_second_limit
+production_linked: false
+next: symbolic_all32_register_realization_and_constant_load_ledger
