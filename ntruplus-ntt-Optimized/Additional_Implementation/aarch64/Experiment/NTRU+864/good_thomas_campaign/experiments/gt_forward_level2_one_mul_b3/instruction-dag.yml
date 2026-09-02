@@ -1,0 +1,30 @@
+dag:
+  id: gt864_forward_level2_one_mul_b3_dag
+  kernel_contract: kernel-contract.yml
+  description: preserve_the_complete_M5R-C_region_and_replace_only_six_level2_B3_nodes
+inputs:
+  - M5R-C level1 outputs A0-A2 B0-B2 C0-C2 for two NTT9 blocks
+  - eta-corrected B1 C1 B2 C2
+constants: [rho, rho_prime, q]
+nodes:
+  - id: each_level2_B3
+    op: one_product_radix3
+    inputs: [x0, x1, x2]
+    outputs: [y0, y1, y2]
+    instruction_shape: ten_instructions_add_add_sub_sqrdmulh_mul_mls_sub_add_sub_sub
+    tied_operands: [rho_diff_mul_then_mls]
+    range_before: G0_diff_abs_13074_G1_G2_diff_abs_3655
+    range_after: all_nodes_abs_at_most_26306
+    may_reorder_with: [independent_B3_nodes, independent_public_table_loads]
+    must_precede: [corresponding_output_liveout]
+memory:
+  loads: [unchanged_from_M5R-C]
+  stores: none_inside_region
+  ordering_constraints: [preserve_public_pointer_postincrements]
+outputs: [same_out0-out17_logical_rows_and_physical_slots]
+live_out: [out0-out17, x0, x1, x2, x3]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

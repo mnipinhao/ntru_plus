@@ -1,0 +1,48 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: M5R-C
+  source: ../gt_forward_one_mul_b3/gt864_forward_one_bank_one_mul_b3.sym.S
+  extracted_region: baseline-region.S
+  function: gt864_forward_one_bank_one_mul_b3
+  start_label: gt864_forward_one_bank_one_mul_b3_slothy_start
+  end_label: gt864_forward_one_bank_one_mul_b3_slothy_end
+  source_commit: eab0178a
+region:
+  instruction_count: 593
+  live_in: [x0, x1, x2, x3, x4, v13, v14, v15, v16, v17]
+  live_out: [out0-out17, x0, x1, x2, x3]
+  clobbers: [x0-x4, v0-v12, v18-v31]
+abi:
+  inputs: [one_P8_bank, ntt16_tables, ntt9_tables]
+  outputs: [18_FR0_vectors]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4]
+  fixed_vector_registers: [v13, v14, v15, v16, v17]
+  reserved_registers: [x5-x30, sp, v13-v17]
+memory_contract:
+  loads: [16_coefficient_vectors, 16_tail_lane_loads, 69_public_table_loads]
+  stores: none_inside_region
+  aliasing: caller_supplies_nonoverlap_or_safe_read_before_outer_stores
+  alignment: vector_tables_and_main_P8_rows_16_byte_aligned
+  public_offsets_only: true
+  pointer_updates: [x0_public_postincrements, x1_public_stride, x2_public_postincrements, x3_public_postincrements]
+constant_contract:
+  constants: [q, rho, rho_prime, rho2, rho2_prime, eta, eta_prime, eta_inv, eta_inv_prime]
+  modulus: 3457
+  representation: fixed_Barrett_constants_and_R0_coefficients
+  reduction_method: Algorithm_10_mul_sqrdmulh_mls
+range_contract:
+  input_ranges: [NTT16_producer_abs_at_most_8874]
+  intermediate_ranges: [M5R-C_abs_at_most_26306]
+  output_ranges: [bounded_R0_signed_int16_congruent_to_FR0]
+  narrowing_points: none
+constant_time_contract:
+  secret_inputs: [coefficient_values]
+  public_inputs: [tables, pointers, fixed_loop_shape]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 593
+  slothy_expected_cycles: not_used_as_A76_claim
+  full_path_benchmark: 4454.589575_cycles_p50
+  benchmark_command: python3 ../gt_forward_one_mul_b3/run_pi5.py

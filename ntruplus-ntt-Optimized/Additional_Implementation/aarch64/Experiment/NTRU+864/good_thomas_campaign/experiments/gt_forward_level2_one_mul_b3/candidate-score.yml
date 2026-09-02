@@ -1,0 +1,36 @@
+candidate:
+  id: M5R-D
+  status: promote
+  mode: existing_region_replacement
+
+contract:
+  preserved: true
+  approved_changes: false
+  changed_fields: []
+  approval_note: modulo-q representative may change within the proved signed-int16 bound
+
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+
+slothy:
+  status: pass
+  baseline_expected_cycles: 149
+  candidate_expected_cycles: 143
+  parity_justification:
+  log_json: slothy-output/gt864_forward_one_bank_all_one_mul_b3.ra.log
+
+benchmark:
+  status: pass
+  command: ./run_pi5.py --host pi@100.99.191.9 --core 3 --repetitions 3
+  metric: full-forward cycles p50
+  lower_is_better: true
+  neutral_threshold_percent: 1.0
+  baseline: 4457.45735
+  candidate: 4229.9409
+
+decision:
+  reason: all experiment gates pass and Cortex-A76 improves 5.1047 percent versus M5R-C
+  next_iteration: full multiplication consumer-path benchmark before Production promotion
