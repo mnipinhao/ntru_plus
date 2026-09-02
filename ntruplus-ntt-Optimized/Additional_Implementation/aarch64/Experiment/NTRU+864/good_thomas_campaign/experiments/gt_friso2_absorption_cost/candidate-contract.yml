@@ -1,0 +1,17 @@
+id: M5U-B-FR-ISO2
+source: M5U-A_two_coset_basis_isomorphism
+leaf_basis: [1, Y, Y^2]
+basis_map: [a0, tau*a1, tau^2*a2]
+tau:
+  alpha: theta^(2*column)*theta^(32*row)
+  beta: 27*theta^(2*column)*theta^(32*row)
+leaf_modulus:
+  alpha: Y^3-9
+  beta: Y^3-3
+physical_layout: unchanged_FR0_36_tiles_component_SoA_eight_leaves
+forward: must_directly_emit_normalized_components_before_existing_store
+inverse: must_directly_consume_normalized_components_after_existing_load
+basemul: direct_int32_accumulation_then_one_Montgomery_reduction_per_component
+coefficient_load_store_boundaries: unchanged
+baseinv_and_serialization: production_veto_not_audited
+production_linked: false
