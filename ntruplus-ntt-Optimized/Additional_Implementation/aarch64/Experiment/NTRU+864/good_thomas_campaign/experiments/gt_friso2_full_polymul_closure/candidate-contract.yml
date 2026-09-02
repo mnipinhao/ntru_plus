@@ -1,0 +1,29 @@
+schema_version: 1
+experiment: gt_friso2_full_polymul_closure
+role: candidate
+operation: complete_polynomial_multiplication
+parameter_set: NTRU+864
+forward:
+  calls: 2
+  implementation: gt864_forward_poly_ntt_friso2
+  source_gate: gt_friso2_forward_absorption
+basemul:
+  implementation: gt864_friso2_basemul_direct
+  leaf_moduli: [9, 3]
+  source_gate: gt_friso2_basemul_cycle
+inverse:
+  pass1: gt864_friso2_inverse_ntt9_neon
+  pass2: gt864_fr0_inverse_finish_neon
+  row_correction_mulmods: 64
+  separate_column_correction_mulmods: 0
+  implementation_level: neon_intrinsics_correctness_reference
+representation:
+  input_output_scale: R0
+  full_buffer_conversion_passes: 0
+coefficient_load_store_boundaries:
+  forward_per_call: 2
+  inverse: 2
+gate:
+  correctness: passed
+  performance: rejected_before_new_target_run
+production_linked: false
