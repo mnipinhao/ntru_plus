@@ -12,7 +12,8 @@ the zeta-table SHA-256 remains
 `1c4d61e3a906acec0c44a3f3e88ef047ec7c0e45ed3e3ed8f3b38030092c4d92`.
 
 Five alias paths per case pass: BaseMul `out==a/b` and BaseMulAdd `out==a/b/c`.
-Range proof establishes int32 safety and R0 output bounds 2114/2168. This gate
+G0 updates the source-closed M5R-D operand bound to 25569. The rerun range
+proof establishes int32 safety and R0 output bounds 2148/2205. This gate
 makes no BaseInv, inverse-transform, full-KEM, assembly-performance, or
 SUPERCOP claim.
 

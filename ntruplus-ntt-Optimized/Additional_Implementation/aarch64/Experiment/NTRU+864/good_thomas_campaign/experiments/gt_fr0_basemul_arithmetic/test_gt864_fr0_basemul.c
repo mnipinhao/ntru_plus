@@ -10,7 +10,7 @@
 #define NEG_QINV (-12929)
 #define R (-147)
 #define RSQ 867
-#define BOUND 24438
+#define BOUND 25569
 
 static uint32_t random_state = 0xb453U;
 static int cases;

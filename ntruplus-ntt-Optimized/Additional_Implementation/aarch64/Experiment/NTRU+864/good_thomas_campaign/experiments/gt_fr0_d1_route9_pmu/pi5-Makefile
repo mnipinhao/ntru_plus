@@ -1,0 +1,17 @@
+CC:=gcc
+CFLAGS:=-O3 -std=c11 -Wall -Wextra -Werror -Wmissing-prototypes -march=armv8-a+simd -D_DEFAULT_SOURCE -ffunction-sections -fdata-sections
+BUILD:=build
+.PHONY: all check clean
+all: $(BUILD)/test $(BUILD)/bench
+$(BUILD):
+	mkdir -p $@
+$(BUILD)/route9.o: route9.c route9.h p3b1_tables.h | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/test: test_route9.c $(BUILD)/route9.o
+	$(CC) $(CFLAGS) -Wl,--gc-sections -I. $^ -o $@
+$(BUILD)/bench: bench_route9.c $(BUILD)/route9.o
+	$(CC) $(CFLAGS) -Wl,--gc-sections -I. $^ -o $@
+check: $(BUILD)/test
+	./$(BUILD)/test
+clean:
+	rm -rf $(BUILD)

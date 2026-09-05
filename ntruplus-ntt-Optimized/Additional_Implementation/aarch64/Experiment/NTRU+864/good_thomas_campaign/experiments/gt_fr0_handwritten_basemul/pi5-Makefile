@@ -1,0 +1,26 @@
+CC := gcc
+CFLAGS := -O3 -std=c11 -Wall -Wextra -Werror -march=armv8-a+simd
+BUILD := build
+
+.PHONY: all check clean
+
+all: $(BUILD)/kernel.o $(BUILD)/test-baseline $(BUILD)/bench-baseline
+
+$(BUILD):
+	mkdir -p $@
+
+$(BUILD)/kernel.o: gt864_fr0_basemul.c gt864_fr0_basemul.h \
+		gt864_fr0_basemul_tables.h | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c -o $@ gt864_fr0_basemul.c
+
+$(BUILD)/test-baseline: test_gt864_fr0_basemul.c $(BUILD)/kernel.o | $(BUILD)
+	$(CC) $(CFLAGS) -I. -o $@ test_gt864_fr0_basemul.c $(BUILD)/kernel.o
+
+$(BUILD)/bench-baseline: bench_pmu.c $(BUILD)/kernel.o | $(BUILD)
+	$(CC) $(CFLAGS) -o $@ bench_pmu.c $(BUILD)/kernel.o
+
+check: $(BUILD)/test-baseline
+	./$(BUILD)/test-baseline
+
+clean:
+	rm -rf $(BUILD)

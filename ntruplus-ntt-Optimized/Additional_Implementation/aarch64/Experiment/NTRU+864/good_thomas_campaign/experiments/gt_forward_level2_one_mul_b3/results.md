@@ -6,8 +6,10 @@ Status: **passed as an experimental candidate; Production unchanged.**
 
 - Arithmetic: three additional Algorithm-10 mulmods removed per NTT9 block;
   six removed per block relative to M5R-B.
-- Proof: 26,149 Algorithm-10 congruence checks and 47,803,396 field identity
-  checks; widest difference `±13074`, maximum new-node magnitude 26306.
+- Local identity proof: 26,149 Algorithm-10 congruence checks and 47,803,396
+  field identity checks; widest difference `±13074`, safe coarse new-node
+  magnitude 26306. G0's actual constant-specific `9342` chain tightens the
+  Forward/FR-0 maximum to 25569 and closes M5C/M5E consumers.
 - Slothy: 569 instructions, 143 expected cycles, `OPTIMAL`, self-check OK,
   split scheduling OK, no spill.
 - Memory: 32 independent twist `ldr`s per bank retained; no new coefficient

@@ -240,7 +240,7 @@ int main(void)
     int16_t input[864];
     int16_t a[864];
     int16_t b[864];
-    static const int16_t boundaries[] = {-2168, 2168, -1, 0, 1};
+    static const int16_t boundaries[] = {-2205, 2205, -1, 0, 1};
     static const int positions[] = {0,1,2,3,26,27,431,432,433,861,862,863};
 
     for (size_t k = 0; k < sizeof(boundaries) / sizeof(boundaries[0]); k++) {
@@ -250,13 +250,13 @@ int main(void)
     }
     for (size_t k = 0; k < sizeof(positions) / sizeof(positions[0]); k++) {
         memset(fr0, 0, sizeof(fr0));
-        fr0[positions[k]] = (int16_t)(k & 1 ? -2168 : 2168);
+        fr0[positions[k]] = (int16_t)(k & 1 ? -2205 : 2205);
         check_fr0_case(fr0, "fr0-impulse");
     }
     for (int trial = 0; trial < 32; trial++) {
         for (int i = 0; i < 864; i++)
             fr0[i] = (int16_t)((int32_t)((random_state =
-                random_state * 1664525u + 1013904223u) % 4337U) - 2168);
+                random_state * 1664525u + 1013904223u) % 4411U) - 2205);
         check_fr0_case(fr0, "fr0-random");
     }
 

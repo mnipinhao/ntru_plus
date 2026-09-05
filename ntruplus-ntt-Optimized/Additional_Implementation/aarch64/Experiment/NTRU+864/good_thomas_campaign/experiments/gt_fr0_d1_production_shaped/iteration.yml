@@ -1,0 +1,11 @@
+iteration:
+  id: D1-P1
+  action: optimize_arithmetic_consumer_validation
+  bottleneck: arithmetic_reduction_with_explicit_layout_boundaries
+  target_host: pi@100.99.191.9
+  microarchitecture: Cortex-A76_Raspberry_Pi_5_core_3
+  compiler: GCC_14.2.0
+  flags: -O3_-march=armv8-a+simd_portable_SHAKE256
+  variants: [Official, GT-old, GT-D1]
+  samples: 41_per_order_times_two_orders_times_three_repetitions
+  decision: accept_D1_keep_complete_GT_experimental

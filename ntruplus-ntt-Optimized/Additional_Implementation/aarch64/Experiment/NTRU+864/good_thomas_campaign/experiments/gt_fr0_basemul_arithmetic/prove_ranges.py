@@ -46,25 +46,26 @@ def montgomery_bound(value: Interval) -> Interval:
 
 def load_fr0_bound() -> tuple[int, dict[str, object]]:
     path = (Path(__file__).resolve().parents[1] /
-            "gt_fr0_kernel_realization/prove_ranges.py")
-    spec = importlib.util.spec_from_file_location("m5a_range_contract", path)
+            "gt_m5rd_fr0_range_chain_closure/prove_range_chain.py")
+    spec = importlib.util.spec_from_file_location("g0_range_contract", path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
-    analyzer, outputs = module.analyze((-8874, 8874))
-    bound = max(abs(endpoint) for interval in outputs for endpoint in interval)
+    forward = module.forward_one_product()
+    bound = int(forward["maximum_abs_forward_output"])
     return bound, {
-        "m5b_ntt16_input": [-8874, 8874],
-        "m5a_maximum_any_step": module.maximum_abs(analyzer),
-        "m5a_output_union": [min(x[0] for x in outputs),
-                             max(x[1] for x in outputs)],
+        "source": "G0 actual M5R-D constant-specific one-product Forward",
+        "m5rd_ntt16_max_abs": forward["ntt16_max_abs"],
+        "m5rd_maximum_any_forward_node":
+            forward["maximum_abs_any_forward_node"],
+        "m5rd_output_union": forward["forward_output_union"],
     }
 
 
 def main() -> None:
     operand_bound, derivation = load_fr0_bound()
-    assert operand_bound == 24438
+    assert operand_bound == 25569
     operand = (-operand_bound, operand_bound)
     product1 = multiply(operand, operand)
     product2 = add(product1, product1)
@@ -92,8 +93,8 @@ def main() -> None:
         add_outputs.append(montgomery_bound(add_accum))
     assert all(interval[0] >= INT32_MIN and interval[1] <= INT32_MAX
                for interval in final_accumulators)
-    assert max(abs(x) for interval in product_outputs for x in interval) == 2114
-    assert max(abs(x) for interval in add_outputs for x in interval) == 2168
+    assert max(abs(x) for interval in product_outputs for x in interval) == 2148
+    assert max(abs(x) for interval in add_outputs for x in interval) == 2205
 
     # Exhaust every possible low half of the Neon -qinv/add reduction.
     low_half_checks = 0
@@ -133,8 +134,8 @@ def main() -> None:
         "intermediate_R_minus_1_bounds": [list(x) for x in reduced],
         "basemul_R0_output_bounds": [list(x) for x in product_outputs],
         "basemul_add_R0_output_bounds": [list(x) for x in add_outputs],
-        "maximum_abs_basemul_output": 2114,
-        "maximum_abs_basemul_add_output": 2168,
+        "maximum_abs_basemul_output": 2148,
+        "maximum_abs_basemul_add_output": 2205,
         "montgomery_low_half_checks": low_half_checks,
         "intentional_low_half_wrap": True,
         "production_linked": False,

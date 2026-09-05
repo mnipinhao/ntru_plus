@@ -15,8 +15,8 @@ g = top*18 + row*2 + column/8
 lane = column mod 8
 ```
 
-All values are normal `R0`. M5C proves the widest real consumer input contract,
-BaseMulAdd, as `[-2168,2168]`.
+All values are normal `R0`. G0 re-closes M5C against M5R-D and proves the
+widest real consumer input contract, BaseMulAdd, as `[-2205,2205]`.
 
 ## Pass 1 register-flow view: inverse NTT9
 

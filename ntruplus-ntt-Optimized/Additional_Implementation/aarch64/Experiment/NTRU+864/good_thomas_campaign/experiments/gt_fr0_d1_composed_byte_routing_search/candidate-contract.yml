@@ -1,0 +1,15 @@
+candidate:
+  id: D1-P3B2-direct-composed-routing
+  directions:
+    - FR0_to_postshuffle_coefficient_layout
+    - preshuffle_coefficient_layout_to_FR0
+  candidate_families:
+    C1: eight_lane_loads_per_output_q_then_one_q_store
+    C2: two_TBL4_banks_per_output_q_then_ORR_and_one_q_store
+constraints:
+  - exact_authoritative_864_map_composed_with_stock_shuffle
+  - forward_and_reverse_are_exact_inverses
+  - no_Official_864_intermediate
+  - no_arithmetic_scale_range_or_representation_change
+  - public_fixed_map_only
+  - no_cycle_promotion_no_Slothy_no_production_linkage

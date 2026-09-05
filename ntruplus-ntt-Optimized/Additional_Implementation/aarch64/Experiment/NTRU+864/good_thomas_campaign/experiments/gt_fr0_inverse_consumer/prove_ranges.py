@@ -11,7 +11,7 @@ from generate_tables import make_tables
 
 Q = 3457
 NEG_QINV = -12929
-INPUT_BOUND = 2168
+INPUT_BOUND = 2205
 S16_MIN = -(1 << 15)
 S16_MAX = (1 << 15) - 1
 

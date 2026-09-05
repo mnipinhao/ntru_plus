@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifndef INPUT_BOUND
+#define INPUT_BOUND 2205
+#endif
+
 static uint32_t random_state = 0x5eU;
 static int pass1_modq_mismatches;
 static int pass2_modq_mismatches;
@@ -69,7 +73,9 @@ static void check_case(const int16_t fr0[864], const char *label)
 int main(void)
 {
     int16_t fr0[864];
-    static const int16_t boundaries[] = {-2168,2168,-1,0,1};
+    static const int16_t boundaries[] = {
+        -INPUT_BOUND, INPUT_BOUND, -1, 0, 1
+    };
 
     for (unsigned k = 0; k < sizeof(boundaries) / sizeof(boundaries[0]); k++) {
         for (int i = 0; i < 864; i++)
@@ -82,13 +88,15 @@ int main(void)
         };
         for (int i = 0; i < 864; i++)
             fr0[i] = 0;
-        fr0[positions[impulse]] = (int16_t)(impulse & 1 ? -2168 : 2168);
+        fr0[positions[impulse]] =
+            (int16_t)(impulse & 1 ? -INPUT_BOUND : INPUT_BOUND);
         check_case(fr0, "impulse");
     }
     for (int trial = 0; trial < 32; trial++) {
         for (int i = 0; i < 864; i++) {
             random_state = random_state * 1664525u + 1013904223u;
-            fr0[i] = (int16_t)((int32_t)(random_state % 4337U) - 2168);
+            fr0[i] = (int16_t)((int32_t)(random_state %
+                (2U * INPUT_BOUND + 1U)) - INPUT_BOUND);
         }
         check_case(fr0, "random");
     }

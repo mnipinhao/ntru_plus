@@ -1,0 +1,16 @@
+candidate:
+  id: D1-P3B1-route9
+  variants:
+    factorized_scalar: 144_public_routes_times_top_and_component
+    R9-A: cyclic_canonicalization_plus_8x8_transpose_plus_diagonal_repair_plus_exact_lane_reorder
+    R9-B: three_bank_TBL_plus_OR_merge
+  route9_instances_per_polynomial: 12
+  directions: [FR0_to_Official, Official_to_FR0]
+constraints:
+  - exact_coordinate_permutation_only
+  - one_reusable_body_per_direction_and_variant
+  - no_coefficient_scratch
+  - no_vector_spill
+  - fixed_public_addresses_and_indices
+  - no_scale_range_or_representative_change
+  - no_Slothy_and_no_production_linkage

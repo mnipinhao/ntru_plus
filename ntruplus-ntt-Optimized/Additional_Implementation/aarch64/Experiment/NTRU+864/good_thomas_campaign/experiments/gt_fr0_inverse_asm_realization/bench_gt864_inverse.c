@@ -53,7 +53,7 @@ int main(void)
 
     for (int i = 0; i < 864; i++) {
         random_state = random_state * 1664525u + 1013904223u;
-        fr0[i] = (int16_t)((int32_t)(random_state % 4337U) - 2168);
+        fr0[i] = (int16_t)((int32_t)(random_state % 4411U) - 2205);
     }
     gt864_fr0_inverse_ntt9_neon(p8, fr0);
 

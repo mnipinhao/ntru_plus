@@ -3,7 +3,7 @@
 
 import json
 
-INPUT = 2168
+INPUT = 2205
 FQMUL = 3444  # Exhaustive signed-halfword maximum from generate_barrett_tables.py.
 INT16_MAX = 32767
 

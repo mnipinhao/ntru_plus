@@ -1,0 +1,49 @@
+experiment:
+  id: B1
+  action: benchmark
+  status: D1_promoted_experimental_arithmetic_baseline_H1_H2_deferred
+  parameter_set: NTRU+864
+  lane: AArch64_Neon_FR0
+  bottleneck: widening_multiply_dependency_and_scheduling
+baseline:
+  source: ../gt_fr0_basemul_arithmetic/gt864_fr0_basemul.c
+  symbols: [gt864_fr0_basemul_neon,gt864_fr0_basemul_add_neon]
+  compiler: Pi5_system_GCC_exact_version_recorded_by_runner
+  flags: -O3_-std=c11_-Wall_-Wextra_-Werror_-march=armv8-a+simd
+contract:
+  groups: 36
+  group_layout: three_int16x8_components
+  input_scale: R0
+  zeta_scale: R1
+  output_scale: R0
+  input_bound: 25569
+  basemul_output_bound: 2148
+  basemuladd_output_bound: 2205
+  coefficient_memory_passes: one_load_and_one_store_per_operand_or_output
+d1_contract:
+  unchanged: [layout,input_scale,zeta_scale,output_scale,coefficient_memory_passes]
+  required_early_cross_montgomery_reductions: 2
+  final_reduction: signed_s32_sqrdmulh_mls_then_narrow
+  reciprocal: 621199
+  final_accumulator_interval: [-1961116731,1961346849]
+  output_bound: 2911
+  inverse_reclosed_maximum_halfword_abs: 17220
+  representative_equivalence: modulo_q_not_bit_exact
+  production_linked: false
+hypothesis:
+  observation: compiler_loop_contains_many_independent_widening_multiply_chains
+  proposed_change: none_B1-0_freezes_baseline_only
+  expected_static_effect: exact_disassembly_and_per_group_instruction_ledger
+  expected_performance_effect: establish_full_36_group_BM_and_BMAdd_cycles
+  expected_register_pressure_effect: measure_compiler_stack_and_vector_usage
+  correctness_or_range_impact: none
+  falsifier: active_benchmark_links_a_different_source_or_object
+next_gates:
+  H1: one_group_handwritten_same_DAG
+  H2_U: two_groups_sequentially_unrolled_control
+  H2_P: two_groups_genuinely_interleaved_pipeline
+  H3: BaseMulAdd_specialized_schedule
+  K0: six_multiply_preadd_int16_feasibility
+  K1: K0_safe_leaves_form_complete_eight_lane_groups_rejected_zero_groups
+  D0: direct_wide_FR0_reduction_boundary_feasibility
+  D1: promoted_after_D1_C1_complete_polynomial_consumer_pass

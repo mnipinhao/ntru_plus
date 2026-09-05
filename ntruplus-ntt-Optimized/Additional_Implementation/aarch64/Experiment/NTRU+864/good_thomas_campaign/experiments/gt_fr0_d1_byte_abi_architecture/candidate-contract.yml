@@ -1,0 +1,18 @@
+experiment: D1-P3A
+scope: exact map factorization and architecture selection only
+candidates:
+  leaf_factorized:
+    base_route_entries: 144
+    reused_across_top_and_component: true
+  route9:
+    components_per_top: 2
+    graph: K9,9 minus one perfect matching
+    vector_kernels_for_full_polynomial: 12
+  direct_byte_composition:
+    eliminate_materialized_official_array: required
+    eliminate_separate_poly_shuffle_pass: required
+forbidden:
+  - change_protocol_bytes
+  - change_FR0_arithmetic
+  - production_link
+  - Slothy_before_concrete_Neon_region

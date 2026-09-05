@@ -1,0 +1,11 @@
+CC=gcc
+CFLAGS=-O3 -std=c11 -Wall -Wextra -Werror -march=armv8-a+simd -D_DEFAULT_SOURCE -ffunction-sections -fdata-sections
+all: test
+test: harness.c byte_boundary.c route9.c pack.o stock_wrapper.o
+	$(CC) $(CFLAGS) -I. $^ -o $@
+pack.o: pack.s
+	$(CC) -x assembler-with-cpp -Dpoly_tobytes_asm=raw_to -Dpoly_frombytes_asm=raw_from -Dpoly_shuffle_asm=raw_shuffle -Dpoly_shuffle2_asm=raw_shuffle2 -c $< -o $@
+stock_wrapper.o: stock_wrapper.S
+	$(CC) -c $< -o $@
+check: test
+	./test

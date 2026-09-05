@@ -43,3 +43,7 @@ bytes and creates no 2x432 top-branch scratch.
 See `REGISTER_FLOW.md` for exact register meanings and the store trade-off.
 See `SLOTHY_PLAN.md` for why the chosen scheduling regions stop at two NTT16
 layers or four completed output states.
+
+G0 later expands the authoritative M5E input contract from the historical
+`2168` to the M5R-D/M5C-closed bound `2205`; the universal fixed-product bound
+and the `17220` maximum lazy halfword bound remain unchanged.

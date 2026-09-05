@@ -1,0 +1,16 @@
+experiment:
+  id: gt_fr0_d1_route9_pmu
+  gate: D1-P3B1
+  status: passed
+  parameter_set: NTRU+864
+  production_linked: false
+gates:
+  correctness: tagged_864_plus_128_random_per_direction_and_roundtrip
+  object: exact_helper_sizes_and_no_vector_stack_spill
+  performance: R9-A_and_R9-B_each_beat_current_in_all_repetitions
+non_claims:
+  - no_direct_byte_boundary_yet
+  - no_BaseInv_or_Inverse_change
+  - no_Slothy
+  - no_KAT_SUPERCOP_or_Production
+next: D1-P3B2 composed byte-routing search

@@ -10,9 +10,10 @@
   schoolbook quotient-ring mismatches;
 - zero dependency on the 32 P8 padding values.
 
-The largest observed output magnitude was 3519. The machine proof, rather than
-that observation, establishes the 3696 bound and a maximum lazy halfword
-magnitude of 19512.
+After G0 expands the input contract to `[-2205,2205]`, the largest observed
+output magnitude is 3467. The machine proof, rather than that observation,
+establishes the unchanged 3696 final bound and a maximum lazy halfword
+magnitude of 19845.
 
 The algorithmic boundary is exactly two full-buffer load/store passes. The
 packed alpha/beta second pass eliminates a third top-branch pass. Compiler

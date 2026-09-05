@@ -1,0 +1,22 @@
+experiment:
+  id: D1-P1
+  status: passed_keep_experimental
+  parameter_set: NTRU+864
+  production_linked: false
+baseline:
+  official: stock_AArch64_NTRU+864
+  gt_old: M5R-D_Forward_M5C_BaseMul_M5E_Inverse
+candidate:
+  gt_d1: M5R-D_Forward_D1_direct_R0_Barrett_M5E_Inverse
+fixed_contracts:
+  kem_source: Additional_Implementation/aarch64/common/kem.c
+  hash: SHAKE256_NO_CE_portable_same_byte_contract
+  gt_layout: FR0
+  external_byte_layout: stock_NTRU+864
+  required_isa: armv8-a+simd
+gates:
+  correctness: deterministic_Keypair_Encaps_Decaps_and_tampered_ciphertext_byte_exact
+  performance: paired_component_and_full_KEM_PMU_on_Cortex_A76
+non_claims:
+  - default_Production_unchanged
+  - not_yet_KAT_or_SUPERCOP

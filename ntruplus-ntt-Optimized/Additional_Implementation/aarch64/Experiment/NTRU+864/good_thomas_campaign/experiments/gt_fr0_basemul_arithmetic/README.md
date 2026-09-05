@@ -19,3 +19,7 @@ addends, and outputs are normal `R0`; zeta is Montgomery `R1`. The implementatio
 uses widening int32 accumulators and the official two-step Montgomery/RSQ scale
 schedule. Run `make check` for table-map, range, exact-schedule, canonical
 cubic, and alias gates. Production remains untouched.
+
+G0 later re-closes this consumer against the actual M5R-D `9342` producer and
+one-product NTT9. The authoritative current input, BaseMul-output, and
+BaseMulAdd-output bounds are respectively `25569`, `2148`, and `2205`.

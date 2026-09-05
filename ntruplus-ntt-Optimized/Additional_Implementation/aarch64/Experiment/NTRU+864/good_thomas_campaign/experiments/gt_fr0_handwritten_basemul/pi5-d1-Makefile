@@ -1,0 +1,30 @@
+CC := gcc
+CFLAGS := -O3 -std=c11 -Wall -Wextra -Werror -march=armv8-a+simd
+BUILD := build
+
+.PHONY: all check clean
+
+all: $(BUILD)/baseline.o $(BUILD)/d1.o $(BUILD)/test-d1 $(BUILD)/bench-d1
+
+$(BUILD):
+	mkdir -p $@
+
+$(BUILD)/baseline.o: gt864_fr0_basemul.c gt864_fr0_basemul.h \
+		gt864_fr0_basemul_tables.h | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c -o $@ gt864_fr0_basemul.c
+
+$(BUILD)/d1.o: gt864_fr0_basemul_d1.c gt864_fr0_basemul_d1.h \
+		gt864_fr0_basemul_tables.h | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c -o $@ gt864_fr0_basemul_d1.c
+
+$(BUILD)/test-d1: test_d1.c $(BUILD)/baseline.o $(BUILD)/d1.o | $(BUILD)
+	$(CC) $(CFLAGS) -I. -o $@ test_d1.c $(BUILD)/baseline.o $(BUILD)/d1.o
+
+$(BUILD)/bench-d1: bench_d1_pmu.c $(BUILD)/baseline.o $(BUILD)/d1.o | $(BUILD)
+	$(CC) $(CFLAGS) -I. -o $@ bench_d1_pmu.c $(BUILD)/baseline.o $(BUILD)/d1.o
+
+check: $(BUILD)/test-d1
+	./$(BUILD)/test-d1
+
+clean:
+	rm -rf $(BUILD)

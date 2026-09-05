@@ -23,3 +23,9 @@ The result is an accepted experimental candidate: 569 instructions per bank,
 90 Algorithm-10 products per bank, no spill, exact modulo-q Forward output,
 and 4229.9409 cycle p50 on Cortex-A76 versus 4457.45735 for M5R-C and
 4396.91215 for Official Neon.
+
+G0 `gt_m5rd_fr0_range_chain_closure` is the authoritative downstream range
+proof. It starts from the actual Algorithm-10 NTT16 maximum 9342 and derives
+the tighter constant-specific M5R-D FR-0 output bound 25569 before carrying it
+through M5C and M5E. The original 26306 figure is a safe local identity bound,
+but is not the current end-to-end consumer chain.

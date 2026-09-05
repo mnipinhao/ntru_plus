@@ -1,0 +1,12 @@
+iteration:
+  id: D1-P3B3
+  action: optimize-layout
+  baseline: current_scalar_and_R9A_stock_API
+  candidates: C1_four_outputs_and_C2_public_greedy_order
+  observation: byte_boundary_materialization_cost
+  hypothesis: fused_routing_and_encoding_can_reduce_complete_boundary_cost
+  falsifier: byte_mismatch_spill_or_Pi5_regression
+  local_host: Apple_arm64
+  target_host: pi@100.99.191.9
+  target_status: passed_correctness_GCC_object_and_PMU
+  result: select_R9A_to_bytes_and_C1_from_bytes_reject_C2

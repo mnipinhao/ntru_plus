@@ -1,7 +1,7 @@
 # Results
 
 `make check` passes 49 boundary, impulse, and deterministic randomized FR-0
-cases within M5C's `[-2168,2168]` contract. Pass 1 and pass 2 match M5D
+cases within G0's M5R-D/M5C-closed `[-2205,2205]` contract. Pass 1 and pass 2 match M5D
 coefficientwise modulo q with zero mismatches. The new reduction deliberately
 chooses different noncanonical representatives in 385 pass-1 and 673 pass-2
 comparisons. Sentinel checks report zero writes to the 32 P8 tail-padding
@@ -10,7 +10,7 @@ coefficients.
 The fixed-multiply proof exhausts all 65,536 signed halfword inputs for 270
 distinct constants: 17,694,720 congruence checks, zero failures, and maximum
 output magnitude 3444. The derived inverse bound peaks at 17,220 during NTT16
-and gives a final output bound 6888; the observed maximum is 3568.
+and gives a final output bound 6888; the G0 rerun observed maximum is 3492.
 
 The disassembly audit reports:
 

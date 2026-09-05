@@ -1,0 +1,56 @@
+CC := gcc
+CFLAGS := -O3 -std=c11 -Wall -Wextra -Werror -Wmissing-prototypes \
+	-march=armv8-a+simd -D_DEFAULT_SOURCE -ffunction-sections -fdata-sections
+LDFLAGS := -Wl,--gc-sections
+BUILD := build
+
+COMMON_OBJECTS := $(BUILD)/symmetric.o $(BUILD)/poly.o $(BUILD)/fips202.o \
+	$(BUILD)/gt864_poly_api.o $(BUILD)/gt864_fr0_basemul.o \
+	$(BUILD)/gt864_fr0_basemul_d1.o $(BUILD)/gt864_fr0_inverse_asm_wrapper.o \
+	$(BUILD)/add.o $(BUILD)/ntt.o $(BUILD)/base.o $(BUILD)/crepmod3.o \
+	$(BUILD)/pack.o $(BUILD)/cbd.o $(BUILD)/gt864_forward_poly_ntt.o \
+	$(BUILD)/gt864_forward_six_bank.o $(BUILD)/gt864_top_split.o \
+	$(BUILD)/gt864_fr0_inverse9_block.o $(BUILD)/gt864_inverse16_blocks.o
+KEM_OBJECTS := $(BUILD)/kem_official.o $(BUILD)/kem_gt_old.o $(BUILD)/kem_gt_d1.o
+
+GT_OLD_RENAMES := \
+	-Dcrypto_kem_keypair=gt_old_crypto_kem_keypair \
+	-Dcrypto_kem_enc=gt_old_crypto_kem_enc -Dcrypto_kem_dec=gt_old_crypto_kem_dec \
+	-Dpoly_ntt=gt_old_poly_ntt -Dpoly_invntt=gt_old_poly_invntt \
+	-Dpoly_baseinv=gt_old_poly_baseinv -Dpoly_basemul=gt_old_poly_basemul \
+	-Dpoly_basemul_add=gt_old_poly_basemul_add \
+	-Dpoly_tobytes=gt_old_poly_tobytes -Dpoly_frombytes=gt_old_poly_frombytes
+GT_D1_RENAMES := $(subst gt_old_,gt_d1_,$(GT_OLD_RENAMES))
+
+.PHONY: all check clean
+all: $(BUILD)/test-kem $(BUILD)/bench-kem
+
+$(BUILD):
+	mkdir -p $@
+
+$(BUILD)/kem_official.o: kem_stock.c | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/kem_gt_old.o: kem_stock.c | $(BUILD)
+	$(CC) $(CFLAGS) $(GT_OLD_RENAMES) -I. -c $< -o $@
+$(BUILD)/kem_gt_d1.o: kem_stock.c | $(BUILD)
+	$(CC) $(CFLAGS) $(GT_D1_RENAMES) -I. -c $< -o $@
+$(BUILD)/fips202.o: NO_CE/fips202.c | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+
+$(BUILD)/%.o: %.c | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/%.o: %.S | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/%.o: %.s | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+
+$(BUILD)/test-kem: test_kem.c $(KEM_OBJECTS) $(COMMON_OBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -o $@ test_kem.c $(KEM_OBJECTS) $(COMMON_OBJECTS)
+$(BUILD)/bench-kem: bench_kem_pmu.c $(KEM_OBJECTS) $(COMMON_OBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -o $@ bench_kem_pmu.c $(KEM_OBJECTS) $(COMMON_OBJECTS)
+
+check: $(BUILD)/test-kem
+	./$(BUILD)/test-kem
+
+clean:
+	rm -rf $(BUILD)
