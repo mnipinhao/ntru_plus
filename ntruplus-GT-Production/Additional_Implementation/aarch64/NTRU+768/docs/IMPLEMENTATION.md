@@ -55,12 +55,12 @@ intermediate runtime dispatch.
 decapsulation. The following production symbols consume this layout:
 
 - `poly_basemul`
-- `poly_basemul_add`
+- `poly_basemul_add_encap`
 - `poly_invntt`, subject to the paired `R^-1` contract below
-- `poly_tobytes`, when serializing a block-major transform result
+- `poly_tobytes_encap`, when serializing a block-major transform result
 
-Block-major order is not canonical byte order. `poly_frombytes` and
-`poly_tobytes` apply the fixed permutation required at the external boundary.
+Block-major order is not canonical byte order. `poly_frombytes_encap` and
+`poly_tobytes_encap` apply the fixed permutation required at the external boundary.
 
 ### 3.2 Coefficient-quartic key-generation layout
 
@@ -100,7 +100,7 @@ arithmetic:
 | Symbol | Input | Output | Production consumer |
 |---|---|---|---|
 | `poly_ntt` | coefficient order | block-major GT | encapsulation and decapsulation pointwise paths |
-| `gt_keygen_poly_ntt_to_cq` | coefficient order | key-generation CQ | CQ base inversion |
+| `poly_ntt_keygen_cq` | coefficient order | key-generation CQ | CQ base inversion |
 
 The endpoints differ at the selected final store layout. A caller must choose
 the endpoint from the next kernel's expected representation; no generic
@@ -111,18 +111,18 @@ runtime conversion is inserted between them.
 The private key-generation pipeline is:
 
 ```text
-gt_keygen_poly_ntt_to_cq
-    -> gt_keygen_baseinv_cq_to_cq_scaled_r
-    -> gt_keygen_basemul_cq_cq_to_cq_scaled_r
-    -> gt_keygen_tobytes_cq
+poly_ntt_keygen_cq
+    -> poly_baseinv_keygen_cq_scaled_r
+    -> poly_basemul_keygen_cq_scaled_r
+    -> poly_tobytes_keygen_cq
 ```
 
-`gt_keygen_baseinv_cq_to_cq_scaled_r` returns nonzero for a noninvertible
+`poly_baseinv_keygen_cq_scaled_r` returns nonzero for a noninvertible
 sample; `crypto_kem_keypair_internal` then resamples that polynomial. On
 success, its output scaling and CQ layout are the input contract of
-`gt_keygen_basemul_cq_cq_to_cq_scaled_r`.
+`poly_basemul_keygen_cq_scaled_r`.
 
-`gt_keygen_tobytes_cq` is the only CQ-to-canonical boundary in the production
+`poly_tobytes_keygen_cq` is the only CQ-to-canonical boundary in the production
 key-generation path.
 
 ## 6. Pointwise/Inverse Contract
@@ -148,22 +148,22 @@ output representation are unchanged.
 
 ### 6.1 Encapsulation exact-alias contract
 
-The encapsulation-only `poly_basemul_add` call passes the message polynomial as
+The encapsulation-only `poly_basemul_add_encap` call passes the message polynomial as
 both its additive input and output.  The selected assembly processes one
 64-byte block at a time and loads the complete additive-input block before
 storing that output block, so this exact alias is part of the fixed production
-contract.  The result is consumed immediately by `poly_tobytes`.
+contract.  The result is consumed immediately by `poly_tobytes_encap`.
 
 This alias is not a general public overlap guarantee: callers must not infer
-that `poly_basemul_add` supports partial overlap or output aliasing with either
+that `poly_basemul_add_encap` supports partial overlap or output aliasing with either
 multiplicative input.
 
 ## 7. Serialization Boundary
 
-`poly_tobytes` and `poly_frombytes` implement canonical NTRU+ byte order while
+`poly_tobytes_encap` and `poly_frombytes_encap` implement canonical NTRU+ byte order while
 absorbing the fixed block-major Good-Thomas permutation.
 
-The selected `poly_tobytes` has twelve layout-specific gather frontends and one
+The selected `poly_tobytes_encap` has twelve layout-specific gather frontends and one
 shared normalize/transpose/pack core. The key-generation CQ packer keeps its
 CQ-specific frontend and calls a shared pack core for its output chunks. These
 helpers do not create an intermediate public format.

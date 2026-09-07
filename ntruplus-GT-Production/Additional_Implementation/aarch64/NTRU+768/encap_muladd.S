@@ -1,7 +1,7 @@
 /*
- * GT encap-only poly_basemul_add direct32 Q31 byte-contract path.
+ * GT encap-only poly_basemul_add_encap direct32 Q31 byte-contract path.
  *
- * This is the fixed production poly_basemul_add endpoint used by the
+ * This is the fixed production poly_basemul_add_encap endpoint used by the
  * encapsulation ciphertext path.  It keeps the selected register allocation
  * through the quartic product accumulator boundary, then replaces the product
  * Montgomery fold plus add32 finalizer with:
@@ -13,9 +13,9 @@
  *   t = sqrdmulh_s32(x, C)
  *   y = x - t * q
  *
- * The output is byte-equivalent under poly_tobytes, not a general centered
+ * The output is byte-equivalent under poly_tobytes_encap, not a general centered
  * representative contract.  Callers must consume the result immediately with
- * poly_tobytes in the encap ciphertext path.
+ * poly_tobytes_encap in the encap ciphertext path.
  */
 
 /* Instruction scheduling was generated with Slothy; release annotations removed. */
@@ -43,10 +43,10 @@
 
 #endif
 
-.global poly_basemul_add
-.global _poly_basemul_add
-poly_basemul_add:
-_poly_basemul_add:
+.global poly_basemul_add_encap
+.global _poly_basemul_add_encap
+poly_basemul_add_encap:
+_poly_basemul_add_encap:
  sub sp, sp, #64
  stp d8, d9, [sp, #0]
  stp d10, d11, [sp, #16]

@@ -13,27 +13,27 @@
 .align 4
 .equ STACK_LOC_0, 0
 
-.global gt_internal_poly_ntt_loose
-.global _gt_internal_poly_ntt_loose
-.global gt_internal_block_major_poly_ntt_loose
-.global _gt_internal_block_major_poly_ntt_loose
+.global poly_ntt_loose
+.global _poly_ntt_loose
+.global poly_ntt_loose_block_major
+.global _poly_ntt_loose_block_major
 #ifndef __APPLE__
-.type gt_internal_poly_ntt_loose, %function
+.type poly_ntt_loose, %function
 #endif
-gt_internal_poly_ntt_loose:
-_gt_internal_poly_ntt_loose:
-gt_internal_block_major_poly_ntt_loose:
-_gt_internal_block_major_poly_ntt_loose:
+poly_ntt_loose:
+_poly_ntt_loose:
+poly_ntt_loose_block_major:
+_poly_ntt_loose_block_major:
     mov w2, #0
     b .Lgt_shared_core_entry
 
-.global gt_keygen_poly_ntt_to_cq
-.global _gt_keygen_poly_ntt_to_cq
+.global poly_ntt_keygen_cq
+.global _poly_ntt_keygen_cq
 #ifndef __APPLE__
-.type gt_keygen_poly_ntt_to_cq, %function
+.type poly_ntt_keygen_cq, %function
 #endif
-gt_keygen_poly_ntt_to_cq:
-_gt_keygen_poly_ntt_to_cq:
+poly_ntt_keygen_cq:
+_poly_ntt_keygen_cq:
     mov w2, #1
 .Lgt_shared_core_entry:
     sub sp, sp, #1696
@@ -6794,8 +6794,8 @@ _gt_keygen_poly_ntt_to_cq:
     ret
 .Lgt_shared_core_end:
 #ifndef __APPLE__
-.size gt_internal_poly_ntt_loose, .Lgt_shared_core_end-gt_internal_poly_ntt_loose
-.size gt_keygen_poly_ntt_to_cq, .Lgt_shared_core_end-gt_keygen_poly_ntt_to_cq
+.size poly_ntt_loose, .Lgt_shared_core_end-poly_ntt_loose
+.size poly_ntt_keygen_cq, .Lgt_shared_core_end-poly_ntt_keygen_cq
 #endif
 .global gt_internal_poly_ntt_loose_end
 gt_internal_poly_ntt_loose_end:
@@ -7022,13 +7022,13 @@ u01_block_first_gt_ntt32_batch8_twiddle_vecs:
  * and the block-major loose output contract are identical to generic NTT.
  * Mode 2 is saved before x2 is reused as a table pointer above.
  */
-.global gt_internal_poly_ntt_encap_small
-.global _gt_internal_poly_ntt_encap_small
+.global poly_ntt_encap_small
+.global _poly_ntt_encap_small
 #ifndef __APPLE__
-.type gt_internal_poly_ntt_encap_small, %function
+.type poly_ntt_encap_small, %function
 #endif
-gt_internal_poly_ntt_encap_small:
-_gt_internal_poly_ntt_encap_small:
+poly_ntt_encap_small:
+_poly_ntt_encap_small:
     mov w2, #2
     b .Lgt_shared_core_entry
 .Lencap_small_front:

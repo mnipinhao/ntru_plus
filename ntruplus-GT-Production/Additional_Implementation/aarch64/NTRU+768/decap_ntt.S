@@ -452,7 +452,7 @@ _looptop_3456:
     ret
 
 /*************************************************
-* Name:        gt_decap_poly_invntt_scale
+* Name:        poly_invntt_decap_scale
 *
 * Description: Transforms a polynomial from the incomplete NTT
 *              representation to coefficient representation and applies
@@ -470,10 +470,10 @@ _looptop_3456:
 .section .text.gt_decap_poly_invntt_scale,"ax",%progbits
 #endif
 
-.global gt_decap_poly_invntt_scale
-.global _gt_decap_poly_invntt_scale
-gt_decap_poly_invntt_scale:
-_gt_decap_poly_invntt_scale:
+.global poly_invntt_decap_scale
+.global _poly_invntt_decap_scale
+poly_invntt_decap_scale:
+_poly_invntt_decap_scale:
     stp d8,  d9,  [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]

@@ -1,10 +1,10 @@
 // Generated checked U1 canonical unpack from clean GT Production; strategy=globalmax.
 .text
 .p2align 4
-.global poly_frombytes
-.global _poly_frombytes
-poly_frombytes:
-_poly_frombytes:
+.global poly_frombytes_encap
+.global _poly_frombytes_encap
+poly_frombytes_encap:
+_poly_frombytes_encap:
     sub sp, sp, #64
     stp d8, d9, [sp, #0]
     stp d10, d11, [sp, #16]

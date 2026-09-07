@@ -1,5 +1,5 @@
 /*************************************************
-* Name:        gt_decap_poly_basemul
+* Name:        poly_basemul_decap
 *
 * Description: Multiplication of two polynomials in the NTT domain.
 *
@@ -10,7 +10,7 @@
 *                               coefficients must lie in (-2q,2q)
 *
 * Returns:     none. Output coefficients lie in (-3q/2,3q/2) and are
-*              reduced by gt_decap_poly_tobytes before serialization.
+*              reduced by poly_tobytes_decap before serialization.
 **************************************************/
 #ifdef __APPLE__
 .section __TEXT,__text,regular,pure_instructions
@@ -18,10 +18,10 @@
 .section .text.gt_decap_poly_basemul,"ax",%progbits
 #endif
 
-.global gt_decap_poly_basemul
-.global _gt_decap_poly_basemul
-gt_decap_poly_basemul:
-_gt_decap_poly_basemul:
+.global poly_basemul_decap
+.global _poly_basemul_decap
+poly_basemul_decap:
+_poly_basemul_decap:
     stp d8,  d9,  [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
@@ -306,7 +306,7 @@ _looptop_scale:
     uzp2    v5.8h, v14.8h, v15.8h
     uzp2    v4.8h, v12.8h, v13.8h
 
-    #store in R^-1 representation for gt_decap_poly_invntt_scale
+    #store in R^-1 representation for poly_invntt_decap_scale
     st1 {v4.8h - v7.8h}, [dst], #64
 
     subs counter, counter, #64
@@ -341,7 +341,7 @@ _looptop_scale:
 *                               coefficients must lie in [-q+1,q-1]
 *
 * Returns:     none. Output coefficients lie in (-5q/2,5q/2) and are
-*              reduced by gt_decap_poly_tobytes before serialization.
+*              reduced by poly_tobytes_decap before serialization.
 **************************************************/
 #ifdef __APPLE__
 .section __TEXT,__text,regular,pure_instructions

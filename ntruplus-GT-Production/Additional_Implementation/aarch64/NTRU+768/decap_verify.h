@@ -9,23 +9,23 @@
 /*
  * Checked packed ct/f consumer for the production decapsulation path.
  * It retains ct in Decap QSoA layout and emits the scaled R^-1 product
- * expected by gt_decap_poly_invntt_scale().
+ * expected by poly_invntt_decap_scale().
  */
-int gt_decap_checked_ct_f_basemul_scale64(
+int poly_frombytes_basemul_decap_scale(
     poly *out, poly *decoded_ct,
     const uint8_t packed_ct[NTRUPLUS_POLYBYTES],
     const uint8_t packed_f[NTRUPLUS_POLYBYTES]);
 
-int gt_decap_poly_frombytes(
+int poly_frombytes_decap(
     poly *out, const uint8_t in[NTRUPLUS_POLYBYTES]);
-void gt_decap_poly_tobytes(
+void poly_tobytes_decap(
     uint8_t out[NTRUPLUS_POLYBYTES], const poly *in);
-void gt_decap_poly_basemul(
+void poly_basemul_decap(
     poly *out, const poly *a, const poly *b);
-void gt_decap_poly_invntt_scale(poly *inout);
-void gt_decap_poly_sub(
+void poly_invntt_decap_scale(poly *inout);
+void poly_sub_decap(
     poly *out, const poly *a, const poly *b);
-void gt_decap_poly_ntt(poly *out, const poly *in);
+void poly_ntt_decap(poly *out, const poly *in);
 
 /* Private decapsulation endpoint with a prevalidated QSoA h^-1 operand. */
 void gt_decap_verify_predecoded_qsoa_to_bytes(

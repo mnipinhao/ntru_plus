@@ -1,7 +1,7 @@
 /*
  * GT Production checked packed ct/f consumer.
  *
- * int gt_decap_checked_ct_f_basemul_scale64(
+ * int poly_frombytes_basemul_decap_scale(
  *     int16_t out[768], int16_t decoded_ct[768],
  *     const uint8_t packed_ct[1152], const uint8_t packed_f[1152]);
  *
@@ -21,9 +21,9 @@
 #define C_SYM(sym) sym
 #endif
 
-.global C_SYM(gt_decap_checked_ct_f_basemul_scale64)
+.global C_SYM(poly_frombytes_basemul_decap_scale)
 #ifndef __APPLE__
-.type C_SYM(gt_decap_checked_ct_f_basemul_scale64), %function
+.type C_SYM(poly_frombytes_basemul_decap_scale), %function
 #endif
 
 /*
@@ -181,7 +181,7 @@
     uzp2    v4.8h, v12.8h, v13.8h
 .endm
 
-C_SYM(gt_decap_checked_ct_f_basemul_scale64):
+C_SYM(poly_frombytes_basemul_decap_scale):
     stp d8,  d9,  [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
@@ -457,8 +457,8 @@ C_SYM(gt_decap_checked_ct_f_basemul_scale64):
     ret
 
 #ifndef __APPLE__
-.size C_SYM(gt_decap_checked_ct_f_basemul_scale64), \
-      .-C_SYM(gt_decap_checked_ct_f_basemul_scale64)
+.size C_SYM(poly_frombytes_basemul_decap_scale), \
+      .-C_SYM(poly_frombytes_basemul_decap_scale)
 #endif
 
 .p2align 4

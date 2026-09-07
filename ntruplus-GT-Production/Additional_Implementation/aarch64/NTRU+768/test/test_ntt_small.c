@@ -13,11 +13,11 @@ int main(void) {
         int16_t *v = (int16_t *)&in;
         for (int i = 0; i < 768; i++)
             v[i] = n < 5 ? n - 2 : (int)(next() % 5) - 2;
-        gt_internal_poly_ntt_loose(&generic, &in);
-        gt_internal_poly_ntt_encap_small(&small, &in);
+        poly_ntt_loose(&generic, &in);
+        poly_ntt_encap_small(&small, &in);
         if (memcmp(&generic, &small, sizeof generic)) return 1;
         alias = in;
-        gt_internal_poly_ntt_encap_small(&alias, &alias);
+        poly_ntt_encap_small(&alias, &alias);
         if (memcmp(&generic, &alias, sizeof generic)) return 2;
     }
     puts("4096 signed [-2,2] exact/alias Encap-small cases: PASS");

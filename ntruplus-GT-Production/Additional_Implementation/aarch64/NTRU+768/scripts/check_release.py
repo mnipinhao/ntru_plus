@@ -45,13 +45,13 @@ BANNED_TOKENS = (
 REQUIRED_PUBLIC_SYMBOLS = (
     "poly_invntt",
     "poly_basemul",
-    "poly_basemul_add",
-    "poly_tobytes",
-    "poly_frombytes",
+    "poly_basemul_add_encap",
+    "poly_tobytes_encap",
+    "poly_frombytes_encap",
 )
 REQUIRED_INTERNAL_KEM_SYMBOLS = (
-    "gt_internal_poly_ntt_encap_small",
-    "gt_internal_poly_tobytes_from_loose",
+    "poly_ntt_encap_small",
+    "poly_tobytes_encap_loose",
 )
 EXPECTED_KAT_RSP_SHA256 = (
     "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8"

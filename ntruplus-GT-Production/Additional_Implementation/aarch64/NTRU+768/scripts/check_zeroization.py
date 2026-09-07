@@ -18,7 +18,7 @@ require('kem.c', (
     'gt_secure_clear(buf1, sizeof buf1);', 'gt_secure_clear(&r, sizeof r);',
     'gt_secure_clear(&m, sizeof m);', 'gt_secure_clear(&scratch, sizeof scratch);',
     'gt_secure_clear(ss, NTRUPLUS_SSBYTES);',
-    'gt_internal_poly_tobytes_from_loose(ct, &r);', 'hash_g(ct, ct);'))
+    'poly_tobytes_encap_loose(ct, &r);', 'hash_g(ct, ct);'))
 require('keygen.c', ('gt_secure_clear(numerator, sizeof numerator);',
                             'gt_secure_clear(den, sizeof den);'))
 require('fips202.c', ('gt_secure_clear(state->ctx, PQC_SHAKECTX_BYTES);',

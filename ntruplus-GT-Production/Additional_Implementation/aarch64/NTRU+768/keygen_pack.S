@@ -6,10 +6,10 @@
 .text
 
 .p2align 4
-.global gt_keygen_tobytes_cq
-.global _gt_keygen_tobytes_cq
-gt_keygen_tobytes_cq:
-_gt_keygen_tobytes_cq:
+.global poly_tobytes_keygen_cq
+.global _poly_tobytes_keygen_cq
+poly_tobytes_keygen_cq:
+_poly_tobytes_keygen_cq:
     sub sp, sp, #80
     stp d8, d9, [sp, #0]
     stp d10, d11, [sp, #16]

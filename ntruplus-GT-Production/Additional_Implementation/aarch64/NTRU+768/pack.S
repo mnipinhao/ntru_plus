@@ -1,27 +1,27 @@
 /* Production Wave 8 dual-entry canonical pack. */
 /* Promoted from production_pack_sha256=03d69c69946f5e55f5c6b1f13bf1a62f43f2b1453b246c8dc8f5f39b2482b346. */
-/* poly_tobytes keeps the reduced fast path; the Wave 8 entry */
+/* poly_tobytes_encap keeps the reduced fast path; the Wave 8 entry */
 /* canonicalizes arbitrary signed-16 block-major representatives. */
 // Production compact shared-core canonical pack.
 .text
 
 .p2align 4
-.global poly_tobytes
-.global _poly_tobytes
+.global poly_tobytes_encap
+.global _poly_tobytes_encap
 #ifndef __APPLE__
-.type poly_tobytes, %function
+.type poly_tobytes_encap, %function
 #endif
-.global gt_internal_poly_tobytes_from_loose
-.global _gt_internal_poly_tobytes_from_loose
+.global poly_tobytes_encap_loose
+.global _poly_tobytes_encap_loose
 #ifndef __APPLE__
-.type gt_internal_poly_tobytes_from_loose, %function
+.type poly_tobytes_encap_loose, %function
 #endif
-gt_internal_poly_tobytes_from_loose:
-_gt_internal_poly_tobytes_from_loose:
+poly_tobytes_encap_loose:
+_poly_tobytes_encap_loose:
     mov w3, #1
     b .Lwave8_dual_pack_entry
-poly_tobytes:
-_poly_tobytes:
+poly_tobytes_encap:
+_poly_tobytes_encap:
     mov w3, #0
 .Lwave8_dual_pack_entry:
     sub sp, sp, #80
@@ -476,5 +476,5 @@ _poly_tobytes:
     .hword 19412, 19412, 19412, 19412
     .hword 19412, 19412, 19412, 19412
 #ifndef __APPLE__
-.size poly_tobytes, .-poly_tobytes
+.size poly_tobytes_encap, .-poly_tobytes_encap
 #endif

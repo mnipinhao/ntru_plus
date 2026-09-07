@@ -95,7 +95,7 @@ static inline int16x8_t reduce_mul4(int16x8_t a0, int16x8_t b0,
     return montgomery_reduce_vec(lo, hi, con);
 }
 
-int gt_keygen_baseinv_cq_to_cq_scaled_r(
+int poly_baseinv_keygen_cq_scaled_r(
     gt_cq_poly *out_cq, const gt_cq_poly *in_cq)
 {
     int16_t den[GT_KEYGEN_CQ_GROUPS * 8] __attribute__((aligned(16)));
@@ -118,7 +118,7 @@ int gt_keygen_baseinv_cq_to_cq_scaled_r(
     }
 }
 
-void gt_keygen_basemul_cq_cq_to_cq_scaled_r(
+void poly_basemul_keygen_cq_scaled_r(
     gt_cq_poly *out_cq, const gt_cq_poly *a_cq,
     const gt_cq_poly *b_scaled_r_cq)
 {

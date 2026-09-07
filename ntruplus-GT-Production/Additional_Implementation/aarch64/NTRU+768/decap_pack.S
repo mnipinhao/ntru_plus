@@ -1,5 +1,5 @@
 /*************************************************
-* Name:        gt_decap_poly_frombytes
+* Name:        poly_frombytes_decap
 *
 * Description: De-serializes a polynomial from its canonical 12-bit
 *              coefficient representation.
@@ -10,10 +10,10 @@
 * Returns:     0 on success, 1 if any coefficient is greater than or equal to q.
 *              Output coefficients lie in [0,4095].
 **************************************************/
-.global gt_decap_poly_frombytes
-.global _gt_decap_poly_frombytes
-gt_decap_poly_frombytes:
-_gt_decap_poly_frombytes:
+.global poly_frombytes_decap
+.global _poly_frombytes_decap
+poly_frombytes_decap:
+_poly_frombytes_decap:
     stp d8,  d9,  [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
@@ -106,7 +106,7 @@ _loop_frombytes:
 
 
 /*************************************************
-* Name:        gt_decap_poly_tobytes
+* Name:        poly_tobytes_decap
 *
 * Description: Reduces polynomial coefficients to [0,q) and serializes each
 *              coefficient into 12 bits.
@@ -117,10 +117,10 @@ _loop_frombytes:
 *
 * Returns:     none.
 **************************************************/
-.global gt_decap_poly_tobytes
-.global _gt_decap_poly_tobytes
-gt_decap_poly_tobytes:
-_gt_decap_poly_tobytes:
+.global poly_tobytes_decap
+.global _poly_tobytes_decap
+poly_tobytes_decap:
+_poly_tobytes_decap:
     stp d8,  d9,  [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]

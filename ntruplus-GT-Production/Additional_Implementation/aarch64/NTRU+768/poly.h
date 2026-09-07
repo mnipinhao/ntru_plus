@@ -10,12 +10,12 @@ typedef struct {
 } poly __attribute__((aligned(16)));
 
 /* Canonical public-key, secret-key, and ciphertext byte boundary. */
-void poly_tobytes(uint8_t out[NTRUPLUS_POLYBYTES], const poly *a);
+void poly_tobytes_encap(uint8_t out[NTRUPLUS_POLYBYTES], const poly *a);
 /*
  * Decode every coefficient and return 1 iff any decoded 12-bit value is
  * outside [0, NTRUPLUS_Q). The output is complete on both return paths.
  */
-int poly_frombytes(poly *out,
+int poly_frombytes_encap(poly *out,
                    const uint8_t in[NTRUPLUS_POLYBYTES]);
 
 void poly_cbd1(poly *out, const uint8_t buf[NTRUPLUS_N / 4]);
@@ -32,7 +32,7 @@ void poly_basemul(poly *out, const poly *a, const poly *b);
 void poly_invntt(poly *out, const poly *in);
 
 /* Encapsulation-only a*b+c endpoint; its result is packed immediately. */
-void poly_basemul_add(poly *out, const poly *a, const poly *b,
+void poly_basemul_add_encap(poly *out, const poly *a, const poly *b,
                       const poly *c);
 
 void poly_sub(poly *out, const poly *a, const poly *b);

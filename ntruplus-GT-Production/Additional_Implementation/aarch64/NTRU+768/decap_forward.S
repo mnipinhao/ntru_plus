@@ -6,15 +6,15 @@
 .align 4
 .equ STACK_LOC_0, 0
 
-.global gt_decap_poly_ntt
-.global _gt_decap_poly_ntt
+.global poly_ntt_decap
+.global _poly_ntt_decap
 .global gt_decap_gt_poly_ntt
 .global _gt_decap_gt_poly_ntt
 #ifndef __APPLE__
-.type gt_decap_poly_ntt, %function
+.type poly_ntt_decap, %function
 #endif
-gt_decap_poly_ntt:
-_gt_decap_poly_ntt:
+poly_ntt_decap:
+_poly_ntt_decap:
 gt_decap_gt_poly_ntt:
 _gt_decap_gt_poly_ntt:
     sub sp, sp, #1696
@@ -5250,7 +5250,7 @@ gt_decap_stage345_decap_row2_slothy_end:
     add sp, sp, #1696
     ret
 #ifndef __APPLE__
-.size gt_decap_poly_ntt, .-gt_decap_poly_ntt
+.size poly_ntt_decap, .-poly_ntt_decap
 #endif
 .global gt_decap_poly_ntt_end
 gt_decap_poly_ntt_end:

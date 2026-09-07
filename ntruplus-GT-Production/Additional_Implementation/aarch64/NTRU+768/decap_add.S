@@ -4,10 +4,10 @@
 .section .text.gt_decap_poly_sub,"ax",%progbits
 #endif
 
-.global gt_decap_poly_sub
-.global _gt_decap_poly_sub
-gt_decap_poly_sub:
-_gt_decap_poly_sub:
+.global poly_sub_decap
+.global _poly_sub_decap
+poly_sub_decap:
+_poly_sub_decap:
     dst       .req x0
     src1      .req x1
     src2      .req x2
