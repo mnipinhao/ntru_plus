@@ -453,10 +453,6 @@ C_SYM(gt_decap_checked_ct_f_basemul_scale64):
     ldp d12, d13, [sp, #32]
     ldp d14, d15, [sp, #48]
     ldp d8,  d9,  [sp]
-    /* P0-B: erase the complete handwritten spill frame (64 bytes). */
-    movi v0.16b, #0
-    stp q0, q0, [sp, #0]
-    stp q0, q0, [sp, #32]
     add sp, sp, #64
     ret
 

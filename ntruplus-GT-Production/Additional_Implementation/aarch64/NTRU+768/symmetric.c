@@ -24,7 +24,7 @@ void hash_f(uint8_t *buf, const uint8_t *msg)
     data[0] = 0x00;
     memcpy(data + 1, msg, HASH_F_INBYTES);
     shake256(buf, HASH_F_OUTBYTES, data, HASH_F_INBYTES + 1);
-    gt_secure_clear(data, sizeof data);
+    /* hash_f input is public; follow the Official cleanup policy. */
 }
 
 void hash_g(uint8_t *buf, const uint8_t *msg)

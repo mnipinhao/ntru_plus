@@ -5247,18 +5247,6 @@ gt_decap_stage345_decap_row2_slothy_end:
     ldr x23, [sp, #48]
     ldp x21, x22, [sp, #32]
     ldp x19, x20, [sp, #16]
-    /* P0-B: erase the complete 1696-byte handwritten frame. */
-    movi v0.16b, #0
-    mov x9, sp
-    mov x10, #13
-.Lgt_decap_clear_1696:
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    subs x10, x10, #1
-    b.ne .Lgt_decap_clear_1696
-    stp q0, q0, [x9], #32
     add sp, sp, #1696
     ret
 #ifndef __APPLE__

@@ -10,6 +10,7 @@
 typedef uint64_t (*abi_sentinel_fn)(void *, void *, void *, void *);
 
 uint64_t abi_internal_poly_ntt_loose(void *, void *, void *, void *);
+uint64_t abi_internal_poly_ntt_encap_small(void *, void *, void *, void *);
 uint64_t abi_poly_invntt(void *, void *, void *, void *);
 uint64_t abi_poly_basemul(void *, void *, void *, void *);
 uint64_t abi_poly_basemul_add(void *, void *, void *, void *);
@@ -88,6 +89,8 @@ int main(void)
         {"crypto_kem_dec", abi_crypto_kem_dec,
          ss_dec, ct, sk, NULL, 1},
         {"internal_ntt_loose", abi_internal_poly_ntt_loose,
+         &a, &b, NULL, NULL, 1},
+        {"ntt_encap_small", abi_internal_poly_ntt_encap_small,
          &a, &b, NULL, NULL, 1},
         {"poly_invntt", abi_poly_invntt, &a, &b, NULL, NULL, 1},
         {"poly_basemul", abi_poly_basemul, &a, &b, &c, NULL, 1},

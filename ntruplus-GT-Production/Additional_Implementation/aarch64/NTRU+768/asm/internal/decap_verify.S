@@ -572,11 +572,6 @@ ldr x30, [sp, #0]
     ldp d10, d11, [sp, #32]
     ldp d12, d13, [sp, #48]
     ldp d14, d15, [sp, #64]
-    /* P0-B: erase the complete handwritten spill frame. */
-    movi v0.16b, #0
-    stp q0, q0, [sp, #0]
-    stp q0, q0, [sp, #32]
-    str q0, [sp, #64]
     add sp, sp, #80
     ret
 

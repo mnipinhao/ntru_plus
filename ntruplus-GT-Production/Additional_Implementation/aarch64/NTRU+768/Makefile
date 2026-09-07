@@ -9,6 +9,7 @@ TEST_KEM := $(BUILD_DIR)/test_kem
 TEST_ABI := $(BUILD_DIR)/test_abi
 TEST_ZEROIZATION := $(BUILD_DIR)/test_zeroization
 TEST_CANONICAL := $(BUILD_DIR)/test_canonical
+TEST_NTT_SMALL := $(BUILD_DIR)/test_ntt_small
 KAT_GENERATOR := $(BUILD_DIR)/PQCgenKAT_kem
 
 CPPFLAGS := -I. -Iinternal
@@ -91,6 +92,13 @@ $(TEST_ZEROIZATION): test/test_zeroization.c randombytes.c $(KEM_SOURCES) | $(BU
 $(TEST_CANONICAL): test/test_canonical.c randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
+$(TEST_NTT_SMALL): test/test_ntt_small.c randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+.PHONY: small
+small: check-release $(TEST_NTT_SMALL)
+	$(TEST_NTT_SMALL)
+
 $(KAT_GENERATOR): kat/PQCgenKAT_kem.c kat/rng.c kat/aes.c $(KEM_SOURCES) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
@@ -124,7 +132,7 @@ kat-check: kat $(KAT_REQ) $(KAT_RSP)
 	cmp $(GENERATED_KAT_RSP) $(KAT_RSP)
 	shasum -a 256 $(GENERATED_KAT_RSP)
 
-check: manifest-check test canonical zeroization kat-check
+check: manifest-check test canonical small zeroization kat-check
 
 size: $(TEST_KEM)
 	size $(SIZE_FLAGS) $(TEST_KEM)
@@ -133,6 +141,7 @@ symbols: $(TEST_KEM)
 	nm $(NM_GLOBAL_FLAGS) $(TEST_KEM)
 
 clean:
+	$(RM) $(TEST_NTT_SMALL)
 	$(RM) $(TEST_KEM) $(TEST_ABI) $(TEST_ZEROIZATION) $(TEST_CANONICAL)
 	$(RM) $(KAT_GENERATOR)
 	$(RM) $(GENERATED_KAT_REQ) $(GENERATED_KAT_RSP)

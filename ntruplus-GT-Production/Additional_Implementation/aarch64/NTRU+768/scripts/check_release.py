@@ -50,7 +50,7 @@ REQUIRED_PUBLIC_SYMBOLS = (
     "poly_frombytes",
 )
 REQUIRED_INTERNAL_KEM_SYMBOLS = (
-    "gt_internal_poly_ntt_loose",
+    "gt_internal_poly_ntt_encap_small",
     "gt_internal_poly_tobytes_from_loose",
 )
 EXPECTED_KAT_RSP_SHA256 = (

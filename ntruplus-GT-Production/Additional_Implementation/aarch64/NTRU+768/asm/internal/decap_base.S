@@ -37,6 +37,8 @@ _gt_decap_poly_basemul:
 
     #load
     ld1  {v0.8h}, [zetas_ptr], #16
+    adr x9, .Ldecap_basemul_q31_consts
+    ldr q24, [x9]
 
     mov counter, #1536
 
@@ -112,46 +114,37 @@ _looptop:
     smlal   v16.4s, v6.4h, v8.4h //a2*b0
     smlal2  v17.4s, v6.8h, v8.8h //a2*b0
 
-    uzp1    v23.8h, v18.8h, v19.8h
-    uzp1    v22.8h, v16.8h, v17.8h
-    uzp1    v21.8h, v14.8h, v15.8h
-    uzp1    v20.8h, v12.8h, v13.8h
+    /*
+     * D1: v12/v13 through v18/v19 are the four normal-domain int32
+     * accumulators.  Reduce them directly instead of taking the second
+     * Montgomery reduction followed by multiplication back by R.
+     * q24.s[0] = q = 3457; q24.s[2] = C = 621199.
+     */
+    sqrdmulh v4.4s, v12.4s, v24.s[2]
+    sqrdmulh v5.4s, v13.4s, v24.s[2]
+    sqrdmulh v6.4s, v14.4s, v24.s[2]
+    sqrdmulh v7.4s, v15.4s, v24.s[2]
+    mls v12.4s, v4.4s, v24.s[0]
+    mls v13.4s, v5.4s, v24.s[0]
+    mls v14.4s, v6.4s, v24.s[0]
+    mls v15.4s, v7.4s, v24.s[0]
+    xtn v8.4h, v12.4s
+    xtn2 v8.8h, v13.4s
+    xtn v9.4h, v14.4s
+    xtn2 v9.8h, v15.4s
 
-    mul     v23.8h, v23.8h, v0.h[2]
-    mul     v22.8h, v22.8h, v0.h[2]
-    mul     v21.8h, v21.8h, v0.h[2]
-    mul     v20.8h, v20.8h, v0.h[2]
-
-    smlal   v18.4s, v23.4h, v0.h[0]
-    smlal   v16.4s, v22.4h, v0.h[0]
-    smlal   v14.4s, v21.4h, v0.h[0]
-    smlal   v12.4s, v20.4h, v0.h[0]
-
-    smlal2  v19.4s, v23.8h, v0.h[0]
-    smlal2  v17.4s, v22.8h, v0.h[0]
-    smlal2  v15.4s, v21.8h, v0.h[0]
-    smlal2  v13.4s, v20.8h, v0.h[0]
-
-    uzp2    v7.8h, v18.8h, v19.8h
-    uzp2    v6.8h, v16.8h, v17.8h
-    uzp2    v5.8h, v14.8h, v15.8h
-    uzp2    v4.8h, v12.8h, v13.8h
-
-    #Barrett multiplication
-    mul v11.8h, v7.8h, v0.h[3]
-    mul v10.8h, v6.8h, v0.h[3]
-    mul  v9.8h, v5.8h, v0.h[3]
-    mul  v8.8h, v4.8h, v0.h[3]
-
-    sqrdmulh v7.8h, v7.8h, v0.h[4]
-    sqrdmulh v6.8h, v6.8h, v0.h[4]
-    sqrdmulh v5.8h, v5.8h, v0.h[4]
-    sqrdmulh v4.8h, v4.8h, v0.h[4]
-
-    mls v11.8h, v7.8h, v0.h[0]
-    mls v10.8h, v6.8h, v0.h[0]
-    mls  v9.8h, v5.8h, v0.h[0]
-    mls  v8.8h, v4.8h, v0.h[0]
+    sqrdmulh v4.4s, v16.4s, v24.s[2]
+    sqrdmulh v5.4s, v17.4s, v24.s[2]
+    sqrdmulh v6.4s, v18.4s, v24.s[2]
+    sqrdmulh v7.4s, v19.4s, v24.s[2]
+    mls v16.4s, v4.4s, v24.s[0]
+    mls v17.4s, v5.4s, v24.s[0]
+    mls v18.4s, v6.4s, v24.s[0]
+    mls v19.4s, v7.4s, v24.s[0]
+    xtn v10.4h, v16.4s
+    xtn2 v10.8h, v17.4s
+    xtn v11.4h, v18.4s
+    xtn2 v11.8h, v19.4s
 
     #store
     st1 {v8.8h - v11.8h}, [dst], #64
@@ -169,12 +162,7 @@ _looptop:
     ldp d12, d13, [sp, #32]
     ldp d14, d15, [sp, #48]
     ldp d8,  d9,  [sp]
-    /* P0-B: erase the complete handwritten spill frame (64 bytes). */
-    movi v0.16b, #0
-    stp q0, q0, [sp, #0]
-    stp q0, q0, [sp, #32]
     add sp, sp, #64
-
     ret
 
 
@@ -334,12 +322,7 @@ _looptop_scale:
     ldp d12, d13, [sp, #32]
     ldp d14, d15, [sp, #48]
     ldp d8,  d9,  [sp]
-    /* P0-B: erase the complete handwritten spill frame (64 bytes). */
-    movi v0.16b, #0
-    stp q0, q0, [sp, #0]
-    stp q0, q0, [sp, #32]
     add sp, sp, #64
-
     ret
 
 
@@ -526,12 +509,7 @@ _looptop_add:
     ldp d12, d13, [sp, #32]
     ldp d14, d15, [sp, #48]
     ldp d8,  d9,  [sp]
-    /* P0-B: erase the complete handwritten spill frame (64 bytes). */
-    movi v0.16b, #0
-    stp q0, q0, [sp, #0]
-    stp q0, q0, [sp, #32]
     add sp, sp, #64
-
     ret
 
 
@@ -841,12 +819,7 @@ _looptop_baseinv_1:
     ldp d12, d13, [sp, #32]
     ldp d14, d15, [sp, #48]
     ldp d8,  d9,  [sp]
-    /* P0-B: erase the complete handwritten spill frame (64 bytes). */
-    movi v0.16b, #0
-    stp q0, q0, [sp, #0]
-    stp q0, q0, [sp, #32]
     add sp, sp, #64
-
     ret
 
 
@@ -882,3 +855,7 @@ zetas_mul:
     .hword 0xffea, 0xf953, 0x0113, 0xfbac, 0xfe9e, 0x06c0, 0x03c8, 0xfca6
     .hword 0x04c5, 0xff26, 0x0126, 0xfd24, 0xfbb9, 0x037c, 0x0634, 0xfcf5
     .hword 0xfb3b, 0x00da, 0xfeda, 0x02dc, 0x0447, 0xfc84, 0xf9cc, 0x030b
+
+.align 4
+.Ldecap_basemul_q31_consts:
+    .word 3457, 0, 621199, 0

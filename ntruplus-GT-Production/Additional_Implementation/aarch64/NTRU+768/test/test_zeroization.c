@@ -53,6 +53,6 @@ int main(void)
         fputs("P0 zeroization harness: incomplete clear coverage\n", stderr);
         return 1;
     }
-    puts("P0 explicit C zeroization: ok");
+    puts("Official-aligned explicit C zeroization: ok");
     return 0;
 }

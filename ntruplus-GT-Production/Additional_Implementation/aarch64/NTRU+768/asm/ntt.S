@@ -61,6 +61,9 @@ _gt_keygen_poly_ntt_to_cq:
     // compact Stage12 producer.
 
     // Production GT frontend iter0, shared prefix once.
+    ldr w2, [sp, #8]
+    cmp w2, #2
+    b.eq .Lencap_small_front
     add x1, x20, #0
     add x3, x22, #0
     add x4, x21, #0
@@ -1372,8 +1375,10 @@ _gt_keygen_poly_ntt_to_cq:
         str q10, [x5, #48]
         str q11, [x6, #48]
 
+.Lntt_endpoint_suffix:
     ldr w2, [sp, #8]
-    cbnz w2, .Lgt_shared_core_cq_suffix
+    cmp w2, #1
+    b.eq .Lgt_shared_core_cq_suffix
 .Lgt_shared_core_generic_suffix:
     // ---- row0: Stage12 one-pass block0+block1+block2 live-out ----
     ldr q2, [x23, #16]
@@ -6785,14 +6790,6 @@ _gt_keygen_poly_ntt_to_cq:
     ldr x23, [sp, #48]
     ldp x21, x22, [sp, #32]
     ldp x19, x20, [sp, #16]
-    /* P0-B: erase the complete handwritten spill frame. */
-    movi v0.16b, #0
-    mov x9, sp
-    mov x10, #106
-.Lp0b_clear_1696:
-    str q0, [x9], #16
-    subs x10, x10, #1
-    b.ne .Lp0b_clear_1696
     add sp, sp, #1696
     ret
 .Lgt_shared_core_end:
@@ -7017,3 +7014,1237 @@ u01_block_first_gt_ntt32_batch8_twiddle_vecs:
     .hword 9, -6711, 16266, -14417, -11763, 5213, -417, 370
     .hword -1673, -1267, -1558, 281, -1464, -588, 1015, 436
     .hword -15858, -12010, -14768, 2664, -13877, -5573, 9621, 4133
+
+.text
+.align 4
+/* Encap-only signed [-2,2] input: round(-6844*b/32768) is exactly zero.
+ * Delete only that top-split quotient/correction; all subsequent instructions
+ * and the block-major loose output contract are identical to generic NTT.
+ * Mode 2 is saved before x2 is reused as a table pointer above.
+ */
+.global gt_internal_poly_ntt_encap_small
+.global _gt_internal_poly_ntt_encap_small
+#ifndef __APPLE__
+.type gt_internal_poly_ntt_encap_small, %function
+#endif
+gt_internal_poly_ntt_encap_small:
+_gt_internal_poly_ntt_encap_small:
+    mov w2, #2
+    b .Lgt_shared_core_entry
+.Lencap_small_front:
+    add x1, x20, #0
+    add x3, x22, #0
+    add x4, x21, #0
+    add x5, x21, #512
+    add x6, x21, #1024
+    // high side
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        mul v16.8H, v10.8H, v0.H[4]
+        mul v18.8H, v12.8H, v0.H[4]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        sub v12.8H, v12.8H, v18.8H
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        add v11.8H, v11.8H, v5.8H
+        add v4.8H, v4.8H, v16.8H
+        add v5.8H, v5.8H, v17.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        sub v14.8H, v14.8H, v20.8H
+        ldp q1, q2, [x3], #32
+        ldp q8, q9, [x1, #512]
+        ldp q6, q7, [x1, #256]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        add v15.8H, v15.8H, v9.8H
+        sub v13.8H, v13.8H, v19.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v9.8H, v9.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        add v6.8H, v6.8H, v18.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v24.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip2 v25.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        mls v8.8H, v3.8H, v0.H[0]
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v10.8H, v22.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v30.8H, v26.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v22.8H, v30.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v23.8H, v31.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v22.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v26.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q9, [x4, #0]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v28.8H, v24.8H
+        str q10, [x5, #0]
+        sub v10.8H, v27.8H, v31.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v27.8H, v23.8H
+        str q11, [x6, #0]
+        sub v11.8H, v27.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v31.8H
+        str q11, [x6, #16]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q9, [x4, #16]
+        str q10, [x5, #16]
+        sub v6.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        sub v10.8H, v4.8H, v24.8H
+        sub v11.8H, v4.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v4.8H, v28.8H
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v9.8H, v24.8H
+        str q10, [x5, #32]
+        mls v8.8H, v7.8H, v0.H[0]
+        str q9, [x4, #32]
+        add v9.8H, v25.8H, v5.8H
+        str q11, [x6, #32]
+        sub v11.8H, v25.8H, v5.8H
+        add v9.8H, v9.8H, v29.8H
+        sub v10.8H, v25.8H, v29.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #48]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
+
+    // Production GT frontend iter2, shared prefix once.
+    add x1, x20, #64
+    add x3, x22, #768
+    add x4, x21, #128
+    add x5, x21, #640
+    add x6, x21, #1152
+    // high side
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        ldr q14, [x1, #1280]
+        mul v18.8H, v12.8H, v0.H[4]
+        mul v16.8H, v10.8H, v0.H[4]
+        sub v12.8H, v12.8H, v18.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        sub v10.8H, v10.8H, v16.8H
+        sub v11.8H, v11.8H, v17.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q4, q5, [x1, #0]
+        add v11.8H, v11.8H, v5.8H
+        add v10.8H, v10.8H, v4.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        add v5.8H, v5.8H, v17.8H
+        ldp q6, q7, [x1, #256]
+        add v12.8H, v12.8H, v6.8H
+        ldp q1, q2, [x3], #32
+        mul v21.8H, v15.8H, v0.H[4]
+        sub v14.8H, v14.8H, v20.8H
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        sub v15.8H, v15.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sub v6.8H, v26.8H, v22.8H
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        mls v8.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        zip2 v31.2D, v8.2D, v14.2D
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v11.8H, v30.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        sub v6.8H, v31.8H, v27.8H
+        sub v10.8H, v30.8H, v22.8H
+        mls v9.8H, v3.8H, v0.H[0]
+        mls v8.8H, v7.8H, v0.H[0]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        zip1 v4.2D, v9.2D, v15.2D
+        zip2 v5.2D, v9.2D, v15.2D
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v23.8H, v31.8H
+        sub v6.8H, v24.8H, v4.8H
+        add v9.8H, v9.8H, v27.8H
+        sub v11.8H, v23.8H, v31.8H
+        sub v10.8H, v23.8H, v27.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        str q9, [x4, #16]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v30.8H, v26.8H
+        str q10, [x5, #16]
+        sub v10.8H, v28.8H, v4.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v22.8H
+        str q9, [x4, #0]
+        sub v6.8H, v29.8H, v25.8H
+        str q11, [x6, #16]
+        sub v11.8H, v28.8H, v24.8H
+        add v10.8H, v10.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v5.8H, v29.8H
+        str q11, [x6, #32]
+        sub v11.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v25.8H
+        str q10, [x5, #32]
+        sub v10.8H, v5.8H, v25.8H
+        str q9, [x4, #48]
+        add v9.8H, v28.8H, v24.8H
+        add v9.8H, v9.8H, v4.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #32]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
+
+    // Production GT frontend iter4, shared prefix once.
+    add x1, x20, #128
+    add x3, x22, #1536
+    add x4, x21, #256
+    add x5, x21, #768
+    add x6, x21, #1280
+    // high side
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        mul v16.8H, v10.8H, v0.H[4]
+        mul v18.8H, v12.8H, v0.H[4]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        sub v12.8H, v12.8H, v18.8H
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        add v11.8H, v11.8H, v5.8H
+        add v5.8H, v5.8H, v17.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        ldp q6, q7, [x1, #256]
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        sub v14.8H, v14.8H, v20.8H
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        mul v10.8H, v10.8H, v1.8H
+        add v14.8H, v14.8H, v8.8H
+        ldp q1, q2, [x3], #32
+        add v8.8H, v8.8H, v20.8H
+        add v7.8H, v7.8H, v19.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v11.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v8.8H, v3.8H, v0.H[0]
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v11.8H, v26.8H, v22.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v22.8H, v30.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sub v10.8H, v26.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v27.8H, v23.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v26.8H, v22.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v30.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #0]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        sub v11.8H, v31.8H, v27.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v31.8H, v27.8H
+        sub v6.8H, v4.8H, v28.8H
+        add v9.8H, v9.8H, v23.8H
+        str q9, [x4, #16]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v10.8H, v31.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v9.8H, v24.8H, v4.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q11, [x6, #16]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v28.8H
+        str q10, [x5, #16]
+        sub v6.8H, v25.8H, v5.8H
+        str q9, [x4, #32]
+        sub v10.8H, v24.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v24.8H, v4.8H
+        add v9.8H, v29.8H, v25.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #32]
+        sub v10.8H, v29.8H, v5.8H
+        add v9.8H, v9.8H, v5.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        str q11, [x6, #32]
+        sub v11.8H, v29.8H, v25.8H
+        str q9, [x4, #48]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q10, [x5, #48]
+        str q11, [x6, #48]
+
+    // Production GT frontend iter6, shared prefix once.
+    add x1, x20, #192
+    add x3, x22, #2304
+    add x4, x21, #384
+    add x5, x21, #896
+    add x6, x21, #1408
+    // high side
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        mul v16.8H, v10.8H, v0.H[4]
+        mul v18.8H, v12.8H, v0.H[4]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        sub v12.8H, v12.8H, v18.8H
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        add v11.8H, v11.8H, v5.8H
+        add v4.8H, v4.8H, v16.8H
+        add v5.8H, v5.8H, v17.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        sub v14.8H, v14.8H, v20.8H
+        ldp q1, q2, [x3], #32
+        ldp q8, q9, [x1, #512]
+        ldp q6, q7, [x1, #256]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        add v15.8H, v15.8H, v9.8H
+        sub v13.8H, v13.8H, v19.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v9.8H, v9.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        add v6.8H, v6.8H, v18.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v24.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip2 v25.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        mls v8.8H, v3.8H, v0.H[0]
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v10.8H, v22.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v30.8H, v26.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v22.8H, v30.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v23.8H, v31.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v22.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v26.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q9, [x4, #0]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v28.8H, v24.8H
+        str q10, [x5, #0]
+        sub v10.8H, v27.8H, v31.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v27.8H, v23.8H
+        str q11, [x6, #0]
+        sub v11.8H, v27.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v31.8H
+        str q11, [x6, #16]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q9, [x4, #16]
+        str q10, [x5, #16]
+        sub v6.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        sub v10.8H, v4.8H, v24.8H
+        sub v11.8H, v4.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v4.8H, v28.8H
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v9.8H, v24.8H
+        str q10, [x5, #32]
+        mls v8.8H, v7.8H, v0.H[0]
+        str q9, [x4, #32]
+        add v9.8H, v25.8H, v5.8H
+        str q11, [x6, #32]
+        sub v11.8H, v25.8H, v5.8H
+        add v9.8H, v9.8H, v29.8H
+        sub v10.8H, v25.8H, v29.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #48]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
+
+    // Production GT frontend iter1, shared prefix once.
+    add x1, x20, #32
+    add x3, x22, #384
+    add x4, x21, #64
+    add x5, x21, #576
+    add x6, x21, #1088
+    // high side
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        mul v16.8H, v10.8H, v0.H[4]
+        mul v18.8H, v12.8H, v0.H[4]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        sub v12.8H, v12.8H, v18.8H
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        add v11.8H, v11.8H, v5.8H
+        add v5.8H, v5.8H, v17.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        ldp q6, q7, [x1, #256]
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        sub v14.8H, v14.8H, v20.8H
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        mul v10.8H, v10.8H, v1.8H
+        add v14.8H, v14.8H, v8.8H
+        ldp q1, q2, [x3], #32
+        add v8.8H, v8.8H, v20.8H
+        add v7.8H, v7.8H, v19.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v11.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v8.8H, v3.8H, v0.H[0]
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v11.8H, v26.8H, v22.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v22.8H, v30.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sub v10.8H, v26.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v27.8H, v23.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v26.8H, v22.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v30.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #0]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        sub v11.8H, v31.8H, v27.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v31.8H, v27.8H
+        sub v6.8H, v4.8H, v28.8H
+        add v9.8H, v9.8H, v23.8H
+        str q9, [x4, #16]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v10.8H, v31.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v9.8H, v24.8H, v4.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q11, [x6, #16]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v28.8H
+        str q10, [x5, #16]
+        sub v6.8H, v25.8H, v5.8H
+        str q9, [x4, #32]
+        sub v10.8H, v24.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v24.8H, v4.8H
+        add v9.8H, v29.8H, v25.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #32]
+        sub v10.8H, v29.8H, v5.8H
+        add v9.8H, v9.8H, v5.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        str q11, [x6, #32]
+        sub v11.8H, v29.8H, v25.8H
+        str q9, [x4, #48]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q10, [x5, #48]
+        str q11, [x6, #48]
+
+    // Production GT frontend iter3, shared prefix once.
+    add x1, x20, #96
+    add x3, x22, #1152
+    add x4, x21, #192
+    add x5, x21, #704
+    add x6, x21, #1216
+    // high side
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        mul v16.8H, v10.8H, v0.H[4]
+        mul v18.8H, v12.8H, v0.H[4]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        sub v12.8H, v12.8H, v18.8H
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        add v11.8H, v11.8H, v5.8H
+        add v4.8H, v4.8H, v16.8H
+        add v5.8H, v5.8H, v17.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        sub v14.8H, v14.8H, v20.8H
+        ldp q1, q2, [x3], #32
+        ldp q8, q9, [x1, #512]
+        ldp q6, q7, [x1, #256]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        add v15.8H, v15.8H, v9.8H
+        sub v13.8H, v13.8H, v19.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v9.8H, v9.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        add v6.8H, v6.8H, v18.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v24.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip2 v25.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        mls v8.8H, v3.8H, v0.H[0]
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v10.8H, v22.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v30.8H, v26.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v22.8H, v30.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v23.8H, v31.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v22.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v26.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q9, [x4, #0]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v28.8H, v24.8H
+        str q10, [x5, #0]
+        sub v10.8H, v27.8H, v31.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v27.8H, v23.8H
+        str q11, [x6, #0]
+        sub v11.8H, v27.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v31.8H
+        str q11, [x6, #16]
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q9, [x4, #16]
+        str q10, [x5, #16]
+        sub v6.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        sub v10.8H, v4.8H, v24.8H
+        sub v11.8H, v4.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v4.8H, v28.8H
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v9.8H, v24.8H
+        str q10, [x5, #32]
+        mls v8.8H, v7.8H, v0.H[0]
+        str q9, [x4, #32]
+        add v9.8H, v25.8H, v5.8H
+        str q11, [x6, #32]
+        sub v11.8H, v25.8H, v5.8H
+        add v9.8H, v9.8H, v29.8H
+        sub v10.8H, v25.8H, v29.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #48]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
+
+    // Production GT frontend iter5, shared prefix once.
+    add x1, x20, #160
+    add x3, x22, #1920
+    add x4, x21, #320
+    add x5, x21, #832
+    add x6, x21, #1344
+    // high side
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        ldr q14, [x1, #1280]
+        mul v18.8H, v12.8H, v0.H[4]
+        mul v16.8H, v10.8H, v0.H[4]
+        sub v12.8H, v12.8H, v18.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        sub v10.8H, v10.8H, v16.8H
+        sub v11.8H, v11.8H, v17.8H
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q4, q5, [x1, #0]
+        add v11.8H, v11.8H, v5.8H
+        add v10.8H, v10.8H, v4.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        add v5.8H, v5.8H, v17.8H
+        ldp q6, q7, [x1, #256]
+        add v12.8H, v12.8H, v6.8H
+        ldp q1, q2, [x3], #32
+        mul v21.8H, v15.8H, v0.H[4]
+        sub v14.8H, v14.8H, v20.8H
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        mul v10.8H, v10.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        sub v15.8H, v15.8H, v21.8H
+        add v13.8H, v13.8H, v7.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        add v14.8H, v14.8H, v8.8H
+        add v8.8H, v8.8H, v20.8H
+        mls v11.8H, v3.8H, v0.H[0]
+        add v7.8H, v7.8H, v19.8H
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sub v6.8H, v26.8H, v22.8H
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        mls v8.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        zip2 v31.2D, v8.2D, v14.2D
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v11.8H, v30.8H, v26.8H
+        mul v9.8H, v9.8H, v1.8H
+        sub v6.8H, v31.8H, v27.8H
+        sub v10.8H, v30.8H, v22.8H
+        mls v9.8H, v3.8H, v0.H[0]
+        mls v8.8H, v7.8H, v0.H[0]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        zip1 v4.2D, v9.2D, v15.2D
+        zip2 v5.2D, v9.2D, v15.2D
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v23.8H, v31.8H
+        sub v6.8H, v24.8H, v4.8H
+        add v9.8H, v9.8H, v27.8H
+        sub v11.8H, v23.8H, v31.8H
+        sub v10.8H, v23.8H, v27.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        str q9, [x4, #16]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v30.8H, v26.8H
+        str q10, [x5, #16]
+        sub v10.8H, v28.8H, v4.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v22.8H
+        str q9, [x4, #0]
+        sub v6.8H, v29.8H, v25.8H
+        str q11, [x6, #16]
+        sub v11.8H, v28.8H, v24.8H
+        add v10.8H, v10.8H, v8.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        add v9.8H, v5.8H, v29.8H
+        str q11, [x6, #32]
+        sub v11.8H, v5.8H, v29.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v25.8H
+        str q10, [x5, #32]
+        sub v10.8H, v5.8H, v25.8H
+        str q9, [x4, #48]
+        add v9.8H, v28.8H, v24.8H
+        add v9.8H, v9.8H, v4.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #32]
+        str q11, [x6, #48]
+        str q10, [x5, #48]
+
+    // Production GT frontend iter7, shared prefix once.
+    add x1, x20, #224
+    add x3, x22, #2688
+    add x4, x21, #448
+    add x5, x21, #960
+    add x6, x21, #1472
+    // high side
+        ldp q10, q11, [x1, #768]
+        ldr q12, [x1, #1024]
+        ldr q14, [x1, #1280]
+        ldr q15, [x1, #1296]
+        ldr q13, [x1, #1040]
+        mul v16.8H, v10.8H, v0.H[4]
+        mul v18.8H, v12.8H, v0.H[4]
+        sub v10.8H, v10.8H, v16.8H
+        mul v17.8H, v11.8H, v0.H[4]
+        sub v12.8H, v12.8H, v18.8H
+        ldp q4, q5, [x1, #0]
+        sub v11.8H, v11.8H, v17.8H
+        mul v21.8H, v15.8H, v0.H[4]
+        add v10.8H, v10.8H, v4.8H
+        add v11.8H, v11.8H, v5.8H
+        add v5.8H, v5.8H, v17.8H
+        add v4.8H, v4.8H, v16.8H
+        mul v19.8H, v13.8H, v0.H[4]
+        sub v15.8H, v15.8H, v21.8H
+        ldp q6, q7, [x1, #256]
+        mul v20.8H, v14.8H, v0.H[4]
+        ldp q1, q2, [x3], #32
+        add v12.8H, v12.8H, v6.8H
+        sub v13.8H, v13.8H, v19.8H
+        add v6.8H, v6.8H, v18.8H
+        ldp q8, q9, [x1, #512]
+        add v13.8H, v13.8H, v7.8H
+        sqrdmulh v3.8H, v10.8H, v2.8H
+        sub v14.8H, v14.8H, v20.8H
+        add v15.8H, v15.8H, v9.8H
+        add v9.8H, v9.8H, v21.8H
+        mul v10.8H, v10.8H, v1.8H
+        add v14.8H, v14.8H, v8.8H
+        ldp q1, q2, [x3], #32
+        add v8.8H, v8.8H, v20.8H
+        add v7.8H, v7.8H, v19.8H
+        mls v10.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v11.8H, v2.8H
+        mul v11.8H, v11.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v11.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v12.8H, v2.8H
+        mul v12.8H, v12.8H, v1.8H
+        mls v12.8H, v3.8H, v0.H[0]
+        ldp q1, q2, [x3], #32
+        sqrdmulh v3.8H, v13.8H, v2.8H
+        mul v13.8H, v13.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v13.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v14.8H, v2.8H
+        mul v14.8H, v14.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v14.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v15.8H, v2.8H
+        mul v15.8H, v15.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v15.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v4.8H, v2.8H
+        mul v4.8H, v4.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v4.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v5.8H, v2.8H
+        mul v5.8H, v5.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v5.8H, v3.8H, v0.H[0]
+        sqrdmulh v3.8H, v6.8H, v2.8H
+        mul v6.8H, v6.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip2 v25.2D, v5.2D, v11.2D
+        mls v6.8H, v3.8H, v0.H[0]
+        zip1 v22.2D, v4.2D, v10.2D
+        zip2 v23.2D, v4.2D, v10.2D
+        sqrdmulh v3.8H, v7.8H, v2.8H
+        zip1 v24.2D, v5.2D, v11.2D
+        mul v7.8H, v7.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        zip1 v26.2D, v6.2D, v12.2D
+        mls v7.8H, v3.8H, v0.H[0]
+        zip2 v27.2D, v6.2D, v12.2D
+        sqrdmulh v3.8H, v8.8H, v2.8H
+        mul v8.8H, v8.8H, v1.8H
+        ldp q1, q2, [x3], #32
+        mls v8.8H, v3.8H, v0.H[0]
+        zip1 v28.2D, v7.2D, v13.2D
+        zip2 v29.2D, v7.2D, v13.2D
+        sqrdmulh v3.8H, v9.8H, v2.8H
+        sub v11.8H, v26.8H, v22.8H
+        mul v9.8H, v9.8H, v1.8H
+        zip1 v30.2D, v8.2D, v14.2D
+        mls v9.8H, v3.8H, v0.H[0]
+        sub v6.8H, v22.8H, v30.8H
+        zip2 v31.2D, v8.2D, v14.2D
+        sub v10.8H, v26.8H, v30.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        mul v8.8H, v6.8H, v0.H[2]
+        sub v6.8H, v27.8H, v23.8H
+        zip1 v4.2D, v9.2D, v15.2D
+        mls v8.8H, v7.8H, v0.H[0]
+        zip2 v5.2D, v9.2D, v15.2D
+        add v9.8H, v26.8H, v22.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v9.8H, v9.8H, v30.8H
+        add v10.8H, v10.8H, v8.8H
+        str q9, [x4, #0]
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #0]
+        str q11, [x6, #0]
+        sub v11.8H, v31.8H, v27.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v31.8H, v27.8H
+        sub v6.8H, v4.8H, v28.8H
+        add v9.8H, v9.8H, v23.8H
+        str q9, [x4, #16]
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        sub v10.8H, v31.8H, v23.8H
+        sub v11.8H, v11.8H, v8.8H
+        add v9.8H, v24.8H, v4.8H
+        add v10.8H, v10.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q11, [x6, #16]
+        mls v8.8H, v7.8H, v0.H[0]
+        add v9.8H, v9.8H, v28.8H
+        str q10, [x5, #16]
+        sub v6.8H, v25.8H, v5.8H
+        str q9, [x4, #32]
+        sub v10.8H, v24.8H, v28.8H
+        sqrdmulh v7.8H, v6.8H, v0.H[3]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v24.8H, v4.8H
+        add v9.8H, v29.8H, v25.8H
+        sub v11.8H, v11.8H, v8.8H
+        mul v8.8H, v6.8H, v0.H[2]
+        str q10, [x5, #32]
+        sub v10.8H, v29.8H, v5.8H
+        add v9.8H, v9.8H, v5.8H
+        mls v8.8H, v7.8H, v0.H[0]
+        str q11, [x6, #32]
+        sub v11.8H, v29.8H, v25.8H
+        str q9, [x4, #48]
+        add v10.8H, v10.8H, v8.8H
+        sub v11.8H, v11.8H, v8.8H
+        str q10, [x5, #48]
+        str q11, [x6, #48]
+
+    b .Lntt_endpoint_suffix

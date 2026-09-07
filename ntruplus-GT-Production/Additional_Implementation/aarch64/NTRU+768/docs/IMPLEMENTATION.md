@@ -217,45 +217,49 @@ Validated toolchain families are GNU-compatible AArch64 GCC on Linux and Apple
 Clang on macOS. Performance claims remain tied to the exact Linux compiler
 reported by the benchmark summary.
 
-## 10. Secret-Lifetime and Zeroization Contract
+## 10. Official-Aligned Cleanup Policy
 
-The production KEM explicitly clears secret-bearing automatic and heap
-storage before the owning scope returns or releases it:
+This package follows the lower-clear policy used in SUPERCOP-20260627
+ntruplus768/aarch64, rather than the former P0-B full-frame policy.
 
-- key-generation samples, inverses, numerator scratch, and the hierarchical
-  base-inversion denominator tree
-- encapsulation and decapsulation messages, hash images, coins, and polynomial
-  temporaries
-- portable FIPS202 absorb buffers, squeeze buffers, stack states, and
-  allocated incremental contexts
-- handwritten NTT, inverse-NTT, pointwise, serialization, and base-inversion
-  spill frames
+- Keygen shares a 192-byte sample buffer and one output polynomial, clearing
+  them once at their final lifetime. Secret samples/inverses and GT-specific
+  numerator/denominator scratch are still cleared. Retry values are overwritten.
+- Encap reuses ciphertext as the pack-r/hash workspace; it clears secret
+  coins, message, hash buffer, r and m, but not the public decoded h.
+- Decap clears its complete scratch union on every exit. Reducing the buf3
+  declaration does not shrink the union because a polynomial also occupies it.
+- hash_f processes a public key and does not wipe its prefixed input copy.
+  hash_g/hash_h still clear their prefixed inputs. NO_CE uses Official's inline
+  SHAKE contexts with the same clear sites, routed through gt_secure_clear so
+  the package audit hook and platform fallback remain available.
+- Extra P0-B assembly frame/register wipes are removed. ABI saves/restores
+  remain. Existing short keygen prepare/fqinv register cleanups remain, so this
+  is policy alignment, not identical instruction-level erasure coverage.
 
-`internal/secure_clear.h` selects a platform primitive when one is available
-and otherwise uses a volatile byte loop so the clear cannot be removed as a
-dead store. The public KEM wrappers preserve the return value and restored
-AAPCS64 callee-saved state, then erase their spill image and the remaining
-caller-saved general-purpose and SIMD temporaries. Private assembly leaves
-clear their complete spill frames or their secret exponent/product registers
-at the point where the result has been committed.
+There is no longer a promise to erase all handwritten spill frames or all
+caller-saved registers. This explicitly trades the former additional cleanup
+for the requested Official-style policy. It is not a proof about compiler
+copies, caches, swap, or microarchitectural remanence.
 
-The policy has two release gates:
+make zeroization-source-check checks the retained clear sites and the absence
+of the retired P0-B blocks. make zeroization audits actual C cleared bytes.
+The six-path experiment audit additionally covers invalid public keys,
+noncanonical ciphertexts, and verification failures.
 
-```text
-make zeroization-source-check
-make zeroization
-```
+## 11. D1 and Encap-Small Endpoints
 
-The first checks that every audited source boundary still contains its
-required clear. The second builds with `GT_SECURE_CLEAR_AUDIT_HOOK`, runs a
-complete keypair/encapsulation/decapsulation flow, and verifies that the
-portable C clear primitive observes zero bytes after every call and sees the
-large key-generation, FIPS202-state, and domain-separated hash buffers.
-Assembly clearing is checked statically because the portable hook cannot
-intercept stores emitted directly by handwritten assembly.
+Decap verification basemul uses the e03 staggered Q31 final reduction:
+normal-domain int32 accumulator -> normal-domain int16, reciprocal 621199.
+The proved accumulator magnitude is at most 452984832 and residual magnitude
+at most 2001; serialization remains canonical and the wire contract is unchanged.
+This is not the scale-retaining pointwise/inverse endpoint described above.
 
-This is a best-effort lifetime policy for architecturally visible memory and
-register state. It does not claim erasure of compiler-created copies,
-microarchitectural state, caches, or swap. Any source, compiler, ABI, or stack
-layout change requires rerunning `make check` and reviewing the static
-coverage list in `scripts/check_zeroization.py`.
+Encap's two Forward calls use gt_internal_poly_ntt_encap_small. Only inputs
+with signed coefficients in [-2,2] are valid. For these inputs,
+floor((-6844*b + 16384)/32768) = 0, so 48 top-split quotient instructions and
+48 corrections are unnecessary. Subsequent instructions and output bits are
+identical to generic Forward, including aliasing. The shared suffix reloads
+its saved public endpoint selector after x2 has been reused as a table pointer.
+Keygen and Decap keep their existing endpoints. make small tests 4096 fixtures;
+the new endpoint is also covered by the AAPCS64 sentinel.

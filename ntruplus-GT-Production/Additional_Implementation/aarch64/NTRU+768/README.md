@@ -36,6 +36,9 @@ not optional profiles:
 - An encapsulation-only `a*b+c` pointwise endpoint whose output exactly aliases
   the consumed message-polynomial input, avoiding a separate ciphertext
   polynomial temporary.
+- An Encap-only small-input Forward endpoint, bit-exact to generic Forward
+  for signed coefficients in [-2,2], and a Q31-reduced Decap verification
+  basemul. Keygen/Decap Forward endpoints are unchanged.
 - A compact decapsulation verification endpoint with cross-group gather
   pipelining and a Slothy-scheduled shared multiplication helper.
 - A paired pointwise/inverse contract in which pointwise multiplication leaves
@@ -80,6 +83,11 @@ directories or production profile selectors. `make zeroization` combines a
 static source-coverage gate with a runtime audit hook for the portable C
 clears. `make kat-check` regenerates the NIST KAT and compares it byte-for-byte
 with the canonical vectors under `kat/expected/`.
+
+Cleanup now follows the Official-style lower-clear policy. Secret C buffers
+remain cleared, but extra full assembly-frame and caller-register wipes are
+not promised. See the explicit coverage and exceptions in section 10 of
+`docs/IMPLEMENTATION.md`; this is not the former P0-B policy.
 
 ## Scope
 
