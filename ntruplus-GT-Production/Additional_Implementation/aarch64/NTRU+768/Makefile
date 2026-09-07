@@ -37,11 +37,9 @@ PUBLIC_ASM := \
 	kem_api.S
 
 INTERNAL_ASM := \
-	unpack.S \
 	keygen_baseinv_prepare.S \
 	keygen_baseinv_tree.S \
 	keygen_baseinv_finish.S \
-	keygen_pack.S \
 	fqinv.S \
 	encap_muladd.S \
 	decap_verify.S \
@@ -49,7 +47,6 @@ INTERNAL_ASM := \
 	decap_add.S \
 	decap_base.S \
 	decap_ntt.S \
-	decap_pack.S \
 	decap_forward.S
 
 INTERNAL_C := \
