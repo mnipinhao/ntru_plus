@@ -12,7 +12,7 @@ TEST_CANONICAL := $(BUILD_DIR)/test_canonical
 TEST_NTT_SMALL := $(BUILD_DIR)/test_ntt_small
 KAT_GENERATOR := $(BUILD_DIR)/PQCgenKAT_kem
 
-CPPFLAGS := -I. -Iinternal
+CPPFLAGS := -I.
 CFLAGS ?= -O3 -fomit-frame-pointer
 CFLAGS += -std=c99 -Wall -Wextra -Wpedantic
 CFLAGS += -ffunction-sections -fdata-sections
@@ -28,40 +28,40 @@ SIZE_FLAGS :=
 endif
 
 PUBLIC_ASM := \
-	asm/ntt.S \
-	asm/invntt.S \
-	asm/base.S \
-	asm/pack.S \
-	asm/cbd.S \
-	asm/support.S \
-	asm/kem_api.S
+	ntt.S \
+	invntt.S \
+	base.S \
+	pack.S \
+	cbd.S \
+	support.S \
+	kem_api.S
 
 INTERNAL_ASM := \
-	asm/internal/unpack.S \
-	asm/internal/keygen_baseinv_prepare.S \
-	asm/internal/keygen_baseinv_tree.S \
-	asm/internal/keygen_baseinv_finish.S \
-	asm/internal/keygen_pack.S \
-	asm/internal/fqinv.S \
-	asm/internal/encap_muladd.S \
-	asm/internal/decap_verify.S \
-	asm/internal/decap_packed64.S \
-	asm/internal/decap_add.S \
-	asm/internal/decap_base.S \
-	asm/internal/decap_ntt.S \
-	asm/internal/decap_pack.S \
-	asm/internal/decap_forward.S
+	unpack.S \
+	keygen_baseinv_prepare.S \
+	keygen_baseinv_tree.S \
+	keygen_baseinv_finish.S \
+	keygen_pack.S \
+	fqinv.S \
+	encap_muladd.S \
+	decap_verify.S \
+	decap_packed64.S \
+	decap_add.S \
+	decap_base.S \
+	decap_ntt.S \
+	decap_pack.S \
+	decap_forward.S
 
 INTERNAL_C := \
-	internal/keygen.c \
-	internal/keygen_lambda.c \
-	internal/basemul_lambda.c \
-	internal/decap_verify.c
+	keygen.c \
+	keygen_lambda.c \
+	basemul_lambda.c \
+	decap_verify.c
 
 KEM_SOURCES := \
 	kem.c \
 	symmetric.c \
-	NO_CE/fips202.c \
+	fips202.c \
 	$(INTERNAL_C) \
 	$(PUBLIC_ASM) \
 	$(INTERNAL_ASM)

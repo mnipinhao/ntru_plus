@@ -5,7 +5,7 @@
  * from https://twitter.com/tweetfips202
  * by Gilles Van Assche, Daniel J. Bernstein, and Peter Schwabe */
 
-#include "../internal/secure_clear.h"
+#include "secure_clear.h"
 
 #include <stddef.h>
 #include <stdint.h>

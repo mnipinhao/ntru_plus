@@ -14,21 +14,22 @@ shape used by other NTRU+ implementations:
 
 | File | Public responsibility |
 |---|---|
-| `asm/ntt.S` | Forward NTT |
-| `asm/invntt.S` | Inverse NTT |
-| `asm/base.S` | Pointwise multiplication |
-| `asm/pack.S` | Canonical polynomial serialization |
-| `asm/cbd.S` | CBD and SOTP conversion |
-| `asm/support.S` | Subtract, triple, and centered reduction |
-| `asm/kem_api.S` | AAPCS64 boundary for the public KEM API |
+| `ntt.S` | Forward NTT |
+| `invntt.S` | Inverse NTT |
+| `base.S` | Pointwise multiplication |
+| `pack.S` | Canonical polynomial serialization |
+| `cbd.S` | CBD and SOTP conversion |
+| `support.S` | Subtract, triple, and centered reduction |
+| `kem_api.S` | AAPCS64 boundary for the public KEM API |
 | `kem.c` | Key generation, encapsulation, and decapsulation |
 
 Each production `.S` and `.c` file is self-contained. Generated arithmetic,
 constant tables, and small common macros have been flattened into their owning
 source files; the release does not require separate `.inc` fragments.
 
-The selected KEM also uses private specialized endpoints under
-`asm/internal/` and `internal/`. These are part of this one production build,
+The selected KEM also uses private specialized endpoints in this directory.
+Their declarations remain separate in `keygen.h`, `ntt_internal.h`, and
+`decap_verify.h`. These are part of this one production build,
 not optional profiles:
 
 - A key-generation NTT with a direct vector-native output layout, hierarchical

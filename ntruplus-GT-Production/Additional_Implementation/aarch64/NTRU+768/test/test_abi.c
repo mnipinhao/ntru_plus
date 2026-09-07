@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "api.h"
-#include "internal/decap_verify.h"
-#include "internal/keygen.h"
+#include "decap_verify.h"
+#include "keygen.h"
 #include "poly.h"
 
 typedef uint64_t (*abi_sentinel_fn)(void *, void *, void *, void *);

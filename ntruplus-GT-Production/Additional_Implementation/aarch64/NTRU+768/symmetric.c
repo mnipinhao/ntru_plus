@@ -1,11 +1,11 @@
 #include <string.h>
 #include "symmetric.h"
-#include "internal/secure_clear.h"
+#include "secure_clear.h"
 
 #ifdef SUPPORTS_SHAKE256_ASM
 #include "CE/fips202.h"
 #else
-#include "NO_CE/fips202.h"
+#include "fips202.h"
 #endif
 
 #define HASH_F_INBYTES  (NTRUPLUS_POLYBYTES)

@@ -174,9 +174,11 @@ QSoA storage.
 
 ## 8. Source Closure
 
-The exact release source list is defined by `Makefile`. Public arithmetic files
-remain under `asm/`; selected KEM-only endpoints are isolated under
-`asm/internal/` and `internal/`.
+The exact release source list is defined by `Makefile`. All production C,
+assembly, and headers are in the package root. Private endpoint declarations
+remain separate in `keygen.h`, `ntt_internal.h`, and `decap_verify.h`.
+This path-only flattening does not rename functions, merge assembly files,
+change layout contracts, or remove validation/reference endpoints.
 
 Production sources are flattened: arithmetic bodies, constants, lambda tables,
 and assembly helper macros reside in the `.S` or `.c` file that owns them. No
@@ -196,7 +198,7 @@ The release intentionally excludes:
 
 Several closed-world assembly leaves use `d8-d15` as internal scratch
 registers. The public `crypto_kem_keypair`, `crypto_kem_enc`, and
-`crypto_kem_dec` wrappers in `asm/kem_api.S` save those AAPCS64 callee-saved
+`crypto_kem_dec` wrappers in `kem_api.S` save those AAPCS64 callee-saved
 lanes once, call the fixed internal KEM implementation, and restore them on
 return.
 
@@ -210,7 +212,7 @@ the fixed source closure in this directory. A compiler or optimization-policy
 change is therefore a release-contract change: it requires rebuilding the
 whole closure and rerunning `make check`, including the KEM round-trip, public
 ABI sentinel, and byte-for-byte KAT gates. The release does not claim that an
-arbitrary object assembled from `asm/internal/` is independently AAPCS64
+arbitrary private assembly object is independently AAPCS64
 callable.
 
 Validated toolchain families are GNU-compatible AArch64 GCC on Linux and Apple

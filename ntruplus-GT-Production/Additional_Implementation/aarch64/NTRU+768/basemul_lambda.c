@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "ntt.h"
+#include "ntt_internal.h"
 
 const int16_t gt_rowbitrev_lambda[2][96] = {
 	{

@@ -6,14 +6,14 @@
 
 #include "poly.h"
 #include "randombytes.h"
-#include "internal/decap_verify.h"
-#include "internal/keygen.h"
-#include "internal/ntt.h"
-#include "internal/secure_clear.h"
+#include "decap_verify.h"
+#include "keygen.h"
+#include "ntt_internal.h"
+#include "secure_clear.h"
 
 typedef gt_cq_poly keygen_poly;
 
-#include "NO_CE/fips202.h"
+#include "fips202.h"
 
 static inline void encap_basemul_add_tobytes(uint8_t *ct, const poly *h,
                                              const poly *r, poly *m)

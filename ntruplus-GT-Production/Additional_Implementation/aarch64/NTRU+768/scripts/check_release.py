@@ -100,7 +100,7 @@ for symbol in REQUIRED_PUBLIC_SYMBOLS:
         fail(f"missing public declaration: {symbol}")
 
 kem_source = (ROOT / "kem.c").read_text(encoding="utf-8")
-internal_headers = (ROOT / "internal/ntt.h").read_text(encoding="utf-8")
+internal_headers = (ROOT / "ntt_internal.h").read_text(encoding="utf-8")
 for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
     if re.search(rf"\b{re.escape(symbol)}\s*\(", internal_headers) is None:
         fail(f"missing internal declaration: {symbol}")
@@ -108,20 +108,20 @@ for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
         fail(f"missing internal KEM consumer: {symbol}")
 
 expected = {
-    "asm/ntt.S",
-    "asm/invntt.S",
-    "asm/base.S",
-    "asm/pack.S",
-    "asm/cbd.S",
-    "asm/support.S",
-    "asm/kem_api.S",
+    "ntt.S",
+    "invntt.S",
+    "base.S",
+    "pack.S",
+    "cbd.S",
+    "support.S",
+    "kem_api.S",
     "kem.c",
     "poly.h",
     "Makefile",
     "LICENSE",
     "SOURCE-MANIFEST.sha256",
-    "internal/secure_clear.h",
-    "internal/ntt.h",
+    "secure_clear.h",
+    "ntt_internal.h",
     "scripts/check_zeroization.py",
     "test/test_zeroization.c",
     "test/test_canonical.c",
