@@ -38,7 +38,7 @@ for name in files:
  parts.append('/* BEGIN original '+name+'; private namespace '+prefix+' */\n'+initial+s+'\n/* END original '+name+' */\n')
 changes={P/files[0]:'\n'.join(parts)}
 make=(P/'Makefile').read_text()
-for name in files[1:]:make=re.sub(r'^\t'+re.escape(name)+r'\s*\\?\n','',make,flags=re.M)
+for name in files[1:]:make=re.sub(r'^\t'+re.escape(name)+r'[ \t]*\\?\n','',make,flags=re.M)
 changes[P/'Makefile']=make
 # Source-coverage checks must inspect the new owner without changing needles.
 for script in (P/'scripts').glob('*.py'):

@@ -14,10 +14,10 @@ shape used by other NTRU+ implementations:
 
 | File | Public responsibility |
 |---|---|
-| `ntt.S` | Forward NTT |
-| `invntt.S` | Inverse NTT |
-| `base.S` | Pointwise multiplication |
-| `pack.S` | Canonical polynomial serialization |
+| `ntt.S` | Encap/Keygen/Decap Forward and paired inverse transforms |
+| `base.S` | Pointwise multiplication, base inversion leaves, packed first product |
+| `pack.S` | Checked decode and canonical serialization for each layout |
+| `keygen.c` | CQ inversion orchestration and CQ pointwise products |
 | `cbd.S` | CBD and SOTP conversion |
 | `support.S` | Subtract, triple, and centered reduction |
 | `kem_api.S` | AAPCS64 boundary for the public KEM API |
@@ -40,8 +40,8 @@ not optional profiles:
 - An Encap-only small-input Forward endpoint, bit-exact to generic Forward
   for signed coefficients in [-2,2], and a Q31-reduced Decap verification
   basemul. Keygen/Decap Forward endpoints are unchanged.
-- A compact decapsulation verification endpoint with cross-group gather
-  pipelining and a Slothy-scheduled shared multiplication helper.
+- The active packed ct/f first-product and D1 verification endpoints; older
+  QSoA helpers remain available to the unchanged validation roots.
 - A paired pointwise/inverse contract in which pointwise multiplication leaves
   one Montgomery `R^-1` factor and the inverse transform absorbs it.
 
@@ -94,14 +94,29 @@ not promised. See the explicit coverage and exceptions in section 10 of
 
 - Parameter set: NTRU+768
 - ISA: AArch64 Armv8-A Advanced SIMD (Neon)
-- Selected layout: a key-generation-native vector layout and a block-major GT
-  layout for the generic transform path used by encapsulation and
-  decapsulation.
+- Selected layouts: Keygen CQ, Encap block-major GT, and Decap transposed
+  consumers. Equal storage size does not make these interchangeable.
 - External byte contract: canonical NTRU+ public key, secret key, and
   ciphertext encoding.
 
 This release tree intentionally excludes benchmark prototypes, Slothy inputs
-and logs, archived alternatives, and generic kernels not called by the
-selected KEM. The reproducible public full-KEM comparison is maintained under
+and logs. Generic/reference entries required by maintained APIs or validation
+are retained even if the KEM does not call them. The reproducible full-KEM comparison is maintained under
 [`../../../../bench/aarch64/gt-production/`](../../../../bench/aarch64/gt-production/)
 outside the release source closure.
+
+## SUPERCOP leaf export
+
+On AArch64 Linux, choose a fresh destination outside this package:
+
+```sh
+python3 scripts/export_supercop.py /tmp/ntruplus768-aarch64-gt-leaf
+```
+
+The leaf retains readable C and headers, preprocesses `.S` into Linux `.s`,
+and applies a private namespace to all implementation definitions. A small
+`adapter.c` uses SUPERCOP's `crypto_kem.h` namespace for the three public APIs.
+Neither the local randombytes implementation nor its header is exported.
+No KAT/test mains, generated objects, or `goal-*`
+claims are included. Export metadata is written beside the leaf, not inside it.
+The source package remains authoritative; do not maintain hand-edited `.s` copies.

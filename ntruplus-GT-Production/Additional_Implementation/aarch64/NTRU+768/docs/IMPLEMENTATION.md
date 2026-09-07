@@ -33,15 +33,15 @@ key generation:
       -> CQ pointwise products -> CQ canonical pack
 
 encapsulation:
-  canonical unpack -> block-major forward NTT
-      -> specialized a*b+c -> canonical pack
+  checked PK decode -> small Forward(r) -> loose pack -> hash_g/SOTP
+      -> small Forward(m) -> specialized a*b+c (out == m) -> canonical pack
 
 decapsulation:
-  canonical unpack -> block-major pointwise product with R^-1 retained
-      -> paired inverse NTT absorbs R^-1
+  packed ct/f checked first product with R^-1 retained; decode hinv
+      -> Decap paired inverse absorbs R^-1
       -> centered mod-3 representative
-      -> block-major forward NTT
-      -> QSoA verification product -> canonical bytes
+      -> Decap forward -> subtraction -> D1 verification product -> bytes
+      -> hash/SOTP/CBD -> second Decap forward -> bytes -> verification
 ```
 
 The KEM call graph in `kem.c` selects these paths directly. There is no
@@ -51,8 +51,8 @@ intermediate runtime dispatch.
 
 ### 3.1 Block-major GT layout
 
-`poly_ntt` writes the block-major transform layout used by encapsulation and
-decapsulation. The following production symbols consume this layout:
+`poly_ntt_loose` and `poly_ntt_encap_small` write the block-major transform
+layout used by encapsulation. The following symbols consume this layout:
 
 - `poly_basemul`
 - `poly_basemul_add_encap`
@@ -81,7 +81,7 @@ block-major polynomial entrypoints.
 
 ### 3.3 QSoA verification layout
 
-The decapsulation verification endpoint uses a private QSoA representation:
+The retained older verification helpers use a private QSoA representation:
 
 ```text
 qsoa_frombytes
@@ -89,18 +89,21 @@ qsoa_frombytes
     -> qsoa_tobytes
 ```
 
-`gt_decap_verify_to_bytes` owns this complete conversion/product/serialization
-sequence. QSoA is not exposed through the public KEM or polynomial API.
+These helpers remain validation roots, not the selected kem.c sequence.
+The active Decap path uses `poly_frombytes_basemul_decap_scale`,
+`poly_invntt_decap_scale`, `poly_ntt_decap`, `poly_basemul_decap`, and
+`poly_tobytes_decap`. Its ordering must not be confused with Encap block-major.
 
 ## 4. Forward-Transform Endpoints
 
-The release exposes two terminal layouts from the same forward-transform
-arithmetic:
+The maintained Forward endpoints have distinct caller contracts:
 
 | Symbol | Input | Output | Production consumer |
 |---|---|---|---|
-| `poly_ntt` | coefficient order | block-major GT | encapsulation and decapsulation pointwise paths |
+| `poly_ntt_loose` | generic coefficients | block-major loose GT | validation oracle; proved loose consumers |
+| `poly_ntt_encap_small` | signed [-2,2] | bit-exact generic loose GT | Encap r/m, supports exact in-place |
 | `poly_ntt_keygen_cq` | coefficient order | key-generation CQ | CQ base inversion |
+| `poly_ntt_decap` | Decap coefficient inputs | Decap consumer layout | Decap verification |
 
 The endpoints differ at the selected final store layout. A caller must choose
 the endpoint from the next kernel's expected representation; no generic
@@ -127,7 +130,7 @@ key-generation path.
 
 ## 6. Pointwise/Inverse Contract
 
-The production decapsulation pair is:
+The retained generic pointwise/inverse pair is:
 
 ```text
 poly_basemul
@@ -145,6 +148,12 @@ normalized generic product.
 The three inverse Stage45 rows share one internal row helper. This changes only
 the call structure and linked text size; row arithmetic, input order, and
 output representation are unchanged.
+
+The active Decap first-product pair instead is
+`poly_frombytes_basemul_decap_scale -> poly_invntt_decap_scale`; its one-pointer
+inverse and first-product scaling must remain paired. D1 `poly_basemul_decap`
+is a later normal-domain verification product, not a replacement for that
+scaled first product.
 
 ### 6.1 Encapsulation exact-alias contract
 
@@ -177,8 +186,10 @@ QSoA storage.
 The exact release source list is defined by `Makefile`. All production C,
 assembly, and headers are in the package root. Private endpoint declarations
 remain separate in `keygen.h`, `ntt_internal.h`, and `decap_verify.h`.
-This path-only flattening does not rename functions, merge assembly files,
-change layout contracts, or remove validation/reference endpoints.
+The endpoint naming and ntt/base/pack consolidation preserve parameters and
+layout contracts. Each original assembly owner has a private identifier
+namespace and a corresponding section boundary. Validation/reference endpoints
+remain; only the proved-unreferenced legacy Decap twist table was removed.
 
 Production sources are flattened: arithmetic bodies, constants, lambda tables,
 and assembly helper macros reside in the `.S` or `.c` file that owns them. No

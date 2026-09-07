@@ -5,6 +5,7 @@ instruction-count equality as a substitute for code/table equality.
 import sys,re,struct,subprocess,json,hashlib
 from pathlib import Path
 old,new,out=map(Path,sys.argv[1:4]);out.mkdir(parents=True,exist_ok=True)
+trim='--trim' in sys.argv[4:]
 groups={'pack':['pack','unpack','keygen_pack','decap_pack'],
         'base':['base','keygen_baseinv_prepare','keygen_baseinv_tree','keygen_baseinv_finish','fqinv','encap_muladd','decap_verify','decap_packed64','decap_base'],
         'ntt':['ntt','invntt','decap_ntt','decap_forward']}
@@ -38,6 +39,12 @@ for owner,members in groups.items():
   for name,(h,data) in orig.items():
    if not (h[2]&2) or not data:continue
    target=name if name not in ['.text','.data'] else name+'.module_'+m+'_body'
+   if trim and name=='.rodata.gt_decap_forward.unused_twist':
+    assert target not in merged
+    assert len(data)==3072
+    assert not any(name in str(rows) for rows in sr.values())
+    records.append({'source':m,'removed_unreferenced_section':name,'bytes':len(data)})
+    continue
    assert target in merged,(owner,m,name,target)
    nh,nd=merged[target]
    record={'owner':owner,'source':m,'old_section':name,'new_section':target,'bytes':len(data),
