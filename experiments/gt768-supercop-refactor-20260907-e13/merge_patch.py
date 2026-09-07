@@ -13,9 +13,13 @@ groups={
  'ntt':['ntt.S','invntt.S','decap_ntt.S','decap_forward.S'],
 }
 files=groups[sys.argv[1]]
+if len(sys.argv)>2:
+ files=[files[0],sys.argv[2]]
 parts=[]
 for name in files:
  s=(P/name).read_text(); prefix='module_'+Path(name).stem+'_'
+ if name==files[0] and s.startswith('/* BEGIN original '):
+  parts.append(s);continue
  exports=set(re.findall(r'^\s*\.(?:global|globl|weak)\s+(\w+)',s,re.M))
  labels=set(re.findall(r'^\s*([\w.$]+):',s,re.M))
  macros=set(re.findall(r'^\s*\.macro\s+(\w+)',s,re.M))

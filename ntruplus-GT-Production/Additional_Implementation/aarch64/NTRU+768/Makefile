@@ -29,7 +29,6 @@ endif
 
 PUBLIC_ASM := \
 	ntt.S \
-	invntt.S \
 	base.S \
 	pack.S \
 	cbd.S \
@@ -37,9 +36,7 @@ PUBLIC_ASM := \
 	kem_api.S
 
 INTERNAL_ASM := \
-	decap_add.S \
-	decap_ntt.S \
-	decap_forward.S
+	decap_add.S
 
 INTERNAL_C := \
 	keygen.c \

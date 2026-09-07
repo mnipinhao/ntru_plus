@@ -109,7 +109,7 @@ for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
 
 expected = {
     "ntt.S",
-    "invntt.S",
+    "ntt.S",
     "base.S",
     "pack.S",
     "cbd.S",
