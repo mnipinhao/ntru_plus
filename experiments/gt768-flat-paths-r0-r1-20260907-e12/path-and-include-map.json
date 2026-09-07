@@ -1,0 +1,351 @@
+{
+  "mapping": {
+    "NO_CE/fips202.h": "fips202.h",
+    "NO_CE/fips202.c": "fips202.c",
+    "asm/pack.S": "pack.S",
+    "asm/invntt.S": "invntt.S",
+    "asm/ntt.S": "ntt.S",
+    "asm/cbd.S": "cbd.S",
+    "asm/kem_api.S": "kem_api.S",
+    "asm/base.S": "base.S",
+    "asm/support.S": "support.S",
+    "internal/keygen.c": "keygen.c",
+    "internal/keygen_lambda.c": "keygen_lambda.c",
+    "internal/decap_verify.c": "decap_verify.c",
+    "internal/ntt.h": "ntt_internal.h",
+    "internal/keygen.h": "keygen.h",
+    "internal/layout.h": "layout.h",
+    "internal/secure_clear.h": "secure_clear.h",
+    "internal/basemul_lambda.c": "basemul_lambda.c",
+    "internal/decap_verify.h": "decap_verify.h",
+    "asm/internal/decap_forward.S": "decap_forward.S",
+    "asm/internal/decap_packed64.S": "decap_packed64.S",
+    "asm/internal/keygen_baseinv_prepare.S": "keygen_baseinv_prepare.S",
+    "asm/internal/decap_pack.S": "decap_pack.S",
+    "asm/internal/keygen_pack.S": "keygen_pack.S",
+    "asm/internal/decap_add.S": "decap_add.S",
+    "asm/internal/keygen_baseinv_tree.S": "keygen_baseinv_tree.S",
+    "asm/internal/fqinv.S": "fqinv.S",
+    "asm/internal/decap_ntt.S": "decap_ntt.S",
+    "asm/internal/encap_muladd.S": "encap_muladd.S",
+    "asm/internal/decap_base.S": "decap_base.S",
+    "asm/internal/unpack.S": "unpack.S",
+    "asm/internal/decap_verify.S": "decap_verify.S",
+    "asm/internal/keygen_baseinv_finish.S": "keygen_baseinv_finish.S"
+  },
+  "includes": [
+    {
+      "source": "kem.c",
+      "include": "api.h",
+      "resolved": "api.h",
+      "new_source": "kem.c",
+      "new_target": "api.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "params.h",
+      "resolved": "params.h",
+      "new_source": "kem.c",
+      "new_target": "params.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "symmetric.h",
+      "resolved": "symmetric.h",
+      "new_source": "kem.c",
+      "new_target": "symmetric.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "poly.h",
+      "resolved": "poly.h",
+      "new_source": "kem.c",
+      "new_target": "poly.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "randombytes.h",
+      "resolved": "randombytes.h",
+      "new_source": "kem.c",
+      "new_target": "randombytes.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "internal/decap_verify.h",
+      "resolved": "internal/decap_verify.h",
+      "new_source": "kem.c",
+      "new_target": "decap_verify.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "internal/keygen.h",
+      "resolved": "internal/keygen.h",
+      "new_source": "kem.c",
+      "new_target": "keygen.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "internal/ntt.h",
+      "resolved": "internal/ntt.h",
+      "new_source": "kem.c",
+      "new_target": "ntt_internal.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "internal/secure_clear.h",
+      "resolved": "internal/secure_clear.h",
+      "new_source": "kem.c",
+      "new_target": "secure_clear.h"
+    },
+    {
+      "source": "kem.c",
+      "include": "NO_CE/fips202.h",
+      "resolved": "NO_CE/fips202.h",
+      "new_source": "kem.c",
+      "new_target": "fips202.h"
+    },
+    {
+      "source": "symmetric.h",
+      "include": "params.h",
+      "resolved": "params.h",
+      "new_source": "symmetric.h",
+      "new_target": "params.h"
+    },
+    {
+      "source": "api.h",
+      "include": "params.h",
+      "resolved": "params.h",
+      "new_source": "api.h",
+      "new_target": "params.h"
+    },
+    {
+      "source": "randombytes.c",
+      "include": "randombytes.h",
+      "resolved": "randombytes.h",
+      "new_source": "randombytes.c",
+      "new_target": "randombytes.h"
+    },
+    {
+      "source": "poly.h",
+      "include": "params.h",
+      "resolved": "params.h",
+      "new_source": "poly.h",
+      "new_target": "params.h"
+    },
+    {
+      "source": "symmetric.c",
+      "include": "symmetric.h",
+      "resolved": "symmetric.h",
+      "new_source": "symmetric.c",
+      "new_target": "symmetric.h"
+    },
+    {
+      "source": "symmetric.c",
+      "include": "internal/secure_clear.h",
+      "resolved": "internal/secure_clear.h",
+      "new_source": "symmetric.c",
+      "new_target": "secure_clear.h"
+    },
+    {
+      "source": "symmetric.c",
+      "include": "CE/fips202.h",
+      "resolved": null
+    },
+    {
+      "source": "symmetric.c",
+      "include": "NO_CE/fips202.h",
+      "resolved": "NO_CE/fips202.h",
+      "new_source": "symmetric.c",
+      "new_target": "fips202.h"
+    },
+    {
+      "source": "NO_CE/fips202.c",
+      "include": "../internal/secure_clear.h",
+      "resolved": "internal/secure_clear.h",
+      "new_source": "fips202.c",
+      "new_target": "secure_clear.h"
+    },
+    {
+      "source": "NO_CE/fips202.c",
+      "include": "fips202.h",
+      "resolved": "NO_CE/fips202.h",
+      "new_source": "fips202.c",
+      "new_target": "fips202.h"
+    },
+    {
+      "source": "test/test_canonical.c",
+      "include": "api.h",
+      "resolved": "api.h",
+      "new_source": "test/test_canonical.c",
+      "new_target": "api.h"
+    },
+    {
+      "source": "test/test_canonical.c",
+      "include": "params.h",
+      "resolved": "params.h",
+      "new_source": "test/test_canonical.c",
+      "new_target": "params.h"
+    },
+    {
+      "source": "test/test_abi.c",
+      "include": "api.h",
+      "resolved": "api.h",
+      "new_source": "test/test_abi.c",
+      "new_target": "api.h"
+    },
+    {
+      "source": "test/test_abi.c",
+      "include": "internal/decap_verify.h",
+      "resolved": "internal/decap_verify.h",
+      "new_source": "test/test_abi.c",
+      "new_target": "decap_verify.h"
+    },
+    {
+      "source": "test/test_abi.c",
+      "include": "internal/keygen.h",
+      "resolved": "internal/keygen.h",
+      "new_source": "test/test_abi.c",
+      "new_target": "keygen.h"
+    },
+    {
+      "source": "test/test_abi.c",
+      "include": "poly.h",
+      "resolved": "poly.h",
+      "new_source": "test/test_abi.c",
+      "new_target": "poly.h"
+    },
+    {
+      "source": "test/test_ntt_small.c",
+      "include": "internal/ntt.h",
+      "resolved": "internal/ntt.h",
+      "new_source": "test/test_ntt_small.c",
+      "new_target": "ntt_internal.h"
+    },
+    {
+      "source": "test/test.c",
+      "include": "api.h",
+      "resolved": "api.h",
+      "new_source": "test/test.c",
+      "new_target": "api.h"
+    },
+    {
+      "source": "test/test_zeroization.c",
+      "include": "api.h",
+      "resolved": "api.h",
+      "new_source": "test/test_zeroization.c",
+      "new_target": "api.h"
+    },
+    {
+      "source": "internal/keygen.c",
+      "include": "keygen.h",
+      "resolved": "internal/keygen.h",
+      "new_source": "keygen.c",
+      "new_target": "keygen.h"
+    },
+    {
+      "source": "internal/keygen.c",
+      "include": "secure_clear.h",
+      "resolved": "internal/secure_clear.h",
+      "new_source": "keygen.c",
+      "new_target": "secure_clear.h"
+    },
+    {
+      "source": "internal/keygen_lambda.c",
+      "include": "params.h",
+      "resolved": "params.h",
+      "new_source": "keygen_lambda.c",
+      "new_target": "params.h"
+    },
+    {
+      "source": "internal/decap_verify.c",
+      "include": "decap_verify.h",
+      "resolved": "internal/decap_verify.h",
+      "new_source": "decap_verify.c",
+      "new_target": "decap_verify.h"
+    },
+    {
+      "source": "internal/ntt.h",
+      "include": "params.h",
+      "resolved": "params.h",
+      "new_source": "ntt_internal.h",
+      "new_target": "params.h"
+    },
+    {
+      "source": "internal/ntt.h",
+      "include": "poly.h",
+      "resolved": "poly.h",
+      "new_source": "ntt_internal.h",
+      "new_target": "poly.h"
+    },
+    {
+      "source": "internal/keygen.h",
+      "include": "layout.h",
+      "resolved": "internal/layout.h",
+      "new_source": "keygen.h",
+      "new_target": "layout.h"
+    },
+    {
+      "source": "internal/layout.h",
+      "include": "poly.h",
+      "resolved": "poly.h",
+      "new_source": "layout.h",
+      "new_target": "poly.h"
+    },
+    {
+      "source": "internal/basemul_lambda.c",
+      "include": "ntt.h",
+      "resolved": "internal/ntt.h",
+      "new_source": "basemul_lambda.c",
+      "new_target": "ntt_internal.h"
+    },
+    {
+      "source": "internal/decap_verify.h",
+      "include": "params.h",
+      "resolved": "params.h",
+      "new_source": "decap_verify.h",
+      "new_target": "params.h"
+    },
+    {
+      "source": "internal/decap_verify.h",
+      "include": "poly.h",
+      "resolved": "poly.h",
+      "new_source": "decap_verify.h",
+      "new_target": "poly.h"
+    },
+    {
+      "source": "kat/aes.c",
+      "include": "aes.h",
+      "resolved": "kat/aes.h",
+      "new_source": "kat/aes.c",
+      "new_target": "kat/aes.h"
+    },
+    {
+      "source": "kat/PQCgenKAT_kem.c",
+      "include": "rng.h",
+      "resolved": "kat/rng.h",
+      "new_source": "kat/PQCgenKAT_kem.c",
+      "new_target": "kat/rng.h"
+    },
+    {
+      "source": "kat/PQCgenKAT_kem.c",
+      "include": "api.h",
+      "resolved": "api.h",
+      "new_source": "kat/PQCgenKAT_kem.c",
+      "new_target": "api.h"
+    },
+    {
+      "source": "kat/rng.c",
+      "include": "rng.h",
+      "resolved": "kat/rng.h",
+      "new_source": "kat/rng.c",
+      "new_target": "kat/rng.h"
+    },
+    {
+      "source": "kat/rng.c",
+      "include": "aes.h",
+      "resolved": "kat/aes.h",
+      "new_source": "kat/rng.c",
+      "new_target": "kat/aes.h"
+    }
+  ]
+}
