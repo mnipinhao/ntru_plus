@@ -237,12 +237,12 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     hash_h(buf1, msg);
 
     poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
-    poly_ntt_encap_small(&r, &r);
+    poly_ntt_encap_small_lazy(&r, &r);
 
     poly_tobytes_encap_loose(ct, &r);
     hash_g(ct, ct);
     poly_sotp_encode(&m, msg, ct);
-    poly_ntt_encap_small(&m, &m);
+    poly_ntt_encap_small_lazy(&m, &m);
 
     encap_basemul_add_tobytes(ct, &h, &r, &m);
 

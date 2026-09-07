@@ -128,6 +128,7 @@ C_SYM(\name):
 
 DEFINE_ABI_SENTINEL abi_internal_poly_ntt_loose, poly_ntt_loose
 DEFINE_ABI_SENTINEL abi_internal_poly_ntt_encap_small, poly_ntt_encap_small
+DEFINE_ABI_SENTINEL abi_internal_poly_ntt_encap_small_lazy, poly_ntt_encap_small_lazy
 DEFINE_ABI_SENTINEL abi_poly_invntt, poly_invntt
 DEFINE_ABI_SENTINEL abi_poly_basemul, poly_basemul
 DEFINE_ABI_SENTINEL abi_poly_basemul_add, poly_basemul_add_encap

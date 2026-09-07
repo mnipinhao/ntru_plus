@@ -18,6 +18,11 @@ void poly_ntt_loose(poly *out, const poly *in);
  * Not a replacement for arbitrary/keygen inputs. */
 void poly_ntt_encap_small(poly *out, const poly *in);
 
+/* Encap-only signed [-2,2] input; output [-21050,21050]. Same block-major
+ * layout and modulo-q scaling as poly_ntt_loose; exact alias allowed.
+ * NOT raw bit-exact to generic NTT. Consumers: loose pack and loose basemul-add. */
+void poly_ntt_encap_small_lazy(poly *out, const poly *in);
+
 /*
  * Canonical byte boundary for the loose representation above.  This entry
  * accepts every signed-16 representative; public poly_tobytes_encap retains its

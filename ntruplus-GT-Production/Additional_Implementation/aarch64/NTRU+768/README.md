@@ -120,3 +120,13 @@ Neither the local randombytes implementation nor its header is exported.
 No KAT/test mains, generated objects, or `goal-*`
 claims are included. Export metadata is written beside the leaf, not inside it.
 The source package remains authoritative; do not maintain hand-edited `.s` copies.
+# Encap small-input entry contracts
+
+Encapsulation uses `poly_ntt_encap_small_lazy`: signed [-2,2] input,
+block-major output bounded by [-21050,21050], modulo-q equivalence to the
+generic transform, and in-place support. It shares the frontend, tables and
+late stages; only three Stage12 blocks are specialized.
+
+`poly_ntt_encap_small` remains the raw-bit-exact reference entry. Its tests
+remain enabled; separate lazy-entry tests check range, modulo-q, alias and
+serialized-byte equivalence. Keygen and Decap retain their own entry contracts.

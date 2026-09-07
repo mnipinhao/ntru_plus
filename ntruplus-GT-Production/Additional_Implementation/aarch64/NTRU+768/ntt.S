@@ -72,7 +72,7 @@ module_ntt_.Lgt_shared_core_entry:
     // Production GT frontend iter0, shared prefix once.
     ldr w2, [sp, #8]
     cmp w2, #2
-    b.eq module_ntt_.Lencap_small_front
+    b.hs module_ntt_.Lencap_small_front
     add x1, x20, #0
     add x3, x22, #0
     add x4, x21, #0
@@ -1389,6 +1389,9 @@ module_ntt_.Lntt_endpoint_suffix:
     cmp w2, #1
     b.eq module_ntt_.Lgt_shared_core_cq_suffix
 module_ntt_.Lgt_shared_core_generic_suffix:
+    ldr w2,[sp,#8]
+    cmp w2,#3
+    b.eq .Lencap_lazy_row0
     // ---- row0: Stage12 one-pass block0+block1+block2 live-out ----
     ldr q2, [x23, #16]
     ldr q3, [x23, #32]
@@ -1578,6 +1581,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     // str q19, [x21, #368] omitted: E3 block2 Q23.
     str q25, [x21, #496]     // block3 Q31
 
+.Lencap_lazy_join0:
     // ---- row0: Stage345 block0 from live handoff ----
     add x10, x19, #0
     add x14, x19, #768
@@ -2275,6 +2279,9 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         cmp x7, x14
         csel x13, x13, x7, hs
 
+    ldr w2,[sp,#8]
+    cmp w2,#3
+    b.eq .Lencap_lazy_row1
     // ---- row1: Stage12 one-pass block0+block1+block2 live-out ----
     ldr q2, [x23, #16]
     ldr q3, [x23, #32]
@@ -2464,6 +2471,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     // str q19, [x21, #880] omitted: E3 block2 Q23.
     str q25, [x21, #1008]     // block3 Q31
 
+.Lencap_lazy_join1:
     // ---- row1: Stage345 block0 from live handoff ----
     add x10, x19, #256
     add x14, x19, #768
@@ -3161,6 +3169,9 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         cmp x7, x14
         csel x13, x13, x7, hs
 
+    ldr w2,[sp,#8]
+    cmp w2,#3
+    b.eq .Lencap_lazy_row2
     // ---- row2: Stage12 one-pass block0+block1+block2 live-out ----
     ldr q2, [x23, #16]
     ldr q3, [x23, #32]
@@ -3350,6 +3361,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     // str q19, [x21, #1392] omitted: E3 block2 Q23.
     str q25, [x21, #1520]     // block3 Q31
 
+.Lencap_lazy_join2:
     // ---- row2: Stage345 block0 from live handoff ----
     add x10, x19, #512
     add x14, x19, #768
@@ -16176,3 +16188,554 @@ module_decap_forward_joint_stage345_decap_row_tables:
     .hword -370, 0, 0, 0, 0, 0, 0, 0
 
 /* END original decap_forward.S */
+
+#ifdef __APPLE__
+.text
+#else
+.section .text.module_ntt_body,"ax",%progbits
+#endif
+.p2align 4
+.global poly_ntt_encap_small_lazy
+.global _poly_ntt_encap_small_lazy
+/* Small-input modular endpoint. Mode 3 shares the frontend and late stages;
+ * only Stage12 stripe1..7 omit their range-reset pairs. Input [-2,2],
+ * output [-21050,21050]; no raw-equality promise to the generic endpoint.
+ * The saved selector is public. x2/NZCV are dead at each row dispatch. */
+#ifndef __APPLE__
+.type poly_ntt_encap_small_lazy, %function
+#endif
+poly_ntt_encap_small_lazy:
+_poly_ntt_encap_small_lazy:
+    mov w2,#3
+    b module_ntt_.Lgt_shared_core_entry
+.Lencap_lazy_row0:
+    // ---- row0: Stage12 one-pass block0+block1+block2 live-out ----
+    ldr q2, [x23, #16]
+    ldr q3, [x23, #32]
+    ldr q4, [x23, #48]
+
+    // Stage12 row0 stripe0: Q0->q29, Q8->q10, Q16->q7; Q24 stored.
+    ldr q10, [x21, #128]     // B
+    ldr q5, [x21, #384]      // D / later t3 / out3
+    add v1.8h, v10.8h, v5.8h       // t0 = B + D
+    sub v10.8h, v10.8h, v5.8h     // t1 raw = B - D
+    sqrdmulh v6.8h, v1.8h, v2.h[0]
+    mls v1.8h, v6.8h, v0.h[0]         // t0 reduced
+    sqrdmulh v6.8h, v10.8h, v4.h[0]
+    mul v10.8h, v10.8h, v3.h[0]
+    mls v10.8h, v6.8h, v0.h[0]       // t1 reduced
+    ldr q29, [x21, #0]     // A
+    ldr q7, [x21, #256]    // C
+    sub v5.8h, v29.8h, v7.8h     // t3 = A - C
+    add v29.8h, v29.8h, v7.8h   // t2 = A + C
+    sub v6.8h, v5.8h, v10.8h      // out3 = t3 - t1
+    add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
+    sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
+    add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
+    // str q29, [x21, #0] omitted: E3 block0 Q0.
+    // str q10, [x21, #128] omitted: E3 block1 Q8.
+    // str q7, [x21, #256] omitted: E3 block2 Q16.
+    str q6, [x21, #384]     // block3 Q24
+
+    // Stage12 row0 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
+    ldr q20, [x21, #144]     // B
+    ldr q6, [x21, #400]      // D / later t3 / out3
+    add v5.8h, v20.8h, v6.8h       // t0 = B + D
+    sub v20.8h, v20.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v20.8h, v4.h[0]
+    mul v20.8h, v20.8h, v3.h[0]
+    mls v20.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q1, [x21, #16]     // A
+    ldr q11, [x21, #272]    // C
+    sub v6.8h, v1.8h, v11.8h     // t3 = A - C
+    add v1.8h, v1.8h, v11.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v20.8h      // out3 = t3 - t1
+    add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
+    sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
+    add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
+    // str q1, [x21, #16] omitted: E3 block0 Q1.
+    // str q20, [x21, #144] omitted: E3 block1 Q9.
+    // str q11, [x21, #272] omitted: E3 block2 Q17.
+    str q8, [x21, #400]     // block3 Q25
+
+    // Stage12 row0 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
+    ldr q30, [x21, #160]     // B
+    ldr q6, [x21, #416]      // D / later t3 / out3
+    add v5.8h, v30.8h, v6.8h       // t0 = B + D
+    sub v30.8h, v30.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v30.8h, v4.h[0]
+    mul v30.8h, v30.8h, v3.h[0]
+    mls v30.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q28, [x21, #32]     // A
+    ldr q12, [x21, #288]    // C
+    sub v6.8h, v28.8h, v12.8h     // t3 = A - C
+    add v28.8h, v28.8h, v12.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v30.8h      // out3 = t3 - t1
+    add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
+    sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
+    add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
+    // str q28, [x21, #32] omitted: E3 block0 Q2.
+    // str q30, [x21, #160] omitted: E3 block1 Q10.
+    // str q12, [x21, #288] omitted: E3 block2 Q18.
+    str q8, [x21, #416]     // block3 Q26
+
+    // Stage12 row0 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
+    ldr q24, [x21, #176]     // B
+    ldr q6, [x21, #432]      // D / later t3 / out3
+    add v5.8h, v24.8h, v6.8h       // t0 = B + D
+    sub v24.8h, v24.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v24.8h, v4.h[0]
+    mul v24.8h, v24.8h, v3.h[0]
+    mls v24.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q17, [x21, #48]     // A
+    ldr q13, [x21, #304]    // C
+    sub v6.8h, v17.8h, v13.8h     // t3 = A - C
+    add v17.8h, v17.8h, v13.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v24.8h      // out3 = t3 - t1
+    add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
+    sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
+    add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
+    // str q17, [x21, #48] omitted: E3 block0 Q3.
+    // str q24, [x21, #176] omitted: E3 block1 Q11.
+    // str q13, [x21, #304] omitted: E3 block2 Q19.
+    str q8, [x21, #432]     // block3 Q27
+
+    // Stage12 row0 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
+    ldr q9, [x21, #192]     // B
+    ldr q6, [x21, #448]      // D / later t3 / out3
+    add v5.8h, v9.8h, v6.8h       // t0 = B + D
+    sub v9.8h, v9.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v9.8h, v4.h[0]
+    mul v9.8h, v9.8h, v3.h[0]
+    mls v9.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q26, [x21, #64]     // A
+    ldr q15, [x21, #320]    // C
+    sub v6.8h, v26.8h, v15.8h     // t3 = A - C
+    add v26.8h, v26.8h, v15.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v9.8h      // out3 = t3 - t1
+    add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
+    sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
+    add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
+    // str q26, [x21, #64] omitted: E3 block0 Q4.
+    // str q9, [x21, #192] omitted: E3 block1 Q12.
+    // str q15, [x21, #320] omitted: E3 block2 Q20.
+    str q8, [x21, #448]     // block3 Q28
+
+    // Stage12 row0 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
+    ldr q6, [x21, #208]     // B
+    ldr q14, [x21, #464]      // D / later t3 / out3
+    add v8.8h, v6.8h, v14.8h       // t0 = B + D
+    sub v6.8h, v6.8h, v14.8h     // t1 raw = B - D
+    sqrdmulh v18.8h, v6.8h, v4.h[0]
+    mul v6.8h, v6.8h, v3.h[0]
+    mls v6.8h, v18.8h, v0.h[0]       // t1 reduced
+    ldr q5, [x21, #80]     // A
+    ldr q16, [x21, #336]    // C
+    sub v14.8h, v5.8h, v16.8h     // t3 = A - C
+    add v5.8h, v5.8h, v16.8h   // t2 = A + C
+    sub v18.8h, v14.8h, v6.8h      // out3 = t3 - t1
+    add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
+    sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
+    add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
+    // str q5, [x21, #80] omitted: E3 block0 Q5.
+    // str q6, [x21, #208] omitted: E3 block1 Q13.
+    // str q16, [x21, #336] omitted: E3 block2 Q21.
+    str q18, [x21, #464]     // block3 Q29
+
+    // Stage12 row0 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
+    ldr q31, [x21, #224]     // B
+    ldr q14, [x21, #480]      // D / later t3 / out3
+    add v8.8h, v31.8h, v14.8h       // t0 = B + D
+    sub v31.8h, v31.8h, v14.8h     // t1 raw = B - D
+    sqrdmulh v19.8h, v31.8h, v4.h[0]
+    mul v31.8h, v31.8h, v3.h[0]
+    mls v31.8h, v19.8h, v0.h[0]       // t1 reduced
+    ldr q18, [x21, #96]     // A
+    ldr q21, [x21, #352]    // C
+    sub v14.8h, v18.8h, v21.8h     // t3 = A - C
+    add v18.8h, v18.8h, v21.8h   // t2 = A + C
+    sub v19.8h, v14.8h, v31.8h      // out3 = t3 - t1
+    add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
+    sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
+    add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
+    // str q18, [x21, #96] omitted: E3 block0 Q6.
+    // str q31, [x21, #224] omitted: E3 block1 Q14.
+    // str q21, [x21, #352] omitted: E3 block2 Q22.
+    str q19, [x21, #480]     // block3 Q30
+
+    // Stage12 row0 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
+    ldr q23, [x21, #240]     // B
+    ldr q22, [x21, #496]      // D / later t3 / out3
+    add v14.8h, v23.8h, v22.8h       // t0 = B + D
+    sub v23.8h, v23.8h, v22.8h     // t1 raw = B - D
+    sqrdmulh v25.8h, v23.8h, v4.h[0]
+    mul v23.8h, v23.8h, v3.h[0]
+    mls v23.8h, v25.8h, v0.h[0]       // t1 reduced
+    ldr q8, [x21, #112]     // A
+    ldr q19, [x21, #368]    // C
+    sub v22.8h, v8.8h, v19.8h     // t3 = A - C
+    add v8.8h, v8.8h, v19.8h   // t2 = A + C
+    sub v25.8h, v22.8h, v23.8h      // out3 = t3 - t1
+    add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
+    sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
+    add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
+    // str q8, [x21, #112] omitted: E3 block0 Q7.
+    // str q23, [x21, #240] omitted: E3 block1 Q15.
+    // str q19, [x21, #368] omitted: E3 block2 Q23.
+    str q25, [x21, #496]     // block3 Q31
+
+    b .Lencap_lazy_join0
+.Lencap_lazy_row1:
+    // ---- row1: Stage12 one-pass block0+block1+block2 live-out ----
+    ldr q2, [x23, #16]
+    ldr q3, [x23, #32]
+    ldr q4, [x23, #48]
+
+    // Stage12 row1 stripe0: Q0->q29, Q8->q10, Q16->q7; Q24 stored.
+    ldr q10, [x21, #640]     // B
+    ldr q5, [x21, #896]      // D / later t3 / out3
+    add v1.8h, v10.8h, v5.8h       // t0 = B + D
+    sub v10.8h, v10.8h, v5.8h     // t1 raw = B - D
+    sqrdmulh v6.8h, v1.8h, v2.h[0]
+    mls v1.8h, v6.8h, v0.h[0]         // t0 reduced
+    sqrdmulh v6.8h, v10.8h, v4.h[0]
+    mul v10.8h, v10.8h, v3.h[0]
+    mls v10.8h, v6.8h, v0.h[0]       // t1 reduced
+    ldr q29, [x21, #512]     // A
+    ldr q7, [x21, #768]    // C
+    sub v5.8h, v29.8h, v7.8h     // t3 = A - C
+    add v29.8h, v29.8h, v7.8h   // t2 = A + C
+    sub v6.8h, v5.8h, v10.8h      // out3 = t3 - t1
+    add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
+    sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
+    add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
+    // str q29, [x21, #512] omitted: E3 block0 Q0.
+    // str q10, [x21, #640] omitted: E3 block1 Q8.
+    // str q7, [x21, #768] omitted: E3 block2 Q16.
+    str q6, [x21, #896]     // block3 Q24
+
+    // Stage12 row1 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
+    ldr q20, [x21, #656]     // B
+    ldr q6, [x21, #912]      // D / later t3 / out3
+    add v5.8h, v20.8h, v6.8h       // t0 = B + D
+    sub v20.8h, v20.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v20.8h, v4.h[0]
+    mul v20.8h, v20.8h, v3.h[0]
+    mls v20.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q1, [x21, #528]     // A
+    ldr q11, [x21, #784]    // C
+    sub v6.8h, v1.8h, v11.8h     // t3 = A - C
+    add v1.8h, v1.8h, v11.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v20.8h      // out3 = t3 - t1
+    add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
+    sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
+    add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
+    // str q1, [x21, #528] omitted: E3 block0 Q1.
+    // str q20, [x21, #656] omitted: E3 block1 Q9.
+    // str q11, [x21, #784] omitted: E3 block2 Q17.
+    str q8, [x21, #912]     // block3 Q25
+
+    // Stage12 row1 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
+    ldr q30, [x21, #672]     // B
+    ldr q6, [x21, #928]      // D / later t3 / out3
+    add v5.8h, v30.8h, v6.8h       // t0 = B + D
+    sub v30.8h, v30.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v30.8h, v4.h[0]
+    mul v30.8h, v30.8h, v3.h[0]
+    mls v30.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q28, [x21, #544]     // A
+    ldr q12, [x21, #800]    // C
+    sub v6.8h, v28.8h, v12.8h     // t3 = A - C
+    add v28.8h, v28.8h, v12.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v30.8h      // out3 = t3 - t1
+    add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
+    sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
+    add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
+    // str q28, [x21, #544] omitted: E3 block0 Q2.
+    // str q30, [x21, #672] omitted: E3 block1 Q10.
+    // str q12, [x21, #800] omitted: E3 block2 Q18.
+    str q8, [x21, #928]     // block3 Q26
+
+    // Stage12 row1 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
+    ldr q24, [x21, #688]     // B
+    ldr q6, [x21, #944]      // D / later t3 / out3
+    add v5.8h, v24.8h, v6.8h       // t0 = B + D
+    sub v24.8h, v24.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v24.8h, v4.h[0]
+    mul v24.8h, v24.8h, v3.h[0]
+    mls v24.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q17, [x21, #560]     // A
+    ldr q13, [x21, #816]    // C
+    sub v6.8h, v17.8h, v13.8h     // t3 = A - C
+    add v17.8h, v17.8h, v13.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v24.8h      // out3 = t3 - t1
+    add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
+    sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
+    add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
+    // str q17, [x21, #560] omitted: E3 block0 Q3.
+    // str q24, [x21, #688] omitted: E3 block1 Q11.
+    // str q13, [x21, #816] omitted: E3 block2 Q19.
+    str q8, [x21, #944]     // block3 Q27
+
+    // Stage12 row1 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
+    ldr q9, [x21, #704]     // B
+    ldr q6, [x21, #960]      // D / later t3 / out3
+    add v5.8h, v9.8h, v6.8h       // t0 = B + D
+    sub v9.8h, v9.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v9.8h, v4.h[0]
+    mul v9.8h, v9.8h, v3.h[0]
+    mls v9.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q26, [x21, #576]     // A
+    ldr q15, [x21, #832]    // C
+    sub v6.8h, v26.8h, v15.8h     // t3 = A - C
+    add v26.8h, v26.8h, v15.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v9.8h      // out3 = t3 - t1
+    add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
+    sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
+    add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
+    // str q26, [x21, #576] omitted: E3 block0 Q4.
+    // str q9, [x21, #704] omitted: E3 block1 Q12.
+    // str q15, [x21, #832] omitted: E3 block2 Q20.
+    str q8, [x21, #960]     // block3 Q28
+
+    // Stage12 row1 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
+    ldr q6, [x21, #720]     // B
+    ldr q14, [x21, #976]      // D / later t3 / out3
+    add v8.8h, v6.8h, v14.8h       // t0 = B + D
+    sub v6.8h, v6.8h, v14.8h     // t1 raw = B - D
+    sqrdmulh v18.8h, v6.8h, v4.h[0]
+    mul v6.8h, v6.8h, v3.h[0]
+    mls v6.8h, v18.8h, v0.h[0]       // t1 reduced
+    ldr q5, [x21, #592]     // A
+    ldr q16, [x21, #848]    // C
+    sub v14.8h, v5.8h, v16.8h     // t3 = A - C
+    add v5.8h, v5.8h, v16.8h   // t2 = A + C
+    sub v18.8h, v14.8h, v6.8h      // out3 = t3 - t1
+    add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
+    sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
+    add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
+    // str q5, [x21, #592] omitted: E3 block0 Q5.
+    // str q6, [x21, #720] omitted: E3 block1 Q13.
+    // str q16, [x21, #848] omitted: E3 block2 Q21.
+    str q18, [x21, #976]     // block3 Q29
+
+    // Stage12 row1 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
+    ldr q31, [x21, #736]     // B
+    ldr q14, [x21, #992]      // D / later t3 / out3
+    add v8.8h, v31.8h, v14.8h       // t0 = B + D
+    sub v31.8h, v31.8h, v14.8h     // t1 raw = B - D
+    sqrdmulh v19.8h, v31.8h, v4.h[0]
+    mul v31.8h, v31.8h, v3.h[0]
+    mls v31.8h, v19.8h, v0.h[0]       // t1 reduced
+    ldr q18, [x21, #608]     // A
+    ldr q21, [x21, #864]    // C
+    sub v14.8h, v18.8h, v21.8h     // t3 = A - C
+    add v18.8h, v18.8h, v21.8h   // t2 = A + C
+    sub v19.8h, v14.8h, v31.8h      // out3 = t3 - t1
+    add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
+    sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
+    add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
+    // str q18, [x21, #608] omitted: E3 block0 Q6.
+    // str q31, [x21, #736] omitted: E3 block1 Q14.
+    // str q21, [x21, #864] omitted: E3 block2 Q22.
+    str q19, [x21, #992]     // block3 Q30
+
+    // Stage12 row1 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
+    ldr q23, [x21, #752]     // B
+    ldr q22, [x21, #1008]      // D / later t3 / out3
+    add v14.8h, v23.8h, v22.8h       // t0 = B + D
+    sub v23.8h, v23.8h, v22.8h     // t1 raw = B - D
+    sqrdmulh v25.8h, v23.8h, v4.h[0]
+    mul v23.8h, v23.8h, v3.h[0]
+    mls v23.8h, v25.8h, v0.h[0]       // t1 reduced
+    ldr q8, [x21, #624]     // A
+    ldr q19, [x21, #880]    // C
+    sub v22.8h, v8.8h, v19.8h     // t3 = A - C
+    add v8.8h, v8.8h, v19.8h   // t2 = A + C
+    sub v25.8h, v22.8h, v23.8h      // out3 = t3 - t1
+    add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
+    sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
+    add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
+    // str q8, [x21, #624] omitted: E3 block0 Q7.
+    // str q23, [x21, #752] omitted: E3 block1 Q15.
+    // str q19, [x21, #880] omitted: E3 block2 Q23.
+    str q25, [x21, #1008]     // block3 Q31
+
+    b .Lencap_lazy_join1
+.Lencap_lazy_row2:
+    // ---- row2: Stage12 one-pass block0+block1+block2 live-out ----
+    ldr q2, [x23, #16]
+    ldr q3, [x23, #32]
+    ldr q4, [x23, #48]
+
+    // Stage12 row2 stripe0: Q0->q29, Q8->q10, Q16->q7; Q24 stored.
+    ldr q10, [x21, #1152]     // B
+    ldr q5, [x21, #1408]      // D / later t3 / out3
+    add v1.8h, v10.8h, v5.8h       // t0 = B + D
+    sub v10.8h, v10.8h, v5.8h     // t1 raw = B - D
+    sqrdmulh v6.8h, v1.8h, v2.h[0]
+    mls v1.8h, v6.8h, v0.h[0]         // t0 reduced
+    sqrdmulh v6.8h, v10.8h, v4.h[0]
+    mul v10.8h, v10.8h, v3.h[0]
+    mls v10.8h, v6.8h, v0.h[0]       // t1 reduced
+    ldr q29, [x21, #1024]     // A
+    ldr q7, [x21, #1280]    // C
+    sub v5.8h, v29.8h, v7.8h     // t3 = A - C
+    add v29.8h, v29.8h, v7.8h   // t2 = A + C
+    sub v6.8h, v5.8h, v10.8h      // out3 = t3 - t1
+    add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
+    sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
+    add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
+    // str q29, [x21, #1024] omitted: E3 block0 Q0.
+    // str q10, [x21, #1152] omitted: E3 block1 Q8.
+    // str q7, [x21, #1280] omitted: E3 block2 Q16.
+    str q6, [x21, #1408]     // block3 Q24
+
+    // Stage12 row2 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
+    ldr q20, [x21, #1168]     // B
+    ldr q6, [x21, #1424]      // D / later t3 / out3
+    add v5.8h, v20.8h, v6.8h       // t0 = B + D
+    sub v20.8h, v20.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v20.8h, v4.h[0]
+    mul v20.8h, v20.8h, v3.h[0]
+    mls v20.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q1, [x21, #1040]     // A
+    ldr q11, [x21, #1296]    // C
+    sub v6.8h, v1.8h, v11.8h     // t3 = A - C
+    add v1.8h, v1.8h, v11.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v20.8h      // out3 = t3 - t1
+    add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
+    sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
+    add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
+    // str q1, [x21, #1040] omitted: E3 block0 Q1.
+    // str q20, [x21, #1168] omitted: E3 block1 Q9.
+    // str q11, [x21, #1296] omitted: E3 block2 Q17.
+    str q8, [x21, #1424]     // block3 Q25
+
+    // Stage12 row2 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
+    ldr q30, [x21, #1184]     // B
+    ldr q6, [x21, #1440]      // D / later t3 / out3
+    add v5.8h, v30.8h, v6.8h       // t0 = B + D
+    sub v30.8h, v30.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v30.8h, v4.h[0]
+    mul v30.8h, v30.8h, v3.h[0]
+    mls v30.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q28, [x21, #1056]     // A
+    ldr q12, [x21, #1312]    // C
+    sub v6.8h, v28.8h, v12.8h     // t3 = A - C
+    add v28.8h, v28.8h, v12.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v30.8h      // out3 = t3 - t1
+    add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
+    sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
+    add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
+    // str q28, [x21, #1056] omitted: E3 block0 Q2.
+    // str q30, [x21, #1184] omitted: E3 block1 Q10.
+    // str q12, [x21, #1312] omitted: E3 block2 Q18.
+    str q8, [x21, #1440]     // block3 Q26
+
+    // Stage12 row2 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
+    ldr q24, [x21, #1200]     // B
+    ldr q6, [x21, #1456]      // D / later t3 / out3
+    add v5.8h, v24.8h, v6.8h       // t0 = B + D
+    sub v24.8h, v24.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v24.8h, v4.h[0]
+    mul v24.8h, v24.8h, v3.h[0]
+    mls v24.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q17, [x21, #1072]     // A
+    ldr q13, [x21, #1328]    // C
+    sub v6.8h, v17.8h, v13.8h     // t3 = A - C
+    add v17.8h, v17.8h, v13.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v24.8h      // out3 = t3 - t1
+    add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
+    sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
+    add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
+    // str q17, [x21, #1072] omitted: E3 block0 Q3.
+    // str q24, [x21, #1200] omitted: E3 block1 Q11.
+    // str q13, [x21, #1328] omitted: E3 block2 Q19.
+    str q8, [x21, #1456]     // block3 Q27
+
+    // Stage12 row2 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
+    ldr q9, [x21, #1216]     // B
+    ldr q6, [x21, #1472]      // D / later t3 / out3
+    add v5.8h, v9.8h, v6.8h       // t0 = B + D
+    sub v9.8h, v9.8h, v6.8h     // t1 raw = B - D
+    sqrdmulh v8.8h, v9.8h, v4.h[0]
+    mul v9.8h, v9.8h, v3.h[0]
+    mls v9.8h, v8.8h, v0.h[0]       // t1 reduced
+    ldr q26, [x21, #1088]     // A
+    ldr q15, [x21, #1344]    // C
+    sub v6.8h, v26.8h, v15.8h     // t3 = A - C
+    add v26.8h, v26.8h, v15.8h   // t2 = A + C
+    sub v8.8h, v6.8h, v9.8h      // out3 = t3 - t1
+    add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
+    sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
+    add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
+    // str q26, [x21, #1088] omitted: E3 block0 Q4.
+    // str q9, [x21, #1216] omitted: E3 block1 Q12.
+    // str q15, [x21, #1344] omitted: E3 block2 Q20.
+    str q8, [x21, #1472]     // block3 Q28
+
+    // Stage12 row2 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
+    ldr q6, [x21, #1232]     // B
+    ldr q14, [x21, #1488]      // D / later t3 / out3
+    add v8.8h, v6.8h, v14.8h       // t0 = B + D
+    sub v6.8h, v6.8h, v14.8h     // t1 raw = B - D
+    sqrdmulh v18.8h, v6.8h, v4.h[0]
+    mul v6.8h, v6.8h, v3.h[0]
+    mls v6.8h, v18.8h, v0.h[0]       // t1 reduced
+    ldr q5, [x21, #1104]     // A
+    ldr q16, [x21, #1360]    // C
+    sub v14.8h, v5.8h, v16.8h     // t3 = A - C
+    add v5.8h, v5.8h, v16.8h   // t2 = A + C
+    sub v18.8h, v14.8h, v6.8h      // out3 = t3 - t1
+    add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
+    sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
+    add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
+    // str q5, [x21, #1104] omitted: E3 block0 Q5.
+    // str q6, [x21, #1232] omitted: E3 block1 Q13.
+    // str q16, [x21, #1360] omitted: E3 block2 Q21.
+    str q18, [x21, #1488]     // block3 Q29
+
+    // Stage12 row2 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
+    ldr q31, [x21, #1248]     // B
+    ldr q14, [x21, #1504]      // D / later t3 / out3
+    add v8.8h, v31.8h, v14.8h       // t0 = B + D
+    sub v31.8h, v31.8h, v14.8h     // t1 raw = B - D
+    sqrdmulh v19.8h, v31.8h, v4.h[0]
+    mul v31.8h, v31.8h, v3.h[0]
+    mls v31.8h, v19.8h, v0.h[0]       // t1 reduced
+    ldr q18, [x21, #1120]     // A
+    ldr q21, [x21, #1376]    // C
+    sub v14.8h, v18.8h, v21.8h     // t3 = A - C
+    add v18.8h, v18.8h, v21.8h   // t2 = A + C
+    sub v19.8h, v14.8h, v31.8h      // out3 = t3 - t1
+    add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
+    sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
+    add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
+    // str q18, [x21, #1120] omitted: E3 block0 Q6.
+    // str q31, [x21, #1248] omitted: E3 block1 Q14.
+    // str q21, [x21, #1376] omitted: E3 block2 Q22.
+    str q19, [x21, #1504]     // block3 Q30
+
+    // Stage12 row2 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
+    ldr q23, [x21, #1264]     // B
+    ldr q22, [x21, #1520]      // D / later t3 / out3
+    add v14.8h, v23.8h, v22.8h       // t0 = B + D
+    sub v23.8h, v23.8h, v22.8h     // t1 raw = B - D
+    sqrdmulh v25.8h, v23.8h, v4.h[0]
+    mul v23.8h, v23.8h, v3.h[0]
+    mls v23.8h, v25.8h, v0.h[0]       // t1 reduced
+    ldr q8, [x21, #1136]     // A
+    ldr q19, [x21, #1392]    // C
+    sub v22.8h, v8.8h, v19.8h     // t3 = A - C
+    add v8.8h, v8.8h, v19.8h   // t2 = A + C
+    sub v25.8h, v22.8h, v23.8h      // out3 = t3 - t1
+    add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
+    sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
+    add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
+    // str q8, [x21, #1136] omitted: E3 block0 Q7.
+    // str q23, [x21, #1264] omitted: E3 block1 Q15.
+    // str q19, [x21, #1392] omitted: E3 block2 Q23.
+    str q25, [x21, #1520]     // block3 Q31
+
+    b .Lencap_lazy_join2
