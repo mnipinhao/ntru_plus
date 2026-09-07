@@ -32,6 +32,6 @@ for start, end in [('void hash_g', 'void hash_h'), ('void hash_h', None)]:
 for p in ROOT.glob('*.S'):
     assert 'P0-B:' not in p.read_text(), p
 # Existing small keygen register cleanups remain; no full-frame wipe promise.
-require('keygen_baseinv_prepare.S', ('movi v31.16b, #0',))
-require('fqinv.S', ('movi v21.16b, #0',))
+require('base.S', ('movi v31.16b, #0',))
+require('base.S', ('movi v21.16b, #0',))
 print('Official-aligned cleanup source coverage: ok (no full-frame wipe claim)')

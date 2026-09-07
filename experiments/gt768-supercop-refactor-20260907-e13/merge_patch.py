@@ -30,7 +30,8 @@ for name in files:
  # Original input objects each had an independent default text/data section.
  for section,flags in [('text','ax'),('data','aw')]:
   s=re.sub(r'^\s*\.'+section+r'\s*$', '#ifdef __APPLE__\n.'+section+'\n#else\n.section .'+section+'.'+prefix+'body,"'+flags+'",%progbits\n#endif',s,flags=re.M)
- parts.append('/* BEGIN original '+name+'; private namespace '+prefix+' */\n'+s+'\n/* END original '+name+' */\n')
+ initial='#ifdef __APPLE__\n.text\n#else\n.section .text.'+prefix+'body,"ax",%progbits\n#endif\n'
+ parts.append('/* BEGIN original '+name+'; private namespace '+prefix+' */\n'+initial+s+'\n/* END original '+name+' */\n')
 changes={P/files[0]:'\n'.join(parts)}
 make=(P/'Makefile').read_text()
 for name in files[1:]:make=re.sub(r'^\t'+re.escape(name)+r'\s*\\?\n','',make,flags=re.M)

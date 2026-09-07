@@ -43,6 +43,8 @@ for owner,members in groups.items():
    record={'owner':owner,'source':m,'old_section':name,'new_section':target,'bytes':len(data),
            'equal':data==nd,'alignment_equal':h[8]==nh[8], 'sha256':hashlib.sha256(data).hexdigest()}
    records.append(record)
+   if not record['equal']:
+    print('differing words',[(hex(i),data[i:i+4].hex(),nd[i:i+4].hex()) for i in range(0,max(len(data),len(nd)),4) if data[i:i+4]!=nd[i:i+4]][:24],flush=True)
    assert record['equal'] and record['alignment_equal'],record
    def normalize(rows):
     normalized=[]

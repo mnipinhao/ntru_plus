@@ -2356,6 +2356,11 @@ module_keygen_pack_.Lbpq_cq_pack_q:
 /* END original keygen_pack.S */
 
 /* BEGIN original decap_pack.S; private namespace module_decap_pack_ */
+#ifdef __APPLE__
+.text
+#else
+.section .text.module_decap_pack_body,"ax",%progbits
+#endif
 /*************************************************
 * Name:        poly_frombytes_decap
 *
