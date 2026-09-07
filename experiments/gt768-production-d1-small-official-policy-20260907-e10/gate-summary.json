@@ -1,0 +1,738 @@
+{
+  "id": "gt768-production-d1-small-official-policy-20260907-e10",
+  "production_revision": "0bdc5798d848c25c09e308ab4a9de2cda250d0c1",
+  "tests": {
+    "package": "python3 scripts/check_release.py\nrelease-check: pass (61 files)\nshasum -a 256 -c SOURCE-MANIFEST.sha256\n./LICENSE: OK\n./Makefile: OK\n./NO_CE/fips202.c: OK\n./NO_CE/fips202.h: OK\n./README.md: OK\n./api.h: OK\n./asm/base.S: OK\n./asm/cbd.S: OK\n./asm/internal/decap_add.S: OK\n./asm/internal/decap_base.S: OK\n./asm/internal/decap_forward.S: OK\n./asm/internal/decap_ntt.S: OK\n./asm/internal/decap_pack.S: OK\n./asm/internal/decap_packed64.S: OK\n./asm/internal/decap_verify.S: OK\n./asm/internal/encap_muladd.S: OK\n./asm/internal/fqinv.S: OK\n./asm/internal/keygen_baseinv_finish.S: OK\n./asm/internal/keygen_baseinv_prepare.S: OK\n./asm/internal/keygen_baseinv_tree.S: OK\n./asm/internal/keygen_pack.S: OK\n./asm/internal/unpack.S: OK\n./asm/invntt.S: OK\n./asm/kem_api.S: OK\n./asm/ntt.S: OK\n./asm/pack.S: OK\n./asm/support.S: OK\n./docs/IMPLEMENTATION.md: OK\n./internal/basemul_lambda.c: OK\n./internal/decap_verify.c: OK\n./internal/decap_verify.h: OK\n./internal/keygen.c: OK\n./internal/keygen.h: OK\n./internal/keygen_lambda.c: OK\n./internal/layout.h: OK\n./internal/ntt.h: OK\n./internal/secure_clear.h: OK\n./kat/PQCgenKAT_kem.c: OK\n./kat/aes.c: OK\n./kat/aes.h: OK\n./kat/expected/PQCkemKAT_2336.req: OK\n./kat/expected/PQCkemKAT_2336.rsp: OK\n./kat/rng.c: OK\n./kat/rng.h: OK\n./kem.c: OK\n./ntt.h: OK\n./params.h: OK\n./poly.h: OK\n./randombytes.c: OK\n./randombytes.h: OK\n./scripts/check_release.py: OK\n./scripts/check_zeroization.py: OK\n./symmetric.c: OK\n./symmetric.h: OK\n./test/abi_sentinel.S: OK\n./test/test.c: OK\n./test/test_abi.c: OK\n./test/test_canonical.c: OK\n./test/test_ntt_small.c: OK\n./test/test_zeroization.c: OK\n/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/test_kem\nNTRU+768 GT-Optimized: 100 KEM round trips passed\n/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/test_abi\ncrypto_kem_keypair   mask=0x00000\ncrypto_kem_enc       mask=0x00000\ncrypto_kem_dec       mask=0x00000\ninternal_ntt_loose   mask=0x00000\nntt_encap_small      mask=0x00000\npoly_invntt          mask=0x00000\npoly_basemul         mask=0x00000\npoly_basemul_add     mask=0x00000\npoly_tobytes         mask=0x00000\npoly_frombytes       mask=0x00000\npoly_cbd1            mask=0x3fc00\npoly_sotp_encode     mask=0x3fc00\npoly_sotp_decode     mask=0x3fc00\npoly_sub             mask=0x3fc00\npoly_triple          mask=0x18c00\npoly_crepmod3        mask=0x20000\nkeygen_ntt           mask=0x00000\nkeygen_baseinv       mask=0x00000\nkeygen_basemul       mask=0x00000\nkeygen_tobytes       mask=0x00000\ndecap_verify_predecoded mask=0x37c00\nqsoa_frombytes       mask=0x00000\ndecap_pointwise      mask=0x00000\nqsoa_tobytes         mask=0x37c00\ndecap_packed64       mask=0x00000\ndecap_frombytes      mask=0x00000\ndecap_tobytes        mask=0x00000\ndecap_basemul        mask=0x00000\ndecap_invntt         mask=0x00000\ndecap_sub            mask=0x00000\ndecap_ntt            mask=0x00000\nrequired_abi_mask=0x00000 internal_custom_mask=0x3fc00\n/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/test_canonical\ncanonical-boundary: cases=9216 failures=0\n/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/test_ntt_small\n4096 signed [-2,2] exact/alias Encap-small cases: PASS\npython3 scripts/check_zeroization.py\nOfficial-aligned cleanup source coverage: ok (no full-frame wipe claim)\n/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/test_zeroization\nclear_calls=45,clear_bytes=30692,nonzero_after_clear=0,keygen_large=11,fips_state=16,domain_image=4\nOfficial-aligned explicit C zeroization: ok\ncd /home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package && ./PQCgenKAT_kem\ncmp /home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/PQCkemKAT_2336.req kat/expected/PQCkemKAT_2336.req\ncmp /home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/PQCkemKAT_2336.rsp kat/expected/PQCkemKAT_2336.rsp\nshasum -a 256 /home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/PQCkemKAT_2336.rsp\n22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8  /home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/package/PQCkemKAT_2336.rsp\n",
+    "e10-production": {
+      "kat": "req/rsp bit-exact",
+      "coverage": "keygen\nclear=200\nclear=200\nclear=136\nclear=1536\nclear=384\nclear=192\nclear=200\nclear=200\nclear=136\nclear=1536\nclear=384\nclear=192\nclear=200\nclear=200\nclear=136\nclear=1153\nclear=1536\nclear=1536\nclear=32\nclear=1536\nclear=1536\nclear=1536\nclear=1536\ncalls=23 bytes=16233\nencap\nclear=200\nclear=200\nclear=136\nclear=1153\nclear=200\nclear=200\nclear=136\nclear=129\nclear=200\nclear=200\nclear=136\nclear=1153\nclear=128\nclear=224\nclear=1152\nclear=1536\nclear=1536\nclear=1536\nclear=96\ncalls=19 bytes=10251\ndecap-valid\nclear=200\nclear=200\nclear=136\nclear=1153\nclear=200\nclear=200\nclear=136\nclear=129\nclear=8576\ncalls=9 bytes=10930\ndecap-invalid\nclear=200\nclear=200\nclear=136\nclear=1153\nclear=200\nclear=200\nclear=136\nclear=129\nclear=8576\ncalls=9 bytes=10930\ndecap-noncanonical\nclear=32\nclear=8576\ncalls=2 bytes=8608\nencap-invalid-pk\nclear=1152\nclear=32\nclear=1536\nclear=96\ncalls=4 bytes=2816\n",
+      "abi": "crypto_kem_keypair   mask=0x00000\ncrypto_kem_enc       mask=0x00000\ncrypto_kem_dec       mask=0x00000\ninternal_ntt_loose   mask=0x00000\npoly_invntt          mask=0x00000\npoly_basemul         mask=0x00000\npoly_basemul_add     mask=0x00000\npoly_tobytes         mask=0x00000\npoly_frombytes       mask=0x00000\npoly_cbd1            mask=0x3fc00\npoly_sotp_encode     mask=0x3fc00\npoly_sotp_decode     mask=0x3fc00\npoly_sub             mask=0x3fc00\npoly_triple          mask=0x18c00\npoly_crepmod3        mask=0x20000\nkeygen_ntt           mask=0x00000\nkeygen_baseinv       mask=0x00000\nkeygen_basemul       mask=0x00000\nkeygen_tobytes       mask=0x00000\ndecap_verify_predecoded mask=0x37c00\nqsoa_frombytes       mask=0x00000\ndecap_pointwise      mask=0x00000\nqsoa_tobytes         mask=0x37c00\ndecap_packed64       mask=0x00000\ndecap_frombytes      mask=0x00000\ndecap_tobytes        mask=0x00000\ndecap_basemul        mask=0x00000\ndecap_invntt         mask=0x00000\ndecap_sub            mask=0x00000\ndecap_ntt            mask=0x00000\nrequired_abi_mask=0x00000 internal_custom_mask=0x3fc00\n",
+      "size": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n 135000\t    808\t     72\t 135880\t  212c8\t/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/e10-production-kat\n",
+      "symbols": "00000000000400e0 0000000000000001 b completed.0\n000000000001d590 0000000000000004 R _IO_stdin_used\n000000000001c620 0000000000000004 T aes128_ctr_keyexp\n000000000001cbe0 0000000000000004 T aes192_ctr_keyexp\n000000000001ce90 0000000000000004 T aes256_ctr_keyexp\n0000000000001548 0000000000000004 T crypto_kem_dec\n0000000000001544 0000000000000004 T crypto_kem_enc\n0000000000001540 0000000000000004 T crypto_kem_keypair\n000000000001d560 0000000000000008 T aes128_ctx_release\n000000000001d568 0000000000000008 T aes192_ctx_release\n000000000001d570 0000000000000008 T aes256_ctx_release\n000000000001fdb0 000000000000000a r Rcon\n0000000000001434 0000000000000014 t call_weak_fn\n0000000000004de0 0000000000000018 T sha3_256_inc_absorb\n0000000000005340 0000000000000018 T sha3_384_inc_absorb\n0000000000005740 0000000000000018 T sha3_512_inc_absorb\n0000000000002cc0 0000000000000018 T shake128_inc_absorb\n0000000000002f20 0000000000000018 T shake256_inc_absorb\n00000000000211e4 0000000000000020 r __abi_tag\n000000000001a084 000000000000002c T handleErrors\n00000000000400f0 0000000000000034 B DRBG_ctx\n0000000000001400 0000000000000034 T _start\n0000000000004da0 0000000000000034 T sha3_256_inc_ctx_release\n0000000000005360 0000000000000034 T sha3_384_inc_ctx_release\n0000000000005760 0000000000000034 T sha3_512_inc_ctx_release\n0000000000003f60 0000000000000034 T shake128_ctx_release\n0000000000002e84 0000000000000034 T shake128_inc_ctx_release\n0000000000004284 0000000000000034 T shake256_ctx_release\n00000000000030e4 0000000000000034 T shake256_inc_ctx_release\n0000000000002ce0 0000000000000038 T shake128_inc_finalize\n0000000000002f40 0000000000000038 T shake256_inc_finalize\n0000000000005e60 000000000000003c T gt_decap_verify_predecoded_qsoa_to_bytes\n0000000000019ec0 0000000000000048 T seedexpander_init\n0000000000003fa0 0000000000000050 T shake256_absorb\n000000000001a0b0 0000000000000054 T AES256_ECB\n0000000000004cd0 0000000000000054 T sha3_256_inc_init\n0000000000005260 0000000000000054 T sha3_384_inc_init\n0000000000005660 0000000000000054 T sha3_512_inc_init\n0000000000002c64 0000000000000054 T shake128_inc_init\n0000000000002ec0 0000000000000054 T shake256_inc_init\n0000000000001ba0 0000000000000058 T hash_f\n0000000000001c00 000000000000005c T hash_g\n000000000000194c 0000000000000064 T crypto_kem_enc_internal\n0000000000001c60 000000000000006c T hash_h\n0000000000004d24 0000000000000074 T sha3_256_inc_ctx_clone\n00000000000052c0 0000000000000074 T sha3_384_inc_ctx_clone\n00000000000056c0 0000000000000074 T sha3_512_inc_ctx_clone\n0000000000003ee0 0000000000000074 T shake128_ctx_clone\n0000000000002e10 0000000000000074 T shake128_inc_ctx_clone\n0000000000004210 0000000000000074 T shake256_ctx_clone\n0000000000003070 0000000000000074 T shake256_inc_ctx_clone\n000000000001a760 0000000000000080 T randombytes_init\n0000000000005c40 0000000000000094 T gt_keygen_baseinv_cq_to_cq_scaled_r\n0000000000019e20 00000000000000a0 T fprintBstr\n00000000000057a0 00000000000000b8 T sha3_512_inc_finalize\n00000000000053a0 00000000000000bc T sha3_384_inc_finalize\n000000000001d5a0 00000000000000c0 r KeccakF_RoundConstants\n000000000001cea0 00000000000000e8 T aes128_ecb\n000000000001d0e0 00000000000000e8 T aes192_ecb\n000000000001d320 00000000000000e8 T aes256_ecb\n0000000000002d20 00000000000000f0 T shake128_inc_squeeze\n0000000000002f80 00000000000000f0 T shake256_inc_squeeze\n00000000000130d0 00000000000000f8 T gt_keygen_baseinv_cq_finish\n0000000000002320 00000000000000fc t keccak_inc_absorb\n0000000000010fb8 000000000000010c T gt_policy_crypto_kem_dec\n0000000000010eac 000000000000010c T gt_policy_crypto_kem_enc\n0000000000010da0 000000000000010c T gt_policy_crypto_kem_keypair\n0000000000019a60 0000000000000124 T FindMarker\n000000000001aa00 0000000000000124 t br_aes_ct64_ortho\n000000000001cf88 0000000000000158 T aes128_ctr\n000000000001d1c8 0000000000000158 T aes192_ctr\n000000000001d408 0000000000000158 T aes256_ctr\n0000000000005ce0 0000000000000174 T gt_keygen_basemul_cq_cq_to_cq_scaled_r\n0000000000019f08 000000000000017c T seedexpander\n000000000001d6f0 0000000000000180 R gt_keygen_bpq_lambda8\n000000000001d870 0000000000000180 R gt_rowbitrev_lambda\n0000000000001560 00000000000001c0 t crypto_kem_enc_derand\n00000000000019b0 00000000000001dc T crypto_kem_dec_internal\n0000000000005068 00000000000001f0 T sha3_256\n0000000000005460 00000000000001f4 T sha3_384\n000000000001a54c 000000000000020c T AES256_CTR_DRBG_Update\n000000000001a7e0 000000000000021c t br_aes_ct64_bitslice_Sbox\n0000000000003ff0 0000000000000220 T shake256_squeezeblocks\n0000000000001720 000000000000022c T crypto_kem_keypair_internal\n0000000000004e00 0000000000000268 T sha3_256_inc_finalize\n0000000000019b84 0000000000000298 T ReadHex\n000000000001cbe4 00000000000002ac T aes256_ecb_keyexp\n0000000000003bc0 0000000000000320 T shake128_squeezeblocks\n0000000000005860 00000000000003d4 T sha3_512\n00000000000123c0 00000000000003dc T gt_keygen_baseinv_cq_prepare\n0000000000014c90 0000000000000438 T gt_decap_checked_ct_f_basemul_scale64\n000000000000488c 0000000000000444 T shake256\n000000000001a104 0000000000000448 T randombytes\n000000000001c10c 000000000000050c T aes128_ecb_keyexp\n000000000001c624 00000000000005b0 T aes192_ecb_keyexp\n00000000000042c0 00000000000005cc T shake128\n0000000000001ce0 0000000000000640 t KeccakF1600_StatePermute\n0000000000000d00 00000000000006c8 T main\n000000000000fed8 00000000000006e8 T poly_tobytes\n000000000001b9c0 000000000000074c t aes_ecb4x.constprop.0\n000000000001ab24 000000000000074c t aes_ecb4x.constprop.1\n000000000001b270 0000000000000750 t aes_ecb4x.constprop.2\n0000000000002420 0000000000000844 t keccak_absorb.constprop.2\n00000000000127b0 0000000000000910 T gt_keygen_baseinv_hier_k8\n0000000000003120 0000000000000a94 T shake128_absorb\n0000000000016820 0000000000003240 T gt_decap_poly_ntt\n0000000000005ea8 0000000000005af0 T gt_keygen_poly_ntt_to_cq\n0000000000005ea0 0000000000005af8 T gt_internal_poly_ntt_loose\n",
+      "hashes": {
+        "unit_27.s": "d0b2ff36ca06b76ddcc2c8523dc748ff3861a64542fa807913a9287061a11715",
+        "unit_21.s": "280c954bc5e6bec59277242a959c9200ca1ab93e380b6cc67b768a1844be5d4b",
+        "unit_07.s": "637fc92055671acdf2c1e83faa2af34a50b213f61f0ba5b86bf59ec2854fc137",
+        "unit_01.c": "96368855d051c6dc234dde34bc37ec59e0e39f975e9fbe5b41fc358a11cc48d2",
+        "unit_08.s": "4a6c0217319a14d8bc6cdf008229ab17751d3b2e0193e6983b5b8c32e100a948",
+        "unit_02.c": "a6b0dc5ea19ba61fcd2f3791c6db944c43de47d47e24bc4860a85220466a3130",
+        "architectures": "5121ae59314a84da7b4d9587374398f1afa2000b243b3e54f491adefaac54f92",
+        "unit_18.s": "df2c76bea401c8cec688b322e9c22f8bf91f788b7e6f51f3e9f0283c47f41baa",
+        "unit_24.s": "78207b23e5e5957627cab73288a1a0f617b6ae8c1cbc7ca68852a95b360de6e7",
+        "unit_05.c": "672c05d84e5a1908497a1b837280cf8ef05c6675eea213e8571691cdf9898861",
+        "unit_16.s": "6214d978af25b3761ae2568ae924969f5976362da3deb8e854d5e1f66380164c",
+        "unit_17.s": "85aa774abd155eff570fd0963d6531399cb0a1778a833e4fc9fd83189218df32",
+        "api.h": "76275b8a5ae938aaabe94342237eff64e9eaa7b048b3de110485cc4fb98b704e",
+        "params.h": "e231fae6c5108a35c88426cc5e70f063e418ea75c51062cbb91fce46e91a9467",
+        "unit_26.s": "53152cb8c20831b53a4c3e4d12951aff6bcbf1db3b2475fbda2b2c9cad77b9b9",
+        "unit_06.c": "c5fa0d67513ce0a6dfbff1e5c0874e8865db338a4ff3fab2711a18a94e2d750c",
+        "unit_11.s": "2ce5457720266c170dc5d40003ea1b441259b0bfb652f86e48521b3d47b8003c",
+        "unit_22.s": "1f86b58086cccf046471574bd9dc5689f83e8175f0ae4160d9a378972ab5976e",
+        "unit_13.s": "39390ad393722c6d5281f49baefeafe4a8a91c473a44f275375716493390024b",
+        "unit_25.s": "93ce516ee42dd763019f3bc2df206cbefb32ceef9b4bf5901c9a9655db6679ed",
+        "adapter.c": "bfa2f2a3cbef109a33135e3243fa7359191ec518fb59293f424c7fdcecc2bbf8",
+        "unit_20.s": "1fef15e9a216cd7b829c07f3f47155e21ce3dbb9403d6cbf267ebbf5cdcd0abb",
+        "unit_23.s": "25bed73e455492cda955824e04def8e8fc2dd24e0a358e24a6bddd43b5fc9a22",
+        "unit_12.s": "4ff6af43b62d06154c88651f59d01f188dad06ef81b1dac3fa52e22116ade0ea",
+        "unit_04.c": "b240a83356129e01b467ba6de798197d620786f9735782b05c925c6862c98e9f",
+        "unit_19.s": "53540669a5ab53ca8ffddcdccddc02d5ec85feb6ae84fa0bf7219a1fc5006c25",
+        "unit_09.s": "2b4e7eac2dac10e3a7832c34be60916de4d64c2419924a5a81387357277a162a",
+        "unit_00.c": "9ab18a9717b3f765167059c1e69a983d9401221b80d2f48327b15df40f97ef5a",
+        "unit_10.s": "cae3dee838f389b74fe560f8d3eefa60a51a4247c5b2d6d017fe522d5c81777a",
+        "unit_14.s": "0b8d08e655c25d87155607508a1587795855190024c9dbe374e9ba8b5624966f",
+        "unit_03.c": "89050ddf046a3d836f98d406953db2517cfa233609140b28a387540d77d6e02d",
+        "unit_15.s": "52610d6952232bebcadc246e2f8ce8c4cecd196e98e18500537f00eb5d5cace9"
+      }
+    },
+    "e10-candidate": {
+      "kat": "req/rsp bit-exact",
+      "coverage": "keygen\nclear=200\nclear=136\nclear=200\nclear=1536\nclear=384\nclear=200\nclear=136\nclear=200\nclear=1536\nclear=384\nclear=200\nclear=136\nclear=200\nclear=1536\nclear=192\nclear=32\nclear=1536\nclear=1536\nclear=1536\nclear=1536\ncalls=20 bytes=13352\nencap\nclear=200\nclear=136\nclear=200\nclear=200\nclear=136\nclear=200\nclear=129\nclear=200\nclear=136\nclear=200\nclear=1153\nclear=128\nclear=224\nclear=1536\nclear=1536\nclear=96\ncalls=16 bytes=6410\ndecap-valid\nclear=200\nclear=136\nclear=200\nclear=1153\nclear=200\nclear=136\nclear=200\nclear=129\nclear=8576\ncalls=9 bytes=10930\ndecap-invalid\nclear=200\nclear=136\nclear=200\nclear=1153\nclear=200\nclear=136\nclear=200\nclear=129\nclear=8576\ncalls=9 bytes=10930\ndecap-noncanonical\nclear=32\nclear=8576\ncalls=2 bytes=8608\nencap-invalid-pk\nclear=32\nclear=96\ncalls=2 bytes=128\n",
+      "abi": "crypto_kem_keypair   mask=0x00000\ncrypto_kem_enc       mask=0x00000\ncrypto_kem_dec       mask=0x00000\ninternal_ntt_loose   mask=0x00000\nntt_encap_small      mask=0x00000\npoly_invntt          mask=0x00000\npoly_basemul         mask=0x00000\npoly_basemul_add     mask=0x00000\npoly_tobytes         mask=0x00000\npoly_frombytes       mask=0x00000\npoly_cbd1            mask=0x3fc00\npoly_sotp_encode     mask=0x3fc00\npoly_sotp_decode     mask=0x3fc00\npoly_sub             mask=0x3fc00\npoly_triple          mask=0x18c00\npoly_crepmod3        mask=0x20000\nkeygen_ntt           mask=0x00000\nkeygen_baseinv       mask=0x00000\nkeygen_basemul       mask=0x00000\nkeygen_tobytes       mask=0x00000\ndecap_verify_predecoded mask=0x37c00\nqsoa_frombytes       mask=0x00000\ndecap_pointwise      mask=0x00000\nqsoa_tobytes         mask=0x37c00\ndecap_packed64       mask=0x00000\ndecap_frombytes      mask=0x00000\ndecap_tobytes        mask=0x00000\ndecap_basemul        mask=0x00000\ndecap_invntt         mask=0x00000\ndecap_sub            mask=0x00000\ndecap_ntt            mask=0x00000\nrequired_abi_mask=0x00000 internal_custom_mask=0x3fc00\n",
+      "size": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n 126815\t    800\t     72\t 127687\t  1f2c7\t/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/e10-candidate-kat\n",
+      "symbols": "00000000000300e0 0000000000000001 b completed.0\n000000000001bbb0 0000000000000004 R _IO_stdin_used\n000000000001ac40 0000000000000004 T aes128_ctr_keyexp\n000000000001b200 0000000000000004 T aes192_ctr_keyexp\n000000000001b4b0 0000000000000004 T aes256_ctr_keyexp\n0000000000001508 0000000000000004 T crypto_kem_dec\n0000000000001504 0000000000000004 T crypto_kem_enc\n0000000000001500 0000000000000004 T crypto_kem_keypair\n0000000000002d28 0000000000000004 T shake256_absorb\n000000000001bb80 0000000000000008 T aes128_ctx_release\n000000000001bb88 0000000000000008 T aes192_ctx_release\n000000000001bb90 0000000000000008 T aes256_ctx_release\n0000000000002fa0 0000000000000008 T shake256_ctx_release\n0000000000002d20 0000000000000008 T shake256_inc_ctx_release\n000000000001e3e0 000000000000000a r Rcon\n00000000000013f4 0000000000000014 t call_weak_fn\n000000000001f1f4 0000000000000020 r __abi_tag\n0000000000002a84 0000000000000024 T shake256_inc_init\n00000000000186a4 000000000000002c T handleErrors\n00000000000300f0 0000000000000034 B DRBG_ctx\n00000000000013c0 0000000000000034 T _start\n0000000000002ba8 0000000000000034 T shake256_inc_finalize\n00000000000035e0 000000000000003c T gt_decap_verify_predecoded_qsoa_to_bytes\n000000000000f7f8 000000000000003c T gt_policy_crypto_kem_dec\n000000000000f7bc 000000000000003c T gt_policy_crypto_kem_enc\n000000000000f780 000000000000003c T gt_policy_crypto_kem_keypair\n0000000000002f60 000000000000003c T shake256_ctx_clone\n0000000000002ce0 000000000000003c T shake256_inc_ctx_clone\n00000000000184e0 0000000000000048 T seedexpander_init\n0000000000001ae0 000000000000004c T hash_f\n00000000000186d0 0000000000000054 T AES256_ECB\n0000000000001b2c 000000000000005c T hash_g\n0000000000001888 0000000000000064 T crypto_kem_enc_internal\n0000000000001b88 000000000000006c T hash_h\n0000000000018d80 0000000000000080 T randombytes_init\n00000000000033c0 0000000000000094 T gt_keygen_baseinv_cq_to_cq_scaled_r\n0000000000011820 000000000000009c T gt_keygen_baseinv_cq_finish\n0000000000018440 00000000000000a0 T fprintBstr\n000000000001bbc0 00000000000000c0 r KeccakF_RoundConstants\n000000000001b4c0 00000000000000e8 T aes128_ecb\n000000000001b700 00000000000000e8 T aes192_ecb\n000000000001b940 00000000000000e8 T aes256_ecb\n0000000000002be0 00000000000000f4 T shake256_inc_squeeze\n0000000000002aa8 0000000000000100 T shake256_inc_absorb\n0000000000018080 0000000000000124 T FindMarker\n0000000000019020 0000000000000124 t br_aes_ct64_ortho\n000000000001b5a8 0000000000000158 T aes128_ctr\n000000000001b7e8 0000000000000158 T aes192_ctr\n000000000001ba28 0000000000000158 T aes256_ctr\n0000000000003460 0000000000000174 T gt_keygen_basemul_cq_cq_to_cq_scaled_r\n0000000000018528 000000000000017c T seedexpander\n000000000001bd10 0000000000000180 R gt_keygen_bpq_lambda8\n000000000001be90 0000000000000180 R gt_rowbitrev_lambda\n0000000000001520 0000000000000190 t crypto_kem_enc_derand\n00000000000016b0 00000000000001d8 T crypto_kem_keypair_internal\n00000000000018ec 00000000000001dc T crypto_kem_dec_internal\n0000000000018b6c 000000000000020c T AES256_CTR_DRBG_Update\n0000000000018e00 000000000000021c t br_aes_ct64_bitslice_Sbox\n0000000000002d2c 0000000000000228 T shake256_squeezeblocks\n00000000000181a4 0000000000000298 T ReadHex\n000000000001b204 00000000000002ac T aes256_ecb_keyexp\n0000000000010b20 00000000000003dc T gt_keygen_baseinv_cq_prepare\n0000000000002fa8 0000000000000418 T shake256\n0000000000013340 000000000000042c T gt_decap_checked_ct_f_basemul_scale64\n0000000000018724 0000000000000448 T randombytes\n000000000001a72c 000000000000050c T aes128_ecb_keyexp\n000000000001ac44 00000000000005b0 T aes192_ecb_keyexp\n0000000000001c00 0000000000000640 t KeccakF1600_StatePermute\n0000000000000cc0 00000000000006c8 T main\n000000000000e8c8 00000000000006d8 T poly_tobytes\n0000000000019fe0 000000000000074c t aes_ecb4x.constprop.0\n0000000000019144 000000000000074c t aes_ecb4x.constprop.1\n0000000000019890 0000000000000750 t aes_ecb4x.constprop.2\n0000000000002240 0000000000000844 t keccak_absorb.constprop.0\n0000000000010f10 00000000000008f8 T gt_keygen_baseinv_hier_k8\n0000000000014e50 0000000000003218 T gt_decap_poly_ntt\n0000000000003628 0000000000005ae8 T gt_keygen_poly_ntt_to_cq\n0000000000003620 0000000000005af0 T gt_internal_poly_ntt_loose\n",
+      "hashes": {
+        "unit_27.s": "d6cb86e8f2df73d806e8d9c35bf4aa03db3b4392be7912f28d8915bcdea5e6a9",
+        "unit_21.s": "49ccbecee909d002996e0feef32a62a5444278680ab88eded4dd7eb94cfae73c",
+        "unit_07.s": "e2d854cb6e3cef5a0def18315815e19c7b696ac2064602be655d0289d8852b02",
+        "unit_01.c": "84326522f092ff61db7f446a5d7ed00791cdb5cb99739d7450fcc49b0da26949",
+        "unit_08.s": "0ee2e84650ba42d0a51f09731369e40843fb416d4c6489392520334b8647e06d",
+        "unit_02.c": "b2436070180fd607ac04a953c776f01c1a6f9929dceb8d9f0bfb63583455f07d",
+        "architectures": "5121ae59314a84da7b4d9587374398f1afa2000b243b3e54f491adefaac54f92",
+        "unit_18.s": "31e6eaf94e8ec065ec5c8fe353cb01bdd43575543f1750dc6cff8f89344f7a84",
+        "unit_24.s": "dd9532b2b5bee85a3ee56c6ca7a0ba151d868c01838ce9c5c0564c897ab6775b",
+        "unit_05.c": "24dd135ae095267109659a51ae378726ad9e16ba91c97fa259ce8eb4bfc73300",
+        "unit_16.s": "d1ac3b2089dce4e2f0a39989a71cc69000c14c2d8fbb02428d2ff50d3fc40a73",
+        "unit_17.s": "8b6c2ca4870dd94c18580e6d18950626d28e20c6e64cdea9cf4252c9fbc22157",
+        "api.h": "76275b8a5ae938aaabe94342237eff64e9eaa7b048b3de110485cc4fb98b704e",
+        "params.h": "e231fae6c5108a35c88426cc5e70f063e418ea75c51062cbb91fce46e91a9467",
+        "unit_26.s": "54d02bd82326b87762c206194a4d87e3d8d5da45feada5d2aaa5485501d95359",
+        "unit_06.c": "c5fa0d67513ce0a6dfbff1e5c0874e8865db338a4ff3fab2711a18a94e2d750c",
+        "unit_11.s": "2ce5457720266c170dc5d40003ea1b441259b0bfb652f86e48521b3d47b8003c",
+        "unit_22.s": "86c49cafaf3df78e6d3c13c5997d8645ff76e5af44bdda39d3f91e6f172f07e1",
+        "unit_13.s": "3aa4d7a6a150c2597df87cb2ca77b0a40a2836fcc37b15aa41dfe3079c3fc47b",
+        "unit_25.s": "94f5ef8640d271c8eef061255b19f1350df4f8696bc7b731f32152eff4e81933",
+        "adapter.c": "bfa2f2a3cbef109a33135e3243fa7359191ec518fb59293f424c7fdcecc2bbf8",
+        "unit_20.s": "a668a5430f26e32b886254b79d972d8257d38a42f2f541ad20076e683beaeed9",
+        "unit_23.s": "25bed73e455492cda955824e04def8e8fc2dd24e0a358e24a6bddd43b5fc9a22",
+        "unit_12.s": "4ff6af43b62d06154c88651f59d01f188dad06ef81b1dac3fa52e22116ade0ea",
+        "unit_04.c": "b240a83356129e01b467ba6de798197d620786f9735782b05c925c6862c98e9f",
+        "unit_19.s": "53540669a5ab53ca8ffddcdccddc02d5ec85feb6ae84fa0bf7219a1fc5006c25",
+        "unit_09.s": "eede258f494ae504cfe855747a4b176024e7f2b18f7f61d1cbaefef954f06ce1",
+        "unit_00.c": "c0abf17518709cd1ae35333efe23933ea2d8a293834bacb17b289f9ad0d09470",
+        "unit_10.s": "6f2712a8f4d9612497f93e7483fcad7ada6c28d90be6678fcbfe5561e67eae4e",
+        "unit_14.s": "ddf864cf082d3c2c1316a6572b6b3e3409c58c5bc2e0e7742a0fc6661c3d5364",
+        "unit_03.c": "89050ddf046a3d836f98d406953db2517cfa233609140b28a387540d77d6e02d",
+        "unit_15.s": "52610d6952232bebcadc246e2f8ce8c4cecd196e98e18500537f00eb5d5cace9"
+      }
+    },
+    "e10-official": {
+      "kat": "req/rsp bit-exact",
+      "coverage": "keygen\nclear=200\nclear=136\nclear=200\nclear=384\nclear=384\nclear=200\nclear=136\nclear=200\nclear=384\nclear=384\nclear=200\nclear=136\nclear=200\nclear=1536\nclear=32\nclear=192\nclear=1536\nclear=1536\nclear=1536\nclear=1536\ncalls=20 bytes=11048\nencap\nclear=200\nclear=136\nclear=200\nclear=200\nclear=136\nclear=200\nclear=129\nclear=200\nclear=136\nclear=200\nclear=1153\nclear=128\nclear=224\nclear=1536\nclear=1536\nclear=96\ncalls=16 bytes=6410\ndecap-valid\nclear=200\nclear=136\nclear=200\nclear=1153\nclear=200\nclear=136\nclear=200\nclear=129\nclear=128\nclear=1152\nclear=1152\nclear=224\nclear=1536\nclear=1536\nclear=1536\nclear=1536\ncalls=16 bytes=11154\ndecap-invalid\nclear=200\nclear=136\nclear=200\nclear=1153\nclear=200\nclear=136\nclear=200\nclear=129\nclear=128\nclear=1152\nclear=1152\nclear=224\nclear=1536\nclear=1536\nclear=1536\nclear=1536\ncalls=16 bytes=11154\ndecap-noncanonical\nclear=32\nclear=128\nclear=1152\nclear=1152\nclear=224\nclear=1536\nclear=1536\nclear=1536\nclear=1536\ncalls=9 bytes=8832\nencap-invalid-pk\nclear=32\nclear=96\ncalls=2 bytes=128\n",
+      "size": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n  43031\t    792\t    104\t  43927\t   ab97\t/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/e10-official-kat\n",
+      "symbols": "00000000000200e0 0000000000000001 b completed.0\n00000000000200f0 0000000000000001 B supercop_int8_optblocker\n0000000000020100 0000000000000001 B supercop_uint8_signed_optblocker\n00000000000200e2 0000000000000002 B supercop_int16_optblocker\n00000000000200f2 0000000000000002 B supercop_uint16_signed_optblocker\n00000000000099d0 0000000000000004 R _IO_stdin_used\n0000000000008a60 0000000000000004 T aes128_ctr_keyexp\n0000000000009020 0000000000000004 T aes192_ctr_keyexp\n00000000000092d0 0000000000000004 T aes256_ctr_keyexp\n0000000000003608 0000000000000004 T shake256_absorb\n00000000000200e4 0000000000000004 B supercop_int32_optblocker\n00000000000200f4 0000000000000004 B supercop_uint32_signed_optblocker\n00000000000099a0 0000000000000008 T aes128_ctx_release\n00000000000099a8 0000000000000008 T aes192_ctx_release\n00000000000099b0 0000000000000008 T aes256_ctx_release\n0000000000003880 0000000000000008 T shake256_ctx_release\n0000000000003600 0000000000000008 T shake256_inc_ctx_release\n00000000000200e8 0000000000000008 B supercop_int64_optblocker\n00000000000200f8 0000000000000008 B supercop_uint64_signed_optblocker\n0000000000009d30 000000000000000a r Rcon\n00000000000013b4 0000000000000014 t call_weak_fn\n000000000000aa84 0000000000000020 r __abi_tag\n0000000000003364 0000000000000024 T shake256_inc_init\n00000000000064c4 000000000000002c T handleErrors\n0000000000020110 0000000000000034 B DRBG_ctx\n0000000000001380 0000000000000034 T _start\n0000000000003488 0000000000000034 T shake256_inc_finalize\n0000000000003840 000000000000003c T shake256_ctx_clone\n00000000000035c0 000000000000003c T shake256_inc_ctx_clone\n0000000000006300 0000000000000048 T seedexpander_init\n0000000000005d80 000000000000004c t hash_f\n00000000000064f0 0000000000000054 T AES256_ECB\n0000000000005dcc 000000000000005c t hash_g\n0000000000003fe4 0000000000000064 T crypto_kem_enc\n0000000000005e28 000000000000006c t hash_h\n0000000000006ba0 0000000000000080 T randombytes_init\n0000000000006260 00000000000000a0 T fprintBstr\n00000000000099e0 00000000000000c0 r KeccakF_RoundConstants\n00000000000092e0 00000000000000e8 T aes128_ecb\n0000000000009520 00000000000000e8 T aes192_ecb\n0000000000009760 00000000000000e8 T aes256_ecb\n00000000000034c0 00000000000000f4 T shake256_inc_squeeze\n0000000000003388 0000000000000100 T shake256_inc_absorb\n0000000000005ea0 0000000000000124 T FindMarker\n0000000000006e40 0000000000000124 t br_aes_ct64_ortho\n00000000000093c8 0000000000000158 T aes128_ctr\n0000000000009608 0000000000000158 T aes192_ctr\n0000000000009848 0000000000000158 T aes256_ctr\n0000000000003ca0 0000000000000174 t crypto_kem_enc_derand\n0000000000006348 000000000000017c T seedexpander\n0000000000003e20 00000000000001c4 T crypto_kem_keypair\n000000000000698c 000000000000020c T AES256_CTR_DRBG_Update\n0000000000006c20 000000000000021c t br_aes_ct64_bitslice_Sbox\n000000000000360c 0000000000000228 T shake256_squeezeblocks\n0000000000004048 0000000000000280 T crypto_kem_dec\n0000000000005fc4 0000000000000298 T ReadHex\n0000000000009024 00000000000002ac T aes256_ecb_keyexp\n0000000000003888 0000000000000418 T shake256\n0000000000006544 0000000000000448 T randombytes\n000000000000854c 000000000000050c T aes128_ecb_keyexp\n0000000000008a64 00000000000005b0 T aes192_ecb_keyexp\n00000000000024e0 0000000000000640 t KeccakF1600_StatePermute\n0000000000000c80 00000000000006c8 T main\n0000000000007e00 000000000000074c t aes_ecb4x.constprop.0\n0000000000006f64 000000000000074c t aes_ecb4x.constprop.1\n00000000000076b0 0000000000000750 t aes_ecb4x.constprop.2\n00000000000055a0 00000000000007c8 T poly_baseinv\n0000000000002b20 0000000000000844 t keccak_absorb.constprop.0\n",
+      "hashes": {
+        "add.s": "002f9f04bb5b1099cdcd043a57b026d3ca010b48915b8eeb45d19bfcc7466e7b",
+        "crepmod3.s": "f546ea6303b1e7675ca1efd5ab7c18a49672a90571476f749c409e3c375c2eaa",
+        "util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9",
+        "symmetric.c": "a9ab4afbb2a9053c75cd959040569e1e705d769021f250d87c3d3f08da1d7053",
+        "architectures": "5121ae59314a84da7b4d9587374398f1afa2000b243b3e54f491adefaac54f92",
+        "poly.c": "906b33b57ae7b7456dc9d2b46ee492532552aa1b35a7df5570b872aae7ac7a5f",
+        "cbd.s": "e85933a3f50f120ca215bb22497ee5c830d6762b2e1fe8606a5a47eaf457a1a7",
+        "ntt.s": "771ce9114fe69bed19646b4406d320784792344aef25283802e4f3e07e3474fb",
+        "base.s": "b7ddd7c0859769c7d35d875717f09b90f303c04b415b6d1ec2ea274f893ba872",
+        "fips202.c": "7a150641dd886261d299d0addb6c3474fdf69e2382e88357a1c088b2ce631181",
+        "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+        "params.h": "420bef5432154798239e1f09b18f31947e3afff248ff98d4e83346b84d27ebb8",
+        "fips202.h": "86d3adefd72a25231b26d14b345648359db534790abd25148ccdfdba2800c298",
+        "pack.s": "e51ff06f7c77278163474e4e3f0e40c9feeee0e3f440621ecc705ea54f36f335",
+        "kem.c": "acb888a4aa199cc4d1f9a62e4b61921be8d6032b38bd19c8e2afd35aa808937c",
+        "symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+        "poly.h": "d6303af329597ee19ab81c6e32649fd657e9ff727f084214a09bc03ae03af650"
+      }
+    }
+  },
+  "exports": {
+    "e10-production": {
+      "unit_00.c": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/kem.c",
+        "source_sha256": "f0e1ebfe1dc83869c436ad8ba88d5632640bc20c06fcbdd652bffece25e70278",
+        "export_sha256": "9ab18a9717b3f765167059c1e69a983d9401221b80d2f48327b15df40f97ef5a"
+      },
+      "unit_01.c": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/symmetric.c",
+        "source_sha256": "046a97cb21be9c497d63fbdcd84d471391a5ddb695ee819f8b74c128aeb4f29e",
+        "export_sha256": "96368855d051c6dc234dde34bc37ec59e0e39f975e9fbe5b41fc358a11cc48d2"
+      },
+      "unit_02.c": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/NO_CE/fips202.c",
+        "source_sha256": "33f184eaff2cb997e573bac77e462c707c385b549fb4e0f88c942c12d553c97a",
+        "export_sha256": "a6b0dc5ea19ba61fcd2f3791c6db944c43de47d47e24bc4860a85220466a3130"
+      },
+      "unit_03.c": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/internal/keygen.c",
+        "source_sha256": "b985454aba6b4d3cedd427fdcfc714c9bb4e50ddad48ff2aa04e49baa2c29e12",
+        "export_sha256": "89050ddf046a3d836f98d406953db2517cfa233609140b28a387540d77d6e02d"
+      },
+      "unit_04.c": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/internal/keygen_lambda.c",
+        "source_sha256": "3f2f537f6a97f1fb76223aa24ac741601f1cff2502a524d2e4f4eeb8e8adbed1",
+        "export_sha256": "b240a83356129e01b467ba6de798197d620786f9735782b05c925c6862c98e9f"
+      },
+      "unit_05.c": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/internal/basemul_lambda.c",
+        "source_sha256": "7e0c472f94abcf1ddadbf53d28228c8bf32f20b30ed13cbd78ad6804f9463623",
+        "export_sha256": "672c05d84e5a1908497a1b837280cf8ef05c6675eea213e8571691cdf9898861"
+      },
+      "unit_06.c": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/internal/decap_verify.c",
+        "source_sha256": "ef3e6b35975244613670ba14385b2621e0cdc2356cf9939e53444eab77fe80ed",
+        "export_sha256": "c5fa0d67513ce0a6dfbff1e5c0874e8865db338a4ff3fab2711a18a94e2d750c"
+      },
+      "unit_07.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/ntt.S",
+        "source_sha256": "824dca30fb6918ce17775e499a54c8f9739cbcc17c19dbc04d6e93307d5d5396",
+        "export_sha256": "637fc92055671acdf2c1e83faa2af34a50b213f61f0ba5b86bf59ec2854fc137"
+      },
+      "unit_08.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/invntt.S",
+        "source_sha256": "e8f19954af0932c289a007856c6cbff8504b09865ebb31baaea9d7055169ceae",
+        "export_sha256": "4a6c0217319a14d8bc6cdf008229ab17751d3b2e0193e6983b5b8c32e100a948"
+      },
+      "unit_09.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/base.S",
+        "source_sha256": "4d7e7d2489f234ba30a89baf3e66c621a9b1d355887e65b14456b8e6ef364925",
+        "export_sha256": "2b4e7eac2dac10e3a7832c34be60916de4d64c2419924a5a81387357277a162a"
+      },
+      "unit_10.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/pack.S",
+        "source_sha256": "87144945533034c066205245bd42f66271569666bae301883f6db7cda33d84d2",
+        "export_sha256": "cae3dee838f389b74fe560f8d3eefa60a51a4247c5b2d6d017fe522d5c81777a"
+      },
+      "unit_11.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/cbd.S",
+        "source_sha256": "b23d5ca62ba9cd1e6f2631386007fafb822027d0558d5d855b64db52a4775f32",
+        "export_sha256": "2ce5457720266c170dc5d40003ea1b441259b0bfb652f86e48521b3d47b8003c"
+      },
+      "unit_12.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/support.S",
+        "source_sha256": "068efe89ef1b2d13d7b043ef758593f99d883cc9ff6c8e2e789434e0ba48d8cc",
+        "export_sha256": "4ff6af43b62d06154c88651f59d01f188dad06ef81b1dac3fa52e22116ade0ea"
+      },
+      "unit_13.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/kem_api.S",
+        "source_sha256": "99df2d668fa490eb825337bad87fba07f6ccd30c384e10d68711c1f05636a918",
+        "export_sha256": "39390ad393722c6d5281f49baefeafe4a8a91c473a44f275375716493390024b"
+      },
+      "unit_14.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/unpack.S",
+        "source_sha256": "816ab37e33da6442e6068932662c8102d4d9975e55bab48386759a4fc7c9ad7f",
+        "export_sha256": "0b8d08e655c25d87155607508a1587795855190024c9dbe374e9ba8b5624966f"
+      },
+      "unit_15.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/keygen_baseinv_prepare.S",
+        "source_sha256": "3b9fa29d9bc2ae0f50cc8951af47b6cb0f406544c1dcebc0e027c60a2898a275",
+        "export_sha256": "52610d6952232bebcadc246e2f8ce8c4cecd196e98e18500537f00eb5d5cace9"
+      },
+      "unit_16.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/keygen_baseinv_tree.S",
+        "source_sha256": "1e05af2e5971a5a7d23583b9232cf5d744e18459b6b016ef9ba9221724438146",
+        "export_sha256": "6214d978af25b3761ae2568ae924969f5976362da3deb8e854d5e1f66380164c"
+      },
+      "unit_17.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/keygen_baseinv_finish.S",
+        "source_sha256": "eeeaa8284f96d3dc76db2633906cb009d4ec2b70aee9e83d96688c0de4f268f2",
+        "export_sha256": "85aa774abd155eff570fd0963d6531399cb0a1778a833e4fc9fd83189218df32"
+      },
+      "unit_18.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/keygen_pack.S",
+        "source_sha256": "f1b450d8afb66a50d287a7ede7f0e36600e990488667ab9cf5499a3806e58d4f",
+        "export_sha256": "df2c76bea401c8cec688b322e9c22f8bf91f788b7e6f51f3e9f0283c47f41baa"
+      },
+      "unit_19.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/fqinv.S",
+        "source_sha256": "cd8426d7fad96ddec60e2032e4107ffe250867850267b267fbbd7d823680f25c",
+        "export_sha256": "53540669a5ab53ca8ffddcdccddc02d5ec85feb6ae84fa0bf7219a1fc5006c25"
+      },
+      "unit_20.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/encap_muladd.S",
+        "source_sha256": "fcdca961b93ed65add6ee4c9f77d81b081fdde20bf77c9b5036caa5b8a1fbdb1",
+        "export_sha256": "1fef15e9a216cd7b829c07f3f47155e21ce3dbb9403d6cbf267ebbf5cdcd0abb"
+      },
+      "unit_21.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/decap_verify.S",
+        "source_sha256": "3da9708ce900d3bd5e37119c966ca6e63b2dc3859b39cde4c89e8f551c6e6837",
+        "export_sha256": "280c954bc5e6bec59277242a959c9200ca1ab93e380b6cc67b768a1844be5d4b"
+      },
+      "unit_22.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/decap_packed64.S",
+        "source_sha256": "5ba20e5ac369ee6bcdf728f122756ee2b8fae8a3ea4400ca795fc5f1b7aeb52e",
+        "export_sha256": "1f86b58086cccf046471574bd9dc5689f83e8175f0ae4160d9a378972ab5976e"
+      },
+      "unit_23.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/decap_add.S",
+        "source_sha256": "3084caec0741d7ced19659b574307e5b4c364a18408cad64157f65aa3fbcd7ee",
+        "export_sha256": "25bed73e455492cda955824e04def8e8fc2dd24e0a358e24a6bddd43b5fc9a22"
+      },
+      "unit_24.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/decap_base.S",
+        "source_sha256": "c14738f029c2992720f1fb2007076a51f7645edbfb42a2486a0901d19b7eb4a3",
+        "export_sha256": "78207b23e5e5957627cab73288a1a0f617b6ae8c1cbc7ca68852a95b360de6e7"
+      },
+      "unit_25.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/decap_ntt.S",
+        "source_sha256": "704f3a7da981bbba3a48d3978be179259aca97fa9def250626af16c6240ad0ff",
+        "export_sha256": "93ce516ee42dd763019f3bc2df206cbefb32ceef9b4bf5901c9a9655db6679ed"
+      },
+      "unit_26.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/decap_pack.S",
+        "source_sha256": "7c58b352b0987ffd60191894bee0e4bfdc2bf019db134544c890f54d29b8bb05",
+        "export_sha256": "53152cb8c20831b53a4c3e4d12951aff6bcbf1db3b2475fbda2b2c9cad77b9b9"
+      },
+      "unit_27.s": {
+        "source": "/home/pi/gt768-production-policy-threeway-20260907-e08/.build/production-original/asm/internal/decap_forward.S",
+        "source_sha256": "9093196d9cfb6e267311f184ccfeb6eb2f1598fbaeea2b9326b5e35dba086462",
+        "export_sha256": "d0b2ff36ca06b76ddcc2c8523dc748ff3861a64542fa807913a9287061a11715"
+      }
+    },
+    "e10-candidate": {
+      "unit_00.c": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/kem.c",
+        "source_sha256": "aa43c3517f7f82d5d0ebbaa12f2b89110b51776b35d670d6905601f93fee03a6",
+        "export_sha256": "c0abf17518709cd1ae35333efe23933ea2d8a293834bacb17b289f9ad0d09470"
+      },
+      "unit_01.c": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/symmetric.c",
+        "source_sha256": "6e33b31dabee133000ded22f915c53ec766fef2aa4b5917dacc9f12e39a95d0c",
+        "export_sha256": "84326522f092ff61db7f446a5d7ed00791cdb5cb99739d7450fcc49b0da26949"
+      },
+      "unit_02.c": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/NO_CE/fips202.c",
+        "source_sha256": "4217fc7875d092462e72c06f2eb06eef9b856912d4e20aae0994c1fc7f5d2e94",
+        "export_sha256": "b2436070180fd607ac04a953c776f01c1a6f9929dceb8d9f0bfb63583455f07d"
+      },
+      "unit_03.c": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/internal/keygen.c",
+        "source_sha256": "b985454aba6b4d3cedd427fdcfc714c9bb4e50ddad48ff2aa04e49baa2c29e12",
+        "export_sha256": "89050ddf046a3d836f98d406953db2517cfa233609140b28a387540d77d6e02d"
+      },
+      "unit_04.c": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/internal/keygen_lambda.c",
+        "source_sha256": "3f2f537f6a97f1fb76223aa24ac741601f1cff2502a524d2e4f4eeb8e8adbed1",
+        "export_sha256": "b240a83356129e01b467ba6de798197d620786f9735782b05c925c6862c98e9f"
+      },
+      "unit_05.c": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/internal/basemul_lambda.c",
+        "source_sha256": "7e0c472f94abcf1ddadbf53d28228c8bf32f20b30ed13cbd78ad6804f9463623",
+        "export_sha256": "24dd135ae095267109659a51ae378726ad9e16ba91c97fa259ce8eb4bfc73300"
+      },
+      "unit_06.c": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/internal/decap_verify.c",
+        "source_sha256": "ef3e6b35975244613670ba14385b2621e0cdc2356cf9939e53444eab77fe80ed",
+        "export_sha256": "c5fa0d67513ce0a6dfbff1e5c0874e8865db338a4ff3fab2711a18a94e2d750c"
+      },
+      "unit_07.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/ntt.S",
+        "source_sha256": "b32efd300f442c068a49c1a2b491ea57b3e15db830790370076f04cddf7ae5c6",
+        "export_sha256": "e2d854cb6e3cef5a0def18315815e19c7b696ac2064602be655d0289d8852b02"
+      },
+      "unit_08.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/invntt.S",
+        "source_sha256": "b8b4ba798b9687807caa7b851836c2dac319936d04cd67482f741fdc9af91073",
+        "export_sha256": "0ee2e84650ba42d0a51f09731369e40843fb416d4c6489392520334b8647e06d"
+      },
+      "unit_09.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/base.S",
+        "source_sha256": "7351f93ebd98b29b3cb2b6093c685a5902d78051d8f2b2f56e6f7bd43a56846c",
+        "export_sha256": "eede258f494ae504cfe855747a4b176024e7f2b18f7f61d1cbaefef954f06ce1"
+      },
+      "unit_10.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/pack.S",
+        "source_sha256": "6cdb365cdbc62cd876a9ee1831877fd09cf47da9e9321dc03d55f096a47ff45f",
+        "export_sha256": "6f2712a8f4d9612497f93e7483fcad7ada6c28d90be6678fcbfe5561e67eae4e"
+      },
+      "unit_11.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/cbd.S",
+        "source_sha256": "b23d5ca62ba9cd1e6f2631386007fafb822027d0558d5d855b64db52a4775f32",
+        "export_sha256": "2ce5457720266c170dc5d40003ea1b441259b0bfb652f86e48521b3d47b8003c"
+      },
+      "unit_12.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/support.S",
+        "source_sha256": "068efe89ef1b2d13d7b043ef758593f99d883cc9ff6c8e2e789434e0ba48d8cc",
+        "export_sha256": "4ff6af43b62d06154c88651f59d01f188dad06ef81b1dac3fa52e22116ade0ea"
+      },
+      "unit_13.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/kem_api.S",
+        "source_sha256": "0368a19c04da3fc80b7969a37fc464cedcbd0becd033a3c7d2bd8bc5e43f22f2",
+        "export_sha256": "3aa4d7a6a150c2597df87cb2ca77b0a40a2836fcc37b15aa41dfe3079c3fc47b"
+      },
+      "unit_14.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/unpack.S",
+        "source_sha256": "9027d465820c8e288b58f7f8e3a98f200b82d89933a9650552751156429e5b0f",
+        "export_sha256": "ddf864cf082d3c2c1316a6572b6b3e3409c58c5bc2e0e7742a0fc6661c3d5364"
+      },
+      "unit_15.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/keygen_baseinv_prepare.S",
+        "source_sha256": "3b9fa29d9bc2ae0f50cc8951af47b6cb0f406544c1dcebc0e027c60a2898a275",
+        "export_sha256": "52610d6952232bebcadc246e2f8ce8c4cecd196e98e18500537f00eb5d5cace9"
+      },
+      "unit_16.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/keygen_baseinv_tree.S",
+        "source_sha256": "4a745368681e8874fb7b414ffe31fecf6a9cb74384e58286b97394104336caf0",
+        "export_sha256": "d1ac3b2089dce4e2f0a39989a71cc69000c14c2d8fbb02428d2ff50d3fc40a73"
+      },
+      "unit_17.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/keygen_baseinv_finish.S",
+        "source_sha256": "ecfe9d91b5d4c81062c66a72f09d9fab924ca4a7a393443352aba3d318d41da6",
+        "export_sha256": "8b6c2ca4870dd94c18580e6d18950626d28e20c6e64cdea9cf4252c9fbc22157"
+      },
+      "unit_18.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/keygen_pack.S",
+        "source_sha256": "5e528ad1f6cb227a7e91c5c8e9a04e093be5d20c46ad474caf9361e54f2b3c8a",
+        "export_sha256": "31e6eaf94e8ec065ec5c8fe353cb01bdd43575543f1750dc6cff8f89344f7a84"
+      },
+      "unit_19.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/fqinv.S",
+        "source_sha256": "cd8426d7fad96ddec60e2032e4107ffe250867850267b267fbbd7d823680f25c",
+        "export_sha256": "53540669a5ab53ca8ffddcdccddc02d5ec85feb6ae84fa0bf7219a1fc5006c25"
+      },
+      "unit_20.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/encap_muladd.S",
+        "source_sha256": "3c0ed42dc1232d0bcd2bf1db65463c2e152fd7de9a1e20ffe895f6a8f1205c57",
+        "export_sha256": "a668a5430f26e32b886254b79d972d8257d38a42f2f541ad20076e683beaeed9"
+      },
+      "unit_21.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/decap_verify.S",
+        "source_sha256": "df7ae5d45637523ebe2842819226605ff62dd1e5142e5031dddca8ff75428ce3",
+        "export_sha256": "49ccbecee909d002996e0feef32a62a5444278680ab88eded4dd7eb94cfae73c"
+      },
+      "unit_22.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/decap_packed64.S",
+        "source_sha256": "95790462c7f98954adea7dcb2233c409ced5a4e9fc8a5733bab82f659088237c",
+        "export_sha256": "86c49cafaf3df78e6d3c13c5997d8645ff76e5af44bdda39d3f91e6f172f07e1"
+      },
+      "unit_23.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/decap_add.S",
+        "source_sha256": "3084caec0741d7ced19659b574307e5b4c364a18408cad64157f65aa3fbcd7ee",
+        "export_sha256": "25bed73e455492cda955824e04def8e8fc2dd24e0a358e24a6bddd43b5fc9a22"
+      },
+      "unit_24.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/decap_base.S",
+        "source_sha256": "af7a1f877024a78456af2daa62ed29a7c02d98fa91b68597564d2f49e5e1f796",
+        "export_sha256": "dd9532b2b5bee85a3ee56c6ca7a0ba151d868c01838ce9c5c0564c897ab6775b"
+      },
+      "unit_25.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/decap_ntt.S",
+        "source_sha256": "e59c9034d31aedc5606b65d9a221b5c82236b6c8cbfd0cac5169cdaac5b8b04a",
+        "export_sha256": "94f5ef8640d271c8eef061255b19f1350df4f8696bc7b731f32152eff4e81933"
+      },
+      "unit_26.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/decap_pack.S",
+        "source_sha256": "fd69c8c454f4d91488daeaa5a32acc0311364ccf0d39f600907d33e2054f8233",
+        "export_sha256": "54d02bd82326b87762c206194a4d87e3d8d5da45feada5d2aaa5485501d95359"
+      },
+      "unit_27.s": {
+        "source": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/NTRU+768/asm/internal/decap_forward.S",
+        "source_sha256": "95133ac6ce8b8b8699ee71d6c0618d2385c0f3c9513cfc68f07c7b97c69dad9f",
+        "export_sha256": "d6cb86e8f2df73d806e8d9c35bf4aa03db3b4392be7912f28d8915bcdea5e6a9"
+      }
+    }
+  },
+  "official_sources": {
+    "add.s": "002f9f04bb5b1099cdcd043a57b026d3ca010b48915b8eeb45d19bfcc7466e7b",
+    "crepmod3.s": "f546ea6303b1e7675ca1efd5ab7c18a49672a90571476f749c409e3c375c2eaa",
+    "util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9",
+    "symmetric.c": "a9ab4afbb2a9053c75cd959040569e1e705d769021f250d87c3d3f08da1d7053",
+    "architectures": "5121ae59314a84da7b4d9587374398f1afa2000b243b3e54f491adefaac54f92",
+    "poly.c": "906b33b57ae7b7456dc9d2b46ee492532552aa1b35a7df5570b872aae7ac7a5f",
+    "cbd.s": "e85933a3f50f120ca215bb22497ee5c830d6762b2e1fe8606a5a47eaf457a1a7",
+    "ntt.s": "771ce9114fe69bed19646b4406d320784792344aef25283802e4f3e07e3474fb",
+    "goal-constindex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "base.s": "b7ddd7c0859769c7d35d875717f09b90f303c04b415b6d1ec2ea274f893ba872",
+    "fips202.c": "7a150641dd886261d299d0addb6c3474fdf69e2382e88357a1c088b2ce631181",
+    "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+    "params.h": "420bef5432154798239e1f09b18f31947e3afff248ff98d4e83346b84d27ebb8",
+    "fips202.h": "86d3adefd72a25231b26d14b345648359db534790abd25148ccdfdba2800c298",
+    "goal-constbranch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pack.s": "e51ff06f7c77278163474e4e3f0e40c9feeee0e3f440621ecc705ea54f36f335",
+    "kem.c": "acb888a4aa199cc4d1f9a62e4b61921be8d6032b38bd19c8e2afd35aa808937c",
+    "symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+    "poly.h": "d6303af329597ee19ab81c6e32649fd657e9ff727f084214a09bc03ae03af650"
+  },
+  "linked_audit": "two Encap-small BL sites, Decap basemul present; raw disassembly retained",
+  "runs": [
+    {
+      "round": 0,
+      "variant": "e10-production",
+      "rows": {
+        "keypair_cycles": [
+          36875,
+          36849,
+          36882
+        ],
+        "enc_cycles": [
+          38208,
+          38185,
+          38208
+        ],
+        "dec_cycles": [
+          33070,
+          33076,
+          33073
+        ]
+      },
+      "median": {
+        "keypair_cycles": 36875,
+        "enc_cycles": 38208,
+        "dec_cycles": 33073
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-production -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:18:48+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-production\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=62.0'C\nthrottled_before=throttled=0x0\nelapsed_seconds=9\ntemperature_after=temp=63.1'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-production-20260907-141848",
+      "data_sha256": "725c1663943300a15b3ba4cfce614e2d73d8ee7ac6ee0c38e3743d43b88ea55a"
+    },
+    {
+      "round": 0,
+      "variant": "e10-candidate",
+      "rows": {
+        "keypair_cycles": [
+          36345,
+          36369,
+          36358
+        ],
+        "enc_cycles": [
+          37300,
+          37329,
+          37309
+        ],
+        "dec_cycles": [
+          32505,
+          32502,
+          32500
+        ]
+      },
+      "median": {
+        "keypair_cycles": 36358,
+        "enc_cycles": 37309,
+        "dec_cycles": 32502
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-candidate -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:18:57+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-candidate\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=63.1'C\nthrottled_before=throttled=0x0\nelapsed_seconds=9\ntemperature_after=temp=63.7'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-candidate-20260907-141857",
+      "data_sha256": "cf3b9409b15194b972a9a63c60cebcbcf438beca5baf4d99595e4c873cb98074"
+    },
+    {
+      "round": 0,
+      "variant": "e10-official",
+      "rows": {
+        "keypair_cycles": [
+          38409,
+          38436,
+          38417
+        ],
+        "enc_cycles": [
+          38586,
+          38571,
+          38584
+        ],
+        "dec_cycles": [
+          33504,
+          33513,
+          33499
+        ]
+      },
+      "median": {
+        "keypair_cycles": 38417,
+        "enc_cycles": 38584,
+        "dec_cycles": 33504
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-official -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:19:06+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-official\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=64.2'C\nthrottled_before=throttled=0x0\nelapsed_seconds=7\ntemperature_after=temp=63.7'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-official-20260907-141906",
+      "data_sha256": "7c573f099ab59b542e8d1280b0cf1c7b84150437575f0678a8587274514e5dfb"
+    },
+    {
+      "round": 1,
+      "variant": "e10-candidate",
+      "rows": {
+        "keypair_cycles": [
+          36300,
+          36309,
+          36294
+        ],
+        "enc_cycles": [
+          37272,
+          37311,
+          37313
+        ],
+        "dec_cycles": [
+          32483,
+          32489,
+          32485
+        ]
+      },
+      "median": {
+        "keypair_cycles": 36300,
+        "enc_cycles": 37311,
+        "dec_cycles": 32485
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-candidate -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:19:13+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-candidate\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=64.8'C\nthrottled_before=throttled=0x0\nelapsed_seconds=8\ntemperature_after=temp=64.2'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-candidate-20260907-141913",
+      "data_sha256": "d21e6a0fcaf9155d275547619bb62b3391c3bb31a9c12e44908c6cbdfd7cd8b5"
+    },
+    {
+      "round": 1,
+      "variant": "e10-official",
+      "rows": {
+        "keypair_cycles": [
+          38415,
+          38430,
+          38405
+        ],
+        "enc_cycles": [
+          38587,
+          38593,
+          38575
+        ],
+        "dec_cycles": [
+          33530,
+          33536,
+          33523
+        ]
+      },
+      "median": {
+        "keypair_cycles": 38415,
+        "enc_cycles": 38587,
+        "dec_cycles": 33530
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-official -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:19:21+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-official\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=64.8'C\nthrottled_before=throttled=0x0\nelapsed_seconds=7\ntemperature_after=temp=64.2'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-official-20260907-141921",
+      "data_sha256": "053b669b0fcc6a25fd9ff3fa193152b5514dbf0dc1354982e98a06a9bffe0423"
+    },
+    {
+      "round": 1,
+      "variant": "e10-production",
+      "rows": {
+        "keypair_cycles": [
+          36935,
+          36939,
+          36930
+        ],
+        "enc_cycles": [
+          38176,
+          38179,
+          38182
+        ],
+        "dec_cycles": [
+          33075,
+          33084,
+          33082
+        ]
+      },
+      "median": {
+        "keypair_cycles": 36935,
+        "enc_cycles": 38179,
+        "dec_cycles": 33082
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-production -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:19:28+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-production\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=64.8'C\nthrottled_before=throttled=0x0\nelapsed_seconds=9\ntemperature_after=temp=65.3'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-production-20260907-141928",
+      "data_sha256": "d271655a5441ee3fd876122c48df0e0c79cbb2473ce00aed4d391a9d1865f195"
+    },
+    {
+      "round": 2,
+      "variant": "e10-official",
+      "rows": {
+        "keypair_cycles": [
+          38418,
+          38426,
+          38413
+        ],
+        "enc_cycles": [
+          38571,
+          38580,
+          38582
+        ],
+        "dec_cycles": [
+          33558,
+          33553,
+          33550
+        ]
+      },
+      "median": {
+        "keypair_cycles": 38418,
+        "enc_cycles": 38580,
+        "dec_cycles": 33553
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-official -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:19:37+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-official\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=64.8'C\nthrottled_before=throttled=0x0\nelapsed_seconds=7\ntemperature_after=temp=66.4'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-official-20260907-141937",
+      "data_sha256": "b30498ac8d78ad78243a3f900c3fbab5db51340f0c6dbd916465520e40262ebf"
+    },
+    {
+      "round": 2,
+      "variant": "e10-production",
+      "rows": {
+        "keypair_cycles": [
+          36914,
+          36920,
+          36907
+        ],
+        "enc_cycles": [
+          38191,
+          38181,
+          38189
+        ],
+        "dec_cycles": [
+          33051,
+          33052,
+          33054
+        ]
+      },
+      "median": {
+        "keypair_cycles": 36914,
+        "enc_cycles": 38189,
+        "dec_cycles": 33052
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-production -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:19:44+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-production\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=65.9'C\nthrottled_before=throttled=0x0\nelapsed_seconds=9\ntemperature_after=temp=65.9'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-production-20260907-141944",
+      "data_sha256": "73c57846ccdaf861f864e607812cc3a8daeceab803a76ddeacc491f0afc8c9b7"
+    },
+    {
+      "round": 2,
+      "variant": "e10-candidate",
+      "rows": {
+        "keypair_cycles": [
+          36291,
+          36287,
+          36281
+        ],
+        "enc_cycles": [
+          37301,
+          37292,
+          37302
+        ],
+        "dec_cycles": [
+          32497,
+          32505,
+          32507
+        ]
+      },
+      "median": {
+        "keypair_cycles": 36287,
+        "enc_cycles": 37301,
+        "dec_cycles": 32505
+      },
+      "metadata": [
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks implementation crypto_kem/ntruplus768/e10-candidate -",
+        "20260627 pinhao aarch64 20260907 crypto_kem ntruplus768/timingleaks compiler gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 14.2.0"
+      ],
+      "environment": "timestamp=2026-09-07T14:19:53+08:00\nhostname=pinhao\narchitecture=aarch64\nkernel=Linux 6.18.33+rpt-rpi-2712\nimplementation=crypto_kem/ntruplus768/e10-candidate\ngcc=gcc (Debian 14.2.0-19) 14.2.0\ntemperature_before=temp=66.4'C\nthrottled_before=throttled=0x0\nelapsed_seconds=9\ntemperature_after=temp=65.9'C\nthrottled_after=throttled=0x0\n",
+      "directory": "/home/pi/gt768-production-d1-small-official-policy-20260907-e10/.build/supercop/results/ntruplus768-e10-candidate-20260907-141953",
+      "data_sha256": "9afb33b4714c1accc96e88a174fc23cf8b0b89696974757ba0e4f8b11162ede4"
+    }
+  ],
+  "aggregate": {
+    "e10-production": {
+      "keypair_cycles": 36914,
+      "enc_cycles": 38189,
+      "dec_cycles": 33073
+    },
+    "e10-candidate": {
+      "keypair_cycles": 36300,
+      "enc_cycles": 37309,
+      "dec_cycles": 32502
+    },
+    "e10-official": {
+      "keypair_cycles": 38417,
+      "enc_cycles": 38584,
+      "dec_cycles": 33530
+    }
+  }
+}
