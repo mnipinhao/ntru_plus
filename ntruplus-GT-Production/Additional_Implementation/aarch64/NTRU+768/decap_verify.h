@@ -23,6 +23,9 @@ void poly_tobytes_decap(
 void poly_basemul_decap(
     poly *out, const poly *a, const poly *b);
 void poly_invntt_decap_scale(poly *inout);
+/* Decap-only signed [-2,2] input (both KEM callers are ternary).
+ * Top-split quotient is exactly zero; output remains Decap QSoA.
+ * This is not an arbitrary-coefficient Forward entry. */
 void poly_ntt_decap(poly *out, const poly *in);
 
 #endif

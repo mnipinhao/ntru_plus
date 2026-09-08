@@ -8921,35 +8921,23 @@ _gt_decap_gt_poly_ntt:
         ldr q14, [x1, #1280]
         ldr q15, [x1, #1296]
         ldr q13, [x1, #1040]
-        sqrdmulh v6.8H, v12.8H, v0.H[5]
-        sqrdmulh v4.8H, v10.8H, v0.H[5]
-        sqrdmulh v5.8H, v11.8H, v0.H[5]
         mul v16.8H, v10.8H, v0.H[4]
-        mls v16.8H, v4.8H, v0.H[0]
         mul v18.8H, v12.8H, v0.H[4]
-        mls v18.8H, v6.8H, v0.H[0]
         sub v10.8H, v10.8H, v16.8H
         mul v17.8H, v11.8H, v0.H[4]
-        mls v17.8H, v5.8H, v0.H[0]
         sub v12.8H, v12.8H, v18.8H
-        sqrdmulh v9.8H, v15.8H, v0.H[5]
         ldp q4, q5, [x1, #0]
         sub v11.8H, v11.8H, v17.8H
         mul v21.8H, v15.8H, v0.H[4]
         add v10.8H, v10.8H, v4.8H
-        sqrdmulh v7.8H, v13.8H, v0.H[5]
         add v11.8H, v11.8H, v5.8H
-        mls v21.8H, v9.8H, v0.H[0]
         add v4.8H, v4.8H, v16.8H
         add v5.8H, v5.8H, v17.8H
-        sqrdmulh v8.8H, v14.8H, v0.H[5]
         mul v19.8H, v13.8H, v0.H[4]
         sub v15.8H, v15.8H, v21.8H
         mul v20.8H, v14.8H, v0.H[4]
-        mls v20.8H, v8.8H, v0.H[0]
         sub v14.8H, v14.8H, v20.8H
         ldp q1, q2, [x3], #32
-        mls v19.8H, v7.8H, v0.H[0]
         ldp q8, q9, [x1, #512]
         ldp q6, q7, [x1, #256]
         sqrdmulh v3.8H, v10.8H, v2.8H
@@ -9086,36 +9074,24 @@ _gt_decap_gt_poly_ntt:
         ldr q15, [x1, #1296]
         ldr q13, [x1, #1040]
         ldr q14, [x1, #1280]
-        sqrdmulh v4.8H, v10.8H, v0.H[5]
-        sqrdmulh v6.8H, v12.8H, v0.H[5]
-        sqrdmulh v5.8H, v11.8H, v0.H[5]
         mul v18.8H, v12.8H, v0.H[4]
-        mls v18.8H, v6.8H, v0.H[0]
         mul v16.8H, v10.8H, v0.H[4]
-        mls v16.8H, v4.8H, v0.H[0]
         sub v12.8H, v12.8H, v18.8H
         mul v17.8H, v11.8H, v0.H[4]
-        mls v17.8H, v5.8H, v0.H[0]
         sub v10.8H, v10.8H, v16.8H
         sub v11.8H, v11.8H, v17.8H
         mul v20.8H, v14.8H, v0.H[4]
         ldp q4, q5, [x1, #0]
-        sqrdmulh v8.8H, v14.8H, v0.H[5]
-        sqrdmulh v7.8H, v13.8H, v0.H[5]
         add v11.8H, v11.8H, v5.8H
         add v10.8H, v10.8H, v4.8H
         add v4.8H, v4.8H, v16.8H
         mul v19.8H, v13.8H, v0.H[4]
         add v5.8H, v5.8H, v17.8H
-        mls v19.8H, v7.8H, v0.H[0]
         ldp q6, q7, [x1, #256]
-        sqrdmulh v9.8H, v15.8H, v0.H[5]
         add v12.8H, v12.8H, v6.8H
-        mls v20.8H, v8.8H, v0.H[0]
         ldp q1, q2, [x3], #32
         mul v21.8H, v15.8H, v0.H[4]
         sub v14.8H, v14.8H, v20.8H
-        mls v21.8H, v9.8H, v0.H[0]
         sub v13.8H, v13.8H, v19.8H
         add v6.8H, v6.8H, v18.8H
         ldp q8, q9, [x1, #512]
@@ -9251,36 +9227,24 @@ _gt_decap_gt_poly_ntt:
         ldr q14, [x1, #1280]
         ldr q15, [x1, #1296]
         ldr q13, [x1, #1040]
-        sqrdmulh v6.8H, v12.8H, v0.H[5]
-        sqrdmulh v4.8H, v10.8H, v0.H[5]
-        sqrdmulh v5.8H, v11.8H, v0.H[5]
         mul v16.8H, v10.8H, v0.H[4]
-        mls v16.8H, v4.8H, v0.H[0]
         mul v18.8H, v12.8H, v0.H[4]
-        mls v18.8H, v6.8H, v0.H[0]
         sub v10.8H, v10.8H, v16.8H
         mul v17.8H, v11.8H, v0.H[4]
-        mls v17.8H, v5.8H, v0.H[0]
         sub v12.8H, v12.8H, v18.8H
-        sqrdmulh v9.8H, v15.8H, v0.H[5]
         ldp q4, q5, [x1, #0]
         sub v11.8H, v11.8H, v17.8H
         mul v21.8H, v15.8H, v0.H[4]
         add v10.8H, v10.8H, v4.8H
-        sqrdmulh v7.8H, v13.8H, v0.H[5]
         add v11.8H, v11.8H, v5.8H
-        mls v21.8H, v9.8H, v0.H[0]
         add v5.8H, v5.8H, v17.8H
         add v4.8H, v4.8H, v16.8H
         mul v19.8H, v13.8H, v0.H[4]
-        sqrdmulh v8.8H, v14.8H, v0.H[5]
         sub v15.8H, v15.8H, v21.8H
-        mls v19.8H, v7.8H, v0.H[0]
         ldp q6, q7, [x1, #256]
         mul v20.8H, v14.8H, v0.H[4]
         ldp q1, q2, [x3], #32
         add v12.8H, v12.8H, v6.8H
-        mls v20.8H, v8.8H, v0.H[0]
         sub v13.8H, v13.8H, v19.8H
         add v6.8H, v6.8H, v18.8H
         ldp q8, q9, [x1, #512]
@@ -9416,35 +9380,23 @@ _gt_decap_gt_poly_ntt:
         ldr q14, [x1, #1280]
         ldr q15, [x1, #1296]
         ldr q13, [x1, #1040]
-        sqrdmulh v6.8H, v12.8H, v0.H[5]
-        sqrdmulh v4.8H, v10.8H, v0.H[5]
-        sqrdmulh v5.8H, v11.8H, v0.H[5]
         mul v16.8H, v10.8H, v0.H[4]
-        mls v16.8H, v4.8H, v0.H[0]
         mul v18.8H, v12.8H, v0.H[4]
-        mls v18.8H, v6.8H, v0.H[0]
         sub v10.8H, v10.8H, v16.8H
         mul v17.8H, v11.8H, v0.H[4]
-        mls v17.8H, v5.8H, v0.H[0]
         sub v12.8H, v12.8H, v18.8H
-        sqrdmulh v9.8H, v15.8H, v0.H[5]
         ldp q4, q5, [x1, #0]
         sub v11.8H, v11.8H, v17.8H
         mul v21.8H, v15.8H, v0.H[4]
         add v10.8H, v10.8H, v4.8H
-        sqrdmulh v7.8H, v13.8H, v0.H[5]
         add v11.8H, v11.8H, v5.8H
-        mls v21.8H, v9.8H, v0.H[0]
         add v4.8H, v4.8H, v16.8H
         add v5.8H, v5.8H, v17.8H
-        sqrdmulh v8.8H, v14.8H, v0.H[5]
         mul v19.8H, v13.8H, v0.H[4]
         sub v15.8H, v15.8H, v21.8H
         mul v20.8H, v14.8H, v0.H[4]
-        mls v20.8H, v8.8H, v0.H[0]
         sub v14.8H, v14.8H, v20.8H
         ldp q1, q2, [x3], #32
-        mls v19.8H, v7.8H, v0.H[0]
         ldp q8, q9, [x1, #512]
         ldp q6, q7, [x1, #256]
         sqrdmulh v3.8H, v10.8H, v2.8H
@@ -9581,36 +9533,24 @@ _gt_decap_gt_poly_ntt:
         ldr q14, [x1, #1280]
         ldr q15, [x1, #1296]
         ldr q13, [x1, #1040]
-        sqrdmulh v6.8H, v12.8H, v0.H[5]
-        sqrdmulh v4.8H, v10.8H, v0.H[5]
-        sqrdmulh v5.8H, v11.8H, v0.H[5]
         mul v16.8H, v10.8H, v0.H[4]
-        mls v16.8H, v4.8H, v0.H[0]
         mul v18.8H, v12.8H, v0.H[4]
-        mls v18.8H, v6.8H, v0.H[0]
         sub v10.8H, v10.8H, v16.8H
         mul v17.8H, v11.8H, v0.H[4]
-        mls v17.8H, v5.8H, v0.H[0]
         sub v12.8H, v12.8H, v18.8H
-        sqrdmulh v9.8H, v15.8H, v0.H[5]
         ldp q4, q5, [x1, #0]
         sub v11.8H, v11.8H, v17.8H
         mul v21.8H, v15.8H, v0.H[4]
         add v10.8H, v10.8H, v4.8H
-        sqrdmulh v7.8H, v13.8H, v0.H[5]
         add v11.8H, v11.8H, v5.8H
-        mls v21.8H, v9.8H, v0.H[0]
         add v5.8H, v5.8H, v17.8H
         add v4.8H, v4.8H, v16.8H
         mul v19.8H, v13.8H, v0.H[4]
-        sqrdmulh v8.8H, v14.8H, v0.H[5]
         sub v15.8H, v15.8H, v21.8H
-        mls v19.8H, v7.8H, v0.H[0]
         ldp q6, q7, [x1, #256]
         mul v20.8H, v14.8H, v0.H[4]
         ldp q1, q2, [x3], #32
         add v12.8H, v12.8H, v6.8H
-        mls v20.8H, v8.8H, v0.H[0]
         sub v13.8H, v13.8H, v19.8H
         add v6.8H, v6.8H, v18.8H
         ldp q8, q9, [x1, #512]
@@ -9746,35 +9686,23 @@ _gt_decap_gt_poly_ntt:
         ldr q14, [x1, #1280]
         ldr q15, [x1, #1296]
         ldr q13, [x1, #1040]
-        sqrdmulh v6.8H, v12.8H, v0.H[5]
-        sqrdmulh v4.8H, v10.8H, v0.H[5]
-        sqrdmulh v5.8H, v11.8H, v0.H[5]
         mul v16.8H, v10.8H, v0.H[4]
-        mls v16.8H, v4.8H, v0.H[0]
         mul v18.8H, v12.8H, v0.H[4]
-        mls v18.8H, v6.8H, v0.H[0]
         sub v10.8H, v10.8H, v16.8H
         mul v17.8H, v11.8H, v0.H[4]
-        mls v17.8H, v5.8H, v0.H[0]
         sub v12.8H, v12.8H, v18.8H
-        sqrdmulh v9.8H, v15.8H, v0.H[5]
         ldp q4, q5, [x1, #0]
         sub v11.8H, v11.8H, v17.8H
         mul v21.8H, v15.8H, v0.H[4]
         add v10.8H, v10.8H, v4.8H
-        sqrdmulh v7.8H, v13.8H, v0.H[5]
         add v11.8H, v11.8H, v5.8H
-        mls v21.8H, v9.8H, v0.H[0]
         add v4.8H, v4.8H, v16.8H
         add v5.8H, v5.8H, v17.8H
-        sqrdmulh v8.8H, v14.8H, v0.H[5]
         mul v19.8H, v13.8H, v0.H[4]
         sub v15.8H, v15.8H, v21.8H
         mul v20.8H, v14.8H, v0.H[4]
-        mls v20.8H, v8.8H, v0.H[0]
         sub v14.8H, v14.8H, v20.8H
         ldp q1, q2, [x3], #32
-        mls v19.8H, v7.8H, v0.H[0]
         ldp q8, q9, [x1, #512]
         ldp q6, q7, [x1, #256]
         sqrdmulh v3.8H, v10.8H, v2.8H
@@ -9911,36 +9839,24 @@ _gt_decap_gt_poly_ntt:
         ldr q15, [x1, #1296]
         ldr q13, [x1, #1040]
         ldr q14, [x1, #1280]
-        sqrdmulh v4.8H, v10.8H, v0.H[5]
-        sqrdmulh v6.8H, v12.8H, v0.H[5]
-        sqrdmulh v5.8H, v11.8H, v0.H[5]
         mul v18.8H, v12.8H, v0.H[4]
-        mls v18.8H, v6.8H, v0.H[0]
         mul v16.8H, v10.8H, v0.H[4]
-        mls v16.8H, v4.8H, v0.H[0]
         sub v12.8H, v12.8H, v18.8H
         mul v17.8H, v11.8H, v0.H[4]
-        mls v17.8H, v5.8H, v0.H[0]
         sub v10.8H, v10.8H, v16.8H
         sub v11.8H, v11.8H, v17.8H
         mul v20.8H, v14.8H, v0.H[4]
         ldp q4, q5, [x1, #0]
-        sqrdmulh v8.8H, v14.8H, v0.H[5]
-        sqrdmulh v7.8H, v13.8H, v0.H[5]
         add v11.8H, v11.8H, v5.8H
         add v10.8H, v10.8H, v4.8H
         add v4.8H, v4.8H, v16.8H
         mul v19.8H, v13.8H, v0.H[4]
         add v5.8H, v5.8H, v17.8H
-        mls v19.8H, v7.8H, v0.H[0]
         ldp q6, q7, [x1, #256]
-        sqrdmulh v9.8H, v15.8H, v0.H[5]
         add v12.8H, v12.8H, v6.8H
-        mls v20.8H, v8.8H, v0.H[0]
         ldp q1, q2, [x3], #32
         mul v21.8H, v15.8H, v0.H[4]
         sub v14.8H, v14.8H, v20.8H
-        mls v21.8H, v9.8H, v0.H[0]
         sub v13.8H, v13.8H, v19.8H
         add v6.8H, v6.8H, v18.8H
         ldp q8, q9, [x1, #512]
@@ -10076,36 +9992,24 @@ _gt_decap_gt_poly_ntt:
         ldr q14, [x1, #1280]
         ldr q15, [x1, #1296]
         ldr q13, [x1, #1040]
-        sqrdmulh v6.8H, v12.8H, v0.H[5]
-        sqrdmulh v4.8H, v10.8H, v0.H[5]
-        sqrdmulh v5.8H, v11.8H, v0.H[5]
         mul v16.8H, v10.8H, v0.H[4]
-        mls v16.8H, v4.8H, v0.H[0]
         mul v18.8H, v12.8H, v0.H[4]
-        mls v18.8H, v6.8H, v0.H[0]
         sub v10.8H, v10.8H, v16.8H
         mul v17.8H, v11.8H, v0.H[4]
-        mls v17.8H, v5.8H, v0.H[0]
         sub v12.8H, v12.8H, v18.8H
-        sqrdmulh v9.8H, v15.8H, v0.H[5]
         ldp q4, q5, [x1, #0]
         sub v11.8H, v11.8H, v17.8H
         mul v21.8H, v15.8H, v0.H[4]
         add v10.8H, v10.8H, v4.8H
-        sqrdmulh v7.8H, v13.8H, v0.H[5]
         add v11.8H, v11.8H, v5.8H
-        mls v21.8H, v9.8H, v0.H[0]
         add v5.8H, v5.8H, v17.8H
         add v4.8H, v4.8H, v16.8H
         mul v19.8H, v13.8H, v0.H[4]
-        sqrdmulh v8.8H, v14.8H, v0.H[5]
         sub v15.8H, v15.8H, v21.8H
-        mls v19.8H, v7.8H, v0.H[0]
         ldp q6, q7, [x1, #256]
         mul v20.8H, v14.8H, v0.H[4]
         ldp q1, q2, [x3], #32
         add v12.8H, v12.8H, v6.8H
-        mls v20.8H, v8.8H, v0.H[0]
         sub v13.8H, v13.8H, v19.8H
         add v6.8H, v6.8H, v18.8H
         ldp q8, q9, [x1, #512]
