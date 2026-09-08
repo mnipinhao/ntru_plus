@@ -35,6 +35,7 @@ BANNED_GENERATED_NAMES = {
     "test_canonical",
     "test_kem",
     "test_zeroization",
+    "test_support",
 }
 BANNED_TOKENS = (
     "GT_EXPERIMENT_",
@@ -109,18 +110,18 @@ for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
 
 expected = {
     "ntt.S",
-    "ntt.S",
+    "add.S",
     "base.S",
     "pack.S",
     "cbd.S",
-    "support.S",
+    "crepmod3.S",
     "kem_api.S",
     "kem.c",
     "poly.h",
     "Makefile",
     "LICENSE",
     "SOURCE-MANIFEST.sha256",
-    "secure_clear.h",
+    "util.h",
     "ntt_internal.h",
     "scripts/check_zeroization.py",
     "test/test_zeroization.c",

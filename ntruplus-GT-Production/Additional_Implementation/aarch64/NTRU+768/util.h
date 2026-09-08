@@ -1,5 +1,5 @@
-#ifndef NTRUPLUS768_SECURE_CLEAR_H
-#define NTRUPLUS768_SECURE_CLEAR_H
+#ifndef NTRUPLUS768_UTIL_H
+#define NTRUPLUS768_UTIL_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -17,10 +17,10 @@ extern void explicit_bzero(void *address, size_t length);
 #endif
 
 #ifdef GT_SECURE_CLEAR_AUDIT_HOOK
-void gt_secure_clear_audit_hook(const void *address, size_t length);
+void secure_clear_audit_hook(const void *address, size_t length);
 #endif
 
-static inline void gt_secure_clear(void *address, size_t length)
+static inline void secure_clear(void *address, size_t length)
 {
 #ifdef GT_SECURE_CLEAR_AUDIT_HOOK
     const size_t audit_length = length;
@@ -38,7 +38,7 @@ static inline void gt_secure_clear(void *address, size_t length)
         *cursor++ = 0;
 #endif
 #ifdef GT_SECURE_CLEAR_AUDIT_HOOK
-    gt_secure_clear_audit_hook(address, audit_length);
+    secure_clear_audit_hook(address, audit_length);
 #endif
 }
 

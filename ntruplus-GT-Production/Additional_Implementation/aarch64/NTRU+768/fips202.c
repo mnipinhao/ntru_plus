@@ -5,7 +5,7 @@
  * from https://twitter.com/tweetfips202
  * by Gilles Van Assche, Daniel J. Bernstein, and Peter Schwabe */
 
-#include "secure_clear.h"
+#include "util.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -378,7 +378,7 @@ static void keccak_absorb(uint64_t *s, uint32_t r, const uint8_t *m,
     for (i = 0; i < r / 8; ++i) {
         s[i] ^= load64(t + 8 * i);
     }
-    gt_secure_clear(t, sizeof t);
+    secure_clear(t, sizeof t);
 }
 
 /*************************************************
@@ -545,7 +545,7 @@ void shake256_inc_ctx_clone(shake256incctx *dest, const shake256incctx *src) {
 }
 
 void shake256_inc_ctx_release(shake256incctx *state) {
-    gt_secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);
+    secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);
 }
 
 /*************************************************
@@ -585,7 +585,7 @@ void shake256_ctx_clone(shake256ctx *dest, const shake256ctx *src) {
 
 /** Clear the state. */
 void shake256_ctx_release(shake256ctx *state) {
-    gt_secure_clear(state->ctx, PQC_SHAKECTX_BYTES);
+    secure_clear(state->ctx, PQC_SHAKECTX_BYTES);
 }
 
 /*************************************************
@@ -616,6 +616,6 @@ void shake256(uint8_t *output, size_t outlen,
             output[i] = t[i];
         }
     }
-    gt_secure_clear(t, sizeof(t));
+    secure_clear(t, sizeof(t));
     shake256_ctx_release(&s);
 }

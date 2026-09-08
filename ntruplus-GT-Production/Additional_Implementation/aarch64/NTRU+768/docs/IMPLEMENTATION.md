@@ -244,7 +244,7 @@ ntruplus768/aarch64, rather than the former P0-B full-frame policy.
   declaration does not shrink the union because a polynomial also occupies it.
 - hash_f processes a public key and does not wipe its prefixed input copy.
   hash_g/hash_h still clear their prefixed inputs. NO_CE uses Official's inline
-  SHAKE contexts with the same clear sites, routed through gt_secure_clear so
+  SHAKE contexts with the same clear sites, routed through secure_clear so
   the package audit hook and platform fallback remain available.
 - Extra P0-B assembly frame/register wipes are removed. ABI saves/restores
   remain. Existing short keygen prepare/fqinv register cleanups remain, so this

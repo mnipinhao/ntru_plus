@@ -4,7 +4,7 @@
 #include <arm_neon.h>
 
 #include "keygen.h"
-#include "secure_clear.h"
+#include "util.h"
 
 #if NTRUPLUS_N != 768
 #error "The direct-CQ keygen backend is specialized for NTRU+768"
@@ -112,8 +112,8 @@ int poly_baseinv_keygen_cq_scaled_r(
         else
             gt_keygen_baseinv_cq_finish(
                 out_cq->storage.coeffs, numerator, den);
-        gt_secure_clear(numerator, sizeof numerator);
-        gt_secure_clear(den, sizeof den);
+        secure_clear(numerator, sizeof numerator);
+        secure_clear(den, sizeof den);
         return result;
     }
 }

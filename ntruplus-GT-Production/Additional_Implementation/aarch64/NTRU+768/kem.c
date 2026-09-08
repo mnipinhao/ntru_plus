@@ -9,7 +9,7 @@
 #include "decap_verify.h"
 #include "keygen.h"
 #include "ntt_internal.h"
-#include "secure_clear.h"
+#include "util.h"
 
 typedef gt_cq_poly keygen_poly;
 
@@ -148,7 +148,7 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
     poly_basemul_keygen_cq_scaled_r(&h, f, ginv);
     poly_tobytes_keygen_cq(sk + NTRUPLUS_POLYBYTES, &h);
     hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
-    gt_secure_clear(&h, sizeof h);
+    secure_clear(&h, sizeof h);
 
 }
 
@@ -190,12 +190,12 @@ int crypto_kem_keypair_internal(uint8_t *pk, uint8_t *sk)
     }
 
     crypto_kem_keypair_derand(pk, sk, &f, &finv, &g, &ginv);
-    gt_secure_clear(buf, sizeof buf);
-    gt_secure_clear(coins, sizeof coins);
-    gt_secure_clear(&f, sizeof f);
-    gt_secure_clear(&g, sizeof g);
-    gt_secure_clear(&finv, sizeof finv);
-    gt_secure_clear(&ginv, sizeof ginv);
+    secure_clear(buf, sizeof buf);
+    secure_clear(coins, sizeof coins);
+    secure_clear(&f, sizeof f);
+    secure_clear(&g, sizeof g);
+    secure_clear(&finv, sizeof finv);
+    secure_clear(&ginv, sizeof ginv);
     return 0;
 }
 
@@ -225,7 +225,7 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
 
     if (poly_frombytes_encap(&h, pk)) {
         for (size_t i = 0; i < NTRUPLUS_CIPHERTEXTBYTES; i++) ct[i] = 0;
-        gt_secure_clear(ss, NTRUPLUS_SSBYTES);
+        secure_clear(ss, NTRUPLUS_SSBYTES);
 
         return 1;
     }
@@ -249,11 +249,11 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf1[i];
 
-    gt_secure_clear(msg, sizeof msg);
-    gt_secure_clear(buf1, sizeof buf1);
+    secure_clear(msg, sizeof msg);
+    secure_clear(buf1, sizeof buf1);
 
-    gt_secure_clear(&r, sizeof r);
-    gt_secure_clear(&m, sizeof m);
+    secure_clear(&r, sizeof r);
+    secure_clear(&m, sizeof m);
     return 0;
 }
 
@@ -280,7 +280,7 @@ int crypto_kem_enc_internal(uint8_t *ct, uint8_t *ss, const uint8_t *pk)
 
     randombytes(coins, sizeof coins);
     result = crypto_kem_enc_derand(ct, ss, pk, coins);
-    gt_secure_clear(coins, sizeof coins);
+    secure_clear(coins, sizeof coins);
     return result;
 }
 
@@ -329,7 +329,7 @@ int crypto_kem_dec_internal(uint8_t *ss, const uint8_t *ct,
     fail |= (int8_t)poly_frombytes_decap(
         &scratch.hinv, sk + NTRUPLUS_POLYBYTES);
     if (fail) {
-        gt_secure_clear(ss, NTRUPLUS_SSBYTES);
+        secure_clear(ss, NTRUPLUS_SSBYTES);
         goto cleanup;
     }
 
@@ -337,7 +337,7 @@ int crypto_kem_dec_internal(uint8_t *ss, const uint8_t *ct,
     poly_crepmod3(m_r, m_r);
 
     poly_ntt_decap(forward, m_r);
-    poly_sub_decap(&scratch.c, &scratch.c, forward);
+    poly_sub(&scratch.c, &scratch.c, forward);
     poly_basemul_decap(
         forward, &scratch.c, &scratch.hinv);
     poly_tobytes_decap(scratch.buf1, forward);
@@ -361,6 +361,6 @@ int crypto_kem_dec_internal(uint8_t *ss, const uint8_t *ct,
         ss[i] = scratch.slot.buf3[i] & ~(-fail);
 
 cleanup:
-    gt_secure_clear(&scratch, sizeof scratch);
+    secure_clear(&scratch, sizeof scratch);
     return fail;
 }

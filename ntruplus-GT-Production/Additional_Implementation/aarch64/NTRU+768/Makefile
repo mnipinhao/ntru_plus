@@ -10,6 +10,7 @@ TEST_ABI := $(BUILD_DIR)/test_abi
 TEST_ZEROIZATION := $(BUILD_DIR)/test_zeroization
 TEST_CANONICAL := $(BUILD_DIR)/test_canonical
 TEST_NTT_SMALL := $(BUILD_DIR)/test_ntt_small
+TEST_SUPPORT := $(BUILD_DIR)/test_support
 KAT_GENERATOR := $(BUILD_DIR)/PQCgenKAT_kem
 
 CPPFLAGS := -I.
@@ -32,17 +33,16 @@ PUBLIC_ASM := \
 	base.S \
 	pack.S \
 	cbd.S \
-	support.S \
+	crepmod3.S \
 	kem_api.S
 
 INTERNAL_ASM := \
-	decap_add.S
+	add.S
 
 INTERNAL_C := \
 	keygen.c \
 	keygen_lambda.c \
-	basemul_lambda.c \
-	decap_verify.c
+	basemul_lambda.c
 
 KEM_SOURCES := \
 	kem.c \
@@ -68,7 +68,7 @@ $(BUILD_DIR):
 $(TEST_KEM): test/test.c randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
-$(TEST_ABI): test/test_abi.c test/abi_sentinel.S randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
+$(TEST_ABI): test/test_abi.c test/abi_sentinel.S test/legacy/verify.c test/legacy/verify.S test/legacy/support.S randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 $(TEST_ZEROIZATION): test/test_zeroization.c randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
@@ -97,6 +97,15 @@ manifest-check: check-release
 test: check-release $(TEST_KEM) $(TEST_ABI)
 	$(TEST_KEM)
 	$(TEST_ABI)
+
+$(TEST_SUPPORT): test/test_support.c $(KEM_SOURCES) randombytes.c | $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+.PHONY: support-check
+support-check: $(TEST_SUPPORT)
+	$(TEST_SUPPORT)
+
+check: support-check
 
 abi: check-release $(TEST_ABI)
 	$(TEST_ABI)
@@ -127,7 +136,7 @@ symbols: $(TEST_KEM)
 	nm $(NM_GLOBAL_FLAGS) $(TEST_KEM)
 
 clean:
-	$(RM) $(TEST_NTT_SMALL)
+	$(RM) $(TEST_NTT_SMALL) $(TEST_SUPPORT)
 	$(RM) $(TEST_KEM) $(TEST_ABI) $(TEST_ZEROIZATION) $(TEST_CANONICAL)
 	$(RM) $(KAT_GENERATOR)
 	$(RM) $(GENERATED_KAT_REQ) $(GENERATED_KAT_RSP)

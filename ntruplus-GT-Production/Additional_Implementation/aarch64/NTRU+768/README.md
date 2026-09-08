@@ -19,7 +19,9 @@ shape used by other NTRU+ implementations:
 | `pack.S` | Checked decode and canonical serialization for each layout |
 | `keygen.c` | CQ inversion orchestration and CQ pointwise products |
 | `cbd.S` | CBD and SOTP conversion |
-| `support.S` | Subtract, triple, and centered reduction |
+| `add.S` | ABI-safe subtraction and two-pointer triple |
+| `crepmod3.S` | Center modulo q, then reduce modulo 3 |
+| `util.h` | Portable secure_clear and optional test audit hook |
 | `kem_api.S` | AAPCS64 boundary for the public KEM API |
 | `kem.c` | Key generation, encapsulation, and decapsulation |
 
@@ -37,11 +39,12 @@ not optional profiles:
 - An encapsulation-only `a*b+c` pointwise endpoint whose output exactly aliases
   the consumed message-polynomial input, avoiding a separate ciphertext
   polynomial temporary.
-- An Encap-only small-input Forward endpoint, bit-exact to generic Forward
-  for signed coefficients in [-2,2], and a Q31-reduced Decap verification
-  basemul. Keygen/Decap Forward endpoints are unchanged.
+- The active Encap small-lazy Forward endpoint accepts signed [-2,2] and
+  produces representatives in [-21050,21050]. The separate exact endpoint
+  remains available as a differential oracle. Decap verification uses Q31 reduction.
 - The active packed ct/f first-product and D1 verification endpoints; older
-  QSoA helpers remain available to the unchanged validation roots.
+  QSoA helpers are isolated under test/legacy and linked only into ABI regression
+  tests, not the KEM library or SUPERCOP leaf.
 - A paired pointwise/inverse contract in which pointwise multiplication leaves
   one Montgomery `R^-1` factor and the inverse transform absorbs it.
 
@@ -52,7 +55,7 @@ provides a concise comparison with KPQC final.
 
 ## Build
 
-The default build uses portable `NO_CE` SHAKE:
+The default build uses portable C SHAKE:
 
 ```sh
 make
@@ -63,6 +66,7 @@ make kat
 make kat-check
 make size
 make manifest-check
+make support-check
 ```
 
 Supported build environments:
@@ -84,6 +88,16 @@ directories or production profile selectors. `make zeroization` combines a
 static source-coverage gate with a runtime audit hook for the portable C
 clears. `make kat-check` regenerates the NIST KAT and compares it byte-for-byte
 with the canonical vectors under `kat/expected/`.
+
+`make support-check` verifies the full mod3 input contract [-3456,3456], including
+q-centering, in-place and out-of-place use. The old direct-mod3 implementation
+was not equivalent outside [-1728,1728]; the current consumer follows Official
+centering semantics. `poly_sub` is the active Decap subtraction name; its arithmetic
+matches the previous poly_sub_decap and preserves AAPCS64 d8-d15.
+
+The Encap checked decoder stores directly from the pre-64-bit-transpose packets,
+removing 96 TRN operations while retaining complete output on success and failure.
+The loose pack reducer is unchanged after the two measured alternatives regressed.
 
 Cleanup now follows the Official-style lower-clear policy. Secret C buffers
 remain cleared, but extra full assembly-frame and caller-register wipes are

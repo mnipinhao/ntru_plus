@@ -4,6 +4,7 @@
 
 #include "api.h"
 #include "decap_verify.h"
+#include "legacy/verify.h"
 #include "keygen.h"
 #include "poly.h"
 
@@ -104,9 +105,9 @@ int main(void)
          &a, bytes_a, bytes_b, NULL, 0},
         {"poly_sotp_decode", abi_poly_sotp_decode,
          bytes_a, &a, bytes_b, NULL, 0},
-        {"poly_sub", abi_poly_sub, &a, &b, &c, NULL, 0},
+        {"poly_sub", abi_poly_sub, &a, &b, &c, NULL, 1},
         {"poly_triple", abi_poly_triple, &a, &b, NULL, NULL, 0},
-        {"poly_crepmod3", abi_poly_crepmod3, &a, &b, NULL, NULL, 0},
+        {"poly_crepmod3", abi_poly_crepmod3, &a, &b, NULL, NULL, 1},
         {"keygen_ntt", abi_keygen_ntt, &cq_a, &a, NULL, NULL, 1},
         {"keygen_baseinv", abi_keygen_baseinv,
          &cq_b, &cq_a, NULL, NULL, 1},

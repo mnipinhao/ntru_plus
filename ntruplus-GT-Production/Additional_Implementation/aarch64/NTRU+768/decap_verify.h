@@ -23,20 +23,8 @@ void poly_tobytes_decap(
 void poly_basemul_decap(
     poly *out, const poly *a, const poly *b);
 void poly_invntt_decap_scale(poly *inout);
-void poly_sub_decap(
+void poly_sub(
     poly *out, const poly *a, const poly *b);
 void poly_ntt_decap(poly *out, const poly *in);
-
-/* Private decapsulation endpoint with a prevalidated QSoA h^-1 operand. */
-void gt_decap_verify_predecoded_qsoa_to_bytes(
-    uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,
-    const poly *hinv_qsoa);
-
-/* Internal QSoA pointwise kernel used by gt_decap_verify_to_bytes(). */
-void gt_decap_verify_pointwise(poly *out_qsoa, const poly *gt_input,
-                               const poly *hinv_qsoa);
-int qsoa_frombytes(poly *out,
-                   const uint8_t in[NTRUPLUS_POLYBYTES]);
-void qsoa_tobytes(uint8_t out[NTRUPLUS_POLYBYTES], const poly *in);
 
 #endif

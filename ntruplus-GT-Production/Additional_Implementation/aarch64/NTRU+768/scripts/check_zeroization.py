@@ -7,28 +7,28 @@ def require(relative, needles):
     for needle in needles:
         if needle not in text:
             raise SystemExit(f'{relative}: missing {needle!r}')
-require('secure_clear.h', ('GT_SECURE_CLEAR_AUDIT_HOOK', 'volatile uint8_t *cursor'))
+require('util.h', ('GT_SECURE_CLEAR_AUDIT_HOOK', 'volatile uint8_t *cursor'))
 require('kem.c', (
     'if (!genf_derand(&f, &finv, coins, buf))',
     'if (!geng_derand(&g, &ginv, coins, buf))',
-    'gt_secure_clear(buf, sizeof buf);', 'gt_secure_clear(coins, sizeof coins);',
-    'gt_secure_clear(&f, sizeof f);', 'gt_secure_clear(&finv, sizeof finv);',
-    'gt_secure_clear(&g, sizeof g);', 'gt_secure_clear(&ginv, sizeof ginv);',
-    'gt_secure_clear(&h, sizeof h);', 'gt_secure_clear(msg, sizeof msg);',
-    'gt_secure_clear(buf1, sizeof buf1);', 'gt_secure_clear(&r, sizeof r);',
-    'gt_secure_clear(&m, sizeof m);', 'gt_secure_clear(&scratch, sizeof scratch);',
-    'gt_secure_clear(ss, NTRUPLUS_SSBYTES);',
+    'secure_clear(buf, sizeof buf);', 'secure_clear(coins, sizeof coins);',
+    'secure_clear(&f, sizeof f);', 'secure_clear(&finv, sizeof finv);',
+    'secure_clear(&g, sizeof g);', 'secure_clear(&ginv, sizeof ginv);',
+    'secure_clear(&h, sizeof h);', 'secure_clear(msg, sizeof msg);',
+    'secure_clear(buf1, sizeof buf1);', 'secure_clear(&r, sizeof r);',
+    'secure_clear(&m, sizeof m);', 'secure_clear(&scratch, sizeof scratch);',
+    'secure_clear(ss, NTRUPLUS_SSBYTES);',
     'poly_tobytes_encap_loose(ct, &r);', 'hash_g(ct, ct);'))
-require('keygen.c', ('gt_secure_clear(numerator, sizeof numerator);',
-                            'gt_secure_clear(den, sizeof den);'))
-require('fips202.c', ('gt_secure_clear(state->ctx, PQC_SHAKECTX_BYTES);',
-    'gt_secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);',
-    'gt_secure_clear(t, sizeof t);', 'gt_secure_clear(t, sizeof(t));'))
+require('keygen.c', ('secure_clear(numerator, sizeof numerator);',
+                            'secure_clear(den, sizeof den);'))
+require('fips202.c', ('secure_clear(state->ctx, PQC_SHAKECTX_BYTES);',
+    'secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);',
+    'secure_clear(t, sizeof t);', 'secure_clear(t, sizeof(t));'))
 s = (ROOT/'symmetric.c').read_text()
-assert 'gt_secure_clear' not in s[s.index('void hash_f'):s.index('void hash_g')]
+assert 'secure_clear' not in s[s.index('void hash_f'):s.index('void hash_g')]
 for start, end in [('void hash_g', 'void hash_h'), ('void hash_h', None)]:
     section = s[s.index(start):s.index(end) if end else len(s)]
-    assert 'gt_secure_clear(data, sizeof data);' in section
+    assert 'secure_clear(data, sizeof data);' in section
 for p in ROOT.glob('*.S'):
     assert 'P0-B:' not in p.read_text(), p
 # Existing small keygen register cleanups remain; no full-frame wipe promise.

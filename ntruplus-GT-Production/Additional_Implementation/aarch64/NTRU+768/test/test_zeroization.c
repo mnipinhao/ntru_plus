@@ -12,7 +12,7 @@ static size_t saw_keygen_large;
 static size_t saw_fips_state;
 static size_t saw_domain_image;
 
-void gt_secure_clear_audit_hook(const void *address, size_t length)
+void secure_clear_audit_hook(const void *address, size_t length)
 {
     const volatile uint8_t *bytes = address;
     size_t i;

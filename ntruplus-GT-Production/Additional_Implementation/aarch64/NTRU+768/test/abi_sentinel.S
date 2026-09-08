@@ -153,7 +153,7 @@ DEFINE_ABI_SENTINEL abi_decap_frombytes, poly_frombytes_decap
 DEFINE_ABI_SENTINEL abi_decap_tobytes, poly_tobytes_decap
 DEFINE_ABI_SENTINEL abi_decap_basemul, poly_basemul_decap
 DEFINE_ABI_SENTINEL abi_decap_invntt, poly_invntt_decap_scale
-DEFINE_ABI_SENTINEL abi_decap_sub, poly_sub_decap
+DEFINE_ABI_SENTINEL abi_decap_sub, poly_sub
 DEFINE_ABI_SENTINEL abi_decap_ntt, poly_ntt_decap
 DEFINE_ABI_SENTINEL abi_crypto_kem_keypair, crypto_kem_keypair
 DEFINE_ABI_SENTINEL abi_crypto_kem_enc, crypto_kem_enc

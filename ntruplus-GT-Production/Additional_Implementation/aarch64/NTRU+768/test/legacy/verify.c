@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "decap_verify.h"
+#include "verify.h"
 
 void gt_decap_verify_predecoded_qsoa_to_bytes(
     uint8_t out[NTRUPLUS_POLYBYTES], const poly *c_minus_m2,

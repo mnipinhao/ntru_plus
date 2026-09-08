@@ -37,6 +37,7 @@ void poly_basemul_add_encap(poly *out, const poly *a, const poly *b,
 
 void poly_sub(poly *out, const poly *a, const poly *b);
 void poly_triple(poly *out, const poly *in);
+/* Centers modulo q, then modulo 3; input [-3456,3456]. Exact alias allowed. */
 void poly_crepmod3(poly *out, const poly *in);
 
 #endif
