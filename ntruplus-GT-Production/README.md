@@ -1,5 +1,11 @@
 # NTRU+ GT Production
 
+NTRU+864 now has a separate KEM-only K1 integration at
+[`Additional_Implementation/aarch64/NTRU+864`](Additional_Implementation/aarch64/NTRU+864/README.md).
+Read its `VALIDATION.md` for Pi 5 correctness, KAT and integration PMU evidence.
+Its Linux build and internal compatibility sources are distinct from the
+NTRU+768 release profile described below; NTRU+768 is unchanged.
+
 This package contains the publishable NTRU+768 AArch64 Neon implementation:
 
 ```text

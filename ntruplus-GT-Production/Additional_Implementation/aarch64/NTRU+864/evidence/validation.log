@@ -1,0 +1,87 @@
+shasum -a 256 -c SOURCE-MANIFEST.sha256
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c symmetric.c -o symmetric.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c poly.c -o poly.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c NO_CE/fips202.c -o fips202.o
+NO_CE/fips202.c: OK
+NO_CE/fips202.h: OK
+add.s: OK
+api.h: OK
+base.s: OK
+byte_api.c: OK
+byte_boundary.c: OK
+byte_boundary.h: OK
+cbd.s: OK
+cluster_transpose_frombytes.c: OK
+cluster_transpose_frombytes.h: OK
+crepmod3.s: OK
+gather.h: OK
+gt864_forward_poly_ntt.S: OK
+gt864_forward_six_bank.S: OK
+gt864_fr0_basemul.c: OK
+gt864_fr0_basemul.h: OK
+gt864_fr0_basemul_d1.c: OK
+gt864_fr0_basemul_d1.h: OK
+gt864_fr0_basemul_tables.h: OK
+gt864_fr0_inverse9_block.S: OK
+gt864_fr0_inverse_asm.h: OK
+gt864_fr0_inverse_asm_wrapper.c: OK
+gt864_fr0_inverse_barrett_tables.h: OK
+gt864_fr0_inverse_tables.h: OK
+gt864_fr0_to_official_map.h: OK
+gt864_inverse16_blocks.s: OK
+gt864_poly_api.c: OK
+gt864_poly_api.h: OK
+gt864_top_split.s: OK
+input_once_frombytes.c: OK
+input_once_frombytes.h: OK
+kem.c: OK
+ntt.s: OK
+p3b1_tables.h: OK
+pack.s: OK
+params.h: OK
+poly.c: OK
+poly.h: OK
+randombytes.h: OK
+route9.c: OK
+route9.h: OK
+stock_wrapper.S: OK
+symmetric.c: OK
+symmetric.h: OK
+tables.h: OK
+tail_variants.S: OK
+randombytes.c: OK
+kat/aes.c: OK
+kat/PQCgenKAT_kem.c: OK
+kat/rng.h: OK
+kat/aes.h: OK
+kat/rng.c: OK
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c gt864_poly_api.c -o gt864_poly_api.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c gt864_fr0_basemul.c -o gt864_fr0_basemul.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c gt864_fr0_basemul_d1.c -o gt864_fr0_basemul_d1.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c gt864_fr0_inverse_asm_wrapper.c -o gt864_fr0_inverse_asm_wrapper.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c add.s -o add.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c ntt.s -o ntt.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c base.s -o base.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c crepmod3.s -o crepmod3.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c pack.s -o pack.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c cbd.s -o cbd.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c gt864_forward_poly_ntt.S -o gt864_forward_poly_ntt.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c gt864_forward_six_bank.S -o gt864_forward_six_bank.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c gt864_top_split.s -o gt864_top_split.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c gt864_fr0_inverse9_block.S -o gt864_fr0_inverse9_block.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c gt864_inverse16_blocks.s -o gt864_inverse16_blocks.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c cluster_transpose_frombytes.c -o cluster_transpose_frombytes.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c byte_api.c -o byte_api.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c input_once_frombytes.c -o input_once_frombytes.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c byte_boundary.c -o byte_boundary.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x c -c route9.c -o route9.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -Dpoly_tobytes_asm=raw_to -Dpoly_frombytes_asm=raw_from -Dpoly_shuffle_asm=raw_shuffle -Dpoly_shuffle2_asm=raw_shuffle2 -D_poly_tobytes_asm=_raw_to -D_poly_frombytes_asm=_raw_from -D_poly_shuffle_asm=_raw_shuffle -D_poly_shuffle2_asm=_raw_shuffle2 -c pack.s -o raw_pack.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c stock_wrapper.S -o stock_wrapper.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -Dpoly_ntt=gt_d1_poly_ntt -Dpoly_invntt=gt_d1_poly_invntt -Dpoly_baseinv=gt_d1_poly_baseinv -Dpoly_basemul=gt_d1_poly_basemul -Dpoly_basemul_add=gt_d1_poly_basemul_add -Dpoly_tobytes=p3b12_candidate_tobytes -Dpoly_frombytes=p3b12_candidate_frombytes -c kem.c -o kem-normal.o
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -x assembler-with-cpp -c tail_variants.S -o tail_variants.o
+cc -shared -Wl,-Bsymbolic -Wl,--gc-sections symmetric.o poly.o fips202.o gt864_poly_api.o gt864_fr0_basemul.o gt864_fr0_basemul_d1.o gt864_fr0_inverse_asm_wrapper.o add.o ntt.o base.o crepmod3.o pack.o cbd.o gt864_forward_poly_ntt.o gt864_forward_six_bank.o gt864_top_split.o gt864_fr0_inverse9_block.o gt864_inverse16_blocks.o cluster_transpose_frombytes.o byte_api.o input_once_frombytes.o byte_boundary.o route9.o raw_pack.o stock_wrapper.o kem-normal.o tail_variants.o -o libgt864.so
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. test/test_kem.c randombytes.c -L. -lgt864 -Wl,-rpath,'$ORIGIN' -o test_kem
+cc -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections -I. -Ikat kat/PQCgenKAT_kem.c kat/rng.c kat/aes.c -L. -lgt864 -Wl,-rpath,'$ORIGIN' -o PQCgenKAT_kem
+./test_kem
+PASS: 64 KEM round trips and tampered ciphertext rejection
+./PQCgenKAT_kem
