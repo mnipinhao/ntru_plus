@@ -23,8 +23,6 @@ void poly_tobytes_decap(
 void poly_basemul_decap(
     poly *out, const poly *a, const poly *b);
 void poly_invntt_decap_scale(poly *inout);
-void poly_sub(
-    poly *out, const poly *a, const poly *b);
 void poly_ntt_decap(poly *out, const poly *in);
 
 #endif

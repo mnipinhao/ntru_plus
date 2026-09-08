@@ -1,9 +1,4 @@
-/* BEGIN original base.S; private namespace module_base_ */
-#ifdef __APPLE__
-.text
-#else
-.section .text.module_base_body,"ax",%progbits
-#endif
+/* Section: base.S; private namespace module_base_ */
 #ifdef __APPLE__
 .text
 #else
@@ -215,9 +210,9 @@ module_base_.Lrminus1_pair_consts:
 #undef LOAD_ADDR_PAGE
 #undef LOAD_ADDR_OFF
 
-/* END original base.S */
+/* End section: base.S */
 
-/* BEGIN original keygen_baseinv_prepare.S; private namespace module_keygen_baseinv_prepare_ */
+/* Section: keygen_baseinv_prepare.S; private namespace module_keygen_baseinv_prepare_ */
 #ifdef __APPLE__
 .text
 #else
@@ -536,9 +531,9 @@ module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop:
 module_keygen_baseinv_prepare_Lgt_keygen_baseinv_prepare_constants:
     .hword 3457, 19412, -12929, -147, -1393, -682, -6464, 0
 
-/* END original keygen_baseinv_prepare.S */
+/* End section: keygen_baseinv_prepare.S */
 
-/* BEGIN original keygen_baseinv_tree.S; private namespace module_keygen_baseinv_tree_ */
+/* Section: keygen_baseinv_tree.S; private namespace module_keygen_baseinv_tree_ */
 #ifdef __APPLE__
 .text
 #else
@@ -753,9 +748,9 @@ module_keygen_baseinv_tree_Lbpq_tree_return:
 module_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts:
 	.hword 3457, 19412, -12929, -147, -1393, -682, -6464, 0
 
-/* END original keygen_baseinv_tree.S */
+/* End section: keygen_baseinv_tree.S */
 
-/* BEGIN original keygen_baseinv_finish.S; private namespace module_keygen_baseinv_finish_ */
+/* Section: keygen_baseinv_finish.S; private namespace module_keygen_baseinv_finish_ */
 #ifdef __APPLE__
 .text
 #else
@@ -852,9 +847,9 @@ module_keygen_baseinv_finish_Lbpq_finish_cq_loop:
 module_keygen_baseinv_finish_Lbpq_finish_scaled_r_consts:
 	.hword 3457, 19412, -12929, -147, -1393, -682, -6464, 0
 
-/* END original keygen_baseinv_finish.S */
+/* End section: keygen_baseinv_finish.S */
 
-/* BEGIN original fqinv.S; private namespace module_fqinv_ */
+/* Section: fqinv.S; private namespace module_fqinv_ */
 #ifdef __APPLE__
 .text
 #else
@@ -1029,9 +1024,9 @@ C_SYM(gt_fqinv15_asm):
 	movi v21.16b, #0
 	ret
 
-/* END original fqinv.S */
+/* End section: fqinv.S */
 
-/* BEGIN original encap_muladd.S; private namespace module_encap_muladd_ */
+/* Section: encap_muladd.S; private namespace module_encap_muladd_ */
 #ifdef __APPLE__
 .text
 #else
@@ -1297,11 +1292,11 @@ module_encap_muladd_Lpoly_basemul_add_consts:
  .hword 0x0d81, 0x0000, 0xcd7f, 0xff6d
  .hword 0x7a8f, 0x0009, 0x0000, 0x0363
 
-/* END original encap_muladd.S */
+/* End section: encap_muladd.S */
 
 
 
-/* BEGIN original decap_packed64.S; private namespace module_decap_packed64_ */
+/* Section: decap_packed64.S; private namespace module_decap_packed64_ */
 #ifdef __APPLE__
 .text
 #else
@@ -1812,9 +1807,9 @@ module_decap_packed64_.Lgt_decap_mask_0fff:
 #undef C_SYM_1
 #endif
 
-/* END original decap_packed64.S */
+/* End section: decap_packed64.S */
 
-/* BEGIN original decap_base.S; private namespace module_decap_base_ */
+/* Section: decap_base.S; private namespace module_decap_base_ */
 #ifdef __APPLE__
 .text
 #else
@@ -2025,4 +2020,4 @@ module_decap_base_zetas_mul:
 module_decap_base_.Ldecap_basemul_q31_consts:
     .word 3457, 0, 621199, 0
 
-/* END original decap_base.S */
+/* End section: decap_base.S */

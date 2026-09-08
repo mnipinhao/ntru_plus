@@ -1,17 +1,7 @@
-/* BEGIN original ntt.S; private namespace module_ntt_ */
-#ifdef __APPLE__
-.text
-#else
-.section .text.module_ntt_body,"ax",%progbits
-#endif
-/* Production Wave 8 common-loose Forward NTT. */
-/* Promoted from production_ntt_sha256=6f874aa58557ba12ed20f36bc3e3bb8c8e642c2f1d70c17bed13453510ecacbc. */
-/* The sole internal generic NTT endpoint stores [-27548,27548]. */
-/* The keygen Direct-CQ endpoint retains its production reductions. */
-/* Production dual endpoint for generic block-major and keygen CQ. */
-/* production_sha256=dcd05579c140e07533f311fa3550bf9e80753bfaf1b7fa342cdafbc48bb21497 */
-/* direct_cq_sha256=c8fdb1d61c0c226df0a9493b13c97b3b876284993c3b7ecf9aec1b8d3007ea43 */
-/* Public block-major NTT plus the fixed Direct-CQ keygen endpoint. */
+/* Generic loose Forward NTT and Keygen Direct-CQ shared core.
+ * Generic output: [-27548,27548]; Keygen retains its own reductions.
+ * Historical provenance is retained in Git; see docs/IMPLEMENTATION.md.
+ */
 
 /* Instruction scheduling was generated with Slothy; release annotations removed. */
 #ifdef __APPLE__
@@ -24,6 +14,7 @@
 
 .global poly_ntt_loose
 .global _poly_ntt_loose
+/* Compatibility aliases: same address, no additional kernel body. */
 .global poly_ntt_loose_block_major
 .global _poly_ntt_loose_block_major
 #ifndef __APPLE__
@@ -6818,6 +6809,7 @@ module_ntt_.Lgt_shared_core_end:
 .size poly_ntt_loose, module_ntt_.Lgt_shared_core_end-poly_ntt_loose
 .size poly_ntt_keygen_cq, module_ntt_.Lgt_shared_core_end-poly_ntt_keygen_cq
 #endif
+/* Retained boundary symbol for external audit tooling. */
 .global gt_internal_poly_ntt_loose_end
 gt_internal_poly_ntt_loose_end:
 
@@ -8273,9 +8265,9 @@ module_ntt_.Lencap_small_front:
 
     b module_ntt_.Lntt_endpoint_suffix
 
-/* END original ntt.S */
+/* End section: ntt.S */
 
-/* BEGIN original invntt.S; private namespace module_invntt_ */
+/* Section: invntt.S; private namespace module_invntt_ */
 #ifdef __APPLE__
 .text
 #else
@@ -8292,9 +8284,11 @@ module_ntt_.Lencap_small_front:
 
 /*
  * Production-only AArch64 NEON inverse NTT for the Good-Thomas row-bitrev
- * layout produced by asm/ntt.S.
+ * layout produced by the generic Forward NTT above.
  *
- * This file keeps only the path currently wired into production wrappers:
+ * This generic inverse is retained for the raw-factor pair and ABI tests.
+ * The active Decap entry is poly_invntt_decap_scale, defined below.
+ * Its implementation uses:
  *   - direct physical input -> inverse NTT32 stage123
  *   - stage123 stripe scratch laid out for stage45 consumption
  *   - Slothy-scheduled stage45 + row-end Barrett reduction fusion
@@ -9544,9 +9538,9 @@ module_invntt_inv_branchfold_vecs:
 .purgem module_invntt_INVNTT_SAVE_CALLEE_SAVED_SIMD
 .purgem module_invntt_INVNTT_RESTORE_CALLEE_SAVED_SIMD
 
-/* END original invntt.S */
+/* End section: invntt.S */
 
-/* BEGIN original decap_ntt.S; private namespace module_decap_ntt_ */
+/* Section: decap_ntt.S; private namespace module_decap_ntt_ */
 #ifdef __APPLE__
 .text
 #else
@@ -10132,9 +10126,9 @@ module_decap_ntt_zetas_inv:
     # The final constants absorb the R factor retained by the packed first-product kernel.
     .hword 0x0662, 0x3c80, 0xfcd5, 0xe1f9, 0xf9aa, 0xc3f1, 0x0000, 0x0000
 
-/* END original decap_ntt.S */
+/* End section: decap_ntt.S */
 
-/* BEGIN original decap_forward.S; private namespace module_decap_forward_ */
+/* Section: decap_forward.S; private namespace module_decap_forward_ */
 #ifdef __APPLE__
 .text
 #else
@@ -10153,6 +10147,7 @@ module_decap_ntt_zetas_inv:
 
 .global poly_ntt_decap
 .global _poly_ntt_decap
+/* Compatibility aliases; the current KEM entry is poly_ntt_decap. */
 .global gt_decap_gt_poly_ntt
 .global _gt_decap_gt_poly_ntt
 #ifndef __APPLE__
@@ -15397,6 +15392,7 @@ module_decap_forward_gt_decap_stage345_decap_row2_slothy_end:
 #ifndef __APPLE__
 .size poly_ntt_decap, .-poly_ntt_decap
 #endif
+/* Retained boundary symbol for external audit tooling. */
 .global gt_decap_poly_ntt_end
 gt_decap_poly_ntt_end:
 
@@ -15674,7 +15670,7 @@ module_decap_forward_joint_stage345_decap_row_tables:
     .hword -39, 0, 0, 0, 0, 0, 0, 0
     .hword -370, 0, 0, 0, 0, 0, 0, 0
 
-/* END original decap_forward.S */
+/* End section: decap_forward.S */
 
 #ifdef __APPLE__
 .text
