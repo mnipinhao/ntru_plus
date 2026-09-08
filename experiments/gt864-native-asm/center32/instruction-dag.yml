@@ -1,0 +1,6 @@
+kernel: center32
+inputs: [32 natural R0 coefficients]
+outputs: [32 centered natural coefficients]
+memory: four input Q loads before four output Q stores at x0
+arithmetic: standard Barrett with reciprocal9 then sign correction and compare1728
+range: full signed-int16 to centered abs <=1728

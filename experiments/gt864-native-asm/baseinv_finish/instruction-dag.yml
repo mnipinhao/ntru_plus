@@ -1,0 +1,7 @@
+kernel: binv_finish_tile
+inputs: ["numerator R1 abs <=4000; inverse denominator R1 abs <=2000"]
+outputs: ["FR0 centered R0 abs <=1728"]
+arithmetic: "convert inverse denominator to R0; reuse d times negQINV; three products; canonical center"
+dependencies: [all input loads before stores; destructive SMLAL tied to accumulator; mm scale exponent out equals a plus b minus one]
+memory: "x0 numerator inout 48 bytes; x1 inverse denominator 16 bytes"
+constants: [q3457, negQINV12929, R2_867]

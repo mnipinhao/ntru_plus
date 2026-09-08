@@ -1,0 +1,8 @@
+kernel: early_pair
+inputs: [two FR0 streams x1 and x2; each 9 vectors at 48-byte stride]
+outputs: [final byte pairs at x0 with nine-byte stride and public row permutation]
+dependencies: [coefficient loads precede arithmetic; producer stores feed consumer loads; pointer updates order stores]
+constants: [existing modular constants; public routing indices]
+arithmetic: transpose states then construct one row pair then normalize and pack immediately
+memory: 18 coefficient vectors once plus routing masks x3 and indices x4; 216 bytes in disjoint 3-byte groups within 648-byte top output
+range: no arithmetic reduction removed

@@ -1,0 +1,51 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: gt864_public_wrappers
+  name: gt864_public_wrappers
+  source: public.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: call independently allocated internal regions
+  allow_spills: false
+region:
+  start_label: wrapper_control_start
+  end_label: wrapper_control_end
+  live_in: [x0, x1, x2, x3, x4, x5]
+  live_out: [x0]
+abi:
+  inputs: [public AAPCS pointers from api.h]
+  outputs: [BaseInv status plus centered FR0; BaseMul R^-1; centered natural Inverse]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x8, x9, x10, x11, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+  fixed_vector_registers: [d8, d9, d10, d11, d12, d13, d14, d15]
+  reserved_registers: [x18]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: FR0 tile-major 36 tiles of three eight-lane components
+  output_representation: BaseInv centered FR0; BaseMul R^-1 FR0; Inverse centered natural
+memory_contract:
+  loads: [core input and public constant tables]
+  stores: [output buffers; fixed explicit stack scratch]
+  aliasing: exact out equals input allowed; partial overlap forbidden
+  alignment: 2-byte input; stack 16-byte aligned
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457; 36 tiles; 12 prefix steps; three chains]
+  modulus: 3457
+  representation: region contracts define scale conversions
+range_contract:
+  input_ranges: [BaseInv signed int16; BaseMul FromBytes 0..4095; Inverse abs <=2497]
+  output_ranges: [BaseInv and Inverse centered abs <=1728; BaseMul abs <=2497]
+constant_time_contract:
+  secret_inputs: [coefficients]
+  public_inputs: [pointers, loop indices]
+  no_secret_dependent_branches: false
+  no_secret_dependent_memory_access: true
+  failure_exception: fixed scan of 24 prefix lanes then one noninvertible branch; same public BaseInv failure contract
+validation:
+  oracle_command: python3 ../verify.py
+  test_command: python3 build_test.py
+  full_path_benchmark_command: deferred until correctness and full-KEM integration

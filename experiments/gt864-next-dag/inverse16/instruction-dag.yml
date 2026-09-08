@@ -1,0 +1,8 @@
+kernel: packed_i16
+inputs: [packed-top vectors at x1; R^-1 inverse9 output]
+outputs: [natural output through existing scaled terminal constants at x4]
+dependencies: [coefficient loads precede arithmetic; producer stores feed consumer loads; pointer updates order stores]
+constants: [existing modular constants; public routing indices]
+arithmetic: identical arithmetic to fixed scale baseline; change only final routing or input loads
+memory: 16 contiguous packed vector loads; unchanged twiddle loads; existing exact natural halfword scatter
+range: no arithmetic reduction removed

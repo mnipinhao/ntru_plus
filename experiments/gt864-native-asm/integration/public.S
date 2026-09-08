@@ -1,0 +1,305 @@
+/* Public AAPCS control wrappers. Arithmetic is in Slothy-allocated leaf cores.
+ * Save d8-d15 once per public operation; x19-x28 hold state across core calls.
+ * No scalar secret arithmetic except the fixed-length BaseInv failure scan.
+ */
+#ifdef __APPLE__
+#define C(name) _##name
+#else
+#define C(name) name
+#endif
+.text
+.macro SAVE_PUBLIC
+    stp x29, x30, [sp, #-160]!
+    mov x29, sp
+    stp x19, x20, [sp, #16]
+    stp x21, x22, [sp, #32]
+    stp x23, x24, [sp, #48]
+    stp x25, x26, [sp, #64]
+    stp x27, x28, [sp, #80]
+    stp d8, d9, [sp, #96]
+    stp d10, d11, [sp, #112]
+    stp d12, d13, [sp, #128]
+    stp d14, d15, [sp, #144]
+.endm
+.macro RESTORE_PUBLIC
+    /* Erase volatile SIMD state, including high halves of v8-v15. */
+    movi v0.16b, #0
+    movi v1.16b, #0
+    movi v2.16b, #0
+    movi v3.16b, #0
+    movi v4.16b, #0
+    movi v5.16b, #0
+    movi v6.16b, #0
+    movi v7.16b, #0
+    movi v8.16b, #0
+    movi v9.16b, #0
+    movi v10.16b, #0
+    movi v11.16b, #0
+    movi v12.16b, #0
+    movi v13.16b, #0
+    movi v14.16b, #0
+    movi v15.16b, #0
+    movi v16.16b, #0
+    movi v17.16b, #0
+    movi v18.16b, #0
+    movi v19.16b, #0
+    movi v20.16b, #0
+    movi v21.16b, #0
+    movi v22.16b, #0
+    movi v23.16b, #0
+    movi v24.16b, #0
+    movi v25.16b, #0
+    movi v26.16b, #0
+    movi v27.16b, #0
+    movi v28.16b, #0
+    movi v29.16b, #0
+    movi v30.16b, #0
+    movi v31.16b, #0
+    ldp d8, d9, [sp, #96]
+    ldp d10, d11, [sp, #112]
+    ldp d12, d13, [sp, #128]
+    ldp d14, d15, [sp, #144]
+    ldp x19, x20, [sp, #16]
+    ldp x21, x22, [sp, #32]
+    ldp x23, x24, [sp, #48]
+    ldp x25, x26, [sp, #64]
+    ldp x27, x28, [sp, #80]
+    ldp x29, x30, [sp], #160
+    ret
+.endm
+.macro COPY_TRIPLE dst, src
+    ldp x8, x9, [\src, #0]
+    stp x8, x9, [\dst, #0]
+    ldp x8, x9, [\src, #16]
+    stp x8, x9, [\dst, #16]
+    ldp x8, x9, [\src, #32]
+    stp x8, x9, [\dst, #32]
+.endm
+
+.p2align 4
+.global C(gt864_baseinv_asm)
+C(gt864_baseinv_asm):
+    SAVE_PUBLIC
+    sub sp, sp, #1200
+    mov x19, x0                 // output; exact out=in is legal
+    mov x20, x1
+    mov x21, x2                 // 36 zR vectors, advanced in tile order
+    mov x22, sp                 // den[12][3][8]: 576 bytes
+    add x23, sp, #576           // prefix[12][3][8]: 576 bytes
+    add x24, sp, #1152          // running inverse[3][8]: 48 bytes
+    mov x25, #0                // chain
+    mov x27, x19
+    mov x28, x20
+.Lbinv_chain:
+    mov x26, #0                // step
+.Lbinv_num:
+    mov x0, x27
+    mov x1, x28
+    mov x2, x21
+    mov x8, #48
+    madd x3, x26, x8, x22
+    add x3, x3, x25, lsl #4
+    bl C(binv_num_tile)
+    add x27, x27, #48
+    add x28, x28, #48
+    add x21, x21, #16
+    add x26, x26, #1
+    cmp x26, #12
+    b.ne .Lbinv_num
+    add x25, x25, #1
+    cmp x25, #3
+    b.ne .Lbinv_chain
+    COPY_TRIPLE x23, x22
+    mov x25, #1
+.Lbinv_prefix:
+    mov x8, #48
+    madd x0, x25, x8, x23
+    sub x1, x0, #48
+    madd x2, x25, x8, x22
+    bl C(binv_prefix3)
+    add x25, x25, #1
+    cmp x25, #12
+    b.ne .Lbinv_prefix
+    // Prefix values lie inside (-q,q), so only integer zero represents zero.
+    // Scan all 24 lanes before the single failure branch; no early lane exit.
+    add x9, x23, #528
+    mov x10, #24
+    mov w11, #0
+.Lbinv_scan:
+    ldrh w8, [x9], #2
+    cmp w8, #0
+    cset w8, eq
+    orr w11, w11, w8
+    subs x10, x10, #1
+    b.ne .Lbinv_scan
+    cbnz w11, .Lbinv_fail
+    mov x0, x24
+    add x1, x23, #528
+    bl C(binv_inverse3)
+    mov x25, #11
+.Lbinv_recover:
+    mov x8, #48
+    madd x0, x25, x8, x22
+    madd x1, x25, x8, x23
+    sub x1, x1, #48
+    mov x2, x24
+    mov x3, x0                 // den overwrite is safe: core loads first
+    bl C(binv_recover3)
+    subs x25, x25, #1
+    b.ne .Lbinv_recover
+    COPY_TRIPLE x22, x24
+    mov x25, #0
+    mov x27, x19
+.Lbinv_finish_chain:
+    mov x26, #0
+.Lbinv_finish:
+    mov x0, x27
+    mov x8, #48
+    madd x1, x26, x8, x22
+    add x1, x1, x25, lsl #4
+    bl C(binv_finish_tile)
+    add x27, x27, #48
+    add x26, x26, #1
+    cmp x26, #12
+    b.ne .Lbinv_finish
+    add x25, x25, #1
+    cmp x25, #3
+    b.ne .Lbinv_finish_chain
+    mov w0, #0
+    b .Lbinv_wipe
+.Lbinv_fail:
+    mov x9, x19
+    mov x10, #108
+.Lbinv_zero_output:
+    stp xzr, xzr, [x9], #16
+    subs x10, x10, #1
+    b.ne .Lbinv_zero_output
+    mov w0, #1
+.Lbinv_wipe:
+    mov x9, sp
+    mov x10, #75
+.Lbinv_zero_scratch:
+    stp xzr, xzr, [x9], #16
+    subs x10, x10, #1
+    b.ne .Lbinv_zero_scratch
+    add sp, sp, #1200
+    RESTORE_PUBLIC
+
+.p2align 4
+#ifndef BASEINV_ONLY
+.global C(gt864_basemul_rinv_asm)
+C(gt864_basemul_rinv_asm):
+    SAVE_PUBLIC
+    mov x19, x0
+    mov x20, x1
+    mov x21, x2
+    mov x22, x3
+    mov x23, #36
+.Lbm_tile:
+    mov x0, x19
+    mov x1, x20
+    mov x2, x21
+    mov x3, x22
+    bl C(bm_rinv_tile)
+    add x19, x19, #48
+    add x20, x20, #48
+    add x21, x21, #48
+    add x22, x22, #16
+    subs x23, x23, #1
+    b.ne .Lbm_tile
+    RESTORE_PUBLIC
+
+.p2align 4
+.global C(gt864_inverse_rinv_asm)
+C(gt864_inverse_rinv_asm):
+    SAVE_PUBLIC
+    sub sp, sp, #1792
+    mov x19, x0
+    mov x20, x1
+    mov x21, x2
+    mov x22, x3
+    mov x23, x4
+    mov x24, x5
+    mov x25, sp
+    // Only tail padding requires initialization, not the entire main buffer.
+    add x9, sp, #1536
+    mov x10, #16
+.Linv_init_tail:
+    stp xzr, xzr, [x9], #16
+    subs x10, x10, #1
+    b.ne .Linv_init_tail
+    mov x26, #0                // top
+.Linv_top:
+    mov x27, #0                // component
+.Linv_component:
+    mov x28, #0                // eight-column block
+.Linv_i9:
+    add x0, x25, x27, lsl #9
+    add x0, x0, x28, lsl #7
+    add x0, x0, x26, lsl #3
+    add x1, x25, #1536
+    add x1, x1, x28, lsl #7
+    mov x8, #6
+    madd x1, x26, x8, x1
+    add x1, x1, x27, lsl #1
+    mov x8, #864
+    madd x2, x26, x8, x20
+    mov x8, #48
+    madd x2, x28, x8, x2
+    add x2, x2, x27, lsl #4
+    mov x8, #576
+    madd x3, x26, x8, x21
+    mov x8, #288
+    madd x3, x28, x8, x3
+    bl C(packed_i9)
+    add x28, x28, #1
+    cmp x28, #2
+    b.ne .Linv_i9
+    add x27, x27, #1
+    cmp x27, #3
+    b.ne .Linv_component
+    add x26, x26, #1
+    cmp x26, #2
+    b.ne .Linv_top
+    mov x26, #0                // component
+.Linv_main_component:
+    mov x27, #0                // four-row half
+.Linv_main:
+    add x0, x19, x26, lsl #1
+    mov x8, #24
+    madd x0, x27, x8, x0
+    add x1, x25, x26, lsl #9
+    add x1, x1, x27, lsl #8
+    mov x2, #0
+    mov x3, x22
+    mov x4, x23
+    bl C(lazy_i16)
+    add x27, x27, #1
+    cmp x27, #2
+    b.ne .Linv_main
+    add x26, x26, #1
+    cmp x26, #3
+    b.ne .Linv_main_component
+    add x0, x19, #48
+    add x1, x25, #1536
+    mov x2, #0
+    mov x3, x22
+    mov x4, x24
+    bl C(lazy_itail)
+    mov x26, #27
+    mov x27, x19
+.Linv_center:
+    mov x0, x27
+    bl C(center32)
+    add x27, x27, #64
+    subs x26, x26, #1
+    b.ne .Linv_center
+    mov x9, sp
+    mov x10, #112
+.Linv_wipe:
+    stp xzr, xzr, [x9], #16
+    subs x10, x10, #1
+    b.ne .Linv_wipe
+    add sp, sp, #1792
+    RESTORE_PUBLIC
+#endif

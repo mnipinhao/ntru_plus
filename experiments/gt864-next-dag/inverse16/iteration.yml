@@ -1,0 +1,16 @@
+iteration:
+  id: next-dag-01
+  mode: new_symbolic_kernel
+  current_state: static_checks
+  hypothesis: producer-consumer dataflow reduces intermediate routing
+  earliest_state_to_revisit: static_checks
+gates:
+  repo_probe: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: syntax passes; lane target-model support incomplete
+  Slothy_run_by_user: pending
+  oracle_correctness: model only; allocated assembly pending
+  full_path_benchmark: pending
+  promotion_decision: investigate

@@ -1,0 +1,7 @@
+kernel: binv_prefix3
+inputs: ["R1 abs <=4000"]
+outputs: ["R1 abs <2000"]
+arithmetic: "three independent Montgomery products"
+dependencies: [all input loads before stores; destructive SMLAL tied to accumulator; mm scale exponent out equals a plus b minus one]
+memory: "x0 output prefix triple 48 bytes; x1 previous triple 48 bytes; x2 denominator triple 48 bytes"
+constants: [q3457, negQINV12929, R2_867]

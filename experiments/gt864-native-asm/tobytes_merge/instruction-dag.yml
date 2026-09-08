@@ -1,0 +1,6 @@
+kernel: tobytes_merge
+inputs: [see kernel-contract.yml]
+outputs: [see kernel-contract.yml]
+memory: public disjoint byte ranges; no coefficient scratch; byte scratch648 per top
+arithmetic: three two-register TBL results combined with ORR; full STR Q or D
+dependencies: all data loads precede dependent stores; destructive input ties retained; TBL2 requires consecutive source registers

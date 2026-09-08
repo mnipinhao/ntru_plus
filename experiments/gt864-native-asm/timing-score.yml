@@ -1,0 +1,26 @@
+candidate:
+  id: gt864-native-timing-20260908
+  status: investigate
+  mode: new_symbolic_kernel
+contract:
+  preserved: true
+  approved_changes: false
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: unknown
+slothy:
+  status: pass
+  parity_justification: final outputs and selfchecks pass; no aggregate whole-public-wrapper model estimate claimed
+benchmark:
+  status: pass
+  command: python3 pi-run.py
+  metric: complete Decaps cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.2
+  baseline: 44422.950
+  candidate: 43573.775
+decision:
+  reason: positive full-caller timing gate; keep experimental, promotion not requested
+  next_iteration: complete publication/KAT and constant-time review before promotion; ToBytes separately

@@ -1,0 +1,7 @@
+kernel: binv_num_tile
+inputs: ["FR0 any signed int16 R0"]
+outputs: ["three R1 numerators abs <=4000; R1 denominator abs <=4000"]
+arithmetic: "direct full-int16 wide REDC times R2; cubic cofactors and determinant; input centering removed under <=2162 conversion bound"
+dependencies: [all input loads before stores; destructive SMLAL tied to accumulator; mm scale exponent out equals a plus b minus one]
+memory: "x0 numerator 48 bytes; x1 input 48 bytes; x2 zR 16 bytes; x3 denominator 16 bytes"
+constants: [q3457, negQINV12929, R2_867]

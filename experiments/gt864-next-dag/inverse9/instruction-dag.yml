@@ -1,0 +1,8 @@
+kernel: packed_i9
+inputs: [FR0 rows at x2 with 96-byte row stride; R^-1 input]
+outputs: [packed top-half scratch at x0; unchanged s8 tail at x1]
+dependencies: [coefficient loads precede arithmetic; producer stores feed consumer loads; pointer updates order stores]
+constants: [existing modular constants; public routing indices]
+arithmetic: identical arithmetic to fixed scale baseline; change only final routing or input loads
+memory: 9 vector input loads and 18 constant vector loads; 16 half-vector main stores plus 8 halfword tail stores
+range: no arithmetic reduction removed

@@ -1,0 +1,25 @@
+candidate:
+  id: packed_i16
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: ../optimize.py
+contract_preservation:
+  preserved: false
+  approved_changes: true
+  approved_by: user requested experimental dataflow redesign
+region:
+  start_label: packed_i16_slothy_start
+  end_label: packed_i16_slothy_end
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [x0]
+abi:
+  inputs: [packed-top vectors at x1; R^-1 inverse9 output]
+  outputs: [natural output through existing scaled terminal constants at x4]
+memory_contract:
+  loads: [16 contiguous packed vector loads; unchanged twiddle loads]
+  stores: [existing exact natural halfword scatter]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

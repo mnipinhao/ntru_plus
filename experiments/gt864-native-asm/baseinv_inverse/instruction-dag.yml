@@ -1,0 +1,7 @@
+kernel: binv_inverse3
+inputs: ["R1 abs <=4000 with each lane nonzero modulo q"]
+outputs: ["R1 inverse triple abs <2000"]
+arithmetic: "xy and xyz; fixed exponent 3455; recover inverses of x y z"
+dependencies: [all input loads before stores; destructive SMLAL tied to accumulator; mm scale exponent out equals a plus b minus one]
+memory: "x0 inverse triple 48 bytes; x1 final prefix triple 48 bytes"
+constants: [q3457, negQINV12929, R2_867]

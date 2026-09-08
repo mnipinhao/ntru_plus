@@ -1,0 +1,7 @@
+kernel: gt864_public_wrappers
+inputs: [api.h public pointers]
+outputs: [status and coefficient buffers]
+control: public fixed loops call internal arithmetic regions; one BaseInv invertibility branch
+memory: BaseInv scratch1200; Inverse scratch1792; public ABI save frame160
+zeroization: wipe entire scratch on success and failure; clear temporary vector registers before restoring caller d8-d15
+ordering: every I9 producer finishes before I16; BaseInv all numerator stages precede prefix and recovery

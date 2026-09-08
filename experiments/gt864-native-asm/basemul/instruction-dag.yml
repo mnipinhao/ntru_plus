@@ -1,0 +1,7 @@
+kernel: bm_rinv_tile
+inputs: ["FR0 R0 inputs each [0,4095]"]
+outputs: ["FR0 product R^-1 each abs <=2497"]
+arithmetic: "two early REDC; zR multiply; three final REDC"
+dependencies: [all input loads before stores; destructive SMLAL tied to accumulator; mm scale exponent out equals a plus b minus one]
+memory: "x0 output 48 bytes; x1 a 48 bytes; x2 b 48 bytes; x3 zR 16 bytes"
+constants: [q3457, negQINV12929, R2_867]

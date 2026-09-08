@@ -1,0 +1,17 @@
+id: gt864-native-timing-20260908
+mode: new_symbolic_kernel
+action: optimize-scheduling
+status: investigate
+authority: user requested local timing scheduling and Pi5 benchmark
+baseline: frozen candidate.alloc.S and freshly built local GT864 production source
+candidate: candidate.opt.S; no arithmetic or layout changes
+observation: allocated cores preserve source order and have dependent wide reduction chains
+hypothesis: bounded-window reordering exposes independent arithmetic and reduces cycles
+static_effect: same arithmetic and coefficient memory boundary; no spills
+register_effect: allocation frozen; allow_renaming false
+correctness: rerun native component identities, alias, ABI, wipe, and full-KEM differential
+falsifier: scheduled complete callers regress versus identical unscheduled wrappers
+host: pi@100.99.191.9, Cortex-A76, CPU3
+compiler: GCC -O3 -march=armv8-a+simd; fresh objects
+measurement: paired cycles, instructions and branches; 6 processes x41 samples; AB/BA
+promotion: not requested; production untouched

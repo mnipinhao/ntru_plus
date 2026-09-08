@@ -1,0 +1,7 @@
+kernel: binv_recover3
+inputs: ["R1 abs <=4000"]
+outputs: ["R1 abs <2000"]
+arithmetic: "out=prefix*running; running=running*den for three independent chains"
+dependencies: [all input loads before stores; destructive SMLAL tied to accumulator; mm scale exponent out equals a plus b minus one]
+memory: "x0 inverse denominator triple 48 bytes; x1 previous prefix triple; x2 running inverse triple inout; x3 denominator triple"
+constants: [q3457, negQINV12929, R2_867]

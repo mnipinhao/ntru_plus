@@ -1,0 +1,51 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: packed_i9
+  name: packed_i9
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_hardware_n1_proxy_model
+slothy:
+  workflow: ra-then-window-opt
+  allow_spills: false
+  driver: optimize.py
+region:
+  start_label: packed_i9_slothy_start
+  end_label: packed_i9_slothy_end
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [x0]
+abi:
+  inputs: [FR0 rows at x2 with 96-byte row stride; R^-1 input]
+  outputs: [packed top-half scratch at x0; unchanged s8 tail at x1]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: FR0 rows at x2 with 96-byte row stride; R^-1 input
+  output_representation: packed top-half scratch at x0; unchanged s8 tail at x1
+memory_contract:
+  loads: [9 vector input loads and 18 constant vector loads]
+  stores: [16 half-vector main stores plus 8 halfword tail stores]
+  aliasing: disjoint input and output
+  alignment: halfword input and byte output; no wider requirement
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457, existing public table values]
+  modulus: 3457
+  representation: inherited R^-1 scale candidate
+range_contract:
+  input_ranges: [inherited M5E chain from first Decaps REDC bound 2497]
+  output_ranges: [unchanged arithmetic bounds; routing-only change]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, tables, loop indices]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 ../model.py
+  test_command: pending allocated-assembly differential harness
+  full_path_benchmark_command: pending allocated-assembly KEM paired harness

@@ -1,0 +1,7 @@
+kernel: lazy_itail
+inputs: [I9 output abs <=3456 at R^-1 scale]
+outputs: [natural uncentered R0 abs <=6912]
+constants: [scaled_tables.h terminal constants; stage constants unchanged]
+arithmetic: omit identity resets at butterfly positions 0-8 10 12 14 16 20; keep position24 reset but omit its MUL
+memory: same as tail baseline; no added memory pass
+proof: ../inverse_range.py
