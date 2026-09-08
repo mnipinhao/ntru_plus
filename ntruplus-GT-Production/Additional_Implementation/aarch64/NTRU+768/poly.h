@@ -24,13 +24,6 @@ void poly_sotp_encode(poly *out, const uint8_t msg[NTRUPLUS_N / 8],
 int poly_sotp_decode(uint8_t msg[NTRUPLUS_N / 8], const poly *a,
                      const uint8_t buf[NTRUPLUS_N / 4]);
 
-/*
- * The production decapsulation pair keeps one R^-1 factor after basemul and
- * absorbs it in the inverse transform's final constants.
- */
-void poly_basemul(poly *out, const poly *a, const poly *b);
-void poly_invntt(poly *out, const poly *in);
-
 /* Encapsulation-only a*b+c endpoint; its result is packed immediately. */
 void poly_basemul_add_encap(poly *out, const poly *a, const poly *b,
                       const poly *c);

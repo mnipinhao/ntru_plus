@@ -44,6 +44,8 @@ INTERNAL_C := \
 	keygen_lambda.c \
 	basemul_lambda.c
 
+REFERENCE_ASM := test/reference/basemul.S test/reference/invntt.S
+
 KEM_SOURCES := \
 	kem.c \
 	symmetric.c \
@@ -68,7 +70,7 @@ $(BUILD_DIR):
 $(TEST_KEM): test/test.c randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
-$(TEST_ABI): test/test_abi.c test/abi_sentinel.S test/legacy/verify.c test/legacy/verify.S test/legacy/support.S randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
+$(TEST_ABI): test/test_abi.c test/abi_sentinel.S test/legacy/verify.c test/legacy/verify.S test/legacy/support.S $(REFERENCE_ASM) randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 $(TEST_ZEROIZATION): test/test_zeroization.c randombytes.c $(KEM_SOURCES) | $(BUILD_DIR)

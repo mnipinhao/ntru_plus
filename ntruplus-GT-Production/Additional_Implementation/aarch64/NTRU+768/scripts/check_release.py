@@ -44,8 +44,6 @@ BANNED_TOKENS = (
     "GT_PRODUCTION_VARIANT",
 )
 REQUIRED_PUBLIC_SYMBOLS = (
-    "poly_invntt",
-    "poly_basemul",
     "poly_basemul_add_encap",
     "poly_tobytes_encap",
     "poly_frombytes_encap",
@@ -96,6 +94,12 @@ for path in files:
             fail(f"selector token {token!r}: {path.relative_to(ROOT)}")
 
 headers = (ROOT / "poly.h").read_text(encoding="utf-8")
+reference_header = (ROOT / "test/reference/poly_reference.h").read_text()
+for symbol in ("poly_basemul", "poly_invntt"):
+    if re.search(rf"\b{symbol}\s*\(", headers):
+        fail(f"test-only declaration in production header: {symbol}")
+    if not re.search(rf"\b{symbol}\s*\(", reference_header):
+        fail(f"missing test-only declaration: {symbol}")
 for symbol in REQUIRED_PUBLIC_SYMBOLS:
     if re.search(rf"\b{re.escape(symbol)}\s*\(", headers) is None:
         fail(f"missing public declaration: {symbol}")
@@ -126,6 +130,9 @@ expected = {
     "scripts/check_zeroization.py",
     "test/test_zeroization.c",
     "test/test_canonical.c",
+    "test/reference/basemul.S",
+    "test/reference/invntt.S",
+    "test/reference/poly_reference.h",
     "kat/expected/PQCkemKAT_2336.req",
     "kat/expected/PQCkemKAT_2336.rsp",
 }

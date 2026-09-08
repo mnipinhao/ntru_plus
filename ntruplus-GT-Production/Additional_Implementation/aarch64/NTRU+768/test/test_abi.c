@@ -7,6 +7,7 @@
 #include "legacy/verify.h"
 #include "keygen.h"
 #include "poly.h"
+#include "reference/poly_reference.h"
 
 typedef uint64_t (*abi_sentinel_fn)(void *, void *, void *, void *);
 

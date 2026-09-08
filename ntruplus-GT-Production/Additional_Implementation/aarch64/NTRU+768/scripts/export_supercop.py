@@ -19,6 +19,7 @@ assert not a.destination.resolve().is_relative_to(root), 'Export must be outside
 sources=subprocess.check_output(['make','-s','--no-print-directory','-f','Makefile','-f','-','export_sources'],cwd=root,
  input=b'export_sources:\n\t@echo $(KEM_SOURCES)\n').decode().split()
 assert 'randombytes.c' not in sources
+assert all(not Path(name).parts[0] == 'test' for name in sources), 'Test source in KEM closure'
 defined=set()
 with tempfile.TemporaryDirectory(prefix='gt768-export-') as temp:
  for i,name in enumerate(sources):
@@ -27,6 +28,8 @@ with tempfile.TemporaryDirectory(prefix='gt768-export-') as temp:
   nm=subprocess.check_output(['nm','-g','--defined-only',str(obj)]).decode()
   defined.update(line.split()[-1] for line in nm.splitlines() if len(line.split())>=3)
 assert 'randombytes' not in defined
+assert not ({'poly_basemul', '_poly_basemul', 'poly_invntt', '_poly_invntt',
+             'gt_block_major_poly_invntt', '_gt_block_major_poly_invntt'} & defined), 'Reference kernel in export'
 a.destination.mkdir(parents=True)
 ns=a.destination/'namespace.h'
 ns.write_text('#ifndef GT768_EXPORT_NAMESPACE_H\n#define GT768_EXPORT_NAMESPACE_H\n'+

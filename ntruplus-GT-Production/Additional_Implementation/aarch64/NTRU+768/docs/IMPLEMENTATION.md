@@ -130,7 +130,7 @@ key-generation path.
 
 ## 6. Pointwise/Inverse Contract
 
-The retained generic pointwise/inverse pair is:
+The test-only generic pointwise/inverse pair in `test/reference/` is:
 
 ```text
 poly_basemul
@@ -143,7 +143,11 @@ poly_invntt
 These two symbols form one representation contract. `poly_invntt` is not an
 independently normalized generic inverse for arbitrary transform-domain input,
 and the output of `poly_basemul` must not be interpreted as a separately
-normalized generic product.
+normalized generic product. Their declarations live in
+`test/reference/poly_reference.h`; only the ABI test links these sources.
+Neither kernel is included in KEM_SOURCES or the SUPERCOP export.
+The shared `gt_rowbitrev_lambda` table remains in production because the
+Encap basemul-add also consumes it. Forward NTT sources are unchanged.
 
 The three inverse Stage45 rows share one internal row helper. This changes only
 the call structure and linked text size; row arithmetic, input order, and
