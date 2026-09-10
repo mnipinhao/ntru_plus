@@ -1,0 +1,9 @@
+hypothesis:
+  id: gt864_p6b_packed_half
+  baseline: P6-A current route with two complete saved pairs
+  change: Replace the simultaneous two-stream pair-2 route with A route plus exact 12-bit A compression, followed by B route and immediate final pair packing.
+  invariant: output[3*i+0] = A[i] mod 256; output[3*i+1] = floor(A[i]/256) OR 16*(B[i] mod 16); output[3*i+2] = floor(B[i]/16), for canonical A and B in 0..3456.
+  expected_effect: Reduce pair-2 live state from eighteen Q registers to seven packed-A plus nine B-row registers, exposing three Q registers at the full-normalization frontier.
+  success_gate: exact mapping proof and zero-spill Slothy allocation for both route and full-normalization frontiers
+  non_goals: [production promotion, cycle claim, complete ToBytes correctness claim]
+

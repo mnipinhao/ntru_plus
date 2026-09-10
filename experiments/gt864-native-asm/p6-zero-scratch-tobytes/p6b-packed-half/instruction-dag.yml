@@ -1,0 +1,51 @@
+dag:
+  id: gt864_p6b_packed_half_frontiers
+  kernel_contract: kernel-contract.yml
+  description: Two independent allocation frontiers for packed-half pair-2 production.
+inputs:
+  - twenty retained vectors representing two saved pairs plus packed A
+  - nine repaired-or-unrepaired B row vectors
+constants: [one public row index, q 3457, reciprocal9]
+nodes:
+  - id: route_frontier
+    op: destructively repair one B row while all twenty retained vectors and nine B rows remain live
+    inputs: [twenty retained vectors, nine B rows, public route index]
+    outputs: [twenty retained vectors, nine B rows with one repaired]
+    instruction_shape: LDR Q index; TBL1 row,row,index
+    tied_operands: [TBL output aliases its row input]
+    range_before: signed int16
+    range_after: unchanged
+    may_reorder_with: []
+    must_precede: [normalization_frontier]
+  - id: normalization_frontier
+    op: normalize one repaired B row while twenty retained vectors and the other eight B rows remain live
+    inputs: [twenty retained vectors, nine B rows, q, reciprocal9]
+    outputs: [twenty retained vectors, one canonical B row, eight untouched B rows]
+    instruction_shape: LDR Q q; LDR Q reciprocal9; SQRDMULH quotient,row,reciprocal9; MLS row,quotient,q; SSHR quotient,row,15; AND quotient,quotient,q; ADD row,row,quotient
+    tied_operands: [row is destructively normalized, quotient temporary is reused]
+    range_before: full ToBytes producer range
+    range_after: canonical 0 to 3456
+    may_reorder_with: []
+    must_precede: [pair_pack]
+  - id: pair_pack
+    op: combine restored A high nibbles with canonical B into exact three-byte coefficient encoding
+    inputs: [packed A low bytes, packed A high nibbles, canonical B]
+    outputs: [three-byte coefficient stream]
+    instruction_shape: exact operation count deferred until both allocation frontiers pass
+    tied_operands: [consumer may destructively reuse packed-A and B storage]
+    range_before: canonical 0 to 3456
+    range_after: bytes 0 to 255
+    may_reorder_with: []
+    must_precede: []
+memory:
+  loads: [public constants and synthetic live-in frontier]
+  stores: [synthetic live-out frontier]
+  ordering_constraints: [no coefficient scratch and no extra coefficient loads]
+outputs: [exact pair-2 byte stream and preserved future-row state]
+live_out: [all values required by unprocessed rows]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true
+

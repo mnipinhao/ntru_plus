@@ -1,0 +1,10 @@
+iteration:
+  id: P6-B
+  status: investigate
+  observation: P6-A leaves only one free vector at the current third-pair route peak; removing the TBL index alone does not leave the three temporaries required by full normalization.
+  bottleneck_class: joint layout permutation and register pressure
+  hypothesis: Canonicalize and compress the A half of pair 2 to its exact 12-bit 108-byte representation before constructing the B route.  Thirteen retained-pair vectors plus seven packed-A vectors plus nine B-row vectors peak at 29 data vectors, leaving three vectors for q, reciprocal9, and quotient.
+  falsifier: Reject if the exact byte map fails, either isolated Slothy frontier spills or is infeasible, or a complete implementation requires an extra coefficient load, coefficient scratch, lane ST3, or more than 32 simultaneous vector values.
+  next_if_pass: Author the complete full and small pair-2 route-normalize-pack DAG, then integrate it with consumer-oriented three-pair merge and full-vector stores.
+  next_if_fail: Search a producer route that emits one row before materializing all nine rows; do not return to the P6-A storage-only layout.
+

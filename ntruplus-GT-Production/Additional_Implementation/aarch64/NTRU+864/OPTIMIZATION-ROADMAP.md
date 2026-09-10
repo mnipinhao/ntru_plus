@@ -28,7 +28,9 @@ Status meanings:
 | P4 | Done | Fuse FromBytes legality accumulation into decode/routing | Promoted after removing the second 1,728-byte scan, exact four-input rejection proof, no vector spill, unchanged KAT and Pi 5 full-KEM improvement |
 | P5 | Done | Reuse KEM temporaries following proven lifetimes | Promoted one-`h` Keygen, `ct`-backed Encaps serialized `r`, and four-poly Decaps after stack/object, cleanup, KAT, rejection, malformed-transcript and Pi 5 gates |
 | P6-A | Dropped | Retain both saved pairs in registers but keep the current third-pair row-copy plus TBL repair | Exact 33-vector frontier is Slothy-infeasible; both one-fewer-vector and no-index controls allocate, so storage-only rewriting is rejected |
+| P6-B | Done | Compress pair-2 A to an exact seven-Q 12-bit state before constructing pair-2 B | All nine production route maps and 4,100 pack cases passed; 31-vector route and exact 32-vector full-normalization frontiers allocate without spill |
 | P6 | Active | Consumer-oriented zero-scratch ToBytes route + normalization + packing | Remove at least one P6-A frontier lifetime; no extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
+| P6-C | Next | Joint packed-A producer + restore-A/B pack + three-pair merge symbolic DAG | Peak at most 32; exact byte map; TBL consecutive-register rules; no scratch or extra coefficient loads; full-vector stores |
 
 ## Fixed facts and non-tasks
 
@@ -136,3 +138,13 @@ Status meanings:
   vector or remove the independent index lifetime. A Pi 5 bridge proxy still
   improves from 58.999 to 42.000 cycles/top, so P6 remains active as a
   consumer-oriented route redesign rather than being dropped.
+- Completed the P6-B packed-half feasibility gate.  The third pair is split so
+  its canonical A half occupies the exact 108-byte 12-bit representation
+  (seven Q slots) before its nine-vector B route is created.  All nine
+  production `p3b1_a_fwd` permutations and 4,100 exact pack cases passed.
+  Local Slothy from `/Users/chenpinhao/slothy` allocated both the 31-vector
+  route-repair frontier and the exact 32-vector full-Barrett frontier with
+  spills disabled; both physical regions assembled for arm64.  This proves
+  capacity, not a complete kernel: P6-C must still close the joint packed-A
+  producer, pair reconstruction, three-pair merge, TBL grouping and final
+  full-vector store DAG before any benchmark or production change.
