@@ -25,8 +25,8 @@ Status meanings:
 | P2 | Done | BaseInv two-tile kernel with q/qinv/R constants resident and 18 numerator calls; SIMD chain-end failure aggregation | Promoted combined candidate: exact output/cleanup, constant-time scan, zero spill, KAT and Pi 5 BaseInv/Keygen gates passed |
 | P3 | Done | Stage-fused Decaps inverse; retain promoted P3-A constant-resident `center864` | P3-A passed; P3-B producer-side centering was correct but failed Pi 5 performance and is recorded below |
 | P3-B | Dropped | Pair half-filled I16 terminal vectors, center in producer registers, then use the existing scatter addresses | Correct and spill-free, but Inverse regressed 634.266 cycles (+9.05%) and Decaps 643.425 cycles (+1.46%); reopen only with a naturally full-vector terminal ABI |
-| P4 | Active | Fuse FromBytes legality accumulation into decode/routing | No second 1,728-byte coefficient scan; exact canonical rejection for Encaps and all three Decaps inputs |
-| P5 | Next | Reuse KEM temporaries following proven lifetimes | Keygen one `h`; Encaps reuse `ct` for serialized `r`; Decaps reduce seven polynomial temporaries after alias audit; preserve cleanup and failure semantics |
+| P4 | Done | Fuse FromBytes legality accumulation into decode/routing | Promoted after removing the second 1,728-byte scan, exact four-input rejection proof, no vector spill, unchanged KAT and Pi 5 full-KEM improvement |
+| P5 | Active | Reuse KEM temporaries following proven lifetimes | Keygen one `h`; Encaps reuse `ct` for serialized `r`; Decaps reduce seven polynomial temporaries after alias audit; preserve cleanup and failure semantics |
 | P6 | Deferred | True zero-scratch ToBytes route + normalization + packing | No extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
 
 ## Fixed facts and non-tasks
@@ -101,3 +101,16 @@ Status meanings:
   scatter groups.  Pi 5 Inverse regressed from 7005.531 to 7639.797 cycles
   (+9.05%); Decaps regressed from 44006.425 to 44649.850 (+1.46%).  Production
   remains P3-A and P4 is now active.
+- Completed and promoted P4.  Legality is accumulated with unsigned vector
+  maxima directly from all 108 existing `unpack8` results, before their
+  temporaries enter the unchanged routing network.  This removes the second
+  1,728-byte output scan without adding input loads, output stores, scratch or
+  vector spills.  Local differential testing passed 5,828 boundary/random
+  cases; Pi 5 passed 13,824 KEM rejection cases across Encaps `pk` and Decaps
+  `ct`, `sk[0]`, `sk[1]`, every coefficient position, and invalid values 3457
+  and 4095.  KAT SHA-256 remained
+  `0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c`.
+  Checked FromBytes improved from 870.856 to 715.062 cycles (-17.89%);
+  Encaps improved by 126.100 cycles and Decaps by 443.750 cycles, with exact
+  dynamic deltas of -322 instructions/-108 branches per decoder call.  P5 is
+  now active.

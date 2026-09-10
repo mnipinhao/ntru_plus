@@ -1,0 +1,24 @@
+iteration: P4-A1
+date: 2026-09-10
+mode: existing_region_replacement
+hypothesis: "accumulating legality from each already-decoded vector removes the second 1728-byte coefficient scan without changing decode or routing memory traffic"
+states:
+  repo_probe: pass_local_slothy_at_users_primary_path
+  baseline_contract: pass_exact_source_hash_and_region
+  kernel_contract: pass
+  instruction_dag: pass
+  candidate_c: pass_generated_after_contract
+  compiler_object_audit: pass_no_vector_stack_access
+  Slothy_run_by_user: not_applicable_compiler_emitted_c_neon
+  oracle_correctness: pass_local_5828_and_pi_kem_rejection_13824
+  full_path_benchmark: pass_checked_frombytes_minus_155_794_decaps_minus_443_750
+  score_candidate: promote
+  promotion_decision: promoted_to_gt864_production
+evidence:
+  baseline: baseline-audit.json and baseline-region.c
+  generation: generation-report.json
+  oracle: oracle-results.json
+  compiler: object-audit.json and pi-results/candidate-cluster.objdump
+  pi5: pi-results.json and pi-results/
+  production: promotion-report.yml
+next_iteration: "P5 KEM temporary lifetime and reuse audit"

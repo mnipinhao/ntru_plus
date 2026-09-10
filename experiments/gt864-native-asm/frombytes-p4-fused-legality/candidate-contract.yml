@@ -1,0 +1,28 @@
+candidate:
+  id: gt864_p4a1_fused_legality
+  status: investigate
+  mode: existing_region_replacement
+contract_preservation:
+  preserved: false
+  approved_changes: user requested removal of the output legality reread in P4 on 2026-09-10; observable ABI, bytes and status remain unchanged
+abi:
+  inputs: [same 1296-byte packed polynomial]
+  outputs: [same exact GT FR0 bytes, same exact integer noncanonical status]
+  clobbers: [C ABI caller-saved registers]
+memory_contract:
+  loads: [same input bytes, no output legality reread]
+  stores: [same FR0 output bytes at the same public offsets]
+  aliasing: input and output disjoint
+  public_offsets_only: true
+range_contract:
+  decoded: unsigned [0,4095]
+  accepted: every coefficient below 3457
+  rejected: at least one coefficient at least 3457
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+performance_contract:
+  input_loads_do_not_increase: true
+  coefficient_scratch_does_not_increase: true
+  spills_allowed: false
+  target: remove all 108 output reread loads and recover at least 145 cycles per checked call

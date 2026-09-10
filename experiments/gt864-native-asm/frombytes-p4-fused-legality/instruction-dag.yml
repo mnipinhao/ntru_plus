@@ -1,0 +1,22 @@
+dag:
+  id: gt864_p4_fused_legality
+inputs: [packed bytes, output pointer, unpack index, unpack shifts, mask4095, q3457]
+nodes:
+  - decode: each existing unpack8 load produces eight unsigned 12-bit coefficients
+  - accumulate: unsigned vector maximum includes every decoded vector before routing destroys its temporary
+  - route: unchanged TRN ZIP lane-insert network produces the exact FR0 layout
+  - store: unchanged 108 full-vector stores write all 864 coefficients
+  - reduce_status: combine the two 432-coefficient maxima and return maximum >= q
+outputs: [unchanged FR0 coefficient bytes, exact noncanonical status]
+ordering_constraints:
+  - each accumulate node consumes its decoded vector before that temporary is overwritten
+  - route dependencies and store order remain unchanged
+  - status reduction occurs after both fixed-size halves and has no data-dependent exit
+memory_dependencies:
+  - input offsets and load widths are identical to baseline
+  - output offsets and store widths are identical to baseline
+  - the baseline output reread is absent
+range_transitions:
+  - packed bytes to decoded lanes: unsigned [0,4095]
+  - vector maxima: unsigned [0,4095]
+  - comparison against 3457: canonical iff maximum <3457

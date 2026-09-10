@@ -33,5 +33,11 @@ void p3b12_candidate_frombytes(poly *out, const uint8_t *in)
 
 int gt864_fr0_frombytes_checked(poly *out,const uint8_t *in)
 {
-    return gt864_fr0_cluster_transpose_frombytes_checked_raw(out->coeffs,in);
+    gt864_fr0_cluster_transpose_frombytes(out->coeffs,in);
+    /* All unpacked lanes are unsigned 12-bit values. The permutation does not
+     * affect the predicate; scan every lane, with no data-dependent early exit. */
+    uint16x8_t maximum=vdupq_n_u16(0);
+    for (size_t i=0;i<NTRUPLUS_N;i+=8)
+        maximum=vmaxq_u16(maximum,vreinterpretq_u16_s16(vld1q_s16(out->coeffs+i)));
+    return vmaxvq_u16(maximum)>=NTRUPLUS_Q;
 }

@@ -1,0 +1,30 @@
+candidate:
+  id: gt864_p4a1_fused_legality
+  status: promote
+  mode: existing_region_replacement
+contract:
+  preserved: false
+  approved_changes: true
+  changed_fields: [memory_contract.loads]
+  approval_note: "P4 explicitly requires removal of the second 1728-byte output scan; observable ABI and outputs are unchanged"
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+compiler_object:
+  status: pass
+  target: GCC 14.2 AArch64
+  vector_stack_accesses_in_transpose_core: 0
+  note: "C/Neon compiler-emitted kernel; no Slothy schedule or cycle claim"
+benchmark:
+  status: pass
+  command: "six paired-order PMU processes on Raspberry Pi 5 core 3"
+  metric: complete Decaps cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.1
+  baseline: 44001.950
+  candidate: 43558.200
+decision:
+  reason: "one decoder call removes exactly 322 instructions and 108 branches; Decaps receives the exact three-call delta and improves 443.750 cycles"
+  next_iteration: "P5 KEM temporary lifetime and reuse audit"

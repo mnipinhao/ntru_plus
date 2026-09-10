@@ -1,0 +1,46 @@
+
+/tmp/gt864-p4-20260910/build/p3a/byte_api.o:     file format elf64-littleaarch64
+
+
+Disassembly of section .text.p3b12_base_tobytes:
+
+0000000000000000 <p3b12_base_tobytes>:
+   0:	14000000 	b	0 <r9_to>
+
+Disassembly of section .text.p3b12_base_frombytes:
+
+0000000000000000 <p3b12_base_frombytes>:
+   0:	14000000 	b	0 <gt864_fr0_input_once_frombytes>
+
+Disassembly of section .text.p3b12_candidate_tobytes:
+
+0000000000000000 <p3b12_candidate_tobytes>:
+   0:	14000000 	b	0 <r9_to>
+
+Disassembly of section .text.p3b12_candidate_frombytes:
+
+0000000000000000 <p3b12_candidate_frombytes>:
+   0:	14000000 	b	0 <gt864_fr0_cluster_transpose_frombytes>
+
+Disassembly of section .text.gt864_fr0_frombytes_checked:
+
+0000000000000000 <gt864_fr0_frombytes_checked>:
+   0:	a9be7bfd 	stp	x29, x30, [sp, #-32]!
+   4:	910003fd 	mov	x29, sp
+   8:	f9000bf3 	str	x19, [sp, #16]
+   c:	aa0003f3 	mov	x19, x0
+  10:	94000000 	bl	0 <gt864_fr0_cluster_transpose_frombytes>
+  14:	4f00041f 	movi	v31.4s, #0x0
+  18:	aa1303e0 	mov	x0, x19
+  1c:	911b0261 	add	x1, x19, #0x6c0
+  20:	3cc1041e 	ldr	q30, [x0], #16
+  24:	6e7e67ff 	umax	v31.8h, v31.8h, v30.8h
+  28:	eb00003f 	cmp	x1, x0
+  2c:	54ffffa1 	b.ne	20 <gt864_fr0_frombytes_checked+0x20>  // b.any
+  30:	6e70abff 	umaxv	h31, v31.8h
+  34:	f9400bf3 	ldr	x19, [sp, #16]
+  38:	a8c27bfd 	ldp	x29, x30, [sp], #32
+  3c:	0e023fe0 	umov	w0, v31.h[0]
+  40:	7136001f 	cmp	w0, #0xd80
+  44:	1a9f97e0 	cset	w0, hi	// hi = pmore
+  48:	d65f03c0 	ret

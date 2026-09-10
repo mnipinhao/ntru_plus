@@ -1,0 +1,24 @@
+mode: existing_region_replacement
+baseline:
+  id: gt864_p3a_checked_frombytes
+  source: baseline-region.c
+  measured_boundary: gt864_fr0_frombytes_checked
+abi:
+  inputs: [1296-byte packed polynomial at in]
+  outputs: [1728-byte FR0 polynomial at out, integer noncanonical status]
+  clobbers: [C ABI caller-saved registers]
+layout:
+  input: 864 consecutive unsigned 12-bit encodings
+  output: exact GT FR0 cluster-transpose layout
+memory_contract:
+  loads: [1296 input bytes once during decode, 1728 output bytes once during legality scan]
+  stores: [1728 output bytes once during routing]
+  aliasing: input and output disjoint
+  public_offsets_only: true
+range_contract:
+  decoded: unsigned [0,4095]
+  accepted: every decoded coefficient in [0,3456]
+  rejected: at least one decoded coefficient in [3457,4095]
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

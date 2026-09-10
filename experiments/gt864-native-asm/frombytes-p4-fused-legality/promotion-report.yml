@@ -1,0 +1,34 @@
+promotion:
+  candidate_id: gt864_p4a1_fused_legality
+  status: promote
+  date: 2026-09-10
+  mode: existing_region_replacement
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  candidate_contract: candidate-contract.yml
+  generated_sources: [candidate-cluster.c, candidate-cluster.h, candidate-byte-api.c]
+  compiler_object_audit: object-audit.json
+  candidate_score: candidate-score.yml
+gates:
+  contract_preserved: false
+  approved_contract_changes: true
+  compiler_object_passed: true
+  slothy_result: not_applicable_compiler_emitted_c_neon
+  oracle_correctness_passed: true
+  full_path_benchmark_passed: true
+metrics:
+  baseline_checked_frombytes_cycles: 870.8555
+  candidate_checked_frombytes_cycles: 715.062
+  baseline_decaps_cycles: 44001.950
+  candidate_decaps_cycles: 43558.200
+  benchmark_metric: paired Pi 5 PMU cycles
+production_files:
+  - cluster_transpose_frombytes.c
+  - cluster_transpose_frombytes.h
+  - byte_api.c
+  - OPTIMIZATION-ROADMAP.md
+  - SOURCE-MANIFEST.sha256
+decision:
+  reason: "exact canonical rejection and FR0 output preserved; no second coefficient scan, no vector spill, and full Encaps/Decaps improvement"
+  follow_up: "P5 KEM temporary lifetime and reuse audit"
