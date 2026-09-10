@@ -23,8 +23,9 @@ Status meanings:
 | P0 | Done | Promote BaseInv 84-instruction fused-wide numerator and 37-instruction no-centering finish; promote scheduled ToBytes pair+merge | Passed exact linked-object sizes, Mac/Linux assembly, 100-case KAT, 808-case BaseInv failure/alias/wipe, malformed transcript and Pi 5 paired PMU |
 | P1 | Done | Replace BaseInv bitwise exponentiation with a scale-correct shortest addition chain for exponent 3455 | Promoted 157-instruction, 21-MM zero-spill core; exact scale/range, KAT, failure/alias/wipe and Pi 5 BaseInv/Keygen gates passed |
 | P2 | Done | BaseInv two-tile kernel with q/qinv/R constants resident and 18 numerator calls; SIMD chain-end failure aggregation | Promoted combined candidate: exact output/cleanup, constant-time scan, zero spill, KAT and Pi 5 BaseInv/Keygen gates passed |
-| P3 | Active | Stage-fused Decaps inverse; P3-A constant-resident `center864` promoted | P3-B must preserve BaseMul R^-1 to natural-R0 contract while fusing centering into I16/tail producer stores and removing the separate 1,728-byte pass |
-| P4 | Next | Fuse FromBytes legality accumulation into decode/routing | No second 1,728-byte coefficient scan; exact canonical rejection for Encaps and all three Decaps inputs |
+| P3 | Done | Stage-fused Decaps inverse; retain promoted P3-A constant-resident `center864` | P3-A passed; P3-B producer-side centering was correct but failed Pi 5 performance and is recorded below |
+| P3-B | Dropped | Pair half-filled I16 terminal vectors, center in producer registers, then use the existing scatter addresses | Correct and spill-free, but Inverse regressed 634.266 cycles (+9.05%) and Decaps 643.425 cycles (+1.46%); reopen only with a naturally full-vector terminal ABI |
+| P4 | Active | Fuse FromBytes legality accumulation into decode/routing | No second 1,728-byte coefficient scan; exact canonical rejection for Encaps and all three Decaps inputs |
 | P5 | Next | Reuse KEM temporaries following proven lifetimes | Keygen one `h`; Encaps reuse `ct` for serialized `r`; Decaps reduce seven polynomial temporaries after alias audit; preserve cleanup and failure semantics |
 | P6 | Deferred | True zero-scratch ToBytes route + normalization + packing | No extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
 
@@ -91,3 +92,12 @@ Status meanings:
   improved from 7230.391 to 7017.531 cycles (-2.94%); Decaps improved from
   44206.275 to 43994.000 cycles (-0.48%), with exactly 235 instructions and 52
   branches removed from both.  P3 remains active for producer-fused centering.
+- Completed and rejected P3-B.  The candidate packed the two half-filled
+  terminal vectors with `ZIP1`, centered each packed group, and retained every
+  existing `UMOV`/`STRH` address.  Exhaustive `[-6912,6912]` reduction,
+  lane/address, dead-register, fixed-allocation Slothy, KAT, tampered, exact
+  Inverse and alias gates passed.  It removed 108 Q loads, 108 Q stores and 29
+  branches, but added exactly 61 instructions and serialized centering into 112
+  scatter groups.  Pi 5 Inverse regressed from 7005.531 to 7639.797 cycles
+  (+9.05%); Decaps regressed from 44006.425 to 44649.850 (+1.46%).  Production
+  remains P3-A and P4 is now active.

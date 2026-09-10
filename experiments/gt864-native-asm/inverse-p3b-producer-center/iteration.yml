@@ -1,0 +1,27 @@
+iteration: P3-B
+date: 2026-09-10
+mode: existing_region_replacement
+hypothesis: "packing two half-filled terminal vectors and centering before scatter can remove the separate 1728-byte center864 pass"
+states:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass_with_documented_cmgt_umov_checker_warnings
+  machine_oracle: pass_exhaustive_13825_plus_32000_group_trials
+  fixed_allocation: pass_dead_register_reuse_no_spill
+  Slothy_timing: pass_bounded_windows_main_and_tail
+  post_slothy_review: pass_instruction_multiset_and_store_offsets
+  native_correctness: pass_kat_valid_tampered_inverse_alias
+  full_path_benchmark: fail_inverse_plus_9_05_percent
+  score_candidate: reject
+  promotion_decision: retain_p3a
+evidence:
+  layout: producer-layout-audit.json
+  oracle: verification-report.json
+  preflight: preflight.json
+  slothy: main/slothy-timing.log and tail/slothy-timing.log
+  post_slothy: post-slothy-audit.json
+  packages: package-audit.json
+  pi5: pi-results.json and pi-results/
+next_iteration: P4 fuse FromBytes legality accumulation into decode and routing

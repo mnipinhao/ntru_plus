@@ -1,0 +1,15 @@
+kernel: lazy_i16_centered
+baseline_nodes: [all 733 P3-A lazy_i16 instructions in exact order before local rescheduling]
+new_store_group_nodes:
+  - zip the low four live coefficients of two output vectors into one eight-lane vector
+  - create reciprocal9 with MOVI and compute Algorithm-10 Barrett quotient
+  - reduce with q3457 already live in the kernel
+  - derive halfq as unsigned q shift right one
+  - conditionally add q to negative residues and subtract q above 1728
+  - extract the packed lanes to the exact existing eight public store addresses
+groups: 16
+ordering_constraints:
+  - terminal output values precede their packed centering group
+  - each centered lane precedes its matching UMOV and STRH
+  - existing loads arithmetic and scatter addresses are otherwise unchanged
+range_changes: terminal abs <=6912 becomes centered abs <=1728 before every store

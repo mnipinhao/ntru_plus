@@ -1,0 +1,15 @@
+kernel: lazy_itail_centered
+baseline_nodes: [all 669 P3-A lazy_itail instructions in exact order before local rescheduling]
+new_store_group_nodes:
+  - zip the low three live coefficients of two output vectors into lanes zero-to-two and four-to-six
+  - create reciprocal9 with MOVI and compute Algorithm-10 Barrett quotient
+  - reduce with q3457 already live in the kernel
+  - derive halfq as unsigned q shift right one
+  - conditionally add q to negative residues and subtract q above 1728
+  - extract only lanes zero-to-two and four-to-six to the exact existing six public store addresses
+groups: 16
+ordering_constraints:
+  - terminal output values precede their packed centering group
+  - each centered lane precedes its matching UMOV and STRH
+  - padded lanes are never stored
+range_changes: terminal abs <=6912 becomes centered abs <=1728 before every store

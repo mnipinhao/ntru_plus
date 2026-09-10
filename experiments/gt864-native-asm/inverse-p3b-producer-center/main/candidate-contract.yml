@@ -1,0 +1,24 @@
+candidate:
+  id: gt864_p3b_main_centered
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: ../optimize.py
+contract_preservation:
+  preserved: false
+  approved_changes: user requested P3-B producer-fused centering on 2026-09-10; output representative changes from abs <=6912 to centered abs <=1728 while addresses and residues remain identical
+region:
+  start_label: lazy_i16_slothy_start
+  end_label: lazy_i16_slothy_end
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [x0]
+abi:
+  inputs: [same packed I9 and public table inputs]
+  outputs: [same 128 addresses with centered representatives]
+memory_contract:
+  loads: [same packed and table loads]
+  stores: [same 128 halfword scatter stores]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

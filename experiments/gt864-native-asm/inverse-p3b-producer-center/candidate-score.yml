@@ -1,0 +1,30 @@
+candidate:
+  id: gt864_p3b_producer_center
+  status: reject
+  mode: existing_region_replacement
+contract:
+  preserved: false
+  approved_changes: true
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  main_instructions: 909
+  tail_instructions: 845
+  allow_renaming: false
+  spills: 0
+  parity_justification: "fixed P3-A allocation with generator-proven dead-register reuse; both bounded-window runs ended split_heuristic_full:OK"
+benchmark:
+  status: fail
+  command: "six paired-order repetitions on Raspberry Pi 5 core 3"
+  metric: complete Decaps cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.1
+  baseline: 44006.425
+  candidate: 44649.850
+decision:
+  reason: "removing 216 vector memory operations costs 634.266 inverse cycles because per-group centering serializes the terminal scatter path"
+  next_iteration: "P4 fuse FromBytes legality accumulation into decode and routing"

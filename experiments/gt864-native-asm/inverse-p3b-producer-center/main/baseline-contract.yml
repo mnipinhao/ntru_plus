@@ -1,0 +1,25 @@
+mode: existing_region_replacement
+baseline:
+  id: p3a_ddeb79a5_lazy_i16
+  source: ../../../../ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse16_lazy.S
+  extracted_region: baseline-region.S
+  function: lazy_i16
+  start_label: lazy_i16_slothy_start
+  end_label: lazy_i16_slothy_end
+baseline_cost:
+  static_instruction_count: 733
+  benchmark_command: python3 ../run_pi5.py
+region:
+  instruction_count: 733
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [x0 and 128 uncentered output coefficients]
+abi:
+  inputs: [packed I9 output at x1, stage constants at x3, scale constants at x4]
+  outputs: [128 natural-order R0 coefficients with abs <=6912]
+memory_contract:
+  loads: [16 contiguous packed vectors and public constant tables]
+  stores: [128 exact natural-order halfword scatters]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

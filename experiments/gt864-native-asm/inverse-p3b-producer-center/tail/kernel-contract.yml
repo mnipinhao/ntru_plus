@@ -1,0 +1,51 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: lazy_itail_centered
+  name: GT864 tail I16 with producer-side packed centering
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: preserve existing allocation then bounded-window timing schedule
+  allow_spills: false
+region:
+  start_label: lazy_itail_slothy_start
+  end_label: lazy_itail_slothy_end
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [x0]
+abi:
+  inputs: [padded tail I9 output at x1, public stage and tail terminal tables]
+  outputs: [96 natural-order centered R0 coefficients at existing scatter addresses]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: padded tail I9 vectors at R^-1 input scale
+  output_representation: same natural coefficient addresses, centered R0
+memory_contract:
+  loads: [same 16 padded vectors and public table loads as P3-A]
+  stores: [same 96 halfword scatter stores as P3-A]
+  alignment: halfword; no wider alignment requirement
+  aliasing: input scratch and output disjoint
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457, reciprocal9 derived with MOVI, halfq derived as q logical-shift-right 1, existing stage and tail scale tables]
+  modulus: 3457
+  representation: terminal tables produce natural R0; centering changes representative only
+range_contract:
+  input_ranges: [I9 terminal output abs <=3456]
+  intermediate_ranges: [I16 peak <=30939, terminal top output abs <=6912, Algorithm-10 Barrett plus branchless centered correction]
+  output_ranges: [centered abs <=1728]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed tables, fixed addresses]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 ../verify.py
+  test_command: integrated exact Inverse alias and KAT tests
+  full_path_benchmark_command: python3 ../run_pi5.py
