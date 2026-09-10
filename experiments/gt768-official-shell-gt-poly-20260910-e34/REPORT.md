@@ -34,9 +34,10 @@ The intentionally replaced polynomial/backend surface is `ntt.s`, `base.s`,
 `pack.s`, polynomial add/sub support and `poly.h`. Official `poly.c` is replaced
 by GT keygen/basemul helper C and tables. `kem.c` necessarily changes its
 polynomial call sites, stack representations, ranges and layouts to use the
-specialized Keygen/Encap/Decap GT contracts. `kem_api.s` plus `adapter.c`
-retain the three public SUPERCOP function names. This is an Official-shaped
-leaf, not a claim that Official `kem.c` remains byte-identical.
+specialized Keygen/Encap/Decap GT contracts. The materialized package uses
+`kem_api.s` directly for the three public SUPERCOP function names; it contains
+no namespace header or public-name adapter. This is an Official-shaped leaf,
+not a claim that Official `kem.c` remains byte-identical.
 
 `prepare_candidate.py` recreates this strict shell on Linux. Generated leaves,
 objects, executables and raw samples stay in gitignored `.build` directories.
@@ -79,8 +80,18 @@ The tradeoff is code size: linked text grows from 21,617 to 81,681 bytes,
 +60,064 bytes or +277.86%. This is the principal cost of the unrolled,
 specialized GT backend.
 
-Full compact values are in `benchmark-summary.json`. Remote raw artifacts are
-under `/home/pi/gt768-official-shell-gt-poly-20260910-e34/gate-v4/raw/`.
+The final materialized-leaf rerun produced the following independent p50s:
+
+| Operation | Official p50 | Materialized leaf p50 | Saved | Improvement |
+|---|---:|---:|---:|---:|
+| Keygen | 38,435 | 36,362 | 2,073 | 5.39% |
+| Encap | 38,686 | 37,212 | 1,474 | 3.81% |
+| Decap | 33,483 | 32,124 | 1,359 | 4.06% |
+
+The final linked text is 81,529 bytes, versus Official's 21,617 bytes. Full
+machine-readable values are in `materialized-gate-summary.json`. Remote raw
+artifacts are under
+`/home/pi/gt768-official-shell-gt-poly-20260910-e34/materialized-gate-v1/raw/`.
 
 ## Reproduction
 
@@ -90,7 +101,13 @@ under `/home/pi/gt768-official-shell-gt-poly-20260910-e34/gate-v4/raw/`.
    E33 benchmark harness/API stubs, retained package KAT and
    `/home/pi/supercop-20260831`.
 
-The next gate, if requested, is source packaging: materialize this generated
-candidate as a reviewable Official-layout leaf, add a manifest/file mapping,
-then rerun the actual SUPERCOP integration build. It is not necessary to alter
-Official CBD/SOTP/hash/util to obtain the measured speedups.
+The source-packaging gate is complete. The reviewable leaf is tracked under
+`ntruplus-GT-Production/SUPERCOP/crypto_kem/ntruplus768/aarch64`; provenance,
+function mapping, deterministic manifest, build contract and validation are in
+the adjacent `metadata/ntruplus768-aarch64-gt` directory. The generator is
+`ntruplus-GT-Production/scripts/generate_supercop_ntruplus768.py`.
+
+Decision remains **keep-experimental**: the package is reproducible, correct,
+SUPERCOP-shaped and faster on Pi 5, but it has not been promoted to
+`aarch64-production` and its substantially larger text footprint remains an
+explicit tradeoff.
