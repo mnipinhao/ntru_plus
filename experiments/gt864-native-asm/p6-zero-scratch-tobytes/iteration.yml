@@ -14,13 +14,16 @@ baseline:
 target:
   host: pi@100.99.191.9
   microarchitecture: Cortex-A76 (Raspberry Pi 5)
-status: active-p6b
+status: active-p6d
 gate_result: >-
-  P6-A current-route storage-only is rejected. Exact 31-live plus row-copy plus
-  index frontier is Slothy INFEASIBLE; removing either one held vector or the
-  independent index is OPTIMAL without spill. Pi5 optimistic bridge remains
-  17 cycles/top faster, so P6 continues as a consumer-oriented route redesign.
+  P6-C passes: packed-A production peaks at 26 vectors and the exact joint
+  first-row consumer peaks at 32. Both local Cortex-A76 Slothy allocations are
+  OPTIMAL without spill, physical TBL groups are consecutive, and executable
+  arm64 assembly passes 12,288 pack plus 4,096 joint-row oracle cases.
+  Production remains unchanged until a complete all-nine-row kernel exists.
 next_iteration: >-
-  P6-B eliminate the row-copy or independent TBL-index lifetime by producing
-  consumer-oriented rows; preserve 108 coefficient Q loads, zero coefficient
-  scratch, no lane ST3 and direct final stores.
+  P6-D materialize the complete all-nine-row full/small consumer-oriented
+  kernels using the P6-C packed-A and joint-row ABI. Preserve 108 coefficient
+  Q loads, zero coefficient scratch, no lane ST3, no spill and direct 40 Q plus
+  one D final stores per top. Close cross-row carry and public AAPCS handling
+  before any Pi 5 benchmark or production promotion.

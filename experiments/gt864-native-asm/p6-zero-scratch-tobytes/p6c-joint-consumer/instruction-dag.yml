@@ -1,0 +1,72 @@
+dag:
+  id: gt864_p6c_joint_consumer
+  kernel_contract: kernel-contract.yml
+  description: Packed-A producer plus worst-row consumer with exact source-group and carry constraints.
+inputs:
+  - thirteen Q values holding the first twenty-six saved-pair D chunks
+  - twenty-eight X values holding the remaining saved-pair D chunks
+  - nine pair-2 A rows followed by nine pair-2 B rows
+  - production route and byte-merge indices
+constants: [q 3457, reciprocal9, nibble mask 15]
+nodes:
+  - id: normalize_and_pack_a
+    op: normalize each A row and retain exact low bytes and packed high nibbles
+    inputs: [nine A rows, q, reciprocal9]
+    outputs: [Alo01, Alo23, Alo45, Alo67, Alo8hi8, Ahi03, Ahi47]
+    instruction_shape: SQRDMULH MLS SSHR AND ADD; XTN; USHR UZP1 UZP2 SLI XTN; INS
+    tied_operands: [A row is destructively normalized, accumulators are updated in place]
+    range_before: full producer signed int16 range
+    range_after: exact 108-byte canonical A state
+    may_reorder_with: [independent A rows]
+    must_precede: [normalize_b0]
+  - id: normalize_b0
+    op: full Barrett normalization and conditional add for the first consumed B row
+    inputs: [B0, q, reciprocal9]
+    outputs: [canonical B0]
+    instruction_shape: SQRDMULH MLS SSHR AND ADD
+    tied_operands: [B0 destructive, quotient reused as sign]
+    range_before: full producer signed int16 range
+    range_after: canonical 0 to 3456
+    may_reorder_with: []
+    must_precede: [derive_pair2_sources]
+  - id: derive_pair2_sources
+    op: form pair-2 low A, mixed A-high and B-low, and B-high streams without a 24-byte scratch row
+    inputs: [packed A row0, canonical B0, nibble mask]
+    outputs: [Alo0, Mid0, Bhi0]
+    instruction_shape: SHL or SLI and XTN for B low nibble; USHR XTN for B high; AND USHR ZIP1 for A high; ORR into Mid0
+    tied_operands: [B0 storage becomes Mid0, temporary constants die before merge]
+    range_before: canonical 0 to 3456
+    range_after: three eight-byte streams
+    may_reorder_with: []
+    must_precede: [merge_five_chunks]
+  - id: merge_five_chunks
+    op: merge two saved 24-byte pairs and three pair-2 streams into one 72-byte output row
+    inputs: [saved Q0 Q1 Q2, Alo0 Mid0 Bhi0, fifteen public indices]
+    outputs: [four Q output chunks and one D carry]
+    instruction_shape: per chunk TBL2 overlapping saved groups; ORR; TBL3 consecutive pair-2 group; ORR; STR Q or retain D carry
+    tied_operands: [each loaded index is overwritten by its TBL result, partial result ORR is destructive]
+    range_before: bytes 0 to 255
+    range_after: exact serialized bytes
+    may_reorder_with: [public index loads subject to register capacity]
+    must_precede: [next_physical_row]
+  - id: next_physical_row
+    op: process logical rows in inverse physical permutation and join the eight-byte carry to the next row
+    inputs: [row tail carry, next row output]
+    outputs: [contiguous 648-byte top stream]
+    instruction_shape: EXT or INS routing followed by full STR Q; one final STR D per top
+    tied_operands: [carry is destructively advanced]
+    range_before: bytes 0 to 255
+    range_after: bytes 0 to 255
+    may_reorder_with: []
+    must_precede: []
+memory:
+  loads: [each coefficient once and fixed public tables]
+  stores: [forty Q plus one D per 648-byte top in the complete design]
+  ordering_constraints: [physical row order 0 3 6 1 4 7 2 5 8, no coefficient scratch, no lane ST3]
+outputs: [exact 648-byte top stream]
+live_out: [unconsumed saved state, packed-A state, B rows, cross-row carry]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

@@ -1,0 +1,20 @@
+iteration:
+  id: P6-C
+  status: pass
+  mode: new_symbolic_kernel
+  observation: P6-B proved 29-data-vector route and normalization frontiers, but did not prove production of the seven-Q packed-A state or the merge consumer that must obey TBL register-group constraints.
+  primary_bottleneck: joint layout permutation and register pressure
+  hypothesis: Densely store early saved-pair rows as six D chunks in three Q registers, canonicalize and pack A before B, kill q and reciprocal immediately after each B normalization, and use each loaded merge index as its own TBL destination. This keeps the worst first-row joint frontier within 32 vectors.
+  exact_change: Model the physical-row traversal and cross-row byte carry; author separate packed-A-producer and first-row joint-consumer symbolic regions.
+  expected_static_effect: Replace 432-byte scratch stores and reloads with 28 X plus 13 Q retained state, while keeping only 40 Q plus one D final stores per 648-byte top.
+  expected_performance_effect: Preserve the P6-A bridge upside without lane ST3; no cycle claim before a complete kernel exists.
+  expected_register_effect: Peak exactly 32 vectors in B normalization and at most 32 in three-part merge.
+  correctness_impact: Byte layout changes internally only; final 1,296 bytes must remain identical.
+  falsifier: Any tagged-byte mismatch, non-consecutive TBL allocation, spill, physical-register infeasibility, extra coefficient load, coefficient scratch, or peak above 32.
+  repo_probe:
+    slothy_root: /Users/chenpinhao/slothy
+    interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+    python_path: /Users/chenpinhao/slothy
+    target: cortex_a76
+  result: The exact model, physical allocation audit, and executable assembly oracle pass. Pack-A is 179 instructions with a 26-vector peak and 45 modeled cycles. The joint first-row consumer is 118 instructions with an exact 32-vector peak and 30 modeled cycles. Both Slothy solves are OPTIMAL without spill; all ten TBL2 and five TBL3 source groups are physically consecutive.
+  next_iteration: P6-D materialize the complete nine-row full/small ToBytes kernels, including 28-GPR saved-state reconstruction, cross-row carry, one outer ABI wrapper, final 40 STR Q plus one STR D stores, and whole-function correctness before Pi 5 timing.

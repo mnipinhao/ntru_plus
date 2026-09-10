@@ -1,0 +1,7 @@
+hypothesis:
+  id: gt864_p6c_joint_consumer
+  baseline: P6-B isolated register frontiers
+  proposed_change: Realize packed A in seven Q registers and consume one full output row through overlapping saved-pair TBL2 groups and a consecutive pair-2 TBL3 group.
+  joint_reason: Pair-2 representation and three-pair merge cannot be evaluated independently because only destructive consumer progress releases the registers required by the merge.
+  hard_gate: exact full-top byte map plus zero-spill Slothy allocation with valid overlapping TBL2 and consecutive TBL3 groups
+  non_goals: [production integration, Pi 5 benchmark, promotion]

@@ -1,0 +1,66 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: gt864_p6c_joint_consumer
+  name: GT864 zero-scratch ToBytes packed-A producer and joint row consumer
+  source: candidate.sym.S
+  scheme: NTRU+864
+  operation: exact packed-A production and first-row route-normalize-pack-merge allocation
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: allocation-only separate semantic regions
+  driver: optimize.py
+  expected_outputs: [candidate.pack-a.alloc.S, candidate.row0.alloc.S, slothy-results.json]
+  allow_spills: false
+region:
+  start_label: gt864_p6c_pack_a_slothy_start
+  end_label: gt864_p6c_row0_slothy_end
+  live_in: [coefficient and table pointers, thirteen saved-pair Q values, nine A or B row values]
+  live_out: [seven packed-A Q values or exact first 72 output bytes plus future-row state]
+abi:
+  inputs: [two saved packed pairs, one pair-2 A or B route, public route and merge indices]
+  outputs: [seven-Q packed A and exact merged output row]
+  clobbers: [v0-v31, x0-x17, x19-x28, NZCV]
+  concrete_gprs_allowed: [x0-x17, x19-x28, w8]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: canonicalize and pack nine A rows, then prove the worst first-row B normalization and five-chunk three-pair merge
+layout:
+  input_representation: FR0 route rows as signed int16; saved pair bytes densely packed in 26 Q half-slots plus 28 X slots
+  output_representation: canonical NTRU+ 12-bit bytes in physical output-row order
+  vector_lanes: eight halfwords during normalization and eight bytes per coefficient stream after XTN
+  packing: low A rows pair into four Q plus row8 low D; high A nibbles pack four rows per Q with row8 high S sharing the row8 Q
+memory_contract:
+  loads: [original coefficients once, fixed public route and merge indices, synthetic saved-state seeds]
+  stores: [final output only in complete design, synthetic live-out stores in allocation regions]
+  aliasing: input and output disjoint; synthetic frontier buffers disjoint
+  alignment: coefficient and table Q loads aligned as in production; output supports byte alignment
+  public_offsets_only: true
+  pointer_updates: [fixed public output progression]
+constant_contract:
+  constants: [q 3457, reciprocal9, nibble mask 15, production p3b1_a_fwd table, byte-merge table with compile-time plus-eight adjustment for the densely packed second saved pair]
+  modulus: 3457
+  representation: R0 producer values to canonical 12-bit serialized bytes
+  reduction_method: full path uses Barrett b equals 1 then conditional add q; small path retains its proved conditional-add-only contract
+range_contract:
+  input_ranges: [full ToBytes producer range already accepted by production, small producer range strictly between minus q and q]
+  intermediate_ranges: [canonical coefficients 0 to 3456, high nibbles 0 to 13, bytes 0 to 255]
+  output_ranges: [bytes 0 to 255]
+  narrowing_points: [XTN after canonicalization, four-bit packed-A high nibble]
+constant_time_contract:
+  secret_inputs: [all coefficient and retained pair bytes]
+  public_inputs: [pointers, row order, route tables, merge tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 model.py
+  test_command: assemble allocated regions and run packed-A differential harness where applicable
+  full_path_benchmark_command: forbidden until complete 1,296-byte full and small candidates pass correctness
+  benchmark_metric: cycles
+  lower_is_better: true

@@ -30,7 +30,8 @@ Status meanings:
 | P6-A | Dropped | Retain both saved pairs in registers but keep the current third-pair row-copy plus TBL repair | Exact 33-vector frontier is Slothy-infeasible; both one-fewer-vector and no-index controls allocate, so storage-only rewriting is rejected |
 | P6-B | Done | Compress pair-2 A to an exact seven-Q 12-bit state before constructing pair-2 B | All nine production route maps and 4,100 pack cases passed; 31-vector route and exact 32-vector full-normalization frontiers allocate without spill |
 | P6 | Active | Consumer-oriented zero-scratch ToBytes route + normalization + packing | Remove at least one P6-A frontier lifetime; no extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
-| P6-C | Next | Joint packed-A producer + restore-A/B pack + three-pair merge symbolic DAG | Peak at most 32; exact byte map; TBL consecutive-register rules; no scratch or extra coefficient loads; full-vector stores |
+| P6-C | Done | Joint packed-A producer + restore-A/B pack + three-pair merge symbolic DAG | Exact model and physical assembly oracle passed; peaks are 26/32; both Slothy allocations are optimal without spill; all physical TBL2/TBL3 groups are consecutive |
+| P6-D | Next | Complete all-nine-row full/small zero-scratch ToBytes kernels | Close 28-GPR reconstruction and cross-row carry; one public ABI wrapper; exact 1,296 bytes; no coefficient scratch, extra coefficient loads, lane ST3 or spill; then paired Pi 5 ToBytes/full-KEM timing |
 
 ## Fixed facts and non-tasks
 
@@ -148,3 +149,16 @@ Status meanings:
   capacity, not a complete kernel: P6-C must still close the joint packed-A
   producer, pair reconstruction, three-pair merge, TBL grouping and final
   full-vector store DAG before any benchmark or production change.
+- Completed the P6-C joint-consumer feasibility gate.  A stale symbolic load
+  name had created seven false live-ins and the earlier 33-vector result; after
+  repairing the definition chain, reverse liveness is exactly 26 vectors for
+  packed-A production and 32 for the worst first-row consumer.  Local
+  Cortex-A76 Slothy allocation is `OPTIMAL` without spill at modeled 45 and 30
+  cycles, respectively.  All ten TBL2 and five TBL3 source groups are
+  physically consecutive, and both allocated regions assemble on arm64.
+- The executable Mac oracle passed 12,288 packed-A cases and 4,096 joint-row
+  cases with exact output bytes and future-state preservation.  This remains a
+  partial kernel: production and its 432-byte wiped scratch are unchanged.
+  P6-D is now next and must build the complete full/small nine-row kernels,
+  close GPR reconstruction/cross-row carry and public ABI, then pass complete
+  correctness before Pi 5 timing.

@@ -1,0 +1,317 @@
+.text
+.global gt864_p6c_pack_a
+gt864_p6c_pack_a:
+// live-in: x0 packed output, x1 nine A rows, x2 q/reciprocal, x3 saved seed, x4 saved sink.
+// live-out: seven exact packed-A Q values and thirteen unchanged saved Q values.
+// range: input is the existing full-ToBytes producer range; output coefficients are canonical 0..3456.
+// reserved physical registers: x18, sp, xzr; vector allocation may use v0-v31.
+gt864_p6c_pack_a_slothy_start:
+    ldr Q<s0>, [x3, #0]
+    ldr Q<s1>, [x3, #16]
+    ldr Q<s2>, [x3, #32]
+    ldr Q<s3>, [x3, #48]
+    ldr Q<s4>, [x3, #64]
+    ldr Q<s5>, [x3, #80]
+    ldr Q<s6>, [x3, #96]
+    ldr Q<s7>, [x3, #112]
+    ldr Q<s8>, [x3, #128]
+    ldr Q<s9>, [x3, #144]
+    ldr Q<s10>, [x3, #160]
+    ldr Q<s11>, [x3, #176]
+    ldr Q<s12>, [x3, #192]
+    ldr Q<a0>, [x1, #0]
+    ldr Q<a1>, [x1, #16]
+    ldr Q<a2>, [x1, #32]
+    ldr Q<a3>, [x1, #48]
+    ldr Q<a4>, [x1, #64]
+    ldr Q<a5>, [x1, #80]
+    ldr Q<a6>, [x1, #96]
+    ldr Q<a7>, [x1, #112]
+    ldr Q<a8>, [x1, #128]
+    mov w8, #3457
+    dup V<modq>.8h, w8
+    mov w8, #9
+    dup V<recip>.8h, w8
+    sqrdmulh V<quotient0>.8h, V<a0>.8h, V<recip>.8h
+    mul V<qproduct0>.8h, V<quotient0>.8h, V<modq>.8h
+    sub V<red0>.8h, V<a0>.8h, V<qproduct0>.8h
+    sshr V<quotient0>.8h, V<red0>.8h, #15
+    and V<quotient0>.16b, V<quotient0>.16b, V<modq>.16b
+    add V<red0>.8h, V<red0>.8h, V<quotient0>.8h
+    xtn V<lo0>.8b, V<red0>.8h
+    orr V<L0>.16b, V<lo0>.16b, V<lo0>.16b
+    ushr V<hi0>.8h, V<red0>.8h, #8
+    uzp1 V<even0>.8h, V<hi0>.8h, V<hi0>.8h
+    uzp2 V<odd0>.8h, V<hi0>.8h, V<hi0>.8h
+    sli V<even0>.8h, V<odd0>.8h, #4
+    xtn V<hp0>.8b, V<even0>.8h
+    orr V<H0>.16b, V<hp0>.16b, V<hp0>.16b
+    sqrdmulh V<quotient1>.8h, V<a1>.8h, V<recip>.8h
+    mul V<qproduct1>.8h, V<quotient1>.8h, V<modq>.8h
+    sub V<red1>.8h, V<a1>.8h, V<qproduct1>.8h
+    sshr V<quotient1>.8h, V<red1>.8h, #15
+    and V<quotient1>.16b, V<quotient1>.16b, V<modq>.16b
+    add V<red1>.8h, V<red1>.8h, V<quotient1>.8h
+    xtn V<lo1>.8b, V<red1>.8h
+    mov V<L0>.d[1], V<lo1>.d[0]
+    ushr V<hi1>.8h, V<red1>.8h, #8
+    uzp1 V<even1>.8h, V<hi1>.8h, V<hi1>.8h
+    uzp2 V<odd1>.8h, V<hi1>.8h, V<hi1>.8h
+    sli V<even1>.8h, V<odd1>.8h, #4
+    xtn V<hp1>.8b, V<even1>.8h
+    ins V<H0>.h[2], V<hp1>.h[0]
+    ins V<H0>.h[3], V<hp1>.h[1]
+    sqrdmulh V<quotient2>.8h, V<a2>.8h, V<recip>.8h
+    mul V<qproduct2>.8h, V<quotient2>.8h, V<modq>.8h
+    sub V<red2>.8h, V<a2>.8h, V<qproduct2>.8h
+    sshr V<quotient2>.8h, V<red2>.8h, #15
+    and V<quotient2>.16b, V<quotient2>.16b, V<modq>.16b
+    add V<red2>.8h, V<red2>.8h, V<quotient2>.8h
+    xtn V<lo2>.8b, V<red2>.8h
+    orr V<L1>.16b, V<lo2>.16b, V<lo2>.16b
+    ushr V<hi2>.8h, V<red2>.8h, #8
+    uzp1 V<even2>.8h, V<hi2>.8h, V<hi2>.8h
+    uzp2 V<odd2>.8h, V<hi2>.8h, V<hi2>.8h
+    sli V<even2>.8h, V<odd2>.8h, #4
+    xtn V<hp2>.8b, V<even2>.8h
+    ins V<H0>.h[4], V<hp2>.h[0]
+    ins V<H0>.h[5], V<hp2>.h[1]
+    sqrdmulh V<quotient3>.8h, V<a3>.8h, V<recip>.8h
+    mul V<qproduct3>.8h, V<quotient3>.8h, V<modq>.8h
+    sub V<red3>.8h, V<a3>.8h, V<qproduct3>.8h
+    sshr V<quotient3>.8h, V<red3>.8h, #15
+    and V<quotient3>.16b, V<quotient3>.16b, V<modq>.16b
+    add V<red3>.8h, V<red3>.8h, V<quotient3>.8h
+    xtn V<lo3>.8b, V<red3>.8h
+    mov V<L1>.d[1], V<lo3>.d[0]
+    ushr V<hi3>.8h, V<red3>.8h, #8
+    uzp1 V<even3>.8h, V<hi3>.8h, V<hi3>.8h
+    uzp2 V<odd3>.8h, V<hi3>.8h, V<hi3>.8h
+    sli V<even3>.8h, V<odd3>.8h, #4
+    xtn V<hp3>.8b, V<even3>.8h
+    ins V<H0>.h[6], V<hp3>.h[0]
+    ins V<H0>.h[7], V<hp3>.h[1]
+    sqrdmulh V<quotient4>.8h, V<a4>.8h, V<recip>.8h
+    mul V<qproduct4>.8h, V<quotient4>.8h, V<modq>.8h
+    sub V<red4>.8h, V<a4>.8h, V<qproduct4>.8h
+    sshr V<quotient4>.8h, V<red4>.8h, #15
+    and V<quotient4>.16b, V<quotient4>.16b, V<modq>.16b
+    add V<red4>.8h, V<red4>.8h, V<quotient4>.8h
+    xtn V<lo4>.8b, V<red4>.8h
+    orr V<L2>.16b, V<lo4>.16b, V<lo4>.16b
+    ushr V<hi4>.8h, V<red4>.8h, #8
+    uzp1 V<even4>.8h, V<hi4>.8h, V<hi4>.8h
+    uzp2 V<odd4>.8h, V<hi4>.8h, V<hi4>.8h
+    sli V<even4>.8h, V<odd4>.8h, #4
+    xtn V<hp4>.8b, V<even4>.8h
+    orr V<H1>.16b, V<hp4>.16b, V<hp4>.16b
+    sqrdmulh V<quotient5>.8h, V<a5>.8h, V<recip>.8h
+    mul V<qproduct5>.8h, V<quotient5>.8h, V<modq>.8h
+    sub V<red5>.8h, V<a5>.8h, V<qproduct5>.8h
+    sshr V<quotient5>.8h, V<red5>.8h, #15
+    and V<quotient5>.16b, V<quotient5>.16b, V<modq>.16b
+    add V<red5>.8h, V<red5>.8h, V<quotient5>.8h
+    xtn V<lo5>.8b, V<red5>.8h
+    mov V<L2>.d[1], V<lo5>.d[0]
+    ushr V<hi5>.8h, V<red5>.8h, #8
+    uzp1 V<even5>.8h, V<hi5>.8h, V<hi5>.8h
+    uzp2 V<odd5>.8h, V<hi5>.8h, V<hi5>.8h
+    sli V<even5>.8h, V<odd5>.8h, #4
+    xtn V<hp5>.8b, V<even5>.8h
+    ins V<H1>.h[2], V<hp5>.h[0]
+    ins V<H1>.h[3], V<hp5>.h[1]
+    sqrdmulh V<quotient6>.8h, V<a6>.8h, V<recip>.8h
+    mul V<qproduct6>.8h, V<quotient6>.8h, V<modq>.8h
+    sub V<red6>.8h, V<a6>.8h, V<qproduct6>.8h
+    sshr V<quotient6>.8h, V<red6>.8h, #15
+    and V<quotient6>.16b, V<quotient6>.16b, V<modq>.16b
+    add V<red6>.8h, V<red6>.8h, V<quotient6>.8h
+    xtn V<lo6>.8b, V<red6>.8h
+    orr V<L3>.16b, V<lo6>.16b, V<lo6>.16b
+    ushr V<hi6>.8h, V<red6>.8h, #8
+    uzp1 V<even6>.8h, V<hi6>.8h, V<hi6>.8h
+    uzp2 V<odd6>.8h, V<hi6>.8h, V<hi6>.8h
+    sli V<even6>.8h, V<odd6>.8h, #4
+    xtn V<hp6>.8b, V<even6>.8h
+    ins V<H1>.h[4], V<hp6>.h[0]
+    ins V<H1>.h[5], V<hp6>.h[1]
+    sqrdmulh V<quotient7>.8h, V<a7>.8h, V<recip>.8h
+    mul V<qproduct7>.8h, V<quotient7>.8h, V<modq>.8h
+    sub V<red7>.8h, V<a7>.8h, V<qproduct7>.8h
+    sshr V<quotient7>.8h, V<red7>.8h, #15
+    and V<quotient7>.16b, V<quotient7>.16b, V<modq>.16b
+    add V<red7>.8h, V<red7>.8h, V<quotient7>.8h
+    xtn V<lo7>.8b, V<red7>.8h
+    mov V<L3>.d[1], V<lo7>.d[0]
+    ushr V<hi7>.8h, V<red7>.8h, #8
+    uzp1 V<even7>.8h, V<hi7>.8h, V<hi7>.8h
+    uzp2 V<odd7>.8h, V<hi7>.8h, V<hi7>.8h
+    sli V<even7>.8h, V<odd7>.8h, #4
+    xtn V<hp7>.8b, V<even7>.8h
+    ins V<H1>.h[6], V<hp7>.h[0]
+    ins V<H1>.h[7], V<hp7>.h[1]
+    sqrdmulh V<quotient8>.8h, V<a8>.8h, V<recip>.8h
+    mul V<qproduct8>.8h, V<quotient8>.8h, V<modq>.8h
+    sub V<red8>.8h, V<a8>.8h, V<qproduct8>.8h
+    sshr V<quotient8>.8h, V<red8>.8h, #15
+    and V<quotient8>.16b, V<quotient8>.16b, V<modq>.16b
+    add V<red8>.8h, V<red8>.8h, V<quotient8>.8h
+    xtn V<lo8>.8b, V<red8>.8h
+    orr V<L4>.16b, V<lo8>.16b, V<lo8>.16b
+    ushr V<hi8>.8h, V<red8>.8h, #8
+    uzp1 V<even8>.8h, V<hi8>.8h, V<hi8>.8h
+    uzp2 V<odd8>.8h, V<hi8>.8h, V<hi8>.8h
+    sli V<even8>.8h, V<odd8>.8h, #4
+    xtn V<hp8>.8b, V<even8>.8h
+    ins V<L4>.h[4], V<hp8>.h[0]
+    ins V<L4>.h[5], V<hp8>.h[1]
+    str Q<L0>, [x0, #0]
+    str Q<L1>, [x0, #16]
+    str Q<L2>, [x0, #32]
+    str Q<L3>, [x0, #48]
+    str Q<L4>, [x0, #64]
+    str Q<H0>, [x0, #80]
+    str Q<H1>, [x0, #96]
+    str Q<s0>, [x4, #0]
+    str Q<s1>, [x4, #16]
+    str Q<s2>, [x4, #32]
+    str Q<s3>, [x4, #48]
+    str Q<s4>, [x4, #64]
+    str Q<s5>, [x4, #80]
+    str Q<s6>, [x4, #96]
+    str Q<s7>, [x4, #112]
+    str Q<s8>, [x4, #128]
+    str Q<s9>, [x4, #144]
+    str Q<s10>, [x4, #160]
+    str Q<s11>, [x4, #176]
+    str Q<s12>, [x4, #192]
+gt864_p6c_pack_a_slothy_end:
+    ret
+
+.global gt864_p6c_row0
+gt864_p6c_row0:
+// live-in: x0 row output, x2 constants, x3 synthetic state, x4 live-out sink, x5 merge indices.
+// live-out: exact 72-byte row0 plus all state required by later physical rows.
+// range: B0 enters in the full producer range and becomes canonical 0..3456; saved state is bytes.
+// reserved physical registers: x18, sp, xzr; TBL2/TBL3 source groups must allocate consecutively.
+gt864_p6c_row0_slothy_start:
+    ldr Q<s0>, [x3, #0]
+    ldr Q<s1>, [x3, #16]
+    ldr Q<s2>, [x3, #32]
+    ldr Q<s3>, [x3, #48]
+    ldr Q<s4>, [x3, #64]
+    ldr Q<s5>, [x3, #80]
+    ldr Q<s6>, [x3, #96]
+    ldr Q<s7>, [x3, #112]
+    ldr Q<s8>, [x3, #128]
+    ldr Q<s9>, [x3, #144]
+    ldr Q<s10>, [x3, #160]
+    ldr Q<s11>, [x3, #176]
+    ldr Q<s12>, [x3, #192]
+    ldr Q<packed0>, [x3, #208]
+    ldr Q<packed1>, [x3, #224]
+    ldr Q<packed2>, [x3, #240]
+    ldr Q<packed3>, [x3, #256]
+    ldr Q<packed4>, [x3, #272]
+    ldr Q<packed5>, [x3, #288]
+    ldr Q<packed6>, [x3, #304]
+    ldr Q<b0>, [x3, #320]
+    ldr Q<b1>, [x3, #336]
+    ldr Q<b2>, [x3, #352]
+    ldr Q<b3>, [x3, #368]
+    ldr Q<b4>, [x3, #384]
+    ldr Q<b5>, [x3, #400]
+    ldr Q<b6>, [x3, #416]
+    ldr Q<b7>, [x3, #432]
+    ldr Q<b8>, [x3, #448]
+    mov w8, #3457
+    dup V<modq>.8h, w8
+    mov w8, #9
+    dup V<recip>.8h, w8
+    sqrdmulh V<quot>.8h, V<b0>.8h, V<recip>.8h
+    mls V<b0>.8h, V<quot>.8h, V<modq>.8h
+    sshr V<quot>.8h, V<b0>.8h, #15
+    and V<quot>.16b, V<quot>.16b, V<modq>.16b
+    add V<b0>.8h, V<b0>.8h, V<quot>.8h
+    eor V<modq>.16b, V<modq>.16b, V<modq>.16b
+    sli V<modq>.8h, V<b0>.8h, #4
+    xtn V<bmid>.8b, V<modq>.8h
+    ushr V<bhi_h>.8h, V<b0>.8h, #4
+    xtn V<bhi>.8b, V<bhi_h>.8h
+    ldr Q<nibble>, [x2, #32]
+    and V<ahi_lo>.16b, V<packed5>.16b, V<nibble>.16b
+    ushr V<nibble>.16b, V<packed5>.16b, #4
+    zip1 V<ahi>.16b, V<ahi_lo>.16b, V<nibble>.16b
+    orr V<bmid>.8b, V<bmid>.8b, V<ahi>.8b
+    ldr Q<p0_0>, [x5, #0]
+    tbl V<p0_0>.16b, {V<s0>.16b, V<s1>.16b}, V<p0_0>.16b
+    ldr Q<p1_0>, [x5, #16]
+    tbl V<p1_0>.16b, {V<s1>.16b, V<s2>.16b}, V<p1_0>.16b
+    orr V<p0_0>.16b, V<p0_0>.16b, V<p1_0>.16b
+    ldr Q<p2_0>, [x5, #32]
+    tbl V<p2_0>.16b, {V<packed0>.16b, V<bmid>.16b, V<bhi>.16b}, V<p2_0>.16b
+    orr V<p0_0>.16b, V<p0_0>.16b, V<p2_0>.16b
+    str Q<p0_0>, [x0, #0]
+    ldr Q<p0_1>, [x5, #48]
+    tbl V<p0_1>.16b, {V<s0>.16b, V<s1>.16b}, V<p0_1>.16b
+    ldr Q<p1_1>, [x5, #64]
+    tbl V<p1_1>.16b, {V<s1>.16b, V<s2>.16b}, V<p1_1>.16b
+    orr V<p0_1>.16b, V<p0_1>.16b, V<p1_1>.16b
+    ldr Q<p2_1>, [x5, #80]
+    tbl V<p2_1>.16b, {V<packed0>.16b, V<bmid>.16b, V<bhi>.16b}, V<p2_1>.16b
+    orr V<p0_1>.16b, V<p0_1>.16b, V<p2_1>.16b
+    str Q<p0_1>, [x0, #16]
+    ldr Q<p0_2>, [x5, #96]
+    tbl V<p0_2>.16b, {V<s0>.16b, V<s1>.16b}, V<p0_2>.16b
+    ldr Q<p1_2>, [x5, #112]
+    tbl V<p1_2>.16b, {V<s1>.16b, V<s2>.16b}, V<p1_2>.16b
+    orr V<p0_2>.16b, V<p0_2>.16b, V<p1_2>.16b
+    ldr Q<p2_2>, [x5, #128]
+    tbl V<p2_2>.16b, {V<packed0>.16b, V<bmid>.16b, V<bhi>.16b}, V<p2_2>.16b
+    orr V<p0_2>.16b, V<p0_2>.16b, V<p2_2>.16b
+    str Q<p0_2>, [x0, #32]
+    ldr Q<p0_3>, [x5, #144]
+    tbl V<p0_3>.16b, {V<s0>.16b, V<s1>.16b}, V<p0_3>.16b
+    ldr Q<p1_3>, [x5, #160]
+    tbl V<p1_3>.16b, {V<s1>.16b, V<s2>.16b}, V<p1_3>.16b
+    orr V<p0_3>.16b, V<p0_3>.16b, V<p1_3>.16b
+    ldr Q<p2_3>, [x5, #176]
+    tbl V<p2_3>.16b, {V<packed0>.16b, V<bmid>.16b, V<bhi>.16b}, V<p2_3>.16b
+    orr V<p0_3>.16b, V<p0_3>.16b, V<p2_3>.16b
+    str Q<p0_3>, [x0, #48]
+    ldr Q<p0_4>, [x5, #192]
+    tbl V<p0_4>.16b, {V<s0>.16b, V<s1>.16b}, V<p0_4>.16b
+    ldr Q<p1_4>, [x5, #208]
+    tbl V<p1_4>.16b, {V<s1>.16b, V<s2>.16b}, V<p1_4>.16b
+    orr V<p0_4>.16b, V<p0_4>.16b, V<p1_4>.16b
+    ldr Q<p2_4>, [x5, #224]
+    tbl V<p2_4>.16b, {V<packed0>.16b, V<bmid>.16b, V<bhi>.16b}, V<p2_4>.16b
+    orr V<p0_4>.16b, V<p0_4>.16b, V<p2_4>.16b
+    str D<p0_4>, [x0, #64]
+    str Q<s3>, [x4, #0]
+    str Q<s4>, [x4, #16]
+    str Q<s5>, [x4, #32]
+    str Q<s6>, [x4, #48]
+    str Q<s7>, [x4, #64]
+    str Q<s8>, [x4, #80]
+    str Q<s9>, [x4, #96]
+    str Q<s10>, [x4, #112]
+    str Q<s11>, [x4, #128]
+    str Q<s12>, [x4, #144]
+    str Q<packed0>, [x4, #160]
+    str Q<packed1>, [x4, #176]
+    str Q<packed2>, [x4, #192]
+    str Q<packed3>, [x4, #208]
+    str Q<packed4>, [x4, #224]
+    str Q<packed5>, [x4, #240]
+    str Q<packed6>, [x4, #256]
+    str Q<b1>, [x4, #272]
+    str Q<b2>, [x4, #288]
+    str Q<b3>, [x4, #304]
+    str Q<b4>, [x4, #320]
+    str Q<b5>, [x4, #336]
+    str Q<b6>, [x4, #352]
+    str Q<b7>, [x4, #368]
+    str Q<b8>, [x4, #384]
+gt864_p6c_row0_slothy_end:
+    ret
