@@ -147,7 +147,10 @@ normalized generic product. Their declarations live in
 `test/reference/poly_reference.h`; only the ABI test links these sources.
 Neither kernel is included in KEM_SOURCES or the SUPERCOP export.
 The shared `gt_rowbitrev_lambda` table remains in production because the
-Encap basemul-add also consumes it. Forward NTT sources are unchanged.
+Encap basemul-add also consumes it. `basemul_lambda.c` owns the sole C
+definition; assembly refers to the external symbol and the linker resolves it.
+No public or internal header declares the table because there is no C consumer.
+Forward NTT sources are unchanged.
 
 The three inverse Stage45 rows share one internal row helper. This changes only
 the call structure and linked text size; row arithmetic, input order, and
@@ -189,7 +192,7 @@ QSoA storage.
 
 The exact release source list is defined by `Makefile`. All production C,
 assembly, and headers are in the package root. Private endpoint declarations
-remain separate in `keygen.h`, `ntt_internal.h`, and `decap_verify.h`.
+remain separate in `keygen.h`, `ntt.h`, and `decap_verify.h`.
 The endpoint naming and ntt/base/pack consolidation preserve parameters and
 layout contracts. Each original assembly owner has a private identifier
 namespace and a corresponding section boundary. Validation/reference endpoints

@@ -24,7 +24,6 @@
 | `layout.h` | GT Production | `layout.h` | copy |
 | `ntt.h` | GT Production | `ntt.h` | copy |
 | `ntt.s` | GT Production | `ntt.S` | Linux GCC preprocessing |
-| `ntt_internal.h` | GT Production | `ntt_internal.h` | copy |
 | `pack.s` | GT Production | `pack.S` | Linux GCC preprocessing |
 | `params.h` | Official | `params.h` | copy |
 | `poly.h` | GT Production | `poly.h` | copy |

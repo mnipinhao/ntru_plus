@@ -8,7 +8,7 @@
 #include "randombytes.h"
 #include "decap_verify.h"
 #include "keygen.h"
-#include "ntt_internal.h"
+#include "ntt.h"
 #include "util.h"
 
 typedef gt_cq_poly keygen_poly;

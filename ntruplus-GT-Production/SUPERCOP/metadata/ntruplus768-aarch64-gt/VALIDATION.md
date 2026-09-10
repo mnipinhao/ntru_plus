@@ -68,3 +68,20 @@ Full machine-readable results are retained in the E34 experiment record as
 `materialized-gate-summary.json`. Raw build, KAT, paired-sample and PMU outputs
 remain ephemeral on the Pi under
 `/home/pi/gt768-official-shell-gt-poly-20260910-e34/materialized-gate-v1/raw/`.
+
+## Header ownership cleanup revalidation
+
+The internal transform declarations were consolidated into `ntt.h`, and the
+unused C declaration of `gt_rowbitrev_lambda` was removed. The table has one
+definition in `basemul_lambda.c`; `base.s` resolves that symbol at link time.
+
+- Deterministic regeneration against the Official source above: pass.
+- Mac and Pi release, KEM, ABI, canonical-boundary, small-input, zeroization,
+  and KAT gates: pass.
+- Pi baseline/candidate `.text` SHA256 (both):
+  `eb05f6dea5ff904a5ef300f1b726a6b63f98bf4159c873ce9d968ed4c495f7db`.
+- Pi baseline/candidate `.rodata` SHA256 (both):
+  `ddd8fe041b3ec66891b3076b5de8e6aa84c371c150e4820797eda358bff524d7`.
+
+Thus the cleanup changes header ownership and package structure only; linked
+instructions and constant-table bytes are unchanged.

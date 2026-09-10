@@ -105,7 +105,7 @@ for symbol in REQUIRED_PUBLIC_SYMBOLS:
         fail(f"missing public declaration: {symbol}")
 
 kem_source = (ROOT / "kem.c").read_text(encoding="utf-8")
-internal_headers = (ROOT / "ntt_internal.h").read_text(encoding="utf-8")
+internal_headers = (ROOT / "ntt.h").read_text(encoding="utf-8")
 for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
     if re.search(rf"\b{re.escape(symbol)}\s*\(", internal_headers) is None:
         fail(f"missing internal declaration: {symbol}")
@@ -126,7 +126,7 @@ expected = {
     "LICENSE",
     "SOURCE-MANIFEST.sha256",
     "util.h",
-    "ntt_internal.h",
+    "ntt.h",
     "scripts/check_zeroization.py",
     "test/test_zeroization.c",
     "test/test_canonical.c",

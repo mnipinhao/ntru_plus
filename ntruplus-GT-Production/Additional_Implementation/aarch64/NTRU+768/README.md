@@ -30,7 +30,7 @@ constant tables, and small common macros have been flattened into their owning
 source files; the release does not require separate `.inc` fragments.
 
 The selected KEM also uses private specialized endpoints in this directory.
-Their declarations remain separate in `keygen.h`, `ntt_internal.h`, and
+Their declarations remain separate in `keygen.h`, `ntt.h`, and
 `decap_verify.h`. These are part of this one production build,
 not optional profiles:
 

@@ -1,7 +1,5 @@
 #include <stdint.h>
 
-#include "ntt_internal.h"
-
 const int16_t gt_rowbitrev_lambda[2][96] = {
 	{
 		  1655,   -601,    -31,  -1655,   1473,     31,    183,  -1473,

@@ -8,7 +8,7 @@ OFFICIAL_COPY = (
     'symmetric.h','cbd.s','architectures','goal-constbranch','goal-constindex')
 GT_COPY = (
     'kem.c','keygen.c','keygen_lambda.c','basemul_lambda.c','poly.h','layout.h',
-    'ntt.h','ntt_internal.h','decap_verify.h','keygen.h')
+    'ntt.h','decap_verify.h','keygen.h')
 GT_ASM = {'ntt.S':'ntt.s','base.S':'base.s','pack.S':'pack.s',
           'add.S':'add.s','kem_api.S':'kem_api.s'}
 GENERATED_METADATA = ('SOURCE-MAP.json','SOURCE-MAP.md','SOURCE-MANIFEST.sha256',
