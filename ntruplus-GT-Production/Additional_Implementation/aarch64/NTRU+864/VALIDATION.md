@@ -109,3 +109,16 @@ transcript remained exactly 417,216 bytes with SHA-256
 `2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67`.
 Six paired Pi 5 repetitions measured BaseInv success at 5469.860 cycles versus
 5561.656 and Keygen at 46995.250 versus 47172.250.
+
+## P3-A complete inverse centering — 2026-09-10
+
+The production Inverse now calls one constant-resident `center864` kernel in
+place of 27 `center32` calls.  The closed input bound remains `abs <= 6912` and
+the exact output remains natural-order centered R0 with `abs <= 1728`.
+Exhaustive scalar coverage of the producer range, 4,096 random vectors and
+memory canaries passed locally.  On Pi 5, both isolated P2/P3-A packages passed
+manifest validation, `test_kem`, 100-case KAT, 256 exact Inverse comparisons,
+256 exact-alias comparisons, and six repetitions of valid/tampered KEM tests.
+Paired PMU measured -235 instructions, -52 branches, and -212.859 cycles per
+Inverse; complete Decaps inherited the same exact static-event reduction and
+-212.275 cycles.

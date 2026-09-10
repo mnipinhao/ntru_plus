@@ -1,0 +1,15 @@
+kernel: center864_body
+inputs: [a0, a1, a2, a3, q, reciprocal9, halfq]
+outputs: [centered_a0, centered_a1, centered_a2, centered_a3]
+per_vector:
+  - quotient = SQRDMULH(a, reciprocal9)
+  - reduced = a - quotient*q
+  - negative_mask = reduced >> 15
+  - nonnegative = reduced + (negative_mask & q)
+  - high_mask = nonnegative > halfq
+  - centered = nonnegative - (high_mask & q)
+memory:
+  loads: four Q vectors before any store
+  stores: four Q vectors at the original public offsets
+ordering: four independent arithmetic chains may interleave; tied MLS operands and memory contract remain exact
+range: inherited exact production center32 proof for input abs <=6912 and output abs <=1728

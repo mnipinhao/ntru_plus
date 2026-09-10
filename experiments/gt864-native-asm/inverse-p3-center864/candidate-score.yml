@@ -1,0 +1,28 @@
+candidate:
+  id: gt864_p3a_center864
+  status: promote
+  mode: new_kernel_baseline_then_iterate
+contract:
+  preserved: true
+  approved_changes: true
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  candidate_expected_cycles: 37
+  candidate_expected_cycles_per_64_bytes: 37
+  parity_justification: "fixed loop-safe allocation uses v0-v10, 40 instructions, and zero spill; Slothy timing schedule is optimal on Cortex-A76 model"
+benchmark:
+  status: pass
+  command: "six paired-order repetitions on Raspberry Pi 5 core 3"
+  metric: complete Decaps cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.1
+  baseline: 44206.275
+  candidate: 43994.000
+decision:
+  reason: "one constant-resident loop removes 235 instructions and 52 branches from both Inverse and Decaps, improving them by 212.86 and 212.28 cycles respectively"
+  next_iteration: "P3-B fuse final centering into inverse producer stores"

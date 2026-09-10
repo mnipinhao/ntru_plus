@@ -6,7 +6,8 @@ every optimization gate so deferred and rejected work does not disappear.
 
 Latest production promotion integrates the 160-instruction two-tile fused-wide
 BaseInv numerator, SIMD failure aggregation, 37-instruction no-centering finish
-and scheduled pair+merge ToBytes.
+and scheduled pair+merge ToBytes.  P3-A also replaces 27 final Inverse
+`center32` calls with one constant-resident `center864` pass.
 Mac and Pi 5 KEM/KAT, canonical rejection, malformed-input, BaseInv
 failure/alias/AAPCS/scratch-wipe and paired PMU gates pass.  See
 [NATIVE-INTEGRATION.md](NATIVE-INTEGRATION.md),

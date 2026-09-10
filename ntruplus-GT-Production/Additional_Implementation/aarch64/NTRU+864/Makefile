@@ -4,7 +4,7 @@ CFLAGS = -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sec
 HEADERS := $(wildcard *.h NO_CE/*.h)
 TOBYTES_OBJECTS := gt864_tobytes.o gt864_tobytes_public.o gt864_tobytes_full_core.o gt864_tobytes_small_core.o gt864_tobytes_merge_core.o gt864_pair_merge_small.o gt864_pair_merge_full.o
 NATIVE_OBJECTS := gt864_native.o gt864_native_public.o gt864_native_baseinv_num.o gt864_native_baseinv_prefix.o gt864_native_baseinv_inverse.o gt864_native_baseinv_recover.o gt864_native_baseinv_finish.o
-NATIVE_OBJECTS += gt864_native_basemul.o gt864_native_center32.o gt864_native_inverse9.o gt864_native_inverse16_lazy.o gt864_native_inverse_tail_lazy.o gt864_support_abi.o
+NATIVE_OBJECTS += gt864_native_basemul.o gt864_native_center864.o gt864_native_inverse9.o gt864_native_inverse16_lazy.o gt864_native_inverse_tail_lazy.o gt864_support_abi.o
 $(NATIVE_OBJECTS): $(HEADERS) Makefile
 gt864_native.o: gt864_native.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@

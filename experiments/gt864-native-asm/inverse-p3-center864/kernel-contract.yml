@@ -1,0 +1,52 @@
+mode: new_kernel_baseline_then_iterate
+candidate_status: promote
+kernel:
+  id: center864
+  name: constant-resident complete GT864 inverse canonicalization
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: fixed-constant single-iteration RA and schedule inside public fixed loop
+  allow_spills: false
+  driver: optimize.py
+region:
+  start_label: center864_body_slothy_start
+  end_label: center864_body_slothy_end
+  live_in: [x0, q, recip, halfq]
+  live_out: [x0, q, recip, halfq]
+abi:
+  inputs: ["x0 current 64-byte block", "v0=q", "v1=Barrett reciprocal 9", "v2=halfq 1728"]
+  outputs: [four centered Q vectors stored in place]
+  concrete_gprs_allowed: [x0, x4, x8, x30]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: four contiguous natural-order R0 Q vectors
+  output_representation: same positions, centered modulo q
+memory_contract:
+  loads: [x0 offsets 0, 16, 32, 48]
+  stores: [x0 offsets 0, 16, 32, 48]
+  alignment: 2 bytes
+  aliasing: exact in-place; all loads precede overlapping stores
+  public_offsets_only: true
+constant_contract:
+  constants: [3457, 9, 1728]
+  modulus: 3457
+  representation: R0; constants established once outside the fixed 27-iteration loop
+range_contract:
+  input_ranges: [abs <= 6912]
+  intermediate_ranges: [same Algorithm-10 Barrett and branchless centering DAG as production center32]
+  output_ranges: [abs <= 1728]
+constant_time_contract:
+  secret_inputs: [coefficients]
+  public_inputs: [pointers, fixed loop count, constants]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 verify.py
+  test_command: production KAT and native inverse differential/failure/alias checks
+  full_path_benchmark_command: paired Pi5 Inverse and Decaps PMU

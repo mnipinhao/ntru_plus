@@ -23,7 +23,7 @@ Status meanings:
 | P0 | Done | Promote BaseInv 84-instruction fused-wide numerator and 37-instruction no-centering finish; promote scheduled ToBytes pair+merge | Passed exact linked-object sizes, Mac/Linux assembly, 100-case KAT, 808-case BaseInv failure/alias/wipe, malformed transcript and Pi 5 paired PMU |
 | P1 | Done | Replace BaseInv bitwise exponentiation with a scale-correct shortest addition chain for exponent 3455 | Promoted 157-instruction, 21-MM zero-spill core; exact scale/range, KAT, failure/alias/wipe and Pi 5 BaseInv/Keygen gates passed |
 | P2 | Done | BaseInv two-tile kernel with q/qinv/R constants resident and 18 numerator calls; SIMD chain-end failure aggregation | Promoted combined candidate: exact output/cleanup, constant-time scan, zero spill, KAT and Pi 5 BaseInv/Keygen gates passed |
-| P3 | Active | Monolithic/stage-fused Decaps inverse | Preserve BaseMul R^-1 to natural-R0 contract; remove avoidable stage calls/scratch/centering only after range closure; improve complete Decaps |
+| P3 | Active | Stage-fused Decaps inverse; P3-A constant-resident `center864` promoted | P3-B must preserve BaseMul R^-1 to natural-R0 contract while fusing centering into I16/tail producer stores and removing the separate 1,728-byte pass |
 | P4 | Next | Fuse FromBytes legality accumulation into decode/routing | No second 1,728-byte coefficient scan; exact canonical rejection for Encaps and all three Decaps inputs |
 | P5 | Next | Reuse KEM temporaries following proven lifetimes | Keygen one `h`; Encaps reuse `ct` for serialized `r`; Decaps reduce seven polynomial temporaries after alias audit; preserve cleanup and failure semantics |
 | P6 | Deferred | True zero-scratch ToBytes route + normalization + packing | No extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
@@ -83,3 +83,11 @@ Status meanings:
   KEM, BaseInv success and BaseInv failure tests passed.  Encaps and Decaps have
   zero instruction change because they do not call BaseInv.
 - Activated P3: monolithic/stage-fused Decaps inverse.
+- Completed and promoted P3-A.  A single `center864` loop replaces 27
+  `center32` calls, keeping q, reciprocal9 and halfq resident.  Slothy schedules
+  each 64-byte body at 37 modeled Cortex-A76 cycles with 40 instructions and no
+  spill.  Exhaustive producer-range scalar coverage, 4,096 random vectors,
+  canaries, exact aliasing, KAT and tampered KEM checks passed.  Pi 5 Inverse
+  improved from 7230.391 to 7017.531 cycles (-2.94%); Decaps improved from
+  44206.275 to 43994.000 cycles (-0.48%), with exactly 235 instructions and 52
+  branches removed from both.  P3 remains active for producer-fused centering.

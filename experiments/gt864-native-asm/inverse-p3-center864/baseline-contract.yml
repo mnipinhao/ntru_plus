@@ -1,0 +1,39 @@
+mode: new_kernel_baseline_then_iterate
+candidate_status: investigate
+baseline:
+  id: p2_958c5a06_center32
+  source: ../../../ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_center32.S
+  extracted_region: baseline-region.S
+  function: center32
+  start_label: center32_slothy_start
+  end_label: center32_slothy_end
+baseline_cost:
+  static_instruction_count: 46
+  dynamic_leaf_instruction_count: 1242
+  benchmark_command: python3 run_pi5.py
+kernel:
+  id: center864_baseline
+  name: 27 calls to production center32
+  source: production gt864_native_public.S and gt864_native_center32.S at commit 958c5a06
+target: {arch: aarch64_neon, microarchitecture: cortex_a76}
+region:
+  instruction_count: 46
+  start_label: center32_slothy_start
+  end_label: center32_slothy_end
+  live_in: [x19 output base]
+  live_out: [centered 1728-byte output]
+abi:
+  inputs: [864 natural-order R0 coefficients with abs <= 6912]
+  outputs: [864 natural-order centered R0 coefficients with abs <= 1728]
+memory_contract:
+  loads: [108 Q loads from output]
+  stores: [108 Q stores to output]
+  aliasing: in-place
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+cost:
+  leaf_instructions: 46
+  leaf_calls: 27
+  repeated_constant_materializations: 27

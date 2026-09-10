@@ -55,7 +55,7 @@ to arbitrary polynomial multiplication.
   FromBytes in [0,4095], including malformed bytes. Output bound is 2497.
   Both early REDCs and all three final REDCs remain; none were deleted here.
 - gt864_native_inverse9.S, gt864_native_inverse16_lazy.S,
-  gt864_native_inverse_tail_lazy.S, gt864_native_center32.S: consume R^-1,
+  gt864_native_inverse_tail_lazy.S, gt864_native_center864.S: consume R^-1,
   compensate it in terminal scale constants, then center the natural output.
 - gt864_native_scaled_tables.h: exact experimental scaled table values, with
   a distinct include guard to avoid collision with the legacy R0 table header.

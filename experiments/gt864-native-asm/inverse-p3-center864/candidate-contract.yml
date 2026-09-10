@@ -1,0 +1,24 @@
+candidate:
+  id: center864
+  status: promote
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: true
+  approved_changes: [internal call granularity changes from 27 center32 calls to one fixed-loop center864 call; output and public inverse ABI unchanged]
+region:
+  start_label: center864_body_slothy_start
+  end_label: center864_body_slothy_end
+  live_in: [x0, q, recip, halfq]
+  live_out: [x0, q, recip, halfq]
+abi:
+  inputs: [x0 current 64-byte block and three constant vectors]
+  outputs: [four centered Q vectors stored in place]
+memory_contract:
+  loads: [four Q]
+  stores: [same four Q]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

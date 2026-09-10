@@ -286,14 +286,9 @@ C(gt864_inverse_rinv_asm):
     mov x3, x22
     mov x4, x24
     bl C(lazy_itail)
-    mov x26, #27
-    mov x27, x19
-.Linv_center:
-    mov x0, x27
-    bl C(center32)
-    add x27, x27, #64
-    subs x26, x26, #1
-    b.ne .Linv_center
+    // P3-A: one complete normalization pass; constants stay resident.
+    mov x0, x19
+    bl C(center864)
     mov x9, sp
     mov x10, #112
 .Linv_wipe:
