@@ -3,7 +3,7 @@ candidate_status: investigate
 kernel:
   id: gt864_p6d_complete_tobytes
   name: GT864 complete zero-scratch full and small ToBytes
-  source: generated symbolic regions and public wrapper
+  source: d3-regions.sym.S and p6d3-full.alloc.S
   scheme: NTRU+864
   operation: route, normalize, pack and serialize two 648-byte tops
 target:
@@ -13,8 +13,8 @@ target:
   slothy_target_module: slothy.targets.aarch64.cortex_a76
 slothy:
   workflow: allocation first for saved-pair producer and per-row consumer, then bounded timing windows
-  driver: optimize.py
-  expected_outputs: [producer.alloc.S, consumer.alloc.S, slothy-results.json]
+  driver: optimize_d3.py
+  expected_outputs: [d3.*.alloc.S, p6d3-full.alloc.S, d3-slothy-results.json]
   allow_spills: false
 region:
   start_label: gt864_p6d_saved_pair_start
@@ -25,7 +25,7 @@ abi:
   inputs: [output byte pointer, FR0 coefficient pointer, prefix table, route table, merge table, public full-or-small selector]
   outputs: [exact 1296 canonical packed bytes]
   clobbers: [v0-v31, x0-x30, NZCV]
-  concrete_gprs_allowed: [x0-x30, w8, w11]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
   fixed_vector_registers: []
   reserved_registers: [x18, sp]
 instruction_dag:
@@ -47,7 +47,7 @@ constant_contract:
   constants: [q 3457, reciprocal9, nibble mask15, production prefix and route tables, compile-time-adjusted merge indices, two fixed three-channel interleave tables]
   modulus: 3457
   representation: full path canonicalizes any accepted signed-int16 producer; small path requires proved minus-q-to-q producers
-  reduction_method: full Barrett b-equals-one plus conditional add; small conditional add only
+  reduction_method: D3 correctness baseline uses full Barrett b-equals-one plus conditional add for both entry points; a later small-specific DAG may remove reciprocal reductions after timing
 range_contract:
   input_ranges: [full signed-int16 accepted producer range, small producer strictly between minus q and q]
   intermediate_ranges: [canonical coefficient 0 to 3456, byte 0 to 255]

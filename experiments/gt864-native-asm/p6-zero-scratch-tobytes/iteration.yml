@@ -14,17 +14,17 @@ baseline:
 target:
   host: pi@100.99.191.9
   microarchitecture: Cortex-A76 (Raspberry Pi 5)
-status: active-p6d
+status: p6d-candidate-awaiting-timing
 gate_result: >-
-  P6-D1 now passes: the saved-pair producers allocate OPTIMAL without spill,
-  their physical TBL groups are consecutive, and 4,107 executable arm64 cases
-  match the production byte-pair reference. P6-D2 also passes a 4,096-case
-  exact nine-row model for the 13-Q plus 28-GPR state, including the row-4
-  Q-to-GPR crossing and final 40-Q plus one-D store shape. Production remains
-  unchanged because P6-D3 has not yet materialized one complete wrapper.
+  P6-D3 now passes complete assembly correctness and physical audit. All twelve
+  local Cortex-A76 Slothy regions allocate OPTIMAL without spill; the two-top
+  wrapper performs exactly 108 coefficient Q loads, zero coefficient scratch,
+  and 80 Q plus two D final stores, with no lane ST3 or x18. Full passes 4,107
+  arbitrary-int16 cases and small passes 4,096 proved-range cases. Production
+  remains unchanged pending timing; small currently shares the full Barrett DAG.
 next_iteration: >-
-  P6-D3 materialize one complete full/small assembly wrapper from the proven
-  producer and row schedule. Preserve 108 coefficient Q loads, zero coefficient
-  scratch, no lane ST3, no spill and direct 40 Q plus one D stores per top.
-  Prove the physical cross-stage register map, public AAPCS save/restore and
-  whole-function bytes before any Pi 5 benchmark or production promotion.
+  P6-E perform paired Pi 5 same-boundary full and small ToBytes timing against
+  the frozen 432-byte-scratch production baseline, including cycles,
+  instructions, IPC, loads and stores. If small loses due to shared full
+  normalization, create a conditional-add-only D3-small specialization before
+  any production or full-KEM integration.

@@ -31,7 +31,8 @@ Status meanings:
 | P6-B | Done | Compress pair-2 A to an exact seven-Q 12-bit state before constructing pair-2 B | All nine production route maps and 4,100 pack cases passed; 31-vector route and exact 32-vector full-normalization frontiers allocate without spill |
 | P6 | Active | Consumer-oriented zero-scratch ToBytes route + normalization + packing | Remove at least one P6-A frontier lifetime; no extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
 | P6-C | Done | Joint packed-A producer + restore-A/B pack + three-pair merge symbolic DAG | Exact model and physical assembly oracle passed; peaks are 26/32; both Slothy allocations are optimal without spill; all physical TBL2/TBL3 groups are consecutive |
-| P6-D | Next | Complete all-nine-row full/small zero-scratch ToBytes kernels | Close 28-GPR reconstruction and cross-row carry; one public ABI wrapper; exact 1,296 bytes; no coefficient scratch, extra coefficient loads, lane ST3 or spill; then paired Pi 5 ToBytes/full-KEM timing |
+| P6-D | Done | Complete all-nine-row full/small zero-scratch ToBytes kernels | 12 Slothy regions optimal/no-spill; exact 1,296 bytes; 108 coefficient Q loads; zero coefficient scratch; 80 Q + 2 D stores; complete full/small oracle passed |
+| P6-E | Next | Same-boundary Pi 5 timing of P6-D3 versus frozen 432-byte-scratch ToBytes | Full and small cycles/instructions/IPC/load/store; specialize small conditional-add-only DAG if shared full normalization loses; only then consider full-KEM integration |
 
 ## Fixed facts and non-tasks
 
@@ -170,5 +171,17 @@ Status meanings:
 - P6-D2 proves the all-nine-row coordinate schedule over 4,096 cases.  Rows are
   consumed in logical order `0,3,6,1,4,7,2,5,8`; physical row 4 is the exact
   Q-to-GPR crossing, and the final top boundary remains 40 `STR Q` plus one
-  `STR D`.  P6-D is still active: D3 must materialize one complete full/small
-  wrapper and close physical handoff, AAPCS and whole-function correctness.
+  `STR D`.
+- Completed P6-D3.  The third pair is processed as A-route/normalize/pack,
+  then B-route, then nine physical-row consumers; this avoids simultaneous
+  nine-A plus nine-B liveness.  Cross-row eight-byte carry converts the first
+  byte-correct `72 Q + 18 D` shape into exactly `80 Q + 2 D` final stores.
+  All twelve local Cortex-A76 Slothy regions are `OPTIMAL` with spill disabled.
+  The 16,752-byte arm64 text performs 108 coefficient Q loads, uses a 176-byte
+  public save frame and zero coefficient scratch, keeps TBL groups consecutive,
+  and uses neither lane ST3 nor x18.  The executable oracle passed 4,107 full
+  signed-int16 cases and 4,096 small-range cases with output canaries.
+- Production remains unchanged.  D3-small currently aliases the full Barrett
+  DAG, so P6-E must time full and small separately against the frozen scratch
+  implementation; a conditional-add-only small specialization is the fallback
+  before any production promotion.

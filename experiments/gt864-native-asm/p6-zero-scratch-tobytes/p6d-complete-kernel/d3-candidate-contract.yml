@@ -1,0 +1,45 @@
+candidate:
+  id: gt864_p6d3_complete_tobytes
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: d3-regions.sym.S
+  allocated_source: p6d3-full.alloc.S
+  slothy_driver: optimize_d3.py
+contract_preservation:
+  preserved: true
+  approved_changes: false
+  changed_fields: [internal table layout and removal of coefficient scratch are the experiment itself]
+region:
+  start_label: gt864_p6d3_full_asm
+  end_label: .Lp6d3_tables
+  live_in: [x0 output pointer, x1 FR0 coefficient pointer]
+  live_out: [exact 1296-byte serialized output and x0 original output pointer]
+abi:
+  inputs: [output byte pointer, FR0 coefficient pointer]
+  outputs: [exact canonical 1296-byte string]
+  clobbers: [caller-saved GPRs, v0-v31, NZCV]
+  concrete_gprs_allowed: [x0-x30]
+  fixed_vector_registers: []
+  reserved_registers: [x18, sp]
+memory_contract:
+  loads: [108 coefficient Q loads, 624-byte embedded public table, 176-byte public save frame]
+  stores: [80 Q plus two D output stores, public AAPCS save frame]
+  aliasing: input and output disjoint
+  alignment: input Q aligned; output may be unaligned
+  public_offsets_only: true
+  pointer_updates: [two fixed top offsets and nine fixed 72-byte row advances]
+constant_contract:
+  constants: [q3457, reciprocal9, nibble15, prefix, route, pair interleave and adjusted merge tables]
+  modulus: 3457
+  representation: full signed-int16 canonicalization; D3 small entry intentionally shares the full arithmetic baseline
+  reduction_method: Barrett reciprocal9 plus conditional add for both D3 entry points
+range_contract:
+  input_ranges: [full signed int16; small strictly between minus q and q]
+  intermediate_ranges: [canonical 0 to 3456 and byte 0 to 255]
+  output_ranges: [byte 0 to 255]
+  narrowing_points: [XTN only after canonicalization]
+constant_time_contract:
+  secret_inputs: [coefficients]
+  public_inputs: [addresses and compile-time table offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

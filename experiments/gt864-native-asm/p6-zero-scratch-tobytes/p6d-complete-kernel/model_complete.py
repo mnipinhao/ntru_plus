@@ -102,7 +102,7 @@ def main() -> None:
         "final_store_shape_per_top": {"bytes": 648, "str_q": 40, "str_d": 1, "lane_st3": 0},
         "coefficient_scratch_bytes": 0,
         "gate": "PASS_P6D2_ALL_ROW_LAYOUT_MODEL",
-        "remaining": "P6-D3 must materialize this schedule in one public full/small assembly wrapper and prove whole-function allocation/correctness.",
+        "closure": "P6-D3 materializes this schedule in p6d3-full.alloc.S; run_d3_oracle.sh and audit_d3.py close whole-function correctness and physical structure.",
     }
     (HERE / "complete-model-results.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, indent=2))

@@ -1,6 +1,6 @@
 iteration:
   id: P6-D
-  status: active-d3
+  status: candidate-awaiting-pi-timing
   mode: new_symbolic_kernel
   observation: P6-C proved packed-A and the worst joint consumer row separately, but a complete kernel must first create the 13-Q plus 28-GPR saved-pair state without memory scratch and retain a usable public pointer ABI while all 28 data GPRs are occupied.
   primary_bottleneck: register pressure and cross-stage layout
@@ -17,5 +17,5 @@ iteration:
     python_path: /Users/chenpinhao/slothy
     target: cortex_a76
   subgates: [P6-D1 saved-pair producer, P6-D2 all-row consumer, P6-D3 public two-top executable]
-  gate_result: P6-D1 passes physical allocation and 4107-case executable byte oracle; P6-D2 passes the exact all-nine-row layout model over 4096 cases. P6-D3 remains required before timing or promotion.
-  next_iteration: Materialize one monolithic full/small wrapper. Preserve the pair1 physical 13-Q plus 28-GPR live-out mapping across packed-A production, load/normalize all B rows without a scalar scratch GPR, switch x29 from coefficient base to output base after the final coefficient load, consume rows in physical order, and perform only final full-vector stores.
+  gate_result: P6-D3 passes. All twelve Slothy regions allocate OPTIMAL with spills disabled; the composed public function has 108 coefficient Q loads, zero coefficient scratch, 80 Q plus two D final stores, no lane ST3 or x18, and consecutive physical TBL groups. The executable oracle passes 4107 full and 4096 small cases with canaries. Small currently aliases the full-normalization DAG and is correct but not yet cost-specialized.
+  next_iteration: P6-E run paired Cortex-A76 timing at the exact complete-ToBytes boundary for full and small against the frozen 432-byte-scratch production baseline. Measure cycles, instructions, IPC, loads and stores. Promote nothing unless ToBytes improves; if small regresses because it shares full Barrett normalization, first build and time a conditional-add-only D3-small specialization.
