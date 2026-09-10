@@ -99,11 +99,11 @@ C(gt864_baseinv_asm):
     mov x8, #48
     madd x3, x26, x8, x22
     add x3, x3, x25, lsl #4
-    bl C(binv_num_tile)
-    add x27, x27, #48
-    add x28, x28, #48
-    add x21, x21, #16
-    add x26, x26, #1
+    bl C(binv_num_pair)
+    add x27, x27, #96
+    add x28, x28, #96
+    add x21, x21, #32
+    add x26, x26, #2
     cmp x26, #12
     b.ne .Lbinv_num
     add x25, x25, #1
@@ -123,15 +123,15 @@ C(gt864_baseinv_asm):
     // Prefix values lie inside (-q,q), so only integer zero represents zero.
     // Scan all 24 lanes before the single failure branch; no early lane exit.
     add x9, x23, #528
-    mov x10, #24
-    mov w11, #0
-.Lbinv_scan:
-    ldrh w8, [x9], #2
-    cmp w8, #0
-    cset w8, eq
-    orr w11, w11, w8
-    subs x10, x10, #1
-    b.ne .Lbinv_scan
+    ldp q0, q1, [x9]
+    ldr q2, [x9, #32]
+    cmeq v0.8h, v0.8h, #0
+    cmeq v1.8h, v1.8h, #0
+    cmeq v2.8h, v2.8h, #0
+    orr v0.16b, v0.16b, v1.16b
+    orr v0.16b, v0.16b, v2.16b
+    umaxv h0, v0.8h
+    umov w11, v0.h[0]
     cbnz w11, .Lbinv_fail
     mov x0, x24
     add x1, x23, #528

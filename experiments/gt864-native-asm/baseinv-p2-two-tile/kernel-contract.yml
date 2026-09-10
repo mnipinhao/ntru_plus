@@ -1,0 +1,52 @@
+mode: new_kernel_baseline_then_iterate
+candidate_status: investigate
+kernel:
+  id: binv_num_pair
+  name: two adjacent GT864 BaseInv numerator tiles
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: unified-ra-and-schedule
+  allow_spills: false
+  driver: optimize.py
+region:
+  start_label: binv_num_pair_slothy_start
+  end_label: binv_num_pair_slothy_end
+  live_in: [x0, x1, x2, x3]
+  live_out: [x0, x1, x2, x3]
+abi:
+  inputs: ["x0 output 96B", "x1 FR0 input 96B", "x2 zR 32B", "x3 denominator tile A; tile B is x3+48"]
+  outputs: ["six R1 numerators abs <=4000", "two R1 denominators abs <=4000"]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x8, x30]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: two adjacent FR0 tiles, each three Q vectors
+  output_representation: two adjacent triples of R1 cofactors and strided R1 denominators
+memory_contract:
+  loads: ["x1 offsets 0,16,32,48,64,80", "x2 offsets 0,16"]
+  stores: ["x0 offsets 0,16,32,48,64,80", "x3 offsets 0,48"]
+  alignment: 2 bytes; Q accesses need not be 16-byte aligned
+  aliasing: all loads for a tile precede its stores; exact x0=x1 allowed; partial overlap forbidden
+  public_offsets_only: true
+constant_contract:
+  constants: [3457, -12929, -147, -1393]
+  modulus: 3457
+  representation: constants are materialized once and shared by both tile DAGs
+range_contract:
+  input_ranges: [FR0 any signed int16 R0]
+  intermediate_ranges: [same exact per-tile P0 fused-wide proof; independent pair introduces no arithmetic edge]
+  output_ranges: [six R1 numerators abs <=4000, two R1 denominators abs <=4000]
+constant_time_contract:
+  secret_inputs: [coefficients]
+  public_inputs: [pointers, fixed offsets, constants]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 verify.py
+  test_command: integrated BaseInv and production KAT/failure/alias tests
+  full_path_benchmark_command: paired Pi5 P1 versus P2 BaseInv and Keygen PMU

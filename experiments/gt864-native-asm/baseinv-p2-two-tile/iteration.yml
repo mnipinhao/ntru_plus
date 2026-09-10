@@ -1,0 +1,26 @@
+iteration: P2
+date: 2026-09-10
+mode: new_kernel_baseline_then_iterate
+hypothesis:
+  p2a: two adjacent numerator tiles can share four constants and halve wrapper calls without new memory boundaries
+  p2b: SIMD aggregation can replace the fixed 24-lane scalar failure scan without changing failure semantics
+states:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: pass_with_documented_smlsl_checker_warnings
+  Slothy_run_by_user: pass_authorized_codex_local
+  parse_slothy_result: pass_163_expected_cycles_zero_spill
+  oracle_correctness: pass
+  full_path_benchmark: pass
+  score_candidate: promote
+  promotion_decision: promote_combined
+evidence:
+  slothy: slothy.log
+  slothy_result: slothy-result.json
+  oracle: oracle-results.json
+  pi5: pi-results.json
+  package_audit: package-audit.json
+next_iteration: P3 monolithic/stage-fused Decaps inverse

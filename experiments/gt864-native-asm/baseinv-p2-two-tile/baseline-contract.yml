@@ -1,0 +1,26 @@
+mode: new_kernel_baseline_then_iterate
+candidate_status: investigate
+kernel:
+  id: binv_num_pair_baseline
+  name: P1 two-call numerator pair baseline
+  source: baseline-pair.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+region:
+  live_in: [x0, x1, x2, x3]
+  live_out: [x0, x1, x2, x3]
+abi:
+  inputs: ["x0 output 96B", "x1 FR0 input 96B", "x2 zR 32B", "x3 denominator tile A; tile B is x3+48"]
+  outputs: ["six R1 numerator vectors", "two R1 denominator vectors"]
+memory_contract:
+  loads: ["two times: three operand Q plus one zR Q"]
+  stores: ["two times: three numerator Q plus one denominator Q"]
+  alignment: 2 bytes
+  aliasing: exact input-output alias allowed because each tile loads before its stores; partial overlap forbidden
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  full_path_baseline: P1 production commit 383a65ac

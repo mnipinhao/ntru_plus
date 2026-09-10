@@ -4,8 +4,9 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion integrates the 84-instruction fused-wide BaseInv
-numerator, 37-instruction no-centering finish and scheduled pair+merge ToBytes.
+Latest production promotion integrates the 160-instruction two-tile fused-wide
+BaseInv numerator, SIMD failure aggregation, 37-instruction no-centering finish
+and scheduled pair+merge ToBytes.
 Mac and Pi 5 KEM/KAT, canonical rejection, malformed-input, BaseInv
 failure/alias/AAPCS/scratch-wipe and paired PMU gates pass.  See
 [NATIVE-INTEGRATION.md](NATIVE-INTEGRATION.md),

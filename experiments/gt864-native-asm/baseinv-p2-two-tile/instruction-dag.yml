@@ -1,0 +1,14 @@
+kernel: binv_num_pair
+inputs: [tile_a_three_FR0_vectors, tile_b_three_FR0_vectors, tile_a_zR, tile_b_zR]
+outputs: [tile_a_three_R1_cofactors, tile_b_three_R1_cofactors, tile_a_R1_denominator, tile_b_R1_denominator]
+arithmetic: two independent copies of the proved 84-instruction fused-wide numerator DAG
+shared_nodes: [q_3457, qinv_minus12929, R_mod_q_minus147, R_barrett_minus1393]
+dependencies:
+  - each tile preserves the P0 fused-wide true dependencies
+  - constants may remain live across both tiles
+  - no arithmetic edge crosses between tile A and tile B
+  - each tile's input loads precede its stores for exact in-place operation
+memory:
+  tile_a: {input: "x1+0..47", zeta: "x2+0..15", output: "x0+0..47", denominator: "x3+0..15"}
+  tile_b: {input: "x1+48..95", zeta: "x2+16..31", output: "x0+48..95", denominator: "x3+48..63"}
+range: each independent tile inherits the machine-checked fused-wide range chain

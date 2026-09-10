@@ -22,8 +22,8 @@ Status meanings:
 |---|---|---|---|
 | P0 | Done | Promote BaseInv 84-instruction fused-wide numerator and 37-instruction no-centering finish; promote scheduled ToBytes pair+merge | Passed exact linked-object sizes, Mac/Linux assembly, 100-case KAT, 808-case BaseInv failure/alias/wipe, malformed transcript and Pi 5 paired PMU |
 | P1 | Done | Replace BaseInv bitwise exponentiation with a scale-correct shortest addition chain for exponent 3455 | Promoted 157-instruction, 21-MM zero-spill core; exact scale/range, KAT, failure/alias/wipe and Pi 5 BaseInv/Keygen gates passed |
-| P2 | Active | BaseInv two-tile kernel with q/qinv/R constants resident and 18 numerator calls; evaluate SIMD chain-end failure aggregation | Same output and cleanup policy, no secret-dependent branch/address, fewer instructions and BaseInv cycles |
-| P3 | Next | Monolithic/stage-fused Decaps inverse | Preserve BaseMul R^-1 to natural-R0 contract; remove avoidable stage calls/scratch/centering only after range closure; improve complete Decaps |
+| P2 | Done | BaseInv two-tile kernel with q/qinv/R constants resident and 18 numerator calls; SIMD chain-end failure aggregation | Promoted combined candidate: exact output/cleanup, constant-time scan, zero spill, KAT and Pi 5 BaseInv/Keygen gates passed |
+| P3 | Active | Monolithic/stage-fused Decaps inverse | Preserve BaseMul R^-1 to natural-R0 contract; remove avoidable stage calls/scratch/centering only after range closure; improve complete Decaps |
 | P4 | Next | Fuse FromBytes legality accumulation into decode/routing | No second 1,728-byte coefficient scan; exact canonical rejection for Encaps and all three Decaps inputs |
 | P5 | Next | Reuse KEM temporaries following proven lifetimes | Keygen one `h`; Encaps reuse `ct` for serialized `r`; Decaps reduce seven polynomial temporaries after alias audit; preserve cleanup and failure semantics |
 | P6 | Deferred | True zero-scratch ToBytes route + normalization + packing | No extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
@@ -65,3 +65,21 @@ Status meanings:
   (-1.65%), and complete Keygen improved by 177 cycles (-0.375%).  Keygen's
   instruction count fell by exactly 102, matching its two BaseInv calls.
 - Activated P2: two-tile BaseInv organization and SIMD failure aggregation.
+- Completed P2-A.  One 160-instruction Slothy region replaces two 84-instruction
+  numerator leaves, sharing q, qinv, R mod q and its Barrett-Shoup constant.
+  Slothy reports 163 expected A76 cycles and zero spills.  The wrapper now makes
+  18 pair calls instead of 36 tile calls, without changing the denominator
+  layout or adding memory traffic.  Pi 5 BaseInv success improved by 162.923
+  cycles and complete Keygen by 351 cycles versus P1.
+- Completed P2-B.  The fixed 24-halfword scalar zero scan is replaced by three
+  vector loads, three `CMEQ`, two `ORR`, `UMAXV`, and `UMOV`; all lanes are
+  aggregated before the same single failure branch.  It removes 137 dynamic
+  instructions and 24 branches per BaseInv, improving BaseInv success by
+  68.672 cycles and Keygen by 145.25 cycles versus P1.
+- Promoted the combined P2 candidate.  It removes 533 instructions and 78
+  branches per BaseInv and 1,066 instructions and 156 branches per Keygen.
+  BaseInv success improved from 5450.860 to 5214.297 cycles (-4.34%); Keygen
+  improved from 46998.875 to 46503.875 cycles (-1.05%).  KAT, valid/tampered
+  KEM, BaseInv success and BaseInv failure tests passed.  Encaps and Decaps have
+  zero instruction change because they do not call BaseInv.
+- Activated P3: monolithic/stage-fused Decaps inverse.

@@ -1,0 +1,22 @@
+candidate:
+  id: binv_num_pair
+  status: promote
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: true
+  approved_changes: true
+  approved_by: "P2 internal call granularity changes from one tile to two while preserving the public ABI, exact memory layout, ranges, and outputs"
+region:
+  start_label: binv_num_pair_slothy_start
+  end_label: binv_num_pair_slothy_end
+  live_in: [x0, x1, x2, x3]
+  live_out: [x0, x1, x2, x3]
+memory_contract:
+  loads: [exact contracted pair inputs]
+  stores: [exact contracted pair outputs]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

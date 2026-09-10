@@ -2,9 +2,12 @@
 
 ## 2026-09-10 BaseInv arithmetic promotion
 
-Production now uses the 84-instruction fused-wide numerator and 37-instruction
-no-centering finish.  The numerator preserves the existing R1 denominator and
-adjugate ABI while reducing to seven wide REDC results.  Finish retains one
+Production now uses a 160-instruction two-tile fused-wide numerator and the
+37-instruction no-centering finish.  The numerator preserves the existing R1
+denominator and adjugate ABI while sharing four constants across adjacent
+tiles and reducing each tile to seven wide REDC results.  The public wrapper
+makes 18 pair calls instead of 36 tile calls and uses a fixed-length SIMD
+failure aggregation instead of 24 scalar iterations.  Finish retains one
 inverse-denominator R1-to-R0 correction and three product REDCs, but returns raw
 R0 representatives bounded by `[-1972,1972]` instead of centered
 `[-1728,1728]`.  Keygen-to-D1 consumer closure proves the latter still ends in
@@ -43,9 +46,9 @@ to arbitrary polynomial multiplication.
 ## Files and representation
 
 - gt864_native.h / gt864_native.c: typed adapter API and table selection.
-- gt864_native_public.S: unchanged measured AAPCS wrappers, failure handling
-  and scratch clearing. BaseInv scratch 1200 bytes, Inverse scratch 1792 bytes,
-  plus a 160-byte public ABI frame per operation.
+- gt864_native_public.S: measured AAPCS wrappers, SIMD-aggregated BaseInv
+  failure handling and scratch clearing. BaseInv scratch 1200 bytes, Inverse
+  scratch 1792 bytes, plus a 160-byte public ABI frame per operation.
 - gt864_native_baseinv_{num,prefix,inverse,recover,finish}.S: five scheduled
   BaseInv cores, directly consuming FR0 without Official layout conversion.
 - gt864_native_basemul.S: first-Decaps R^-1 product only. Both inputs come from

@@ -1,0 +1,28 @@
+candidate:
+  id: gt864_p2_baseinv_pair_and_simd_scan
+  status: promote
+  mode: new_kernel_baseline_then_iterate
+contract:
+  preserved: true
+  approved_changes: true
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 168
+  candidate_expected_cycles: 163
+  parity_justification: "160 instructions, optimal 163-cycle Cortex-A76 model schedule, v0-v31 and zero spill"
+benchmark:
+  status: pass
+  command: "six paired-order repetitions on Raspberry Pi 5 core 3"
+  metric: complete Keygen cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.1
+  baseline: 46998.875
+  candidate: 46503.875
+decision:
+  reason: "P2-A and P2-B independently improve BaseInv and Keygen; combined removes 533 instructions per BaseInv and improves full Keygen by 495 cycles"
+  next_iteration: "P3 monolithic/stage-fused Decaps inverse"
