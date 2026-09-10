@@ -139,3 +139,9 @@ and TOBYTES-TIMING-RESULTS.md, not a fresh measurement of this final package.
 When the current SUPERCOP job is finished, run isolated Linux make check plus
 paired package validation. The Official source for subsequent comparison is
 /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64, not the 20260627 archive.
+### P1 BaseInv field inverse
+
+`binv_inverse3` uses the 15-multiplication addition chain for exponent 3455.
+Together with prefix construction and recovery, its region contains 21 widening
+Montgomery multiplications and 157 instructions.  Inputs and outputs remain R1;
+the public wrapper and failure scan are unchanged.

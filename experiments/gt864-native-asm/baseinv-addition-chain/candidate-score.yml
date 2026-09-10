@@ -1,0 +1,28 @@
+candidate:
+  id: gt864_p1_baseinv_addition_chain
+  status: promote
+  mode: existing_region_replacement
+contract:
+  preserved: true
+  approved_changes: true
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 387
+  candidate_expected_cycles: 283
+  parity_justification: "Cortex-A76 model reached OPTIMAL at 157 instructions and 283 expected cycles; allocated assembly has no spill"
+benchmark:
+  status: pass
+  command: "six paired repetitions on Raspberry Pi 5 core 3"
+  metric: "complete Keygen cycles"
+  lower_is_better: true
+  neutral_threshold_percent: 0.1
+  baseline: 47172.25
+  candidate: 46995.25
+decision:
+  reason: "exact 51-instruction BaseInv reduction appears twice in Keygen as a 102-instruction and 177-cycle full-path improvement"
+  next_iteration: "P2 two-tile BaseInv organization and SIMD failure aggregation"

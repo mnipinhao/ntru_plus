@@ -21,8 +21,8 @@ Status meanings:
 | ID | Status | Work | Completion gate |
 |---|---|---|---|
 | P0 | Done | Promote BaseInv 84-instruction fused-wide numerator and 37-instruction no-centering finish; promote scheduled ToBytes pair+merge | Passed exact linked-object sizes, Mac/Linux assembly, 100-case KAT, 808-case BaseInv failure/alias/wipe, malformed transcript and Pi 5 paired PMU |
-| P1 | Active | Replace BaseInv bitwise exponentiation with a scale-correct shortest addition chain for exponent 3455 | Exact field identity, scale/range proof, failure path, no spill, BaseInv and Keygen cycles improve |
-| P2 | Next | BaseInv two-tile kernel with q/qinv/R constants resident and 18 numerator calls; evaluate SIMD chain-end failure aggregation | Same output and cleanup policy, no secret-dependent branch/address, fewer instructions and BaseInv cycles |
+| P1 | Done | Replace BaseInv bitwise exponentiation with a scale-correct shortest addition chain for exponent 3455 | Promoted 157-instruction, 21-MM zero-spill core; exact scale/range, KAT, failure/alias/wipe and Pi 5 BaseInv/Keygen gates passed |
+| P2 | Active | BaseInv two-tile kernel with q/qinv/R constants resident and 18 numerator calls; evaluate SIMD chain-end failure aggregation | Same output and cleanup policy, no secret-dependent branch/address, fewer instructions and BaseInv cycles |
 | P3 | Next | Monolithic/stage-fused Decaps inverse | Preserve BaseMul R^-1 to natural-R0 contract; remove avoidable stage calls/scratch/centering only after range closure; improve complete Decaps |
 | P4 | Next | Fuse FromBytes legality accumulation into decode/routing | No second 1,728-byte coefficient scan; exact canonical rejection for Encaps and all three Decaps inputs |
 | P5 | Next | Reuse KEM temporaries following proven lifetimes | Keygen one `h`; Encaps reuse `ct` for serialized `r`; Decaps reduce seven polynomial temporaries after alias audit; preserve cleanup and failure semantics |
@@ -59,3 +59,9 @@ Status meanings:
   `2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67`).
 - Activated P1: shortest BaseInv exponent-3455 addition chain.
 - P1--P6 were carried forward from the SUPERCOP remaining-optimization audit.
+- Completed P1.  The inverse region changed from 28 to 21 widening Montgomery
+  multiplications and from 208 to 157 instructions.  Slothy produced a
+  zero-spill 283-cycle schedule.  Pi 5 BaseInv success improved by 91.797 cycles
+  (-1.65%), and complete Keygen improved by 177 cycles (-0.375%).  Keygen's
+  instruction count fell by exactly 102, matching its two BaseInv calls.
+- Activated P2: two-tile BaseInv organization and SIMD failure aggregation.

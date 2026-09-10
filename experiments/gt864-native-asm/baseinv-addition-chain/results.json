@@ -1,0 +1,53 @@
+{
+  "status": "promote",
+  "baseline_commit": "803baecd",
+  "candidate": {
+    "addition_chain_multiplications": 15,
+    "total_montgomery_multiplications": 21,
+    "instructions": 157,
+    "slothy_expected_cycles": 283,
+    "spills": 0
+  },
+  "baseline": {
+    "total_montgomery_multiplications": 28,
+    "instructions": 208
+  },
+  "correctness": {
+    "symbolic_random_vectors": 4096,
+    "mac_kat_cases": 100,
+    "mac_kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+    "pi_baseinv_cases": 808,
+    "pi_baseinv_success": 517,
+    "pi_baseinv_failure": 291,
+    "malformed_trace_bytes": 417216,
+    "malformed_trace_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67"
+  },
+  "pi5_medians": {
+    "baseinv_success": {
+      "baseline_cycles": 5561.656,
+      "candidate_cycles": 5469.8595,
+      "delta_cycles": -91.7965,
+      "delta_percent": -1.6505,
+      "baseline_instructions": 7187.25,
+      "candidate_instructions": 7136.25
+    },
+    "keygen": {
+      "baseline_cycles": 47172.25,
+      "candidate_cycles": 46995.25,
+      "delta_cycles": -177.0,
+      "delta_percent": -0.3752,
+      "baseline_instructions": 100406.5,
+      "candidate_instructions": 100304.5
+    },
+    "encaps_delta_percent": 0.0100,
+    "decaps_delta_percent": 0.0165
+  },
+  "environment": {
+    "host": "Raspberry Pi 5",
+    "kernel": "Linux 6.18.33+rpt-rpi-2712 aarch64",
+    "compiler": "gcc 14.2.0",
+    "governor": "ondemand",
+    "measurement_core": 3,
+    "paired_repetitions": 6
+  }
+}

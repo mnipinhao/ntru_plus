@@ -96,3 +96,16 @@ Linux/GCC is the validated build; Darwin and CE hash builds are not claimed.
 Internal compatibility/helper symbols are retained for faithful integration;
 only crypto_kem_* is a supported public API. Name/dead-helper cleanup remains
 a separate mechanical gate, not part of this arithmetic promotion.
+## P1 BaseInv addition-chain promotion — 2026-09-10
+
+The production `binv_inverse3` uses 21 widening Montgomery multiplications and
+157 instructions, versus P0's 28 and 208.  Local Cortex-A76 Slothy scheduling
+completed with no spill and an expected 283 cycles.
+
+Mac and Pi 5 passed the 100-case KAT, 64 KEM round trips, tampered rejection,
+and the linked 808-case BaseInv test including every zero-leaf position, exact
+aliasing, canaries, AAPCS preservation, and scratch wipe.  The Pi 5 malformed
+transcript remained exactly 417,216 bytes with SHA-256
+`2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67`.
+Six paired Pi 5 repetitions measured BaseInv success at 5469.860 cycles versus
+5561.656 and Keygen at 46995.250 versus 47172.250.

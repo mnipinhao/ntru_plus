@@ -1,0 +1,23 @@
+id: gt864_p1_baseinv_addition_chain
+mode: existing_region_replacement
+candidate_status: promote
+state: promoted
+hypothesis: "the 15-multiplication addition chain for 3455 removes seven Montgomery multiplications from binv_inverse3 and improves BaseInv plus Keygen"
+baseline_commit: 803baecd
+baseline_region_sha256: 9ca922ef087b00ce10cf91f375b031ec2bc7b287bcd5140b15e5e53f33b68173
+slothy_checkout: /Users/chenpinhao/slothy
+venv: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+target: cortex_a76
+local_execution: user previously authorized
+production_changed: true
+slothy: "optimal 157 instructions, expected 283 cycles, zero spill"
+correctness: "4096 symbolic vectors; Mac/Pi KAT; 808 BaseInv cases; exact malformed transcript"
+benchmark: "BaseInv success -1.65 percent; Keygen -177 cycles / -0.375 percent"
+promotion_commit: pending_this_round
+promotion_gate:
+  - exact exponent and Montgomery-scale proof
+  - static reduction from 28 to 21 Montgomery multiplications
+  - zero spill and no hidden memory access
+  - linked BaseInv failure alias wipe and AAPCS tests
+  - full KAT and malformed-ciphertext transcript
+  - Pi5 isolated BaseInv and complete Keygen improvement

@@ -1,0 +1,12 @@
+kernel: binv_inverse3
+hypothesis: "replace 22-step bitwise exponentiation by the 15-multiplication shortest addition chain for exponent 3455"
+inputs: ["x, y, z in R1, each nonzero modulo q"]
+outputs: ["x^-1, y^-1, z^-1 in R1"]
+arithmetic:
+  prefix: ["xy = MM(x,y)", "a = xyz = MM(xy,z)"]
+  exponent_chain: ["a2", "a4", "a8", "a16", "a17", "a32", "a64", "a128", "a145", "a273", "a546", "a691", "a1382", "a2764", "a3455"]
+  recovery: ["invxy = MM(a3455,z)", "xinv = MM(invxy,y)", "yinv = MM(invxy,x)", "zinv = MM(a3455,xy)"]
+dependencies: "each MM is exact widening Montgomery REDC; named powers preserve the two live chain values required by later nodes"
+memory: "load all three inputs before the three stores"
+constants: [q3457, negQINV12929]
+static_cost: "21 Montgomery multiplications; 157 instructions before scheduling; 51 fewer than baseline"

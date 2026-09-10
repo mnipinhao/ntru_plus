@@ -1,0 +1,66 @@
+mode: existing_region_replacement
+baseline:
+  id: p0_20260910_baseinv_inverse_bitwise
+  source: ../../../ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_baseinv_inverse.S
+  extracted_region: baseline-region.S
+  function: binv_inverse3
+  start_label: binv_inverse3_slothy_start
+  end_label: binv_inverse3_slothy_end
+  source_sha256: 5be9766c1f8e131dceb433d002330197ec622bfd32dcc4efd1836d5d8a64bc28
+  region_sha256: 9ca922ef087b00ce10cf91f375b031ec2bc7b287bcd5140b15e5e53f33b68173
+baseline_cost:
+  static_instruction_count: 208
+  montgomery_multiplications: 28
+  benchmark_command: python3 ../baseinv-tobytes-next-model/pi-production-promotion.py
+candidate_status: investigate
+kernel:
+  id: binv_inverse3
+  name: binv_inverse3
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: existing-region-replacement
+  allow_spills: false
+  driver: optimize.py
+region:
+  instruction_count: 208
+  start_label: binv_inverse3_slothy_start
+  end_label: binv_inverse3_slothy_end
+  live_in: [x0, x1]
+  live_out: [x0, x1]
+abi:
+  inputs: ["x1 final prefix triple: three Q vectors in R1, nonzero modulo q"]
+  outputs: ["x0 inverse triple: three Q vectors in R1"]
+  concrete_gprs_allowed: [x0, x1, x8]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: "three lane-wise R1 values, abs <=4000, each nonzero modulo 3457"
+  output_representation: "lane-wise inverses of the three inputs, R1, abs <2000"
+memory_contract:
+  loads: ["3 Q loads from x1 offsets 0, 16, 32"]
+  stores: ["3 Q stores to x0 offsets 0, 16, 32"]
+  alignment: "2 bytes; Q accesses need not be 16-byte aligned"
+  aliasing: "all inputs loaded before stores; exact x0=x1 alias allowed; partial overlap forbidden"
+  public_offsets_only: true
+constant_contract:
+  constants: [3457, -12929, -147]
+  modulus: 3457
+  representation: "all values R1; widening Montgomery multiplication maps R1 times R1 to R1"
+range_contract:
+  input_ranges: ["R1 abs <=4000 and nonzero modulo q"]
+  intermediate_ranges: ["all widening products and q corrections fit signed int32; every REDC result abs <2000"]
+  output_ranges: ["R1 abs <2000"]
+constant_time_contract:
+  secret_inputs: [coefficients]
+  public_inputs: [pointers, constants]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 verify.py
+  test_command: python3 ../baseinv-tobytes-next-model/pi-production-promotion.py
+  full_path_benchmark_command: python3 run_pi5.py
