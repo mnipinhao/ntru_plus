@@ -26,8 +26,8 @@ Status meanings:
 | P3 | Done | Stage-fused Decaps inverse; retain promoted P3-A constant-resident `center864` | P3-A passed; P3-B producer-side centering was correct but failed Pi 5 performance and is recorded below |
 | P3-B | Dropped | Pair half-filled I16 terminal vectors, center in producer registers, then use the existing scatter addresses | Correct and spill-free, but Inverse regressed 634.266 cycles (+9.05%) and Decaps 643.425 cycles (+1.46%); reopen only with a naturally full-vector terminal ABI |
 | P4 | Done | Fuse FromBytes legality accumulation into decode/routing | Promoted after removing the second 1,728-byte scan, exact four-input rejection proof, no vector spill, unchanged KAT and Pi 5 full-KEM improvement |
-| P5 | Active | Reuse KEM temporaries following proven lifetimes | Keygen one `h`; Encaps reuse `ct` for serialized `r`; Decaps reduce seven polynomial temporaries after alias audit; preserve cleanup and failure semantics |
-| P6 | Deferred | True zero-scratch ToBytes route + normalization + packing | No extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
+| P5 | Done | Reuse KEM temporaries following proven lifetimes | Promoted one-`h` Keygen, `ct`-backed Encaps serialized `r`, and four-poly Decaps after stack/object, cleanup, KAT, rejection, malformed-transcript and Pi 5 gates |
+| P6 | Active | True zero-scratch ToBytes route + normalization + packing | No extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
 
 ## Fixed facts and non-tasks
 
@@ -114,3 +114,16 @@ Status meanings:
   Encaps improved by 126.100 cycles and Decaps by 443.750 cycles, with exact
   dynamic deltas of -322 instructions/-108 branches per decoder call.  P5 is
   now active.
+- Completed and promoted P5.  The Keygen `h` and `hinv` live intervals now
+  share one 1,728-byte polynomial; Encaps uses the not-yet-final `ct` buffer for
+  serialized `r`; Decaps reuses the dead `f` work slot and retains four rather
+  than seven polynomial objects.  GCC 14.2 stack frames changed from
+  10,720/8,704/16,288 to 8,992/7,392/11,072 bytes for Keygen, the Encaps helper
+  and Decaps.  Every surviving secret-bearing object remains explicitly wiped
+  on its applicable normal and failure paths.
+- P5 passed exact 100-case KAT, 64 valid/tampered iterations, 13,824 exhaustive
+  non-canonical KEM rejection cases and the byte-identical malformed transcript.
+  Six balanced Pi 5 runs measured Keygen `-95.500` cycles (`-149`
+  instructions), Encaps `-48.950` (`-124`) and Decaps `-166.800` (`-455`)
+  versus P4.  The improvement is from storage lifetime and cleanup traffic;
+  arithmetic and transform ABIs are unchanged.  P6 is now active.

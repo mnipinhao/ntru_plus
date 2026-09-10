@@ -1,0 +1,27 @@
+observation: >-
+  The production KEM keeps temporaries whose live intervals do not overlap:
+  Keygen has separate h and hinv, Encaps has a 1296-byte buf2 while ct is not
+  yet final, and Decaps keeps seven polynomial objects although four suffice.
+primary_bottleneck_category: memory and stack traffic
+hypothesis: >-
+  Reusing storage only after the previous value's final consumer will reduce
+  stack frames and mandatory secure-clear traffic without changing arithmetic,
+  representation, public outputs, rejection order, or KEM semantics.
+exact_proposed_change:
+  keygen: Reuse one poly h for the public h and secret hinv products.
+  encaps: Use ct as the temporary serialized-r/hash_g/SOTP byte buffer.
+  decaps: Reuse f for both forward/re-encryption products and retain only c, f, hinv, m.
+expected_static_effect:
+  keygen_bytes_removed: 1728
+  encaps_bytes_removed: 1296
+  decaps_bytes_removed: 5184
+  arithmetic_change: none
+expected_performance_effect: >-
+  Lower stack allocation/page pressure and less secure_clear traffic; Decaps
+  should show the largest improvement, Keygen and Encaps may be modest.
+expected_register_pressure_effect: unchanged or lower
+correctness_or_range_impact: none; storage aliases are introduced only across proven-dead values
+falsifying_measurement: >-
+  Reject any candidate that changes KAT, valid/tampered/malformed behavior,
+  weakens cleanup, increases linked dynamic instructions unexpectedly, or
+  fails to improve the affected full-KEM operation reproducibly on Pi 5.

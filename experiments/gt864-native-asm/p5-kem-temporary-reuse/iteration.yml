@@ -1,0 +1,17 @@
+id: gt864-p5-kem-temporary-reuse
+date: 2026-09-10
+parameter: NTRU+864
+action: optimize-memory
+baseline:
+  revision: 60b74b054a773efc77595bd90424cb8c26f18931
+  kem_sha256: 717bb40d760360e1c7aee380f2ac22bca67e83df8aa9b3a4d1d5ad4a949c6a21
+  linked_object: kem-normal.o
+  compiler_flags: -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections
+target:
+  host: pi@100.99.191.9
+  microarchitecture: Cortex-A76 (Raspberry Pi 5)
+  supercop_root: /home/pi/supercop-20260831
+status: accepted-and-promoted
+candidate:
+  kem_sha256: dc9a3743288941f4e7c664e4b4648408cbb473e8b1be72c1d8764fde40a81692
+decision: accept

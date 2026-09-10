@@ -1,0 +1,91 @@
+{
+  "experiment": "gt864-p5-kem-temporary-reuse",
+  "baseline": "GT864 production P4 at 60b74b05",
+  "candidate": "P5 KEM lifetime reuse",
+  "correctness_repetitions": 6,
+  "stack_frames_bytes": {
+    "keygen": {
+      "p4": 10720,
+      "p5": 8992,
+      "delta": -1728
+    },
+    "encaps_helper": {
+      "p4": 8704,
+      "p5": 7392,
+      "delta": -1312
+    },
+    "decaps": {
+      "p4": 16288,
+      "p5": 11072,
+      "delta": -5216
+    }
+  },
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+  "rejection_cases": 13824,
+  "summary": {
+    "keygen": {
+      "p4": {
+        "cycles": 46483.5,
+        "instructions": 99244.0,
+        "branches": 1758.5
+      },
+      "p5": {
+        "cycles": 46388.0,
+        "instructions": 99095.0,
+        "branches": 1722.5
+      },
+      "delta": {
+        "cycles": -95.5,
+        "instructions": -149.0,
+        "branches": -36.0
+      },
+      "cycle_delta_percent": -0.20544924543117737
+    },
+    "encaps": {
+      "p4": {
+        "cycles": 45827.850000000006,
+        "instructions": 125697.65,
+        "branches": 1141.5
+      },
+      "p5": {
+        "cycles": 45778.9,
+        "instructions": 125573.65,
+        "branches": 1112.5
+      },
+      "delta": {
+        "cycles": -48.950000000004366,
+        "instructions": -124.0,
+        "branches": -29.0
+      },
+      "cycle_delta_percent": -0.10681277869244443
+    },
+    "decaps": {
+      "p4": {
+        "cycles": 43526.2,
+        "instructions": 99457.65,
+        "branches": 1478.0
+      },
+      "p5": {
+        "cycles": 43359.399999999994,
+        "instructions": 99002.65,
+        "branches": 1370.0
+      },
+      "delta": {
+        "cycles": -166.8000000000029,
+        "instructions": -455.0,
+        "branches": -108.0
+      },
+      "cycle_delta_percent": -0.38321746442373517
+    }
+  },
+  "environment": {
+    "host": "pi@100.99.191.9",
+    "kernel": "Linux 6.18.33+rpt-rpi-2712 aarch64",
+    "compiler": "gcc 14.2.0",
+    "core": 3,
+    "governor": "ondemand",
+    "temperature_after": "59.8'C",
+    "supercop_reference_root": "/home/pi/supercop-20260831"
+  }
+}

@@ -1,0 +1,26 @@
+experiment: gt864-p5-kem-temporary-reuse
+decision: accept
+promoted_files:
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/kem.c
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/OPTIMIZATION-ROADMAP.md
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/SOURCE-MANIFEST.sha256
+contracts:
+  mathematical: unchanged
+  representation: unchanged
+  public_abi: unchanged
+  rejection_order: unchanged
+  cleanup: preserved for all surviving secret-bearing storage
+validation:
+  manifest: pass
+  clean_rebuild: pass
+  valid_tampered_kem_iterations: 64
+  kat_sha256: 0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c
+  noncanonical_cases: 13824
+  malformed_transcript_sha256: 2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67
+pi5:
+  host: pi@100.99.191.9
+  run_directory: /tmp/gt864-p5-20260910
+  production_library_sha256: aa7f04be5f3289035c439d1e5277ca123b7f042c620c673f14ea751304756d32
+  balanced_runs: 6
+  retained_samples_per_implementation_per_run: 40
+next: P6 zero-scratch ToBytes

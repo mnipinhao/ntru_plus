@@ -108,18 +108,17 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
                                              const poly *f,  const poly *finv,
                                              const poly *g,  const poly *ginv)
 {
-    poly h, hinv;
+    poly h;
 
     poly_basemul(&h, g, finv);
-    poly_basemul(&hinv, f, ginv);
-
-    /* D1 outputs fit (-q,q); the direct Forward result f does not. */
     gt864_fr0_tobytes_small(pk, &h);
+
+    poly_basemul(&h, f, ginv);
+    /* D1 outputs fit (-q,q); the direct Forward result f does not. */
     gt864_fr0_tobytes_full(sk, f);
-    gt864_fr0_tobytes_small(sk + NTRUPLUS_POLYBYTES, &hinv);
+    gt864_fr0_tobytes_small(sk + NTRUPLUS_POLYBYTES, &h);
     hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
     secure_clear(&h, sizeof h);
-    secure_clear(&hinv, sizeof hinv);
 }
 
 /*************************************************
@@ -185,8 +184,6 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
 {
 	uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
 	uint8_t buf1[NTRUPLUS_SYMBYTES + NTRUPLUS_N / 4];
-	uint8_t buf2[NTRUPLUS_POLYBYTES];
-
     poly c, h, r, m;
 
     if (gt864_fr0_frombytes_checked(&h,pk)) {
@@ -204,9 +201,10 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
     poly_ntt(&r, &r);
 
-    gt864_fr0_tobytes_full(buf2, &r);
-    hash_g(buf2, buf2);
-    poly_sotp_encode(&m, msg, buf2);
+    /* ct is dead until the final complete ciphertext serialization. */
+    gt864_fr0_tobytes_full(ct, &r);
+    hash_g(ct, ct);
+    poly_sotp_encode(&m, msg, ct);
     poly_ntt(&m, &m);
 
     poly_basemul_add(&c, &h, &r, &m);
@@ -217,7 +215,6 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
 
     secure_clear(msg,sizeof msg);
     secure_clear(buf1,sizeof buf1);
-    secure_clear(buf2,sizeof buf2);
     secure_clear(&r,sizeof r);
     secure_clear(&m,sizeof m);
     return 0;
@@ -274,9 +271,8 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
     int8_t fail=1;
 
-    poly c, f, hinv;
-    poly r1, r2;
-    poly m1, m2;
+    /* Four-slot lifetime ABI: c, reusable f/work, hinv, and natural m. */
+    poly c, f, hinv, m;
 
     /* Same rejection order as the selected Official. Secret-key validity is
      * intentionally released as a status bit; do not claim this branch-free. */
@@ -288,26 +284,27 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
     }
 
     /* Only this product uses R^-1; the paired inverse restores natural R0. */
-    gt864_native_basemul_for_inverse(m1.coeffs, c.coeffs, f.coeffs);
-    gt864_native_inverse(&m1, &m1);
-    poly_crepmod3(&m1, &m1);
+    gt864_native_basemul_for_inverse(m.coeffs, c.coeffs, f.coeffs);
+    gt864_native_inverse(&m, &m);
+    poly_crepmod3(&m, &m);
 
-    poly_ntt(&m2, &m1);
-    poly_sub(&c, &c, &m2);
-    poly_basemul(&r2, &c, &hinv);
+    /* f is dead after the decrypting BaseMul and becomes the work slot. */
+    poly_ntt(&f, &m);
+    poly_sub(&c, &c, &f);
+    poly_basemul(&f, &c, &hinv);
 
-    gt864_fr0_tobytes_small(buf1, &r2);
+    gt864_fr0_tobytes_small(buf1, &f);
     hash_g(buf2, buf1);
-    fail = poly_sotp_decode(msg, &m1, buf2);
+    fail = poly_sotp_decode(msg, &m, buf2);
 
     for (size_t i = 0; i < NTRUPLUS_SYMBYTES; i++)
         msg[i + NTRUPLUS_N / 8] = sk[i + 2 * NTRUPLUS_POLYBYTES];
 
     hash_h(buf3, msg);
 
-    poly_cbd1(&r1, buf3 + NTRUPLUS_SSBYTES);
-    poly_ntt(&r1, &r1);
-    gt864_fr0_tobytes_full(buf2, &r1);
+    poly_cbd1(&f, buf3 + NTRUPLUS_SSBYTES);
+    poly_ntt(&f, &f);
+    gt864_fr0_tobytes_full(buf2, &f);
 
     fail |= verify(buf1, buf2, NTRUPLUS_POLYBYTES);
 
@@ -322,9 +319,6 @@ cleanup:
     secure_clear(&c,sizeof c);
     secure_clear(&f,sizeof f);
     secure_clear(&hinv,sizeof hinv);
-    secure_clear(&r1,sizeof r1);
-    secure_clear(&r2,sizeof r2);
-    secure_clear(&m1,sizeof m1);
-    secure_clear(&m2,sizeof m2);
+    secure_clear(&m,sizeof m);
     return fail;
 }
