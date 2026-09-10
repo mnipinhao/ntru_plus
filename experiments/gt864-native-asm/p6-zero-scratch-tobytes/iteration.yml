@@ -1,0 +1,26 @@
+id: gt864-p6-zero-scratch-tobytes
+date: 2026-09-10
+parameter: NTRU+864
+action: optimize-layout
+baseline:
+  revision: b81c883b
+  full_symbol: gt864_tobytes_full_asm
+  small_symbol: gt864_tobytes_small_asm
+  scratch_bytes: 432
+  linked_objects:
+    - gt864_tobytes_public.o
+    - gt864_pair_merge_full.o
+    - gt864_pair_merge_small.o
+target:
+  host: pi@100.99.191.9
+  microarchitecture: Cortex-A76 (Raspberry Pi 5)
+status: active-p6b
+gate_result: >-
+  P6-A current-route storage-only is rejected. Exact 31-live plus row-copy plus
+  index frontier is Slothy INFEASIBLE; removing either one held vector or the
+  independent index is OPTIMAL without spill. Pi5 optimistic bridge remains
+  17 cycles/top faster, so P6 continues as a consumer-oriented route redesign.
+next_iteration: >-
+  P6-B eliminate the row-copy or independent TBL-index lifetime by producing
+  consumer-oriented rows; preserve 108 coefficient Q loads, zero coefficient
+  scratch, no lane ST3 and direct final stores.

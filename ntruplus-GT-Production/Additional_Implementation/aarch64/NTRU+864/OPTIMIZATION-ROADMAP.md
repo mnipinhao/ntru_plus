@@ -27,7 +27,8 @@ Status meanings:
 | P3-B | Dropped | Pair half-filled I16 terminal vectors, center in producer registers, then use the existing scatter addresses | Correct and spill-free, but Inverse regressed 634.266 cycles (+9.05%) and Decaps 643.425 cycles (+1.46%); reopen only with a naturally full-vector terminal ABI |
 | P4 | Done | Fuse FromBytes legality accumulation into decode/routing | Promoted after removing the second 1,728-byte scan, exact four-input rejection proof, no vector spill, unchanged KAT and Pi 5 full-KEM improvement |
 | P5 | Done | Reuse KEM temporaries following proven lifetimes | Promoted one-`h` Keygen, `ct`-backed Encaps serialized `r`, and four-poly Decaps after stack/object, cleanup, KAT, rejection, malformed-transcript and Pi 5 gates |
-| P6 | Active | True zero-scratch ToBytes route + normalization + packing | No extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
+| P6-A | Dropped | Retain both saved pairs in registers but keep the current third-pair row-copy plus TBL repair | Exact 33-vector frontier is Slothy-infeasible; both one-fewer-vector and no-index controls allocate, so storage-only rewriting is rejected |
+| P6 | Active | Consumer-oriented zero-scratch ToBytes route + normalization + packing | Remove at least one P6-A frontier lifetime; no extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
 
 ## Fixed facts and non-tasks
 
@@ -127,3 +128,11 @@ Status meanings:
   instructions), Encaps `-48.950` (`-124`) and Decaps `-166.800` (`-455`)
   versus P4.  The improvement is from storage lifetime and cleanup traffic;
   arithmetic and transform ABIs are unchanged.  P6 is now active.
+- Completed P6-A and rejected only the storage-only/current-route candidate.
+  Two retained pairs require 13 vector and 28 GPR storage slots; together with
+  the current third-pair route, row copy and independent TBL index, the exact
+  frontier is 33 vectors. Local Cortex-A76 Slothy reports `INFEASIBLE` with
+  spills disabled. Both controls allocate `OPTIMAL`: either remove one held
+  vector or remove the independent index lifetime. A Pi 5 bridge proxy still
+  improves from 58.999 to 42.000 cycles/top, so P6 remains active as a
+  consumer-oriented route redesign rather than being dropped.

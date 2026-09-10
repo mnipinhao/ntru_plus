@@ -1,0 +1,27 @@
+observation: >-
+  Production writes the first two pair results to 432 bytes of private scratch,
+  then the third pair consumes those bytes into final 16/8-byte output stores.
+primary_bottleneck_category: layout and permutation
+hypothesis: >-
+  A register-only bridge might remove the private scratch and its wipe, but is
+  viable only if retaining two arbitrary pair results alongside the third 9x8
+  transpose fits without spill and costs less than the current L1 bridge.
+exact_proposed_change: >-
+  Before writing a full zero-scratch kernel, prove the minimum register/storage
+  schedule and benchmark an optimistic cross-domain bridge against the exact
+  18 ST3 plus 36 LDR current-boundary instruction mix per top.
+expected_static_effect: >-
+  Zero private coefficient scratch; at best remove 27 wipe stores and wrapper
+  allocation while replacing 108 per-call scratch instructions by at least 112
+  vector/GPR transfer instructions.
+expected_performance_effect: uncertain; GPR transfers may cost more than hot L1 traffic
+expected_register_pressure_effect: 32/32 vector and 30/30 cross-platform GPRs at the peak
+correctness_or_range_impact: none; wire map and normalization remain unchanged
+falsifying_measurement: >-
+  Drop the generic zero-scratch direction if the optimistic GPR bridge plus its
+  best possible wipe saving cannot beat the current scratch bridge, or if the
+  register proof leaves no executable transient capacity without spill.
+result: >-
+  Storage-only with the current route is falsified: the actual row0 frontier is
+  33 vectors. The broader zero-scratch hypothesis survives only if the routing
+  DAG removes the row copy, the independent TBL index, or one retained vector.

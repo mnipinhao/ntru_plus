@@ -1,0 +1,61 @@
+dag:
+  id: gt864_p6_register_frontier_dag
+  kernel_contract: kernel-contract.yml
+  description: allocation lower bound for retaining two packed pairs while current third-pair route begins row0
+inputs:
+  - thirteen live vector-equivalent retained pair slots
+  - twenty-eight live GPR retained slots plus two live pointers
+  - eighteen live current-route pair2 vectors
+constants: [public row0 route index, q 3457, reciprocal 9]
+nodes:
+  - id: current_route_peak
+    op: preserve thirteen retained vectors and eighteen third-pair vectors
+    inputs: [all frontier inputs]
+    outputs: [thirty-one simultaneous live vector values]
+    instruction_shape: live-in frontier
+    tied_operands: []
+    range_before: contract input ranges
+    range_after: unchanged
+    may_reorder_with: []
+    must_precede: [row0_copy, row0_index]
+  - id: row0_copy
+    op: construct non-destructive row0 from a third-pair route value
+    inputs: [current route at0 and ninth value]
+    outputs: [row0]
+    instruction_shape: ORR then INS
+    tied_operands: [row0 is destructive after construction]
+    range_before: signed int16
+    range_after: signed int16
+    may_reorder_with: [row0_index]
+    must_precede: [row0_permute]
+  - id: row0_index
+    op: make public TBL index live
+    inputs: [public literal]
+    outputs: [idx0]
+    instruction_shape: LDR Q literal
+    tied_operands: []
+    range_before: public bytes
+    range_after: public bytes
+    may_reorder_with: [row0_copy]
+    must_precede: [row0_permute]
+  - id: row0_permute
+    op: current-route lane repair
+    inputs: [row0, idx0]
+    outputs: [permuted row0]
+    instruction_shape: destructive TBL1
+    tied_operands: [output aliases row0]
+    range_before: signed int16
+    range_after: signed int16
+    may_reorder_with: []
+    must_precede: []
+memory:
+  loads: [31 synthetic Q seeds for the allocation frontier, public row index]
+  stores: [31 synthetic live-out stores after row0, one row0 frontier store]
+  ordering_constraints: [future-row values remain live across row0 permutation]
+outputs: [permuted row0, all future-row retained and pair2 values]
+live_out: [permuted row0, nine retained vectors, all third-pair values required by rows1 through8]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

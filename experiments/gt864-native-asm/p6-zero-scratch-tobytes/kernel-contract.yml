@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p6_zero_scratch_tobytes
+  name: GT864 zero-scratch route normalization and packing
+  source: candidate.sym.S
+  scheme: NTRU+864
+  operation: full and small ToBytes
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: allocation-frontier then bounded-window timing
+  driver: optimize.py
+  expected_outputs: [candidate.alloc.S, candidate.opt.S, slothy-ra.log, slothy-timing.log]
+  allow_spills: false
+region:
+  start_label: gt864_p6_zero_scratch_tobytes_slothy_start
+  end_label: gt864_p6_zero_scratch_tobytes_slothy_end
+  expected_instruction_count: unknown until frontier passes
+  live_in: [x0 output, x1 FR0 input, public constant tables, full-or-small selector]
+  live_out: [x0 original output pointer, 1296 exact output bytes]
+abi:
+  inputs: [same public ToBytes inputs as P5]
+  outputs: [same 1296 canonical packed bytes as P5]
+  clobbers: [x0-x17, x19-x30, v0-v31, NZCV]
+  concrete_gprs_allowed: [x0-x17, x19-x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: retain pair0 and pair1 in registers, route pair2, normalize and pack rows directly to final full-vector stores
+layout:
+  input_representation: FR0 R0 signed int16 in P5 GT physical layout
+  output_representation: exact NTRU+864 canonical 12-bit byte wire order
+  vector_lanes: eight signed halfwords during route and eight bytes per packed stream
+  packing: output[9*k+3*p+c] equals pair[p][3*k+c]
+memory_contract:
+  loads: [exactly the existing 108 distinct coefficient Q loads and public constant loads]
+  stores: [72 STR Q plus 18 STR D final stores per call; AAPCS save area only]
+  aliasing: output disjoint from input and public tables
+  alignment: halfword input and byte output; stack remains 16-byte aligned
+  public_offsets_only: true
+  pointer_updates: [fixed two-top unrolled or public-count loop]
+constant_contract:
+  constants: [q 3457, Barrett reciprocal 9 for full entry, exact route and merge indices]
+  modulus: 3457
+  representation: FR0 R0 to canonical byte wire format
+  reduction_method: unchanged full and small normalization semantics
+range_contract:
+  input_ranges: [full entry signed int16, small entry strict -3457 to 3457]
+  intermediate_ranges: [canonical coefficients 0 to 3456, packed bytes 0 to 255]
+  output_ranges: [1296 bytes 0 to 255]
+  narrowing_points: [XTN only after normalization]
+constant_time_contract:
+  secret_inputs: [864 coefficient lanes]
+  public_inputs: [pointers, entry selector, tables, fixed loop counters]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 experiments/gt864-native-asm/verify_bytes.py and native full-small differential harness
+  test_command: production KAT rejection malformed-ciphertext alias AAPCS and canary tests
+  full_path_benchmark_command: paired Pi5 PMU in /home/pi/supercop-20260831 using aarch64 implementation
+  benchmark_metric: cycles
+  lower_is_better: true

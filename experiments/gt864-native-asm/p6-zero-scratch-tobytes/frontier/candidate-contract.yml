@@ -1,0 +1,49 @@
+candidate:
+  id: gt864_p6_current_route_frontier
+  status: reject
+  kernel_contract: kernel-contract.yml
+  baseline_contract: ../baseline-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: optimize.py
+  slothy_log: slothy-exact.log
+  generated_output: none because exact frontier is infeasible
+contract_preservation:
+  baseline_compared: false
+  preserved: true
+  approved_changes: false
+  approved_by: not applicable to allocation-only screening kernel
+  changed_fields: []
+region:
+  start_label: gt864_p6_register_frontier_slothy_start
+  end_label: gt864_p6_register_frontier_slothy_end
+  live_in: [x0, x2, x3 synthetic seed]
+  live_out: [31 frontier values and row0]
+abi:
+  inputs: [synthetic exact-liveness frontier]
+  outputs: [allocation feasibility]
+  clobbers: [v0-v31, x0, x2, x3, x4, NZCV]
+  concrete_gprs_allowed: [x0, x2, x3, x4]
+  fixed_vector_registers: []
+  reserved_registers: [x18, sp, xzr]
+memory_contract:
+  loads: [31 synthetic Q seeds and one public index]
+  stores: [31 synthetic live-out Q stores and one row0 store]
+  aliasing: synthetic buffers disjoint
+  alignment: 16-byte synthetic buffers
+  public_offsets_only: true
+  pointer_updates: []
+constant_contract:
+  constants: [public row0 route index]
+  modulus: 3457
+  representation: exact vector-liveness proxy for R0 ToBytes
+  reduction_method: unchanged by this screening gate
+range_contract:
+  input_ranges: [retained bytes 0 to 255 and signed int16 route values]
+  intermediate_ranges: [unchanged in allocation slice]
+  output_ranges: [unchanged in allocation slice]
+  narrowing_points: []
+constant_time_contract:
+  secret_inputs: [synthetic vector values]
+  public_inputs: [pointers and index]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

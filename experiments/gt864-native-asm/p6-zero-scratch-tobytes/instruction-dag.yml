@@ -1,0 +1,56 @@
+dag:
+  id: gt864_p6_zero_scratch_tobytes_dag
+  kernel_contract: kernel-contract.yml
+  description: two-top register-only ToBytes with pair routing fused into normalization packing and final stores
+inputs:
+  - 864 FR0 signed int16 coefficients in the P5 GT physical layout
+  - public full-or-small selector
+  - public fixed route and merge tables
+constants:
+  - q equals 3457
+  - full-entry Barrett reciprocal equals 9
+  - exact public route indices
+nodes:
+  - id: pair0_route_pack_retain
+    op: route normalize and split pair0 to three byte streams
+    inputs: [pair0 coefficient vectors, public route constants]
+    outputs: [27 eight-byte streams retained in 27 GPR slots]
+    instruction_shape: current route9 plus normalization and XTN followed by UMOV
+    tied_operands: []
+    range_before: entry-specific coefficient range
+    range_after: byte streams 0 to 255
+    may_reorder_with: [independent loads and arithmetic inside pair0]
+    must_precede: [pair2_merge_store]
+  - id: pair1_route_pack_retain
+    op: route normalize and split pair1 to three byte streams
+    inputs: [pair1 coefficient vectors, public route constants]
+    outputs: [26 streams retained in 13 vectors and one stream in one GPR slot]
+    instruction_shape: current route9 plus normalization and XTN with destructive vector packing
+    tied_operands: [INS destination retains previous eight-byte stream]
+    range_before: entry-specific coefficient range
+    range_after: byte streams 0 to 255
+    may_reorder_with: [independent loads and arithmetic inside pair1]
+    must_precede: [pair2_merge_store]
+  - id: pair2_merge_store
+    op: consumer-oriented route normalize and merge each row directly
+    inputs: [pair2 coefficient vectors, retained pair0 streams, retained pair1 streams, public indices]
+    outputs: [nine 72-byte final rows per top]
+    instruction_shape: row-lifetime route plus TBL and ORR ending in four STR Q and one STR D per row
+    tied_operands: [destructive TBL and ORR permitted only after source last use]
+    range_before: entry-specific coefficient range and retained bytes
+    range_after: exact final bytes 0 to 255
+    may_reorder_with: [independent row fragments when register capacity permits]
+    must_precede: []
+memory:
+  loads: [108 distinct coefficient Q loads per call, public constant loads only]
+  stores: [1296 final output bytes and AAPCS save area only]
+  ordering_constraints: [no final byte may be overwritten, no coefficient reload, output stores use public fixed offsets]
+outputs:
+  - exact canonical NTRU+864 full ToBytes output
+  - exact canonical NTRU+864 small ToBytes output
+live_out: [x0 original output pointer, complete 1296-byte output]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true
