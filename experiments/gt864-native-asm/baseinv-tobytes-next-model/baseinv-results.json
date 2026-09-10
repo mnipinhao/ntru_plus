@@ -1,0 +1,70 @@
+{
+  "status": "algebra-and-range-pass",
+  "production_changed": false,
+  "no_centering": {
+    "input_inverse_bound": 1972,
+    "other_operand_bound": 32768,
+    "early_product_bounds": [
+      129236992,
+      64618496
+    ],
+    "early_REDC_bounds": [
+      3700,
+      2714
+    ],
+    "final_accumulator_bounds": [
+      71012096,
+      133926784,
+      193855488
+    ],
+    "D1_output_bound": [
+      -1845,
+      1845
+    ],
+    "quotient_bucket_inputs_covered": 387710977,
+    "consumer_paths": [
+      "Keygen:g * finv -> h -> ToBytes_small",
+      "Keygen:f * ginv -> hinv -> ToBytes_small"
+    ],
+    "centering_arithmetic_removed_per_call": 648,
+    "finish_instructions": [
+      57,
+      37
+    ],
+    "complete_symbolic_batches_pass": 23,
+    "zero_batches_detected": 1,
+    "full_KEM_physical_test": false
+  },
+  "fused_numerator": {
+    "formal_polynomial_identity": "pass",
+    "range": {
+      "input_R1": 3013,
+      "u_and_w": 1867,
+      "n2": 2005,
+      "n0_n1": 1916,
+      "h": 1908,
+      "den": 1866
+    },
+    "edge_and_random_cases": 108000,
+    "REDC_per_tile": 7,
+    "input_scale": "R0",
+    "internal_and_output_scale": "R1",
+    "fixed_scale_baseline_instructions": 114,
+    "fused_one_tile_instructions": 84,
+    "fused_two_tile_shared_constants_instructions": 160,
+    "one_tile_vector_liveness_peak": 11,
+    "two_tile_sequential_vector_liveness_peak": 13,
+    "physical_assembly_test": false
+  },
+  "source_sha256": {
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/kem.c": "717bb40d760360e1c7aee380f2ac22bca67e83df8aa9b3a4d1d5ad4a949c6a21",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/Makefile": "91d5023ada37f9ee4d273e57dc3cef8be64fb7bc3fe5cb70bbe3b137ae663c74",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_fr0_basemul_d1.c": "d760c545aa4e4298867a76357cb3677d8825192df48ae9428f2ca884f6c322e9",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_fr0_basemul_tables.h": "b76d05dda1c2892a1bfd763bc1667ecad22a6a455ad0fdfba1e127d3d9faa307",
+    "experiments/gt864-native-asm/generate.py": "6b4fcb01b944dd9080b48c255d6cd4da460d951f55825c7142fc9eb673cf4bdb",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_poly_api.c": "727d80e25b3d895da203c9e4757e3f6d629e1880f2749cfcfa9f72ef5a3fa4a2",
+    "experiments/gt864-native-asm/baseinv-tobytes-next-model/baseinv-proof.py": "9de8c850074212f000c024208b8a638637865263659222b47b2caa4f95b9b40d",
+    "experiments/gt864-native-asm/baseinv-fixed-scale/build/pi-20260910/official-source/base.s": "896046d790ef7b22f5624f0f7eb5c68af0bb1fb98bc20a5ad9f8fc0cdd2f3bdf",
+    "experiments/gt864-native-asm/baseinv-fixed-scale/candidate-model.json": "042055f6cac822bf36e96061acb5a9a70b6f331103b4407a7198314525779e53"
+  }
+}

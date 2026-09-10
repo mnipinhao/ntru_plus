@@ -1,0 +1,64 @@
+{
+  "production_source": "/home/pi/gt864-p0-production-20260910/production",
+  "official_source": "/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64",
+  "official_upstream_latest_verified": false,
+  "correctness": {
+    "test_kem": "pass",
+    "kat_cases": 100,
+    "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+    "baseinv_linked_component": "pass",
+    "malformed_trace_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+    "malformed_trace_bytes": 417216
+  },
+  "summary": {
+    "keygen": {
+      "official": {
+        "cycles": 44330.875,
+        "instructions": 89336.0,
+        "branches": 1189.0
+      },
+      "gt-candidate": {
+        "cycles": 47226.875,
+        "instructions": 100414.0,
+        "branches": 1915.0
+      },
+      "cycle_delta_percent": 6.532693072266227
+    },
+    "encaps": {
+      "official": {
+        "cycles": 46413.375,
+        "instructions": 120822.2,
+        "branches": 1064.6
+      },
+      "gt-candidate": {
+        "cycles": 46007.625,
+        "instructions": 126018.2,
+        "branches": 1249.6
+      },
+      "cycle_delta_percent": -0.8742092123229517
+    },
+    "decaps": {
+      "official": {
+        "cycles": 40772.875,
+        "instructions": 86654.2,
+        "branches": 1081.6
+      },
+      "gt-candidate": {
+        "cycles": 44191.3,
+        "instructions": 100654.2,
+        "branches": 1853.6
+      },
+      "cycle_delta_percent": 8.384066612913621
+    }
+  },
+  "environment": {
+    "uname": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc": "gcc (Debian 14.2.0-19) 14.2.0",
+    "governor": "ondemand",
+    "temperature": "temp=62.0'C"
+  },
+  "hashes": {
+    "official.so": "f4c552e1324dd96658bf3513aedea06c1c7046d1855a3bba1b194b152ce68e4e",
+    "gt-production.so": "299106e9ccd04d4235f5811a43638cf7b04390996e9577c8a506a6a1db7241ba"
+  }
+}

@@ -1,0 +1,56 @@
+/* Imported scheduled core: experiments/gt864-native-asm/center32/candidate.opt.S */
+#ifdef __APPLE__
+#define center32 _center32
+#endif
+.text
+.global center32
+center32:
+        center32_slothy_start:
+        mov w4, #3457
+        mov w16, #1728
+        dup v16.8H, w4
+        mov w4, #9
+        dup v4.8H, w16
+        ldr q27, [x0, #48]
+        dup v1.8H, w4
+        ldr q10, [x0, #0]
+        ldr q21, [x0, #16]
+        ldr q9, [x0, #32]
+        sqrdmulh v25.8H, v10.8H, v1.8H
+        mls v10.8H, v25.8H, v16.8H
+        sshr v15.8H, v10.8H, #15
+        and v15.16B, v15.16B, v16.16B
+        add v5.8H, v10.8H, v15.8H
+        sqrdmulh v0.8H, v21.8H, v1.8H
+        cmgt v6.8H, v5.8H, v4.8H
+        mls v21.8H, v0.8H, v16.8H
+        and v6.16B, v6.16B, v16.16B
+        sshr v0.8H, v21.8H, #15
+        sub v15.8H, v5.8H, v6.8H
+        and v17.16B, v0.16B, v16.16B
+        str q15, [x0, #0]
+        add v5.8H, v21.8H, v17.8H
+        sqrdmulh v3.8H, v9.8H, v1.8H
+        cmgt v10.8H, v5.8H, v4.8H
+        mls v9.8H, v3.8H, v16.8H
+        and v20.16B, v10.16B, v16.16B
+        sub v15.8H, v5.8H, v20.8H
+        sshr v21.8H, v9.8H, #15
+        str q15, [x0, #16]
+        and v23.16B, v21.16B, v16.16B
+        add v10.8H, v9.8H, v23.8H
+        sqrdmulh v24.8H, v27.8H, v1.8H
+        cmgt v23.8H, v10.8H, v4.8H
+        mls v27.8H, v24.8H, v16.8H
+        and v11.16B, v23.16B, v16.16B
+        sub v2.8H, v10.8H, v11.8H
+        sshr v15.8H, v27.8H, #15
+        str q2, [x0, #32]
+        and v8.16B, v15.16B, v16.16B
+        add v31.8H, v27.8H, v8.8H
+        cmgt v11.8H, v31.8H, v4.8H
+        and v1.16B, v11.16B, v16.16B
+        sub v9.8H, v31.8H, v1.8H
+        str q9, [x0, #48]
+        center32_slothy_end:
+    ret

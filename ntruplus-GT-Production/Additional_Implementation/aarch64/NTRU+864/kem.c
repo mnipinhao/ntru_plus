@@ -4,6 +4,10 @@
 #include "params.h"
 #include "symmetric.h"
 #include "poly.h"
+#include "gt864_tobytes.h"
+#include "gt864_native.h"
+#include "gt864_frombytes.h"
+#include "gt864_secure_clear.h"
 #include "randombytes.h"
 
 #ifdef DSUPPORTS_SHAKE256_ASM
@@ -46,11 +50,9 @@ static inline int verify(const uint8_t *a, const uint8_t *b, size_t len)
 *
 * Returns 0 on success; non-zero if f is not invertible in the NTT domain.
 **************************************************/
-static inline int genf_derand(poly *f, poly *finv, const uint8_t *coins)
+static inline int genf_derand(poly *f, poly *finv, uint8_t buf[NTRUPLUS_N / 4], const uint8_t *coins)
 {
-    uint8_t buf[NTRUPLUS_N / 4];
-
-    shake256(buf, sizeof buf, coins, 32);
+    shake256(buf, NTRUPLUS_N / 4, coins, 32);
 
     poly_cbd1(f, buf);
     poly_triple(f, f);
@@ -74,11 +76,9 @@ static inline int genf_derand(poly *f, poly *finv, const uint8_t *coins)
 *
 * Returns 0 on success; non-zero if g is not invertible in the NTT domain.
 **************************************************/
-static inline int geng_derand(poly *g, poly *ginv, const uint8_t *coins)
+static inline int geng_derand(poly *g, poly *ginv, uint8_t buf[NTRUPLUS_N / 4], const uint8_t *coins)
 {
-    uint8_t buf[NTRUPLUS_N / 4];
-
-    shake256(buf, sizeof buf, coins, 32);
+    shake256(buf, NTRUPLUS_N / 4, coins, 32);
 
     poly_cbd1(g, buf);
     poly_triple(g, g);
@@ -113,10 +113,13 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
     poly_basemul(&h, g, finv);
     poly_basemul(&hinv, f, ginv);
 
-    poly_tobytes(pk, &h);
-    poly_tobytes(sk, f);
-    poly_tobytes(sk + NTRUPLUS_POLYBYTES, &hinv);
+    /* D1 outputs fit (-q,q); the direct Forward result f does not. */
+    gt864_fr0_tobytes_small(pk, &h);
+    gt864_fr0_tobytes_full(sk, f);
+    gt864_fr0_tobytes_small(sk + NTRUPLUS_POLYBYTES, &hinv);
     hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
+    secure_clear(&h, sizeof h);
+    secure_clear(&hinv, sizeof hinv);
 }
 
 /*************************************************
@@ -137,19 +140,27 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
 int crypto_kem_keypair(uint8_t *pk, uint8_t *sk)
 {
     uint8_t coins[NTRUPLUS_SYMBYTES];
+    /* Shared across retries, fully overwritten by SHAKE, erased on exit. */
+    uint8_t buf[NTRUPLUS_N / 4];
 
     poly f, finv;
     poly g, ginv;
 
     do {
         randombytes(coins, sizeof coins);
-    } while (genf_derand(&f, &finv, coins));
+    } while (genf_derand(&f, &finv, buf, coins));
 
     do {
         randombytes(coins, sizeof coins);
-    } while (geng_derand(&g, &ginv, coins));
+    } while (geng_derand(&g, &ginv, buf, coins));
 
     crypto_kem_keypair_derand(pk, sk, &f, &finv, &g, &ginv);
+    secure_clear(coins, sizeof coins);
+    secure_clear(buf, sizeof buf);
+    secure_clear(&f, sizeof f);
+    secure_clear(&finv, sizeof finv);
+    secure_clear(&g, sizeof g);
+    secure_clear(&ginv, sizeof ginv);
     return 0;
 }
 
@@ -178,6 +189,12 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
 
     poly c, h, r, m;
 
+    if (gt864_fr0_frombytes_checked(&h,pk)) {
+        memset(ct,0,NTRUPLUS_CIPHERTEXTBYTES);
+        secure_clear(ss,NTRUPLUS_SSBYTES);
+        return 1;
+    }
+
     for (size_t i = 0; i < NTRUPLUS_N / 8; i++)
         msg[i] = coins[i];
 
@@ -187,18 +204,22 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
     poly_ntt(&r, &r);
 
-    poly_tobytes(buf2, &r);
+    gt864_fr0_tobytes_full(buf2, &r);
     hash_g(buf2, buf2);
     poly_sotp_encode(&m, msg, buf2);
     poly_ntt(&m, &m);
 
-    poly_frombytes(&h, pk);
     poly_basemul_add(&c, &h, &r, &m);
-    poly_tobytes(ct, &c);
+    gt864_fr0_tobytes_small(ct, &c);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf1[i];
 
+    secure_clear(msg,sizeof msg);
+    secure_clear(buf1,sizeof buf1);
+    secure_clear(buf2,sizeof buf2);
+    secure_clear(&r,sizeof r);
+    secure_clear(&m,sizeof m);
     return 0;
 }
 
@@ -223,7 +244,9 @@ int crypto_kem_enc(uint8_t *ct, uint8_t *ss, const uint8_t *pk)
     uint8_t coins[NTRUPLUS_N / 8];
 
     randombytes(coins, sizeof coins);
-    return crypto_kem_enc_derand(ct, ss, pk, coins);
+    int ret=crypto_kem_enc_derand(ct, ss, pk, coins);
+    secure_clear(coins,sizeof coins);
+    return ret;
 }
 
 /*************************************************
@@ -249,25 +272,31 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 	uint8_t buf2[NTRUPLUS_POLYBYTES];
 	uint8_t buf3[NTRUPLUS_POLYBYTES + NTRUPLUS_SYMBYTES];
 
-    int8_t fail;
+    int8_t fail=1;
 
     poly c, f, hinv;
     poly r1, r2;
     poly m1, m2;
 
-    poly_frombytes(&c, ct);
-    poly_frombytes(&f, sk);
-    poly_frombytes(&hinv, sk + NTRUPLUS_POLYBYTES);
+    /* Same rejection order as the selected Official. Secret-key validity is
+     * intentionally released as a status bit; do not claim this branch-free. */
+    if (gt864_fr0_frombytes_checked(&c,ct) ||
+        gt864_fr0_frombytes_checked(&f,sk) ||
+        gt864_fr0_frombytes_checked(&hinv,sk+NTRUPLUS_POLYBYTES)) {
+        secure_clear(ss,NTRUPLUS_SSBYTES);
+        goto cleanup;
+    }
 
-    poly_basemul(&m1, &c, &f);
-    poly_invntt(&m1, &m1);
+    /* Only this product uses R^-1; the paired inverse restores natural R0. */
+    gt864_native_basemul_for_inverse(m1.coeffs, c.coeffs, f.coeffs);
+    gt864_native_inverse(&m1, &m1);
     poly_crepmod3(&m1, &m1);
 
     poly_ntt(&m2, &m1);
     poly_sub(&c, &c, &m2);
     poly_basemul(&r2, &c, &hinv);
 
-    poly_tobytes(buf1, &r2);
+    gt864_fr0_tobytes_small(buf1, &r2);
     hash_g(buf2, buf1);
     fail = poly_sotp_decode(msg, &m1, buf2);
 
@@ -278,12 +307,24 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
     poly_cbd1(&r1, buf3 + NTRUPLUS_SSBYTES);
     poly_ntt(&r1, &r1);
-    poly_tobytes(buf2, &r1);
+    gt864_fr0_tobytes_full(buf2, &r1);
 
     fail |= verify(buf1, buf2, NTRUPLUS_POLYBYTES);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf3[i] & ~(-fail);
 
+cleanup:
+    secure_clear(msg,sizeof msg);
+    secure_clear(buf1,sizeof buf1);
+    secure_clear(buf2,sizeof buf2);
+    secure_clear(buf3,sizeof buf3);
+    secure_clear(&c,sizeof c);
+    secure_clear(&f,sizeof f);
+    secure_clear(&hinv,sizeof hinv);
+    secure_clear(&r1,sizeof r1);
+    secure_clear(&r2,sizeof r2);
+    secure_clear(&m1,sizeof m1);
+    secure_clear(&m2,sizeof m2);
     return fail;
 }

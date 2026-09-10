@@ -1,5 +1,44 @@
 # K1 production integration evidence
 
+## Current promotion gate — 2026-09-10
+
+The production-linked 84/37 BaseInv and pair+merge ToBytes promotion passed:
+
+- local Apple arm64: 47 exact Makefile-selected objects, 64 KEM
+  round-trips/tampered rejections and 100 KAT cases;
+- Pi 5 Linux/GCC 14.2: manifest, assembly/link, the same KEM/KAT gate, and 808
+  BaseInv success/failure/alias/canary/AAPCS/scratch-wipe cases;
+- malformed transcript: 417216 bytes, SHA-256
+  `2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67`;
+- KAT `.rsp`: SHA-256
+  `0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c`.
+
+Six-process AB/BA paired PMU on Pi 5, core 3, ondemand governor, 62 C:
+
+| Operation | SUPERCOP 20260831 Official | GT production | Delta |
+|---|---:|---:|---:|
+| Keygen | 44330.875 | 47226.875 | +6.53% |
+| Encaps | 46413.375 | 46007.625 | -0.87% |
+| Decaps | 40772.875 | 44191.300 | +8.38% |
+
+The comparison source is
+`/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64`; independent latest
+upstream provenance remains unverified.  Raw evidence is retained under
+`experiments/gt864-native-asm/baseinv-tobytes-next-model/production-promotion-results/`.
+
+The remainder of this document records historical K1 integration evidence.
+
+Historical K1 evidence below. Latest sequential native integration and unchanged
+ToBytes validation: [NATIVE-INTEGRATION.md](NATIVE-INTEGRATION.md). Linux testing
+now passes. The 2026-09-08 checked-decoder gate closes the previously observed
+Official noncanonical-input rejection gap: 10368 boundary differential cases
+and all 79 x+q counterexamples pass. See experiments/gt864-native-asm/
+CHECKED-PROFILE-RESULTS.md in the parent repository for fresh PMU and profiler.
+Do not reuse historical numbers below as current performance.
+The 2026-09-09 gate additionally aligns Keygen-owned secret cleanup; all above
+correctness gates pass again. CLEANUP-BASEINV-RESULTS.md supersedes the earlier
+checked-decoder report's missing-Keygen-cleanup limitation and performance baseline.
+
 Host: pi@100.99.191.9, Linux AArch64, GCC Debian 14.2.0-19.
 Remote directory: /home/pi/ntruplus-experiments/gt864-production-k1-validation/NTRU+864.
 Reference: /home/pi/ntruplus-experiments/gt864-p3b41-k1/raw.so.

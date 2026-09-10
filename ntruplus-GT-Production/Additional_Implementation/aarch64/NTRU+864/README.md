@@ -1,4 +1,16 @@
-# NTRU+864 GT KEM — K1 integration
+# NTRU+864 GT KEM — production optimization package
+
+Current work order and gate status are maintained in
+[OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
+every optimization gate so deferred and rejected work does not disappear.
+
+Latest production promotion integrates the 84-instruction fused-wide BaseInv
+numerator, 37-instruction no-centering finish and scheduled pair+merge ToBytes.
+Mac and Pi 5 KEM/KAT, canonical rejection, malformed-input, BaseInv
+failure/alias/AAPCS/scratch-wipe and paired PMU gates pass.  See
+[NATIVE-INTEGRATION.md](NATIVE-INTEGRATION.md),
+[TOBYTES-INTEGRATION.md](TOBYTES-INTEGRATION.md) and
+[VALIDATION.md](VALIDATION.md).
 
 This self-contained Linux/AArch64 package fixes P3B41 K1 as the shared Forward
 for Keygen, Encaps and Decaps. Stock NTRU+864 and GT768 are unchanged.
@@ -17,12 +29,17 @@ Read in this order:
 
 1. `kem.c` and the **kem-normal.o rule in Makefile**: explicit per-file aliases
    select GT consumers, while crypto_kem_* retains the public names.
-2. `gt864_poly_api.c`: K1 Forward, GT inverse, centered BaseInv adapter, D1.
+2. `gt864_native.h/.c` and `gt864_native_public.S`: direct FR0 BaseInv and
+   the paired first-Decaps R^-1 BaseMul/Inverse. `gt864_poly_api.c` retains K1
+   Forward, D1, and legacy inverse/BaseInv adapters.
 3. `gt864_forward_poly_ntt.S`: public ABI wrapper saves/restores d8–d15.
 4. `gt864_top_split.s`, `tail_variants.S`, `gt864_forward_six_bank.S`:
    raw top, T1 bank-major tail, K1 Pass-2.
 5. `gt864_fr0_basemul_d1.c`, inverse assembly and tables.
-6. `byte_api.c`: candidate ToBytes → r9_to; candidate FromBytes → cluster transpose.
+6. `gt864_tobytes.h`, `gt864_tobytes.c`, `gt864_tobytes_public.S`, the three
+   legacy ToBytes cores and `gt864_pair_merge_{full,small}.S`: caller-selected
+   full/small normalization, routing and byte packing.
+   `byte_api.c`: legacy ToBytes → r9_to; candidate FromBytes → cluster transpose.
    `byte_boundary.c`, `route9.c`, `cluster_transpose_frombytes.c` implement them.
 
 ## Integration policy and range
@@ -47,4 +64,13 @@ proof run: imported K1 sources and core objects are checked unchanged.
 There is no build-time dependency on the campaign or Slothy.
 
 Generic polynomial multiplication is outside this package's contract.
-No new scheduling, arithmetic, layout or security-parameter change was made.
+KEM decoding uses gt864_fr0_frombytes_checked: all 12-bit values must be < q.
+Encaps rejects noncanonical pk; Decaps rejects noncanonical ct/sk components.
+Legacy void FromBytes helpers are internal compatibility APIs, not validators.
+gt864_support_abi.S preserves d8-d15 around the six legacy support helpers.
+Keygen now clears its sampling workspace, coins, f/finv/g/ginv and h/hinv.
+The shared sampling workspace is overwritten across retries and erased on exit.
+See the parent repository experiments/gt864-native-asm/CLEANUP-BASEINV-RESULTS.md
+for the 2026-09-09 baseline and BaseInv stage measurements.
+K1 import history above predates the scheduled ToBytes integration; see its
+separate range, scheduling and validation record. Security parameters are unchanged.

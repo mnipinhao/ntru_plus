@@ -1,0 +1,51 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: binv_finish_nocenter_tile
+  name: GT864 BaseInv finish without centering
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: allocate-and-optimize
+  driver: ../baseinv-allocate.py
+  allow_spills: false
+region:
+  start_label: binv_finish_nocenter_tile_slothy_start
+  end_label: binv_finish_nocenter_tile_slothy_end
+  live_in: [x0, x1]
+  live_out: [x0, x1]
+abi:
+  inputs: [x0 points to three R1 numerators; x1 points to one R1 inverse denominator]
+  outputs: [x0 receives three congruent R0 vectors bounded by 1972]
+  concrete_gprs_allowed: [x0, x1, x8, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: three contiguous R1 numerator vectors and one R1 inverse-denominator vector
+  output_representation: same locations contain bounded non-centered R0 representatives
+memory_contract:
+  loads: [48 numerator bytes; 16 inverse-denominator bytes]
+  stores: [48 result bytes]
+  aliasing: in-place x0 required; x1 disjoint
+  alignment: halfword valid; no wider alignment required
+  public_offsets_only: true
+constant_contract:
+  constants: [q 3457; negative q inverse -12929; R inverse mod q -682; fixed multiply reciprocal -6464]
+  modulus: 3457
+  representation: input R1; output R0 bounded non-centered
+range_contract:
+  input_ranges: [numerators absolute value at most 2005; inverse denominator absolute value at most 2000]
+  output_ranges: [absolute value at most 1972; exact consumer closure proves D1 output in -1845 through 1845]
+constant_time_contract:
+  secret_inputs: [all coefficient lanes]
+  public_inputs: [pointers]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 ../baseinv-physical-test.py
+  test_command: python3 ../baseinv-physical-test.py
+  full_path_benchmark_command: Pi 5 isolated BaseInv and full Keygen benchmark after wrapper integration

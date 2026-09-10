@@ -1,0 +1,309 @@
+{
+  "interpreter": "/Users/chenpinhao/slothy_and_ra/.venv/bin/python",
+  "architecture": "/Users/chenpinhao/slothy/slothy/targets/aarch64/aarch64_neon.py",
+  "architecture_sha256": "618a330f8c4e4b214626c5b44cac434dff1440815aaf8b582d556b0bf5499e4d",
+  "mode": "full",
+  "instructions": 805,
+  "vector_liveness_peak": 30,
+  "peak_example": [
+    {
+      "instruction": 149,
+      "source": "orr V<m0_out3>.16b, V<m0_part9>.16b, V<m0_part10>.16b",
+      "live": [
+        "aninth",
+        "at0",
+        "at1",
+        "at2",
+        "at3",
+        "at4",
+        "at5",
+        "at6",
+        "at7",
+        "bninth",
+        "bt0",
+        "bt1",
+        "bt2",
+        "bt3",
+        "bt4",
+        "bt5",
+        "bt6",
+        "bt7",
+        "hi0",
+        "lo0",
+        "m0_p0hi",
+        "m0_p0lo",
+        "m0_p1hi",
+        "m0_p1lo",
+        "m0_part10",
+        "m0_part11",
+        "m0_part9",
+        "mid0",
+        "q",
+        "recip"
+      ]
+    }
+  ],
+  "TBL3_timing": "placeholder; timing forbidden",
+  "allow_spills": false,
+  "allow_reordering": false,
+  "regions": [
+    {
+      "block": 0,
+      "instructions": 84,
+      "held": [],
+      "live_out_mapping": {
+        "bt2": "v0",
+        "bt4": "v3",
+        "recip": "v14",
+        "bt3": "v10",
+        "at6": "v6",
+        "bt6": "v9",
+        "bt5": "v15",
+        "at0": "v5",
+        "q": "v13",
+        "at5": "v8",
+        "bt7": "v19",
+        "at4": "v12",
+        "at3": "v7",
+        "at1": "v11",
+        "bninth": "v1",
+        "at7": "v18",
+        "aninth": "v2",
+        "at2": "v16",
+        "bt0": "v4",
+        "bt1": "v17"
+      }
+    },
+    {
+      "block": 1,
+      "instructions": 77,
+      "held": [
+        "at1",
+        "at2",
+        "at3",
+        "at4",
+        "at5",
+        "at6",
+        "at7",
+        "bt1",
+        "bt2",
+        "bt3",
+        "bt4",
+        "bt5",
+        "bt6",
+        "bt7"
+      ],
+      "live_out_mapping": {
+        "bt7": "v19",
+        "bt6": "v9",
+        "at4": "v12",
+        "bt2": "v0",
+        "bt5": "v15",
+        "at3": "v7",
+        "bt4": "v3",
+        "at1": "v11",
+        "at2": "v16",
+        "bt3": "v10",
+        "at5": "v8",
+        "bt1": "v17",
+        "at6": "v6",
+        "at7": "v18",
+        "at0": "v5",
+        "aninth": "v2",
+        "q": "v13",
+        "recip": "v14",
+        "bninth": "v1",
+        "bt0": "v4"
+      }
+    },
+    {
+      "block": 2,
+      "instructions": 82,
+      "held": [
+        "at2",
+        "at3",
+        "at4",
+        "at5",
+        "at6",
+        "at7",
+        "bt2",
+        "bt3",
+        "bt4",
+        "bt5",
+        "bt6",
+        "bt7"
+      ],
+      "live_out_mapping": {
+        "bt7": "v19",
+        "bt6": "v9",
+        "at4": "v12",
+        "bt2": "v0",
+        "bt5": "v15",
+        "at3": "v7",
+        "bt4": "v3",
+        "at2": "v16",
+        "bt3": "v10",
+        "at5": "v8",
+        "at6": "v6",
+        "at7": "v18",
+        "aninth": "v2",
+        "q": "v13",
+        "at1": "v11",
+        "recip": "v14",
+        "bninth": "v1",
+        "bt1": "v17"
+      }
+    },
+    {
+      "block": 3,
+      "instructions": 82,
+      "held": [
+        "at3",
+        "at4",
+        "at5",
+        "at6",
+        "at7",
+        "bt3",
+        "bt4",
+        "bt5",
+        "bt6",
+        "bt7"
+      ],
+      "live_out_mapping": {
+        "bt7": "v19",
+        "bt6": "v9",
+        "at4": "v12",
+        "bt5": "v15",
+        "at3": "v7",
+        "bt4": "v3",
+        "bt3": "v10",
+        "at5": "v8",
+        "at6": "v6",
+        "at7": "v18",
+        "bt2": "v0",
+        "aninth": "v2",
+        "q": "v13",
+        "recip": "v14",
+        "at2": "v16",
+        "bninth": "v1"
+      }
+    },
+    {
+      "block": 4,
+      "instructions": 82,
+      "held": [
+        "at4",
+        "at5",
+        "at6",
+        "at7",
+        "bt4",
+        "bt5",
+        "bt6",
+        "bt7"
+      ],
+      "live_out_mapping": {
+        "bt7": "v19",
+        "bt6": "v9",
+        "at4": "v12",
+        "bt5": "v15",
+        "bt4": "v3",
+        "at5": "v8",
+        "at6": "v6",
+        "at7": "v18",
+        "aninth": "v2",
+        "at3": "v7",
+        "q": "v13",
+        "recip": "v14",
+        "bninth": "v1",
+        "bt3": "v10"
+      }
+    },
+    {
+      "block": 5,
+      "instructions": 82,
+      "held": [
+        "at5",
+        "at6",
+        "at7",
+        "bt5",
+        "bt6",
+        "bt7"
+      ],
+      "live_out_mapping": {
+        "bt7": "v19",
+        "bt6": "v9",
+        "bt5": "v15",
+        "at5": "v8",
+        "at6": "v6",
+        "at7": "v18",
+        "at4": "v12",
+        "aninth": "v2",
+        "bt4": "v3",
+        "q": "v13",
+        "recip": "v14",
+        "bninth": "v1"
+      }
+    },
+    {
+      "block": 6,
+      "instructions": 82,
+      "held": [
+        "at6",
+        "at7",
+        "bt6",
+        "bt7"
+      ],
+      "live_out_mapping": {
+        "bt7": "v19",
+        "bt6": "v9",
+        "at6": "v6",
+        "at7": "v18",
+        "bt5": "v15",
+        "aninth": "v2",
+        "q": "v13",
+        "recip": "v14",
+        "bninth": "v1",
+        "at5": "v8"
+      }
+    },
+    {
+      "block": 7,
+      "instructions": 82,
+      "held": [
+        "at7",
+        "bt7"
+      ],
+      "live_out_mapping": {
+        "bt7": "v19",
+        "at7": "v18",
+        "bt6": "v9",
+        "aninth": "v2",
+        "q": "v13",
+        "recip": "v14",
+        "bninth": "v1",
+        "at6": "v6"
+      }
+    },
+    {
+      "block": 8,
+      "instructions": 77,
+      "held": [
+        "at7",
+        "bt7"
+      ],
+      "live_out_mapping": {
+        "bt7": "v19",
+        "at7": "v18",
+        "q": "v13",
+        "recip": "v14"
+      }
+    },
+    {
+      "block": 9,
+      "instructions": 75,
+      "held": [],
+      "live_out_mapping": {}
+    }
+  ],
+  "allocation": "pass"
+}

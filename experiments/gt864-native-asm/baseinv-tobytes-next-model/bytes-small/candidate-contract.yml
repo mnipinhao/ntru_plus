@@ -1,0 +1,24 @@
+candidate:
+  id: pair_merge_small
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: ../bytes-allocate.py
+contract_preservation:
+  preserved: true
+  approved_changes: [new internal experimental ABI only; no production replacement]
+region:
+  start_label: pair_merge_small_slothy_start
+  end_label: pair_merge_small_slothy_end
+  live_in: [x0, x1, x2, x3, x4, x6, x7, x9]
+  live_out: [x0, x1, x2, x3, x4, x6, x7, x9]
+abi:
+  inputs: [FR0 streams and two packed scratch pairs and public tables]
+  outputs: [648 final wire bytes]
+memory_contract:
+  loads: [288 coefficient bytes and 432 scratch bytes plus tables]
+  stores: [648 final bytes]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

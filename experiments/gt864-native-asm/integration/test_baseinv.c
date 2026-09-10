@@ -29,7 +29,10 @@ int main(void){
             int64_t a=in.v[24*j+l],b=in.v[24*j+8+l],c=in.v[24*j+16+l];
             int64_t x=out.v[24*j+l],y=out.v[24*j+8+l],w=out.v[24*j+16+l];
             int z=mod((int64_t)gt864_fr0_zetas_mul[j][l]*2775);
-            check(x>=-1728&&x<=1728&&y>=-1728&&y<=1728&&w>=-1728&&w<=1728,"canonical range");
+            /* The promoted no-centering finish deliberately returns raw R0
+             * representatives.  The proved Keygen-only consumer contract is
+             * [-1972,1972], not the former centered [-1728,1728] contract. */
+            check(x>=-1972&&x<=1972&&y>=-1972&&y<=1972&&w>=-1972&&w<=1972,"no-centering range");
             check(mod(a*x+z*(b*w+c*y))==1&&!mod(a*y+b*x+z*c*w)&&!mod(a*w+b*y+c*x),"cubic inverse identity");
         }
     }

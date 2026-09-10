@@ -1,0 +1,24 @@
+candidate:
+  id: binv_finish_nocenter_tile
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: ../baseinv-allocate.py
+contract_preservation:
+  preserved: true
+  approved_changes: [new default-off experimental internal kernel only]
+region:
+  start_label: binv_finish_nocenter_tile_slothy_start
+  end_label: binv_finish_nocenter_tile_slothy_end
+  live_in: ['x0', 'x1']
+  live_out: ['x0', 'x1']
+abi:
+  inputs: [contracted pointers and coefficient vectors]
+  outputs: [contracted memory stores]
+memory_contract:
+  loads: [exact fixed-offset inputs]
+  stores: [exact fixed-offset outputs]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

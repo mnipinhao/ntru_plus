@@ -1,0 +1,51 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: pair_merge_small
+  name: third pair plus merge small
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: ra-then-window-opt
+  driver: ../bytes-allocate.py
+  allow_spills: false
+region:
+  start_label: pair_merge_small_slothy_start
+  end_label: pair_merge_small_slothy_end
+  live_in: [x0, x1, x2, x3, x4, x6, x7, x9]
+  live_out: [x0, x1, x2, x3, x4, x6, x7, x9]
+abi:
+  inputs: [x1 and x2 FR0 streams; x3 masks; x4 row indices; x6 and x7 packed pairs; x9 merge indices]
+  outputs: [648 final wire bytes at x0]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: FR0 R0; two nine-vector streams at 48-byte stride and two 216-byte packed pairs
+  output_representation: nine 72-byte final wire rows; no third-pair scratch
+memory_contract:
+  loads: [18 coefficient vectors exactly once; 432 packed scratch bytes; fixed masks and index vectors]
+  stores: [36 STR Q and nine STR D; exact 648 final bytes]
+  aliasing: output disjoint from coefficient streams and scratch and constants
+  alignment: halfword coefficient inputs; byte output and scratch; no out of bounds accesses
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457; existing row masks and indices; new TBL3 merge indices]
+  modulus: 3457
+  representation: R0
+range_contract:
+  input_ranges: [-3456 through 3456]
+  output_ranges: [canonical packed bytes 0 through 255]
+constant_time_contract:
+  secret_inputs: [coefficient lanes and scratch bytes]
+  public_inputs: [pointers and table indices]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 ../bytes-test.py
+  test_command: python3 ../bytes-test.py --physical
+  full_path_benchmark_command: not enabled; full ToBytes and KEM measurement required before promotion

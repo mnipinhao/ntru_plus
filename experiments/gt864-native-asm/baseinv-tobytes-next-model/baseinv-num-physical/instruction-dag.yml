@@ -1,0 +1,16 @@
+inputs: [a_R0, b_R0, c_R0, zetaR]
+outputs: [n0_R1, n1_R1, n2_R1, denominator_R1]
+nodes:
+  conversion: each input uses fixed constant mul sqrdmulh mls to produce R1
+  u: REDC b*c
+  w: REDC c*c
+  n2: REDC of wide b*b minus a*c
+  n0: REDC of wide a*a minus u*zetaR
+  n1: REDC of wide w*zetaR minus a*b
+  h: REDC of wide n2*b plus n1*c
+  denominator: REDC of wide h*zetaR plus n0*a
+dependencies:
+  - all input loads precede stores to permit x0 equal x1
+  - each REDC narrows only after signed-int32 range proof
+  - outputs retain R1 scale expected by unchanged prefix and recovery kernels
+  - x0 and x3 stores are disjoint

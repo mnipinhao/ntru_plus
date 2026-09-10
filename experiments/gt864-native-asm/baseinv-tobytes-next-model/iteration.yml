@@ -1,0 +1,34 @@
+iteration:
+  id: baseinv-and-third-pair-20260910
+  mode: new_symbolic_kernel
+  current_state: promotion_decision
+  hypothesis: eliminate final centering with consumer closure; fuse numerator wide sums; stream third packed pair into final byte merge
+  earliest_state_to_revisit: instruction_dag
+  candidate_status: candidate
+artifacts:
+  kernel_contract: [bytes-small/kernel-contract.yml, bytes-full/kernel-contract.yml]
+  instruction_dag: [bytes-small/instruction-dag.yml, bytes-full/instruction-dag.yml]
+  symbolic_source: [bytes-small/candidate.sym.S, bytes-full/candidate.sym.S]
+  slothy_driver: bytes-allocate.py
+  slothy_log: [bytes-small/slothy-window-ra.log, bytes-full/slothy-window-ra.log, bytes-small/slothy-timing.log, bytes-full/slothy-timing.log]
+  correctness: [baseinv-results.json, baseinv-physical-results.json, bytes-physical-results.json, pi-results/scheduled/raw/test-baseinv.log, pi-results/scheduled/raw/test-tobytes.log, pi-results/scheduled/raw/test-combined.log]
+  benchmark: [pi-results/scheduled/pi-results.json, official-comparison.json]
+gates:
+  repo_probe: pass; existing generate_bytes.py and active public wrappers inspected
+  baseline_contract: not required for new internal experimental ABI; production unchanged
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: pass with explicit local opcode classification extension
+  Slothy_run_by_user: pass; user authorized local execution by agent
+  parse_slothy_result: functional allocation pass for twenty regions; TBL3-measured timing schedule pass at natural boundaries
+  oracle_correctness: Mac physical plus Pi KAT, rejection, BaseInv failure and exact-wire bytes pass
+  full_path_benchmark: pass; versus active GT Keygen -9.10%, Encaps -0.29%, Decaps -0.27%; versus SUPERCOP 20260831 Official Keygen +6.62%, Encaps -0.91%, Decaps +8.41%
+  promotion_decision: candidate; production unchanged pending explicit promotion and linked-object audit
+notes:
+  - TBL3 architecture constraint modeled locally with three consecutive vector inputs.
+  - Functional allocation used placeholders; timing pass used Pi-measured TBL3 throughput/latency in an experiment-local model.
+  - Generic checker locally extended with TBL definition and INS read-write semantics.
+  - Whole-region RA timed out; row-region RA with contiguous work bank passed.
+  - Experimental wrapper clears its complete 432-byte scratch before return.
+  - No production file was changed by this gate.

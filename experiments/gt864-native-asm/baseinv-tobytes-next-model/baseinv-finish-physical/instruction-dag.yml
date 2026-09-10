@@ -1,0 +1,11 @@
+inputs: [n0_R1, n1_R1, n2_R1, inverse_denominator_R1]
+outputs: [out0_R0_bounded, out1_R0_bounded, out2_R0_bounded]
+nodes:
+  denominator_correction: fixed Barrett-Shoup multiply by R inverse to get R0
+  shared_qinv: multiply corrected denominator by negative q inverse once
+  products: three Montgomery reductions sharing corrected denominator and shared_qinv
+  stores: overwrite the numerator vectors with bounded R0 representatives
+dependencies:
+  - load all numerator inputs before in-place stores
+  - no centering correction is present
+  - consumer closure rather than modular equivalence justifies the wider representatives

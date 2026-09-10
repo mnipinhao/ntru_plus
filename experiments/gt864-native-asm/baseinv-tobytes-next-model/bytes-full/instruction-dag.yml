@@ -1,0 +1,13 @@
+inputs: [FR0 stream a, FR0 stream b, scratch pair0, scratch pair1]
+outputs: [nine final wire rows]
+nodes:
+  frontend: 18 once-only coefficient loads; EXT and TRN to two eight-vector transposes plus ninth vectors
+  row: select two adjacent transpose vectors; insert ninth lane; row TBL; normalization; three packed byte vectors
+  merge: load two packed scratch rows; 15 index loads and TBLs; 10 ORRs; five final stores
+dependencies:
+  - each row must retain transpose inputs until their last selected lane is consumed
+  - each merge uses current row packed vectors directly before producing next row
+  - rows visit physical indices 0 3 6 1 4 7 2 5 8
+  - TBL2 scratch pairs require two consecutive vector registers
+  - TBL3 live packed low middle high require three consecutive vector registers
+  - all output stores are disjoint; all input and scratch loads are read-only

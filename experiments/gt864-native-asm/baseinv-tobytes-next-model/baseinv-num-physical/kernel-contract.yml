@@ -1,0 +1,51 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: binv_num_fused_tile
+  name: GT864 fused-wide BaseInv numerator tile
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: allocate-and-optimize
+  driver: ../baseinv-allocate.py
+  allow_spills: false
+region:
+  start_label: binv_num_fused_tile_slothy_start
+  end_label: binv_num_fused_tile_slothy_end
+  live_in: [x0, x1, x2, x3]
+  live_out: [x0, x1, x2, x3]
+abi:
+  inputs: [x1 points to one 24-coefficient FR0 tile; x2 points to eight zetaR values]
+  outputs: [x0 receives three R1 numerator vectors; x3 receives one R1 denominator vector]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x8, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: three vectors a b c in FR0 R0 tile order
+  output_representation: three R1 adjugate vectors and one R1 determinant vector
+memory_contract:
+  loads: [48 input bytes exactly once; 16 zetaR bytes exactly once]
+  stores: [48 numerator bytes; 16 denominator bytes]
+  aliasing: x0 may equal x1 because all input loads precede output stores; x3 disjoint from x0 tile
+  alignment: halfword valid; no wider alignment required
+  public_offsets_only: true
+constant_contract:
+  constants: [q 3457; negative q inverse -12929; R mod q -147; Barrett-Shoup reciprocal -1393]
+  modulus: 3457
+  representation: input R0; arithmetic and outputs R1
+range_contract:
+  input_ranges: [full signed int16 input; zetaR absolute value at most 1728]
+  output_ranges: [numerators absolute value at most 2005; denominator absolute value at most 1866]
+constant_time_contract:
+  secret_inputs: [all coefficient lanes]
+  public_inputs: [pointers and fixed zeta table positions]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 ../baseinv-physical-test.py
+  test_command: python3 ../baseinv-physical-test.py
+  full_path_benchmark_command: Pi 5 isolated BaseInv and full Keygen benchmark after wrapper integration
