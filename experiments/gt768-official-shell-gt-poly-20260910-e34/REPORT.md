@@ -102,12 +102,20 @@ artifacts are under
    `/home/pi/supercop-20260831`.
 
 The source-packaging gate is complete. The reviewable leaf is tracked under
-`ntruplus-GT-Production/SUPERCOP/crypto_kem/ntruplus768/aarch64`; provenance,
-function mapping, deterministic manifest, build contract and validation are in
-the adjacent `metadata/ntruplus768-aarch64-gt` directory. The generator is
-`ntruplus-GT-Production/scripts/generate_supercop_ntruplus768.py`.
+`ntruplus-GT-Production/SUPERCOP/crypto_kem/ntruplus768/aarch64`. The generator
+is `ntruplus-GT-Production/scripts/generate_supercop_ntruplus768.py`; detailed
+provenance and validation remain in this experiment record and Git history.
 
 Decision remains **keep-experimental**: the package is reproducible, correct,
 SUPERCOP-shaped and faster on Pi 5, but it has not been promoted to
 `aarch64-production` and its substantially larger text footprint remains an
 explicit tradeoff.
+
+## Post-promotion packaging note
+
+The verified leaf was later promoted to `aarch64-production`. To keep the
+tracked SUPERCOP tree shaped like an ordinary implementation, the adjacent
+generated metadata directory was removed after promotion. Provenance and
+performance evidence remain in this experiment record, the machine-readable
+gate summaries, the generator's explicit Official/GT file lists, and Git
+history. The executable leaf itself is unchanged by that cleanup.
