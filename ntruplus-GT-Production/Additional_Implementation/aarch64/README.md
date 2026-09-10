@@ -23,10 +23,11 @@ The implementation supports Linux/AArch64 ELF and macOS/AArch64 Mach-O.
 Performance numbers in this release were measured on Linux/AArch64 using a
 Raspberry Pi 5 Cortex-A76.
 
-To verify the complete extracted archive:
+To verify the NTRU+768 production source closure:
 
 ```sh
-shasum -a 256 -c SHA256SUMS
+cd NTRU+768
+make manifest-check
 ```
 
 The repository does not track a generated zip. From the repository root,
