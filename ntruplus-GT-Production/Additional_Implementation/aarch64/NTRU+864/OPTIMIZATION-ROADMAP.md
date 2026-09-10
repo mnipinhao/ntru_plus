@@ -162,3 +162,13 @@ Status meanings:
   P6-D is now next and must build the complete full/small nine-row kernels,
   close GPR reconstruction/cross-row carry and public ABI, then pass complete
   correctness before Pi 5 timing.
+- P6-D1 now proves the saved-pair producer frontier.  Pair 0 and pair 1 allocate
+  `OPTIMAL` without spill at 407 and 475 semantic instructions; physical TBL
+  groups are consecutive and `x18` is unused.  An executable arm64 oracle
+  passed 4,107 edge/random cases against production `byte_pair_block`, including
+  the exact 13-Q plus 28-GPR dense state.
+- P6-D2 proves the all-nine-row coordinate schedule over 4,096 cases.  Rows are
+  consumed in logical order `0,3,6,1,4,7,2,5,8`; physical row 4 is the exact
+  Q-to-GPR crossing, and the final top boundary remains 40 `STR Q` plus one
+  `STR D`.  P6-D is still active: D3 must materialize one complete full/small
+  wrapper and close physical handoff, AAPCS and whole-function correctness.

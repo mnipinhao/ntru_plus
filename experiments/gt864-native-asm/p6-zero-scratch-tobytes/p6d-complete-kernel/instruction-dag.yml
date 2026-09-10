@@ -1,0 +1,41 @@
+dag:
+  id: gt864_p6d_complete_tobytes
+inputs:
+  coefficients: 108 Q vectors in two production GT tops
+  tables: production prefix and route tables, merge tables, two fixed pair-interleave index vectors
+  mode: public full or small selector
+nodes:
+  - id: pair0_route_pack
+    operation: route nine A/B rows, canonicalize, create three byte channels, TBL3-interleave each row into 24 bytes
+    outputs: 27 D chunks initially held in GPRs
+    memory: no coefficient output stores
+  - id: pair1_route_pack_fold
+    operation: route and pack pair1 row by row; combine each completed row with matching pair0 GPR chunks
+    outputs: first 26 dense chunks in 13 Q, remaining 28 dense chunks in GPRs
+    invariant: each new Q lifetime replaces route values that are dead after the corresponding row
+  - id: pair2_a_pack
+    operation: P6-C exact seven-Q canonical 12-bit A representation
+    outputs: seven Q
+  - id: pair2_b_route
+    operation: route nine B rows only
+    outputs: nine Q
+  - id: rows_0_to_8
+    operation: reconstruct the required saved-pair row, restore pair2 A, normalize pair2 B, perform two TBL2 plus one TBL3 and OR merge
+    order: physical rows [0,3,6,1,4,7,2,5,8]
+    outputs: four Q plus one D stores per logical 72-byte row, combined as 40 Q plus one D contiguous top stores
+  - id: repeat_top
+    operation: repeat with fixed coefficient and output offsets for the second top
+outputs:
+  bytes: exact 1296-byte NTRU+864 serialization
+ordering_constraints:
+  - pair0 GPR production precedes pair1 folding
+  - pair1 folding precedes pair2 A packing
+  - pair2 A packing precedes pair2 B materialization
+  - consumers release state monotonically in physical row order
+  - all output stores preserve increasing byte order
+  - x29 holds output base while x30 holds merge-table base at the 28-data-GPR frontier
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

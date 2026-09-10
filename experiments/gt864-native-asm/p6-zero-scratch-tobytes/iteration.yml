@@ -16,14 +16,15 @@ target:
   microarchitecture: Cortex-A76 (Raspberry Pi 5)
 status: active-p6d
 gate_result: >-
-  P6-C passes: packed-A production peaks at 26 vectors and the exact joint
-  first-row consumer peaks at 32. Both local Cortex-A76 Slothy allocations are
-  OPTIMAL without spill, physical TBL groups are consecutive, and executable
-  arm64 assembly passes 12,288 pack plus 4,096 joint-row oracle cases.
-  Production remains unchanged until a complete all-nine-row kernel exists.
+  P6-D1 now passes: the saved-pair producers allocate OPTIMAL without spill,
+  their physical TBL groups are consecutive, and 4,107 executable arm64 cases
+  match the production byte-pair reference. P6-D2 also passes a 4,096-case
+  exact nine-row model for the 13-Q plus 28-GPR state, including the row-4
+  Q-to-GPR crossing and final 40-Q plus one-D store shape. Production remains
+  unchanged because P6-D3 has not yet materialized one complete wrapper.
 next_iteration: >-
-  P6-D materialize the complete all-nine-row full/small consumer-oriented
-  kernels using the P6-C packed-A and joint-row ABI. Preserve 108 coefficient
-  Q loads, zero coefficient scratch, no lane ST3, no spill and direct 40 Q plus
-  one D final stores per top. Close cross-row carry and public AAPCS handling
-  before any Pi 5 benchmark or production promotion.
+  P6-D3 materialize one complete full/small assembly wrapper from the proven
+  producer and row schedule. Preserve 108 coefficient Q loads, zero coefficient
+  scratch, no lane ST3, no spill and direct 40 Q plus one D stores per top.
+  Prove the physical cross-stage register map, public AAPCS save/restore and
+  whole-function bytes before any Pi 5 benchmark or production promotion.

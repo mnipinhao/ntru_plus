@@ -1,0 +1,21 @@
+iteration:
+  id: P6-D
+  status: active-d3
+  mode: new_symbolic_kernel
+  observation: P6-C proved packed-A and the worst joint consumer row separately, but a complete kernel must first create the 13-Q plus 28-GPR saved-pair state without memory scratch and retain a usable public pointer ABI while all 28 data GPRs are occupied.
+  primary_bottleneck: register pressure and cross-stage layout
+  hypothesis: Produce pair 0 as 27 GPR D chunks, then consume pair-1 rows immediately to form the first 26 interleaved D chunks in 13 Q registers while moving only the remaining 28 chunks to GPRs. Reserve x29 for output and deliberately repurpose saved x30 as the public merge-table pointer. This leaves the exact P6-C 29-vector consumer state with no coefficient scratch.
+  exact_change: Replace saved-pair ST3 stores with a TBL3 byte-interleave and register handoff; materialize all nine consumers in physical order; wrap both tops in one AAPCS save/restore boundary.
+  expected_static_effect: Remove the 432-byte scratch write/read/wipe boundary while retaining 108 coefficient Q loads and final 40 Q plus one D stores per top.
+  expected_performance_effect: Recover the measured P6-A bridge opportunity; no full-path cycle claim before complete executable correctness.
+  expected_register_effect: Producer accumulation must remain at most 32 vectors; saved state is exactly 13 Q plus 28 GPR; consumer peak remains at most 32 vectors.
+  correctness_impact: Internal representation only; exact 1296-byte output and full/small normalization contracts are unchanged.
+  falsifier: Any all-row byte mismatch, coefficient scratch, extra coefficient load, lane ST3, spill, non-consecutive TBL group, unavailable pointer at a 28-GPR frontier, or peak above 32.
+  repo_probe:
+    slothy_root: /Users/chenpinhao/slothy
+    interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+    python_path: /Users/chenpinhao/slothy
+    target: cortex_a76
+  subgates: [P6-D1 saved-pair producer, P6-D2 all-row consumer, P6-D3 public two-top executable]
+  gate_result: P6-D1 passes physical allocation and 4107-case executable byte oracle; P6-D2 passes the exact all-nine-row layout model over 4096 cases. P6-D3 remains required before timing or promotion.
+  next_iteration: Materialize one monolithic full/small wrapper. Preserve the pair1 physical 13-Q plus 28-GPR live-out mapping across packed-A production, load/normalize all B rows without a scalar scratch GPR, switch x29 from coefficient base to output base after the final coefficient load, consume rows in physical order, and perform only final full-vector stores.

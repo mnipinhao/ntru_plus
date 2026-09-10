@@ -1,0 +1,44 @@
+candidate:
+  id: gt864_p6d_complete_tobytes
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: producer.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: true
+  approved_changes: false
+  changed_fields: []
+region:
+  start_label: gt864_p6d_pair0_start
+  end_label: gt864_p6d_pair1_end
+  live_in: [x29 top coefficient base, x30 combined public table base]
+  live_out: [13 Q plus 28 GPR dense saved-pair chunks]
+abi:
+  inputs: [fixed public coefficient and table pointers]
+  outputs: [register-only saved-pair state]
+  clobbers: [v0-v31, x0-x28, NZCV]
+  concrete_gprs_allowed: [x29, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x29, x30, sp]
+memory_contract:
+  loads: [36 coefficient Q loads and public tables for two saved pairs]
+  stores: [synthetic live-out stores only in allocation harness]
+  aliasing: public inputs disjoint
+  alignment: Q aligned
+  public_offsets_only: true
+  pointer_updates: []
+constant_contract:
+  constants: [q, reciprocal9, route masks and indices, pair-interleave indices]
+  modulus: 3457
+  representation: signed FR0 to dense canonical pair bytes
+  reduction_method: full Barrett plus conditional add
+range_contract:
+  input_ranges: [signed int16]
+  intermediate_ranges: [canonical 0 to 3456, bytes]
+  output_ranges: [bytes]
+  narrowing_points: [XTN after canonicalization]
+constant_time_contract:
+  secret_inputs: [coefficients]
+  public_inputs: [all addresses and indices]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

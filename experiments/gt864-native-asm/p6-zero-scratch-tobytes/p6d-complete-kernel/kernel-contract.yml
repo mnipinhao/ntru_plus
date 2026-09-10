@@ -1,0 +1,66 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: gt864_p6d_complete_tobytes
+  name: GT864 complete zero-scratch full and small ToBytes
+  source: generated symbolic regions and public wrapper
+  scheme: NTRU+864
+  operation: route, normalize, pack and serialize two 648-byte tops
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: allocation first for saved-pair producer and per-row consumer, then bounded timing windows
+  driver: optimize.py
+  expected_outputs: [producer.alloc.S, consumer.alloc.S, slothy-results.json]
+  allow_spills: false
+region:
+  start_label: gt864_p6d_saved_pair_start
+  end_label: gt864_p6d_consumer_end
+  live_in: [public input output route prefix and merge-table pointers]
+  live_out: [exact 648-byte serialized top]
+abi:
+  inputs: [output byte pointer, FR0 coefficient pointer, prefix table, route table, merge table, public full-or-small selector]
+  outputs: [exact 1296 canonical packed bytes]
+  clobbers: [v0-v31, x0-x30, NZCV]
+  concrete_gprs_allowed: [x0-x30, w8, w11]
+  fixed_vector_registers: []
+  reserved_registers: [x18, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: two saved pair routes to 13-Q plus 28-GPR state, packed pair-2 A, pair-2 B route, nine direct merge rows, repeated for two tops
+layout:
+  input_representation: FR0 R0 signed int16 in production GT physical layout
+  output_representation: canonical NTRU+ 12-bit byte order
+  vector_lanes: eight signed halfwords before canonicalization and byte streams after narrowing
+  saved_pair_state: 54 interleaved D chunks in physical row order; chunks 0 to 25 in 13 Q and chunks 26 to 53 in 28 GPR
+memory_contract:
+  loads: [exactly 108 coefficient Q loads, fixed public prefix route and merge tables, public pointer save slots]
+  stores: [40 Q plus one D per 648-byte top, AAPCS save slots only]
+  aliasing: production ToBytes input and output are disjoint
+  alignment: coefficient and table Q loads retain production alignment; output byte pointer may be unaligned
+  public_offsets_only: true
+  pointer_updates: [fixed two-top and nine-row progression]
+constant_contract:
+  constants: [q 3457, reciprocal9, nibble mask15, production prefix and route tables, compile-time-adjusted merge indices, two fixed three-channel interleave tables]
+  modulus: 3457
+  representation: full path canonicalizes any accepted signed-int16 producer; small path requires proved minus-q-to-q producers
+  reduction_method: full Barrett b-equals-one plus conditional add; small conditional add only
+range_contract:
+  input_ranges: [full signed-int16 accepted producer range, small producer strictly between minus q and q]
+  intermediate_ranges: [canonical coefficient 0 to 3456, byte 0 to 255]
+  output_ranges: [byte 0 to 255]
+  narrowing_points: [XTN after canonicalization, packed high nibble]
+constant_time_contract:
+  secret_inputs: [all coefficients and retained serialized chunks]
+  public_inputs: [pointers, selector, fixed table offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 model.py and executable differential test
+  test_command: complete full/small 1296-byte differential, canary, AAPCS and zeroization-policy checks
+  full_path_benchmark_command: paired Pi5 complete ToBytes and KEM only after correctness
+  benchmark_metric: cycles
+  lower_is_better: true
