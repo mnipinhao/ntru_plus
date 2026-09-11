@@ -34,8 +34,8 @@ Status meanings:
 | P6-D | Done | Complete all-nine-row full/small zero-scratch ToBytes kernels | 12 Slothy regions optimal/no-spill; exact 1,296 bytes; 108 coefficient Q loads; zero coefficient scratch; 80 Q + 2 D stores; complete full/small oracle passed |
 | P6-E | Done—Rejected | Same-boundary Pi 5 timing of P6-D3 versus frozen 432-byte-scratch ToBytes | 74 paired samples/mode: full 1766.734→2268.457 cycles; small 1363.399→2268.223; production unchanged |
 | P6-F | Done | Fresh selected-Official full-KEM and call-site profiler checkpoint | 252 clean observations per operation/implementation, 6× exact/tampered compatibility and 12 instrumentation-equivalence gates passed; Inverse, BaseInv and aggregate ToBytes gaps isolated |
-| P7 | Next | Inverse CT feasibility | Establish exact 864 coordinate, root, scale, range, layout, instruction and memory ledger; require a static opportunity over the current inverse before assembly |
-| P8 | Queued | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
+| P7 | Done—Local benefit only | Inverse CT feasibility | GT NTT16 is genuine CT DIT; 10,000-vector ordering proof, complete coordinate/scale/range/memory ledger and source audit pass. CT absorbs bit reversal and avoids a GS range cut, but no new CT/GS DAG attacks the measured +2,895.9-cycle whole-Inverse gap; production unchanged |
+| P8 | Next | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
 | P9 | Queued | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
 | P10 | Queued—Keygen | BaseInv numerator/finish kernel redesign after P7/P8 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
 
@@ -218,3 +218,14 @@ Status meanings:
   725--730 cycles per two calls, R0 BaseMul is faster, R-inverse BaseMul is tied,
   and FromBytes is slightly faster.  Therefore P7--P9 remain ordered as before;
   P10 records the Keygen-only BaseInv opportunity so it is not forgotten.
+- Completed P7.  Dependency inspection classifies GT's four-layer NTT16 as
+  CT DIT and selected Official as GS DIF.  The exact N=16 ordering relation
+  passed 10,000 random vectors: GT absorbs bit reversal into P8 coordinates
+  and adds no complete permutation pass.  At the closed I16 input bound 3456,
+  CT stays int16-safe while an unreduced GS sum path reaches 55,296 and needs
+  at least one range cut, so the local CT benefit is real.  It is not an
+  end-to-end win: GT still measures 7,013.950 versus 4,118.050 Official cycles,
+  with 12 inverse9 calls, P8 materialization, 864 `UMOV` plus 864 scalar stores,
+  a 1,169-instruction center pass and scratch lifecycle outside the CT/GS
+  choice.  P7 therefore retains production CT without a new assembly candidate.
+  P8 raw-Inverse-to-ternary is now next; P9 ToBytes and P10 BaseInv remain queued.

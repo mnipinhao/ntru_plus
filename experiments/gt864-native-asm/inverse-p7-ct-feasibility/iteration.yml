@@ -1,0 +1,36 @@
+id: gt864-p7-inverse-ct-feasibility
+date: 2026-09-11
+parameter: NTRU+864
+action: understand
+scope: production GT R-inverse BaseMul output through natural centered inverse output
+baseline:
+  revision: bb30ee43
+  entry: gt864_inverse_rinv_asm
+  leaf_kernels:
+    - packed_i9
+    - lazy_i16
+    - lazy_itail
+    - center864
+comparison:
+  source: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+  entry: poly_invntt_scale
+  note: selected SHAKE256 SUPERCOP snapshot; independent latest-upstream status remains unverified
+hard_gates:
+  - classify butterflies from actual dependencies, not names
+  - close coordinate, ordering, scale, range and memory ledgers
+  - prove the N=16 CT/GS ordering relation over at least 10000 random vectors
+  - establish whether CT removes a range cut under the current GT input bound
+  - identify any explicit full-polynomial permutation
+  - require a static opportunity over the current inverse before assembly
+status: passed-local-ct-benefit-only
+decision: >-
+  Retain CT for the fixed GT NTT16 ABI. It absorbs bit reversal into P8
+  addressing and avoids the mandatory GS sum-path range cut. Do not claim an
+  end-to-end CT win: the GT inverse remains slower because its Good-Thomas I9,
+  P8 materialization, scalar natural-order scatter, center pass and scratch
+  lifecycle dominate. No production source changes in P7.
+next_iteration: >-
+  P8 closes and implements the raw-Inverse-to-ternary Decaps consumer at the
+  combined Inverse-plus-conversion and full-Decaps boundaries. P9 remains a
+  new ToBytes routing search; P10 remains the Keygen-only BaseInv redesign.
+
