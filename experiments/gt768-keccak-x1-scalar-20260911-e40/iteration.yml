@@ -2,11 +2,14 @@ experiment_id: gt768-keccak-x1-scalar-20260911-e40
 mode: optimize-arithmetic
 baseline_revision: f14cc9b84ebfd69c460efbcb2a0da887d4b90677
 candidate_branch: codex/gt768-keccak-x1-scalar-20260911-e40
+candidate_revision: 298d9a766b3558368901aaf1fc5e4e27e18a890d
+previous_champion_revision: f14cc9b84ebfd69c460efbcb2a0da887d4b90677
+promotion_target: aarch64-production
 target: NTRU+768 AArch64 production
 kernel: KeccakF1600_StatePermute
 host: pi@100.99.191.9
 core: 3
-status: keep-experimental
+status: accepted
 hypothesis: >-
   Replacing only the portable-C Keccak-f[1600] permutation with the supplied
   scalar AArch64 x1 kernel will reduce permutation and KEM cycles by retaining
@@ -20,5 +23,5 @@ performance_gate:
   - paired hash component cycles
   - paired SUPERCOP-style keygen, encap, and decap cycles
 decision: >-
-  All correctness and performance gates pass. Promotion is recommended, but
-  the production branch remains unchanged pending explicit promotion approval.
+  All correctness, provenance, ISA, and performance gates pass. The user
+  approved promotion of the scalar AArch64 x1 Keccak backend.
