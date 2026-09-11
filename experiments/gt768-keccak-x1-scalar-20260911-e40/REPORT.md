@@ -118,6 +118,28 @@ The promotion decision is **accepted**.  The previous production champion is
 `f14cc9b84ebfd69c460efbcb2a0da887d4b90677`.  The final promotion-ready code
 revision is recorded in `iteration.yml` after this preflight commit.
 
+## Promoted SUPERCOP leaf gate
+
+The tracked `ntruplus-GT-Production/SUPERCOP/crypto_kem/ntruplus768/aarch64`
+leaf is generated with the same scalar backend while retaining the Official
+CBD/SOTP, centered mod-3, utility, public headers and symmetric wrappers.  The
+generated `keccakf1600.s` retains the upstream copyright, SPDX identifier and
+revision even though normal assembly preprocessing removes source comments.
+
+The actual generated leaf passed KAT comparison, valid workloads, malformed
+ciphertext and noncanonical-public-key failure paths.  Its fresh paired Pi 5
+result against the otherwise-identical GT portable-C baseline was:
+
+| Operation | GT portable C | Promoted SUPERCOP leaf | Saved | Improvement |
+|---|---:|---:|---:|---:|
+| Keygen | 36,348 | 33,118 | 3,230 | 8.89% |
+| Encap | 37,217 | 31,981 | 5,236 | 14.07% |
+| Decap | 32,076 | 29,140 | 2,936 | 9.15% |
+
+This final package run again used 62 samples/variant, 2,000 operations/sample,
+100 warmups, both execution orders and core 3.  It ended at
+`throttled=0x0`, 65.3 C.
+
 Raw binaries, samples, disassembly, and PMU logs are ephemeral and belong in
 the gitignored `.build/` directory locally and under the matching experiment
 directory on the Pi 5.

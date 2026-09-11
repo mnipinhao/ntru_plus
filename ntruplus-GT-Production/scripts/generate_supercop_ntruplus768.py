@@ -4,13 +4,14 @@ from pathlib import Path
 import argparse, subprocess, tempfile
 
 OFFICIAL_COPY = (
-    'api.h','params.h','util.h','fips202.c','fips202.h','symmetric.c',
+    'api.h','params.h','util.h','fips202.h','symmetric.c',
     'symmetric.h','cbd.s','architectures','goal-constbranch','goal-constindex')
 GT_COPY = (
     'kem.c','keygen.c','keygen_lambda.c','basemul_lambda.c','poly.h','layout.h',
-    'ntt.h','decap_verify.h','keygen.h')
+    'ntt.h','decap_verify.h','keygen.h','fips202.c')
 GT_ASM = {'ntt.S':'ntt.s','base.S':'base.s','pack.S':'pack.s',
-          'add.S':'add.s','kem_api.S':'kem_api.s'}
+          'add.S':'add.s','kem_api.S':'kem_api.s',
+          'keccakf1600.S':'keccakf1600.s'}
 
 def write(path,data):
     path.parent.mkdir(parents=True,exist_ok=True)
@@ -32,6 +33,15 @@ def build(gt,official,target):
     for source,name in GT_ASM.items():
         data=subprocess.check_output(['gcc','-E','-P','-x','assembler-with-cpp',
                                       '-I'+str(gt),str(gt/source)])
+        if source == 'keccakf1600.S':
+            data=b'''/*
+ * Copyright (c) The mlkem-native project authors
+ * Copyright (c) 2021-2022 Arm Limited
+ * Copyright (c) 2022 Matthias Kannwischer
+ * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+ * Upstream revision: 0924122d0e92b2d682fab5d5e5e2593ec84c8a1f
+ */
+'''+data
         add(name,data)
     adapter='''#include "poly.h"\n#include <string.h>\n\nextern void official_poly_crepmod3(poly *r);\n\n/* GT uses a two-pointer exact-alias contract; Official is in-place. */\nvoid poly_crepmod3(poly *out, const poly *in)\n{\n    if (out != in)\n        memcpy(out, in, sizeof(*out));\n    official_poly_crepmod3(out);\n}\n'''
     add('crepmod3_adapter.c',adapter)
@@ -41,7 +51,8 @@ def build(gt,official,target):
 Drop `crypto_kem/ntruplus768/aarch64` into a SUPERCOP tree. Official CBD/SOTP,
 centered mod-3, NO_CE hash, utility clearing and public headers are retained.
 The NTT, inverse NTT, base arithmetic, pack/unpack and their operation-specific
-KEM call sites use the GT Production backend.
+KEM call sites use the GT Production backend. The SHAKE API and symmetric hash
+wrappers remain unchanged; Keccak-f[1600] uses the scalar AArch64 x1 backend.
 ''')
 
 def compare(expected,actual):

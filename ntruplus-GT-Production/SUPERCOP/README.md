@@ -3,4 +3,5 @@
 Drop `crypto_kem/ntruplus768/aarch64` into a SUPERCOP tree. Official CBD/SOTP,
 centered mod-3, NO_CE hash, utility clearing and public headers are retained.
 The NTT, inverse NTT, base arithmetic, pack/unpack and their operation-specific
-KEM call sites use the GT Production backend.
+KEM call sites use the GT Production backend. The SHAKE API and symmetric hash
+wrappers remain unchanged; Keccak-f[1600] uses the scalar AArch64 x1 backend.
