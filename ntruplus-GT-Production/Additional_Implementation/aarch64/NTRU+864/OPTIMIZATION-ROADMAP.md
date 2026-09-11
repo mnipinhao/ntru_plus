@@ -35,9 +35,9 @@ Status meanings:
 | P6-E | Done—Rejected | Same-boundary Pi 5 timing of P6-D3 versus frozen 432-byte-scratch ToBytes | 74 paired samples/mode: full 1766.734→2268.457 cycles; small 1363.399→2268.223; production unchanged |
 | P6-F | Done | Fresh selected-Official full-KEM and call-site profiler checkpoint | 252 clean observations per operation/implementation, 6× exact/tampered compatibility and 12 instrumentation-equivalence gates passed; Inverse, BaseInv and aggregate ToBytes gaps isolated |
 | P7 | Done—Local benefit only | Inverse CT feasibility | GT NTT16 is genuine CT DIT; 10,000-vector ordering proof, complete coordinate/scale/range/memory ledger and source audit pass. CT absorbs bit reversal and avoids a GS range cut, but no new CT/GS DAG attacks the measured +2,895.9-cycle whole-Inverse gap; production unchanged |
-| P7-B0 | Next | Same-boundary Inverse core decomposition | On Pi 5 independently measure inverse9, NTT16 arithmetic/scale/recombine, terminal scatter, center864 and wrapper/scratch lifecycle; retain the exact production ABI and report cycles, instructions, IPC, reads/writes and branches |
-| P7-B1 | Queued | Optimize the measured dominant Inverse NTT region | Isolated candidate must delete arithmetic or routing rather than only reschedule; preserve FR0 R^-1 input, natural centered R0 output, range/scale, two transform boundaries, no spill, alias/AAPCS/wipe and complete Decaps correctness; require complete Inverse and Decaps cycle improvement before promotion |
-| P8 | Queued | Raw-Inverse-to-ternary Decaps consumer | Only after P7-B: close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
+| P7-B0 | Done | Same-boundary Inverse core decomposition | Pi 5 PMU isolated inverse9 as the largest stage (2,958.406 cycles, IPC 1.292); main+tail scatter ideal-removal ceiling was only 164.890 cycles, so B1 selected inverse9 constant liveness rather than a new scatter ABI |
+| P7-B1 | Done—Promoted | Keep the repeated `(722,6844)` Barrett-Shoup pair in `v0/v5`, then reschedule the fixed allocation | Removed 20 instructions/call and 80 object bytes; exact/KAT/alias/no-spill gates passed. Raw order regressed, but Slothy timing recovered it; final paired Pi 5 delta was -18.782 Inverse cycles and -17.875 Decaps cycles with exactly -240 instructions |
+| P8 | Next | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
 | P9 | Queued | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
 | P10 | Queued—Keygen | BaseInv numerator/finish kernel redesign after P7/P8 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
 
@@ -236,3 +236,29 @@ Status meanings:
   center pass from being mistaken for an Inverse-NTT improvement.  P8
   raw-Inverse-to-ternary follows only after the core attempt; P9 ToBytes and
   P10 BaseInv remain queued.
+- Completed P7-B0.  Same-boundary PMU decomposed the 7,021.336-cycle production
+  Inverse into inverse9 aggregate 2,958.406, six main NTT16 calls 2,555.812,
+  tail NTT16 409.297, center864 750.859 and wrapper/residual work.  Inverse9 is
+  both the largest isolated stage and the lowest-IPC stage (1.292).  Diagnostic
+  removal of all 864 main/tail halfword scatters saved only 164.890 cycles, so
+  a full-vector terminal ABI was not selected for B1.
+- Completed and promoted P7-B1.  Physical `v0` and `v5`, previously unused by
+  `packed_i9`, now retain the repeated Algorithm-10 constant pair 722/6844.
+  This removes six repeated MOV+DUP materializations of each constant: 20
+  instructions per inverse9 call, 240 per complete Inverse, and 80 text bytes.
+  A generator audit caught and fixed both Q/V register alias termination and a
+  destructive destination's final source use before the candidate was accepted.
+- Instruction deletion alone was not sufficient: the raw-order candidate
+  regressed Inverse by 15.258 cycles and Decaps by 10.225.  Timing-only Slothy
+  from `/Users/chenpinhao/slothy`, with renaming and spills disabled, preserved
+  all 284 instructions and produced a 71-cycle A76 model.  Relative to raw it
+  recovered 27.571 Inverse and 25.700 Decaps cycles.  The final candidate versus
+  production improved paired medians by 18.782 Inverse cycles and 17.875 Decaps
+  cycles while retiring exactly 240 fewer instructions at both boundaries.
+- Six baseline-to-candidate paired runs passed 24 valid, 24 tampered, 256 exact
+  Inverse and 256 exact-alias checks each.  Fresh 64-case KEM and 100-case KAT
+  passed with unchanged digest
+  `0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c`.
+  The cleaned production source assembles to the byte-identical benchmarked
+  object.  Keygen and Encaps retire exactly zero changed instructions, confirming
+  the caller scope; P8 is now active, followed by P9 and P10.

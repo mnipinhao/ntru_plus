@@ -2,7 +2,7 @@ id: gt864-p7b-inverse-core-optimization
 date: 2026-09-11
 parameter: NTRU+864
 action: benchmark
-status: active-p7b0
+status: complete-promoted
 baseline:
   revision: 555485b1
   public_entry: gt864_inverse_rinv_asm
@@ -31,19 +31,18 @@ hypothesis_gate:
     Official. Static leaf expansion is 3660 inverse9, 5074 main-plus-tail
     NTT16, and 1169 center instructions before wrapper overhead, but static
     instructions do not identify the cycle-dominant region.
-  primary_bottleneck_category: unknown until same-boundary decomposition
+  primary_bottleneck_category: inverse9 arithmetic and constant materialization
   hypothesis: >-
     A separately measurable NTT arithmetic/routing region accounts for enough
     of the gap that deleting its arithmetic or routing can improve complete
     Inverse before any raw-to-ternary consumer fusion.
   exact_proposed_change: >-
-    P7-B0 changes no kernel. Instrument fixed production stage boundaries and
-    collect paired PMU for inverse9 aggregate, NTT16 main, NTT16 tail, terminal
-    scatter where separable, center864, and wrapper/scratch lifecycle. P7-B1
-    will change only the measured dominant category in an isolated symbol.
-  expected_static_effect: none in P7-B0; P7-B1 must delete arithmetic or routing
-  expected_performance_effect: identify a core candidate capable of reducing complete Inverse cycles
-  expected_register_pressure_effect: none in P7-B0; P7-B1 must remain spill-free
+    Keep Barrett-Shoup constants 722 and 6844 in previously unused v0/v5 for
+    the whole packed_i9 region, remove their repeated materialization, then
+    timing-schedule the fixed allocation with Slothy.
+  expected_static_effect: -20 instructions per inverse9; -240 per complete Inverse
+  expected_performance_effect: improve complete Inverse and complete Decaps
+  expected_register_pressure_effect: use all 32 SIMD registers without spill
   correctness_or_range_impact: none in P7-B0; P7-B1 preserves the fixed contract
   falsifying_measurement: >-
     No NTT/routing region has sufficient cost or no isolated deletion survives
@@ -57,5 +56,16 @@ measurement:
     - center864
     - complete inverse
   decision_boundaries: [complete inverse, complete decaps]
-next_iteration: run P7-B0 paired Pi 5 decomposition, then select exactly one P7-B1 bottleneck
-
+result:
+  p7b0_inverse9_cycles: 2958.406
+  p7b0_main_i16_cycles: 2555.812
+  p7b0_tail_i16_cycles: 409.297
+  p7b0_center864_cycles: 750.859
+  raw_b1_inverse_cycle_delta: 15.258
+  scheduled_b1_inverse_cycle_delta: -18.782
+  scheduled_b1_decaps_cycle_delta: -17.875
+  complete_inverse_instruction_delta: -240
+  complete_decaps_instruction_delta: -240
+  production_source_sha256: 29be0511f5908964bb79720385c092c54bebefcbb82a08961599735e9c46180a
+  kat_sha256: 0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c
+next_iteration: P8 raw-Inverse-to-ternary Decaps consumer gate
