@@ -14,17 +14,15 @@ baseline:
 target:
   host: pi@100.99.191.9
   microarchitecture: Cortex-A76 (Raspberry Pi 5)
-status: p6d-candidate-awaiting-timing
+status: rejected-p6e
 gate_result: >-
-  P6-D3 now passes complete assembly correctness and physical audit. All twelve
-  local Cortex-A76 Slothy regions allocate OPTIMAL without spill; the two-top
-  wrapper performs exactly 108 coefficient Q loads, zero coefficient scratch,
-  and 80 Q plus two D final stores, with no lane ST3 or x18. Full passes 4,107
-  arbitrary-int16 cases and small passes 4,096 proved-range cases. Production
-  remains unchanged pending timing; small currently shares the full Barrett DAG.
+  P6-D3 remains byte-correct, zero-spill and zero-coefficient-scratch, but P6-E
+  rejects it on Pi 5. Full regressed by 501.723 cycles, plus 28.40 percent, and
+  small by 904.825 cycles, plus 66.37 percent. All 74 paired deltas per mode were
+  positive. Removing about 105 write events did not compensate for 101 extra
+  read events and 829 to 1064 extra instructions. Production remains unchanged.
 next_iteration: >-
-  P6-E perform paired Pi 5 same-boundary full and small ToBytes timing against
-  the frozen 432-byte-scratch production baseline, including cycles,
-  instructions, IPC, loads and stores. If small loses due to shared full
-  normalization, create a conditional-add-only D3-small specialization before
-  any production or full-KEM integration.
+  P7 perform the Inverse CT feasibility gate. P8 then studies the existing
+  raw-Inverse-to-ternary Decaps consumer gate. P9 reopens ToBytes only with a
+  new FR0-coordinate-to-wire routing DAG that statically removes at least about
+  829 instructions and 101 reads before Slothy or Pi timing.

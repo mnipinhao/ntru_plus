@@ -31,6 +31,7 @@ result = {
     "tbl_groups_consecutive": True,
     "public_stack_frame_bytes": 176,
     "coefficient_scratch_bytes": 0,
+    "volatile_simd_clears": sorted({int(x) for x in re.findall(r"\bmovi\s+v(\d+)\.16b,\s*#0", body, re.I)}),
     "stack_q_or_d_single_accesses": sp_q_or_d,
     "lane_st3": bool(re.search(r"\bst3\s+\{[^}]+\}\[", body, re.I)),
     "platform_x18": bool(re.search(r"\b[wx]18\b", body)),
@@ -38,6 +39,7 @@ result = {
 }
 assert result["coefficient_q_loads"] == 108, result
 assert result["final_str_q"] == 80 and result["final_str_d"] == 2, result
+assert result["volatile_simd_clears"] == list(range(32)), result
 assert not sp_q_or_d, result
 assert not result["lane_st3"] and not result["platform_x18"] and not result["symbolic_registers"], result
 result["gate"] = "PASS_P6D3_PHYSICAL_AUDIT"

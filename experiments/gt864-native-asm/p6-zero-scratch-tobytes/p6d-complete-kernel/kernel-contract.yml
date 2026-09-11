@@ -58,6 +58,7 @@ constant_time_contract:
   public_inputs: [pointers, selector, fixed table offsets]
   no_secret_dependent_branches: true
   no_secret_dependent_memory_access: true
+  volatile_simd_cleanup: v0-v31 cleared before restoring d8-d15 low halves
 validation:
   oracle_command: python3 model.py and executable differential test
   test_command: complete full/small 1296-byte differential, canary, AAPCS and zeroization-policy checks

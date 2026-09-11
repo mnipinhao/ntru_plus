@@ -91,14 +91,15 @@ function resolves this as follows:
 The composed physical audit reports:
 
 ```text
-semantic instructions including public wrapper  4029
+semantic instructions including public wrapper  4061
 coefficient Q loads                               108
 final stores                                      80 Q + 2 D
 TBL / TBL2 / TBL3                                 450 / 180 / 162
 public AAPCS stack frame                           176 bytes
 coefficient scratch                               0 bytes
 lane ST3 / x18 / symbolic leaks                    none
-arm64 object __TEXT                                16,752 bytes
+volatile SIMD cleanup                              v0-v31
+arm64 object __TEXT                                16,880 bytes
 ```
 
 The full executable oracle compares arbitrary signed-int16 inputs against
@@ -113,6 +114,10 @@ The D3 small entry intentionally aliases the full-normalization DAG.  This is
 byte-correct, but it does **not** yet exploit the small producer's conditional-
 add-only contract.  P6-E must measure full and small separately.  If the small
 alias loses, a small-specific D3 arithmetic DAG is required before promotion.
+
+P6-E subsequently measured this complete candidate on Pi 5 and rejected it:
+full regressed by 501.723 cycles (+28.40%) and small by 904.825 cycles
+(+66.37%).  The implementation remains a correctness/research artifact only.
 
 The generic symbolic checker has zero contract errors after per-region
 live-in/live-out/range annotations were added.  Its remaining 264 warnings are

@@ -1,0 +1,101 @@
+{
+  "experiment": "P6-E",
+  "environment": {
+    "uname": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc": "gcc (Debian 14.2.0-19) 14.2.0",
+    "governor": "ondemand",
+    "temperature": "temp=62.0'C",
+    "throttled": "throttled=0x0",
+    "core": 3,
+    "iterations_per_sample": 128,
+    "samples_per_variant": 74,
+    "paired_order": "two reverse runs; order alternates by sample",
+    "pmu_device": "armv8_cortex_a76 type 9",
+    "pmu_raw_configs": {
+      "mem_access_rd": "0x66",
+      "mem_access_wr": "0x67"
+    },
+    "competing_benchmark_preflight": "none found"
+  },
+  "correctness": "513 full and 513 small cases per run, two runs each; exact bytes and canaries",
+  "benchmarks": {
+    "full": {
+      "baseline": {
+        "cycles": 1766.734,
+        "instructions": 3245.156,
+        "branches": 66.031,
+        "mem_access_rd": 552.023,
+        "mem_access_wr": 200.094,
+        "ipc": 1.836810747967719,
+        "samples": 74
+      },
+      "candidate": {
+        "cycles": 2268.4570000000003,
+        "instructions": 4074.156,
+        "branches": 3.031,
+        "mem_access_rd": 653.023,
+        "mem_access_wr": 95.094,
+        "ipc": 1.7960031863068153,
+        "samples": 74
+      },
+      "delta": {
+        "cycles": 501.7230000000004,
+        "instructions": 829.0,
+        "branches": -63.00000000000001,
+        "mem_access_rd": 101.0,
+        "mem_access_wr": -105.0,
+        "ipc": -0.0408075616609036
+      },
+      "delta_percent": {
+        "cycles": 28.398332742789822,
+        "instructions": 25.545767291310504,
+        "branches": -95.40973179264284,
+        "mem_access_rd": 18.296339101812787,
+        "mem_access_wr": -52.475336591801856,
+        "ipc": -2.2216530312692218
+      }
+    },
+    "small": {
+      "baseline": {
+        "cycles": 1363.3985,
+        "instructions": 3010.156,
+        "branches": 59.031,
+        "mem_access_rd": 552.023,
+        "mem_access_wr": 200.102,
+        "ipc": 2.207832852977321,
+        "samples": 74
+      },
+      "candidate": {
+        "cycles": 2268.223,
+        "instructions": 4074.156,
+        "branches": 3.031,
+        "mem_access_rd": 653.023,
+        "mem_access_wr": 95.094,
+        "ipc": 1.7961884700049333,
+        "samples": 74
+      },
+      "delta": {
+        "cycles": 904.8245,
+        "instructions": 1064.0,
+        "branches": -56.0,
+        "mem_access_rd": 101.0,
+        "mem_access_wr": -105.00800000000001,
+        "ipc": -0.4116443829723877
+      },
+      "delta_percent": {
+        "cycles": 66.36537299989695,
+        "instructions": 35.347005271487596,
+        "branches": -94.86540969998815,
+        "mem_access_rd": 18.296339101812787,
+        "mem_access_wr": -52.477236609329246,
+        "ipc": -18.644725863974454
+      }
+    }
+  },
+  "sha256": {
+    "production/libgt864.so": "aa7f04be5f3289035c439d1e5277ca123b7f042c620c673f14ea751304756d32",
+    "build/candidate.so": "3509458f61ca25155621abd0b33987e1e5485e8b92c11f13348420eec851305e",
+    "p6d3-full.alloc.S": "3870a058bcc96277c7a775c9b78a0b267e74a6f62b0a0f13adddefa5d98922b4",
+    "bench.c": "9e3910143bd820f3d570cfb43fb044b940b979de3d261aac22aeacff4f161f44"
+  }
+}

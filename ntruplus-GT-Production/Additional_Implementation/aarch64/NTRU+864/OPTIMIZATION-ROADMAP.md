@@ -29,10 +29,13 @@ Status meanings:
 | P5 | Done | Reuse KEM temporaries following proven lifetimes | Promoted one-`h` Keygen, `ct`-backed Encaps serialized `r`, and four-poly Decaps after stack/object, cleanup, KAT, rejection, malformed-transcript and Pi 5 gates |
 | P6-A | Dropped | Retain both saved pairs in registers but keep the current third-pair row-copy plus TBL repair | Exact 33-vector frontier is Slothy-infeasible; both one-fewer-vector and no-index controls allocate, so storage-only rewriting is rejected |
 | P6-B | Done | Compress pair-2 A to an exact seven-Q 12-bit state before constructing pair-2 B | All nine production route maps and 4,100 pack cases passed; 31-vector route and exact 32-vector full-normalization frontiers allocate without spill |
-| P6 | Active | Consumer-oriented zero-scratch ToBytes route + normalization + packing | Remove at least one P6-A frontier lifetime; no extra coefficient loads, no lane ST3, no spill, direct full-vector final stores, complete full/small ToBytes and KEM improvement |
+| P6 | Dropped | Consumer-oriented zero-scratch ToBytes route + normalization + packing | Correct architecture reached P6-D3, but exact Pi 5 boundaries regressed full by 28.40% and small by 66.37%; reopen only after removing the measured route/table instruction and read deficit |
 | P6-C | Done | Joint packed-A producer + restore-A/B pack + three-pair merge symbolic DAG | Exact model and physical assembly oracle passed; peaks are 26/32; both Slothy allocations are optimal without spill; all physical TBL2/TBL3 groups are consecutive |
 | P6-D | Done | Complete all-nine-row full/small zero-scratch ToBytes kernels | 12 Slothy regions optimal/no-spill; exact 1,296 bytes; 108 coefficient Q loads; zero coefficient scratch; 80 Q + 2 D stores; complete full/small oracle passed |
-| P6-E | Next | Same-boundary Pi 5 timing of P6-D3 versus frozen 432-byte-scratch ToBytes | Full and small cycles/instructions/IPC/load/store; specialize small conditional-add-only DAG if shared full normalization loses; only then consider full-KEM integration |
+| P6-E | Done—Rejected | Same-boundary Pi 5 timing of P6-D3 versus frozen 432-byte-scratch ToBytes | 74 paired samples/mode: full 1766.734→2268.457 cycles; small 1363.399→2268.223; production unchanged |
+| P7 | Next | Inverse CT feasibility | Establish exact 864 coordinate, root, scale, range, layout, instruction and memory ledger; require a static opportunity over the current inverse before assembly |
+| P8 | Queued | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
+| P9 | Queued | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
 
 ## Fixed facts and non-tasks
 
@@ -177,11 +180,26 @@ Status meanings:
   nine-A plus nine-B liveness.  Cross-row eight-byte carry converts the first
   byte-correct `72 Q + 18 D` shape into exactly `80 Q + 2 D` final stores.
   All twelve local Cortex-A76 Slothy regions are `OPTIMAL` with spill disabled.
-  The 16,752-byte arm64 text performs 108 coefficient Q loads, uses a 176-byte
+  After adding the production-equivalent 32 volatile SIMD clears, the
+  16,880-byte arm64 text performs 108 coefficient Q loads, uses a 176-byte
   public save frame and zero coefficient scratch, keeps TBL groups consecutive,
   and uses neither lane ST3 nor x18.  The executable oracle passed 4,107 full
   signed-int16 cases and 4,096 small-range cases with output canaries.
-- Production remains unchanged.  D3-small currently aliases the full Barrett
-  DAG, so P6-E must time full and small separately against the frozen scratch
-  implementation; a conditional-add-only small specialization is the fallback
-  before any production promotion.
+
+### 2026-09-11
+
+- P6-E rejected P6-D3 at the complete public boundary.  On Pi 5, full changed
+  from 1766.734 to 2268.457 cycles (+501.723, +28.40%) and small from 1363.399
+  to 2268.223 (+904.825, +66.37%).  Every one of 74 paired samples per mode
+  regressed.  P6-D3 removes about 105 PMU write events and 56--63 branches, but
+  adds 101 read events and 829--1064 retired instructions; IPC also falls.
+- Production remains the P5 432-byte wiped-scratch implementation.  A
+  small-only Barrett specialization is not the next step because the full
+  route/table DAG already fails.  ToBytes reopens only after a smaller
+  FR0-coordinate-to-wire network jointly consumes normalization, 12-bit
+  packing and routing without nine complete routed rows, reduces TBL2/TBL3,
+  uses separate full/small DAGs, and statically removes at least about 829
+  instructions and 101 reads before Slothy.
+- The fixed priority is now P7 Inverse CT feasibility, P8 raw-Inverse-to-ternary,
+  then P9 ToBytes routing search.  This replaces the temporary proposal to run
+  another general profiler before selecting the next gate.

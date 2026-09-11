@@ -186,7 +186,13 @@ def main() -> None:
     split = top2.index("ldr x29, [sp, #160]")
     top2[split:split+1] = ["ldr x29, [sp, #160]", "add x29, x29, #648"]
     out += ["    "+x for x in top2]
-    out += ["    ldr x0, [sp, #160]", "    ldp d8, d9, [sp, #96]", "    ldp d10, d11, [sp, #112]",
+    out += ["    ldr x0, [sp, #160]"]
+    # Match the production public-wrapper cleanup boundary exactly: volatile
+    # SIMD state is cleared before the low halves of callee-saved v8-v15 are
+    # restored.  This is part of the KEM cleanup contract and must be included
+    # in timing rather than treated as optional benchmark overhead.
+    out += [f"    movi v{i}.16b, #0" for i in range(32)]
+    out += ["    ldp d8, d9, [sp, #96]", "    ldp d10, d11, [sp, #112]",
             "    ldp d12, d13, [sp, #128]", "    ldp d14, d15, [sp, #144]", "    ldp x19, x20, [sp, #0]",
             "    ldp x21, x22, [sp, #16]", "    ldp x23, x24, [sp, #32]", "    ldp x25, x26, [sp, #48]",
             "    ldp x27, x28, [sp, #64]", "    ldp x29, x30, [sp, #80]", "    add sp, sp, #176", "    ret",
@@ -196,6 +202,7 @@ def main() -> None:
     (HERE / "p6d3-full.alloc.S").write_text("\n".join(out) + "\n")
     (HERE / "d3-compose-results.json").write_text(json.dumps({"top_semantic_instructions":len(top), "table_bytes":len(table),
         "coefficient_scratch_bytes":0, "public_stack_bytes":176, "final_store_shape_per_top":{"str_q":40,"str_d":1},
+        "volatile_simd_clears":32,
         "small_entry":"shares full-normalization DAG in D3 correctness baseline"}, indent=2)+"\n")
 
 

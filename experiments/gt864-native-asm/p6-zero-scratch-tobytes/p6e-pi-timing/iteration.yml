@@ -1,0 +1,32 @@
+iteration:
+  id: P6-E
+  date: 2026-09-11
+  action: benchmark
+  status: rejected
+  observation: P6-D3 removes the 432-byte coefficient scratch boundary and preserves 108 coefficient Q loads plus final full-vector stores, but its 4,061-instruction public function is large and the small entry currently shares full Barrett normalization.
+  primary_bottleneck: memory and table-permutation economics at the complete ToBytes boundary
+  hypothesis: Avoiding scratch write/read/wipe traffic and immediately consuming routed rows can outweigh the larger TBL-heavy monolithic DAG on Cortex-A76 for full ToBytes; small may require a conditional-add-only specialization.
+  exact_change: Benchmark the frozen production full/small public wrappers and cleanup against P6-D3 with identical inputs, output buffers, caller boundary, core, warmup and paired sample order. No production source is replaced.
+  expected_static_effect: Candidate uses zero coefficient scratch, exactly 108 coefficient Q loads, 80 Q plus two D final stores, and the same 32 volatile-SIMD clears as production.
+  expected_performance_effect: Full should recover scratch bridge and wipe cycles; small is uncertain because D3 performs 108 extra Barrett reductions relative to production small.
+  expected_register_effect: No spill; all vector and GPR pressure was closed in P6-D3.
+  correctness_impact: None. Both implementations must produce identical 1296-byte output for unrestricted full inputs and proved minus-q-to-q small inputs, with input/output canaries intact.
+  falsifier: Reject full if its paired Pi 5 median cycles do not improve. If only small regresses, retain the architecture and require a small-specific DAG before integration. Any mismatch, ABI failure, PMU multiplexing or competing benchmark invalidates timing.
+  baseline:
+    revision: 34ba032c-parent-production
+    full_symbol: gt864_fr0_tobytes_full
+    small_symbol: gt864_fr0_tobytes_small
+    coefficient_scratch_bytes: 432
+  candidate:
+    revision: 34ba032c-plus-cleanup
+    full_symbol: gt864_p6d3_full_asm
+    small_symbol: gt864_p6d3_small_asm
+    coefficient_scratch_bytes: 0
+  target:
+    host: pi@100.99.191.9
+    run_root: /home/pi/supercop-20260831/bench/pinhao/gt864-p6e-20260910
+    cpu: Cortex-A76 Raspberry Pi 5 core 3
+  metrics: [cycles, instructions, IPC, branch-instructions, mem_access_rd, mem_access_wr]
+  gate_result: Rejected. Full regressed from 1766.734 to 2268.457 cycles, plus 28.40 percent, with all 74 paired deltas positive. Small regressed from 1363.399 to 2268.223 cycles, plus 66.37 percent. Candidate removes about 105 write events and 56 to 63 branches but adds 101 read events and 829 to 1064 instructions. Correctness and canaries passed; no full-KEM run was performed because the component boundary failed.
+  reopen_condition: First find a route and table DAG that removes the full-path 829-instruction and 101-read deficit. Small-only Barrett removal is insufficient while full remains slower.
+  next_iteration: P7 perform the Inverse CT feasibility gate. P8 then studies the already-scoped raw-Inverse-to-ternary Decaps consumer. P9 reopens ToBytes only after a smaller FR0-coordinate-to-wire routing DAG statically removes at least about 829 instructions and 101 reads versus P6-D3.
