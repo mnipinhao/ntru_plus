@@ -9,9 +9,9 @@
 // Author: Matthias Kannwischer <matthias@kannwischer.eu>
 
 /*yaml
-  Name: ntruplus_keccak_f1600_x1_scalar_asm
+  Name: ntruplus_keccak_f1600_x1_aarch64
   Description: AArch64 scalar implementation of Keccak-f[1600] permutation for single state
-  Signature: void ntruplus_keccak_f1600_x1_scalar_asm(uint64_t state[25], const uint64_t rc[24])
+  Signature: void ntruplus_keccak_f1600_x1_aarch64(uint64_t state[25], const uint64_t rc[24])
   ABI:
     Architecture: aarch64
     CallingConvention: AAPCS64
@@ -35,6 +35,10 @@
 /*
  * Derived from mlkem-native's
  * dev/fips202/aarch64/src/keccak_f1600_x1_scalar_aarch64_asm.S.
+ * Upstream revision:
+ *   0924122d0e92b2d682fab5d5e5e2593ec84c8a1f
+ * Upstream source SHA-256:
+ *   62134e210376a567c53d460ebeb7feee648eac1d77d8ea2d587f5d89c7ccfeef
  * Only the standalone section and symbol declarations are adapted here.
  */
 
@@ -44,13 +48,13 @@
 .section .text.module_keccakf1600_body,"ax",%progbits
 #endif
 .balign 4
-.global ntruplus_keccak_f1600_x1_scalar_asm
-.global _ntruplus_keccak_f1600_x1_scalar_asm
+.global ntruplus_keccak_f1600_x1_aarch64
+.global _ntruplus_keccak_f1600_x1_aarch64
 #ifndef __APPLE__
-.type ntruplus_keccak_f1600_x1_scalar_asm, %function
+.type ntruplus_keccak_f1600_x1_aarch64, %function
 #endif
-ntruplus_keccak_f1600_x1_scalar_asm:
-_ntruplus_keccak_f1600_x1_scalar_asm:
+ntruplus_keccak_f1600_x1_aarch64:
+_ntruplus_keccak_f1600_x1_aarch64:
 
         .cfi_startproc
         sub sp, sp, #0x80
@@ -374,7 +378,7 @@ Lmlk_keccak_f1600_x1_scalar_loop:
         .cfi_endproc
 
 #ifndef __APPLE__
-.size ntruplus_keccak_f1600_x1_scalar_asm, .-ntruplus_keccak_f1600_x1_scalar_asm
+.size ntruplus_keccak_f1600_x1_aarch64, .-ntruplus_keccak_f1600_x1_aarch64
 #endif
 
 #if defined(__ELF__)

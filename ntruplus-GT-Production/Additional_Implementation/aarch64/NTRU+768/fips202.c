@@ -343,11 +343,11 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
  * this file.  The assembly receives the same 25 little-endian uint64_t lanes
  * plus the existing 24-round constant table.
  */
-extern void ntruplus_keccak_f1600_x1_scalar_asm(
+extern void ntruplus_keccak_f1600_x1_aarch64(
     uint64_t state[25], const uint64_t rc[NROUNDS]);
 
 static void KeccakF1600_StatePermute(uint64_t *state) {
-    ntruplus_keccak_f1600_x1_scalar_asm(state, KeccakF_RoundConstants);
+    ntruplus_keccak_f1600_x1_aarch64(state, KeccakF_RoundConstants);
 }
 #endif
 
