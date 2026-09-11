@@ -33,9 +33,11 @@ Status meanings:
 | P6-C | Done | Joint packed-A producer + restore-A/B pack + three-pair merge symbolic DAG | Exact model and physical assembly oracle passed; peaks are 26/32; both Slothy allocations are optimal without spill; all physical TBL2/TBL3 groups are consecutive |
 | P6-D | Done | Complete all-nine-row full/small zero-scratch ToBytes kernels | 12 Slothy regions optimal/no-spill; exact 1,296 bytes; 108 coefficient Q loads; zero coefficient scratch; 80 Q + 2 D stores; complete full/small oracle passed |
 | P6-E | Done—Rejected | Same-boundary Pi 5 timing of P6-D3 versus frozen 432-byte-scratch ToBytes | 74 paired samples/mode: full 1766.734→2268.457 cycles; small 1363.399→2268.223; production unchanged |
+| P6-F | Done | Fresh selected-Official full-KEM and call-site profiler checkpoint | 252 clean observations per operation/implementation, 6× exact/tampered compatibility and 12 instrumentation-equivalence gates passed; Inverse, BaseInv and aggregate ToBytes gaps isolated |
 | P7 | Next | Inverse CT feasibility | Establish exact 864 coordinate, root, scale, range, layout, instruction and memory ledger; require a static opportunity over the current inverse before assembly |
 | P8 | Queued | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
 | P9 | Queued | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
+| P10 | Queued—Keygen | BaseInv numerator/finish kernel redesign after P7/P8 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
 
 ## Fixed facts and non-tasks
 
@@ -203,3 +205,16 @@ Status meanings:
 - The fixed priority is now P7 Inverse CT feasibility, P8 raw-Inverse-to-ternary,
   then P9 ToBytes routing search.  This replaces the temporary proposal to run
   another general profiler before selecting the next gate.
+- Completed P6-F, the requested fresh profiler checkpoint.  On 252 clean Pi 5
+  observations per operation and implementation, GT measured 46,389.875 cycles
+  for Keygen (+4.72%), 45,748.075 for Encaps (-1.45%), and 43,366.125 for
+  Decaps (+6.41%) against 44,299.625, 46,423.100, and 40,753.325 selected-
+  Official cycles.  Six independent exact/tampered cross-implementation gates,
+  fresh GT test/KAT, and all instrumentation-equivalence checks passed.
+- Call-site profiling isolates the Keygen deficit primarily to BaseInv
+  (+2,105 cycles per Keygen) and the Decaps deficit primarily to Inverse
+  (+2,895.9).  Aggregate GT ToBytes remains slower by +1,276.0/+966.6/+977.6
+  cycles in Keygen/Encaps/Decaps.  GT Forward is already faster by about
+  725--730 cycles per two calls, R0 BaseMul is faster, R-inverse BaseMul is tied,
+  and FromBytes is slightly faster.  Therefore P7--P9 remain ordered as before;
+  P10 records the Keygen-only BaseInv opportunity so it is not forgotten.

@@ -1,0 +1,33 @@
+iteration:
+  id: GT864-OFFICIAL-PROFILE-20260911
+  action: benchmark
+  status: complete
+  parameter: NTRU+864
+  objective: Fresh clean full-KEM and component-profile comparison of current GT production against the user-selected SUPERCOP Official aarch64 implementation.
+  official:
+    root: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+    upstream_latest_verified: false
+    hash_backend: SHAKE256
+    required_hashes:
+      kem.c: acb888a4aa199cc4d1f9a62e4b61921be8d6032b38bd19c8e2afd35aa808937c
+      symmetric.c: a9ab4afbb2a9053c75cd959040569e1e705d769021f250d87c3d3f08da1d7053
+      api.h: 1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865
+  gt:
+    root: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864
+    production_revision: 697defcc
+  target:
+    host: pi@100.99.191.9
+    run_root: /home/pi/supercop-20260831/bench/pinhao/gt864-official-profile-20260911
+    core: 3
+    microarchitecture: Cortex-A76
+  correctness_gate: fresh GT test_kem and KAT generation, instrumentation equivalence, 100 exact cross-implementation KEM transcripts and 100 tampered-ciphertext comparisons
+  clean_metrics: [cycles, instructions, branches]
+  profile_metric: cycle counts around actual KEM call sites with measured read-pair overhead subtracted per call
+  caveat: component instrumentation perturbs scheduling and is diagnostic; clean full-KEM totals are authoritative and component rows are not assumed to add exactly to them
+  result:
+    keygen_gt_delta_percent: 4.7184
+    encaps_gt_delta_percent: -1.4541
+    decaps_gt_delta_percent: 6.4113
+    primary_keygen_gap: BaseInv
+    primary_decaps_gap: Inverse
+    shared_secondary_gap: ToBytes aggregate
