@@ -74,6 +74,25 @@ Decision: **keep-experimental, promotion recommended**.  The candidate passed
 all gates and is materially faster, but `aarch64-production` is intentionally
 unchanged until promotion is explicitly requested.
 
+## Exact-commit rerun
+
+Commit `ec26b4a7cb28ee31483fc0e01314bd6287bd098e` was subsequently rebuilt
+from fresh SUPERCOP leaves and rerun on the same Pi 5.  The full package
+`make check` passed, including 100 KEM round trips, ABI, 9,216 canonical
+boundary cases, 4,096 small-input cases, zeroization checks, and byte-identical
+KAT request/response files.
+
+| Operation | GT portable C | Scalar asm | Saved | Improvement |
+|---|---:|---:|---:|---:|
+| Keygen | 36,346 | 33,092 | 3,254 | 8.95% |
+| Encap | 37,329 | 31,982 | 5,347 | 14.32% |
+| Decap | 32,088 | 29,078 | 3,010 | 9.38% |
+
+The run used 62 samples/variant, 2,000 operations/sample, 100 warmups and
+both execution orders.  The host remained at `throttled=0x0`; temperature was
+59.3--65.3 C.  Linked text remained 81,377 bytes for the portable-C baseline
+and 81,057 bytes for the assembly candidate.
+
 Raw binaries, samples, disassembly, and PMU logs are ephemeral and belong in
 the gitignored `.build/` directory locally and under the matching experiment
 directory on the Pi 5.

@@ -1,0 +1,324 @@
+{
+  "experiment_id": "gt768-official-shell-gt-poly-20260910-e34",
+  "candidate_revision": "111fbd0d",
+  "official_path": "/home/pi/gt768-keccak-x1-scalar-20260911-e40/baseline-leaf-v2",
+  "candidate_path": "/home/pi/gt768-keccak-x1-scalar-20260911-e40/candidate-leaf-v2",
+  "flags": [
+    "-march=native",
+    "-mtune=native",
+    "-O3",
+    "-fwrapv",
+    "-fPIC",
+    "-fPIE",
+    "-gdwarf-4",
+    "-Wall",
+    "-D_DEFAULT_SOURCE",
+    "-ffunction-sections",
+    "-fdata-sections"
+  ],
+  "core": 3,
+  "samples_per_variant": 62,
+  "iterations_per_sample": 2000,
+  "warmups": 100,
+  "host": "Linux-6.18.33+rpt-rpi-2712-aarch64-with-glibc2.41",
+  "compiler": "gcc (Debian 14.2.0-19) 14.2.0",
+  "environment_start": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux\nthrottled=0x0\ntemp=59.3'C\n",
+  "environment_end": "throttled=0x0\ntemp=65.3'C\n",
+  "tree_hashes": {
+    "Official": "692c7699e5b11743c3ff3101a832ebad641c8d57419f5c1c909ad41bd9ac3088",
+    "GT-Polynomial": "351970d98d36551bdc2849948494bfcb359331e5eb48af13db885679b530cfc8"
+  },
+  "kat_rsp_sha256": {
+    "Official": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8",
+    "GT-Polynomial": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8"
+  },
+  "sinks": {
+    "keygen": "4780567577402865334",
+    "encap": "12963712121119935061",
+    "decap": "10844457849835112772"
+  },
+  "sizes": {
+    "Official": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n  81377\t    676\t   4720\t  86773\t  152f5\t/home/pi/gt768-keccak-x1-scalar-20260911-e40/.build/full-gate-v2-ec26b4a7/official/workload\n",
+    "GT-Polynomial": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n  81057\t    676\t   4720\t  86453\t  151b5\t/home/pi/gt768-keccak-x1-scalar-20260911-e40/.build/full-gate-v2-ec26b4a7/gt_polynomial/workload\n"
+  },
+  "results": {
+    "keygen": {
+      "Official": {
+        "count": 62,
+        "min": 36341,
+        "p10": 36343,
+        "p50": 36346,
+        "p90": 36350,
+        "max": 36360
+      },
+      "GT-Polynomial": {
+        "count": 62,
+        "min": 33086,
+        "p10": 33087,
+        "p50": 33092,
+        "p90": 33103,
+        "max": 33108
+      },
+      "delta_cycles": -3254,
+      "improvement_percent": 8.95284212843229
+    },
+    "encap": {
+      "Official": {
+        "count": 62,
+        "min": 37147,
+        "p10": 37150,
+        "p50": 37329,
+        "p90": 37482,
+        "max": 37487
+      },
+      "GT-Polynomial": {
+        "count": 62,
+        "min": 31946,
+        "p10": 31975,
+        "p50": 31982,
+        "p90": 31990,
+        "max": 31996
+      },
+      "delta_cycles": -5347,
+      "improvement_percent": 14.323984033861073
+    },
+    "decap": {
+      "Official": {
+        "count": 62,
+        "min": 32068,
+        "p10": 32071,
+        "p50": 32088,
+        "p90": 32107,
+        "max": 32110
+      },
+      "GT-Polynomial": {
+        "count": 62,
+        "min": 29068,
+        "p10": 29069,
+        "p50": 29078,
+        "p90": 29084,
+        "max": 29088
+      },
+      "delta_cycles": -3010,
+      "improvement_percent": 9.3804537521815
+    }
+  },
+  "pmu_runs": [
+    {
+      "rep": 0,
+      "variant": "Official",
+      "operation": "keygen",
+      "per_operation": {
+        "cycles:u": 36340.97568,
+        "instructions:u": 83214.52599,
+        "ld_spec:u": 10715.83581,
+        "st_spec:u": 6496.48973,
+        "stall_backend:u": 11215.56155
+      }
+    },
+    {
+      "rep": 0,
+      "variant": "Official",
+      "operation": "encap",
+      "per_operation": {
+        "cycles:u": 37200.81923,
+        "instructions:u": 106687.71145,
+        "ld_spec:u": 15253.26754,
+        "st_spec:u": 9228.39792,
+        "stall_backend:u": 6849.29504
+      }
+    },
+    {
+      "rep": 0,
+      "variant": "Official",
+      "operation": "decap",
+      "per_operation": {
+        "cycles:u": 32097.28144,
+        "instructions:u": 72096.71059,
+        "ld_spec:u": 9279.30686,
+        "st_spec:u": 5786.7132,
+        "stall_backend:u": 10131.53398
+      }
+    },
+    {
+      "rep": 0,
+      "variant": "GT-Polynomial",
+      "operation": "keygen",
+      "per_operation": {
+        "cycles:u": 33117.11127,
+        "instructions:u": 66421.64696,
+        "ld_spec:u": 3958.32704,
+        "st_spec:u": 2711.12502,
+        "stall_backend:u": 10820.58715
+      }
+    },
+    {
+      "rep": 0,
+      "variant": "GT-Polynomial",
+      "operation": "encap",
+      "per_operation": {
+        "cycles:u": 31992.57787,
+        "instructions:u": 79499.11599,
+        "ld_spec:u": 4348.22141,
+        "st_spec:u": 3097.54689,
+        "stall_backend:u": 6271.61644
+      }
+    },
+    {
+      "rep": 0,
+      "variant": "GT-Polynomial",
+      "operation": "decap",
+      "per_operation": {
+        "cycles:u": 29078.19977,
+        "instructions:u": 56564.11603,
+        "ld_spec:u": 3035.84998,
+        "st_spec:u": 2279.13719,
+        "stall_backend:u": 9806.54299
+      }
+    },
+    {
+      "rep": 1,
+      "variant": "GT-Polynomial",
+      "operation": "keygen",
+      "per_operation": {
+        "cycles:u": 33112.37111,
+        "instructions:u": 66421.647,
+        "ld_spec:u": 3957.31669,
+        "st_spec:u": 2709.67863,
+        "stall_backend:u": 10820.47181
+      }
+    },
+    {
+      "rep": 1,
+      "variant": "GT-Polynomial",
+      "operation": "encap",
+      "per_operation": {
+        "cycles:u": 32010.13945,
+        "instructions:u": 79507.11622,
+        "ld_spec:u": 4350.005,
+        "st_spec:u": 3098.33226,
+        "stall_backend:u": 6271.46632
+      }
+    },
+    {
+      "rep": 1,
+      "variant": "GT-Polynomial",
+      "operation": "decap",
+      "per_operation": {
+        "cycles:u": 29085.48767,
+        "instructions:u": 56564.11626,
+        "ld_spec:u": 3039.27175,
+        "st_spec:u": 2283.53683,
+        "stall_backend:u": 9808.96777
+      }
+    },
+    {
+      "rep": 1,
+      "variant": "Official",
+      "operation": "keygen",
+      "per_operation": {
+        "cycles:u": 36371.61644,
+        "instructions:u": 83254.5276,
+        "ld_spec:u": 10716.02211,
+        "st_spec:u": 6505.96593,
+        "stall_backend:u": 11221.07636
+      }
+    },
+    {
+      "rep": 1,
+      "variant": "Official",
+      "operation": "encap",
+      "per_operation": {
+        "cycles:u": 37159.56616,
+        "instructions:u": 106675.71122,
+        "ld_spec:u": 15251.58401,
+        "st_spec:u": 9224.8285,
+        "stall_backend:u": 6883.1132
+      }
+    },
+    {
+      "rep": 1,
+      "variant": "Official",
+      "operation": "decap",
+      "per_operation": {
+        "cycles:u": 32107.95353,
+        "instructions:u": 72100.71141,
+        "ld_spec:u": 9278.84228,
+        "st_spec:u": 5787.27653,
+        "stall_backend:u": 10184.15513
+      }
+    },
+    {
+      "rep": 2,
+      "variant": "Official",
+      "operation": "keygen",
+      "per_operation": {
+        "cycles:u": 36383.26001,
+        "instructions:u": 83254.5276,
+        "ld_spec:u": 10721.90465,
+        "st_spec:u": 6504.91174,
+        "stall_backend:u": 11212.20483
+      }
+    },
+    {
+      "rep": 2,
+      "variant": "Official",
+      "operation": "encap",
+      "per_operation": {
+        "cycles:u": 37213.4684,
+        "instructions:u": 106683.71101,
+        "ld_spec:u": 15252.70714,
+        "st_spec:u": 9227.32697,
+        "stall_backend:u": 6921.87117
+      }
+    },
+    {
+      "rep": 2,
+      "variant": "Official",
+      "operation": "decap",
+      "per_operation": {
+        "cycles:u": 32108.90345,
+        "instructions:u": 72100.71137,
+        "ld_spec:u": 9278.70398,
+        "st_spec:u": 5787.22898,
+        "stall_backend:u": 10181.19625
+      }
+    },
+    {
+      "rep": 2,
+      "variant": "GT-Polynomial",
+      "operation": "keygen",
+      "per_operation": {
+        "cycles:u": 33104.54859,
+        "instructions:u": 66421.647,
+        "ld_spec:u": 3957.11513,
+        "st_spec:u": 2709.11439,
+        "stall_backend:u": 10813.3338
+      }
+    },
+    {
+      "rep": 2,
+      "variant": "GT-Polynomial",
+      "operation": "encap",
+      "per_operation": {
+        "cycles:u": 31985.11704,
+        "instructions:u": 79511.11626,
+        "ld_spec:u": 4347.18921,
+        "st_spec:u": 3098.48453,
+        "stall_backend:u": 6264.72468
+      }
+    },
+    {
+      "rep": 2,
+      "variant": "GT-Polynomial",
+      "operation": "decap",
+      "per_operation": {
+        "cycles:u": 29083.29417,
+        "instructions:u": 56564.1163,
+        "ld_spec:u": 3036.1408,
+        "st_spec:u": 2279.54946,
+        "stall_backend:u": 9811.75232
+      }
+    }
+  ]
+}
