@@ -1,0 +1,24 @@
+experiment_id: gt768-keccak-x1-scalar-20260911-e40
+mode: optimize-arithmetic
+baseline_revision: f14cc9b84ebfd69c460efbcb2a0da887d4b90677
+candidate_branch: codex/gt768-keccak-x1-scalar-20260911-e40
+target: NTRU+768 AArch64 production
+kernel: KeccakF1600_StatePermute
+host: pi@100.99.191.9
+core: 3
+status: keep-experimental
+hypothesis: >-
+  Replacing only the portable-C Keccak-f[1600] permutation with the supplied
+  scalar AArch64 x1 kernel will reduce permutation and KEM cycles by retaining
+  all 25 lanes in GPRs across rounds, without changing SHAKE or hash APIs.
+correctness_gate:
+  - KEM round trip
+  - KAT byte identity
+  - ABI sentinel
+  - canonical and failure paths
+performance_gate:
+  - paired hash component cycles
+  - paired SUPERCOP-style keygen, encap, and decap cycles
+decision: >-
+  All correctness and performance gates pass. Promotion is recommended, but
+  the production branch remains unchanged pending explicit promotion approval.

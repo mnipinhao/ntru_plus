@@ -1,0 +1,90 @@
+{
+  "experiment_id": "gt768-keccak-x1-scalar-20260911-e40",
+  "host": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+  "compiler": "gcc (Debian 14.2.0-19) 14.2.0",
+  "core": 3,
+  "samples_per_variant": 62,
+  "iterations_per_sample": 2000,
+  "warmups_per_run": 100,
+  "flags": [
+    "-march=native",
+    "-mtune=native",
+    "-O3",
+    "-fomit-frame-pointer",
+    "-ffunction-sections",
+    "-fdata-sections"
+  ],
+  "sinks": {
+    "shake_coins": "14",
+    "hash_f": "211",
+    "hash_g": "32",
+    "hash_h": "158"
+  },
+  "results": {
+    "shake_coins": {
+      "GT-C": {
+        "count": 62,
+        "min": 2719,
+        "p50": 2722,
+        "max": 2734
+      },
+      "GT-Keccak-Asm": {
+        "count": 62,
+        "min": 2211,
+        "p50": 2216,
+        "max": 2217
+      },
+      "saved_cycles": 506,
+      "improvement_percent": 18.589272593681116
+    },
+    "hash_f": {
+      "GT-C": {
+        "count": 62,
+        "min": 11899,
+        "p50": 11907,
+        "max": 11909
+      },
+      "GT-Keccak-Asm": {
+        "count": 62,
+        "min": 9660,
+        "p50": 9671,
+        "max": 9683
+      },
+      "saved_cycles": 2236,
+      "improvement_percent": 18.778869572520367
+    },
+    "hash_g": {
+      "GT-C": {
+        "count": 62,
+        "min": 13190,
+        "p50": 13194,
+        "max": 13200
+      },
+      "GT-Keccak-Asm": {
+        "count": 62,
+        "min": 10698,
+        "p50": 10710,
+        "max": 10728
+      },
+      "saved_cycles": 2484,
+      "improvement_percent": 18.826739427012278
+    },
+    "hash_h": {
+      "GT-C": {
+        "count": 62,
+        "min": 2769,
+        "p50": 2772,
+        "max": 2774
+      },
+      "GT-Keccak-Asm": {
+        "count": 62,
+        "min": 2257,
+        "p50": 2261,
+        "max": 2266
+      },
+      "saved_cycles": 511,
+      "improvement_percent": 18.434343434343436
+    }
+  },
+  "environment_end": "throttled=0x0\ntemp=60.9'C\n"
+}
