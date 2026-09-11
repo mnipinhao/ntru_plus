@@ -35,7 +35,9 @@ Status meanings:
 | P6-E | Done—Rejected | Same-boundary Pi 5 timing of P6-D3 versus frozen 432-byte-scratch ToBytes | 74 paired samples/mode: full 1766.734→2268.457 cycles; small 1363.399→2268.223; production unchanged |
 | P6-F | Done | Fresh selected-Official full-KEM and call-site profiler checkpoint | 252 clean observations per operation/implementation, 6× exact/tampered compatibility and 12 instrumentation-equivalence gates passed; Inverse, BaseInv and aggregate ToBytes gaps isolated |
 | P7 | Done—Local benefit only | Inverse CT feasibility | GT NTT16 is genuine CT DIT; 10,000-vector ordering proof, complete coordinate/scale/range/memory ledger and source audit pass. CT absorbs bit reversal and avoids a GS range cut, but no new CT/GS DAG attacks the measured +2,895.9-cycle whole-Inverse gap; production unchanged |
-| P8 | Next | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
+| P7-B0 | Next | Same-boundary Inverse core decomposition | On Pi 5 independently measure inverse9, NTT16 arithmetic/scale/recombine, terminal scatter, center864 and wrapper/scratch lifecycle; retain the exact production ABI and report cycles, instructions, IPC, reads/writes and branches |
+| P7-B1 | Queued | Optimize the measured dominant Inverse NTT region | Isolated candidate must delete arithmetic or routing rather than only reschedule; preserve FR0 R^-1 input, natural centered R0 output, range/scale, two transform boundaries, no spill, alias/AAPCS/wipe and complete Decaps correctness; require complete Inverse and Decaps cycle improvement before promotion |
+| P8 | Queued | Raw-Inverse-to-ternary Decaps consumer | Only after P7-B: close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
 | P9 | Queued | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
 | P10 | Queued—Keygen | BaseInv numerator/finish kernel redesign after P7/P8 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
 
@@ -228,4 +230,9 @@ Status meanings:
   with 12 inverse9 calls, P8 materialization, 864 `UMOV` plus 864 scalar stores,
   a 1,169-instruction center pass and scratch lifecycle outside the CT/GS
   choice.  P7 therefore retains production CT without a new assembly candidate.
-  P8 raw-Inverse-to-ternary is now next; P9 ToBytes and P10 BaseInv remain queued.
+- The post-P7 priority was corrected before starting raw-to-ternary: P7-B0 now
+  decomposes the fixed-ABI Inverse itself on Pi 5, and P7-B1 must optimize its
+  measured dominant NTT/routing region.  This prevents removal of the consumer
+  center pass from being mistaken for an Inverse-NTT improvement.  P8
+  raw-Inverse-to-ternary follows only after the core attempt; P9 ToBytes and
+  P10 BaseInv remain queued.

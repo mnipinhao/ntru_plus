@@ -292,13 +292,19 @@ selected Official assembly依固定 loops展開約 3,820 instructions。兩者�
 864 `UMOV` + 864 `STRH`。先前 A2 控制已把它機械替換為 `ST1 lane`；雖少
 634 instructions，完整 Inverse反而慢 484.157 cycles，因此不重開該方向。
 
-P7 對「改 CT/GS」沒有找到值得進 Slothy 的新 DAG。下一輪維持 roadmap：
+P7 對「改 CT/GS」沒有找到值得進 Slothy 的新 DAG。不能因此直接跳到
+consumer fusion；更新後的 roadmap 是：
 
-1. **P8 — raw-Inverse-to-ternary**：刪除獨立 1,169-instruction center pass，
-   但必須在 `Inverse + conversion` 和完整 Decaps 邊界判定。
-2. **P9 — new ToBytes routing**：只有靜態少約 829 instructions和101 reads
+1. **P7-B0 — Inverse core decomposition**：在相同 production ABI 下分別量
+   inverse9、NTT16 arithmetic/scale/recombine、terminal scatter、center與
+   wrapper/scratch lifecycle。
+2. **P7-B1 — Inverse NTT optimization**：只攻實測最大的 NTT/routing區域；
+   必須真的刪 arithmetic或routing，且完整 Inverse和Decaps都變快。
+3. **P8 — raw-Inverse-to-ternary**：P7-B之後才刪獨立 center pass，並在
+   `Inverse + conversion` 和完整 Decaps邊界判定，不能冒充NTT core收益。
+4. **P9 — new ToBytes routing**：只有靜態少約829 instructions和101 reads
    才重開。
-3. **P10 — BaseInv redesign**：保留為 Keygen-only gap，不可遺忘。
+5. **P10 — BaseInv redesign**：保留為Keygen-only gap，不可遺忘。
 
 Machine-readable evidence在 `results.json`；重跑：
 

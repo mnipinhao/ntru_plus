@@ -1,0 +1,61 @@
+id: gt864-p7b-inverse-core-optimization
+date: 2026-09-11
+parameter: NTRU+864
+action: benchmark
+status: active-p7b0
+baseline:
+  revision: 555485b1
+  public_entry: gt864_inverse_rinv_asm
+  pi5_complete_inverse_cycles: 7013.950
+  selected_official_inverse_cycles: 4118.050
+  build_flags: -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections
+  linked_leaf_symbols:
+    - packed_i9
+    - lazy_i16
+    - lazy_itail
+    - center864
+contract:
+  input: FR0 degree-3 leaves, R^-1, reachable absolute bound 2497
+  output: natural-order centered R0 coefficients, absolute bound 1728
+  scratch_bytes: 1792
+  transform_memory_boundaries: 2
+  alias: exact in-place supported
+  required_properties: [constant-address, no leaf spill, AAPCS, complete scratch wipe]
+target:
+  host: pi@100.99.191.9
+  supercop_root: /home/pi/supercop-20260831
+  microarchitecture: Cortex-A76 (Raspberry Pi 5)
+hypothesis_gate:
+  observation: >-
+    Complete GT Inverse costs 7013.950 cycles, 2895.900 more than selected
+    Official. Static leaf expansion is 3660 inverse9, 5074 main-plus-tail
+    NTT16, and 1169 center instructions before wrapper overhead, but static
+    instructions do not identify the cycle-dominant region.
+  primary_bottleneck_category: unknown until same-boundary decomposition
+  hypothesis: >-
+    A separately measurable NTT arithmetic/routing region accounts for enough
+    of the gap that deleting its arithmetic or routing can improve complete
+    Inverse before any raw-to-ternary consumer fusion.
+  exact_proposed_change: >-
+    P7-B0 changes no kernel. Instrument fixed production stage boundaries and
+    collect paired PMU for inverse9 aggregate, NTT16 main, NTT16 tail, terminal
+    scatter where separable, center864, and wrapper/scratch lifecycle. P7-B1
+    will change only the measured dominant category in an isolated symbol.
+  expected_static_effect: none in P7-B0; P7-B1 must delete arithmetic or routing
+  expected_performance_effect: identify a core candidate capable of reducing complete Inverse cycles
+  expected_register_pressure_effect: none in P7-B0; P7-B1 must remain spill-free
+  correctness_or_range_impact: none in P7-B0; P7-B1 preserves the fixed contract
+  falsifying_measurement: >-
+    No NTT/routing region has sufficient cost or no isolated deletion survives
+    complete Inverse and Decaps timing; in that case close P7-B before P8.
+measurement:
+  counters: [cycles, instructions, IPC, reads, writes, branches]
+  required_boundaries:
+    - inverse9 aggregate
+    - NTT16 main aggregate
+    - NTT16 tail
+    - center864
+    - complete inverse
+  decision_boundaries: [complete inverse, complete decaps]
+next_iteration: run P7-B0 paired Pi 5 decomposition, then select exactly one P7-B1 bottleneck
+
