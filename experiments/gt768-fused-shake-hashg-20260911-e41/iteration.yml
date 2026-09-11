@@ -1,0 +1,57 @@
+experiment_id: gt768-fused-shake-hashg-20260911-e41
+mode: optimize-memory
+baseline_revision: a64e7035cb13410554af1c67870d4132a30037b4
+candidate_branch: codex/gt768-fused-shake-hashg-20260911-e41
+candidate_revision: null
+previous_champion_revision: a64e7035cb13410554af1c67870d4132a30037b4
+promotion_target: aarch64-production
+target: NTRU+768 AArch64 production
+kernel: hash_g fixed-size SHAKE256 path
+host: pi@100.99.191.9
+core: 3
+status: active
+observation: >-
+  hash_g performs ten calls to the scalar Keccak-f[1600] permutation.  The
+  current sponge materializes the 200-byte state in memory at every call and
+  hash_g first builds and later clears a 1153-byte domain-prefixed buffer.
+primary_bottleneck_category: memory or table access
+hypothesis: >-
+  A fixed-size hash_g path can preserve all 25 state lanes in GPRs across its
+  ten permutations and directly absorb the virtual stream 0x01 || msg,
+  removing nine internal state store/reload boundaries and the temporary
+  input buffer without changing the SHAKE256 result or public ABI.
+exact_proposed_change: >-
+  First prove the exact ten-permutation byte/lane mapping and the feasibility
+  of a live-state continuation.  Subsequent controls will separately measure
+  removal of data[]/memcpy, a fixed-size C wrapper, and a fully fused AArch64
+  kernel.  Production is not modified in this experiment.
+expected_static_effect: >-
+  Relative to ten standalone calls, the fully fused candidate can remove ten
+  25-lane state loads and ten 25-lane state stores (260 scalar load/store
+  instructions in the current paired-load/store body), nine redundant
+  prologue/epilogue pairs, and the 1153-byte temporary copy/clear path.  Direct
+  output stores remain necessary.  Exact replacement costs remain to be
+  established after the live-state assembly graph exists.
+expected_performance_effect: >-
+  hash_g should save a measurable fraction of its current 10710-cycle median;
+  the gate does not assume that every removed memory instruction costs one
+  cycle on Cortex-A76.
+expected_register_pressure_effect: >-
+  Twenty-five state lanes remain live at permutation boundaries.  Five GPRs
+  remain architecturally available, while the existing round body uses a
+  128-byte frame for ABI saves, control values, and one temporary state spill.
+correctness_or_range_impact: >-
+  No mathematical or SHAKE contract changes are allowed.  The absorbed byte
+  stream, SHAKE delimiter, terminal bit, little-endian lane layout, 192-byte
+  output, cleanup policy, and public hash_g ABI must remain exact.
+falsifying_measurement: >-
+  Reject the fully fused graph if exact mapping fails, if a live-state round
+  continuation needs materially more state spill traffic than the nine
+  boundaries it removes, or if the paired hash_g benchmark does not improve.
+correctness_gate:
+  - exact virtual-stream versus contiguous-buffer block mapping
+  - SHAKE256 differential over deterministic and random messages
+  - full KAT and KEM callers before timing
+performance_gate:
+  - paired hash_g cycles and instructions on Pi 5 core 3
+  - load/store PMU and linked text size
