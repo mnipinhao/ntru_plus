@@ -4,9 +4,11 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion integrates the 160-instruction two-tile fused-wide
-BaseInv numerator, SIMD failure aggregation, 37-instruction no-centering finish
-and scheduled pair+merge ToBytes.  P3-A also replaces 27 final Inverse
+Latest production promotion is P10-A: a 132-instruction two-tile direct-FR0
+BaseInv numerator, a 164-instruction three-chain inverse with one global
+R^-2 correction, and a 26-instruction direct-FR0 finish.  Its approved KEM-only
+output representative bound is 2550.  Production also includes SIMD failure
+aggregation and scheduled pair+merge ToBytes.  P3-A replaces 27 final Inverse
 `center32` calls with one constant-resident `center864` pass.
 Mac and Pi 5 KEM/KAT, canonical rejection, malformed-input, BaseInv
 failure/alias/AAPCS/scratch-wipe and paired PMU gates pass.  See

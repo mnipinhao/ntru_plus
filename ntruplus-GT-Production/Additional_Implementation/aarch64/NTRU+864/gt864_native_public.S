@@ -90,6 +90,11 @@ C(gt864_baseinv_asm):
     mov x25, #0                // chain
     mov x27, x19
     mov x28, x20
+    // P10 repeated numerator leaf ABI: v30=q and v31=-q^-1 mod 2^16.
+    mov w8, #3457
+    dup v30.8h, w8
+    mov w8, #-12929
+    dup v31.8h, w8
 .Lbinv_chain:
     mov x26, #0                // step
 .Lbinv_num:
@@ -150,6 +155,11 @@ C(gt864_baseinv_asm):
     COPY_TRIPLE x22, x24
     mov x25, #0
     mov x27, x19
+    // Middle batch kernels clobber volatile SIMD state; reload the finish constants.
+    mov w8, #3457
+    dup v30.8h, w8
+    mov w8, #-12929
+    dup v31.8h, w8
 .Lbinv_finish_chain:
     mov x26, #0
 .Lbinv_finish:

@@ -2,12 +2,11 @@
 
 ## Outcome
 
-P10-A passes its mathematical, range, physical-assembly, constant-time,
-correctness and Pi 5 performance gates.  It is not yet copied into production:
-the successful BaseInv output remains FR0 modulo 3457, but its proved raw
-representative bound changes from `|x| <= 1972` to `|x| <= 2550`.  The complete
-Keygen consumer chain is safe, but the Slothy promotion policy requires this
-contract delta to be explicitly approved.
+P10-A is promoted to production after passing its mathematical, range,
+physical-assembly, constant-time, correctness and Pi 5 performance gates.  The
+user explicitly approved the successful BaseInv raw-representative contract
+change from `|x| <= 1972` to `|x| <= 2550` on 2026-09-12.  The output remains
+FR0 modulo 3457 and the complete Keygen consumer chain is machine-closed.
 
 The selected Official source is the captured SUPERCOP tree at
 `/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64`; this experiment
@@ -102,26 +101,29 @@ and guard edges.
 ## Pi 5 results
 
 All numbers are medians from six balanced processes pinned to core 3.  The Pi
-reported no throttling.  Full raw observations are in `pi-evidence/*.csv` and
-the aggregate is `pi-results.json`.
+reported no throttling.  The table below is the final run from the actual
+promoted production source.  Full raw observations are in
+`production-pi-evidence/*.csv` and the aggregate is
+`production-pi-results.json`; the earlier isolated-candidate run remains in
+`pi-evidence` and `pi-results.json`.
 
 | Boundary | P9 | P10 | delta |
 |---|---:|---:|---:|
-| BaseInv success, one call | 5209.750 | 4129.875 | -1079.875 |
-| BaseInv failure, one call | 3325.656 | 2629.219 | -696.437 |
-| complete Keygen | 45804.125 | 43656.375 | -2147.750 |
+| BaseInv success, one call | 5197.422 | 4139.985 | -1057.438 |
+| BaseInv failure, one call | 3325.875 | 2628.610 | -697.266 |
+| complete Keygen | 45795.250 | 43670.500 | -2124.750 |
 
 The selected Official versus P10 measurement was:
 
 | Boundary | Official | P10 | P10 - Official |
 |---|---:|---:|---:|
-| BaseInv, two Keygen calls | 8362.750 | 8201.625 | -161.125 |
-| complete Keygen | 44304.625 | 43655.875 | -648.750 |
-| complete Encaps | 46436.400 | 45338.875 | -1097.525 |
-| complete Decaps | 40760.375 | 40918.000 | +157.625 |
+| BaseInv, two Keygen calls | 8366.875 | 8188.250 | -178.625 |
+| complete Keygen | 44309.125 | 43651.625 | -657.500 |
+| complete Encaps | 46407.750 | 45356.375 | -1051.375 |
+| complete Decaps | 40768.450 | 40899.800 | +131.350 |
 
-Encaps and Decaps do not call BaseInv.  Their P9/P10 deltas were +1.275 and
--4.575 cycles with identical instruction/branch counts, so they are treated
+Encaps and Decaps do not call BaseInv.  Their P9/P10 deltas were -0.950 and
+-10.300 cycles with identical instruction/branch counts, so they are treated
 as measurement noise, not a P10 effect.
 
 Correctness evidence: identical 100-case KAT SHA-256
@@ -132,15 +134,14 @@ and 808 BaseInv component cases for both P9 and P10.
 
 ## Decision and next work
 
-P10-A is a performance-winning candidate, but production stays at P9 until the
-`1972 -> 2550` successful-output representative bound is approved.  If it is
-approved, promotion must copy the three allocated leaves and wrapper constant
-hoists, refresh the manifest, and rerun production KAT/component/malformed and
-paired PMU checks.  If it is not approved, P10-B adds a contract-preserving
-normalization finish and is benchmarked separately.
+P10-A is now the production BaseInv.  Promotion copied the three allocated
+leaves and wrapper constant hoists, refreshed the manifest, and passed the
+production KAT/component/malformed and paired PMU checks.  P10-B is dropped
+because the approved, consumer-closed P10-A contract makes its extra
+normalization unnecessary.
 
 After resolving P10, the next measured gap is Decaps.  Compare consistent
-boundaries: Official `Inverse + Crepmod3` is 4619.3 cycles while GT's fused
-`Inverse_to_ternary` is 5432.35, leaving about 813 cycles.  P11 therefore
+boundaries: Official `Inverse + Crepmod3` is 4620.0 cycles while GT's fused
+`Inverse_to_ternary` is 5436.975, leaving about 817 cycles.  P11 therefore
 targets a smaller joint terminal-Inverse-to-ternary DAG; it must not reopen the
 already rejected P6 scratch-only or P3-B half-vector scatter directions.

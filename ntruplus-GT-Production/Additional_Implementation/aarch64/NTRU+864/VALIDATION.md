@@ -1,5 +1,22 @@
 # K1 production integration evidence
 
+## P10-A production promotion — 2026-09-12
+
+The approved P10-A direct-FR0 BaseInv is production.  Machine proof closes the
+K1 input bound 28765, direct numerator, R^-2 determinant, twelve-step prefix,
+one global inverse correction, R2 recovery, raw R0 output bound 2550 and the
+complete D1 consumer to `[-1861,1861]`.  Three local Cortex-A76 Slothy regions
+are final OPTIMAL with zero spill.
+
+The actual production source passed manifest/build, 64 KEM round trips and
+tampered rejection, identical 100-case KAT, identical 417216-byte malformed
+transcript, and 808 BaseInv cases including all 288 zero leaves, exact alias,
+canaries, AAPCS and 1200-byte scratch wipe.  Six balanced Pi 5 runs measured
+BaseInv success 5197.422 to 4139.985 cycles and complete Keygen 45795.250 to
+43670.500 versus P9.  Selected Official versus production was 8366.875 versus
+8188.250 cycles for Keygen's two BaseInv calls and 44309.125 versus 43651.625
+for complete Keygen.  See `experiments/gt864-p10-baseinv/RESULTS.md`.
+
 ## P8 promotion — 2026-09-12
 
 Decaps now uses `gt864_native_inverse_ternary`; original centered API remains.

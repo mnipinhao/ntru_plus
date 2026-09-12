@@ -41,9 +41,9 @@ Status meanings:
 | P7-C1 | Done—Promoted | One-product inverse NTT9, preserving terminal tables and P8 stores | No-spill RA + local timing, exact range/centered-output/alias/wipe/KAT pass. Pi 5 Inverse 6995.484→5728.891; Decaps 43386.675→42104.900 cycles; -1200 instructions in both |
 | P8 | Done—Promoted | Raw-Inverse-to-ternary Decaps consumer | Exact9155-value proof, native alias/AAPCS/wipe/KAT/malformed pass. One pass instead of center864+crepmod3; Pi5 Decaps42085.125→41333.675 cycles (-664 instructions). Old centered Inverse API retained |
 | P9 | Done—Promoted | Input-once ToBytes full/small composed-map routing | Both modes passed static deficit, no-spill, exact-byte, KAT, malformed and Pi 5 gates; combined full-KEM saves 619.875/415.800/435.925 Keygen/Encaps/Decaps cycles |
-| P10-A | Done—Candidate; approval pending | Direct-FR0 BaseInv numerator/finish with one global inverse-scale correction | All math/range/Slothy/KAT/failure/alias/clearing/Pi gates pass; selected Official two-call BaseInv 8362.750 vs P10 8201.625, but raw output bound 1972→2550 needs explicit approval before production promotion |
-| P10-B | Conditional | Contract-preserving normalized finish fallback | Run only if P10-A's proved 2550 KEM-only output bound is not approved; must preserve <=1972 and retain a net Keygen win |
-| P11 | Next—Decaps | Joint terminal Inverse-to-ternary DAG after P7-C1/P8 | Beat the consistent Official `Inverse + Crepmod3` boundary 4619.3 versus GT 5432.35 cycles without reopening rejected half-vector scatter or adding a coefficient memory pass |
+| P10-A | Done—Promoted | Direct-FR0 BaseInv numerator/finish with one global inverse-scale correction | Approved 1972→2550 bound; all production gates pass. P9→P10 BaseInv success 5197.422→4139.985 and Keygen 45795.250→43670.500; selected Official two-call BaseInv 8366.875 vs P10 8188.250 |
+| P10-B | Dropped—Unneeded | Contract-preserving normalized finish fallback | Reopen only if a future consumer cannot accept the approved 2550 bound; current K1→BaseInv→D1 chain is fully closed |
+| P11 | Active—Decaps | Joint terminal Inverse-to-ternary DAG after P7-C1/P8 | Beat the consistent Official `Inverse + Crepmod3` boundary 4620.0 versus GT 5436.975 cycles without reopening rejected half-vector scatter or adding a coefficient memory pass |
 | P12 | Deferred—Decaps | Reconcile remaining instruction/branch gap after P11 | Re-profile first; only keep subgraphs whose same-boundary static model can materially reduce the current +9437 instructions/+152 branches versus Official Decaps |
 
 ## Fixed facts and non-tasks
@@ -58,14 +58,22 @@ Status meanings:
   match Official timing.
 - Forward is currently faster than the selected Official component and is not
   on this immediate critical path.
-- P10-A makes GT BaseInv slightly faster than selected Official at the exact
-  two-call Keygen boundary.  It is held out of production only by the explicit
-  approval requirement for the wider, fully consumer-closed raw representative
-  bound; it is not held for a correctness or performance failure.
+- P10-A makes GT BaseInv faster than selected Official at the exact two-call
+  Keygen boundary.  The wider, fully consumer-closed raw representative bound
+  is explicitly approved and production uses P10-A.
 
 ## Change log
 
 ### 2026-09-12
+
+- Promoted P10-A after explicit user approval of the consumer-closed raw FR0
+  output bound 1972→2550.  The actual production source passed manifest,
+  100-case KAT, malformed transcript, complete KEM and 808-case BaseInv
+  failure/alias/AAPCS/scratch gates on Pi 5.  Final P9→production measurements
+  are BaseInv success 5197.422→4139.985 cycles and complete Keygen
+  45795.250→43670.500.  Production beats selected Official by 178.625 cycles
+  at the two-BaseInv boundary and by 657.500 cycles for complete Keygen.
+  P10-B is dropped as unnecessary; P11 is active.
 
 - Completed P10-A as a promotion candidate while leaving production frozen.
   Direct R0 cofactors remove each tile's input conversion and finish scale

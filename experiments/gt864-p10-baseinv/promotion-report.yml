@@ -1,0 +1,50 @@
+promotion:
+  candidate_id: gt864_p10a_direct_fr0_baseinv
+  status: promote
+  date: 2026-09-12
+  mode: existing_region_replacement
+
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  candidate_contract: candidate-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_output: candidate.alloc.S
+  candidate_score: score.yml
+  production_benchmark: production-pi-results.json
+
+approved_contract_change:
+  field: range_contract.output_ranges
+  baseline: successful FR0 inverse absolute value at most 1972
+  candidate: successful FR0 inverse absolute value at most 2550
+  reason: K1 producer, every BaseInv narrowing and the complete Keygen D1 consumer are machine-closed; D1 ends in [-1861,1861], preserving small ToBytes.
+  approver: user
+  approval_date: 2026-09-12
+
+gates:
+  contract_preserved: false
+  approved_contract_changes: true
+  static_checks_passed: true
+  slothy_result_passed: true
+  oracle_correctness_passed: true
+  full_path_benchmark_passed: true
+
+metrics:
+  baseline_expected_cycles: 4693
+  candidate_expected_cycles: 3623
+  baseline_full_path: 45795.250
+  candidate_full_path: 43670.500
+  benchmark_metric: complete Keygen median cycles
+  official_baseinv_two_calls: 8366.875
+  production_baseinv_two_calls: 8188.250
+
+production_files:
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_baseinv_num.S
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_baseinv_finish.S
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_baseinv_inverse.S
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_public.S
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/SOURCE-MANIFEST.sha256
+
+decision:
+  reason: Approved contract change, exact correctness, zero-spill Slothy output and both component/full-Keygen Pi 5 speedups all passed on the actual production source.
+  follow_up: Start P11 joint terminal Inverse-to-ternary DAG; P10-B normalization fallback is dropped as unnecessary.

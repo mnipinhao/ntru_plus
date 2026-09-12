@@ -1,5 +1,28 @@
 # BaseInv and paired R^-1 BaseMul/Inverse integration — 2026-09-08
 
+## 2026-09-12 P10-A direct-FR0 BaseInv promotion
+
+Production now uses the P10-A direct-FR0 numerator and finish.  The two-tile
+numerator is 132 instructions and keeps q/qi in `v30/v31` across its 18 public
+wrapper calls.  Cofactors use scale R^-1 and determinants R^-2.  Twelve prefix
+steps end at R1; the 164-instruction inverse3 performs one global R^-2
+Algorithm-10 correction; existing recovery yields R2 denominator inverses; the
+26-instruction finish uses three REDCs to return R0 directly.
+
+The user approved the successful raw-output bound change 1972 to 2550 after
+machine closure of the K1 Forward producer (`|x| <= 28765`), every signed
+int16/int32 narrowing, and both Keygen D1 consumers.  D1's final exact Barrett
+range is `[-1861,1861]`, so small ToBytes remains inside `(-q,q)`.
+
+Final production validation passed the manifest, 64 KEM round trips/tampered
+rejection, identical 100-case KAT, identical 417216-byte malformed transcript,
+and 808 BaseInv success/failure/zero-leaf/alias/canary/AAPCS/scratch-wipe cases.
+Six paired Pi 5 runs measured BaseInv success 5197.422 to 4139.985 cycles and
+complete Keygen 45795.250 to 43670.500 versus P9.  At the selected Official
+boundary, two BaseInv calls are 8366.875 versus 8188.250 and complete Keygen is
+44309.125 versus 43651.625.  Evidence is in
+`experiments/gt864-p10-baseinv/`.
+
 ## 2026-09-10 BaseInv arithmetic promotion
 
 Production now uses a 160-instruction two-tile fused-wide numerator and the
@@ -29,7 +52,7 @@ original pending-gate notes below are retained as integration history.
 
 | Caller | Active path |
 | --- | --- |
-| Keygen f/g invertibility | gt864_native_poly_baseinv, direct FR0 R0 -> raw FR0 R0 bounded by 1972 |
+| Keygen f/g invertibility | gt864_native_poly_baseinv, direct FR0 R0 -> raw FR0 R0 bounded by 2550 |
 | Keygen h/hinv products | Unchanged D1 R0 |
 | Encaps BaseMulAdd | Unchanged D1 R0 |
 | Decaps first c*f product | gt864_native_basemul_for_inverse, FR0 R^-1 output |
@@ -70,7 +93,8 @@ not change the instructions.
 
 The producer contracts are inherited from the tested source-identical
 experiments and the 2026-09-10 consumer closure, not proven by KATs alone:
-BaseInv accepts signed-int16 R0 and returns raw R0 bounded by 1972;
+BaseInv accepts the K1 Forward producer domain bounded by 28765 and returns raw
+R0 bounded by 2550;
 first-Decaps BaseMul inputs are [0,4095], its output is
 bounded by 2497; inverse I9 terminal bounds and I16 peak 30939 are recorded in
 the experimental contracts. The second D1 product is unchanged, so the small

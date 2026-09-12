@@ -1,7 +1,7 @@
 iteration:
   id: P10-A
   mode: existing_region_replacement
-  current_state: promotion_decision
+  current_state: iteration_or_promote
   hypothesis: direct FR0 numerator and finish remove per-tile scale conversions while one global R^-2 correction preserves the public FR0 result
   changed_artifacts: [repo-probe.yml, baseline-numerator-region.S, baseline-finish-region.S, baseline-contract.yml, kernel-contract.yml, instruction-dag.yml, prove.py, generate_candidate.py, candidate-contract.yml]
   earliest_state_to_revisit: repo_probe
@@ -26,9 +26,9 @@ gates:
   parse_slothy_result: pass from final OPTIMAL records; the generic parser falsely treats intermediate binary-search INFEASIBLE probes as final failures
   oracle_correctness: pass
   full_path_benchmark: pass
-  score_candidate: investigate because output-range contract approval is not yet recorded
-  promotion_decision: pending explicit approval of the proved 1972 to 2550 output-bound change
-  iteration_or_promote: preserve production until approval; otherwise execute P10-B normalization fallback
+  score_candidate: promote after explicit output-range approval
+  promotion_decision: pass; user approved the proved 1972 to 2550 output-bound change on 2026-09-12
+  iteration_or_promote: pass; P10-A promoted and production validation passed
 notes:
   - Public ABI memory alias failure and clearing behavior are unchanged.
   - KEM-only input range is intentional and follows the user-approved production definition; generic polynomial multiplication is outside this production contract.
