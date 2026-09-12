@@ -54,4 +54,11 @@ void shake256_inc_ctx_release(shake256incctx *state);
 void shake256(uint8_t *output, size_t outlen,
               const uint8_t *input, size_t inlen);
 
+/* Experimental B: generic SHAKE256(prefix || input), with one prefix byte.
+ * Input is fully absorbed before output is written, allowing overlap.
+ * No input bytes are accessed for inlen == 0; no output bytes for outlen == 0.
+ */
+void ntruplus_shake256_prefix(uint8_t *output, size_t outlen, uint8_t prefix,
+                             const uint8_t *input, size_t inlen);
+
 #endif

@@ -636,3 +636,79 @@ void shake256(uint8_t *output, size_t outlen,
     secure_clear(t, sizeof(t));
     shake256_ctx_release(&s);
 }
+
+/* B control: generic one-byte prefix absorber. Word-wise absorption and the
+ * existing permutation ABI are retained; no fixed hash_g loop count is used.
+ * The 200-byte padding scratch, 136-byte squeeze scratch and state are cleared
+ * just as in shake256(). The removed input image never exists in memory.
+ */
+static void keccak_absorb_prefix(uint64_t *s, uint8_t prefix,
+                                const uint8_t *m, size_t mlen) {
+    size_t i, tail_offset = 0;
+    uint8_t t[200];
+
+    for (i = 0; i < 25; ++i) {
+        s[i] = 0;
+    }
+    if (mlen >= SHAKE256_RATE - 1) {
+        s[0] = prefix;
+        for (i = 0; i < 7; ++i) {
+            s[0] |= (uint64_t)m[i] << (8 * (i + 1));
+        }
+        for (i = 1; i < SHAKE256_RATE / 8; ++i) {
+            s[i] = load64(m + 8 * i - 1);
+        }
+        KeccakF1600_StatePermute(s);
+        m += SHAKE256_RATE - 1;
+        mlen -= SHAKE256_RATE - 1;
+    } else {
+        tail_offset = 1;
+    }
+
+    while (mlen >= SHAKE256_RATE) {
+        for (i = 0; i < SHAKE256_RATE / 8; ++i) {
+            s[i] ^= load64(m + 8 * i);
+        }
+        KeccakF1600_StatePermute(s);
+        m += SHAKE256_RATE;
+        mlen -= SHAKE256_RATE;
+    }
+    for (i = 0; i < SHAKE256_RATE; ++i) {
+        t[i] = 0;
+    }
+    if (tail_offset) {
+        t[0] = prefix;
+    }
+    for (i = 0; i < mlen; ++i) {
+        t[tail_offset + i] = m[i];
+    }
+    t[tail_offset + mlen] = 0x1f;
+    t[SHAKE256_RATE - 1] |= 128;
+    for (i = 0; i < SHAKE256_RATE / 8; ++i) {
+        s[i] ^= load64(t + 8 * i);
+    }
+    secure_clear(t, sizeof t);
+}
+
+void ntruplus_shake256_prefix(uint8_t *output, size_t outlen, uint8_t prefix,
+                             const uint8_t *input, size_t inlen) {
+    size_t nblocks = outlen / SHAKE256_RATE;
+    uint8_t t[SHAKE256_RATE];
+    shake256ctx s;
+
+    keccak_absorb_prefix(s.ctx, prefix, input, inlen);
+    shake256_squeezeblocks(output, nblocks, &s);
+    /* Avoid pointer arithmetic on a null output for a zero-length request. */
+    if (nblocks) {
+        output += nblocks * SHAKE256_RATE;
+    }
+    outlen -= nblocks * SHAKE256_RATE;
+    if (outlen) {
+        shake256_squeezeblocks(t, 1, &s);
+        for (size_t i = 0; i < outlen; ++i) {
+            output[i] = t[i];
+        }
+    }
+    secure_clear(t, sizeof(t));
+    shake256_ctx_release(&s);
+}

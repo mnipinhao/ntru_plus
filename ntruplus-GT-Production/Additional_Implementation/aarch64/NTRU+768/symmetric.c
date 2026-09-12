@@ -25,12 +25,9 @@ void hash_f(uint8_t *buf, const uint8_t *msg)
 
 void hash_g(uint8_t *buf, const uint8_t *msg)
 {
-    uint8_t data[1 + HASH_G_INBYTES];
-
-    data[0] = 0x01;
-    memcpy(data + 1, msg, HASH_G_INBYTES);
-    shake256(buf, HASH_G_OUTBYTES, data, HASH_G_INBYTES + 1);
-    secure_clear(data, sizeof data);
+    /* Absorb the virtual prefix || msg before writing any output (buf == msg
+     * is used by Encap). No domain-prefixed message copy is materialized. */
+    ntruplus_shake256_prefix(buf, HASH_G_OUTBYTES, 0x01, msg, HASH_G_INBYTES);
 }
 
 void hash_h(uint8_t *buf, const uint8_t *msg)

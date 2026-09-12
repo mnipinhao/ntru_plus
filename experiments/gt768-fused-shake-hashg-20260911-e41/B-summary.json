@@ -1,0 +1,206 @@
+{
+  "experiment_id": "gt768-fused-shake-hashg-20260911-e41",
+  "gate": "B",
+  "baseline_revision": "a64e7035cb13410554af1c67870d4132a30037b4",
+  "host": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+  "compiler": "gcc (Debian 14.2.0-19) 14.2.0",
+  "flags": [
+    "-march=armv8-a",
+    "-mtune=cortex-a76",
+    "-O3",
+    "-fomit-frame-pointer",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-std=c99"
+  ],
+  "core": 3,
+  "pairs": 62,
+  "operations_per_sample": 2000,
+  "warmups": 100,
+  "order": "alternating AB/BA per pair",
+  "results": {
+    "hash_g": {
+      "A": {
+        "count": 62,
+        "min": 10678,
+        "p10": 10682,
+        "p50": 10693.5,
+        "p90": 10704,
+        "max": 10714
+      },
+      "B": {
+        "count": 62,
+        "min": 10507,
+        "p10": 10511,
+        "p50": 10521.0,
+        "p90": 10528,
+        "max": 10540
+      },
+      "paired_saved_cycles": {
+        "count": 62,
+        "min": 150,
+        "p10": 159,
+        "p50": 174.0,
+        "p90": 184,
+        "max": 194
+      },
+      "sink": "122",
+      "percent_saved_from_medians": 1.6131294711740778
+    },
+    "encap": {
+      "A": {
+        "count": 62,
+        "min": 31903,
+        "p10": 31920,
+        "p50": 31940.5,
+        "p90": 31962,
+        "max": 31972
+      },
+      "B": {
+        "count": 62,
+        "min": 31745,
+        "p10": 31747,
+        "p50": 31760.0,
+        "p90": 31792,
+        "max": 31813
+      },
+      "paired_saved_cycles": {
+        "count": 62,
+        "min": 132,
+        "p10": 141,
+        "p50": 174.0,
+        "p90": 202,
+        "max": 227
+      },
+      "sink": "6218415305765144144",
+      "percent_saved_from_medians": 0.5651132574630955
+    },
+    "decap": {
+      "A": {
+        "count": 62,
+        "min": 29022,
+        "p10": 29031,
+        "p50": 29049.0,
+        "p90": 29063,
+        "max": 29072
+      },
+      "B": {
+        "count": 62,
+        "min": 28897,
+        "p10": 28905,
+        "p50": 28911.5,
+        "p90": 28927,
+        "max": 28942
+      },
+      "paired_saved_cycles": {
+        "count": 62,
+        "min": 103,
+        "p10": 116,
+        "p50": 135.0,
+        "p90": 155,
+        "max": 167
+      },
+      "sink": "10844457849835112772",
+      "percent_saved_from_medians": 0.47333815277634345
+    }
+  },
+  "source_sha256": {
+    "A": {
+      "symmetric.c": "d5c98b67cc4796ca02d9e155a6d66ae00419eafe9f5869d88bc74aba8c40d03d",
+      "fips202.c": "b098e2da844180a5bc917c512546d623c5965e1ad120b392a3c5ae4fce0309dc",
+      "fips202.h": "86d3adefd72a25231b26d14b345648359db534790abd25148ccdfdba2800c298",
+      "keccakf1600.S": "ffa2089695240016bfff471b4af4b71f04b98397b7e7e062eacd2caae20ae0ea"
+    },
+    "B": {
+      "symmetric.c": "5784b96bc76e940d76f8559df80e482b16ee82059f37d539ac78fbe450d8665b",
+      "fips202.c": "067717b570025586ea3c6a1e61b88cafb8cb4f861190b789b7bd0e288e95d607",
+      "fips202.h": "f5f20ae3efe172bd7563506cef9b3907b5374f94f60cce85b19ed86a6e0cdd8d",
+      "keccakf1600.S": "ffa2089695240016bfff471b4af4b71f04b98397b7e7e062eacd2caae20ae0ea"
+    }
+  },
+  "candidate_code_revision": null,
+  "decision": "accept B as experimental control; no production promotion",
+  "correctness": {
+    "mac_package_check": "pass",
+    "mac_asan_ubsan": "2080 cases pass",
+    "pi_packages_A_B": "make check pass",
+    "prefix_differential": "PASS 2080 differential/overlap cases; hash_g: 10 permutations, 3 clears / 536 bytes, no input-image clear",
+    "kat_rsp_sha256": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8",
+    "permutation_linked_opcodes_identical": true,
+    "permutation_bytes": 1152
+  },
+  "winning_pairs": {
+    "hash_g": 62,
+    "encap": 62,
+    "decap": 62
+  },
+  "pmu_per_operation_medians": {
+    "A": {
+      "instructions:u": 30690.0683775,
+      "ld_spec:u": 1404.325595,
+      "st_spec:u": 880.4722925,
+      "stall_backend:u": 1045.6026875
+    },
+    "B": {
+      "instructions:u": 30321.068425,
+      "ld_spec:u": 1349.783535,
+      "st_spec:u": 799.7011775,
+      "stall_backend:u": 1003.6880475
+    }
+  },
+  "pmu_notes": "4 AB/BA long runs, 200000 hash_g operations, user events, 100% scheduled; process startup included and amortized; ld_spec/st_spec are speculative",
+  "linked_kem_sizes_bytes": {
+    "A": {
+      "size_text_category": 83143,
+      "text_section": 73328
+    },
+    "B": {
+      "size_text_category": 87207,
+      "text_section": 77296
+    }
+  },
+  "hash_path_own_stack_at_permutation_bytes": {
+    "A": {
+      "hash_g": 1200,
+      "shake256": 416,
+      "keccak_absorb": 368,
+      "permutation": 128,
+      "sum": 2112
+    },
+    "B": {
+      "hash_g": 0,
+      "prefix_helper": 560,
+      "permutation": 128,
+      "sum": 688
+    },
+    "notes": "Static disassembly accounting; excludes libc and higher callers, not a whole-process stack high-water measurement"
+  },
+  "environment": {
+    "before": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=55.4'C",
+      "frequency": "frequency(0)=2400020480"
+    },
+    "before_timing": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=63.1'C",
+      "frequency": "frequency(0)=2400037120"
+    },
+    "after": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=64.2'C",
+      "frequency": "frequency(0)=2400037120"
+    }
+  },
+  "binary_sha256": {
+    "A-decap": "22fe479cd65d5ca2b1ec236d4a76d9fbb5a7651eca0a5e459e8290feab3cfb7c",
+    "A-encap": "492d4733863c2c954ea877fc260a755034877ddc838456ada429439c489f0768",
+    "A-hash-g-pmu": "56b62f628c44aff90aff90b0699439b0f0285dba17cc7f251f7e89ca81cd0ac4",
+    "A-hash_g": "dc244bd88d644584c6dd7d7092a75148bee9fa9bfe923533d0df5e2b07a73fe9",
+    "B-decap": "b40f4e19d47921a8bea4e18b5b037d6d710608ea7a035a3470f33c1c47ff87ec",
+    "B-encap": "dad790f85791c765ac7e539bf5f1171635a92a45a7f3e6ee843810b1c92fddd7",
+    "B-hash-g-pmu": "03537ddd20cf6370b4272b05d967e8436a652ad39b8b1a24bf85b88792da9fd2",
+    "B-hash_g": "bbdf4402d2a1ed750560369726f01f446a0674f2a47d8fa3afa1889f68f01e3f"
+  },
+  "raw_results": "/home/pi/gt768-fused-shake-hashg-20260911-e41/.build/b-gate-v1"
+}

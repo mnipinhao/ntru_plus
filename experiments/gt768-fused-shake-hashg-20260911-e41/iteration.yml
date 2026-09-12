@@ -10,6 +10,21 @@ kernel: hash_g fixed-size SHAKE256 path
 host: pi@100.99.191.9
 core: 3
 status: active
+current_gate: B completed; C pending
+b_gate:
+  category: memory or table access
+  hypothesis_record: B_GATE.md
+  decision: accept as experimental control
+  production_promoted: false
+  baseline_revision: a64e7035cb13410554af1c67870d4132a30037b4
+  candidate_code_revision: null
+  summary: B-summary.json
+  paired_saved_cycles:
+    hash_g: 174
+    encap: 174
+    decap: 135
+  text_section_growth_bytes: 3968
+  next_gate: fixed-size C wrapper with the existing ten scalar permutations
 observation: >-
   hash_g performs ten calls to the scalar Keccak-f[1600] permutation.  The
   current sponge materializes the 200-byte state in memory at every call and
