@@ -4,7 +4,11 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion is P13-C: the separately shaped tail Inverse16 now
+Latest production promotion is P16: Full ToBytes now uses the retained P15
+Cortex-A76 schedule while Small ToBytes deliberately remains P9.  The Full
+schedule changes no instruction, branch, load/store, register or range contract
+and saves about 75 cycles in each complete KEM operation on Pi 5.
+P13-C previously changed the separately shaped tail Inverse16 so it now
 uses the same composite-terminal algebra with its own six-lane layout.  Together
 P13-B/C save 462 retired Inverse instructions and about 507 paired-median Decaps
 cycles on Pi 5 while preserving the P8 raw-output bound and memory ABI.
@@ -41,9 +45,11 @@ Read in this order:
 4. `gt864_top_split.s`, `tail_variants.S`, `gt864_forward_six_bank.S`:
    raw top, T1 bank-major tail, K1 Pass-2.
 5. `gt864_fr0_basemul_d1.c`, inverse assembly and tables.
-6. `gt864_tobytes.h`, `gt864_tobytes.c`, `gt864_tobytes_public.S`, the three
-   legacy ToBytes cores and `gt864_pair_merge_{full,small}.S`: caller-selected
-   full/small normalization, routing and byte packing.
+6. `gt864_tobytes.h`, `gt864_tobytes.c`, `gt864_p16_tobytes_full.S`,
+   `gt864_p9_tobytes_small.c`, and `p9_tobytes_public.S`: active caller-selected
+   full/small normalization, routing and byte packing.  The other ToBytes cores
+   are retained historical/compatibility sources but are not selected by the
+   production Makefile.
    `byte_api.c`: legacy ToBytes → r9_to; candidate FromBytes → cluster transpose.
    `byte_boundary.c`, `route9.c`, `cluster_transpose_frombytes.c` implement them.
 

@@ -1,0 +1,101 @@
+{
+  "experiment": "P16",
+  "baseline_revision": "5bd54e34af25404dcd3d7881efd6accc100c2dfa",
+  "candidate_p15_full_sha256": "2a59fbf9567124f28c009de0c1989e33600be64e795c4a47e634ba4d0a46deb2",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p16-20260912",
+  "target_audit": {
+    "full": {
+      "baseline": {
+        "top_instructions": 1378,
+        "q_stack_accesses": 0
+      },
+      "candidate": {
+        "top_instructions": 1378,
+        "q_stack_accesses": 0
+      }
+    },
+    "small": {
+      "baseline": {
+        "top_instructions": 1277,
+        "q_stack_accesses": 0
+      },
+      "candidate": {
+        "top_instructions": 1277,
+        "q_stack_accesses": 0
+      }
+    },
+    "small_object_sha256": "a9e783d12b21fd639cea17bb831f4232cdeb29dc2e33391efc581499d5aaec21"
+  },
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+  "kem": {
+    "keygen": {
+      "baseline": {
+        "cycles": 43658.875,
+        "instructions": 96127.0,
+        "branches": 1566.0
+      },
+      "candidate": {
+        "cycles": 43583.125,
+        "instructions": 96127.0,
+        "branches": 1566.0
+      },
+      "paired_delta": {
+        "cycles": -74.875,
+        "instructions": 0.0,
+        "branches": 0.0
+      },
+      "observations": 252
+    },
+    "encaps": {
+      "baseline": {
+        "cycles": 45313.425,
+        "instructions": 124757.2,
+        "branches": 1004.6
+      },
+      "candidate": {
+        "cycles": 45239.225,
+        "instructions": 124757.2,
+        "branches": 1004.6
+      },
+      "paired_delta": {
+        "cycles": -77.77499999999782,
+        "instructions": 0.0,
+        "branches": 0.0
+      },
+      "observations": 252
+    },
+    "decaps": {
+      "baseline": {
+        "cycles": 40397.925,
+        "instructions": 95334.2,
+        "branches": 1118.6
+      },
+      "candidate": {
+        "cycles": 40327.375,
+        "instructions": 95334.2,
+        "branches": 1118.6
+      },
+      "paired_delta": {
+        "cycles": -71.04999999999927,
+        "instructions": 0.0,
+        "branches": 0.0
+      },
+      "observations": 252
+    }
+  },
+  "promotion_gate_passed": true,
+  "environment_before": [
+    "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc (Debian 14.2.0-19) 14.2.0",
+    "ondemand",
+    "temp=59.3'C",
+    "throttled=0x0"
+  ],
+  "environment_after": [
+    "temp=63.1'C",
+    "throttled=0x0"
+  ],
+  "source_manifest_sha256": "d4690bd3f94d012c5023c5172e0f4a1dd0c603c39d23854821f78ffc26c5e915"
+}

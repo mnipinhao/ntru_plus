@@ -1,0 +1,29 @@
+candidate:
+  id: gt864-p16-p15-full-only
+  status: accept-promoted
+contract:
+  full_instruction_multiset_preserved: true
+  small_object_byte_identical: true
+  range_abi_memory_preserved: true
+correctness:
+  kem_64: pass
+  compatibility_exact_and_tampered: pass
+  kat: pass
+  malformed_transcript: pass
+  production_manifest_and_check: pass
+static:
+  full_top_instructions: 1378
+  small_top_instructions: 1277
+  coefficient_q_stack_accesses: 0
+benchmark:
+  observations_per_operation: 252
+  keygen_paired_cycle_delta: -74.875
+  encaps_paired_cycle_delta: -77.775
+  decaps_paired_cycle_delta: -71.050
+  instruction_delta: 0
+  branch_delta: 0
+decision:
+  promote: true
+  production_full: P15 allocated assembly
+  production_small: P9 unchanged
+  next: P17 selected-Official profiler checkpoint

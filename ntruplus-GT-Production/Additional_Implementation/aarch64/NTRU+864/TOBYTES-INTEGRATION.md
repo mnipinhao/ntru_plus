@@ -1,6 +1,8 @@
-# Input-once dual-entry ToBytes — P9 promoted 2026-09-12
+# Input-once dual-entry ToBytes — P16 Full schedule promoted 2026-09-12
 
-Production now uses the P9 input-once composed-map cores.  Each top branch
+Production uses the P9 input-once composed-map DAG.  P16 replaces only the Full
+core's GCC order with the exact retained P15 Cortex-A76 schedule; Small remains
+the original P9 C/GCC object.  Each top branch
 loads its 54 FR0 Q vectors once, retires a routed eight-coefficient output as
 soon as its last source lane arrives, normalizes it, packs it to twelve bytes,
 and writes its final wire address.  The complete call has 108 coefficient
@@ -25,6 +27,15 @@ Keygen/Encaps/Decaps by -619.875/-415.800/-435.925 cycles and by exactly
 -1200/-811/-811 retired instructions.  Complete evidence is in
 `experiments/gt864-p9-tobytes-routing/`.
 
+P15 then preserved the exact Full instruction and memory multiset while
+rescheduling bounded completion/normalization/pack windows.  Its public Full
+boundary improved 1518.188→1441.633 cycles; its Small schedule was neutral and
+was rejected.  P16 integrates only Full and keeps the P9 Small object
+byte-identical.  Across 252 paired observations per operation, P16 improves
+Keygen/Encaps/Decaps by 74.875/77.775/71.050 cycles with zero retired-instruction
+or branch delta.  Evidence is in `experiments/gt864-p15-p9-scheduling/` and
+`experiments/gt864-p16-full-tobytes-integration/`.
+
 ## Previous implementation
 
 The original dual-entry integration is retained below as history.  Production
@@ -44,11 +55,11 @@ It selects `gt864_fr0_tobytes_full` for f, r and r1. `poly_tobytes` and the old
 P3B12 adapters remain as legacy internal helpers, not the active KEM path.
 The small entry is not a generic signed-int16 serializer.
 
-Sources: `gt864_tobytes.c/.h`, `gt864_tobytes_public.S`, full/small/merge
-`_core.S`, `gt864_pair_merge_{full,small}.S` and `byte_merge_tables.h`. These
-are self-contained, with no experiment-tree build dependency.  The promoted
-pair+merge instruction order is copied from the tested scheduled `.opt.S`;
-only production comments and Apple symbol aliases are added.
+Active sources are `gt864_tobytes.c/.h`, `gt864_p16_tobytes_full.S`,
+`gt864_p9_tobytes_small.c`, and `p9_tobytes_public.S`.  They are self-contained,
+with no experiment-tree build dependency.  The P16 Full source is the
+hash-checked P15 allocated assembly (`2a59fbf9...0a46deb2`); the production
+object keeps the existing P9 inner/public symbols and ABI.
 
 ## Range and security review
 

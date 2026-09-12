@@ -1,5 +1,15 @@
 # K1 production integration evidence
 
+## P16 production promotion — 2026-09-12
+
+Only Full ToBytes changes: production links the exact P15 scheduled assembly;
+Small remains the byte-identical P9 object.  Full and Small retain 1378/1277
+instructions per top and have no coefficient-Q stack access.  Two package KEM
+tests, exact KAT, malformed transcript and six-process exact/tampered KEM
+compatibility pass.  On Pi 5, 252 paired observations per operation improve
+Keygen/Encaps/Decaps by 74.875/77.775/71.050 cycles with zero instruction or
+branch delta.  See `experiments/gt864-p16-full-tobytes-integration/`.
+
 ## P13-C production promotion — 2026-09-12
 
 The single tail Inverse16 call now uses its six-useful-lane composite terminal

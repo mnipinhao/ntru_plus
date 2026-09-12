@@ -50,7 +50,8 @@ Status meanings:
 | P13-C | Done—Promoted | Tail-specific composite terminal map for the separately shaped six-useful-lane I16 kernel | Exact row-8 range/oracle, zero-spill Slothy, native KAT/rejection/alias/AAPCS/wipe and paired Pi 5 gates passed; Decaps improves 73.075 paired-median cycles with exactly 66 fewer instructions |
 | P14 | Done—Rejected | Replace P9 lane-edge routing with 15 retained-source TBL4 neighborhood classes | Exact/no-spill assembly removes 1120 full+small instructions, but Pi 5 regresses full/small by 198.993/104.583 cycles; production remains P9 |
 | P15 | Done—Combined rejected, full retained | Preserve P9 input-once lane routing and jointly schedule output completion, normalization and pack | Exact fixed-allocation schedule improves full by 76.555 cycles but small regresses 1.586; strict two-mode gate fails and production remains P9 |
-| P16 | Next—Full-only integration | Replace only full ToBytes with the retained P15 schedule; keep P9 small unchanged | Complete KEM/KAT/malformed/object gates and lower paired Keygen, Encaps and Decaps cycles without instruction, branch or memory-count growth |
+| P16 | Done—Promoted | Replace only full ToBytes with the retained P15 schedule; keep P9 small unchanged | KEM/KAT/malformed/object gates pass; paired Keygen/Encaps/Decaps improve 74.875/77.775/71.050 cycles with zero instruction or branch growth |
+| P17 | Next—Profiler checkpoint | Re-measure production against the selected SUPERCOP 20260831 Official and refresh component/call-site attribution after P13/P16 | Same host/compiler/hash policy; exact compatibility first; publish Keygen/Encaps/Decaps plus actionable component bottlenecks before selecting a new DAG |
 
 ## Fixed facts and non-tasks
 
@@ -71,6 +72,16 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed and promoted P16.  Production now links the exact retained P15
+  schedule for Full ToBytes while Small remains the byte-identical P9 object.
+  Full/Small retain 1378/1277 instructions per top, no coefficient-Q stack
+  access, the same memory/range/ABI contracts, exact KAT and malformed
+  transcript.  Across 252 paired Pi 5 observations per operation,
+  Keygen/Encaps/Decaps improve by 74.875/77.775/71.050 cycles with exactly zero
+  instruction and branch delta.  P17 refreshes the selected-Official profiler
+  after the cumulative P13 and P16 promotions before choosing another DAG.
+  Evidence: `experiments/gt864-p16-full-tobytes-integration/`.
 
 - Completed P15 without combined production promotion.  Slothy timing-only
   scheduling preserves the exact P9 instruction multiset, fixed allocation,

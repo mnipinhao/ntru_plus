@@ -1,0 +1,25 @@
+experiment_id: GT864-P16-FULL-TOBYTES-INTEGRATION-20260912
+action: production-integration-candidate
+state:
+  p15_full_source: pass
+  isolated_candidate: pass
+  target_object_audit: pass
+  kem_correctness: pass
+  kat_comparison: pass
+  malformed_transcript: pass
+  paired_full_kem: pass all three operations improve
+  promotion_decision: accept promoted
+hypothesis:
+  observation: P15 full ToBytes improved 1518.188 to 1441.633 cycles with identical instructions and memory events, while small was neutral
+  primary_bottleneck_category: scheduling or dependency
+  hypothesis: retaining P9 small and replacing only full should transmit one approximately 76-cycle saving to each KEM operation
+  exact_proposed_change: link the exact P15 full scheduled translation unit in place of gt864_p9_tobytes_full.c; leave small and every caller unchanged
+  expected_static_effect: full instruction multiset unchanged; small object byte-identical
+  expected_performance_effect: lower Keygen Encaps and Decaps cycles
+  expected_register_pressure_effect: unchanged fixed GCC allocation and no coefficient spill
+  correctness_or_range_impact: none; exact fixed-contract rescheduling only
+  falsifying_measurement: any target identity correctness or malformed failure, or non-negative paired cycle delta in any KEM operation
+environment:
+  pi5: pi@100.99.191.9
+  supercop_root: /home/pi/supercop-20260831
+  remote: /home/pi/supercop-20260831/bench/pinhao/gt864-p16-20260912

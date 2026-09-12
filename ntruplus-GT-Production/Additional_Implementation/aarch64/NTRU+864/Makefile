@@ -13,8 +13,8 @@ $(filter-out gt864_native.o,$(NATIVE_OBJECTS)): %.o: %.S
 $(filter %.o,$(TOBYTES_OBJECTS)): $(HEADERS) Makefile
 gt864_tobytes.o: gt864_tobytes.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
-gt864_p9_tobytes_full.o: gt864_p9_tobytes_full.c p9_tobytes.h
-	$(CC) $(CFLAGS) -I. -c $< -o $@
+gt864_p9_tobytes_full.o: gt864_p16_tobytes_full.S p9_tobytes.h
+	$(CC) $(CFLAGS) -I. -x assembler-with-cpp -c $< -o $@
 gt864_p9_tobytes_small.o: gt864_p9_tobytes_small.c p9_tobytes.h
 	$(CC) $(CFLAGS) -I. -c $< -o $@
 p9_tobytes_public_full.o: p9_tobytes_public.S
