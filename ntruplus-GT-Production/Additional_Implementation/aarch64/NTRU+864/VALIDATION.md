@@ -165,6 +165,20 @@ cycles, and 40134.675 versus 40764.700 Decaps cycles. The comparison target is
 its independent latest-upstream status remains unverified. Full profiler
 evidence is in `experiments/gt864-p20-official-profile/`.
 
+## P21 Inverse-to-ternary decomposition — 2026-09-12
+
+The P20-byte-identical production library passed a fresh manifest check, 64 KEM
+round trips/tampered rejections and the unchanged 100-case KAT before timing.
+Six balanced Pi 5 processes produced 258 observations per boundary on CPU 3;
+the host remained unthrottled from 57.1 to 62.0 C.
+
+Net medians were 1682.047 cycles for inverse9 ×12, 2117.531 for main I16 ×6,
+341.313 for tail I16, 430.164 for raw-to-ternary and 4893.227 for complete
+Inverse-to-ternary. Diagnostic no-store copies removed exactly the existing
+terminal lane scatters without touching production and established only an
+optimistic 175.016-cycle aggregate ceiling. Full evidence and interpretation
+are in `experiments/gt864-p21-inverse-decomposition/`.
+
 ## Correctness and selection
 
 - `make -j4 check`: imported manifest passed, assembler/linker passed,

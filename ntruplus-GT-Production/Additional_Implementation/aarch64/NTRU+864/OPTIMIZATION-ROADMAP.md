@@ -55,7 +55,8 @@ Status meanings:
 | P18 | Done—Promotion candidate | Replace per-coefficient lane routing with class-local pruned 8x8 transposes and immediate normalization/packing | Exact/no-spill/Slothy gates pass; Full/Small save 31.368/149.117 boundary cycles and isolated Keygen/Encaps/Decaps save 334.125/194.400/182.825 cycles |
 | P19 | Done—Promoted | Link both exact P18 kernels and remove legacy P9 public wrappers from the active object set | Manifest, linked-symbol, exact bytes, disjoint-buffer canary/input immutability, AAPCS/cleanup, KAT/malformed and paired boundary/full-KEM gates pass |
 | P20 | Done—Profiler checkpoint | Refresh GT versus selected SUPERCOP after P19 | Fresh correctness/clean/cycle/event campaign passes; GT wins all full-KEM operations and residual positive gaps are localized |
-| P21 | Next—Inverse decomposition | Re-profile the current P13-B/P13-C/P8 Inverse-to-ternary interior | Isolate inverse9, main I16, tail I16, route/materialization, ternary conversion and wrapper/wipe; select a new DAG only from the largest measured stage |
+| P21 | Done—Inverse decomposition | Re-profile the current P13-B/P13-C/P8 Inverse-to-ternary interior | Fresh 258-observation stage PMU selects main I16 ×6 at 2117.531 cycles; no-store control remains 1960.406, so terminal scatter is rejected as the next target |
+| P22 | Next—Main-I16 arithmetic | Reconstruct and reduce the fixed-ABI P13-B main-I16 arithmetic/dependency DAG | Delete arithmetic/reduction work or shorten the critical path; preserve exact range/layout/memory ABI, no spill, and beat the 2117.531-cycle six-call Pi 5 boundary |
 
 ## Fixed facts and non-tasks
 
@@ -76,6 +77,18 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed P21 without changing production.  The P20-byte-identical library
+  passed a fresh manifest build, 64 valid/tampered KEM cases and the unchanged
+  100-case KAT.  Across 258 Pi 5 observations per stage, current Inverse-to-
+  ternary decomposes to inverse9 ×12 1682.047, main I16 ×6 2117.531, tail I16
+  341.313, raw-to-ternary 430.164 and a diagnostic 322.172-cycle residual.
+- Deleting every main/tail `UMOV+STRH` in diagnostic-only controls saves an
+  optimistic 157.125+17.891 cycles, while no-store main I16 still costs
+  1960.406 cycles at IPC 1.294.  P22 therefore targets the P13-B main-I16
+  arithmetic/dependency DAG; a terminal-store-only rewrite is excluded.
+  ToBytes remains second.  Evidence:
+  `experiments/gt864-p21-inverse-decomposition/`.
 
 - Completed P20 without changing production.  A fresh manifest-bound build of
   revision `126fb028fe9dfe640f37a391e9acb967896be234` beats the selected
