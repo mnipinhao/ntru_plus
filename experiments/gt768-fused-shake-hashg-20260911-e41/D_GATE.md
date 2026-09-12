@@ -49,6 +49,8 @@ the round body once in the binary.
 
 ## Result: accept as experimental champion, not production promotion
 
+Measured candidate code revision: 317a52f400fd84ee9b41d313548cc0dcbe81ba52.
+
 Pi 5 core 3, GCC 14.2.0, `-march=armv8-a -mtune=cortex-a76 -O3
 -fomit-frame-pointer -ffunction-sections -fdata-sections -std=c99`.
 66 balanced A/C/D groups, 2000 operations/sample, 100 warmups.

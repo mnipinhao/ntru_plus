@@ -58,7 +58,7 @@ summary = {k: data[k] for k in (
     "compiler", "flags", "core", "pairs", "operations_per_sample",
     "warmups", "order", "results", "source_sha256")}
 summary.update({
-    "candidate_code_revision": None,
+    "candidate_code_revision": "317a52f400fd84ee9b41d313548cc0dcbe81ba52",
     "decision": "accept D as next experimental champion; no production promotion",
     "correctness": {
         "mac_package": "make check pass; KAT byte-identical",
