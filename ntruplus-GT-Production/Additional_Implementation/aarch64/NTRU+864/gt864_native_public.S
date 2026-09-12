@@ -320,12 +320,17 @@ C(gt864_inverse_ternary_asm):
     mov x24, x5
     mov x25, sp
     // Only tail padding requires initialization, not the entire main buffer.
+    // P13-A: exact 256-byte padding clear, eight full-vector stores.
+    movi v0.16b, #0
     add x9, sp, #1536
-    mov x10, #16
-.Lp8inv_init_tail:
-    stp xzr, xzr, [x9], #16
-    subs x10, x10, #1
-    b.ne .Lp8inv_init_tail
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
     mov x26, #0                // top
 .Lp8inv_top:
     mov x27, #0                // component
@@ -387,12 +392,17 @@ C(gt864_inverse_ternary_asm):
     // P8: one raw-to-ternary pass; constants stay resident.
     mov x0, x19
     bl C(gt864_crepmod3_raw)
+    // P13-A: exact 1792-byte wipe, 128 bytes per fixed iteration.
+    movi v0.16b, #0
     mov x9, sp
-    mov x10, #112
-.Lp8inv_wipe:
-    stp xzr, xzr, [x9], #16
+    mov x10, #14
+.Lp13inv_wipe:
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
     subs x10, x10, #1
-    b.ne .Lp8inv_wipe
+    b.ne .Lp13inv_wipe
     add sp, sp, #1792
     RESTORE_PUBLIC
 #endif

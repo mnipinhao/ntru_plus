@@ -45,7 +45,8 @@ Status meanings:
 | P10-B | Dropped—Unneeded | Contract-preserving normalized finish fallback | Reopen only if a future consumer cannot accept the approved 2550 bound; current K1→BaseInv→D1 chain is fully closed |
 | P11 | Dropped | Joint terminal Inverse-to-ternary DAG after P7-C1/P8 | A0–A4 all correct/no-spill and removed up to 1,292 instructions, but every exact component candidate was slower. Best A2: +17.485 paired cycles, IQR [+15.961,+18.422]; production unchanged |
 | P12 | Done—Profile/selection | Reconcile remaining instruction/branch gap after P11 | Fresh selected-Official clean/profile/event campaign reproduces +9439 instructions/+152.5 branches and localizes the meaningful deficits without changing production |
-| P13 | Active—Inverse interior | Re-decompose the current post-P7-C1 Inverse-to-ternary interior below the rejected P11 terminal route | Select an arithmetic DAG with substantial same-boundary instruction and modeled-cycle margin; terminal store/routing deletion alone is excluded |
+| P13-A | Done—Promoted | Widen exact Inverse tail initialization and 1792-byte scratch wipe from 16-byte scalar pairs to full-vector stores | Exact wipe/AAPCS/KAT/malformed gates pass; -291 instructions/-114 branches, paired -23.555 Inverse and -20.050 Decaps cycles |
+| P13-B | Active—Inverse arithmetic | Re-decompose the six-call `lazy_i16` interior after P7-C1 | Select a mulmod/table/copy DAG with closed range/scale proof and substantial same-boundary modeled-cycle margin; terminal routing and scratch clearing are excluded |
 | P14 | Next—ToBytes | Reduce the Decaps full+small composed route/normalize/pack boundary | Static common-DAG reduction must attack the measured +2886-instruction/+485-cycle aggregate; do not reopen P6 scratch storage |
 
 ## Fixed facts and non-tasks
@@ -67,6 +68,17 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed and promoted P13-A.  The P8 Inverse wrapper still clears exactly
+  256 tail-padding bytes before arithmetic and wipes exactly 1792 scratch bytes
+  afterward, but uses full-vector stores and a 128-byte wipe iteration.  The
+  changed regions remove exactly 291 retired instructions and 114 branches.
+  All manifest/build/KAT/malformed and 4096 exact/alias/AAPCS/wipe gates pass.
+  Pi 5 paired medians improve Inverse-to-ternary by 23.555 cycles (IQR
+  [-24.891,-23.172]) and Decaps by 20.050 (IQR [-31.537,-3.200]); Keygen and
+  Encaps instructions are unchanged.  P13-B now targets the six-call
+  `lazy_i16` arithmetic interior.  Evidence:
+  `experiments/gt864-p13-inverse-interior/`.
 
 - Completed P12 without changing production.  A fresh manifest-closed build of
   production revision `dd8c3146` and the selected SUPERCOP source reproduces

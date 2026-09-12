@@ -1,0 +1,32 @@
+experiment_id: GT864-P13-A-WIDE-SCRATCH-CLEAR
+action: optimize-memory
+secondary_category: control-flow
+baseline_revision: dd8c3146
+control_revision: b6d59f3e
+symbol: gt864_inverse_ternary_asm
+linked_object: gt864_native_public.o
+wrapper_abi: AAPCS64 public wrapper; exact in-place alias permitted
+flags: -O3 -std=c11 -march=armv8-a+simd -fPIC
+target: Raspberry Pi 5 Cortex-A76 core 3
+observation: >-
+  The P8 wrapper clears 256 tail-padding bytes and 1792 scratch bytes with
+  16-byte STP-X loops.  The scratch loop alone retires 112 SUBS and 112 B.NE.
+primary_bottleneck_category: memory/control loop granularity
+hypothesis: >-
+  Full-vector zero stores in a four-STP-Q loop preserve exact wiping while
+  removing most loop arithmetic and branches, reducing Inverse and Decaps time.
+exact_change: >-
+  Fully unroll eight STP-Q stores for tail initialization; clear scratch with
+  fourteen iterations containing four STP-Q stores each.  Arithmetic, layout,
+  addresses, total bytes, public ABI and RESTORE_PUBLIC remain unchanged.
+expected_static_effect:
+  instructions_per_call: -291
+  branches_per_call: -114
+  bytes_initialized: 256
+  bytes_wiped: 1792
+expected_performance_effect: lower Inverse-to-ternary and Decaps cycles
+expected_register_pressure_effect: one dead-boundary vector register; no coefficient liveness or spill
+correctness_or_range_impact: none; exact same byte ranges are zeroed
+falsifying_measurement: >-
+  Reject if exact wipe/AAPCS/KAT/malformed tests fail, or if paired Pi 5
+  Inverse-to-ternary and Decaps cycles do not both improve.
