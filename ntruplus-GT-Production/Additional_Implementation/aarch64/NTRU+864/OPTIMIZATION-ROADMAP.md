@@ -39,8 +39,8 @@ Status meanings:
 | P7-B1 | Done—Promoted | Keep the repeated `(722,6844)` Barrett-Shoup pair in `v0/v5`, then reschedule the fixed allocation | Removed 20 instructions/call and 80 object bytes; exact/KAT/alias/no-spill gates passed. Raw order regressed, but Slothy timing recovered it; final paired Pi 5 delta was -18.782 Inverse cycles and -17.875 Decaps cycles with exactly -240 instructions |
 | P7-C0 | Done—Algebra/range pass | Re-close current physical Inverse arithmetic and one-product B3 alternatives | 266 constant pairs exhausted; current bounds tighten to I9 2311 / I16 19545 / raw 4485. One-product B3 gives 37→19 mulmods per I9 and -576 arithmetic instructions/Inverse, with safe 2617 / 21397 / 4577 bounds. Last I16 identity reset has a 33792 overflow witness and stays |
 | P7-C1 | Done—Promoted | One-product inverse NTT9, preserving terminal tables and P8 stores | No-spill RA + local timing, exact range/centered-output/alias/wipe/KAT pass. Pi 5 Inverse 6995.484→5728.891; Decaps 43386.675→42104.900 cycles; -1200 instructions in both |
-| P8 | Next | Raw-Inverse-to-ternary Decaps consumer | Use P7-C1 raw bound 4577 (within the earlier 6912 contract) and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
-| P9 | Queued | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
+| P8 | Done—Promoted | Raw-Inverse-to-ternary Decaps consumer | Exact9155-value proof, native alias/AAPCS/wipe/KAT/malformed pass. One pass instead of center864+crepmod3; Pi5 Decaps42085.125→41333.675 cycles (-664 instructions). Old centered Inverse API retained |
+| P9 | Next | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
 | P10 | Queued—Keygen | BaseInv numerator/finish kernel redesign after P7/P8 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
 
 ## Fixed facts and non-tasks
@@ -59,6 +59,14 @@ Status meanings:
 
 ### 2026-09-12
 
+- Completed P8: new Decaps-only inverse_ternary entry consumes raw abs4577
+  through compare +/-1728, correction +/-1 and rounded divide by3. q=1 mod3
+  permits removing the centered-q materialization. Kernel has32 instructions
+  per32 coefficients; no spill/new coefficient scratch. Preserve old centered
+  API and all wipe policy. Full Decaps paired delta -745.275 cycles; malformed
+  transcript and KAT unchanged. Evidence: experiments/gt864-p8-raw-ternary/.
+  P9 is next; P10 remains queued. This shortcut must not use the historical
+  abs6912 contract: it fails at5186. No new Official measurements.
 - Completed and promoted P7-C1. Six one-product B3s reduce each I9 body
   284→184 instructions (including constant/move savings), object 1140→740 B.
   Local Slothy RA then bounded timing windows pass without spill; physical

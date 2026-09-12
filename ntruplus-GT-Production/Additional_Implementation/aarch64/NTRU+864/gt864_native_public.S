@@ -297,4 +297,92 @@ C(gt864_inverse_rinv_asm):
     b.ne .Linv_wipe
     add sp, sp, #1792
     RESTORE_PUBLIC
+.p2align 4
+.global C(gt864_inverse_ternary_asm)
+C(gt864_inverse_ternary_asm):
+    SAVE_PUBLIC
+    sub sp, sp, #1792
+    mov x19, x0
+    mov x20, x1
+    mov x21, x2
+    mov x22, x3
+    mov x23, x4
+    mov x24, x5
+    mov x25, sp
+    // Only tail padding requires initialization, not the entire main buffer.
+    add x9, sp, #1536
+    mov x10, #16
+.Lp8inv_init_tail:
+    stp xzr, xzr, [x9], #16
+    subs x10, x10, #1
+    b.ne .Lp8inv_init_tail
+    mov x26, #0                // top
+.Lp8inv_top:
+    mov x27, #0                // component
+.Lp8inv_component:
+    mov x28, #0                // eight-column block
+.Lp8inv_i9:
+    add x0, x25, x27, lsl #9
+    add x0, x0, x28, lsl #7
+    add x0, x0, x26, lsl #3
+    add x1, x25, #1536
+    add x1, x1, x28, lsl #7
+    mov x8, #6
+    madd x1, x26, x8, x1
+    add x1, x1, x27, lsl #1
+    mov x8, #864
+    madd x2, x26, x8, x20
+    mov x8, #48
+    madd x2, x28, x8, x2
+    add x2, x2, x27, lsl #4
+    mov x8, #576
+    madd x3, x26, x8, x21
+    mov x8, #288
+    madd x3, x28, x8, x3
+    bl C(packed_i9)
+    add x28, x28, #1
+    cmp x28, #2
+    b.ne .Lp8inv_i9
+    add x27, x27, #1
+    cmp x27, #3
+    b.ne .Lp8inv_component
+    add x26, x26, #1
+    cmp x26, #2
+    b.ne .Lp8inv_top
+    mov x26, #0                // component
+.Lp8inv_main_component:
+    mov x27, #0                // four-row half
+.Lp8inv_main:
+    add x0, x19, x26, lsl #1
+    mov x8, #24
+    madd x0, x27, x8, x0
+    add x1, x25, x26, lsl #9
+    add x1, x1, x27, lsl #8
+    mov x2, #0
+    mov x3, x22
+    mov x4, x23
+    bl C(lazy_i16)
+    add x27, x27, #1
+    cmp x27, #2
+    b.ne .Lp8inv_main
+    add x26, x26, #1
+    cmp x26, #3
+    b.ne .Lp8inv_main_component
+    add x0, x19, #48
+    add x1, x25, #1536
+    mov x2, #0
+    mov x3, x22
+    mov x4, x24
+    bl C(lazy_itail)
+    // P8: one raw-to-ternary pass; constants stay resident.
+    mov x0, x19
+    bl C(gt864_crepmod3_raw)
+    mov x9, sp
+    mov x10, #112
+.Lp8inv_wipe:
+    stp xzr, xzr, [x9], #16
+    subs x10, x10, #1
+    b.ne .Lp8inv_wipe
+    add sp, sp, #1792
+    RESTORE_PUBLIC
 #endif

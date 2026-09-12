@@ -1,0 +1,11 @@
+inputs: four independent natural-order vectors at offsets 0,16,32,48
+constants: positive threshold1728, negative threshold-1728, reciprocal10923, modulus3
+per_vector:
+  high: cmgt(input,1728); mask -1 or0
+  low: cmgt(-1728,input); mask -1 or0
+  adjusted: input + high - low; congruent centered_q(input) modulo3
+  quotient: sqrdmulh(adjusted,10923)
+  output: adjusted - 3*quotient using destructive MLS
+stores: output to original offset after its input load; no cross-vector dependency
+range: adjusted abs<=4576; quotient abs<=1525; output abs<=1
+loop: x0 advances64 bytes; public x8 counts27 iterations

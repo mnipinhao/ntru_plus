@@ -1,0 +1,15 @@
+id: P8
+baseline: 500f4d59
+mode: new_symbolic_kernel
+status: promote
+state: completed
+action: optimize-arithmetic
+observation: separate center864 and crepmod3 materialize and reread 1728 coefficient bytes
+hypothesis: exact threshold correction modulo3 removes the centered-q intermediate
+expected_static: six vector arithmetic instructions instead of eleven per vector; one fewer read/write pass
+expected_cycles: complete Inverse-plus-conversion and Decaps improve
+register_pressure: four constants and four independent vectors; avoid v8-v15
+range_impact: private raw input4577; public new ternary entry; retain original centered entry
+falsifier: exact oracle differs, overflow, spill, or complete Decaps regression
+slothy_root: /Users/chenpinhao/slothy
+python: /Users/chenpinhao/slothy_and_ra/.venv/bin/python

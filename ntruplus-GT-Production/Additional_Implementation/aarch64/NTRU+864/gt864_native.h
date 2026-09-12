@@ -8,4 +8,6 @@ int gt864_native_poly_baseinv(poly *out, const poly *in);
  * The matching inverse returns centered natural R0. Exact alias supported. */
 void gt864_native_basemul_for_inverse(int16_t *out,const int16_t *a,const int16_t *b);
 void gt864_native_inverse(poly *out,const poly *in);
+/* P8 Decaps consumer: FR0 R^-1 abs<=2497 -> natural ternary. Exact alias. */
+void gt864_native_inverse_ternary(poly *out,const poly *in);
 #endif

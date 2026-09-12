@@ -285,8 +285,7 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
     /* Only this product uses R^-1; the paired inverse restores natural R0. */
     gt864_native_basemul_for_inverse(m.coeffs, c.coeffs, f.coeffs);
-    gt864_native_inverse(&m, &m);
-    poly_crepmod3(&m, &m);
+    gt864_native_inverse_ternary(&m, &m);
 
     /* f is dead after the decrypting BaseMul and becomes the work slot. */
     poly_ntt(&f, &m);

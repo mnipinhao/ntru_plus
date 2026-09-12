@@ -1,0 +1,50 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: P8
+  name: gt864_crepmod3_raw
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: combined-small-region
+  allow_spills: false
+instruction_dag:
+  file: instruction-dag.yml
+region:
+  start_label: p8_slothy_start
+  end_label: p8_slothy_end
+  live_in: [x0, v0, v1, v2, v3]
+  live_out: [memory, x0, v0, v1, v2, v3]
+abi:
+  inputs: [x0 in-place natural R0 coefficients]
+  outputs: [864 centered ternary coefficients]
+  concrete_gprs_allowed: [x0, x4, x8]
+  fixed_vector_registers: [v0, v1, v2, v3]
+  reserved_registers: [v0, v1, v2, v3, v8, v9, v10, v11, v12, v13, v14, v15, x8]
+layout:
+  input_representation: natural-order signed int16 R0
+  output_representation: same coefficient positions; centered mod3 of centered modq input
+memory_contract:
+  loads: [four Q loads per iteration; 27 iterations]
+  stores: [four Q stores to same addresses]
+  aliasing: exact in-place; no other buffers
+  alignment: halfword
+  public_offsets_only: true
+constant_contract:
+  constants: [v0=1728, v1=-1728, v2=10923, v3=3]
+  modulus: 3457
+  representation: q congruent 1 modulo3; compare correction then rounded divide by3
+range_contract:
+  input_ranges: [signed R0 abs <=4577 from P7-C1]
+  output_ranges: [-1, 0, 1]
+constant_time_contract:
+  secret_inputs: [coefficients]
+  public_inputs: [pointer and loop counter]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 proof.py
+  test_command: python3 prepare.py followed by native test.c
+  full_path_benchmark_command: taskset -c 3 ./bench baseline/libgt864.so candidate/libgt864.so 0

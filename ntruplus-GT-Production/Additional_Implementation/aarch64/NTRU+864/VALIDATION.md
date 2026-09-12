@@ -1,5 +1,14 @@
 # K1 production integration evidence
 
+## P8 promotion — 2026-09-12
+
+Decaps now uses `gt864_native_inverse_ternary`; original centered API remains.
+Raw abs4577 proof, 9155-value native exhaustive consumer test,1024 exact full
+inverse+conversion/alias/AAPCS/wipe cases, Mac/Pi KAT and Pi malformed transcript
+all pass. Six paired Pi5 runs: Decaps42085.125→41333.675 cycles, -664 instructions;
+Inverse+conversion6182.235→5417.047 (baseline adapter overhead documented).
+No fresh Official comparison. Details: experiments/gt864-p8-raw-ternary/RESULTS.md.
+
 ## P7-C1 promotion — 2026-09-12
 
 Only `gt864_native_inverse9.S` changes. Six one-product B3 nodes, no-spill
