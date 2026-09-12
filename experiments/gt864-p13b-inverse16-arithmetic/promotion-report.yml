@@ -1,0 +1,28 @@
+promotion:
+  candidate_id: p13b_i16
+  status: promote
+  date: 2026-09-12
+  mode: existing_region_replacement
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  candidate_contract: candidate-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_output: candidate.opt.S
+  candidate_score: candidate-score.yml
+gates:
+  contract_preserved: true
+  approved_contract_changes: false
+  static_checks_passed: true
+  slothy_result_passed: true
+  oracle_correctness_passed: true
+  full_path_benchmark_passed: true
+metrics:
+  baseline_expected_cycles: 184
+  candidate_expected_cycles: 166
+  baseline_full_path: 40889.425
+  candidate_full_path: 40453.625
+  benchmark_metric: complete Decaps cycles
+decision:
+  reason: six main inverse16 calls save 396 instructions and 434.350 paired-median Decaps cycles with all correctness gates passing
+  follow_up: evaluate already-authored tail variant separately before P14 ToBytes

@@ -4,12 +4,12 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion is P10-A: a 132-instruction two-tile direct-FR0
-BaseInv numerator, a 164-instruction three-chain inverse with one global
-R^-2 correction, and a 26-instruction direct-FR0 finish.  Its approved KEM-only
-output representative bound is 2550.  Production also includes SIMD failure
-aggregation and scheduled pair+merge ToBytes.  P3-A replaces 27 final Inverse
-`center32` calls with one constant-resident `center864` pass.
+Latest production promotion is P13-B: the six main Inverse16 calls fuse terminal
+scale and top-CRT evaluation, saving 396 retired instructions and about 434
+Decaps cycles on Pi 5 while preserving the P8 raw-output bound and memory ABI.
+Production also includes P10-A's direct-FR0 BaseInv, SIMD failure aggregation,
+scheduled pair+merge ToBytes, and P3-A's constant-resident `center864` path for
+the retained centered Inverse API.
 Mac and Pi 5 KEM/KAT, canonical rejection, malformed-input, BaseInv
 failure/alias/AAPCS/scratch-wipe and paired PMU gates pass.  See
 [NATIVE-INTEGRATION.md](NATIVE-INTEGRATION.md),

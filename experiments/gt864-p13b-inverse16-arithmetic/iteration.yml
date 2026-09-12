@@ -1,0 +1,39 @@
+iteration:
+  id: P13-B
+  mode: existing_region_replacement
+  current_state: iteration_or_promote
+  hypothesis: Fuse terminal scaling and top CRT into two lane-packed linear forms; selective b=1 resets preserve the existing raw bound while removing one general Algorithm-10 multiplication per output column.
+  changed_artifacts: [composite terminal tables, lazy_i16, lazy_itail]
+  earliest_state_to_revisit: instruction_dag
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: optimize.py
+  slothy_log: slothy-timing.log
+  candidate_contract: candidate-contract.yml
+  candidate_score: candidate-score.yml
+  promotion_report: promotion-report.yml
+gates:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: pass
+  Slothy_run_by_user: pass
+  parse_slothy_result: pass
+  oracle_correctness: pass
+  full_path_benchmark: pass
+  score_candidate: pass
+  promotion_decision: pass
+  iteration_or_promote: promote
+notes:
+  - Slothy root is /Users/chenpinhao/slothy; interpreter is /Users/chenpinhao/slothy_and_ra/.venv/bin/python.
+  - Target is Pi 5 Cortex-A76 core 3.
+  - Baseline production revision is 7073d5ea.
+  - Terminal routing, natural halfword scatter, scratch boundaries and public wrapper are frozen.
+  - Falsifier: any modular-map mismatch, raw bound above 4577, spill, KAT/malformed mismatch, or full Decaps regression.
+  - Whole-region Slothy expected cycles improve 184 to 166; RA is OPTIMAL/no-spill and all timing windows self-check.
+  - Generic log parser falsely flags configured timeout text; slothy-result.json audits final artifacts and successful solver records.

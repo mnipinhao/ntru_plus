@@ -1,15 +1,14 @@
-/* P13-B Slothy allocated and bounded-window scheduled core. */
 #ifdef __APPLE__
-#define lazy_i16 _lazy_i16
+#define p13b_i16 _p13b_i16
 #endif
 .text
-.global lazy_i16
-lazy_i16:
+.global p13b_i16
+p13b_i16:
 // live-in: x0 output, x1 packed scratch, x3 stage table, x4 composite terminal table
 // live-out: exact natural-order coefficient stores at x0
 // coefficient range: input abs<=2617, I16 abs<=21397, output abs<=4454
 // reserved physical registers: x18-x30 and sp; no vector register is fixed
-        lazy_i16_slothy_start:
+        p13b_i16_slothy_start:
                                                  // Instructions:    667
                                                  // Expected cycles: 166
                                                  // Expected IPC:    4.02
@@ -1356,7 +1355,7 @@ lazy_i16:
         // umov w5, v23.h[3]                              // ......................................................................................................................................................................*
         // strh w5, [x0, #828]                            // ......................................................................................................................................................................*
 
-        lazy_i16_slothy_end:
+        p13b_i16_slothy_end:
 
 
     ret

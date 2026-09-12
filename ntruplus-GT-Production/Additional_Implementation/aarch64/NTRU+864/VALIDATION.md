@@ -1,5 +1,22 @@
 # K1 production integration evidence
 
+## P13-B production promotion — 2026-09-12
+
+The six main Inverse16 calls now use a fused terminal-scale/top-CRT DAG.  Two
+composite Algorithm-10 products replace the previous scale plus two CRT
+products per column; selective `b=1` resets retain the existing P8 raw-output
+contract (`|x| <= 4454`, contract limit 4577).  The tail, natural scatter,
+scratch boundary and public wrapper are unchanged.
+
+Exact algebra/range proof covers all 144 row/column contexts and all 8,909 P8
+consumer inputs.  The symbolic oracle passes 544 main/tail cases.  Slothy gives
+an optimal no-spill allocation and improves the bounded A76 estimate 184→166
+cycles.  Pi 5 passes KAT, malformed rejection, 4,096 exact/alias/AAPCS/wipe
+cases and full-KEM checks.  Paired medians improve Inverse-to-ternary by
+428.938 cycles and Decaps by 434.350 cycles, with exactly 396 fewer retired
+instructions; Keygen and Encaps instruction counts are unchanged.  Full
+evidence is in `experiments/gt864-p13b-inverse16-arithmetic/`.
+
 ## P10-A production promotion — 2026-09-12
 
 The approved P10-A direct-FR0 BaseInv is production.  Machine proof closes the

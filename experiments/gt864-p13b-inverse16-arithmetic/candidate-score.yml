@@ -1,0 +1,31 @@
+candidate:
+  id: p13b_i16
+  status: promote
+  mode: existing_region_replacement
+contract:
+  preserved: true
+  approved_changes: false
+  changed_fields: [internal public terminal table layout]
+  approval_note: no ABI representation range or memory-boundary change
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 184
+  candidate_expected_cycles: 166
+  parity_justification:
+  log_json: slothy-result.json
+benchmark:
+  status: pass
+  command: taskset -c 3 paired inverse-to-ternary and complete Decaps PMU on Pi5
+  metric: complete Decaps cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.0
+  baseline: 40889.425
+  candidate: 40453.625
+decision:
+  reason: exact contract preserved and candidate improves Slothy model component timing and full Decaps
+  next_iteration: P13-C tail composite terminal DAG then P14 ToBytes
