@@ -9,14 +9,15 @@ target: NTRU+768 AArch64 production
 kernel: hash_g fixed-size SHAKE256 path
 host: pi@100.99.191.9
 core: 3
-status: active
-current_gate: E completed; tracked SUPERCOP leaf materialized, pending production merge
+status: complete
+current_gate: promoted to aarch64-production
 e_gate:
   hypothesis_and_results: E_GATE.md
   summary: E-summary.json
   integration_revision: 09d4b501423e0d48441ad078b2a846c05e834baa
   decision: accept as promotion-ready experimental champion
-  production_promoted: false
+  production_promoted: true
+  production_code_revision: 525b6a5f815e2f45d260aab54429585bf500871a
   official_path: /home/pi/supercop-20260831/crypto_kem/ntruplus768/aarch64
   official_tree_sha256: 6529e33b01163decbdb441a6b6b905a6ad66807c0f9da9ec924969847785cc03
   paired_saved_cycles_vs_official:
@@ -24,7 +25,13 @@ e_gate:
     encap: 8243
     decap: 5884.5
   text_section_growth_vs_official_bytes: 61272
-  next_gate: explicit production promotion and tracked SUPERCOP leaf update
+  next_gate: none; promotion complete
+promotion:
+  branch: aarch64-production
+  previous_champion_revision: a64e7035cb13410554af1c67870d4132a30037b4
+  production_code_revision: 525b6a5f815e2f45d260aab54429585bf500871a
+  tracked_supercop_tree_sha256: 23cb63e0f6145535fbcc4801197617b264af7498ce0f649e1360192f8a5c58fe
+  pushed: false
 d_gate:
   candidate_code_revision: 317a52f400fd84ee9b41d313548cc0dcbe81ba52
   hypothesis_and_results: D_GATE.md

@@ -15,6 +15,12 @@ The benchmark-identical v3 leaf was subsequently materialized into the tracked
 SUPERCOP tree for the requested production merge. Its local tree hash remains
 `23cb63e0f6145535fbcc4801197617b264af7498ce0f649e1360192f8a5c58fe`.
 
+Promotion completed on 2026-09-12. Branch
+`gt768-fused-shake-hashg-20260911-e41` was merged into `aarch64-production`;
+the production code merge revision is
+`525b6a5f815e2f45d260aab54429585bf500871a`. Post-merge package checks pass.
+The merge has not been pushed.
+
 Previous result: D register-resident hash_g passes. See D_GATE.md
 and D-summary.json. Relative to C, paired savings are 311 hash_g, 306.5
 Encap and 303 Decap cycles, at 1184 bytes additional linked text. D is the
