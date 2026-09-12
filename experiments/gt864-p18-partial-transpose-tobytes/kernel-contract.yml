@@ -1,0 +1,33 @@
+kernel: GT864 P18 partial-transpose ToBytes
+mode: existing_region_replacement
+symbols: [gt864_p18_tobytes_full_asm, gt864_p18_tobytes_small_asm]
+abi:
+  live_in: [x0 output, x1 FR0 input]
+  public_wrapper_saves: [x29, x30, x19, x20, d8-d15]
+  public_wrapper_clears: [v0-v31]
+  callee_saved_low_halves_restored: [d8-d15]
+layout:
+  input: production FR0 tile-major signed int16
+  output: Official canonical 12-bit wire order
+  exact_map_sha256: 087b7193886e9f3e33ac457452642d64ae70ec780a0961d10036c8e5530da270
+arithmetic:
+  full: unchanged P16 Barrett reciprocal 9 plus negative correction
+  small: unchanged P9 conditional add q with no Barrett
+memory:
+  coefficient_q_loads_per_top: 64
+  coefficient_scratch: none
+  output_stores_per_q: [one D, one W]
+  secret_dependent_branch_or_address: false
+registers:
+  source_bank: v0-v7
+  transpose_stage1: v8-v15
+  transpose_stage2: v16-v23
+  rotation_temporaries: v24-v25
+  constants: v26-v28
+  pack_temporaries: v29-v31
+  exact_peak: 32
+  spills_allowed: false
+validation:
+  local: full and small 513 cases plus guarded edges
+  target: assemble, exact-byte differential, ABI/cleanup, KEM/KAT/malformed
+  benchmark: same-boundary Pi5 paired PMU before full KEM

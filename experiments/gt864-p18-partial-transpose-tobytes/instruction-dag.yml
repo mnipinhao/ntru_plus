@@ -1,0 +1,23 @@
+dag: GT864 P18 class-local partial-transpose ToBytes
+per_top:
+  classes: 15
+  source_neighborhood_sizes: {all: 8}
+  class_output_counts: {two: 4, four: 10, six: 1}
+  source_q_loads: 64
+  source_rotations: 40
+  transpose_instructions: 278
+  route_instructions: 318
+  p9_route_instructions: 486
+  pack_tbl: 54
+flow:
+  - retain eight source Q vectors across maximum-overlap class order
+  - rotate exceptional source rows in reusable v24/v25 immediately before stage1
+  - build all eight stage1 nodes
+  - build only four or eight required stage2 nodes
+  - build only the requested two, four or six final columns
+  - immediately normalize, pack and store each completed column
+constraints:
+  - no route-index table
+  - no TBL4 routing
+  - no coefficient scratch or reload outside the 64-load class path
+  - full and small remain separate arithmetic DAGs

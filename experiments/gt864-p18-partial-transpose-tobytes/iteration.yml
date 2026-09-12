@@ -1,0 +1,27 @@
+experiment_id: GT864-P18-PARTIAL-TRANSPOSE-TOBYTES-20260912
+action: optimize-layout
+status: passed
+hypothesis:
+  observation: P9 routes every coefficient with one lane insertion; P14 reduced instructions with two TBL4 gathers per output but lost cycles on Cortex-A76.
+  primary_bottleneck_category: layout or permutation
+  hypothesis: the exact class map is a partial 8x8 transpose after two or four fixed source-row rotations, so TRN/EXT can remove lane inserts without P14's TBL4 throughput floor.
+  exact_proposed_change: process the fifteen source-neighborhood classes in a maximum-overlap path, retain eight source vectors, rotate exceptional rows, emit only required transpose columns, and immediately normalize pack and store.
+  expected_static_effect: fewer complete-path instructions than P16/P9, one pack TBL per output only, no route-index loads, no coefficient reload beyond the class-overlap path, and no scratch.
+  expected_performance_effect: reduce both full and small public ToBytes cycles on Cortex-A76.
+  expected_register_pressure_effect: exact peak v0-v31 with preserved source bank and no spill; full uses every architectural vector register.
+  correctness_or_range_impact: none; P16 full and P9 small normalization, FR0 input ranges, canonical wire bytes, disjoint buffers and public cleanup remain unchanged.
+  falsifying_measurement: exact map proof fails, target object spills, static path is not below P16/P9, exact-byte or edge tests fail, or either full or small same-boundary paired Pi median fails to improve.
+state:
+  exact_class_identity: passed_sha256_087b7193886e9f3e33ac457452642d64ae70ec780a0961d10036c8e5530da270
+  register_frontier: passed_v0_v31_no_spill
+  generated_assembly: passed_full_and_small
+  local_correctness: passed_513_each_plus_guarded_edges
+  target_static: passed_full_minus_461_small_minus_479_dynamic_instructions
+  slothy: passed_15_windows_each_cortex_a76
+  pi5_boundary: passed_full_minus_31_368_small_minus_149_117_cycles
+  full_kem: passed_keygen_minus_334_125_encaps_minus_194_400_decaps_minus_182_825_cycles
+  production: unchanged
+next_queue:
+  - P19 promote both P18 ToBytes kernels into production and repeat KAT malformed alias cleanup and paired KEM validation from the committed tree.
+  - Refresh the GT versus selected SUPERCOP component profile after promotion; do not infer the new residual bottleneck from the isolated delta alone.
+  - If ToBytes is reopened later, attack the full-mode shuffle critical path; its 461-instruction reduction converted to only 31.368 boundary cycles.

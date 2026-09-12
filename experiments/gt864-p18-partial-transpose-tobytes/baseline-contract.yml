@@ -1,0 +1,12 @@
+kernel: GT864 production ToBytes P16 full and P9 small
+symbols: [gt864_p9_tobytes_full_asm, gt864_p9_tobytes_small_asm]
+linked_sources:
+  full: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p16_tobytes_full.S
+  small: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p9_tobytes_small.c
+dynamic_path_instructions: {full: 2809, small: 2607}
+input: 864 FR0 signed int16 coefficients
+output: 1296 canonical NTRU+864 wire bytes
+range: {full: arbitrary signed int16, small: strict -3457 to 3457}
+memory: input and output disjoint; no coefficient scratch
+correctness_oracle: exact composed map 087b7193886e9f3e33ac457452642d64ae70ec780a0961d10036c8e5530da270
+benchmark: paired public serializer boundary on Pi5 Cortex-A76 CPU3
