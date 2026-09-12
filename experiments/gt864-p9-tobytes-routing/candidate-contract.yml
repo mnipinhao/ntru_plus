@@ -1,0 +1,25 @@
+experiment: P9
+baseline:
+  revision: 766cc844
+  implementation: P5 production pair-plus-merge
+  coefficient_scratch_bytes: 432
+candidates:
+  P9-F:
+    input: arbitrary signed int16 FR0
+    normalization: Barrett-Shoup plus negative correction
+  P9-S:
+    input: strict interval (-3457,3457)
+    normalization: negative correction only
+common:
+  output: exact 1296-byte NTRU+ wire encoding
+  mapping_sha256: 087b7193886e9f3e33ac457452642d64ae70ec780a0961d10036c8e5530da270
+  coefficient_q_loads: 108
+  coefficient_scratch_bytes: 0
+  secret_dependent_branch: false
+  public_cleanup: clear v0-v31 and preserve d8-d15
+gates:
+  - conservative dynamic path saves at least 829 instructions versus P6-D3
+  - target has no compiler spill beyond AAPCS saves
+  - exact full and small bytes with canaries
+  - same-boundary Pi 5 timing beats P5 independently for each mode
+  - full-KEM exact bytes, KAT and tamper rejection before production

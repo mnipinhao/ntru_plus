@@ -40,16 +40,17 @@ Status meanings:
 | P7-C0 | Done—Algebra/range pass | Re-close current physical Inverse arithmetic and one-product B3 alternatives | 266 constant pairs exhausted; current bounds tighten to I9 2311 / I16 19545 / raw 4485. One-product B3 gives 37→19 mulmods per I9 and -576 arithmetic instructions/Inverse, with safe 2617 / 21397 / 4577 bounds. Last I16 identity reset has a 33792 overflow witness and stays |
 | P7-C1 | Done—Promoted | One-product inverse NTT9, preserving terminal tables and P8 stores | No-spill RA + local timing, exact range/centered-output/alias/wipe/KAT pass. Pi 5 Inverse 6995.484→5728.891; Decaps 43386.675→42104.900 cycles; -1200 instructions in both |
 | P8 | Done—Promoted | Raw-Inverse-to-ternary Decaps consumer | Exact9155-value proof, native alias/AAPCS/wipe/KAT/malformed pass. One pass instead of center864+crepmod3; Pi5 Decaps42085.125→41333.675 cycles (-664 instructions). Old centered Inverse API retained |
-| P9 | Next | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
-| P10 | Queued—Keygen | BaseInv numerator/finish kernel redesign after P7/P8 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
+| P9 | Done—Promoted | Input-once ToBytes full/small composed-map routing | Both modes passed static deficit, no-spill, exact-byte, KAT, malformed and Pi 5 gates; combined full-KEM saves 619.875/415.800/435.925 Keygen/Encaps/Decaps cycles |
+| P10 | Next—Keygen | BaseInv numerator/finish kernel redesign after P7/P8/P9 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
 
 ## Fixed facts and non-tasks
 
 - GT already uses three-chain hierarchical BaseInv batch inversion.
 - GT already has the BaseMul R^-1 plus matching inverse scale ABI; current
   BaseMul R^-1 is essentially tied with Official.
-- Small ToBytes intentionally omits the 108 Barrett reductions only for
-  producers proved to lie in `(-q,q)`; full ToBytes keeps normalization.
+- P9 ToBytes reads every FR0 Q vector once and writes final bytes without
+  coefficient scratch. Small intentionally omits the 108 Barrett reductions
+  only for producers proved in `(-q,q)`; full retains them.
 - Secret/scratch clearing is a policy requirement and is not deleted merely to
   match Official timing.
 - Forward is currently faster than the selected Official component and is not
@@ -59,6 +60,19 @@ Status meanings:
 
 ### 2026-09-12
 
+- Completed and promoted P9.  The old P3B6 peak-16 input-once route was
+  reconsidered against the current P5 boundary rather than its obsolete
+  1250-cycle threshold.  A separate small core removes every Barrett operation
+  under the closed `(-q,q)` producer contract.  GCC target paths are 2809/2607
+  instructions including two top calls and cleanup, versus P6-D3's 4061;
+  neither has vector spill.  Full/small public PMU changes are -248.508/-196.656
+  cycles, -422/-389 instructions and -424 read events each versus P5.
+- The combined P9 candidate passed Mac and Pi exact bytes, guard edges, four
+  complete KEM builds, unchanged 100-case KAT and malformed transcript, and six
+  balanced full-KEM processes.  Keygen/Encaps/Decaps improve by
+  619.875/415.800/435.925 cycles and exactly 1200/811/811 instructions versus
+  P8.  P10 BaseInv is now next.  Evidence:
+  `experiments/gt864-p9-tobytes-routing/`.
 - Completed P8: new Decaps-only inverse_ternary entry consumes raw abs4577
   through compare +/-1728, correction +/-1 and rounded divide by3. q=1 mod3
   permits removing the centered-q materialization. Kernel has32 instructions

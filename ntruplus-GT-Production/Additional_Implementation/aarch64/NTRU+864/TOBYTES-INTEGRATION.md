@@ -1,10 +1,37 @@
-# Scheduled pair+merge dual-entry ToBytes — promoted 2026-09-10
+# Input-once dual-entry ToBytes — P9 promoted 2026-09-12
+
+Production now uses the P9 input-once composed-map cores.  Each top branch
+loads its 54 FR0 Q vectors once, retires a routed eight-coefficient output as
+soon as its last source lane arrives, normalizes it, packs it to twelve bytes,
+and writes its final wire address.  The complete call has 108 coefficient
+loads, no coefficient scratch, and no intermediate nine-row array.
+
+The two entry points deliberately remain different:
+
+- full accepts any signed `int16_t` and applies 108 Barrett-Shoup reductions
+  followed by negative correction;
+- small is restricted to the already-proved `(-3457,3457)` KEM producers and
+  uses only negative correction.  Its target object contains no `SQRDMULH` or
+  `MLS` normalization instruction.
+
+The exact composed FR0-to-wire map hash is
+`087b7193886e9f3e33ac457452642d64ae70ec780a0961d10036c8e5530da270`.
+Both target cores have a peak of sixteen partial output vectors and no vector
+spill.  Public wrappers clear `v0-v31` and restore caller-owned `d8-d15`.
+
+On the Pi 5 public boundary, P9 changes full from 1766.672 to 1518.164 cycles
+and small from 1370.425 to 1173.769 cycles.  The combined KEM candidate changes
+Keygen/Encaps/Decaps by -619.875/-415.800/-435.925 cycles and by exactly
+-1200/-811/-811 retired instructions.  Complete evidence is in
+`experiments/gt864-p9-tobytes-routing/`.
+
+## Previous implementation
 
 The original dual-entry integration is retained below as history.  Production
-now additionally promotes the scheduled pair+merge candidate: the first two
+previously used the scheduled pair+merge candidate: the first two
 pairs write 432 bytes of scratch and the third pair is consumed directly by
-the row merge.  Mac and Pi 5 validation and the selected Official comparison
-are complete.
+the row merge.  Its source remains for audit and controlled comparisons, but
+the public full/small entries no longer call it.
 
 ## Exact scope
 

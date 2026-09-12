@@ -1,0 +1,30 @@
+{
+  "gate": "P9 static reopen",
+  "status": "pass",
+  "composed_map_sha256": "087b7193886e9f3e33ac457452642d64ae70ec780a0961d10036c8e5530da270",
+  "map_bijection": true,
+  "coefficient_q_loads_per_call": 108,
+  "coefficient_scratch_bytes": 0,
+  "full_input_contract": "arbitrary signed int16; Barrett plus sign canonicalization",
+  "small_input_contract": "-3457 < x < 3457; sign canonicalization only",
+  "small_barrett_instruction_groups": 0,
+  "p6_d3_semantic_instructions": 4061,
+  "conservative_dynamic_instruction_upper_bound": {
+    "P9-F": 2812,
+    "P9-S": 2596
+  },
+  "upper_bound_delta_vs_p6_d3": {
+    "P9-F": -1249,
+    "P9-S": -1465
+  },
+  "instruction_reopen_threshold": -829,
+  "instruction_reopen_pass": true,
+  "read_gate": {
+    "status": "structural pass; target PMU confirmation required",
+    "P6_D3": "108 coefficient Q loads plus repeated route/table reads",
+    "P9": "108 coefficient Q loads; one reusable pack constant; no route tables or coefficient scratch",
+    "required_pmu_delta": -101
+  },
+  "next": "target object audit, same-boundary Pi timing, then full-KEM only for winning modes",
+  "production_linked": false
+}

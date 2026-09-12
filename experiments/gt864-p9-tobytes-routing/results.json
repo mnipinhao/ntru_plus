@@ -1,0 +1,266 @@
+{
+  "experiment": "P9",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p9-20260912",
+  "baseline_revision": "766cc844",
+  "static_audit": {
+    "full": {
+      "top_instructions": 1378,
+      "inner_instructions": 8,
+      "public_instructions": 45,
+      "dynamic_path_instructions": 2809,
+      "delta_vs_p6_d3_4061": -1252,
+      "load_mnemonics_per_top": 60,
+      "sqrdmulh_per_top": 54,
+      "mls_per_top": 54,
+      "tbl_per_top": 54,
+      "coefficient_q_spill": false
+    },
+    "small": {
+      "top_instructions": 1277,
+      "inner_instructions": 8,
+      "public_instructions": 45,
+      "dynamic_path_instructions": 2607,
+      "delta_vs_p6_d3_4061": -1454,
+      "load_mnemonics_per_top": 60,
+      "sqrdmulh_per_top": 0,
+      "mls_per_top": 0,
+      "tbl_per_top": 54,
+      "coefficient_q_spill": false
+    }
+  },
+  "components": {
+    "full": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1766.672,
+          "instructions": 3245.156,
+          "branches": 66.031,
+          "mem_access_rd": 552.023,
+          "mem_access_wr": 200.102
+        },
+        "candidate": {
+          "cycles": 1518.164,
+          "instructions": 2823.156,
+          "branches": 9.031,
+          "mem_access_rd": 128.023,
+          "mem_access_wr": 231.031
+        }
+      },
+      "delta": {
+        "cycles": -248.50800000000004,
+        "instructions": -422.0,
+        "branches": -57.00000000000001,
+        "mem_access_rd": -424.0,
+        "mem_access_wr": 30.929000000000002
+      }
+    },
+    "small": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1370.4254999999998,
+          "instructions": 3010.156,
+          "branches": 59.031,
+          "mem_access_rd": 552.023,
+          "mem_access_wr": 200.098
+        },
+        "candidate": {
+          "cycles": 1173.7694999999999,
+          "instructions": 2621.156,
+          "branches": 9.031,
+          "mem_access_rd": 128.023,
+          "mem_access_wr": 231.008
+        }
+      },
+      "delta": {
+        "cycles": -196.65599999999995,
+        "instructions": -389.0,
+        "branches": -50.0,
+        "mem_access_rd": -424.0,
+        "mem_access_wr": 30.909999999999997
+      }
+    }
+  },
+  "winning_modes": [
+    "full",
+    "small"
+  ],
+  "kem": {
+    "full": {
+      "keygen": {
+        "baseline": {
+          "cycles": 46397.25,
+          "instructions": 99097.0,
+          "branches": 1723.0
+        },
+        "candidate": {
+          "cycles": 46148.375,
+          "instructions": 98675.0,
+          "branches": 1666.0
+        },
+        "delta": {
+          "cycles": -248.875,
+          "instructions": -422.0,
+          "branches": -57.0
+        }
+      },
+      "encaps": {
+        "baseline": {
+          "cycles": 45747.7,
+          "instructions": 125568.2,
+          "branches": 1111.6
+        },
+        "candidate": {
+          "cycles": 45512.725,
+          "instructions": 125146.2,
+          "branches": 1054.6
+        },
+        "delta": {
+          "cycles": -234.97499999999854,
+          "instructions": -422.0,
+          "branches": -57.0
+        }
+      },
+      "decaps": {
+        "baseline": {
+          "cycles": 41340.475,
+          "instructions": 96898.2,
+          "branches": 1339.6
+        },
+        "candidate": {
+          "cycles": 41132.8,
+          "instructions": 96476.2,
+          "branches": 1282.6
+        },
+        "delta": {
+          "cycles": -207.67499999999563,
+          "instructions": -422.0,
+          "branches": -57.0
+        }
+      }
+    },
+    "small": {
+      "keygen": {
+        "baseline": {
+          "cycles": 46411.375,
+          "instructions": 99097.0,
+          "branches": 1723.0
+        },
+        "candidate": {
+          "cycles": 46032.5,
+          "instructions": 98319.0,
+          "branches": 1623.0
+        },
+        "delta": {
+          "cycles": -378.875,
+          "instructions": -778.0,
+          "branches": -100.0
+        }
+      },
+      "encaps": {
+        "baseline": {
+          "cycles": 45776.1,
+          "instructions": 125572.2,
+          "branches": 1112.6
+        },
+        "candidate": {
+          "cycles": 45565.125,
+          "instructions": 125183.2,
+          "branches": 1062.6
+        },
+        "delta": {
+          "cycles": -210.97499999999854,
+          "instructions": -389.0,
+          "branches": -50.0
+        }
+      },
+      "decaps": {
+        "baseline": {
+          "cycles": 41362.05,
+          "instructions": 96894.2,
+          "branches": 1338.6
+        },
+        "candidate": {
+          "cycles": 41131.05,
+          "instructions": 96505.2,
+          "branches": 1288.6
+        },
+        "delta": {
+          "cycles": -231.0,
+          "instructions": -389.0,
+          "branches": -50.0
+        }
+      }
+    },
+    "both": {
+      "keygen": {
+        "baseline": {
+          "cycles": 46408.0,
+          "instructions": 99097.0,
+          "branches": 1723.0
+        },
+        "candidate": {
+          "cycles": 45788.125,
+          "instructions": 97897.0,
+          "branches": 1566.0
+        },
+        "delta": {
+          "cycles": -619.875,
+          "instructions": -1200.0,
+          "branches": -157.0
+        }
+      },
+      "encaps": {
+        "baseline": {
+          "cycles": 45719.149999999994,
+          "instructions": 125564.2,
+          "branches": 1110.6
+        },
+        "candidate": {
+          "cycles": 45303.35,
+          "instructions": 124753.2,
+          "branches": 1003.6
+        },
+        "delta": {
+          "cycles": -415.79999999999563,
+          "instructions": -811.0,
+          "branches": -106.99999999999989
+        }
+      },
+      "decaps": {
+        "baseline": {
+          "cycles": 41357.575,
+          "instructions": 96898.2,
+          "branches": 1339.6
+        },
+        "candidate": {
+          "cycles": 40921.65,
+          "instructions": 96087.2,
+          "branches": 1232.6
+        },
+        "delta": {
+          "cycles": -435.92499999999563,
+          "instructions": -811.0,
+          "branches": -107.0
+        }
+      }
+    }
+  },
+  "promotion_candidate": "both",
+  "transcript_and_kat": [
+    "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67  -",
+    "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c  PQCkemKAT_2624.rsp"
+  ],
+  "environment_before": [
+    "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc (Debian 14.2.0-19) 14.2.0",
+    "ondemand",
+    "temp=56.5'C",
+    "throttled=0x0"
+  ],
+  "environment_after": [
+    "temp=62.0'C",
+    "throttled=0x0"
+  ],
+  "source_manifest_sha256": "41fcd444e5857a4d1e407d0180cff30845f3e58177fe70caab7f5a5127006b46"
+}

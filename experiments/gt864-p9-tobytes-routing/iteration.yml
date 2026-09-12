@@ -1,0 +1,11 @@
+id: P9
+status: passed_and_promoted
+hypothesis: The old P3B6 input-once composed map was rejected by an obsolete absolute threshold; against current P5 it can win full ToBytes, while a separate no-Barrett small specialization may or may not win.
+primary_bottleneck: FR0-to-wire routing plus normalization/packing
+falsifiers:
+  - static path does not recover the P6-D3 829-instruction deficit
+  - target compiler spills coefficient vectors
+  - candidate fails exact bytes, input-range contract, cleanup or KEM rejection
+  - candidate loses the same public boundary to P5
+production_linked: true
+next: P10 BaseInv numerator/finish redesign
