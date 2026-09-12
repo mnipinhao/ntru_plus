@@ -120,6 +120,7 @@ expected = {
     "cbd.S",
     "crepmod3.S",
     "kem_api.S",
+    "keccakf1600.S",
     "kem.c",
     "poly.h",
     "Makefile",

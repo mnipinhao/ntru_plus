@@ -64,6 +64,7 @@ static const uint64_t KeccakF_RoundConstants[NROUNDS] = {
     0x0000000080000001ULL, 0x8000000080008008ULL
 };
 
+#if !defined(__aarch64__)
 /*************************************************
  * Name:        KeccakF1600_StatePermute
  *
@@ -333,6 +334,22 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
     state[23] = Aso;
     state[24] = Asu;
 }
+#else
+
+/*
+ * AArch64 scalar Keccak-f[1600] backend.
+ *
+ * The sponge API, state layout, padding, absorption, and squeezing remain in
+ * this file.  The assembly receives the same 25 little-endian uint64_t lanes
+ * plus the existing 24-round constant table.
+ */
+extern void ntruplus_keccak_f1600_x1_aarch64(
+    uint64_t state[25], const uint64_t rc[NROUNDS]);
+
+static void KeccakF1600_StatePermute(uint64_t *state) {
+    ntruplus_keccak_f1600_x1_aarch64(state, KeccakF_RoundConstants);
+}
+#endif
 
 /*************************************************
  * Name:        keccak_absorb
@@ -619,3 +636,65 @@ void shake256(uint8_t *output, size_t outlen,
     secure_clear(t, sizeof(t));
     shake256_ctx_release(&s);
 }
+
+/* Fixed-input/output C control. memcpy expresses unaligned word access without
+ * type-punning or an alignment precondition; generic SHAKE stays unchanged. */
+#if !defined(__aarch64__)
+static uint64_t hash_g_load64(const uint8_t *p) {
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    uint64_t x;
+    memcpy(&x, p, sizeof x);
+    return x;
+#else
+    return load64(p);
+#endif
+}
+
+static void hash_g_store_lanes(uint8_t *out, const uint64_t *s, size_t n) {
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    memcpy(out, s, n * sizeof *s);
+#else
+    for (size_t i = 0; i < n; ++i) {
+        store64(out + 8 * i, s[i]);
+    }
+#endif
+}
+
+void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]) {
+    uint64_t s[25] = {0};
+
+    /* Domain || first 135 message bytes. The first load's byte 7 is discarded
+     * by the shift and subsequently read as the first byte of lane 1. */
+    s[0] = (hash_g_load64(input) << 8) | UINT64_C(1);
+    for (size_t i = 1; i < 17; ++i) {
+        s[i] = hash_g_load64(input + 8 * i - 1);
+    }
+    KeccakF1600_StatePermute(s);
+    for (size_t block = 1; block < 8; ++block) {
+        for (size_t i = 0; i < 17; ++i) {
+            s[i] ^= hash_g_load64(input + 136 * block + 8 * i - 1);
+        }
+        KeccakF1600_StatePermute(s);
+    }
+
+    /* msg[1087..1151], delimiter at tail byte 65, final bit at byte 135. */
+    for (size_t i = 0; i < 8; ++i) {
+        s[i] ^= hash_g_load64(input + 1087 + 8 * i);
+    }
+    s[8] ^= (uint64_t)input[1151] | UINT64_C(0x1f00);
+    s[16] ^= UINT64_C(0x8000000000000000);
+    KeccakF1600_StatePermute(s);
+    hash_g_store_lanes(output, s, 17);
+    KeccakF1600_StatePermute(s);
+    hash_g_store_lanes(output + 136, s, 7);
+    secure_clear(s, sizeof s);
+}
+#else
+/* D keeps state in GPRs, clears its own frame/state registers, and preserves
+ * the public fixed-size/overlap contract. Generic SHAKE uses standalone x1. */
+extern void ntruplus_hash_g_fused_aarch64(uint8_t *out, const uint8_t *input,
+                                        const uint64_t rc[24]);
+void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]) {
+    ntruplus_hash_g_fused_aarch64(output, input, KeccakF_RoundConstants);
+}
+#endif

@@ -21,6 +21,7 @@ shape used by other NTRU+ implementations:
 | `cbd.S` | CBD and SOTP conversion |
 | `add.S` | ABI-safe subtraction and two-pointer triple |
 | `crepmod3.S` | Center modulo q, then reduce modulo 3 |
+| `keccakf1600.S` | Scalar AArch64 Keccak-f[1600] permutation backend |
 | `util.h` | Portable secure_clear and optional test audit hook |
 | `kem_api.S` | AAPCS64 boundary for the public KEM API |
 | `kem.c` | Key generation, encapsulation, and decapsulation |

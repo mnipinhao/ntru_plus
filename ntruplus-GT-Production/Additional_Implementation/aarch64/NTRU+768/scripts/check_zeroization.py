@@ -26,7 +26,13 @@ require('fips202.c', ('secure_clear(state->ctx, PQC_SHAKECTX_BYTES);',
     'secure_clear(t, sizeof t);', 'secure_clear(t, sizeof(t));'))
 s = (ROOT/'symmetric.c').read_text()
 assert 'secure_clear' not in s[s.index('void hash_f'):s.index('void hash_g')]
-for start, end in [('void hash_g', 'void hash_h'), ('void hash_h', None)]:
+g = s[s.index('void hash_g'):s.index('void hash_h')]
+assert 'ntruplus_hash_g_fixed(buf, msg);' in g
+assert 'uint8_t data[' not in g
+require('fips202.c', ('void ntruplus_hash_g_fixed(', 'secure_clear(s, sizeof s);'))
+require('keccakf1600.S', ('ntruplus_hash_g_fused_aarch64:',
+                         'mov x17, xzr', 'stp xzr, xzr, [sp, #128]'))
+for start, end in [('void hash_h', None)]:
     section = s[s.index(start):s.index(end) if end else len(s)]
     assert 'secure_clear(data, sizeof data);' in section
 for p in ROOT.glob('*.S'):

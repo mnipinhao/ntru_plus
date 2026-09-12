@@ -37,7 +37,8 @@ PUBLIC_ASM := \
 	kem_api.S
 
 INTERNAL_ASM := \
-	add.S
+	add.S \
+	keccakf1600.S
 
 INTERNAL_C := \
 	keygen.c \
