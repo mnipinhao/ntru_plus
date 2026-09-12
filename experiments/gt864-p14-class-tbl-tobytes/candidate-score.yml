@@ -1,0 +1,24 @@
+candidate:
+  id: gt864-p14b-fixed-bank-tbl
+  status: reject
+contract:
+  preserved: true
+correctness:
+  oracle: pass
+  mac: pass
+  pi5: pass
+slothy:
+  status: not-run
+  reason: exact same-boundary Pi5 falsifier already rejects both required modes
+static:
+  full_instruction_delta: -549
+  small_instruction_delta: -571
+  spills: 0
+benchmark:
+  metric: paired median cycles
+  full_delta: 198.993
+  small_delta: 104.583
+decision:
+  promote: false
+  reason: extra gather TBL and public index loads are slower than P9 lane moves on Cortex-A76 despite fewer retired instructions
+  reopen: only with a gather network that does not add 216 TBL and public index loads per complete call

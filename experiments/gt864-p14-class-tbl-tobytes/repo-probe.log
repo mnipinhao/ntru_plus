@@ -1,0 +1,382 @@
+repo_root: /Users/chenpinhao/slothy
+slothy_locations:
+  - slothy
+python_interpreters:
+  - python3
+slothy_venv_rule:
+  preferred_command_prefix: none_found
+  note: create or identify the repo venv before handing off Slothy commands; use global python only with explicit approval
+slothy_drivers:
+  - slothy-cli
+assembly_sources:
+  - paper/clean/helium/ntt/ntt_kyber_12_345_67.s
+  - paper/clean/helium/ntt/ntt_kyber_1_23_45_67_no_trans_vld4.s
+  - paper/clean/helium/ntt/ntt_dilithium_123_456_78_twiddles.s
+  - paper/clean/helium/ntt/ntt_kyber_1_23_45_67_no_trans.s
+  - paper/clean/helium/ntt/ntt_dilithium_12_34_56_78_no_trans_vld4.s
+  - paper/clean/helium/ntt/ntt_dilithium_12_34_56_78.s
+  - paper/clean/helium/ntt/ntt_dilithium_123_456_78.s
+  - paper/clean/helium/ntt/ntt_dilithium_12_34_56_78_twiddles.s
+  - paper/clean/helium/flt_r4_fft/base_symbolic.s
+  - paper/clean/helium/flt_r4_fft/base_ref.s
+  - paper/clean/helium/fx_r4_fft/base_symbolic.s
+  - paper/clean/helium/fx_r4_fft/base_ref.s
+  - paper/clean/helium/cmplx_mag_sqr/cmplx_mag_sqr_fx.s
+  - paper/clean/neon/ntt_dilithium_1234_5678.s
+  - paper/clean/neon/ntt_kyber_123_4567_scalar_load.s
+  - paper/clean/neon/ntt_kyber_1234_567_twiddles.s
+  - paper/clean/neon/ntt_kyber_123_45_67_twiddles.s
+  - paper/clean/neon/ntt_dilithium_123_45678.s
+  - paper/clean/neon/ntt_kyber_123_4567_scalar_load_store.s
+  - paper/clean/neon/ntt_kyber_1234_567.s
+  - paper/clean/neon/ntt_dilithium_123_45678_w_scalar.s
+  - paper/clean/neon/X25519-AArch64-simple.s
+  - paper/clean/neon/ntt_dilithium_123_456_78_twiddles.s
+  - paper/clean/neon/ntt_kyber_123_4567_manual_st4.s
+  - paper/clean/neon/ntt_kyber_123_4567.s
+  - paper/clean/neon/ntt_kyber_123_4567_scalar_store.s
+  - paper/clean/neon/ntt_dilithium_1234_5678_twiddles.s
+  - paper/clean/neon/ntt_dilithium_123_45678_manual_st4.s
+  - paper/opt/helium/ntt/ntt_kyber_1_23_45_67_no_trans_opt_m55.s
+  - paper/opt/helium/ntt/ntt_kyber_1_23_45_67_opt_m55.s
+  - paper/opt/helium/ntt/ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m85.s
+  - paper/opt/helium/ntt/ntt_dilithium_123_456_78_opt_size_m55.s
+  - paper/opt/helium/ntt/ntt_kyber_12_345_67_opt_size_m55.s
+  - paper/opt/helium/ntt/ntt_dilithium_12_34_56_78_opt_m55.s
+  - paper/opt/helium/ntt/ntt_kyber_1_23_45_67_no_trans_vld4_opt_m85.s
+  - paper/opt/helium/ntt/ntt_dilithium_123_456_78_twiddles.s
+  - paper/opt/helium/ntt/ntt_dilithium_123_456_78_opt_size_m85.s
+  - paper/opt/helium/ntt/ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m55.s
+  - paper/opt/helium/ntt/ntt_kyber_1_23_45_67_no_trans_opt_m85.s
+  - paper/opt/helium/ntt/ntt_kyber_1_23_45_67_no_trans_vld4_opt_m55.s
+  - paper/opt/helium/ntt/ntt_kyber_12_345_67_opt_size_m85.s
+  - paper/opt/helium/ntt/ntt_dilithium_12_34_56_78_opt_m85.s
+  - paper/opt/helium/ntt/ntt_dilithium_12_34_56_78_twiddles.s
+  - paper/opt/helium/flt_r4_fft/floatingpoint_radix4_fft_opt_M85.s
+  - paper/opt/helium/flt_r4_fft/base_ref.s
+  - paper/opt/helium/flt_r4_fft/floatingpoint_radix4_fft_opt_M55.s
+  - paper/opt/helium/fx_r4_fft/fixedpoint_radix4_fft_opt_M55.s
+  - paper/opt/helium/fx_r4_fft/base_concrete.s
+  - paper/opt/helium/fx_r4_fft/fixedpoint_radix4_fft_opt_M85.s
+  - paper/opt/helium/cmplx_mag_sqr/cmplx_mag_sqr_fx_opt_M85_unroll4.s
+  - paper/opt/helium/cmplx_mag_sqr/cmplx_mag_sqr_fx_opt_M55_unroll4.s
+  - paper/opt/helium/cmplx_mag_sqr/cmplx_mag_sqr_fx_opt_M55_unroll2.s
+  - paper/opt/helium/cmplx_mag_sqr/cmplx_mag_sqr_fx_opt_M85_unroll2.s
+  - paper/opt/helium/cmplx_mag_sqr/cmplx_mag_sqr_fx_opt_M55_unroll1.s
+  - paper/opt/helium/cmplx_mag_sqr/cmplx_mag_sqr_fx_opt_M85_unroll1.s
+  - paper/opt/neon/ntt_dilithium_123_45678_manual_st4_opt_a55.s
+  - paper/opt/neon/ntt_dilithium_123_45678_manual_st4_opt0_a72.s
+  - paper/opt/neon/ntt_dilithium_123_45678_opt_a55.s
+  - paper/opt/neon/ntt_kyber_1234_567_opt_a72.s
+  - paper/opt/neon/ntt_kyber_1234_567_twiddles.s
+  - paper/opt/neon/ntt_kyber_123_4567_opt_a72.s
+  - paper/opt/neon/ntt_kyber_123_4567_scalar_load_store_opt_a55.s
+  - paper/opt/neon/ntt_dilithium_123_45678_opt0_a55.s
+  - paper/opt/neon/ntt_kyber_123_45_67_twiddles.s
+  - paper/opt/neon/ntt_kyber_123_4567_manual_st4_opt_a72.s
+  - paper/opt/neon/ntt_dilithium_123_45678_w_scalar_opt_a55.s
+  - paper/opt/neon/ntt_kyber_123_4567_scalar_load_opt_a55.s
+  - paper/opt/neon/ntt_dilithium_1234_5678_opt0_a72.s
+  - paper/opt/neon/ntt_kyber_123_4567_scalar_store_opt_a55.s
+  - paper/opt/neon/ntt_dilithium_123_45678_w_scalar_opt0_a55.s
+  - paper/opt/neon/X25519-AArch64-simple_opt.s
+  - paper/opt/neon/ntt_dilithium_123_456_78_twiddles.s
+  - paper/opt/neon/ntt_dilithium_123_45678_manual_st4_opt_a72.s
+  - paper/opt/neon/ntt_dilithium_123_45678_manual_st4_opt0_a55.s
+  - paper/opt/neon/ntt_dilithium_123_45678_opt_a72.s
+  - paper/opt/neon/ntt_dilithium_1234_5678_opt_a72.s
+  - paper/opt/neon/ntt_kyber_123_4567_scalar_load_store_opt_a72.s
+  - paper/opt/neon/ntt_kyber_123_4567_opt_a55.s
+  - paper/opt/neon/ntt_dilithium_123_45678_opt0_a72.s
+  - paper/opt/neon/ntt_kyber_123_4567_manual_st4_opt_a55.s
+  - paper/opt/neon/ntt_kyber_123_4567_scalar_load_opt_a72.s
+  - paper/opt/neon/ntt_kyber_123_4567_scalar_store_opt_a72.s
+  - paper/opt/neon/ntt_dilithium_1234_5678_twiddles.s
+  - tutorial/opt/aarch64_simple0_macros_opt_a55.s
+  - tutorial/opt/aarch64_simple0_loop_opt_a55.s
+  - tutorial/opt/X25519-AArch64-simple_opt.s
+  - tutorial/opt/ntt_kyber_123_4567_opt_a55.s
+  - tutorial/opt/aarch64_simple0_opt_a55.s
+  - tutorial/opt/aarch64_simple0_loop_opt_mca_a55.s
+  - tests/naive/armv7m/armv7m_loop_labels.s
+  - tests/naive/armv7m/loop_cmp.s
+  - tests/naive/armv7m/loop_vmov_cmp.s
+  - tests/naive/armv7m/armv7m_simple0_func.s
+  - tests/naive/armv7m/loop_vmov_cmp_forced.s
+  - tests/naive/armv7m/armv7m_simple0.s
+  - tests/naive/armv7m/loop_subs.s
+  - tests/naive/armv8m/simple0_loop.s
+  - tests/naive/armv8m/simple0.s
+  - tests/naive/armv8m/tag_test.s
+  - tests/naive/armv8m/loop_le.s
+  - tests/naive/armv8m/simple1.s
+  - tests/naive/armv8m/instructions.s
+  - tests/naive/armv8m/simple1_loop.s
+  - tests/naive/armv8m/loop_letp.s
+  - tests/naive/armv8m/hint_test.s
+  - tests/naive/riscv/riscv_simple_loop0.s
+  - tests/naive/riscv/instructions.s
+  - tests/naive/riscv/riscv_test.s
+  - tests/naive/riscv/riscv_simple0.s
+  - tests/naive/aarch64/aarch64_aese.s
+  - tests/naive/aarch64/aarch64_loop_branch.s
+  - tests/naive/aarch64/aarch64_simple0_equ.s
+  - tests/naive/aarch64/aarch64_loop_sub_tabs.s
+  - tests/naive/aarch64/aarch64_loop_sub.s
+  - tests/naive/aarch64/aarch64_ldst.s
+  - tests/naive/aarch64/aarch64_ubfx.s
+  - tests/naive/aarch64/aarch64_directives.s
+  - tests/naive/aarch64/aarch64_selftest_addr.s
+  - tests/naive/aarch64/aarch64_cstyle_comments.s
+  - tests/naive/aarch64/aarch64_loop_subs.s
+  - tests/naive/aarch64/instructions.s
+  - tests/naive/aarch64/aarch64_fusion_veor.s
+  - tests/naive/aarch64/aarch64_simple0.s
+  - tests/naive/aarch64/aarch64_simple0_macros.s
+  - tests/naive/aarch64/aarch64_equ.s
+  - tests/naive/aarch64/aarch64_impossible.s
+  - tests/naive/aarch64/aarch64_selftest_initial_regs.s
+  - tests/naive/aarch64/aarch64_loop_labels.s
+  - tests/naive/aarch64/aarch64_loop_subs_tabs.s
+  - tests/naive/aarch64/aarch64_split0.s
+  - tests/naive/aarch64/aarch64_ifelse.s
+  - tests/naive/aarch64/aarch64_simple0_loop.s
+  - docs/source/tutorial/opt/aarch64_simple0_macros_opt_a55.s
+  - docs/source/tutorial/opt/aarch64_simple0_loop_opt_a55.s
+  - docs/source/tutorial/opt/X25519-AArch64-simple_opt.s
+  - docs/source/tutorial/opt/ntt_kyber_123_4567_opt_a55.s
+  - docs/source/tutorial/opt/aarch64_simple0_opt_a55.s
+  - docs/source/tutorial/opt/aarch64_simple0_loop_opt_mca_a55.s
+  - examples/naive/armv7m/keccak/keccakf1600_adomnicai_m7.s
+  - examples/naive/armv7m/keccak/keccakf1600_xkcp.s
+  - examples/naive/armv7m/keccak/keccakf1600_adomnicai_m4.s
+  - examples/naive/armv7m/kyber/matacc_kyber.s
+  - examples/naive/armv7m/kyber/basemul_16_32_kyber.s
+  - examples/naive/armv7m/kyber/ntt_kyber.s
+  - examples/naive/armv7m/kyber/matacc_acc_kyber.s
+  - examples/naive/armv7m/kyber/barrett_reduce_kyber.s
+  - examples/naive/armv7m/kyber/intt_kyber.s
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_32_kyber.s
+  - examples/naive/armv7m/kyber/sub_kyber.s
+  - examples/naive/armv7m/kyber/fromplant_kyber.s
+  - examples/naive/armv7m/kyber/basemul_acc_32_16_kyber.s
+  - examples/naive/armv7m/kyber/matacc_asm_opt_16_32_kyber.s
+  - examples/naive/armv7m/kyber/add_kyber.s
+  - examples/naive/armv7m/kyber/basemul_kyber.s
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_16_kyber.s
+  - examples/naive/armv7m/kyber/frombytes_mul_acc_32_16_kyber.s
+  - examples/naive/armv7m/kyber/frombytes_mul_acc_32_32_kyber.s
+  - examples/naive/armv7m/kyber/frombytes_mul_16_32_kyber.s
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_32_kyber.s
+  - examples/naive/armv7m/kyber/frombytes_mul_acc_kyber.s
+  - examples/naive/armv7m/kyber/matacc_asm_cache_16_32_kyber.s
+  - examples/naive/armv7m/kyber/basemul_acc_32_32_kyber.s
+  - examples/naive/armv7m/kyber/basemul_acc_kyber.s
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_16_kyber.s
+  - examples/naive/armv7m/kyber/frombytes_mul_kyber.s
+  - examples/naive/armv7m/dilithium/ntt_769_dilithium.s
+  - examples/naive/armv7m/dilithium/pointwise_769_asymmetric_dilithium.s
+  - examples/naive/armv7m/dilithium/intt_769_dilithium.s
+  - examples/naive/armv7m/dilithium/pointwise_769_dilithium.s
+  - examples/naive/armv7m/dilithium/basemul_257_dilithium.s
+  - examples/naive/armv7m/dilithium/ifnt_257_dilithium.s
+  - examples/naive/armv7m/dilithium/fnt_257_dilithium.s
+  - examples/naive/armv7m/dilithium/basemul_257_asymmetric_dilithium.s
+  - examples/naive/armv7m/dilithium/pointwise_montgomery_dilithium.s
+  - examples/naive/armv7m/dilithium/ntt_dilithium.s
+  - examples/naive/armv7m/dilithium/pointwise_acc_montgomery_dilithium.s
+  - examples/naive/armv7m/dilithium/reduce32_dilithium.s
+  - examples/naive/armv7m/dilithium/caddq_dilithium.s
+  - examples/naive/armv7m/dilithium/intt_dilithium_123_456_78.s
+  - examples/naive/armv8m/flt_r4_fft/base_symbolic.s
+  - examples/naive/armv8m/flt_r4_fft/base_ref.s
+  - examples/naive/armv8m/fx_r4_fft/base_symbolic.s
+  - examples/naive/armv8m/fx_r4_fft/base_ref.s
+  - examples/naive/armv8m/cmplx_mag_sqr/cmplx_mag_sqr_fx.s
+  - examples/naive/armv8m/cmplx_mag_sqr/cmplx_mag_sqr_flt_cm85.s
+  - examples/naive/armv8m/cmplx_mag_sqr/cmplx_mag_sqr_flt_cm55.s
+  - examples/naive/armv8m/crt/crt.s
+  - examples/naive/armv8m/kyber/ntt_kyber_1_23_45_67_twiddles.s
+  - examples/naive/armv8m/kyber/ntt_kyber_1_23_45_67.s
+  - examples/naive/armv8m/kyber/ntt_kyber_123_45_67_twiddles.s
+  - examples/naive/armv8m/kyber/ntt_kyber_12_345_67.s
+  - examples/naive/armv8m/kyber/ntt_kyber_12_345_67_twiddles.s
+  - examples/naive/armv8m/kyber/ntt_kyber_1_23_45_67_no_trans_vld4.s
+  - examples/naive/armv8m/kyber/ntt_kyber_1_23_45_67_no_trans.s
+  - examples/naive/armv8m/kyber/intt_kyber_1_23_45_67_twiddles.s
+  - examples/naive/armv8m/kyber/ntt_kyber_12_345_67_trans.s
+  - examples/naive/armv8m/kyber/ntt_kyber_layer345_symbolic.s
+  - examples/naive/armv8m/kyber/intt_kyber_1_23_45_67.s
+  - examples/naive/armv8m/ntt_256/ntt_n256_l8_s32_mont.s
+  - examples/naive/armv8m/ntt_256/intt_n256_l8_s32_bar.s
+slothy_region_labels:
+  - my_32ntt.opt.s:66:        _ntt32_stage12_stripe0_slothy_start:
+  - my_32ntt.opt.s:143:        _ntt32_stage12_stripe0_slothy_end:
+  - my_32ntt.opt.s:148:        _ntt32_stage12_stripe1_slothy_start:
+  - my_32ntt.opt.s:225:        _ntt32_stage12_stripe1_slothy_end:
+  - my_32ntt.opt.s:230:        _ntt32_stage12_stripe2_slothy_start:
+  - my_32ntt.opt.s:307:        _ntt32_stage12_stripe2_slothy_end:
+  - my_32ntt.opt.s:312:        _ntt32_stage12_stripe3_slothy_start:
+  - my_32ntt.opt.s:389:        _ntt32_stage12_stripe3_slothy_end:
+  - my_32ntt.opt.s:394:        _ntt32_stage12_stripe4_slothy_start:
+  - my_32ntt.opt.s:471:        _ntt32_stage12_stripe4_slothy_end:
+  - my_32ntt.opt.s:476:        _ntt32_stage12_stripe5_slothy_start:
+  - my_32ntt.opt.s:553:        _ntt32_stage12_stripe5_slothy_end:
+  - my_32ntt.opt.s:558:        _ntt32_stage12_stripe6_slothy_start:
+  - my_32ntt.opt.s:635:        _ntt32_stage12_stripe6_slothy_end:
+  - my_32ntt.opt.s:640:        _ntt32_stage12_stripe7_slothy_start:
+  - my_32ntt.opt.s:717:        _ntt32_stage12_stripe7_slothy_end:
+  - my_32ntt.opt.s:728:        _ntt32_stage345_block0_slothy_start:
+  - my_32ntt.opt.s:949:        _ntt32_stage345_block0_slothy_end:
+  - my_32ntt.opt.s:954:        _ntt32_stage345_block1_slothy_start:
+  - my_32ntt.opt.s:1175:        _ntt32_stage345_block1_slothy_end:
+  - my_32ntt.opt.s:1180:        _ntt32_stage345_block2_slothy_start:
+  - my_32ntt.opt.s:1405:        _ntt32_stage345_block2_slothy_end:
+  - my_32ntt.opt.s:1410:        _ntt32_stage345_block3_slothy_start:
+  - my_32ntt.opt.s:1635:        _ntt32_stage345_block3_slothy_end:
+  - my_32ntt.s:66:_ntt32_stage12_stripe0_slothy_start:
+  - my_32ntt.s:107:_ntt32_stage12_stripe0_slothy_end:
+  - my_32ntt.s:110:_ntt32_stage12_stripe1_slothy_start:
+  - my_32ntt.s:151:_ntt32_stage12_stripe1_slothy_end:
+  - my_32ntt.s:154:_ntt32_stage12_stripe2_slothy_start:
+  - my_32ntt.s:195:_ntt32_stage12_stripe2_slothy_end:
+  - my_32ntt.s:198:_ntt32_stage12_stripe3_slothy_start:
+  - my_32ntt.s:239:_ntt32_stage12_stripe3_slothy_end:
+  - my_32ntt.s:242:_ntt32_stage12_stripe4_slothy_start:
+  - my_32ntt.s:283:_ntt32_stage12_stripe4_slothy_end:
+  - my_32ntt.s:286:_ntt32_stage12_stripe5_slothy_start:
+  - my_32ntt.s:327:_ntt32_stage12_stripe5_slothy_end:
+  - my_32ntt.s:330:_ntt32_stage12_stripe6_slothy_start:
+  - my_32ntt.s:371:_ntt32_stage12_stripe6_slothy_end:
+  - my_32ntt.s:374:_ntt32_stage12_stripe7_slothy_start:
+  - my_32ntt.s:415:_ntt32_stage12_stripe7_slothy_end:
+  - my_32ntt.s:424:_ntt32_stage345_block0_slothy_start:
+  - my_32ntt.s:545:_ntt32_stage345_block0_slothy_end:
+  - my_32ntt.s:548:_ntt32_stage345_block1_slothy_start:
+  - my_32ntt.s:669:_ntt32_stage345_block1_slothy_end:
+  - my_32ntt.s:672:_ntt32_stage345_block2_slothy_start:
+  - my_32ntt.s:796:_ntt32_stage345_block2_slothy_end:
+  - my_32ntt.s:799:_ntt32_stage345_block3_slothy_start:
+  - my_32ntt.s:923:_ntt32_stage345_block3_slothy_end:
+  - my_32ntt.alloc.s:66:        _ntt32_stage12_stripe0_slothy_start:
+  - my_32ntt.alloc.s:146:        _ntt32_stage12_stripe0_slothy_end:
+  - my_32ntt.alloc.s:150:        _ntt32_stage12_stripe1_slothy_start:
+  - my_32ntt.alloc.s:230:        _ntt32_stage12_stripe1_slothy_end:
+  - my_32ntt.alloc.s:234:        _ntt32_stage12_stripe2_slothy_start:
+  - my_32ntt.alloc.s:314:        _ntt32_stage12_stripe2_slothy_end:
+  - my_32ntt.alloc.s:318:        _ntt32_stage12_stripe3_slothy_start:
+  - my_32ntt.alloc.s:398:        _ntt32_stage12_stripe3_slothy_end:
+  - my_32ntt.alloc.s:402:        _ntt32_stage12_stripe4_slothy_start:
+  - my_32ntt.alloc.s:482:        _ntt32_stage12_stripe4_slothy_end:
+  - my_32ntt.alloc.s:486:        _ntt32_stage12_stripe5_slothy_start:
+  - my_32ntt.alloc.s:566:        _ntt32_stage12_stripe5_slothy_end:
+  - my_32ntt.alloc.s:570:        _ntt32_stage12_stripe6_slothy_start:
+  - my_32ntt.alloc.s:650:        _ntt32_stage12_stripe6_slothy_end:
+  - my_32ntt.alloc.s:654:        _ntt32_stage12_stripe7_slothy_start:
+  - my_32ntt.alloc.s:734:        _ntt32_stage12_stripe7_slothy_end:
+  - my_32ntt.alloc.s:744:        _ntt32_stage345_block0_slothy_start:
+  - my_32ntt.alloc.s:968:        _ntt32_stage345_block0_slothy_end:
+  - my_32ntt.alloc.s:972:        _ntt32_stage345_block1_slothy_start:
+  - my_32ntt.alloc.s:1196:        _ntt32_stage345_block1_slothy_end:
+  - my_32ntt.alloc.s:1200:        _ntt32_stage345_block2_slothy_start:
+  - my_32ntt.alloc.s:1428:        _ntt32_stage345_block2_slothy_end:
+  - my_32ntt.alloc.s:1432:        _ntt32_stage345_block3_slothy_start:
+  - my_32ntt.alloc.s:1660:        _ntt32_stage345_block3_slothy_end:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_16_32_kyber_opt_m7.s:75:        slothy_start_1:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_16_32_kyber_opt_m7.s:164:        slothy_end_1:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_16_32_kyber_opt_m7.s:180:        slothy_start_2:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_16_32_kyber_opt_m7.s:265:        slothy_end_2:
+  - examples/opt/armv7m/kyber/matacc_kyber_opt_m7.s:81:        slothy_start_1:
+  - examples/opt/armv7m/kyber/matacc_kyber_opt_m7.s:174:        slothy_end_1:
+  - examples/opt/armv7m/kyber/matacc_kyber_opt_m7.s:190:        slothy_start_2:
+  - examples/opt/armv7m/kyber/matacc_kyber_opt_m7.s:279:        slothy_end_2:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_16_32_kyber_opt_m7.s:69:        slothy_start_1:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_16_32_kyber_opt_m7.s:138:        slothy_end_1:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_16_32_kyber_opt_m7.s:154:        slothy_start_2:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_16_32_kyber_opt_m7.s:219:        slothy_end_2:
+  - examples/opt/armv7m/keccak/keccakf1600_adomnicai_m4_opt_m7.s:936:        slothy_start:
+  - examples/opt/armv7m/keccak/keccakf1600_adomnicai_m4_opt_m7.s:3991:        slothy_end:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_32_16_kyber_opt_m7.s:84:        slothy_start_1:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_32_16_kyber_opt_m7.s:181:        slothy_end_1:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_32_16_kyber_opt_m7.s:197:        slothy_start_2:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_32_16_kyber_opt_m7.s:290:        slothy_end_2:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_32_16_kyber_opt_m7.s:92:        slothy_start_1:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_32_16_kyber_opt_m7.s:209:        slothy_end_1:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_32_16_kyber_opt_m7.s:225:        slothy_start_2:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_32_16_kyber_opt_m7.s:338:        slothy_end_2:
+  - examples/opt/armv7m/kyber/matacc_acc_kyber_opt_m7.s:87:        slothy_start_1:
+  - examples/opt/armv7m/kyber/matacc_acc_kyber_opt_m7.s:188:        slothy_end_1:
+  - examples/opt/armv7m/kyber/matacc_acc_kyber_opt_m7.s:204:        slothy_start_2:
+  - examples/opt/armv7m/kyber/matacc_acc_kyber_opt_m7.s:301:        slothy_end_2:
+  - examples/opt/armv7m/keccak/keccakf1600_xkcp_opt_m7.s:725:        slothy_start:
+  - examples/opt/armv7m/keccak/keccakf1600_xkcp_opt_m7.s:4048:        slothy_end:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_16_kyber.s:92:    slothy_start_1:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_16_kyber.s:105:        slothy_end_1:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_16_kyber.s:120:        slothy_start_2:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_16_kyber.s:131:        slothy_end_2:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_32_32_kyber_opt_m7.s:81:        slothy_start_1:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_32_32_kyber_opt_m7.s:178:        slothy_end_1:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_32_32_kyber_opt_m7.s:194:        slothy_start_2:
+  - examples/opt/armv7m/kyber/matacc_asm_cache_32_32_kyber_opt_m7.s:287:        slothy_end_2:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_16_32_kyber.s:75:    slothy_start_1:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_16_32_kyber.s:88:        slothy_end_1:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_16_32_kyber.s:103:        slothy_start_2:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_16_32_kyber.s:114:        slothy_end_2:
+  - examples/opt/armv7m/keccak/keccakf1600_adomnicai_m7_opt_m7.s:1134:        slothy_start_round0:
+  - examples/opt/armv7m/keccak/keccakf1600_adomnicai_m7_opt_m7.s:1973:        slothy_end_round0:
+  - examples/opt/armv7m/keccak/keccakf1600_adomnicai_m7_opt_m7.s:1976:        slothy_start_round1:
+  - examples/opt/armv7m/keccak/keccakf1600_adomnicai_m7_opt_m7.s:2821:        slothy_end_round1:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_32_kyber.s:75:    slothy_start_1:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_32_kyber.s:88:        slothy_end_1:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_32_kyber.s:103:        slothy_start_2:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_32_kyber.s:114:        slothy_end_2:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_32_32_kyber_opt_m7.s:75:        slothy_start_1:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_32_32_kyber_opt_m7.s:152:        slothy_end_1:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_32_32_kyber_opt_m7.s:168:        slothy_start_2:
+  - examples/opt/armv7m/kyber/matacc_asm_opt_32_32_kyber_opt_m7.s:241:        slothy_end_2:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_16_kyber.s:84:    slothy_start_1:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_16_kyber.s:97:        slothy_end_1:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_16_kyber.s:112:        slothy_start_2:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_32_16_kyber.s:123:        slothy_end_2:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_16_32_kyber.s:69:    slothy_start_1:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_16_32_kyber.s:82:        slothy_end_1:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_16_32_kyber.s:97:      slothy_start_2:
+  - examples/naive/armv7m/kyber/matacc_asm_opt_16_32_kyber.s:108:      slothy_end_2:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_32_kyber.s:81:    slothy_start_1:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_32_kyber.s:94:        slothy_end_1:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_32_kyber.s:109:      slothy_start_2:
+  - examples/naive/armv7m/kyber/matacc_asm_cache_32_32_kyber.s:120:        slothy_end_2:
+  - examples/naive/armv7m/kyber/matacc_acc_kyber.s:87:        slothy_start_1:
+  - examples/naive/armv7m/kyber/matacc_acc_kyber.s:100:        slothy_end_1:
+  - examples/naive/armv7m/kyber/matacc_acc_kyber.s:115:            slothy_start_2:
+  - examples/naive/armv7m/kyber/matacc_acc_kyber.s:126:        slothy_end_2:
+  - examples/naive/armv7m/kyber/matacc_kyber.s:81:        slothy_start_1:
+  - examples/naive/armv7m/kyber/matacc_kyber.s:94:        slothy_end_1:
+  - examples/naive/armv7m/kyber/matacc_kyber.s:109:            slothy_start_2:
+  - examples/naive/armv7m/kyber/matacc_kyber.s:120:            slothy_end_2:
+  - examples/naive/armv7m/keccak/keccakf1600_adomnicai_m4.s:1151:slothy_start:
+  - examples/naive/armv7m/keccak/keccakf1600_adomnicai_m4.s:1156:slothy_end:
+  - examples/naive/armv7m/keccak/keccakf1600_xkcp.s:725:slothy_start:
+  - examples/naive/armv7m/keccak/keccakf1600_xkcp.s:730:slothy_end:
+  - examples/naive/armv7m/keccak/keccakf1600_adomnicai_m7.s:1134:slothy_start_round0:
+  - examples/naive/armv7m/keccak/keccakf1600_adomnicai_m7.s:1136:slothy_end_round0:
+  - examples/naive/armv7m/keccak/keccakf1600_adomnicai_m7.s:1138:slothy_start_round1:
+  - examples/naive/armv7m/keccak/keccakf1600_adomnicai_m7.s:1140:slothy_end_round1:
+tests_and_benchmarks:
+  - tests/naive/armv7m/_test.py
+  - tests/naive/armv8m/test_instruction_model.py
+  - tests/naive/armv8m/test_memory_model.py
+  - tests/naive/armv8m/tag_test.s
+  - tests/naive/armv8m/_test.py
+  - tests/naive/armv8m/hint_test.s
+  - tests/naive/riscv/_test.py
+  - tests/naive/riscv/riscv_test.s
+  - tests/naive/aarch64/aarch64_selftest_addr.s
+  - tests/naive/aarch64/_test.py
+  - tests/naive/aarch64/aarch64_selftest_initial_regs.s
+  - tests/test_aarch64_cortex_a76_model.py
+  - tests/test_aarch64_neon_parser.py
+  - tests/test_aarch64_lane_scatter.py
+  - test.py
+  - examples/opt/riscv/riscv_test_opt_c908.s
+  - .github/workflows/test_basic.yaml

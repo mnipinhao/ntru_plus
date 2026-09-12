@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864-p14-class-tbl-tobytes
+  name: GT864 class-local TBL4 ToBytes
+  source: build/p14_tobytes_full.S and build/p14_tobytes_small.S
+  scheme: NTRU+864 GT
+  operation: FR0 full and small serialization
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: compiler-lowering-screen followed by a fixed-bank physical screen; existing-region scheduling only if the exact Pi 5 boundary wins
+  driver: pending until a bounded physical region beats P9 statically
+  expected_outputs: [target object audit, fixed-bank physical regions, exact Pi 5 paired PMU result]
+  allow_spills: false
+region:
+  start_label: p14_top_full or p14_top_small
+  end_label: local top return
+  expected_instruction_count: below P9 for both modes
+  live_in: [output pointer, one-top FR0 input pointer]
+  live_out: [648 exact output bytes]
+abi:
+  inputs: [x0 output, x1 864 signed int16 FR0 coefficients]
+  outputs: [1296 canonical 12-bit bytes]
+  clobbers: [caller-saved GPRs and SIMD; wrapper clears v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: 15 source-neighborhood classes, retained sources, two TBL4 plus ORR per output, immediate P9 normalization and pack8
+layout:
+  input_representation: P13-C production FR0 tile-major signed int16
+  output_representation: Official NTRU+864 canonical 12-bit byte ABI
+  vector_lanes: exact composed-map output Q lanes
+  packing: unchanged P9 eight-coefficient to 12-byte pack
+memory_contract:
+  loads: [128 FR0 Q loads per complete call under the 64-load path per top, fixed public index loads]
+  stores: [1296 final bytes]
+  aliasing: input and output disjoint at all production callers
+  alignment: FR0 16-byte aligned; output byte alignment unrestricted
+  public_offsets_only: true
+  pointer_updates: [top offsets fixed at 0 and 432 coefficients]
+constant_contract:
+  constants: [q=3457, Barrett reciprocal 9 in full, pack index, exact public TBL indices]
+  modulus: 3457
+  representation: unchanged FR0 and wire ABI
+  reduction_method: unchanged P9 full/small normalization
+range_contract:
+  input_ranges: [full arbitrary signed int16, small strict -3457 to 3457]
+  intermediate_ranges: [TBL is an exact permutation gather; canonical coefficient 0 to 3456]
+  output_ranges: [exact 1296-byte Official wire encoding]
+  narrowing_points: [unchanged 12-bit packing]
+constant_time_contract:
+  secret_inputs: [FR0 coefficients]
+  public_inputs: [mode, class path, source offsets, TBL indices, output offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 model.py and native 513 full plus 513 small differential tests with guard edges
+  test_command: python3 verify_mac.py
+  full_path_benchmark_command: paired Pi5 complete ToBytes then Keygen Encaps Decaps if winning
+  benchmark_metric: cycles
+  lower_is_better: true

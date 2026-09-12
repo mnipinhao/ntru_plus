@@ -1,0 +1,21 @@
+{
+  "experiment": "GT864-P14-CLASS-TBL-20260912",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p14-20260912",
+  "cpu": "Raspberry Pi 5 Cortex-A76 core 3",
+  "compiler": "GCC 14.2.0 -O3 -march=armv8-a+simd",
+  "sampling": "3 repetitions, both AB and BA orders, 41 samples/order, 400 calls/sample",
+  "correctness": "256 full and 256 small differential cases per process; prior 513/513 plus guard edges",
+  "throttled": "0x0",
+  "overall": {
+    "p9_full": {"cycles": 1507.220, "instructions": 2814.048, "branches": 8.010},
+    "p14_full": {"cycles": 1706.213, "instructions": 2259.048, "branches": 7.010},
+    "p9_small": {"cycles": 1172.662, "instructions": 2612.048, "branches": 8.010},
+    "p14_small": {"cycles": 1277.245, "instructions": 2039.047, "branches": 7.010}
+  },
+  "candidate_minus_p9": {
+    "full": {"cycles": 198.993, "instructions": -555.000, "branches": -1.000},
+    "small": {"cycles": 104.583, "instructions": -573.001, "branches": -1.000}
+  },
+  "decision": "reject before Slothy and full-KEM integration; both required complete ToBytes modes regress consistently"
+}

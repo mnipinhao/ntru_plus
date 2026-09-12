@@ -1,0 +1,15 @@
+P14 exact P9 baseline extraction
+
+Source revision: c21a88b7
+
+Complete versioned source regions (the generated top helper is translation-unit
+local, so the whole source is the splice boundary):
+
+- ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p9_tobytes_full.c
+  SHA-256 76288f44b632c45b70d8ad656e052adbb4d97d6cd8ceefb4900cf099af3e394d
+- ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p9_tobytes_small.c
+  SHA-256 37089f0b4221cdbd75c1a93319b0f48a5175c913188c83d442807940e208e258
+
+Reproduce with `git show c21a88b7:<path>`.  P14 does not splice a standalone
+ABI function into either helper: it replaces each complete generated source
+and retains the existing public wrapper contract.

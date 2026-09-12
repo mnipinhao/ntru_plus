@@ -1,0 +1,28 @@
+experiment_id: GT864-P14-CLASS-TBL-20260912
+mode: existing_region_replacement
+action: optimize-layout
+state:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: P14-A compiler lowering rejected; P14-B fixed-bank assembly generated and assembled
+  static_checks: P14-A reject due 83/69 stack references; P14-B no-spill and 2260/2036 complete dynamic instructions
+  Slothy_run_by_user: not-run because exact Pi5 boundary falsified candidate before scheduling
+  parse_slothy_result: not-applicable-reject
+  oracle_correctness: pass Mac and Pi full small exact bytes plus guard pages
+  full_path_benchmark: early complete-ToBytes falsifier; full +198.993 cycles small +104.583 cycles
+  score_candidate: reject
+  promotion_decision: reject production remains P9
+hypothesis:
+  observation: P9 spends one INS per composed-map edge; 54 output Q vectors collapse to 15 identical eight-source neighborhoods
+  primary_bottleneck_category: layout or permutation
+  hypothesis: class-local two-TBL4 gathers plus source retention remove substantially more routing instructions than their extra loads and public index loads cost
+  exact_proposed_change: follow a maximum-overlap 15-class path requiring 64 source Q loads per top and replace eight INS plus initialization per output by two TBL4 and ORR
+  expected_static_effect: remove about 400 or more complete-call instructions from both full and small P9 paths before scheduling
+  expected_performance_effect: reduce complete ToBytes and the full plus small Decaps aggregate
+  expected_register_pressure_effect: eight resident source vectors plus bounded gather normalize pack temporaries; no partial-output frontier and no spill
+  correctness_or_range_impact: none; exact permutation and P9 normalization packing contracts retained
+  falsifying_measurement: target object spills, fails exact bytes, is not statically below P9, or complete ToBytes paired median does not improve
+artifacts_changed: [P14-A generated intrinsic screen, P14-B fixed-bank assembly, exact oracle, Pi5 paired PMU]
+decision: reject

@@ -48,7 +48,8 @@ Status meanings:
 | P13-A | Done—Promoted | Widen exact Inverse tail initialization and 1792-byte scratch wipe from 16-byte scalar pairs to full-vector stores | Exact wipe/AAPCS/KAT/malformed gates pass; -291 instructions/-114 branches, paired -23.555 Inverse and -20.050 Decaps cycles |
 | P13-B | Done—Promoted | Fuse terminal scale and top-CRT linear forms in the six-call `lazy_i16` interior | Exact algebra/range/oracle, zero-spill Slothy, native KAT/rejection/alias/AAPCS/wipe and paired Pi 5 gates passed; Decaps improves by 434.350 paired-median cycles with exactly 396 fewer instructions |
 | P13-C | Done—Promoted | Tail-specific composite terminal map for the separately shaped six-useful-lane I16 kernel | Exact row-8 range/oracle, zero-spill Slothy, native KAT/rejection/alias/AAPCS/wipe and paired Pi 5 gates passed; Decaps improves 73.075 paired-median cycles with exactly 66 fewer instructions |
-| P14 | Next—ToBytes | Reduce the Decaps full+small composed route/normalize/pack boundary | Static common-DAG reduction must attack the measured +2886-instruction/+485-cycle aggregate; do not reopen P6 scratch storage |
+| P14 | Done—Rejected | Replace P9 lane-edge routing with 15 retained-source TBL4 neighborhood classes | Exact/no-spill assembly removes 1120 full+small instructions, but Pi 5 regresses full/small by 198.993/104.583 cycles; production remains P9 |
+| P15 | Next—P9 scheduling | Preserve P9 input-once lane routing and jointly schedule output completion, normalization and pack | No added TBL, input load, scratch or spill; require lower same-boundary Pi 5 cycles in both full and small before KEM integration |
 
 ## Fixed facts and non-tasks
 
@@ -69,6 +70,19 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed P14 without production promotion.  The exact composed route has
+  only 15 distinct eight-source neighborhoods.  A maximum-overlap class path
+  needs 64 source Q loads/top, and a fixed `v0-v7` implementation replaces
+  eight lane moves per output with two `TBL4` plus `ORR`.  It passes exact
+  full/small bytes and guard edges, has no top-body stack reference, and cuts
+  complete-path instructions 2809→2260 full and 2607→2036 small.  Pi 5 rejects
+  it decisively: paired medians regress 1507.220→1706.213 and
+  1172.662→1277.245 cycles.  The extra lookup/table-load throughput dominates
+  despite 555/573 fewer retired instructions.  Slothy and full-KEM integration
+  are skipped after the predeclared same-boundary falsifier.  P15 retains P9's
+  cheaper lane-move DAG and tests bounded joint scheduling only.  Evidence:
+  `experiments/gt864-p14-class-tbl-tobytes/`.
 
 - Completed and promoted P13-C.  The single tail `lazy_itail` call now uses
   its actual `[top0 components0..2 | top1 components0..2 | zero x2]` layout,

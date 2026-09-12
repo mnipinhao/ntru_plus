@@ -1,0 +1,3 @@
+#define gt864_p14_tobytes_full_inner gt864_p14_tobytes_full_asm
+#define gt864_p14_tobytes_small_inner gt864_p14_tobytes_small_asm
+#include "test.c"

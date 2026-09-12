@@ -1,0 +1,36 @@
+id: gt864-p14-class-tbl-tobytes
+inputs:
+  - one top of 54 FR0 Q vectors
+  - fixed class path and slot assignments
+  - fixed two-bank byte indices per output Q
+outputs:
+  - 54 exact 12-byte groups at their final public offsets
+constants:
+  - q 3457
+  - full Barrett reciprocal 9
+  - P9 pack index
+  - 108 TBL index Q vectors per top
+nodes:
+  - name: class_source_state
+    operation: retain intersection with the preceding eight-source class and load replacements
+    dependencies: [FR0 input, class path]
+    range: signed int16 input unchanged
+  - name: gather_output_q
+    operation: TBL4 low bank and TBL4 high bank followed by ORR
+    dependencies: [eight resident source Q vectors, two public index Q vectors]
+    range: exact lane permutation; signed int16 input unchanged
+  - name: normalize
+    operation: P9 full Barrett plus sign correction or P9 small sign correction only
+    dependencies: [gather_output_q]
+    range: canonical 0 to 3456
+  - name: pack8
+    operation: unchanged P9 UZP shift ORR narrow TBL and 8 plus 4-byte stores
+    dependencies: [normalize, P9 pack index]
+    range: exact 12-bit wire bytes
+memory_order:
+  - all input and index addresses are compile-time public
+  - output groups are disjoint and may be written in class order
+  - no coefficient scratch or input reread outside the recorded 64-load path
+commutativity:
+  - outputs inside a class may be reordered
+  - the two TBL4 operations for one output are independent
