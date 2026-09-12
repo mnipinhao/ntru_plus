@@ -1,0 +1,27 @@
+experiment_id: GT864-P17-OFFICIAL-PROFILE-20260912
+action: benchmark
+state:
+  current_production_binding: pass
+  selected_official_binding: pass
+  no_competing_job: pass
+  correctness: pass
+  clean_pmu: pass
+  cycle_profile: pass
+  instruction_branch_profile: pass
+  bottleneck_decision: pass
+scope:
+  gt_revision: 912066b3
+  official: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+  official_upstream_latest_verified: false
+  host: pi@100.99.191.9
+  core: 3
+  hash_policy: SHAKE256
+  mutation: none
+
+decision:
+  gt_beats_selected_official:
+    keygen_cycles: -727.250
+    encaps_cycles: -1148.450
+    decaps_cycles: -434.550
+  next_gate: P18
+  next_gate_focus: joint ToBytes normalization/packing/routing DAG search
