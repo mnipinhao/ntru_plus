@@ -1,0 +1,18 @@
+id: P7-C1
+inputs: [nine FR0 row vectors]
+constants: [rho722, rho_magic6844, eta1124, eta_inverse366, q3457, terminal_pairs]
+stages:
+  - load nine rows
+  - six one-product B3 nodes in the P7-C0 topology with four intervening eta products
+  - nine terminal products in logical s order
+  - 16 TRN instructions exchange rows and columns in four-row halves
+  - sixteen D stores and eight H tail stores at existing offsets
+b3:
+  difference: b-c
+  product: Algorithm10(difference,722,6844)
+  y0: (a+b)+c
+  y1: (a-c)+product
+  y2: (a-b)-product
+outputs: [main scratch, tail scratch]
+ordering_constraints: [load before use, read old inputs before destructive writes, fixed public output addresses]
+proof: ../inverse-p7c0-range/results.json

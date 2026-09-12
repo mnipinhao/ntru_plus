@@ -1,0 +1,11 @@
+experiment: P7-C1
+mode: existing_region_replacement
+state: completed
+status: promote
+baseline: P7-B1 at ecea7bbc
+slothy_root: /Users/chenpinhao/slothy
+python: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+hypothesis: six one-product B3 nodes reduce arithmetic by 48 instructions per block and shrink constant lifetimes
+falsifier: no-spill allocation fails or complete Inverse and Decaps do not improve after timing
+producer: first Decaps BaseMul R^-1 abs2497
+consumer: existing lazy I16 and centered Inverse output

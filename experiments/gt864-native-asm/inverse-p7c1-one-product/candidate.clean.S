@@ -1,6 +1,3 @@
-#ifdef __APPLE__
-#define packed_i9 _packed_i9
-#endif
 .text
 .global packed_i9
 packed_i9:

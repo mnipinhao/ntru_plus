@@ -1,0 +1,28 @@
+candidate:
+  id: P7-C1
+  status: promote
+  mode: existing_region_replacement
+contract:
+  preserved: true
+  approved_changes: false
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 71
+  candidate_expected_cycles: 46
+  log_json: timing.json
+benchmark:
+  status: pass
+  command: taskset -c 3 ./bench baseline/libgt864.so candidate/libgt864.so 0
+  metric: cycles
+  lower_is_better: true
+  neutral_threshold_percent: 1.0
+  baseline: 6995.484
+  candidate: 5728.891
+decision:
+  reason: Complete Inverse and Decaps improve with exactly 1200 fewer instructions; correctness and ABI preserved
+  next_iteration: P8 raw-Inverse-to-ternary consumer range proof

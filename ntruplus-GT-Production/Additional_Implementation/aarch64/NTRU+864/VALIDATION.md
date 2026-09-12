@@ -1,5 +1,20 @@
 # K1 production integration evidence
 
+## P7-C1 promotion — 2026-09-12
+
+Only `gt864_native_inverse9.S` changes. Six one-product B3 nodes, no-spill
+local Slothy allocation/timing, and unchanged terminal tables/store ABI.
+Physical 288-map/range checks, 100-case Mac/Linux KAT (digest below), 64 KEM
+round trips/tamper rejection, 256 native inverse inputs plus 256 BaseMul chains,
+alias/canaries/AAPCS/1792-byte wipe, and 808 BaseInv regression cases pass.
+Mac testing uses a test-only alias for the pre-existing `binv_num_pair` Mach-O
+symbol omission; Linux benchmark source has no such shim.
+
+Six balanced paired Pi 5 runs: Inverse 6995.484→5728.891 cycles; Decaps
+43386.675→42104.900. Both retire exactly 1200 fewer instructions; branches
+unchanged. See `experiments/gt864-native-asm/inverse-p7c1-one-product/RESULTS.md`
+for frozen identities, raw samples and limitations. Official was not remeasured.
+
 ## Current promotion gate — 2026-09-10
 
 The production-linked 84/37 BaseInv and pair+merge ToBytes promotion passed:

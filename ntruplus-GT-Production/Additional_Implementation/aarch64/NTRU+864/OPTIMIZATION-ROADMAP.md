@@ -38,8 +38,8 @@ Status meanings:
 | P7-B0 | Done | Same-boundary Inverse core decomposition | Pi 5 PMU isolated inverse9 as the largest stage (2,958.406 cycles, IPC 1.292); main+tail scatter ideal-removal ceiling was only 164.890 cycles, so B1 selected inverse9 constant liveness rather than a new scatter ABI |
 | P7-B1 | Done—Promoted | Keep the repeated `(722,6844)` Barrett-Shoup pair in `v0/v5`, then reschedule the fixed allocation | Removed 20 instructions/call and 80 object bytes; exact/KAT/alias/no-spill gates passed. Raw order regressed, but Slothy timing recovered it; final paired Pi 5 delta was -18.782 Inverse cycles and -17.875 Decaps cycles with exactly -240 instructions |
 | P7-C0 | Done—Algebra/range pass | Re-close current physical Inverse arithmetic and one-product B3 alternatives | 266 constant pairs exhausted; current bounds tighten to I9 2311 / I16 19545 / raw 4485. One-product B3 gives 37→19 mulmods per I9 and -576 arithmetic instructions/Inverse, with safe 2617 / 21397 / 4577 bounds. Last I16 identity reset has a 33792 overflow witness and stays |
-| P7-C1 | Next | Implement one-product inverse NTT9, preserving existing terminal tables and P8 stores | Symbolic DAG, no-spill allocation, local Slothy timing, complete centered-output/alias/cleanup/KAT checks, then Pi 5 paired Inverse and Decaps versus P7-B1; no promotion on instruction count alone |
-| P8 | Queued after P7-C1 | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
+| P7-C1 | Done—Promoted | One-product inverse NTT9, preserving terminal tables and P8 stores | No-spill RA + local timing, exact range/centered-output/alias/wipe/KAT pass. Pi 5 Inverse 6995.484→5728.891; Decaps 43386.675→42104.900 cycles; -1200 instructions in both |
+| P8 | Next | Raw-Inverse-to-ternary Decaps consumer | Use P7-C1 raw bound 4577 (within the earlier 6912 contract) and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
 | P9 | Queued | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
 | P10 | Queued—Keygen | BaseInv numerator/finish kernel redesign after P7/P8 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
 
@@ -59,6 +59,17 @@ Status meanings:
 
 ### 2026-09-12
 
+- Completed and promoted P7-C1. Six one-product B3s reduce each I9 body
+  284→184 instructions (including constant/move savings), object 1140→740 B.
+  Local Slothy RA then bounded timing windows pass without spill; physical
+  arithmetic matches all 288 P7-C0 terminal maps/ranges. Mac/Linux KATs agree,
+  native alias/AAPCS/wipe tests pass. Six balanced Pi 5 runs give paired median
+  deltas -1266.281 Inverse and -1284.675 Decaps cycles, exactly -1200
+  instructions and unchanged branches. No meaningful Keygen/Encaps change.
+  Evidence: `experiments/gt864-native-asm/inverse-p7c1-one-product/RESULTS.md`.
+  P8 is next; P9 ToBytes and P10 BaseInv stay queued. No new Official timing
+  was taken this round; the old Official checkpoint must not be mixed into a
+  new same-run speedup claim.
 - Completed P7-C0 in `experiments/gt864-native-asm/inverse-p7c0-range/`.
   Corrected the earlier assumption about the old proof: it already established
   `<q` by exhaustive fixed-constant checks; no automatic reduction deletion

@@ -1,0 +1,34 @@
+candidate:
+  id: P7-C1
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: true
+  approved_changes: []
+region:
+  start_label: packed_i9_slothy_start
+  end_label: packed_i9_slothy_end
+  live_in: [x0, x1, x2, x3]
+  live_out: [memory]
+abi:
+  inputs: [x0 main scratch, x1 tail scratch, x2 FR0 rows, x3 terminal pairs]
+  outputs: [eight packed rows and ninth row tail; R^-1; modular equivalent]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+memory_contract:
+  loads: [nine 16-byte coefficient loads stride 96; eighteen terminal Q loads]
+  stores: [sixteen D stores to main; eight H stores stride 16 to tail]
+  aliasing: disjoint input and scratch; whole Inverse supports exact alias
+  alignment: halfword aligned
+  public_offsets_only: true
+range_contract:
+  input_ranges: [signed R^-1 coefficients abs <=2497]
+  output_ranges: [signed R^-1 abs <=3456]
+constant_time_contract:
+  secret_inputs: [coefficient values]
+  public_inputs: [pointers, tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

@@ -171,6 +171,11 @@ def physical_i9(top,c):
         elif op.startswith('trn'):
             # Only routing follows; fail if a later arithmetic reads it.
             regs[dst]=('routing',)
+        elif op in ('str','st1'):
+            # Scheduling may consume finished rows before the last terminal
+            # MLS. Stores do not alter vector arithmetic; native tests cover
+            # routing and writeback, outside this terminal-map checker.
+            continue
         else: raise AssertionError((index+1,line))
     assert len(outputs)==9
     return [outputs[s] for s in range(9)],m
@@ -376,9 +381,17 @@ def physical_i16(rows,tail=False,half=0):
 
 
 def main():
+    global PROD
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--detail',action='store_true',help='Include every arithmetic node and source line')
+    parser.add_argument('--source-dir',type=Path,help='Frozen P7-B1 package for historical physical baseline audit (tables must match)')
     args=parser.parse_args()
+    if args.source_dir:
+        PROD=args.source_dir.resolve()
+        assert table('gt864_inverse9_twist_barrett')==TWIST
+        assert table('gt864_inverse16_stage_barrett')==STAGE
+        assert table('gt864_inverse16_main_scale_barrett')==SCALE
+        assert table('gt864_inverse16_tail_scale_barrett')==TAIL
     assert pow(722,3,Q)==1 and (722*722)%Q==(-723)%Q
     assert 366*1124%Q==1
     pairs={(722,6844),(-723,-6853),(366,3469),(1124,10654),(-1634,-15488),(-722,-6844)}
