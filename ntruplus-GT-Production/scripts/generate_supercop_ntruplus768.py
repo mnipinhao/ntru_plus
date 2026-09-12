@@ -4,11 +4,11 @@ from pathlib import Path
 import argparse, subprocess, tempfile
 
 OFFICIAL_COPY = (
-    'api.h','params.h','util.h','fips202.h','symmetric.c',
-    'symmetric.h','cbd.s','architectures','goal-constbranch','goal-constindex')
+    'api.h','params.h','util.h','symmetric.h','cbd.s','architectures',
+    'goal-constbranch','goal-constindex')
 GT_COPY = (
     'kem.c','keygen.c','keygen_lambda.c','basemul_lambda.c','poly.h','layout.h',
-    'ntt.h','decap_verify.h','keygen.h','fips202.c')
+    'ntt.h','decap_verify.h','keygen.h','fips202.c','fips202.h','symmetric.c')
 GT_ASM = {'ntt.S':'ntt.s','base.S':'base.s','pack.S':'pack.s',
           'add.S':'add.s','kem_api.S':'kem_api.s',
           'keccakf1600.S':'keccakf1600.s'}
@@ -51,8 +51,10 @@ def build(gt,official,target):
 Drop `crypto_kem/ntruplus768/aarch64` into a SUPERCOP tree. Official CBD/SOTP,
 centered mod-3, NO_CE hash, utility clearing and public headers are retained.
 The NTT, inverse NTT, base arithmetic, pack/unpack and their operation-specific
-KEM call sites use the GT Production backend. The SHAKE API and symmetric hash
-wrappers remain unchanged; Keccak-f[1600] uses the scalar AArch64 x1 backend.
+KEM call sites use the GT Production backend. The public SHAKE and symmetric
+hash APIs remain unchanged. Hash-f/hash-h retain their existing construction;
+hash-g uses the fixed-size register-resident AArch64 sponge. Generic SHAKE uses
+the standalone scalar AArch64 x1 Keccak-f[1600] backend.
 ''')
 
 def compare(expected,actual):
