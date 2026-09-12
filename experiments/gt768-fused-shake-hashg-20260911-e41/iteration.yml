@@ -10,7 +10,23 @@ kernel: hash_g fixed-size SHAKE256 path
 host: pi@100.99.191.9
 core: 3
 status: active
-current_gate: B completed; C pending
+current_gate: C completed; D not implemented
+c_gate:
+  category: memory access and code size
+  hypothesis_and_results: C_GATE.md
+  decision: accept as next experimental champion
+  production_promoted: false
+  baseline_revision: a64e7035cb13410554af1c67870d4132a30037b4
+  previous_candidate_revision: 5300d169fa04b2459bf1093c435e9e22843cfee4
+  candidate_code_revision: null
+  summary: C-summary.json
+  paired_saved_cycles_vs_B:
+    hash_g: 1045
+    encap: 1037
+    decap: 1058.5
+  text_section_growth_vs_A_bytes: 416
+  text_section_reduction_vs_B_bytes: 3552
+  next_gate: use C as baseline for register-resident D; separate SUPERCOP export gate for promotion
 b_gate:
   category: memory or table access
   hypothesis_record: B_GATE.md

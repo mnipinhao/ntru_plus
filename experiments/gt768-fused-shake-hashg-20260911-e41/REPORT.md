@@ -5,6 +5,11 @@ Experiment ID: `gt768-fused-shake-hashg-20260911-e41`
 This experiment is based on `aarch64-production` revision
 `a64e7035cb13410554af1c67870d4132a30037b4`.  Production source is unchanged.
 
+Latest result (2026-09-12): C fixed-size wrapper passes. See C_GATE.md and
+C-summary.json. It improves hash_g/Encap/Decap by 9.94%/3.26%/3.65% over B
+and shrinks the full KEM .text from B's 77296 to 73744 bytes. C is the next
+experimental champion; the B results below are retained as history.
+
 ## Gate 0: exact data flow
 
 The complete byte/lane contract is in `HASH_G_MAPPING.md`.  Its executable
@@ -166,7 +171,8 @@ The register-resident D experiment remains a separate later gate.
 ### Reproduction
 
 Stage the baseline package from git archive of
-a64e7035cb13410554af1c67870d4132a30037b4, the candidate package from this branch,
+a64e7035cb13410554af1c67870d4132a30037b4, the B candidate package from
+5300d169fa04b2459bf1093c435e9e22843cfee4,
 this experiment directory, and the existing bench_hash.c / bench_kem.c /
 perf_counter.c / perf_counter.h / deterministic_randombytes.c harness files.
 Use baseline/, candidate/, experiment/ and harness/ beneath:

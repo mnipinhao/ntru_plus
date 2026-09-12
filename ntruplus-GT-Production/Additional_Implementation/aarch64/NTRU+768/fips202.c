@@ -637,78 +637,54 @@ void shake256(uint8_t *output, size_t outlen,
     shake256_ctx_release(&s);
 }
 
-/* B control: generic one-byte prefix absorber. Word-wise absorption and the
- * existing permutation ABI are retained; no fixed hash_g loop count is used.
- * The 200-byte padding scratch, 136-byte squeeze scratch and state are cleared
- * just as in shake256(). The removed input image never exists in memory.
- */
-static void keccak_absorb_prefix(uint64_t *s, uint8_t prefix,
-                                const uint8_t *m, size_t mlen) {
-    size_t i, tail_offset = 0;
-    uint8_t t[200];
-
-    for (i = 0; i < 25; ++i) {
-        s[i] = 0;
-    }
-    if (mlen >= SHAKE256_RATE - 1) {
-        s[0] = prefix;
-        for (i = 0; i < 7; ++i) {
-            s[0] |= (uint64_t)m[i] << (8 * (i + 1));
-        }
-        for (i = 1; i < SHAKE256_RATE / 8; ++i) {
-            s[i] = load64(m + 8 * i - 1);
-        }
-        KeccakF1600_StatePermute(s);
-        m += SHAKE256_RATE - 1;
-        mlen -= SHAKE256_RATE - 1;
-    } else {
-        tail_offset = 1;
-    }
-
-    while (mlen >= SHAKE256_RATE) {
-        for (i = 0; i < SHAKE256_RATE / 8; ++i) {
-            s[i] ^= load64(m + 8 * i);
-        }
-        KeccakF1600_StatePermute(s);
-        m += SHAKE256_RATE;
-        mlen -= SHAKE256_RATE;
-    }
-    for (i = 0; i < SHAKE256_RATE; ++i) {
-        t[i] = 0;
-    }
-    if (tail_offset) {
-        t[0] = prefix;
-    }
-    for (i = 0; i < mlen; ++i) {
-        t[tail_offset + i] = m[i];
-    }
-    t[tail_offset + mlen] = 0x1f;
-    t[SHAKE256_RATE - 1] |= 128;
-    for (i = 0; i < SHAKE256_RATE / 8; ++i) {
-        s[i] ^= load64(t + 8 * i);
-    }
-    secure_clear(t, sizeof t);
+/* Fixed-input/output C control. memcpy expresses unaligned word access without
+ * type-punning or an alignment precondition; generic SHAKE stays unchanged. */
+static uint64_t hash_g_load64(const uint8_t *p) {
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    uint64_t x;
+    memcpy(&x, p, sizeof x);
+    return x;
+#else
+    return load64(p);
+#endif
 }
 
-void ntruplus_shake256_prefix(uint8_t *output, size_t outlen, uint8_t prefix,
-                             const uint8_t *input, size_t inlen) {
-    size_t nblocks = outlen / SHAKE256_RATE;
-    uint8_t t[SHAKE256_RATE];
-    shake256ctx s;
+static void hash_g_store_lanes(uint8_t *out, const uint64_t *s, size_t n) {
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    memcpy(out, s, n * sizeof *s);
+#else
+    for (size_t i = 0; i < n; ++i) {
+        store64(out + 8 * i, s[i]);
+    }
+#endif
+}
 
-    keccak_absorb_prefix(s.ctx, prefix, input, inlen);
-    shake256_squeezeblocks(output, nblocks, &s);
-    /* Avoid pointer arithmetic on a null output for a zero-length request. */
-    if (nblocks) {
-        output += nblocks * SHAKE256_RATE;
+void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]) {
+    uint64_t s[25] = {0};
+
+    /* Domain || first 135 message bytes. The first load's byte 7 is discarded
+     * by the shift and subsequently read as the first byte of lane 1. */
+    s[0] = (hash_g_load64(input) << 8) | UINT64_C(1);
+    for (size_t i = 1; i < 17; ++i) {
+        s[i] = hash_g_load64(input + 8 * i - 1);
     }
-    outlen -= nblocks * SHAKE256_RATE;
-    if (outlen) {
-        shake256_squeezeblocks(t, 1, &s);
-        for (size_t i = 0; i < outlen; ++i) {
-            output[i] = t[i];
+    KeccakF1600_StatePermute(s);
+    for (size_t block = 1; block < 8; ++block) {
+        for (size_t i = 0; i < 17; ++i) {
+            s[i] ^= hash_g_load64(input + 136 * block + 8 * i - 1);
         }
+        KeccakF1600_StatePermute(s);
     }
-    secure_clear(t, sizeof(t));
-    shake256_ctx_release(&s);
+
+    /* msg[1087..1151], delimiter at tail byte 65, final bit at byte 135. */
+    for (size_t i = 0; i < 8; ++i) {
+        s[i] ^= hash_g_load64(input + 1087 + 8 * i);
+    }
+    s[8] ^= (uint64_t)input[1151] | UINT64_C(0x1f00);
+    s[16] ^= UINT64_C(0x8000000000000000);
+    KeccakF1600_StatePermute(s);
+    hash_g_store_lanes(output, s, 17);
+    KeccakF1600_StatePermute(s);
+    hash_g_store_lanes(output + 136, s, 7);
+    secure_clear(s, sizeof s);
 }

@@ -27,7 +27,7 @@ void hash_g(uint8_t *buf, const uint8_t *msg)
 {
     /* Absorb the virtual prefix || msg before writing any output (buf == msg
      * is used by Encap). No domain-prefixed message copy is materialized. */
-    ntruplus_shake256_prefix(buf, HASH_G_OUTBYTES, 0x01, msg, HASH_G_INBYTES);
+    ntruplus_hash_g_fixed(buf, msg);
 }
 
 void hash_h(uint8_t *buf, const uint8_t *msg)

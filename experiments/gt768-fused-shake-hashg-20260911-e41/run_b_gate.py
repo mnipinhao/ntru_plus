@@ -2,6 +2,7 @@
 """Run from the staged experiment directory on Pi5; outputs stay in .build."""
 import argparse
 import hashlib
+import itertools
 import json
 from pathlib import Path
 import statistics
@@ -10,11 +11,17 @@ import subprocess
 ap = argparse.ArgumentParser()
 ap.add_argument("root", type=Path)
 ap.add_argument("--name", default="b-gate-v1")
+ap.add_argument("--gate", choices=("B", "C"), default="B")
 args = ap.parse_args()
 root = args.root.resolve()
 build = root / ".build" / args.name
 build.mkdir(parents=True, exist_ok=False)
 sources = {"A": root / "baseline", "B": root / "candidate"}
+if args.gate == "C":
+    sources["C"] = root / "candidate-c"
+target_label = args.gate
+pair_count = 66 if args.gate == "C" else 62
+orders = list(itertools.permutations(sources))
 harness = root / "harness"
 flags = ["-march=armv8-a", "-mtune=cortex-a76", "-O3", "-fomit-frame-pointer",
          "-ffunction-sections", "-fdata-sections", "-std=c99"]
@@ -45,20 +52,20 @@ def stats(v):
             "p50": statistics.median(v), "p90": v[len(v)*9//10], "max": max(v)}
 
 environment = {"before": env(), "jobs": run(["ps", "-eo", "pid,pcpu,args", "--sort=-pcpu"])}
-print("Building and checking both packages", flush=True)
+print("Building and checking selected packages: " + ", ".join(sources), flush=True)
 for label, src in sources.items():
     run(["make", "-j3", "check", "CC=gcc", "CFLAGS=" + " ".join(flags),
          "BUILD_DIR=" + str(build / ("package-" + label))],
         "check-" + label + ".log", src)
 
-src = sources["B"]
+src = sources[target_label]
 includes = ["-I" + str(src), "-I" + str(harness)]
 testobj = build / "fips-test.o"
 run(["gcc", *flags, *includes, "-DGT_SECURE_CLEAR_AUDIT_HOOK",
      "-Dntruplus_keccak_f1600_x1_aarch64=counted_permute", "-c",
      src / "fips202.c", "-o", testobj])
 run(["gcc", *flags, *includes, "-DGT_SECURE_CLEAR_AUDIT_HOOK",
-     root / "experiment/test_prefix.c", testobj, src / "symmetric.c",
+     root / ("experiment/test_fixed.c" if args.gate == "C" else "experiment/test_prefix.c"), testobj, src / "symmetric.c",
      src / "keccakf1600.S", "-o", build / "test-prefix"])
 test_result = run([build / "test-prefix"], "prefix-test.log").strip()
 print(test_result, flush=True)
@@ -83,21 +90,26 @@ samples = {}
 result = {}
 for mode in ("hash_g", "encap", "decap"):
     print("Paired measurement: " + mode, flush=True)
-    samples[mode] = {"A": [], "B": []}
+    samples[mode] = {label: [] for label in sources}
     sinks = set()
-    for pair in range(62):
-        for label in (("A", "B") if pair % 2 == 0 else ("B", "A")):
+    for pair in range(pair_count):
+        for label in orders[pair % len(orders)]:
             text = run(["taskset", "-c", "3", bins[label, mode]],
                        f"{mode}-{pair:02d}-{label}.txt")
             fields = dict(line.split("=", 1) for line in text.splitlines() if "=" in line)
             samples[mode][label].append(int(fields["samples"]))
             sinks.add(fields["sink"])
     assert len(sinks) == 1, (mode, sinks)
-    a, b = samples[mode]["A"], samples[mode]["B"]
+    a, b = samples[mode]["A"], samples[mode][target_label]
     delta = [x-y for x,y in zip(a,b)]
-    result[mode] = {"A": stats(a), "B": stats(b), "paired_saved_cycles": stats(delta),
+    result[mode] = {**{label: stats(v) for label, v in samples[mode].items()},
+                    "paired_saved_cycles_vs_A": stats(delta),
                     "sink": next(iter(sinks)),
                     "percent_saved_from_medians": 100*(statistics.median(a)-statistics.median(b))/statistics.median(a)}
+    if args.gate == "C":
+        previous = samples[mode]["B"]
+        result[mode]["paired_saved_cycles_vs_B"] = stats([x-y for x,y in zip(previous,b)])
+        result[mode]["percent_saved_vs_B"] = 100*(statistics.median(previous)-statistics.median(b))/statistics.median(previous)
     print(json.dumps({mode: result[mode]}), flush=True)
 
 # Long component runs reduce process-start overhead in external perf counts.
@@ -110,8 +122,8 @@ for label, src in sources.items():
          src / "symmetric.c", src / "fips202.c", src / "keccakf1600.S",
          harness / "perf_counter.c", "-Wl,--gc-sections", "-o", binary])
     bins[label, "pmu"] = binary
-for repeat in range(4):
-    for label in (("A", "B") if repeat % 2 == 0 else ("B", "A")):
+for repeat in range(6 if args.gate == "C" else 4):
+    for label in orders[repeat % len(orders)]:
         raw = run(["perf", "stat", "-x,", "-e",
                    "instructions:u,ld_spec:u,st_spec:u,stall_backend:u",
                    "taskset", "-c", "3", bins[label, "pmu"]],
@@ -132,11 +144,12 @@ identities = {
     for label, src in sources.items()
 }
 summary = {"experiment_id": "gt768-fused-shake-hashg-20260911-e41",
-           "gate": "B", "baseline_revision": "a64e7035cb13410554af1c67870d4132a30037b4",
+           "gate": args.gate, "baseline_revision": "a64e7035cb13410554af1c67870d4132a30037b4",
+           "B_revision": "5300d169fa04b2459bf1093c435e9e22843cfee4",
            "host": run(["uname", "-a"]).strip(),
            "compiler": run(["gcc", "--version"]).splitlines()[0], "flags": flags,
-           "core": 3, "pairs": 62, "operations_per_sample": 2000, "warmups": 100,
-           "order": "alternating AB/BA per pair",
+           "core": 3, "pairs": pair_count, "operations_per_sample": 2000, "warmups": 100,
+           "order": orders,
            "test": test_result, "results": result, "pmu_per_operation": pmu,
            "sizes": sizes, "source_sha256": identities, "environment": environment}
 (build / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

@@ -1,0 +1,400 @@
+{
+  "experiment_id": "gt768-fused-shake-hashg-20260911-e41",
+  "gate": "C",
+  "baseline_revision": "a64e7035cb13410554af1c67870d4132a30037b4",
+  "B_revision": "5300d169fa04b2459bf1093c435e9e22843cfee4",
+  "host": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+  "compiler": "gcc (Debian 14.2.0-19) 14.2.0",
+  "flags": [
+    "-march=armv8-a",
+    "-mtune=cortex-a76",
+    "-O3",
+    "-fomit-frame-pointer",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-std=c99"
+  ],
+  "core": 3,
+  "pairs": 66,
+  "operations_per_sample": 2000,
+  "warmups": 100,
+  "order": [
+    [
+      "A",
+      "B",
+      "C"
+    ],
+    [
+      "A",
+      "C",
+      "B"
+    ],
+    [
+      "B",
+      "A",
+      "C"
+    ],
+    [
+      "B",
+      "C",
+      "A"
+    ],
+    [
+      "C",
+      "A",
+      "B"
+    ],
+    [
+      "C",
+      "B",
+      "A"
+    ]
+  ],
+  "results": {
+    "hash_g": {
+      "A": {
+        "count": 66,
+        "min": 10679,
+        "p10": 10683,
+        "p50": 10693.5,
+        "p90": 10704,
+        "max": 10710
+      },
+      "B": {
+        "count": 66,
+        "min": 10504,
+        "p10": 10512,
+        "p50": 10522.0,
+        "p90": 10527,
+        "max": 10529
+      },
+      "C": {
+        "count": 66,
+        "min": 9464,
+        "p10": 9470,
+        "p50": 9476.0,
+        "p90": 9479,
+        "max": 9501
+      },
+      "paired_saved_cycles_vs_A": {
+        "count": 66,
+        "min": 1200,
+        "p10": 1206,
+        "p50": 1218.0,
+        "p90": 1231,
+        "max": 1239
+      },
+      "sink": "122",
+      "percent_saved_from_medians": 11.385421050170665,
+      "paired_saved_cycles_vs_B": {
+        "count": 66,
+        "min": 1011,
+        "p10": 1037,
+        "p50": 1045.0,
+        "p90": 1054,
+        "max": 1060
+      },
+      "percent_saved_vs_B": 9.941075841094849
+    },
+    "encap": {
+      "A": {
+        "count": 66,
+        "min": 31906,
+        "p10": 31921,
+        "p50": 31937.0,
+        "p90": 31957,
+        "max": 31972
+      },
+      "B": {
+        "count": 66,
+        "min": 31745,
+        "p10": 31746,
+        "p50": 31754.0,
+        "p90": 31794,
+        "max": 31800
+      },
+      "C": {
+        "count": 66,
+        "min": 30700,
+        "p10": 30711,
+        "p50": 30720.0,
+        "p90": 30734,
+        "max": 30745
+      },
+      "paired_saved_cycles_vs_A": {
+        "count": 66,
+        "min": 1173,
+        "p10": 1198,
+        "p50": 1218.5,
+        "p90": 1234,
+        "max": 1269
+      },
+      "sink": "6218415305765144144",
+      "percent_saved_from_medians": 3.810627172245358,
+      "paired_saved_cycles_vs_B": {
+        "count": 66,
+        "min": 1013,
+        "p10": 1020,
+        "p50": 1037.0,
+        "p90": 1074,
+        "max": 1085
+      },
+      "percent_saved_vs_B": 3.2562826730490646
+    },
+    "decap": {
+      "A": {
+        "count": 66,
+        "min": 29025,
+        "p10": 29037,
+        "p50": 29053.0,
+        "p90": 29071,
+        "max": 29112
+      },
+      "B": {
+        "count": 66,
+        "min": 28897,
+        "p10": 28905,
+        "p50": 28914.0,
+        "p90": 28929,
+        "max": 28970
+      },
+      "C": {
+        "count": 66,
+        "min": 27839,
+        "p10": 27845,
+        "p50": 27859.5,
+        "p90": 27866,
+        "max": 27907
+      },
+      "paired_saved_cycles_vs_A": {
+        "count": 66,
+        "min": 1150,
+        "p10": 1176,
+        "p50": 1198.5,
+        "p90": 1214,
+        "max": 1237
+      },
+      "sink": "10844457849835112772",
+      "percent_saved_from_medians": 4.108009499879531,
+      "paired_saved_cycles_vs_B": {
+        "count": 66,
+        "min": 1033,
+        "p10": 1040,
+        "p50": 1058.5,
+        "p90": 1079,
+        "max": 1111
+      },
+      "percent_saved_vs_B": 3.647022203776717
+    }
+  },
+  "source_sha256": {
+    "A": {
+      "symmetric.c": "d5c98b67cc4796ca02d9e155a6d66ae00419eafe9f5869d88bc74aba8c40d03d",
+      "fips202.c": "b098e2da844180a5bc917c512546d623c5965e1ad120b392a3c5ae4fce0309dc",
+      "fips202.h": "86d3adefd72a25231b26d14b345648359db534790abd25148ccdfdba2800c298",
+      "keccakf1600.S": "ffa2089695240016bfff471b4af4b71f04b98397b7e7e062eacd2caae20ae0ea"
+    },
+    "B": {
+      "symmetric.c": "5784b96bc76e940d76f8559df80e482b16ee82059f37d539ac78fbe450d8665b",
+      "fips202.c": "067717b570025586ea3c6a1e61b88cafb8cb4f861190b789b7bd0e288e95d607",
+      "fips202.h": "f5f20ae3efe172bd7563506cef9b3907b5374f94f60cce85b19ed86a6e0cdd8d",
+      "keccakf1600.S": "ffa2089695240016bfff471b4af4b71f04b98397b7e7e062eacd2caae20ae0ea"
+    },
+    "C": {
+      "symmetric.c": "a65a149c3e36141af436814ea31436779af4ef222a594236cba674f0d9294b47",
+      "fips202.c": "2c2d7f253169827787c1a38ccc74300fdfd66aa8f63b97be4e41088bbe5e5748",
+      "fips202.h": "a0622d8a16507b7e03c13bf9686619b3289d408991c2ca025425998f287470f4",
+      "keccakf1600.S": "ffa2089695240016bfff471b4af4b71f04b98397b7e7e062eacd2caae20ae0ea"
+    }
+  },
+  "candidate_code_revision": null,
+  "decision": "accept C as next experimental champion; production not promoted",
+  "correctness": {
+    "mac_package": "make check pass, KAT byte-identical",
+    "mac_ASan_UBSan": "3841 cases pass",
+    "mac_portable_endian_path": "3841 cases pass (fallback selected on little-endian host)",
+    "pi_package_A_B_C": "make check pass, KAT byte-identical",
+    "pi_targeted": "PASS 3841 fixed hash_g differential/alias/guard cases; 10 permutations, 1 clear / 200 bytes",
+    "kat_rsp_sha256": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8",
+    "permutation_opcodes_identical": true,
+    "permutation_bytes": 1152,
+    "wrapper_shuffle_instructions": 0
+  },
+  "C_winning_groups": {
+    "hash_g": {
+      "A": 66,
+      "B": 66
+    },
+    "encap": {
+      "A": 66,
+      "B": 66
+    },
+    "decap": {
+      "A": 66,
+      "B": 66
+    }
+  },
+  "pmu_per_operation_medians": {
+    "A": {
+      "instructions:u": 30690.06833,
+      "ld_spec:u": 1404.2428075,
+      "st_spec:u": 880.195455,
+      "stall_backend:u": 1055.7893275000001
+    },
+    "B": {
+      "instructions:u": 30321.068339999998,
+      "ld_spec:u": 1349.7502725,
+      "st_spec:u": 799.69217,
+      "stall_backend:u": 1001.6606325
+    },
+    "C": {
+      "instructions:u": 28092.065365,
+      "ld_spec:u": 1248.6666475000002,
+      "st_spec:u": 758.9756,
+      "stall_backend:u": 543.7621075
+    }
+  },
+  "pmu_notes": "6 permutations of ABC, 200000 operations/run, user events with amortized process-start overhead; ld_spec/st_spec are speculative, all events 100% scheduled",
+  "linked_encap_sections": {
+    "A": {
+      "": 0,
+      ".note.gnu.build-id": 36,
+      ".interp": 27,
+      ".gnu.hash": 28,
+      ".dynsym": 624,
+      ".dynstr": 280,
+      ".gnu.version": 52,
+      ".gnu.version_r": 64,
+      ".rela.dyn": 240,
+      ".rela.plt": 480,
+      ".init": 28,
+      ".plt": 352,
+      ".text": 73328,
+      ".fini": 24,
+      ".rodata": 6160,
+      ".eh_frame_hdr": 212,
+      ".eh_frame": 1176,
+      ".note.ABI-tag": 32,
+      ".init_array": 8,
+      ".fini_array": 8,
+      ".dynamic": 480,
+      ".got": 64,
+      ".got.plt": 184,
+      ".data": 16,
+      ".bss": 9360,
+      ".comment": 31,
+      ".symtab": 8616,
+      ".strtab": 4879,
+      ".shstrtab": 259
+    },
+    "B": {
+      "": 0,
+      ".note.gnu.build-id": 36,
+      ".interp": 27,
+      ".gnu.hash": 28,
+      ".dynsym": 624,
+      ".dynstr": 280,
+      ".gnu.version": 52,
+      ".gnu.version_r": 64,
+      ".rela.dyn": 240,
+      ".rela.plt": 480,
+      ".init": 28,
+      ".plt": 352,
+      ".text": 77296,
+      ".fini": 24,
+      ".rodata": 6160,
+      ".eh_frame_hdr": 220,
+      ".eh_frame": 1264,
+      ".note.ABI-tag": 32,
+      ".init_array": 8,
+      ".fini_array": 8,
+      ".dynamic": 480,
+      ".got": 64,
+      ".got.plt": 184,
+      ".data": 16,
+      ".bss": 9360,
+      ".comment": 31,
+      ".symtab": 8664,
+      ".strtab": 4904,
+      ".shstrtab": 259
+    },
+    "C": {
+      "": 0,
+      ".note.gnu.build-id": 36,
+      ".interp": 27,
+      ".gnu.hash": 28,
+      ".dynsym": 624,
+      ".dynstr": 280,
+      ".gnu.version": 52,
+      ".gnu.version_r": 64,
+      ".rela.dyn": 240,
+      ".rela.plt": 480,
+      ".init": 28,
+      ".plt": 352,
+      ".text": 73744,
+      ".fini": 24,
+      ".rodata": 6160,
+      ".eh_frame_hdr": 220,
+      ".eh_frame": 1208,
+      ".note.ABI-tag": 32,
+      ".init_array": 8,
+      ".fini_array": 8,
+      ".dynamic": 480,
+      ".got": 64,
+      ".got.plt": 184,
+      ".data": 16,
+      ".bss": 9360,
+      ".comment": 31,
+      ".symtab": 8664,
+      ".strtab": 4901,
+      ".shstrtab": 259
+    }
+  },
+  "wrapper_bytes": {
+    "B_generic_prefix": 4016,
+    "C_fixed": 464
+  },
+  "hash_path_own_stack_at_permutation_bytes": {
+    "A": 2112,
+    "B": 688,
+    "C": 400,
+    "C_detail": "272-byte wrapper + 128-byte permutation; excludes libc/higher callers"
+  },
+  "cleanup_bytes_per_hash_g": {
+    "A": 1689,
+    "B": 536,
+    "C": 200
+  },
+  "environment": {
+    "before": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=58.2'C",
+      "frequency": "frequency(0)=1800018688"
+    },
+    "before_timing": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=64.2'C",
+      "frequency": "frequency(0)=2400023808"
+    },
+    "after": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=64.2'C",
+      "frequency": "frequency(0)=2400027136"
+    }
+  },
+  "binary_sha256": {
+    "A-decap": "11b6fca4ef73dc976f0e5ff311f000078b69a595ef2e2d24b05a7621dbcb8f80",
+    "A-encap": "e3aae8fac506d796548a3b44c04e7d5e940403a318a6d6c9f9e492f51a6f857e",
+    "A-hash-g-pmu": "101e111942c224b00dea167b43966946f4d7becbf3b9cc48fa63a2fae87e4f22",
+    "A-hash_g": "3afdecaa0ee65a8dff8f4d1f3f7f03121b7f42bfc09ce3254a49547562847969",
+    "B-decap": "2ddc0bdd98211d16687359751e9921e6faa1977f27c369111acf7006b26578dc",
+    "B-encap": "aa5b3dd5a3702f9461d1c8502f261e64262a99e5b3fd662665b22aa6fed2e096",
+    "B-hash-g-pmu": "82bee3a434c105606bf086b4c943951d169d496ccdebe4eb3efc66d0179a1090",
+    "B-hash_g": "f06a8d3d3f936da1eb66251d4e240d95d7d53c911b809aeea42a14a502266ec5",
+    "C-decap": "8d7b4b48a635cabc903e07df2e04532375324d9d55fc43bc05b09e7480be7879",
+    "C-encap": "f69625f6082b136503b75e3f22aa4df413dcc515c6af9516a353048905410f9f",
+    "C-hash-g-pmu": "e740e59c7df3eee2d84b9a9c011c0d1a2ae42599d73e2c882ce3f2744df8156e",
+    "C-hash_g": "d86fa1eb3dec68b050852714ae52a4affe69ff9d4245569cf4c610692392b70e"
+  },
+  "raw_results": "/home/pi/gt768-fused-shake-hashg-20260911-e41/.build/c-gate-v1"
+}
