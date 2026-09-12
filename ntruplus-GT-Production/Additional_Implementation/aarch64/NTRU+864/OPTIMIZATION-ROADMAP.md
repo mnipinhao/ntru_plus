@@ -37,7 +37,9 @@ Status meanings:
 | P7 | Done—Local benefit only | Inverse CT feasibility | GT NTT16 is genuine CT DIT; 10,000-vector ordering proof, complete coordinate/scale/range/memory ledger and source audit pass. CT absorbs bit reversal and avoids a GS range cut, but no new CT/GS DAG attacks the measured +2,895.9-cycle whole-Inverse gap; production unchanged |
 | P7-B0 | Done | Same-boundary Inverse core decomposition | Pi 5 PMU isolated inverse9 as the largest stage (2,958.406 cycles, IPC 1.292); main+tail scatter ideal-removal ceiling was only 164.890 cycles, so B1 selected inverse9 constant liveness rather than a new scatter ABI |
 | P7-B1 | Done—Promoted | Keep the repeated `(722,6844)` Barrett-Shoup pair in `v0/v5`, then reschedule the fixed allocation | Removed 20 instructions/call and 80 object bytes; exact/KAT/alias/no-spill gates passed. Raw order regressed, but Slothy timing recovered it; final paired Pi 5 delta was -18.782 Inverse cycles and -17.875 Decaps cycles with exactly -240 instructions |
-| P8 | Next | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
+| P7-C0 | Done—Algebra/range pass | Re-close current physical Inverse arithmetic and one-product B3 alternatives | 266 constant pairs exhausted; current bounds tighten to I9 2311 / I16 19545 / raw 4485. One-product B3 gives 37→19 mulmods per I9 and -576 arithmetic instructions/Inverse, with safe 2617 / 21397 / 4577 bounds. Last I16 identity reset has a 33792 overflow witness and stays |
+| P7-C1 | Next | Implement one-product inverse NTT9, preserving existing terminal tables and P8 stores | Symbolic DAG, no-spill allocation, local Slothy timing, complete centered-output/alias/cleanup/KAT checks, then Pi 5 paired Inverse and Decaps versus P7-B1; no promotion on instruction count alone |
+| P8 | Queued after P7-C1 | Raw-Inverse-to-ternary Decaps consumer | Close reachable `[-6912,6912]` range and prove a vector DAG exactly equivalent to `center864 -> poly_crepmod3`; decide from complete Inverse+conversion and Decaps cycles |
 | P9 | Queued | New ToBytes routing search with P5 frozen | Smaller FR0-coordinate-to-wire permutation; joint normalization/12-bit packing/route; fewer TBL2/TBL3; separate full/small DAGs; static gate at least about -829 instructions and -101 reads before Slothy |
 | P10 | Queued—Keygen | BaseInv numerator/finish kernel redesign after P7/P8 | Must beat selected Official's 8,324.750 cycles per two-call Keygen boundary without weakening failure, alias or clearing policy |
 
@@ -54,6 +56,26 @@ Status meanings:
   on this immediate critical path.
 
 ## Change log
+
+### 2026-09-12
+
+- Completed P7-C0 in `experiments/gt864-native-asm/inverse-p7c0-range/`.
+  Corrected the earlier assumption about the old proof: it already established
+  `<q` by exhaustive fixed-constant checks; no automatic reduction deletion
+  follows from replacing a `3q/2` label. Per-constant, per-input-interval images
+  instead tighten the actual P7-B1 source chain to 22473→2311→19545→4485→1728.
+- Traced P7-B1 physical I9 arithmetic and full main/tail I16 arithmetic/stores;
+  checked 288 leaf roots and 41472 inverse weights including the R correction.
+  All 64 one-product B3 orientations pass the model. The simple all-722 variant
+  has 19 rather than 37 mulmods per I9, saves 48 arithmetic instructions/block,
+  and closes at 22473→2617→21397→4577→1728. Mixed orientation mask 8 tightens
+  this slightly but needs both root constant pairs; its timing is unknown.
+- Retained the final I16 `b=1` reset: independent inputs within the existing
+  2497 box can produce sixteen I9 s=0 values of 2112, giving 33792 without
+  that reset. This is an input-contract witness, not asserted joint KEM
+  reachability. Added P7-C1 for physical implementation and timing before P8;
+  P9/P10 remain queued. Production assembly and the selected Official baseline
+  are unchanged. No new cycle or physical-candidate correctness claim.
 
 ### 2026-09-10
 
