@@ -1,0 +1,39 @@
+{
+  "status": "allocation-and-scheduling-pass",
+  "spills": 0,
+  "interpreter": "/Users/chenpinhao/slothy_and_ra/.venv/bin/python",
+  "slothy": "/Users/chenpinhao/slothy/slothy/__init__.py",
+  "arch": "/Users/chenpinhao/slothy/slothy/targets/aarch64/aarch64_neon.py",
+  "target": "/Users/chenpinhao/slothy/slothy/targets/aarch64/cortex_a76.py",
+  "input_sha256": "0887ad1315b361ee4a179d00cd5461debc53a25a951e7511c1dec3adaaa9471b",
+  "output_sha256": "c026b981c4b297699291ef8950fb7d5c20787cdb9b1dabe707fc979f985e25b1",
+  "regions": {
+    "p10_num_pair": {
+      "instructions": 132,
+      "expected_cycles": 123,
+      "expected_ipc": 1.07,
+      "log": "slothy-p10_num_pair.log",
+      "fixed_inputs": {
+        "q_num": "v30",
+        "qi_num": "v31"
+      }
+    },
+    "p10_finish_tile": {
+      "instructions": 26,
+      "expected_cycles": 31,
+      "expected_ipc": 0.84,
+      "log": "slothy-p10_finish_tile.log",
+      "fixed_inputs": {
+        "q_finish": "v30",
+        "qi_finish": "v31"
+      }
+    },
+    "p10_inverse3": {
+      "instructions": 164,
+      "expected_cycles": 293,
+      "expected_ipc": 0.56,
+      "log": "slothy-p10_inverse3.log",
+      "fixed_inputs": {}
+    }
+  }
+}

@@ -1,0 +1,22 @@
+repository: /Users/chenpinhao/ntruplus
+source_commit: 1558c54804cc11222f3d02cfad542c87c413ff2b
+slothy_checkout: /Users/chenpinhao/slothy
+slothy_module: /Users/chenpinhao/slothy/slothy
+venv_interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+architecture: slothy.targets.aarch64.aarch64_neon
+target: slothy.targets.aarch64.cortex_a76
+production_source: /Users/chenpinhao/ntruplus/ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864
+production_source_hashes:
+  gt864_native_public.S: 680a313f543c2352b03857fd349ed0e33fe769aeefbb2fb2e71c6df3612ede1b
+  gt864_native_baseinv_num.S: 1cc9ab4b673935a29a4ba3458f038bfe3961c0daac532ac2f4fba471bf74a8a6
+  gt864_native_baseinv_finish.S: 9380bdf721f6377a622406092129d796f7a434713535b2a873e8848a5c3460ec
+  gt864_native_baseinv_inverse.S: f3064c214075ecf182c2b32000da4b73422e87de93f247b7b12972f1dfeef03a
+baseline_regions:
+  numerator_wrapper: .Lbinv_chain through .Lbinv_prefix
+  inverse_leaf: binv_inverse3_slothy_start through binv_inverse3_slothy_end
+  finish_wrapper: .Lbinv_finish_chain through .Lbinv_fail
+benchmark_target: pi@100.99.191.9
+official_tree: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+notes:
+  - The skill probe did not find a venv inside the Slothy checkout; this project uses the separately established slothy_and_ra venv.
+  - P9 production remains frozen until P10 passes the public BaseInv and full-Keygen gates.

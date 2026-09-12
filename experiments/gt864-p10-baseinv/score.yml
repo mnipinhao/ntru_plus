@@ -1,0 +1,36 @@
+candidate:
+  id: gt864_p10a_direct_fr0_baseinv
+  status: investigate
+  mode: existing_region_replacement
+
+contract:
+  preserved: false
+  approved_changes: false
+  changed_fields: [successful output representative absolute bound 1972 to 2550]
+  approval_note: K1 producer and D1 consumer closure passed, but explicit promotion approval is still required.
+
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+
+slothy:
+  status: pass
+  baseline_expected_cycles: 4693
+  candidate_expected_cycles: 3623
+  parity_justification: Dynamic A76 model is 18 numerator pairs plus 36 finish tiles plus one inverse3; all three P10 regions are final OPTIMAL and spill-free.
+  log_json: slothy-result.json
+
+benchmark:
+  status: pass
+  command: ssh pi@100.99.191.9; P10_RUN=run2 python3 pi_run.py on the isolated bundle
+  metric: complete Keygen median cycles, paired P9 then P10
+  lower_is_better: true
+  neutral_threshold_percent: 0.0
+  baseline: 45804.125
+  candidate: 43656.375
+
+decision:
+  reason: All correctness, Slothy and Pi 5 performance gates pass; production is frozen only because the proved wider output-representative contract has not been explicitly approved.
+  next_iteration: Approve and promote P10-A, or run the conditional P10-B normalized-finish fallback.

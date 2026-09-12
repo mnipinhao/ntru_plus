@@ -1,0 +1,71 @@
+dag:
+  id: gt864_p10_direct_fr0_baseinv_dag
+  kernel_contract: kernel-contract.yml
+  description: direct FR0 two-tile numerator, global inverse correction, and direct FR0 finish
+inputs:
+  - a b c are signed R0 coefficients from the K1 Forward output
+  - zR is the lane-specific cubic modulus root multiplied by R
+  - q and qi are fixed live-in vectors shared across repeated leaf calls
+constants: [q equals 3457, qi equals -12929, scale correction equals -1571, scale Shoup equals -14891]
+nodes:
+  - id: num_u_w
+    op: Montgomery REDC of b*c and c*c
+    inputs: [b, c, qi, q]
+    outputs: [u scale R^-1, w scale R^-1]
+    instruction_shape: two independent seven-instruction widening Montgomery products
+    tied_operands: [smlal low and high accumulators]
+    range_before: absolute input at most 28765
+    range_after: u at most 14355 and w at most 14355
+    may_reorder_with: [the other tile and all independent initial loads]
+    must_precede: [num_cofactors]
+  - id: num_cofactors
+    op: fused wide products followed by one Montgomery REDC each
+    inputs: [a, b, c, u, w, zR, qi, q]
+    outputs: [n0 n1 n2 each scale R^-1]
+    instruction_shape: n0=REDC(a^2-u*zR), n1=REDC(w*zR-a*b), n2=REDC(b^2-a*c)
+    tied_operands: [smlsl low and high accumulators]
+    range_before: all listed input bounds
+    range_after: n0 and n1 at most 14733; n2 at most 26980
+    may_reorder_with: [independent cofactor nodes and the other tile]
+    must_precede: [num_h_det]
+  - id: num_h_det
+    op: two fused wide sums and Montgomery REDCs
+    inputs: [n0, n1, n2, a, b, c, zR, qi, q]
+    outputs: [h scale R^-2, determinant scale R^-2]
+    instruction_shape: h=REDC(n2*b+n1*c); determinant=REDC(h*zR+n0*a)
+    tied_operands: [smlal low and high accumulators]
+    range_before: cofactor bounds from previous node
+    range_after: h at most 20038 and determinant at most 8724
+    may_reorder_with: [the other tile]
+    must_precede: [numerator stores, denominator store]
+  - id: inverse_scale
+    op: Algorithm-10 fixed multiplication of the single global inverse by R^-2
+    inputs: [global inverse R1, constant -1571, Shoup constant -14891, q]
+    outputs: [global inverse scale R^-1]
+    instruction_shape: mul then sqrdmulh then mls
+    tied_operands: [mls destination is product]
+    range_before: inverse absolute value below 2000
+    range_after: corrected inverse absolute value below 2000
+    may_reorder_with: []
+    must_precede: [three-chain split]
+  - id: finish
+    op: shared-denominator three-product Montgomery finish
+    inputs: [n0 n1 n2 scale R^-1, recovered denominator inverse scale R^2, qi, q]
+    outputs: [three FR0 coefficients]
+    instruction_shape: share denominator times qi; three six-instruction REDCs and stores
+    tied_operands: [smlal low and high accumulators]
+    range_before: numerator at most 26980 and inverse at most 1995
+    range_after: FR0 absolute value at most 2550
+    may_reorder_with: [three independent output products and other tiles]
+    must_precede: [output stores]
+memory:
+  loads: [two tiles of a b c and zR, inverse triple, one finish tile and inverse denominator]
+  stores: [two cofactor triples and two strided determinants, corrected inverse triple, final FR0 triple]
+  ordering_constraints: [each tile loads all input aliases before writing the same tile; scratch offsets and loop order are public]
+outputs: [same public FR0 inverse or all-zero failure output]
+live_out: [public output memory and w0 status]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

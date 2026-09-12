@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p10_direct_fr0_baseinv
+  name: direct-FR0 BaseInv numerator scale chain and finish
+  source: candidate.sym.S
+  scheme: NTRU+864 Good-Thomas KEM production
+  operation: invert 36 cubic FR0 leaves with fixed-time batch inversion
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: unified allocation and scheduling of three bounded leaf regions
+  driver: optimize.py
+  expected_outputs: [candidate.alloc.S, slothy.log, slothy-result.json]
+  allow_spills: false
+region:
+  start_label: p10_num_pair_slothy_start
+  end_label: p10_inverse3_slothy_end
+  expected_instruction_count: 299
+  live_in: [x0, x1, x2, x3, Q<q_num>, Q<qi_num>, Q<q_finish>, Q<qi_finish>]
+  live_out: [x0, x1, x2, x3, numerator stores, denominator stores, inverse stores, finish stores]
+abi:
+  inputs: [same public gt864_baseinv_asm pointers as baseline, internal fixed q and qi vector live-ins for numerator and finish]
+  outputs: [same public success status and FR0 inverse or zero output as baseline]
+  clobbers: [x0 through x28, v0 through v31, condition flags]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x8, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: seven-REDC direct numerator per tile, one global R^-2 correction, and three final REDCs per tile
+layout:
+  input_representation: K1 Forward FR0 in chain-major 36-tile cubic layout plus zR table
+  output_representation: same FR0 cubic layout as baseline
+  vector_lanes: eight independent cubic leaves per Q register
+  packing: each tile is three consecutive Q vectors; denominator scratch is step-major by three chains
+memory_contract:
+  loads: [same 108 input Q vectors and 36 zeta Q vectors as baseline, fixed prefix and denominator scratch]
+  stores: [same output and 1200-byte scratch footprint as baseline, zero output on failure, wipe all scratch]
+  aliasing: exact output equals input is supported because all three tile inputs load before their stores; other partial overlap is forbidden
+  alignment: 2-byte coefficient alignment; Q accesses need not be 16-byte aligned
+  public_offsets_only: true
+  pointer_updates: [unchanged fixed 36-tile traversal and 12-step three-chain batch inversion]
+constant_contract:
+  constants: [q 3457, Montgomery qi -12929, zR absolute value at most 1728, R^-2 mod q -1571, R^-2 Shoup -14891]
+  modulus: 3457
+  representation: public FR0; cofactor R^-1; determinant R^-2; recovered inverse R^2; final FR0
+  reduction_method: widening signed Montgomery REDC; one Algorithm-10 fixed multiplication for the global inverse scale
+range_contract:
+  input_ranges: [KEM-only K1 Forward f absolute value at most 28765, g absolute value at most 26930]
+  intermediate_ranges: [direct numerator and all batch products fit signed int16 after REDC; every widened accumulator including correction fits signed int32]
+  output_ranges: [successful FR0 inverse absolute value at most 2550 before any later consumer reduction]
+  narrowing_points: [only exact Montgomery high-half extraction after adding the low-word correction]
+constant_time_contract:
+  secret_inputs: [all polynomial coefficients and invertibility]
+  public_inputs: [pointers, fixed loop trip counts, fixed table offsets and constants]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 prove.py
+  test_command: python3 verify.py then production KAT failure alias and cleanup checks
+  full_path_benchmark_command: paired Pi 5 P9 versus P10 BaseInv call-site and complete Keygen PMU
+  benchmark_metric: median cycles
+  lower_is_better: true

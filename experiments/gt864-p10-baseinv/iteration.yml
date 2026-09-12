@@ -1,0 +1,36 @@
+iteration:
+  id: P10-A
+  mode: existing_region_replacement
+  current_state: promotion_decision
+  hypothesis: direct FR0 numerator and finish remove per-tile scale conversions while one global R^-2 correction preserves the public FR0 result
+  changed_artifacts: [repo-probe.yml, baseline-numerator-region.S, baseline-finish-region.S, baseline-contract.yml, kernel-contract.yml, instruction-dag.yml, prove.py, generate_candidate.py, candidate-contract.yml]
+  earliest_state_to_revisit: repo_probe
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: optimize.py
+  slothy_log: slothy.log
+  candidate_contract: candidate-contract.yml
+  candidate_score: score.yml
+  promotion_report: promotion-report.yml
+gates:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: pass; the generic checker emits only known tied-read-write SMLSL warnings
+  Slothy_run_authorized_by_user: pass
+  parse_slothy_result: pass from final OPTIMAL records; the generic parser falsely treats intermediate binary-search INFEASIBLE probes as final failures
+  oracle_correctness: pass
+  full_path_benchmark: pass
+  score_candidate: investigate because output-range contract approval is not yet recorded
+  promotion_decision: pending explicit approval of the proved 1972 to 2550 output-bound change
+  iteration_or_promote: preserve production until approval; otherwise execute P10-B normalization fallback
+notes:
+  - Public ABI memory alias failure and clearing behavior are unchanged.
+  - KEM-only input range is intentional and follows the user-approved production definition; generic polynomial multiplication is outside this production contract.
+  - P10 promotion requires beating 8324.750 cycles for the selected Official two-call Keygen BaseInv boundary.
+  - Pi 5 measured 8201.625 cycles for P10 versus 8362.750 for the selected Official boundary; the timing gate passed.

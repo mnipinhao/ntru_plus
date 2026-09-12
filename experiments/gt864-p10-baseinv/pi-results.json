@@ -1,0 +1,324 @@
+{
+  "status": "pass",
+  "completion_gate": {
+    "metric": "call-site profiler net cycles for two BaseInv calls per Keygen",
+    "official": 8362.75,
+    "p10": 8201.625,
+    "delta": -161.125,
+    "passed": true
+  },
+  "correctness": {
+    "test_kem": "pass both",
+    "kat": {
+      "p9": {
+        "sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+        "cases": 100
+      },
+      "p10": {
+        "sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+        "cases": 100
+      }
+    },
+    "malformed": {
+      "p9": {
+        "sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+        "bytes": 417216
+      },
+      "p10": {
+        "sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+        "bytes": 417216
+      }
+    },
+    "baseinv_808_success_failure_alias_aapcs_scratch": "pass both"
+  },
+  "p9_vs_p10": {
+    "decaps": {
+      "p9": {
+        "cycles": 40919.100000000006,
+        "instructions": 96077.6,
+        "branches": 1230.1
+      },
+      "p10": {
+        "cycles": 40914.525,
+        "instructions": 96077.6,
+        "branches": 1230.1
+      },
+      "cycle_delta": -4.575000000004366
+    },
+    "encaps": {
+      "p9": {
+        "cycles": 45374.6,
+        "instructions": 124763.6,
+        "branches": 1005.6
+      },
+      "p10": {
+        "cycles": 45375.875,
+        "instructions": 124763.6,
+        "branches": 1005.6
+      },
+      "cycle_delta": 1.2750000000014552
+    },
+    "keygen": {
+      "p9": {
+        "cycles": 45804.125,
+        "instructions": 97895.5,
+        "branches": 1564.0
+      },
+      "p10": {
+        "cycles": 43656.375,
+        "instructions": 96125.5,
+        "branches": 1564.0
+      },
+      "cycle_delta": -2147.75
+    },
+    "baseinv_failure": {
+      "p9": {
+        "cycles": 3325.656,
+        "instructions": 4267.062,
+        "branches": 278.375
+      },
+      "p10": {
+        "cycles": 2629.219,
+        "instructions": 3767.062,
+        "branches": 278.375
+      },
+      "cycle_delta": -696.4369999999999
+    },
+    "baseinv_success": {
+      "p9": {
+        "cycles": 5209.75,
+        "instructions": 6597.062,
+        "branches": 317.375
+      },
+      "p10": {
+        "cycles": 4129.875,
+        "instructions": 5712.062,
+        "branches": 317.375
+      },
+      "cycle_delta": -1079.875
+    }
+  },
+  "official_vs_p10": {
+    "keygen": {
+      "official": {
+        "cycles": 44304.625,
+        "instructions": 89328.0,
+        "branches": 1187.0
+      },
+      "p10": {
+        "cycles": 43655.875,
+        "instructions": 96127.0,
+        "branches": 1566.0
+      },
+      "cycle_delta": -648.75
+    },
+    "encaps": {
+      "official": {
+        "cycles": 46436.4,
+        "instructions": 120822.2,
+        "branches": 1064.6
+      },
+      "p10": {
+        "cycles": 45338.875,
+        "instructions": 124761.2,
+        "branches": 1005.6
+      },
+      "cycle_delta": -1097.5250000000015
+    },
+    "decaps": {
+      "official": {
+        "cycles": 40760.375,
+        "instructions": 86648.2,
+        "branches": 1080.1
+      },
+      "p10": {
+        "cycles": 40918.0,
+        "instructions": 96085.2,
+        "branches": 1232.1
+      },
+      "cycle_delta": 157.625
+    }
+  },
+  "call_site_profiles_cycles": {
+    "keygen": {
+      "official": {
+        "BaseInv": 8362.75,
+        "BaseMul_R0": 4880.0,
+        "CBD": 815.5,
+        "Forward": 7533.0,
+        "RNG": 262.0,
+        "SHAKE_sampling": 5525.625,
+        "ToBytes_full": 3327.0,
+        "Triple": 488.0,
+        "cleanup": 465.0,
+        "hash_f": 13270.0
+      },
+      "p10": {
+        "BaseInv": 8201.625,
+        "BaseMul_R0": 4349.0,
+        "CBD": 762.0,
+        "Forward": 6791.375,
+        "RNG": 223.0,
+        "SHAKE_sampling": 5538.25,
+        "ToBytes_full": 1515.0,
+        "ToBytes_small": 2383.875,
+        "Triple": 469.5,
+        "cleanup": 374.75,
+        "hash_f": 13241.5
+      }
+    },
+    "encaps": {
+      "official": {
+        "BaseMulAdd": 2900.0,
+        "CBD": 408.07500000000005,
+        "Forward": 7535.0,
+        "FromBytes_checked": 751.0,
+        "RNG": 384.0,
+        "SOTP_encode": 423.0,
+        "ToBytes_full": 2216.0,
+        "cleanup": 282.05,
+        "hash_f": 13290.275000000001,
+        "hash_g": 14571.175,
+        "hash_h": 4058.85
+      },
+      "p10": {
+        "BaseMulAdd": 2170.0,
+        "CBD": 385.15,
+        "Forward": 6796.0,
+        "FromBytes_checked": 723.0,
+        "RNG": 352.0,
+        "SOTP_encode": 397.0,
+        "ToBytes_full": 1529.0,
+        "ToBytes_small": 1188.5,
+        "cleanup": 220.0,
+        "hash_f": 13224.975,
+        "hash_g": 14481.775,
+        "hash_h": 4038.925
+      }
+    },
+    "decaps": {
+      "official": {
+        "BaseMul_R0": 2439.0,
+        "BaseMul_Rinv": 1761.7,
+        "CBD": 400.0,
+        "Crepmod3": 488.0,
+        "Forward": 7533.625,
+        "FromBytes_checked": 2261.95,
+        "Inverse": 4131.3,
+        "SOTP_decode": 406.0,
+        "Sub": 220.0,
+        "ToBytes_full": 2214.0,
+        "cleanup": 537.0,
+        "hash_g": 14568.65,
+        "hash_h": 4059.85
+      },
+      "p10": {
+        "BaseMul_R0": 2174.0,
+        "BaseMul_Rinv": 1762.25,
+        "CBD": 374.45,
+        "Forward": 6792.5,
+        "FromBytes_checked": 2167.225,
+        "Inverse_to_ternary": 5432.35,
+        "SOTP_decode": 382.0,
+        "Sub": 204.0,
+        "ToBytes_full": 1515.0,
+        "ToBytes_small": 1187.0,
+        "cleanup": 451.0,
+        "hash_g": 14486.400000000001,
+        "hash_h": 4045.2250000000004
+      }
+    }
+  },
+  "official": {
+    "source": "/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64",
+    "upstream_latest_verified": false,
+    "tree_key_hashes": {
+      "kem.c": "acb888a4aa199cc4d1f9a62e4b61921be8d6032b38bd19c8e2afd35aa808937c",
+      "symmetric.c": "a9ab4afbb2a9053c75cd959040569e1e705d769021f250d87c3d3f08da1d7053",
+      "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865"
+    }
+  },
+  "environment": {
+    "uname": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc": "gcc (Debian 14.2.0-19) 14.2.0",
+    "governor": "ondemand",
+    "temperature": "temp=63.1'C",
+    "throttled": "throttled=0x0",
+    "core": 3,
+    "processes": 6
+  },
+  "binary_hashes": {
+    "p9": "4d2d067f3a6637172b7f62f029409e8384f51d049251c8f19db92f6e05c5ec16",
+    "p10": "c5fd7fd8753af19f0c5f7592c9e571ba17a79cbea9d4ef642f3c50e4481c5b0e",
+    "official": "754291c2b34b6d153a15737424890cd6f260a8fb690d92651d51a25a80764b1e"
+  },
+  "profile_link_objects": {
+    "official": [
+      "add.s.official.o",
+      "base.s.official.o",
+      "cbd.s.official.o",
+      "crepmod3.s.official.o",
+      "fips202.c.official.o",
+      "ntt.s.official.o",
+      "pack.s.official.o",
+      "poly.c.official.o",
+      "symmetric.c.official.o",
+      "optblocker.o",
+      "official-profile-kem.o"
+    ],
+    "p10": [
+      "add.o",
+      "base.o",
+      "byte_api.o",
+      "byte_boundary.o",
+      "cbd.o",
+      "cluster_transpose_frombytes.o",
+      "crepmod3.o",
+      "fips202.o",
+      "gt864_crepmod3_raw.o",
+      "gt864_forward_poly_ntt.o",
+      "gt864_forward_six_bank.o",
+      "gt864_fr0_basemul.o",
+      "gt864_fr0_basemul_d1.o",
+      "gt864_fr0_inverse9_block.o",
+      "gt864_fr0_inverse_asm_wrapper.o",
+      "gt864_inverse16_blocks.o",
+      "gt864_native.o",
+      "gt864_native_baseinv_finish.o",
+      "gt864_native_baseinv_inverse.o",
+      "gt864_native_baseinv_num.o",
+      "gt864_native_baseinv_prefix.o",
+      "gt864_native_baseinv_recover.o",
+      "gt864_native_basemul.o",
+      "gt864_native_center864.o",
+      "gt864_native_inverse16_lazy.o",
+      "gt864_native_inverse9.o",
+      "gt864_native_inverse_tail_lazy.o",
+      "gt864_native_public.o",
+      "gt864_p9_tobytes_full.o",
+      "gt864_p9_tobytes_small.o",
+      "gt864_pair_merge_full.o",
+      "gt864_pair_merge_small.o",
+      "gt864_poly_api.o",
+      "gt864_support_abi.o",
+      "gt864_tobytes.o",
+      "gt864_tobytes_full_core.o",
+      "gt864_tobytes_merge_core.o",
+      "gt864_tobytes_public.o",
+      "gt864_tobytes_small_core.o",
+      "gt864_top_split.o",
+      "input_once_frombytes.o",
+      "ntt.o",
+      "p9_tobytes_public_full.o",
+      "p9_tobytes_public_small.o",
+      "pack.o",
+      "poly.o",
+      "raw_pack.o",
+      "route9.o",
+      "stock_wrapper.o",
+      "symmetric.o",
+      "tail_variants.o",
+      "p10-profile-kem.o"
+    ]
+  }
+}

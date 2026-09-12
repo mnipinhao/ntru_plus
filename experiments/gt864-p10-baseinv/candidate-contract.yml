@@ -1,0 +1,49 @@
+candidate:
+  id: gt864_p10a_direct_fr0_baseinv
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: optimize.py
+  slothy_log: [slothy-p10_num_pair.log, slothy-p10_finish_tile.log, slothy-p10_inverse3.log]
+  generated_output: candidate.alloc.S
+contract_preservation:
+  baseline_compared: true
+  preserved: false
+  approved_changes: false
+  approved_by: none; P10-A remains experimental until the output-range delta is closed and approved
+  changed_fields: [conservative successful output range 1972 to 2550]
+region:
+  start_label: p10_num_pair_slothy_start
+  end_label: p10_inverse3_slothy_end
+  live_in: [x19 output, x20 input, x21 zeta table, x22 denominator scratch, x23 prefix scratch, x24 running inverses]
+  live_out: [w0 status, output memory, zeroed scratch, restored public ABI state]
+abi:
+  inputs: [x0 points to 1728-byte FR0 polynomial, x1 aliases or points to 1728-byte FR0 polynomial, x2 points to 576-byte zR table]
+  outputs: [w0 is zero on success and one on noninvertible input, x0 holds 1728-byte FR0 inverse or zeros on failure]
+  clobbers: [x0 through x28, v0 through v31, condition flags]
+  concrete_gprs_allowed: [x0 through x28, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18 platform register]
+memory_contract:
+  loads: [exactly 108 input Q vectors, 36 zeta Q vectors, fixed public scratch locations]
+  stores: [108 output Q vectors, 1200-byte scratch, zero output on failure, wipe all 1200 scratch bytes]
+  aliasing: exact output equals input is supported; other partial overlap is forbidden
+  alignment: 2-byte coefficient alignment; Q accesses need not be 16-byte aligned
+  public_offsets_only: true
+  pointer_updates: [fixed 36-tile traversal, fixed 12-step three-chain batch inversion]
+constant_contract:
+  constants: [q 3457, Montgomery qi -12929, R mod q -147, R inverse correction -682]
+  modulus: 3457
+  representation: public FR0 input and output; internal implementation scale is private to BaseInv
+  reduction_method: signed 16-bit Montgomery REDC and fixed-constant Barrett-Shoup multiplication
+range_contract:
+  input_ranges: [KEM-only K1 Forward f absolute value at most 28765, g absolute value at most 26930]
+  intermediate_ranges: [all BaseInv scratch and leaf values fit signed int16 and all wide accumulators fit signed int32]
+  output_ranges: [successful FR0 inverse leaves satisfy conservative absolute value at most 2550]
+  narrowing_points: [every signed 32-bit Montgomery accumulator narrows only after exact divisibility by 65536]
+constant_time_contract:
+  secret_inputs: [all polynomial coefficients and invertibility]
+  public_inputs: [pointers, fixed loop trip counts, table offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
