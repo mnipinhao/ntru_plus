@@ -68,9 +68,10 @@ Thus the eight blocks consume these message ranges:
 | 7 | `msg[951..1086]` |
 
 Every block after block 0 begins one byte before an 8-byte `msg` boundary.
-A fused implementation must use unaligned loads plus shifts/extracts, or carry
-the one-byte seam between adjacent loads.  It must not silently treat these as
-eight naturally aligned 136-byte `msg` blocks.
+A fused implementation can use unaligned 64-bit loads directly for these
+words; per-word shifts/extracts are not required. Only the first prefix lane
+needs assembly from the domain byte and seven message bytes. It must not
+silently treat these as eight naturally aligned 136-byte `msg` blocks.
 
 ## Tail and padding
 
@@ -138,4 +139,3 @@ defeat the experiment.
    boundary loads, stores, spills, calls, normalization, and input seam work.
 5. D implementation: only after gate 4 demonstrates a net static opportunity.
 6. KAT/full callers precede any Pi timing.
-

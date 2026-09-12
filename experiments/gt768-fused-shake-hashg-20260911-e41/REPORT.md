@@ -73,6 +73,8 @@ loop shape.  Only their measured residual justifies implementing D.
 
 ## B gate completed, 2026-09-12
 
+Measured code revision: 5300d169fa04b2459bf1093c435e9e22843cfee4.
+
 B replaces only hash_g's materialized domain-prefixed input with a generic
 one-byte-prefix absorber. The public hash_g ABI and overlap behavior remain
 unchanged. The rest of SHAKE256, hash_f, hash_h and the polynomial sources

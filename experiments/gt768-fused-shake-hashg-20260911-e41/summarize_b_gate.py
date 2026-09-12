@@ -37,7 +37,7 @@ summary = {
                          "source_sha256")
 }
 summary.update({
-    "candidate_code_revision": None,
+    "candidate_code_revision": "5300d169fa04b2459bf1093c435e9e22843cfee4",
     "decision": "accept B as experimental control; no production promotion",
     "correctness": {
         "mac_package_check": "pass",
