@@ -1,0 +1,694 @@
+{
+  "main": {
+    "source": "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse16_lazy.S",
+    "output": "experiments/gt864-p11-inverse-ternary/candidate-main.S",
+    "removed_umov_strh": 256,
+    "added_str_d": 32,
+    "net_instructions": -224,
+    "function": "p11_lazy_i16",
+    "records": [
+      {
+        "vector": 7,
+        "definition": 244,
+        "k": 0,
+        "offsets": [
+          0,
+          6,
+          12,
+          18
+        ]
+      },
+      {
+        "vector": 30,
+        "definition": 252,
+        "k": 1,
+        "offsets": [
+          54,
+          60,
+          66,
+          72
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 300,
+        "k": 2,
+        "offsets": [
+          108,
+          114,
+          120,
+          126
+        ]
+      },
+      {
+        "vector": 30,
+        "definition": 303,
+        "k": 3,
+        "offsets": [
+          162,
+          168,
+          174,
+          180
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 382,
+        "k": 4,
+        "offsets": [
+          216,
+          222,
+          228,
+          234
+        ]
+      },
+      {
+        "vector": 30,
+        "definition": 386,
+        "k": 5,
+        "offsets": [
+          270,
+          276,
+          282,
+          288
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 442,
+        "k": 6,
+        "offsets": [
+          324,
+          330,
+          336,
+          342
+        ]
+      },
+      {
+        "vector": 30,
+        "definition": 444,
+        "k": 7,
+        "offsets": [
+          378,
+          384,
+          390,
+          396
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 520,
+        "k": 8,
+        "offsets": [
+          432,
+          438,
+          444,
+          450
+        ]
+      },
+      {
+        "vector": 30,
+        "definition": 523,
+        "k": 9,
+        "offsets": [
+          486,
+          492,
+          498,
+          504
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 582,
+        "k": 10,
+        "offsets": [
+          540,
+          546,
+          552,
+          558
+        ]
+      },
+      {
+        "vector": 30,
+        "definition": 585,
+        "k": 11,
+        "offsets": [
+          594,
+          600,
+          606,
+          612
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 661,
+        "k": 12,
+        "offsets": [
+          648,
+          654,
+          660,
+          666
+        ]
+      },
+      {
+        "vector": 30,
+        "definition": 669,
+        "k": 13,
+        "offsets": [
+          702,
+          708,
+          714,
+          720
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 722,
+        "k": 14,
+        "offsets": [
+          756,
+          762,
+          768,
+          774
+        ]
+      },
+      {
+        "vector": 30,
+        "definition": 729,
+        "k": 15,
+        "offsets": [
+          810,
+          816,
+          822,
+          828
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 216,
+        "k": 16,
+        "offsets": [
+          864,
+          870,
+          876,
+          882
+        ]
+      },
+      {
+        "vector": 12,
+        "definition": 219,
+        "k": 17,
+        "offsets": [
+          918,
+          924,
+          930,
+          936
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 278,
+        "k": 18,
+        "offsets": [
+          972,
+          978,
+          984,
+          990
+        ]
+      },
+      {
+        "vector": 12,
+        "definition": 279,
+        "k": 19,
+        "offsets": [
+          1026,
+          1032,
+          1038,
+          1044
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 355,
+        "k": 20,
+        "offsets": [
+          1080,
+          1086,
+          1092,
+          1098
+        ]
+      },
+      {
+        "vector": 12,
+        "definition": 359,
+        "k": 21,
+        "offsets": [
+          1134,
+          1140,
+          1146,
+          1152
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 418,
+        "k": 22,
+        "offsets": [
+          1188,
+          1194,
+          1200,
+          1206
+        ]
+      },
+      {
+        "vector": 12,
+        "definition": 419,
+        "k": 23,
+        "offsets": [
+          1242,
+          1248,
+          1254,
+          1260
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 495,
+        "k": 24,
+        "offsets": [
+          1296,
+          1302,
+          1308,
+          1314
+        ]
+      },
+      {
+        "vector": 12,
+        "definition": 497,
+        "k": 25,
+        "offsets": [
+          1350,
+          1356,
+          1362,
+          1368
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 553,
+        "k": 26,
+        "offsets": [
+          1404,
+          1410,
+          1416,
+          1422
+        ]
+      },
+      {
+        "vector": 12,
+        "definition": 558,
+        "k": 27,
+        "offsets": [
+          1458,
+          1464,
+          1470,
+          1476
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 631,
+        "k": 28,
+        "offsets": [
+          1512,
+          1518,
+          1524,
+          1530
+        ]
+      },
+      {
+        "vector": 12,
+        "definition": 630,
+        "k": 29,
+        "offsets": [
+          1566,
+          1572,
+          1578,
+          1584
+        ]
+      },
+      {
+        "vector": 7,
+        "definition": 693,
+        "k": 30,
+        "offsets": [
+          1620,
+          1626,
+          1632,
+          1638
+        ]
+      },
+      {
+        "vector": 12,
+        "definition": 697,
+        "k": 31,
+        "offsets": [
+          1674,
+          1680,
+          1686,
+          1692
+        ]
+      }
+    ]
+  },
+  "tail": {
+    "source": "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse_tail_lazy.S",
+    "output": "experiments/gt864-p11-inverse-ternary/candidate-tail.S",
+    "removed_umov_strh": 192,
+    "added_str_d": 32,
+    "net_instructions": -160,
+    "function": "p11_lazy_itail",
+    "records": [
+      {
+        "vector": 17,
+        "definition": 239,
+        "k": 0,
+        "offsets": [
+          0,
+          2,
+          4
+        ]
+      },
+      {
+        "vector": 19,
+        "definition": 241,
+        "k": 1,
+        "offsets": [
+          54,
+          56,
+          58
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 293,
+        "k": 2,
+        "offsets": [
+          108,
+          110,
+          112
+        ]
+      },
+      {
+        "vector": 19,
+        "definition": 291,
+        "k": 3,
+        "offsets": [
+          162,
+          164,
+          166
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 367,
+        "k": 4,
+        "offsets": [
+          216,
+          218,
+          220
+        ]
+      },
+      {
+        "vector": 19,
+        "definition": 363,
+        "k": 5,
+        "offsets": [
+          270,
+          272,
+          274
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 410,
+        "k": 6,
+        "offsets": [
+          324,
+          326,
+          328
+        ]
+      },
+      {
+        "vector": 19,
+        "definition": 415,
+        "k": 7,
+        "offsets": [
+          378,
+          380,
+          382
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 489,
+        "k": 8,
+        "offsets": [
+          432,
+          434,
+          436
+        ]
+      },
+      {
+        "vector": 19,
+        "definition": 494,
+        "k": 9,
+        "offsets": [
+          486,
+          488,
+          490
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 538,
+        "k": 10,
+        "offsets": [
+          540,
+          542,
+          544
+        ]
+      },
+      {
+        "vector": 19,
+        "definition": 541,
+        "k": 11,
+        "offsets": [
+          594,
+          596,
+          598
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 610,
+        "k": 12,
+        "offsets": [
+          648,
+          650,
+          652
+        ]
+      },
+      {
+        "vector": 19,
+        "definition": 613,
+        "k": 13,
+        "offsets": [
+          702,
+          704,
+          706
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 662,
+        "k": 14,
+        "offsets": [
+          756,
+          758,
+          760
+        ]
+      },
+      {
+        "vector": 19,
+        "definition": 669,
+        "k": 15,
+        "offsets": [
+          810,
+          812,
+          814
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 218,
+        "k": 16,
+        "offsets": [
+          864,
+          866,
+          868
+        ]
+      },
+      {
+        "vector": 24,
+        "definition": 219,
+        "k": 17,
+        "offsets": [
+          918,
+          920,
+          922
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 267,
+        "k": 18,
+        "offsets": [
+          972,
+          974,
+          976
+        ]
+      },
+      {
+        "vector": 24,
+        "definition": 270,
+        "k": 19,
+        "offsets": [
+          1026,
+          1028,
+          1030
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 336,
+        "k": 20,
+        "offsets": [
+          1080,
+          1082,
+          1084
+        ]
+      },
+      {
+        "vector": 24,
+        "definition": 333,
+        "k": 21,
+        "offsets": [
+          1134,
+          1136,
+          1138
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 394,
+        "k": 22,
+        "offsets": [
+          1188,
+          1190,
+          1192
+        ]
+      },
+      {
+        "vector": 24,
+        "definition": 395,
+        "k": 23,
+        "offsets": [
+          1242,
+          1244,
+          1246
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 465,
+        "k": 24,
+        "offsets": [
+          1296,
+          1298,
+          1300
+        ]
+      },
+      {
+        "vector": 24,
+        "definition": 459,
+        "k": 25,
+        "offsets": [
+          1350,
+          1352,
+          1354
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 518,
+        "k": 26,
+        "offsets": [
+          1404,
+          1406,
+          1408
+        ]
+      },
+      {
+        "vector": 24,
+        "definition": 519,
+        "k": 27,
+        "offsets": [
+          1458,
+          1460,
+          1462
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 590,
+        "k": 28,
+        "offsets": [
+          1512,
+          1514,
+          1516
+        ]
+      },
+      {
+        "vector": 24,
+        "definition": 591,
+        "k": 29,
+        "offsets": [
+          1566,
+          1568,
+          1570
+        ]
+      },
+      {
+        "vector": 17,
+        "definition": 639,
+        "k": 30,
+        "offsets": [
+          1620,
+          1622,
+          1624
+        ]
+      },
+      {
+        "vector": 24,
+        "definition": 640,
+        "k": 31,
+        "offsets": [
+          1674,
+          1676,
+          1678
+        ]
+      }
+    ]
+  }
+}

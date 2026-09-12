@@ -1,0 +1,121 @@
+{
+  "status": "reject",
+  "completion_gate": {
+    "component_cycles_improve": false,
+    "full_decaps_cycles_improve": false,
+    "no_keygen_encaps_instruction_change": true
+  },
+  "correctness": {
+    "test_kem": "pass both",
+    "kat": {
+      "baseline": {
+        "sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+        "cases": 100
+      },
+      "candidate": {
+        "sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+        "cases": 100
+      }
+    },
+    "malformed": {
+      "baseline": {
+        "sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+        "bytes": 417216
+      },
+      "candidate": {
+        "sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+        "bytes": 417216
+      }
+    },
+    "inverse_4096_exact_alias_aapcs_wipe": "pass candidate",
+    "in_benchmark_valid_tampered_inverse_alias": "pass all six processes"
+  },
+  "summary": {
+    "inverse_to_ternary": {
+      "baseline": {
+        "cycles": 5420.063,
+        "instructions": 9096.125,
+        "branches": 228.188
+      },
+      "candidate": {
+        "cycles": 5544.0545,
+        "instructions": 7837.125,
+        "branches": 233.188
+      },
+      "delta": {
+        "cycles": 123.99150000000009,
+        "instructions": -1259.0,
+        "branches": 5.0
+      },
+      "cycle_delta_percent": 2.2876394610173323
+    },
+    "keygen": {
+      "baseline": {
+        "cycles": 43645.875,
+        "instructions": 96128.0,
+        "branches": 1566.0
+      },
+      "candidate": {
+        "cycles": 43662.75,
+        "instructions": 96128.0,
+        "branches": 1566.0
+      },
+      "delta": {
+        "cycles": 16.875,
+        "instructions": 0.0,
+        "branches": 0.0
+      },
+      "cycle_delta_percent": 0.03866344757665896
+    },
+    "encaps": {
+      "baseline": {
+        "cycles": 45321.175,
+        "instructions": 124761.95,
+        "branches": 1004.6
+      },
+      "candidate": {
+        "cycles": 45296.2,
+        "instructions": 124761.95,
+        "branches": 1004.6
+      },
+      "delta": {
+        "cycles": -24.97500000000582,
+        "instructions": 0.0,
+        "branches": 0.0
+      },
+      "cycle_delta_percent": -0.055106691298290045
+    },
+    "decaps": {
+      "baseline": {
+        "cycles": 40928.875,
+        "instructions": 96089.95,
+        "branches": 1232.1
+      },
+      "candidate": {
+        "cycles": 41049.350000000006,
+        "instructions": 94830.95,
+        "branches": 1237.1
+      },
+      "delta": {
+        "cycles": 120.47500000000582,
+        "instructions": -1259.0,
+        "branches": 5.0
+      },
+      "cycle_delta_percent": 0.29435209250194827
+    }
+  },
+  "environment": {
+    "uname": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc": "gcc (Debian 14.2.0-19) 14.2.0",
+    "governor": "ondemand",
+    "temperature": "temp=63.1'C",
+    "throttled": "throttled=0x0",
+    "core": 3,
+    "processes": 6,
+    "supercop_reference_root": "/home/pi/supercop-20260831"
+  },
+  "binary_hashes": {
+    "baseline": "c5fd7fd8753af19f0c5f7592c9e571ba17a79cbea9d4ef642f3c50e4481c5b0e",
+    "candidate": "ae9f829c5ed0c0d88c7d17b55b72abc1dd30db70ade8ff191f74f7d21f47bfd5"
+  }
+}

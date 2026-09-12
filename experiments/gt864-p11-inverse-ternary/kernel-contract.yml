@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p11_joint_inverse_ternary
+  name: p11_route_ternary
+  source: candidate-route.sym.S
+  scheme: NTRU+864 GT production KEM
+  operation: Decaps first BaseMul R-inverse plus inverse terminal to ternary consumer
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: combined-small-region
+  driver: optimize.py
+  expected_outputs: [candidate-route.alloc.S, slothy.log, slothy-result.json]
+  allow_spills: false
+region:
+  start_label: p11_route32_slothy_start
+  end_label: p11_route32_slothy_end
+  expected_instruction_count: 38
+  live_in: [x0 output, x1-x7 scratch streams, x12 lane increment, v0-v3 constants]
+  live_out: [memory, advanced x0-x7, preserved v0-v3]
+abi:
+  inputs: [six main D streams and one tail D stream in existing 1792-byte scratch]
+  outputs: [one natural 27-coefficient block in signed ternary form per iteration]
+  clobbers: [x0-x17, v0-v31, nzcv]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: [v0, v1, v2, v3]
+  reserved_registers: [v0, v1, v2, v3, x8, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: combine two four-row D halves per component, reduce three full Q vectors to ternary, ST3 eight rows, then reduce/store the ninth-row triplet
+layout:
+  input_representation: six component/half streams of 32 D records plus 32 tail D records; raw natural R0 values
+  output_representation: natural coefficient order; 32 blocks of 9 rows times 3 components; signed ternary
+  vector_lanes: main Q lane r is row r for one k/component; tail D lanes0-2 are components0-2 of row8
+  packing: full ST3 writes rows0-7, then STR S plus ST1 H lane2 writes row8
+memory_contract:
+  loads: [three D loads plus three X loads inserted into high D lanes, plus one tail D load per 27-coefficient block]
+  stores: [one full ST3 of 48 bytes and three H-lane stores for row8 per block]
+  aliasing: private scratch disjoint from output; public exact out equals input remains safe because I9 consumes input before terminal output
+  alignment: halfword output; 8-byte scratch records; ST3 has no stronger correctness alignment requirement
+  public_offsets_only: true
+  pointer_updates: [all seven scratch streams advance 8 bytes; ST3 advances output48 and three public x12=2 lane increments advance it6; public loop count32]
+constant_contract:
+  constants: [v0=1728, v1=-1728, v2=10923, v3=3]
+  modulus: 3457
+  representation: raw natural R0 to centered ternary; q congruent1 modulo3
+  reduction_method: one-wrap mask correction followed by SQRDMULH reciprocal3 and MLS
+range_contract:
+  input_ranges: [each raw scratch lane abs <=4577]
+  intermediate_ranges: [one-wrap adjusted abs <=4576; rounded quotient abs <=1525]
+  output_ranges: [signed int16 -1,0,1]
+  narrowing_points: [all operations remain signed int16-safe]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed loop count, fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 model.py
+  test_command: python3 verify.py
+  full_path_benchmark_command: taskset -c 3 ./bench baseline/libgt864.so candidate/libgt864.so
+  benchmark_metric: complete Decaps median cycles
+  lower_is_better: true

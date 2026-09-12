@@ -1,0 +1,38 @@
+id: P11-A0
+inputs:
+  - component0 rows0-3 D stream
+  - component0 rows4-7 D stream
+  - component1 rows0-3 D stream
+  - component1 rows4-7 D stream
+  - component2 rows0-3 D stream
+  - component2 rows4-7 D stream
+  - row8 component-triplet D stream
+constants: [positive threshold1728, negative threshold-1728, reciprocal10923, modulus3]
+producer_rewrite:
+  main: replace each four UMOV plus four STRH group by one STR D to scratch offset 8*k
+  tail: replace each three UMOV plus three STRH group by one STR D to scratch offset 8*k
+per_main_component:
+  - load rows0-3 into low D, load rows4-7 through X and insert into high D of one Q
+  - high mask is CMGT(raw,1728)
+  - low mask is CMGT(-1728,raw)
+  - adjusted is raw plus high mask minus low mask
+  - quotient is SQRDMULH(adjusted,10923)
+  - ternary is adjusted minus 3 times quotient
+main_store: full ST3 writes three component Q vectors as 24 natural int16 coefficients
+tail:
+  - load one D whose lanes0-2 are row8 components0-2
+  - apply the identical raw-to-ternary DAG
+  - three ST1 H lane stores write lanes0-2 using the public two-byte increment
+outputs: [27 consecutive natural-order ternary coefficients]
+ordering_constraints:
+  - producer loads of each old scratch block precede its replacement D stores
+  - all seven route loads for k precede output stores for k
+  - ST3 advances output by48 and tail store advances it by6
+  - fixed public loop processes k0 through k31
+range: raw abs4577 to adjusted abs4576 to ternary abs1
+cost_ledger:
+  baseline_scalar_umov_strh: 1728
+  candidate_producer_str_d: 224
+  baseline_p8_dynamic_body: 864
+  candidate_route_dynamic_body: 1216
+  static_dynamic_instruction_delta_before_loop_scaffolding: -1152

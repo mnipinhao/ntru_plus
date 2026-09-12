@@ -1,0 +1,29 @@
+experiment: P11
+date: 2026-09-12
+mode: existing_region_replacement
+repository_root: /Users/chenpinhao/ntruplus
+production_package: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864
+production_commit: dd8c3146
+active_objects:
+  - gt864_native_inverse9.o
+  - gt864_native_inverse16_lazy.o
+  - gt864_native_inverse_tail_lazy.o
+  - gt864_crepmod3_raw.o
+  - gt864_native_public.o
+active_entry: gt864_native_inverse_ternary
+baseline_regions:
+  - baseline-main-region.S
+  - baseline-tail-region.S
+  - baseline-consumer-region.S
+selected_official: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+official_upstream_latest_independently_verified: false
+slothy:
+  checkout: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  target: cortex_a76
+pi5:
+  ssh: pi@100.99.191.9
+  benchmark_root: /home/pi/supercop-20260831
+notes:
+  - P11 changes only the private I16 terminal/scratch/ternary routing ABI.
+  - Public Decaps output, exact alias, scratch size, wipe, ranges and constant-time policy stay fixed.

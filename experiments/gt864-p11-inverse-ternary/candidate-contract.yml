@@ -1,0 +1,52 @@
+candidate:
+  id: gt864_p11a0_scratch_major_inverse_ternary
+  status: reject
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: candidate-route.sym.S
+  generated_outputs: [candidate-main.S, candidate-tail.S, candidate-route.alloc.S, candidate-main-a1.S, candidate-route-a1.alloc.S, candidate-route-a2.alloc.S, candidate-route-a3.alloc.S, candidate-route-a4.S]
+  slothy_driver: optimize.py
+  oracle: proof.json plus native inverse and KEM differential checks
+contract_preservation:
+  baseline_compared: true
+  preserved: true
+  approved_changes: false
+  changed_fields: [private scratch layout and internal terminal memory schedule only]
+region:
+  start_label: lazy_i16_slothy_start / lazy_itail_slothy_start / p8_slothy_start
+  end_label: lazy_i16_slothy_end / lazy_itail_slothy_end / p8_slothy_end
+  live_in: [x0 output, x1 scratch, x3 stage table, x4 scale table]
+  live_out: [natural-order ternary output memory]
+abi:
+  inputs: [FR0 R-inverse I9 scratch bounded by 2617]
+  outputs: ["864 natural-order signed int16 coefficients in {-1,0,1}"]
+  clobbers: [x0-x17, v0-v31, nzcv]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+memory_contract:
+  loads: [public input transformed into private scratch, public inverse tables]
+  stores: [natural-order ternary output, complete private scratch wipe]
+  aliasing: public Inverse entry supports exact out equals in; private scratch is disjoint
+  alignment: halfword; scratch and tables are at least 16-byte aligned
+  public_offsets_only: true
+  pointer_updates: [public fixed loops only]
+constant_contract:
+  constants: [q3457, halfq1728, reciprocal3=10923, modulus3, existing inverse tables]
+  modulus: 3457
+  representation: I9 R-inverse to natural R0 raw to centered ternary
+  reduction_method: existing Algorithm10 terminal products and P8 one-wrap plus rounded divide by3
+range_contract:
+  input_ranges: [BaseMul R-inverse output abs2497; I9 output abs2617]
+  intermediate_ranges: [I16 peak21397; raw natural R0 abs4577]
+  output_ranges: ["signed int16 {-1,0,1}"]
+  narrowing_points: [existing signed int16 operations proven by P7-C0 and P8]
+constant_time_contract:
+  secret_inputs: [coefficient values]
+  public_inputs: [pointers, tables, loop counters, offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+internal_changes:
+  producer_stores: 1728 UMOV/STRH instructions become 224 STR D instructions into existing scratch
+  consumer_route: separate output reread becomes six main D streams plus one tail D stream, full ST3 for rows0-7 and three H-lane stores for row8
+  coefficient_passes_added: 0

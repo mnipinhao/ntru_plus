@@ -1,0 +1,49 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: gt864_p10_inverse_ternary_terminal
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864
+  extracted_region: baseline-main-region.S + baseline-tail-region.S + baseline-consumer-region.S
+  function: lazy_i16 + lazy_itail + gt864_crepmod3_raw
+  start_label: lazy_i16_slothy_start / lazy_itail_slothy_start / p8_slothy_start
+  end_label: lazy_i16_slothy_end / lazy_itail_slothy_end / p8_slothy_end
+  source_commit: dd8c3146
+region:
+  instruction_count: 733 main + 669 tail + 32 consumer-body
+  live_in: [x0 output, x1 scratch, x3 stage table, x4 scale table]
+  live_out: [natural-order ternary output memory]
+  clobbers: [x0-x17, v0-v31, nzcv]
+abi:
+  inputs: [FR0 R-inverse I9 scratch bounded by 2617]
+  outputs: ["864 natural-order signed int16 coefficients in {-1,0,1}"]
+  clobbers: [x0-x17, v0-v31, nzcv]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+memory_contract:
+  loads: [public input transformed into private scratch, public inverse tables]
+  stores: [natural-order ternary output, complete private scratch wipe]
+  aliasing: public Inverse entry supports exact out equals in; private scratch is disjoint
+  alignment: halfword; scratch and tables are at least 16-byte aligned
+  public_offsets_only: true
+  pointer_updates: [public fixed loops only]
+constant_contract:
+  constants: [q3457, halfq1728, reciprocal3=10923, modulus3, existing inverse tables]
+  modulus: 3457
+  representation: I9 R-inverse to natural R0 raw to centered ternary
+  reduction_method: existing Algorithm10 terminal products and P8 one-wrap plus rounded divide by3
+range_contract:
+  input_ranges: [BaseMul R-inverse output abs2497; I9 output abs2617]
+  intermediate_ranges: [I16 peak21397; raw natural R0 abs4577]
+  output_ranges: ["signed int16 {-1,0,1}"]
+  narrowing_points: [existing signed int16 operations proven by P7-C0 and P8]
+constant_time_contract:
+  secret_inputs: [coefficient values]
+  public_inputs: [pointers, tables, loop counters, offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 1434 across one main body, one tail body and one consumer body
+  slothy_expected_cycles: inherited per-region records
+  full_path_benchmark: 5436.975 cycles for fused Inverse-to-ternary at P10 profiler checkpoint
+  benchmark_command: paired PMU on pi@100.99.191.9 core3

@@ -1,0 +1,26 @@
+iteration:
+  id: P11-A0
+  mode: existing_region_replacement
+  current_state: iterate_or_promote
+  hypothesis: replace scalar natural-order I16 scatter plus the separate P8 pass with scratch-major D stores and a full-ST3 joint ternary route
+  changed_artifacts: [repo-probe.yml, baseline-main-region.S, baseline-tail-region.S, baseline-consumer-region.S, baseline-contract.yml, kernel-contract.yml, instruction-dag.yml, candidate-route.sym.S, candidate-route-a1.sym.S, candidate-route-a2.sym.S, candidate-route-a3.sym.S, candidate-route-a4.S, score.yml, RESULTS.md]
+  earliest_state_to_revisit: repo_probe
+gates:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: authored
+  symbolic_asm: pass A0-A3; A4 is checked pure unfolding of A2 physical output
+  static_checks: pass
+  Slothy_run_by_user: pass authorized local execution
+  parse_slothy_result: pass; all scheduled regions optimal/no-spill
+  oracle_correctness: pass
+  full_path_benchmark: pass measurement; performance gate failed
+  score_candidate: reject
+  promotion_decision: reject
+  iteration_or_promote: complete rejected
+notes:
+  - Do not reopen P3-B producer-side normalization or lane-ST3.
+  - Main output uses full-vector ST3; the unavoidable ninth-row remainder uses three H-lane stores per k and never lane-ST3.
+  - A2 removes those final H-lane stores with EXT plus full STR D, but is still slower than P10.
+  - A3 modeled cross-record scheduling did not predict Pi 5 behavior; A4 pure unfolding also failed the cycle gate.

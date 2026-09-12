@@ -1,0 +1,61 @@
+candidate: P11-A0..A4 joint terminal inverse-to-ternary campaign
+decision: reject
+production_changed: false
+baseline:
+  revision: dd8c3146
+  name: P10 production with P7-C1 inverse and P8 raw-to-ternary consumer
+best_candidate:
+  id: P11-A2
+  reason: lowest exact component median; A4 Decaps noise overlaps zero but its exact component is stably slower
+correctness:
+  exact_inverse_alias_cases: 4096
+  kem_roundtrips_per_package: 64
+  kat_cases: 100
+  kat_sha256: 0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c
+  malformed_transcript_bytes: 417216
+  malformed_transcript_sha256: 2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67
+  aapcs: pass
+  exact_alias: pass
+  scratch_wipe: pass
+pi5:
+  host: pi@100.99.191.9
+  directory: /home/pi/ntruplus-p11-20260912
+  core: 3
+  processes: 6
+  supercop_reference_root: /home/pi/supercop-20260831
+  selected_official_upstream_latest_verified: false
+  p11_a2:
+    inverse_to_ternary:
+      baseline_cycles: 5419.922
+      candidate_cycles: 5433.609
+      summary_delta_cycles: 13.687
+      paired_delta_median_cycles: 17.485
+      paired_delta_iqr_cycles: [15.961, 18.422]
+      instructions_delta: -1260
+      branches_delta: 5
+    decaps:
+      baseline_cycles: 40906.175
+      candidate_cycles: 40931.875
+      summary_delta_cycles: 25.700
+      paired_delta_median_cycles: 33.600
+      paired_delta_iqr_cycles: [22.450, 41.137]
+      instructions_delta: -1260
+      branches_delta: 5
+  p11_a4_control:
+    inverse_to_ternary_paired_delta_median_cycles: 19.265
+    inverse_to_ternary_paired_delta_iqr_cycles: [18.547, 20.657]
+    decaps_summary_delta_cycles: 13.175
+    instructions_delta: -1292
+    branches_delta: -11
+gate:
+  exact_component_must_improve_cycles: fail
+  full_decaps_must_improve_cycles: fail
+  no_added_coefficient_pass: pass
+  no_lane_st3: pass
+  no_spill: pass
+  no_keygen_encaps_instruction_change: pass
+reopen_condition: >-
+  Reopen only when the terminal producer can directly form full natural-order
+  vectors, or a new same-boundary DAG has a static/microarchitectural margin
+  materially larger than the measured store-routing penalty. Fewer retired
+  instructions or more unfolding alone is insufficient.

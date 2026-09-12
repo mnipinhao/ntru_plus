@@ -43,8 +43,8 @@ Status meanings:
 | P9 | Done—Promoted | Input-once ToBytes full/small composed-map routing | Both modes passed static deficit, no-spill, exact-byte, KAT, malformed and Pi 5 gates; combined full-KEM saves 619.875/415.800/435.925 Keygen/Encaps/Decaps cycles |
 | P10-A | Done—Promoted | Direct-FR0 BaseInv numerator/finish with one global inverse-scale correction | Approved 1972→2550 bound; all production gates pass. P9→P10 BaseInv success 5197.422→4139.985 and Keygen 45795.250→43670.500; selected Official two-call BaseInv 8366.875 vs P10 8188.250 |
 | P10-B | Dropped—Unneeded | Contract-preserving normalized finish fallback | Reopen only if a future consumer cannot accept the approved 2550 bound; current K1→BaseInv→D1 chain is fully closed |
-| P11 | Active—Decaps | Joint terminal Inverse-to-ternary DAG after P7-C1/P8 | Beat the consistent Official `Inverse + Crepmod3` boundary 4620.0 versus GT 5436.975 cycles without reopening rejected half-vector scatter or adding a coefficient memory pass |
-| P12 | Deferred—Decaps | Reconcile remaining instruction/branch gap after P11 | Re-profile first; only keep subgraphs whose same-boundary static model can materially reduce the current +9437 instructions/+152 branches versus Official Decaps |
+| P11 | Dropped | Joint terminal Inverse-to-ternary DAG after P7-C1/P8 | A0–A4 all correct/no-spill and removed up to 1,292 instructions, but every exact component candidate was slower. Best A2: +17.485 paired cycles, IQR [+15.961,+18.422]; production unchanged |
+| P12 | Active—Decaps | Reconcile remaining instruction/branch gap after P11 | Re-profile first; only keep subgraphs whose same-boundary static model can materially reduce the current +9437 instructions/+152 branches versus Official Decaps |
 
 ## Fixed facts and non-tasks
 
@@ -65,6 +65,19 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed and rejected P11. A0 replaced 1,728 terminal UMOV/STRH
+  instructions with D records plus a joint ternary route, but regressed the
+  exact component by 339.843 cycles. k-major A1, full-D-tail A2, joint-scheduled
+  A3 and pure-unfold A4 progressively tested load shape, lane-store cost and
+  loop overhead. A2 was the best exact component and still lost by a paired
+  median 17.485 cycles, IQR [+15.961,+18.422], while removing 1,260
+  instructions. A4 removed 1,292 instructions and 11 branches but also lost.
+  All KAT, malformed, exact alias, AAPCS and scratch-wipe gates passed; this is
+  a microarchitectural rejection, not a correctness failure. Production stays
+  P10/P8. Reopen only with a naturally full-vector terminal producer or a DAG
+  with substantially larger same-boundary margin. P12 is active. Evidence:
+  `experiments/gt864-p11-inverse-ternary/`.
 
 - Promoted P10-A after explicit user approval of the consumer-closed raw FR0
   output bound 1972→2550.  The actual production source passed manifest,
