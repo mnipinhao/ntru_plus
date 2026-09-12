@@ -1,0 +1,392 @@
+{
+  "experiment_id": "gt768-fused-shake-hashg-20260911-e41",
+  "gate": "D",
+  "baseline_revision": "a64e7035cb13410554af1c67870d4132a30037b4",
+  "C_revision": "1493b298e790990038d15c146288280db943d79e",
+  "host": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+  "compiler": "gcc (Debian 14.2.0-19) 14.2.0",
+  "flags": [
+    "-march=armv8-a",
+    "-mtune=cortex-a76",
+    "-O3",
+    "-fomit-frame-pointer",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-std=c99"
+  ],
+  "core": 3,
+  "pairs": 66,
+  "operations_per_sample": 2000,
+  "warmups": 100,
+  "order": [
+    [
+      "A",
+      "C",
+      "D"
+    ],
+    [
+      "A",
+      "D",
+      "C"
+    ],
+    [
+      "C",
+      "A",
+      "D"
+    ],
+    [
+      "C",
+      "D",
+      "A"
+    ],
+    [
+      "D",
+      "A",
+      "C"
+    ],
+    [
+      "D",
+      "C",
+      "A"
+    ]
+  ],
+  "results": {
+    "hash_g": {
+      "A": {
+        "count": 66,
+        "min": 10680,
+        "p10": 10683,
+        "p50": 10689.0,
+        "p90": 10701,
+        "max": 10708
+      },
+      "C": {
+        "count": 66,
+        "min": 9464,
+        "p10": 9470,
+        "p50": 9475.0,
+        "p90": 9479,
+        "max": 9491
+      },
+      "D": {
+        "count": 66,
+        "min": 9155,
+        "p10": 9160,
+        "p50": 9164.0,
+        "p90": 9166,
+        "max": 9182
+      },
+      "paired_saved_cycles_vs_A": {
+        "count": 66,
+        "min": 1512,
+        "p10": 1518,
+        "p50": 1526.0,
+        "p90": 1538,
+        "max": 1546
+      },
+      "sink": "122",
+      "percent_saved_from_medians": 14.26700346150248,
+      "paired_saved_cycles_vs_C": {
+        "count": 66,
+        "min": 295,
+        "p10": 304,
+        "p50": 311.0,
+        "p90": 317,
+        "max": 330
+      },
+      "percent_saved_vs_C": 3.282321899736148
+    },
+    "encap": {
+      "A": {
+        "count": 66,
+        "min": 31907,
+        "p10": 31920,
+        "p50": 31939.5,
+        "p90": 31961,
+        "max": 31980
+      },
+      "C": {
+        "count": 66,
+        "min": 30695,
+        "p10": 30714,
+        "p50": 30720.5,
+        "p90": 30731,
+        "max": 30740
+      },
+      "D": {
+        "count": 66,
+        "min": 30388,
+        "p10": 30403,
+        "p50": 30414.5,
+        "p90": 30432,
+        "max": 30454
+      },
+      "paired_saved_cycles_vs_A": {
+        "count": 66,
+        "min": 1457,
+        "p10": 1501,
+        "p50": 1523.0,
+        "p90": 1548,
+        "max": 1568
+      },
+      "sink": "6218415305765144144",
+      "percent_saved_from_medians": 4.774652076582289,
+      "paired_saved_cycles_vs_C": {
+        "count": 66,
+        "min": 258,
+        "p10": 285,
+        "p50": 306.5,
+        "p90": 324,
+        "max": 333
+      },
+      "percent_saved_vs_C": 0.9960775378004916
+    },
+    "decap": {
+      "A": {
+        "count": 66,
+        "min": 29023,
+        "p10": 29035,
+        "p50": 29048.0,
+        "p90": 29063,
+        "max": 29086
+      },
+      "C": {
+        "count": 66,
+        "min": 27836,
+        "p10": 27845,
+        "p50": 27859.0,
+        "p90": 27868,
+        "max": 27896
+      },
+      "D": {
+        "count": 66,
+        "min": 27542,
+        "p10": 27549,
+        "p50": 27554.5,
+        "p90": 27561,
+        "max": 27564
+      },
+      "paired_saved_cycles_vs_A": {
+        "count": 66,
+        "min": 1468,
+        "p10": 1480,
+        "p50": 1493.5,
+        "p90": 1509,
+        "max": 1532
+      },
+      "sink": "10844457849835112772",
+      "percent_saved_from_medians": 5.1414899476728175,
+      "paired_saved_cycles_vs_C": {
+        "count": 66,
+        "min": 280,
+        "p10": 288,
+        "p50": 303.0,
+        "p90": 315,
+        "max": 341
+      },
+      "percent_saved_vs_C": 1.093004056139847
+    }
+  },
+  "source_sha256": {
+    "A": {
+      "symmetric.c": "d5c98b67cc4796ca02d9e155a6d66ae00419eafe9f5869d88bc74aba8c40d03d",
+      "fips202.c": "b098e2da844180a5bc917c512546d623c5965e1ad120b392a3c5ae4fce0309dc",
+      "fips202.h": "86d3adefd72a25231b26d14b345648359db534790abd25148ccdfdba2800c298",
+      "keccakf1600.S": "ffa2089695240016bfff471b4af4b71f04b98397b7e7e062eacd2caae20ae0ea"
+    },
+    "C": {
+      "symmetric.c": "a65a149c3e36141af436814ea31436779af4ef222a594236cba674f0d9294b47",
+      "fips202.c": "2c2d7f253169827787c1a38ccc74300fdfd66aa8f63b97be4e41088bbe5e5748",
+      "fips202.h": "a0622d8a16507b7e03c13bf9686619b3289d408991c2ca025425998f287470f4",
+      "keccakf1600.S": "ffa2089695240016bfff471b4af4b71f04b98397b7e7e062eacd2caae20ae0ea"
+    },
+    "D": {
+      "symmetric.c": "a65a149c3e36141af436814ea31436779af4ef222a594236cba674f0d9294b47",
+      "fips202.c": "26865b4f2f26dcc16b5b28fe3ddb4d0f42851a15e949ec8591c8b3f636ac1539",
+      "fips202.h": "5fe8372f7247f2f75b8ec65a8be1bdb71b2a7dd8ff5eb5e46f44855e4e0e2924",
+      "keccakf1600.S": "f9eb655f1d565ff94172090add7e17a7478e300d0e29859a989d172631891124"
+    }
+  },
+  "candidate_code_revision": "317a52f400fd84ee9b41d313548cc0dcbe81ba52",
+  "decision": "accept D as next experimental champion; no production promotion",
+  "correctness": {
+    "mac_package": "make check pass; KAT byte-identical",
+    "mac_sanitizers": "3841 cases pass; 256 frame/register capture cases pass",
+    "pi_packages_A_C_D": "make check pass; KAT byte-identical",
+    "pi_targeted": "PASS 3841 fused hash_g differential/alias/guard cases; zero standalone calls; frame/register clear capture passed",
+    "new_hash_g_ABI_sentinel_mask": 0,
+    "kat_rsp_sha256": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8",
+    "standalone_Keccak_exact_opcode_identity": true,
+    "fused_round_normalization_exact_opcode_identity": true,
+    "shared_macro_instruction_words": 243,
+    "x0_through_x17_and_144_byte_frame_clear": "captured zero on return"
+  },
+  "D_winning_groups": {
+    "hash_g": {
+      "A": 66,
+      "C": 66
+    },
+    "encap": {
+      "A": 66,
+      "C": 66
+    },
+    "decap": {
+      "A": 66,
+      "C": 66
+    }
+  },
+  "pmu_per_operation_medians": {
+    "A": {
+      "instructions:u": 30690.068407500003,
+      "ld_spec:u": 1404.281955,
+      "st_spec:u": 880.35601,
+      "stall_backend:u": 1055.6740375
+    },
+    "C": {
+      "instructions:u": 28092.0653275,
+      "ld_spec:u": 1248.6334775,
+      "st_spec:u": 758.947045,
+      "stall_backend:u": 544.59386
+    },
+    "D": {
+      "instructions:u": 27746.05878,
+      "ld_spec:u": 1128.6664974999999,
+      "st_spec:u": 529.247685,
+      "stall_backend:u": 431.520045
+    }
+  },
+  "pmu_notes": "six balanced ACD orders, 200000 operations/run, user events, 100% scheduled; speculative load/store events, amortized process overhead",
+  "linked_encap_sections": {
+    "A": {
+      "": 0,
+      ".note.gnu.build-id": 36,
+      ".interp": 27,
+      ".gnu.hash": 28,
+      ".dynsym": 624,
+      ".dynstr": 280,
+      ".gnu.version": 52,
+      ".gnu.version_r": 64,
+      ".rela.dyn": 240,
+      ".rela.plt": 480,
+      ".init": 28,
+      ".plt": 352,
+      ".text": 73328,
+      ".fini": 24,
+      ".rodata": 6160,
+      ".eh_frame_hdr": 212,
+      ".eh_frame": 1176,
+      ".note.ABI-tag": 32,
+      ".init_array": 8,
+      ".fini_array": 8,
+      ".dynamic": 480,
+      ".got": 64,
+      ".got.plt": 184,
+      ".data": 16,
+      ".bss": 9360,
+      ".comment": 31,
+      ".symtab": 8616,
+      ".strtab": 4879,
+      ".shstrtab": 259
+    },
+    "C": {
+      "": 0,
+      ".note.gnu.build-id": 36,
+      ".interp": 27,
+      ".gnu.hash": 28,
+      ".dynsym": 624,
+      ".dynstr": 280,
+      ".gnu.version": 52,
+      ".gnu.version_r": 64,
+      ".rela.dyn": 240,
+      ".rela.plt": 480,
+      ".init": 28,
+      ".plt": 352,
+      ".text": 73744,
+      ".fini": 24,
+      ".rodata": 6160,
+      ".eh_frame_hdr": 220,
+      ".eh_frame": 1208,
+      ".note.ABI-tag": 32,
+      ".init_array": 8,
+      ".fini_array": 8,
+      ".dynamic": 480,
+      ".got": 64,
+      ".got.plt": 184,
+      ".data": 16,
+      ".bss": 9360,
+      ".comment": 31,
+      ".symtab": 8664,
+      ".strtab": 4901,
+      ".shstrtab": 259
+    },
+    "D": {
+      "": 0,
+      ".note.gnu.build-id": 36,
+      ".interp": 27,
+      ".gnu.hash": 28,
+      ".dynsym": 624,
+      ".dynstr": 280,
+      ".gnu.version": 52,
+      ".gnu.version_r": 64,
+      ".rela.dyn": 240,
+      ".rela.plt": 480,
+      ".init": 28,
+      ".plt": 352,
+      ".text": 74928,
+      ".fini": 24,
+      ".rodata": 6160,
+      ".eh_frame_hdr": 228,
+      ".eh_frame": 1248,
+      ".note.ABI-tag": 32,
+      ".init_array": 8,
+      ".fini_array": 8,
+      ".dynamic": 480,
+      ".got": 64,
+      ".got.plt": 184,
+      ".data": 16,
+      ".bss": 9360,
+      ".comment": 31,
+      ".symtab": 8880,
+      ".strtab": 5027,
+      ".shstrtab": 259
+    }
+  },
+  "fused_function_bytes": 1644,
+  "hash_path_own_stack_at_permutation_bytes": {
+    "C": 400,
+    "D": 144
+  },
+  "cleanup": "D clears its full 144-byte frame and caller-saved GPRs; C clears its 200-byte state but does not clear its permutation spill. C hook counts exclude D assembly clears.",
+  "environment": {
+    "before": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=58.7'C",
+      "frequency": "frequency(0)=2400033792"
+    },
+    "before_timing": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=64.8'C",
+      "frequency": "frequency(0)=2400033792"
+    },
+    "after": {
+      "throttling": "throttled=0x0",
+      "temperature": "temp=64.8'C",
+      "frequency": "frequency(0)=2400023808"
+    }
+  },
+  "binary_sha256": {
+    "A-decap": "33d5c28a0040db7b57a9d2cc1f0edb3ae3ad5c5d3397d973ac0a78811fe98606",
+    "A-encap": "39fe5cc5554dd51d3642bd105f3163b011af4b6a7748ee17a7b12c37744d6195",
+    "A-hash-g-pmu": "22987441b87a3426fd73faf9ffd54ba0e7c9c0c6dd5739179699acdb6f07f9ee",
+    "A-hash_g": "22488e2faf32e2143155dfe4e34063ee37a0eceec0f3d60c18a123ea0e931647",
+    "C-decap": "fdc769665d247106b5011f260ccd46a96c991296d3b343eb5a6d342157d06295",
+    "C-encap": "2f67961a98c904c8dc9022eb3177b1593b3265c549814dccf9d277dc23bc5182",
+    "C-hash-g-pmu": "a34e190eb79ffb5fc3e06e95a7ff760e1c20a855cea1b36d1313fa4c5e5164e4",
+    "C-hash_g": "31494d49485eb08b8a65bf938ffbf6cbf4e4cfede264801c24f5e6cdf672a258",
+    "D-decap": "ddf4a8400135c162f8ea891d1d7de31188e463e6d5aa1fb9a7006582241b51c6",
+    "D-encap": "48a8801b71b3b4ff280314cc3ea5fc3bbcd8a1aa219dede1a30f6acf4c3b1e8c",
+    "D-hash-g-pmu": "e6fdc1271f5a6fd0a27e0a372e7262c7eec22f3ae5a021843824f9be916ae351",
+    "D-hash_g": "998117eae05a400c59ffd5d7cc992bcc8fe46bf8d9a3577dacfec574f93e13f5"
+  },
+  "raw_results": "/home/pi/gt768-fused-shake-hashg-20260911-e41/.build/d-gate-v1"
+}

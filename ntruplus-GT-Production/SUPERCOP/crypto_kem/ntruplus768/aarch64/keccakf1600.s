@@ -5,51 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
  * Upstream revision: 0924122d0e92b2d682fab5d5e5e2593ec84c8a1f
  */
-.section .text.module_keccakf1600_body,"ax",%progbits
-.balign 4
-.global ntruplus_keccak_f1600_x1_aarch64
-.global _ntruplus_keccak_f1600_x1_aarch64
-.type ntruplus_keccak_f1600_x1_aarch64, %function
-ntruplus_keccak_f1600_x1_aarch64:
-_ntruplus_keccak_f1600_x1_aarch64:
-        .cfi_startproc
-        sub sp, sp, #0x80
-        .cfi_adjust_cfa_offset 0x80
-        stp x19, x20, [sp, #0x20]
-        .cfi_rel_offset x19, 0x20
-        .cfi_rel_offset x20, 0x28
-        stp x21, x22, [sp, #0x30]
-        .cfi_rel_offset x21, 0x30
-        .cfi_rel_offset x22, 0x38
-        stp x23, x24, [sp, #0x40]
-        .cfi_rel_offset x23, 0x40
-        .cfi_rel_offset x24, 0x48
-        stp x25, x26, [sp, #0x50]
-        .cfi_rel_offset x25, 0x50
-        .cfi_rel_offset x26, 0x58
-        stp x27, x28, [sp, #0x60]
-        .cfi_rel_offset x27, 0x60
-        .cfi_rel_offset x28, 0x68
-        stp x29, x30, [sp, #0x70]
-        .cfi_rel_offset x29, 0x70
-        .cfi_rel_offset x30, 0x78
-Lmlk_keccak_f1600_x1_scalar_initial:
-        mov x26, x1
-        str x1, [sp, #0x8]
-        ldp x1, x6, [x0]
-        ldp x11, x16, [x0, #0x10]
-        ldp x21, x2, [x0, #0x20]
-        ldp x7, x12, [x0, #0x30]
-        ldp x17, x22, [x0, #0x40]
-        ldp x3, x8, [x0, #0x50]
-        ldp x13, x28, [x0, #0x60]
-        ldp x23, x4, [x0, #0x70]
-        ldp x9, x14, [x0, #0x80]
-        ldp x19, x24, [x0, #0x90]
-        ldp x5, x10, [x0, #0xa0]
-        ldp x15, x20, [x0, #0xb0]
-        ldr x25, [x0, #0xc0]
-        str x0, [sp]
+.macro KECCAK_LIVE_PERMUTE
         eor x30, x24, x25
         eor x27, x9, x10
         eor x0, x30, x21
@@ -157,7 +113,7 @@ Lmlk_keccak_f1600_x1_scalar_initial:
         eor x19, x0, x14, ror #12
         eor x14, x26, x6, ror #46
         eor x6, x27, x29, ror #41
-Lmlk_keccak_f1600_x1_scalar_loop:
+Lkeccak_live_loop_\@:
         eor x0, x15, x11, ror #52
         eor x0, x0, x13, ror #48
         eor x26, x8, x9, ror #57
@@ -270,7 +226,7 @@ Lmlk_keccak_f1600_x1_scalar_loop:
         bic x3, x0, x30, ror #5
         eor x23, x3, x26, ror #52
         eor x3, x29, x30, ror #24
-        b.le Lmlk_keccak_f1600_x1_scalar_loop
+        b.le Lkeccak_live_loop_\@
         ror x6, x6, #0x2b
         ror x11, x11, #0x32
         ror x21, x21, #0x14
@@ -294,6 +250,53 @@ Lmlk_keccak_f1600_x1_scalar_loop:
         ror x15, x15, #0x3e
         ror x20, x20, #0x2
         ror x25, x25, #0x9
+.endm
+.section .text.module_keccakf1600_body,"ax",%progbits
+.balign 4
+.global ntruplus_keccak_f1600_x1_aarch64
+.global _ntruplus_keccak_f1600_x1_aarch64
+.type ntruplus_keccak_f1600_x1_aarch64, %function
+ntruplus_keccak_f1600_x1_aarch64:
+_ntruplus_keccak_f1600_x1_aarch64:
+        .cfi_startproc
+        sub sp, sp, #0x80
+        .cfi_adjust_cfa_offset 0x80
+        stp x19, x20, [sp, #0x20]
+        .cfi_rel_offset x19, 0x20
+        .cfi_rel_offset x20, 0x28
+        stp x21, x22, [sp, #0x30]
+        .cfi_rel_offset x21, 0x30
+        .cfi_rel_offset x22, 0x38
+        stp x23, x24, [sp, #0x40]
+        .cfi_rel_offset x23, 0x40
+        .cfi_rel_offset x24, 0x48
+        stp x25, x26, [sp, #0x50]
+        .cfi_rel_offset x25, 0x50
+        .cfi_rel_offset x26, 0x58
+        stp x27, x28, [sp, #0x60]
+        .cfi_rel_offset x27, 0x60
+        .cfi_rel_offset x28, 0x68
+        stp x29, x30, [sp, #0x70]
+        .cfi_rel_offset x29, 0x70
+        .cfi_rel_offset x30, 0x78
+Lmlk_keccak_f1600_x1_scalar_initial:
+        mov x26, x1
+        str x1, [sp, #0x8]
+        ldp x1, x6, [x0]
+        ldp x11, x16, [x0, #0x10]
+        ldp x21, x2, [x0, #0x20]
+        ldp x7, x12, [x0, #0x30]
+        ldp x17, x22, [x0, #0x40]
+        ldp x3, x8, [x0, #0x50]
+        ldp x13, x28, [x0, #0x60]
+        ldp x23, x4, [x0, #0x70]
+        ldp x9, x14, [x0, #0x80]
+        ldp x19, x24, [x0, #0x90]
+        ldp x5, x10, [x0, #0xa0]
+        ldp x15, x20, [x0, #0xb0]
+        ldr x25, [x0, #0xc0]
+        str x0, [sp]
+        KECCAK_LIVE_PERMUTE
         ldr x0, [sp]
         stp x1, x6, [x0]
         stp x11, x16, [x0, #0x10]
@@ -331,4 +334,214 @@ Lmlk_keccak_f1600_x1_scalar_loop:
         ret
         .cfi_endproc
 .size ntruplus_keccak_f1600_x1_aarch64, .-ntruplus_keccak_f1600_x1_aarch64
+.section .text.module_hash_g_fused_body,"ax",%progbits
+.balign 4
+.global ntruplus_hash_g_fused_aarch64
+.global _ntruplus_hash_g_fused_aarch64
+.type ntruplus_hash_g_fused_aarch64, %function
+ntruplus_hash_g_fused_aarch64:
+_ntruplus_hash_g_fused_aarch64:
+        .cfi_startproc
+        sub sp, sp, #0x90
+        .cfi_adjust_cfa_offset 0x90
+        stp x19, x20, [sp, #0x20]
+        .cfi_rel_offset x19, 0x20
+        .cfi_rel_offset x20, 0x28
+        stp x21, x22, [sp, #0x30]
+        .cfi_rel_offset x21, 0x30
+        .cfi_rel_offset x22, 0x38
+        stp x23, x24, [sp, #0x40]
+        .cfi_rel_offset x23, 0x40
+        .cfi_rel_offset x24, 0x48
+        stp x25, x26, [sp, #0x50]
+        .cfi_rel_offset x25, 0x50
+        .cfi_rel_offset x26, 0x58
+        stp x27, x28, [sp, #0x60]
+        .cfi_rel_offset x27, 0x60
+        .cfi_rel_offset x28, 0x68
+        stp x29, x30, [sp, #0x70]
+        .cfi_rel_offset x29, 0x70
+        .cfi_rel_offset x30, 0x78
+        str x0, [sp, #128]
+        str x2, [sp, #8]
+        mov x0, x1
+        add x26, x0, #135
+        str x26, [sp]
+        mov x26, #1
+        str x26, [sp, #136]
+        ldr x1, [x0]
+        lsl x1, x1, #8
+        orr x1, x1, #1
+        ldur x6, [x0, #7]
+        ldur x11, [x0, #15]
+        ldur x16, [x0, #23]
+        ldur x21, [x0, #31]
+        ldur x2, [x0, #39]
+        ldur x7, [x0, #47]
+        ldur x12, [x0, #55]
+        ldur x17, [x0, #63]
+        ldur x22, [x0, #71]
+        ldur x3, [x0, #79]
+        ldur x8, [x0, #87]
+        ldur x13, [x0, #95]
+        ldur x28, [x0, #103]
+        ldur x23, [x0, #111]
+        ldur x4, [x0, #119]
+        ldur x9, [x0, #127]
+        mov x14, xzr
+        mov x19, xzr
+        mov x24, xzr
+        mov x5, xzr
+        mov x10, xzr
+        mov x15, xzr
+        mov x20, xzr
+        mov x25, xzr
+Lhash_g_live_round:
+        KECCAK_LIVE_PERMUTE
+        ldr x0, [sp, #136]
+        cmp x0, #8
+        b.lo Lhash_g_full
+        b.eq Lhash_g_tail
+        cmp x0, #9
+        b.eq Lhash_g_squeeze_first
+        b Lhash_g_squeeze_last
+Lhash_g_full:
+        ldr x0, [sp]
+        ldr x26, [x0, #0]
+        eor x1, x1, x26
+        ldr x26, [x0, #8]
+        eor x6, x6, x26
+        ldr x26, [x0, #16]
+        eor x11, x11, x26
+        ldr x26, [x0, #24]
+        eor x16, x16, x26
+        ldr x26, [x0, #32]
+        eor x21, x21, x26
+        ldr x26, [x0, #40]
+        eor x2, x2, x26
+        ldr x26, [x0, #48]
+        eor x7, x7, x26
+        ldr x26, [x0, #56]
+        eor x12, x12, x26
+        ldr x26, [x0, #64]
+        eor x17, x17, x26
+        ldr x26, [x0, #72]
+        eor x22, x22, x26
+        ldr x26, [x0, #80]
+        eor x3, x3, x26
+        ldr x26, [x0, #88]
+        eor x8, x8, x26
+        ldr x26, [x0, #96]
+        eor x13, x13, x26
+        ldr x26, [x0, #104]
+        eor x28, x28, x26
+        ldr x26, [x0, #112]
+        eor x23, x23, x26
+        ldr x26, [x0, #120]
+        eor x4, x4, x26
+        ldr x26, [x0, #128]
+        eor x9, x9, x26
+        add x0, x0, #136
+        str x0, [sp]
+        ldr x26, [sp, #136]
+        add x26, x26, #1
+        str x26, [sp, #136]
+        b Lhash_g_live_round
+Lhash_g_tail:
+        ldr x0, [sp]
+        ldr x26, [x0, #0]
+        eor x1, x1, x26
+        ldr x26, [x0, #8]
+        eor x6, x6, x26
+        ldr x26, [x0, #16]
+        eor x11, x11, x26
+        ldr x26, [x0, #24]
+        eor x16, x16, x26
+        ldr x26, [x0, #32]
+        eor x21, x21, x26
+        ldr x26, [x0, #40]
+        eor x2, x2, x26
+        ldr x26, [x0, #48]
+        eor x7, x7, x26
+        ldr x26, [x0, #56]
+        eor x12, x12, x26
+        ldrb w26, [x0, #64]
+        orr x26, x26, #0x1f00
+        eor x17, x17, x26
+        eor x9, x9, #0x8000000000000000
+        mov x26, #9
+        str x26, [sp, #136]
+        b Lhash_g_live_round
+Lhash_g_squeeze_first:
+        ldr x0, [sp, #128]
+        stp x1, x6, [x0, #0]
+        stp x11, x16, [x0, #16]
+        stp x21, x2, [x0, #32]
+        stp x7, x12, [x0, #48]
+        stp x17, x22, [x0, #64]
+        stp x3, x8, [x0, #80]
+        stp x13, x28, [x0, #96]
+        stp x23, x4, [x0, #112]
+        str x9, [x0, #128]
+        add x0, x0, #136
+        str x0, [sp, #128]
+        mov x26, #10
+        str x26, [sp, #136]
+        b Lhash_g_live_round
+Lhash_g_squeeze_last:
+        ldr x0, [sp, #128]
+        stp x1, x6, [x0, #0]
+        stp x11, x16, [x0, #16]
+        stp x21, x2, [x0, #32]
+        str x7, [x0, #48]
+        mov x0, xzr
+        mov x1, xzr
+        mov x2, xzr
+        mov x3, xzr
+        mov x4, xzr
+        mov x5, xzr
+        mov x6, xzr
+        mov x7, xzr
+        mov x8, xzr
+        mov x9, xzr
+        mov x10, xzr
+        mov x11, xzr
+        mov x12, xzr
+        mov x13, xzr
+        mov x14, xzr
+        mov x15, xzr
+        mov x16, xzr
+        mov x17, xzr
+        ldp x19, x20, [sp, #0x20]
+        .cfi_restore x19
+        .cfi_restore x20
+        ldp x21, x22, [sp, #0x30]
+        .cfi_restore x21
+        .cfi_restore x22
+        ldp x23, x24, [sp, #0x40]
+        .cfi_restore x23
+        .cfi_restore x24
+        ldp x25, x26, [sp, #0x50]
+        .cfi_restore x25
+        .cfi_restore x26
+        ldp x27, x28, [sp, #0x60]
+        .cfi_restore x27
+        .cfi_restore x28
+        ldp x29, x30, [sp, #0x70]
+        .cfi_restore x29
+        .cfi_restore x30
+        stp xzr, xzr, [sp, #0]
+        stp xzr, xzr, [sp, #16]
+        stp xzr, xzr, [sp, #32]
+        stp xzr, xzr, [sp, #48]
+        stp xzr, xzr, [sp, #64]
+        stp xzr, xzr, [sp, #80]
+        stp xzr, xzr, [sp, #96]
+        stp xzr, xzr, [sp, #112]
+        stp xzr, xzr, [sp, #128]
+        add sp, sp, #0x90
+        .cfi_adjust_cfa_offset -0x90
+        ret
+        .cfi_endproc
+.size ntruplus_hash_g_fused_aarch64, .-ntruplus_hash_g_fused_aarch64
 .section .note.GNU-stack,"",%progbits

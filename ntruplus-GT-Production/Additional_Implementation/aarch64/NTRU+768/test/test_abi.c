@@ -43,6 +43,7 @@ uint64_t abi_decap_ntt(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_keypair(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_enc(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_dec(void *, void *, void *, void *);
+uint64_t abi_hash_g_fixed(void *, void *, void *, void *);
 
 struct abi_case {
     const char *name;
@@ -91,6 +92,7 @@ int main(void)
          ct, ss_enc, pk, NULL, 1},
         {"crypto_kem_dec", abi_crypto_kem_dec,
          ss_dec, ct, sk, NULL, 1},
+        {"hash_g_fixed", abi_hash_g_fixed, bytes_a, bytes_b, NULL, NULL, 1},
         {"internal_ntt_loose", abi_internal_poly_ntt_loose,
          &a, &b, NULL, NULL, 1},
         {"ntt_encap_small_lazy", abi_internal_poly_ntt_encap_small_lazy, &a, &b, NULL, NULL, 1},

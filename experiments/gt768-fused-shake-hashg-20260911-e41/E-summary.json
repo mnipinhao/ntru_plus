@@ -1,0 +1,37 @@
+{
+  "experiment_id": "gt768-fused-shake-hashg-20260911-e41",
+  "gate": "E production-shaped SUPERCOP export",
+  "decision": "accept as promotion-ready experimental champion; not promoted or pushed",
+  "production_baseline_revision": "a64e7035cb13410554af1c67870d4132a30037b4",
+  "d_measured_code_revision": "317a52f400fd84ee9b41d313548cc0dcbe81ba52",
+  "integration_revision": "09d4b501423e0d48441ad078b2a846c05e834baa",
+  "official_path": "/home/pi/supercop-20260831/crypto_kem/ntruplus768/aarch64",
+  "official_tree_sha256": "6529e33b01163decbdb441a6b6b905a6ad66807c0f9da9ec924969847785cc03",
+  "candidate_tree_sha256": "23cb63e0f6145535fbcc4801197617b264af7498ce0f649e1360192f8a5c58fe",
+  "host": "pi@100.99.191.9; Linux 6.18.33+rpt-rpi-2712; Cortex-A76",
+  "compiler": "gcc (Debian 14.2.0-19) 14.2.0",
+  "flags": ["-march=native", "-mtune=native", "-O3", "-fwrapv", "-fPIC", "-fPIE", "-gdwarf-4", "-Wall", "-D_DEFAULT_SOURCE", "-ffunction-sections", "-fdata-sections"],
+  "core": 3,
+  "samples_per_variant": 62,
+  "operations_per_sample": 2000,
+  "warmups": 100,
+  "orders": ["Official,D", "D,Official"],
+  "results": {
+    "keygen": {"official_p50": 38535, "candidate_p50": 33115, "saved": 5420, "improvement_percent": 14.06513559102115, "paired_saved_p50": 5422.5, "paired_saved_p10": 5333, "paired_saved_p90": 5505},
+    "encap": {"official_p50": 38687, "candidate_p50": 30445, "saved": 8242, "improvement_percent": 21.304314110683176, "paired_saved_p50": 8243, "paired_saved_p10": 8226, "paired_saved_p90": 8253},
+    "decap": {"official_p50": 33489, "candidate_p50": 27604, "saved": 5885, "improvement_percent": 17.572934396368957, "paired_saved_p50": 5884.5, "paired_saved_p10": 5866, "paired_saved_p90": 5903}
+  },
+  "pmu_medians": {
+    "keygen": {"official": {"cycles": 38455.62, "instructions": 80336.36, "ld_spec": 9744.63, "st_spec": 6224.80, "stall_backend": 13214.14}, "candidate": {"cycles": 33118.32, "instructions": 66424.60, "ld_spec": 3964.36, "st_spec": 2714.38, "stall_backend": 10800.45}},
+    "encap": {"official": {"cycles": 38649.00, "instructions": 103944.66, "ld_spec": 14557.35, "st_spec": 8624.94, "stall_backend": 8855.74}, "candidate": {"cycles": 30438.55, "instructions": 76549.06, "ld_spec": 4077.70, "st_spec": 2745.36, "stall_backend": 5638.31}},
+    "decap": {"official": {"cycles": 33506.90, "instructions": 72248.66, "ld_spec": 9141.63, "st_spec": 5524.17, "stall_backend": 11103.81}, "candidate": {"cycles": 27616.05, "instructions": 53654.06, "ld_spec": 2784.29, "st_spec": 1945.57, "stall_backend": 9229.45}}
+  },
+  "text_bytes": {"official": 21617, "candidate": 82889, "growth": 61272, "negative_control": 81209, "activation_growth": 1680},
+  "linked_symbols_bytes": {"hash_g": 4, "ntruplus_hash_g_fixed": 12, "ntruplus_hash_g_fused_aarch64": 1644, "ntruplus_keccak_f1600_x1_aarch64": 1152},
+  "linked_text_sha256": "a11a80552293b12df78185a7c685130ca375c21bdee3e4395a153fce1c482398",
+  "kat_rsp_sha256": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8",
+  "correctness": "Mac/Pi package check pass; generated leaf deterministic; Official and candidate KAT, valid workloads and public failure paths pass; sinks match; linked caller chain verified; integration build warning-clean",
+  "environment": {"start_temperature_c": 58.2, "end_temperature_c": 62.6, "start_throttled": "0x0", "end_throttled": "0x0"},
+  "remote_results": "/home/pi/gt768-fused-shake-hashg-20260911-e41/.build/supercop-export-gate-v3/results",
+  "local_ephemeral_results": "experiments/gt768-fused-shake-hashg-20260911-e41/.build/pi-supercop-export-gate-v3"
+}
