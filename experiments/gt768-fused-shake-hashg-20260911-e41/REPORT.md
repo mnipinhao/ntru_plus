@@ -5,7 +5,13 @@ Experiment ID: `gt768-fused-shake-hashg-20260911-e41`
 This experiment is based on `aarch64-production` revision
 `a64e7035cb13410554af1c67870d4132a30037b4`.  Production source is unchanged.
 
-Latest result (2026-09-12): D register-resident hash_g passes. See D_GATE.md
+Latest result (2026-09-12): E production-shaped SUPERCOP export passes after
+correcting the generator's `symmetric.c`/`fips202.h` mapping. See E_GATE.md
+and E-summary.json. Against `/home/pi/supercop-20260831`, the final leaf is
+14.07%/21.30%/17.57% faster for Keygen/Encap/Decap. It is promotion-ready,
+but has not been merged or pushed.
+
+Previous result: D register-resident hash_g passes. See D_GATE.md
 and D-summary.json. Relative to C, paired savings are 311 hash_g, 306.5
 Encap and 303 Decap cycles, at 1184 bytes additional linked text. D is the
 experimental champion, not promoted or pushed. All 66 groups improve.

@@ -2,7 +2,7 @@ experiment_id: gt768-fused-shake-hashg-20260911-e41
 mode: optimize-memory
 baseline_revision: a64e7035cb13410554af1c67870d4132a30037b4
 candidate_branch: codex/gt768-fused-shake-hashg-20260911-e41
-candidate_revision: 317a52f400fd84ee9b41d313548cc0dcbe81ba52
+candidate_revision: 09d4b501423e0d48441ad078b2a846c05e834baa
 previous_champion_revision: 1493b298e790990038d15c146288280db943d79e
 promotion_target: aarch64-production
 target: NTRU+768 AArch64 production
@@ -10,7 +10,21 @@ kernel: hash_g fixed-size SHAKE256 path
 host: pi@100.99.191.9
 core: 3
 status: active
-current_gate: D completed; SUPERCOP export gate pending before promotion
+current_gate: E completed; candidate is promotion-ready but not promoted
+e_gate:
+  hypothesis_and_results: E_GATE.md
+  summary: E-summary.json
+  integration_revision: 09d4b501423e0d48441ad078b2a846c05e834baa
+  decision: accept as promotion-ready experimental champion
+  production_promoted: false
+  official_path: /home/pi/supercop-20260831/crypto_kem/ntruplus768/aarch64
+  official_tree_sha256: 6529e33b01163decbdb441a6b6b905a6ad66807c0f9da9ec924969847785cc03
+  paired_saved_cycles_vs_official:
+    keygen: 5422.5
+    encap: 8243
+    decap: 5884.5
+  text_section_growth_vs_official_bytes: 61272
+  next_gate: explicit production promotion and tracked SUPERCOP leaf update
 d_gate:
   candidate_code_revision: 317a52f400fd84ee9b41d313548cc0dcbe81ba52
   hypothesis_and_results: D_GATE.md
