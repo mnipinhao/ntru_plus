@@ -134,3 +134,12 @@ Decision: **accept as promotion-ready experimental champion**. The first
 control falsified the original export mapping; the corrected mapping passes
 all gates and recovers D's measured effect. No production merge or push was
 performed in this gate.
+
+## Promotion
+
+After explicit user approval, branch `gt768-fused-shake-hashg-20260911-e41`
+was merged into `aarch64-production`. The production code merge revision is
+`525b6a5f815e2f45d260aab54429585bf500871a`; previous champion revision was
+`a64e7035cb13410554af1c67870d4132a30037b4`. The tracked SUPERCOP leaf hash is
+the measured v3 hash above. A post-merge Mac package `make check` passed.
+Nothing was pushed as part of promotion.
