@@ -1,0 +1,169 @@
+{
+  "experiment": "GT864-P19-P18-PRODUCTION-20260912",
+  "baseline_revision": "34d62285580cbd36e907cf0a593f8a57432f0310",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p19-20260912",
+  "target_audit": {
+    "baseline": {
+      "full": {
+        "object": "gt864_p9_tobytes_full.o",
+        "instructions": 1386
+      },
+      "small": {
+        "object": "gt864_p9_tobytes_small.o",
+        "instructions": 1285
+      }
+    },
+    "candidate": {
+      "full": {
+        "object": "gt864_p18_tobytes_full.o",
+        "instructions": 1204,
+        "q_stack_accesses": 0
+      },
+      "small": {
+        "object": "gt864_p18_tobytes_small.o",
+        "instructions": 1096,
+        "q_stack_accesses": 0
+      }
+    },
+    "linked_p18_only": true
+  },
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "modes": {
+    "full": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1441.016,
+          "instructions": 2823.156,
+          "branches": 9.031,
+          "mem_access_rd": 128.023,
+          "mem_access_wr": 231.016
+        },
+        "candidate": {
+          "cycles": 1409.695,
+          "instructions": 2362.156,
+          "branches": 8.031,
+          "mem_access_rd": 138.023,
+          "mem_access_wr": 223.023
+        }
+      },
+      "delta": {
+        "cycles": -31.32100000000014,
+        "instructions": -461.0,
+        "branches": -1.0,
+        "mem_access_rd": 10.0,
+        "mem_access_wr": -7.992999999999995
+      },
+      "wins_cycles": true
+    },
+    "small": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1175.555,
+          "instructions": 2621.156,
+          "branches": 9.031,
+          "mem_access_rd": 128.023,
+          "mem_access_wr": 231.016
+        },
+        "candidate": {
+          "cycles": 1031.516,
+          "instructions": 2142.156,
+          "branches": 8.031,
+          "mem_access_rd": 138.023,
+          "mem_access_wr": 223.023
+        }
+      },
+      "delta": {
+        "cycles": -144.039,
+        "instructions": -479.0,
+        "branches": -1.0,
+        "mem_access_rd": 10.0,
+        "mem_access_wr": -7.992999999999995
+      },
+      "wins_cycles": true
+    }
+  },
+  "promotion_gate_passed": true,
+  "environment_before": [
+    "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc (Debian 14.2.0-19) 14.2.0",
+    "ondemand",
+    "temp=57.1'C",
+    "throttled=0x0"
+  ],
+  "environment_after": [
+    "temp=63.7'C",
+    "throttled=0x0"
+  ],
+  "source_manifest_sha256": "2ba2139c228aff4c9998136bbbcff129f90bb2063622884d0877e2176d7d20f6",
+  "slothy_results": "../gt864-p18-partial-transpose-tobytes/slothy-results.json",
+  "full_kem_gate": {
+    "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+    "kem": {
+      "keygen": {
+        "baseline": {
+          "cycles": 43596.875,
+          "instructions": 96131.0,
+          "branches": 1567.0
+        },
+        "candidate": {
+          "cycles": 43275.375,
+          "instructions": 94712.0,
+          "branches": 1564.0
+        },
+        "paired_delta": {
+          "cycles": -331.875,
+          "instructions": -1419.0,
+          "branches": -3.0
+        },
+        "observations": 252
+      },
+      "encaps": {
+        "baseline": {
+          "cycles": 45276.675,
+          "instructions": 124761.2,
+          "branches": 1005.6
+        },
+        "candidate": {
+          "cycles": 45069.825,
+          "instructions": 123821.2,
+          "branches": 1003.6
+        },
+        "paired_delta": {
+          "cycles": -209.42499999999563,
+          "instructions": -940.0,
+          "branches": -2.0
+        },
+        "observations": 252
+      },
+      "decaps": {
+        "baseline": {
+          "cycles": 40313.975000000006,
+          "instructions": 95334.2,
+          "branches": 1118.6
+        },
+        "candidate": {
+          "cycles": 40125.875,
+          "instructions": 94394.2,
+          "branches": 1116.6
+        },
+        "paired_delta": {
+          "cycles": -194.54999999999927,
+          "instructions": -940.0,
+          "branches": -2.0
+        },
+        "observations": 252
+      }
+    },
+    "wins_all_kem_cycles": true,
+    "environment_after": [
+      "temp=62.6'C",
+      "throttled=0x0"
+    ]
+  },
+  "promotion_checks": {
+    "manifest": "pass",
+    "exact": "p18_correctness=pass full=513 small=513 guarded_edges=2",
+    "abi": "/usr/bin/ld: warning: type and size of dynamic symbol `gt864_p18_tobytes_small_asm' are not defined\n/usr/bin/ld: warning: type and size of dynamic symbol `gt864_p18_tobytes_full_asm' are not defined\nP19 AAPCS/SIMD-cleanup/input-immutability/canary pass"
+  }
+}

@@ -1,5 +1,26 @@
 # K1 production integration evidence
 
+## P19 production promotion — 2026-09-12
+
+Full and Small ToBytes link the exact P18 partial-transpose assembly artifacts,
+SHA-256 `634fe9ee2e982405e86d87980703080dae0c51821d7b79e16905676eb128d83e`
+and `f32af0ec4e173481018856d62a24999fb59818f4d2d1b26a9b4fa541443c1254`.
+The C adapter calls the complete P18 public functions directly; legacy P9
+wrapper objects are not linked.  Final production-package validation and Pi 5
+results are recorded in `experiments/gt864-p19-p18-production/`.
+
+The memory contract remains disjoint input/output.  Promotion checks exact
+1,296-byte output extent, immutable input, canaries, `d8-d15` preservation and
+SIMD cleanup; it does not claim unsupported in-place aliasing.
+
+The production package manifest, linked-symbol audit, 513-case Full and Small
+oracles, guarded edges, 64-case KEM test, KAT and malformed transcript pass on
+Pi 5.  Against pre-P19 revision `34d62285`, Full/Small improve by
+31.321/144.039 cycles.  Across 252 paired observations per operation,
+Keygen/Encaps/Decaps improve by 331.875/209.425/194.550 cycles and retire
+1,419/940/940 fewer instructions.  The Pi remained unthrottled.  Complete raw
+results are in `experiments/gt864-p19-p18-production/pi-results.json`.
+
 ## P16 production promotion — 2026-09-12
 
 Only Full ToBytes changes: production links the exact P15 scheduled assembly;

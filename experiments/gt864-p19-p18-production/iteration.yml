@@ -1,0 +1,21 @@
+experiment_id: GT864-P19-P18-PRODUCTION-20260912
+action: promote
+status: passed
+baseline: committed pre-P19 GT864 production at revision 34d62285
+candidate: working GT864 production with exact P18 full and small artifacts
+gates:
+  source_identity: passed_exact_P18_SHA256
+  local_exact_bytes: passed_513_each_plus_guarded_edges
+  package_manifest: passed
+  linked_symbols: passed_P18_only_no_P9_public_wrapper
+  target_exact_bytes: passed_513_each_plus_guarded_edges
+  aapcs_and_cleanup: passed_d8_d15_SIMD_cleanup_input_immutability_canaries
+  kem_and_kat: passed_64_roundtrips_and_exact_KAT
+  malformed_rejection: passed_exact_transcript
+  paired_boundary: passed_full_minus_31_321_small_minus_144_039_cycles
+  paired_full_kem: passed_keygen_minus_331_875_encaps_minus_209_425_decaps_minus_194_550_cycles
+production: promoted
+next_queue:
+  - P20 refresh GT versus selected SUPERCOP 20260831 component and KEM profile.
+  - Select the next DAG only from the refreshed positive cycle gaps.
+  - Add ELF function type and size metadata outside the measured P18 instruction stream as a packaging-only cleanup.

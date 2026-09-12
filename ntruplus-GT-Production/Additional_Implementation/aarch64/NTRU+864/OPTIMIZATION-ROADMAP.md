@@ -51,7 +51,10 @@ Status meanings:
 | P14 | Done—Rejected | Replace P9 lane-edge routing with 15 retained-source TBL4 neighborhood classes | Exact/no-spill assembly removes 1120 full+small instructions, but Pi 5 regresses full/small by 198.993/104.583 cycles; production remains P9 |
 | P15 | Done—Combined rejected, full retained | Preserve P9 input-once lane routing and jointly schedule output completion, normalization and pack | Exact fixed-allocation schedule improves full by 76.555 cycles but small regresses 1.586; strict two-mode gate fails and production remains P9 |
 | P16 | Done—Promoted | Replace only full ToBytes with the retained P15 schedule; keep P9 small unchanged | KEM/KAT/malformed/object gates pass; paired Keygen/Encaps/Decaps improve 74.875/77.775/71.050 cycles with zero instruction or branch growth |
-| P17 | Next—Profiler checkpoint | Re-measure production against the selected SUPERCOP 20260831 Official and refresh component/call-site attribution after P13/P16 | Same host/compiler/hash policy; exact compatibility first; publish Keygen/Encaps/Decaps plus actionable component bottlenecks before selecting a new DAG |
+| P17 | Done—Profiler checkpoint | Re-measure production against the selected SUPERCOP 20260831 Official and refresh component/call-site attribution after P13/P16 | GT wins Keygen/Encaps/Decaps by 727.25/1148.45/434.55 cycles; remaining positive component gaps were ToBytes and inverse-to-ternary |
+| P18 | Done—Promotion candidate | Replace per-coefficient lane routing with class-local pruned 8x8 transposes and immediate normalization/packing | Exact/no-spill/Slothy gates pass; Full/Small save 31.368/149.117 boundary cycles and isolated Keygen/Encaps/Decaps save 334.125/194.400/182.825 cycles |
+| P19 | Done—Promoted | Link both exact P18 kernels and remove legacy P9 public wrappers from the active object set | Manifest, linked-symbol, exact bytes, disjoint-buffer canary/input immutability, AAPCS/cleanup, KAT/malformed and paired boundary/full-KEM gates pass |
+| P20 | Next—Profiler checkpoint | Refresh GT versus selected SUPERCOP after P19 | Choose the next DAG only from fresh positive cycle gaps |
 
 ## Fixed facts and non-tasks
 
@@ -72,6 +75,25 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed P17: the refreshed selected-SUPERCOP comparison shows production
+  GT ahead by 727.25/1148.45/434.55 cycles for Keygen/Encaps/Decaps.  P18 then
+  replaced P9 lane-edge routing with fifteen class-local partial transposes.
+  It preserves exact bytes and the no-scratch ABI, schedules without spill,
+  and wins both Full/Small boundaries by 31.368/149.117 cycles.  The isolated
+  full-KEM candidate wins all three operations, so P19 promotes both kernels
+  and repeats production-package validation.  Evidence:
+  `experiments/gt864-p17-official-profile/` and
+  `experiments/gt864-p18-partial-transpose-tobytes/`.
+
+- Completed and promoted P19.  Production links the exact P18 Full/Small
+  artifacts and the C adapter calls them directly; legacy P9 public wrappers
+  are absent from the linked library.  Manifest, exact byte, KAT, malformed,
+  disjoint-buffer canary/input-immutability, AAPCS and SIMD-cleanup gates pass.
+  Compared with pre-P19 production, Full/Small improve 31.321/144.039 cycles;
+  Keygen/Encaps/Decaps improve 331.875/209.425/194.550 cycles with exactly
+  1419/940/940 fewer instructions.  P20 is the next selected-Official profiler
+  checkpoint.  Evidence: `experiments/gt864-p19-p18-production/`.
 
 - Completed and promoted P16.  Production now links the exact retained P15
   schedule for Full ToBytes while Small remains the byte-identical P9 object.
