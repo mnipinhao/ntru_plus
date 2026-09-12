@@ -1,0 +1,36 @@
+inputs:
+  - sixteen post-I16 vectors X_t = [top0 components0..2 | top1 components0..2 | zero x2]
+  - q = 3457
+  - public composite tables for low and high CRT rows
+outputs:
+  - 96 low and high natural R0 coefficients at the exact baseline STRH offsets
+nodes:
+  - id: i16
+    operation: unchanged P7-C0/P7-C1 four-level CT inverse NTT16 including the retained final identity reset
+  - id: low_product
+    operation: Algorithm10 lane-wise product by [L_top0 components x3 | L_top1 components x3 | zero x2]
+    range: abs < 3457
+  - id: high_product
+    operation: Algorithm10 lane-wise product by [H_top0 components x3 | H_top1 components x3 | zero x2]
+    range: abs < 3457
+  - id: half_exchange
+    operation: EXT by six bytes then ADD to combine top0 and top1 contributions
+    range: abs <= 5278 before selective reset
+  - id: representative_resets
+    operation: b=1 two-instruction reduction on low t0/t12 and high t0/t2/t8/t10
+    range: reset outputs abs < 3457; all outputs abs <= 4303
+  - id: stores
+    operation: unchanged public UMOV plus STRH scatter, three component lanes per top
+dependencies:
+  - i16 -> low_product -> half_exchange -> representative_resets -> stores
+  - i16 -> high_product -> half_exchange -> representative_resets -> stores
+ordering:
+  - loads and arithmetic may reorder subject to true dependencies
+  - stores retain exact addresses but may move after their value is complete
+  - no load/store boundary is added
+cost_model:
+  baseline_per_t: one packed scale mulmod plus high CRT mulmod plus low CRT mulmod
+  candidate_per_t: low composite mulmod plus high composite mulmod
+  selective_resets: six b=1 two-instruction reductions
+  expected_static_delta: -66 instructions for the one tail call
+  expected_full_path_effect: positive but smaller than P13-B because tail is called once

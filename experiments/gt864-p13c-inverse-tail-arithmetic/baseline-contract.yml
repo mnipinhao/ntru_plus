@@ -1,0 +1,48 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: lazy_itail_p13b
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse_tail_lazy.S
+  extracted_region: baseline-region.S
+  function: lazy_itail
+  start_label: lazy_itail_slothy_start
+  end_label: lazy_itail_slothy_end
+  source_commit: 562a91e6
+region:
+  instruction_count: 669
+  live_in: [x0 output base, x1 packed tail scratch, x3 stage table, x4 tail scale table]
+  live_out: [96 natural coefficient stores]
+  clobbers: [w5-w17, v0-v31]
+abi:
+  inputs: [x0, x1, x3, x4]
+  outputs: [memory at x0]
+  concrete_gprs_allowed: [x0, x1, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+memory_contract:
+  loads: [16 packed input Q vectors, fixed public stage and terminal constants]
+  stores: [96 STRH at fixed natural-order offsets]
+  aliasing: outer scratch makes exact input-output alias safe
+  alignment: halfword output and 16-byte input/table loads
+  public_offsets_only: true
+  pointer_updates: []
+constant_contract:
+  constants: [q3457, inverse16 roots, terminal scale, CRT constants]
+  modulus: 3457
+  representation: I9 R^-1 input to natural R0 output
+  reduction_method: Algorithm-10 Barrett-Shoup fixed multiplication
+range_contract:
+  input_ranges: [P7-C1 I9 output abs <= 2617]
+  intermediate_ranges: [I16 abs <= 21397]
+  output_ranges: [raw natural R0 abs <= 4577]
+  narrowing_points: [all arithmetic stays signed int16]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, table offsets, store offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 669
+  slothy_expected_cycles: 633
+  full_path_benchmark: P13-B Inverse-to-ternary 4966.508 and Decaps 40453.625 independent median cycles
+  benchmark_command: taskset -c 3 paired PMU harness on Pi5

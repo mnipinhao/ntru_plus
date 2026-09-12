@@ -1,5 +1,21 @@
 # K1 production integration evidence
 
+## P13-C production promotion — 2026-09-12
+
+The single tail Inverse16 call now uses its six-useful-lane composite terminal
+map.  Its actual lane ABI is top0's three degree-3 components, top1's three
+components, then two zero padding lanes; it therefore uses `EXT #6`, not the
+main kernel's `EXT #8`.  All 96 natural store addresses, public wrapper and
+scratch behavior are unchanged.  Tail-specific closure gives `|raw| <= 4303`,
+below P8's existing 4577 limit.
+
+Slothy reports OPTIMAL/no-spill allocation and 167→150 same-mode expected A76
+cycles.  Pi 5 passed identical KAT and malformed transcripts, 4,096
+exact/alias/AAPCS/wipe cases, and full-KEM checks.  Paired medians improve
+Inverse-to-ternary by 71.586 cycles and Decaps by 73.075 cycles, with exactly
+66 fewer instructions and no branch change.  See
+`experiments/gt864-p13c-inverse-tail-arithmetic/`.
+
 ## P13-B production promotion — 2026-09-12
 
 The six main Inverse16 calls now use a fused terminal-scale/top-CRT DAG.  Two

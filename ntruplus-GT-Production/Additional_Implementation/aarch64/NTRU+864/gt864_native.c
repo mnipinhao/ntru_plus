@@ -19,7 +19,7 @@ void gt864_native_inverse(poly *out,const poly *in)
         &gt864_inverse9_twist_barrett[0][0][0][0][0],
         &gt864_inverse16_stage_barrett[0][0],
         &gt864_p13b_main[0][0],
-        &gt864_inverse16_tail_scale_barrett[0][0][0]);
+        &gt864_p13b_tail[0][0]);
 }
 
 void gt864_inverse_ternary_asm(int16_t *,const int16_t *,const int16_t *,const int16_t *,const int16_t *,const int16_t *);
@@ -29,5 +29,5 @@ void gt864_native_inverse_ternary(poly *out,const poly *in)
         &gt864_inverse9_twist_barrett[0][0][0][0][0],
         &gt864_inverse16_stage_barrett[0][0],
         &gt864_p13b_main[0][0],
-        &gt864_inverse16_tail_scale_barrett[0][0][0]);
+        &gt864_p13b_tail[0][0]);
 }

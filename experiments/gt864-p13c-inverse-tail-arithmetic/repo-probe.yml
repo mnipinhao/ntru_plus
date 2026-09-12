@@ -1,0 +1,19 @@
+experiment: gt864-p13c-inverse-tail-arithmetic
+source_revision: 562a91e6
+production_package: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864
+linked_source: gt864_native_inverse_tail_lazy.S
+linked_object: gt864_native_inverse_tail_lazy.o
+wrapper: gt864_native_public.S
+symbol: lazy_itail
+calls_per_inverse: 1
+build_flags: -O3 -std=c11 -march=armv8-a+simd -fPIC
+oracle: exact baseline/candidate address and residue comparison plus P8 consumer proof
+benchmark: paired PMU Inverse-to-ternary and complete Decaps
+target_host: pi@100.99.191.9
+microarchitecture: Cortex-A76 (Pi 5)
+slothy_root: /Users/chenpinhao/slothy
+slothy_python: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+slothy_model: slothy.targets.aarch64.cortex_a76
+baseline_region: lazy_itail_slothy_start..lazy_itail_slothy_end
+baseline_static_instructions: 669
+baseline_slothy_expected_cycles: 633

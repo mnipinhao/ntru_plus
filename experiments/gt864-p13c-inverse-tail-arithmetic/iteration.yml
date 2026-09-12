@@ -1,0 +1,33 @@
+experiment_id: gt864-p13c-inverse-tail-arithmetic
+mode: existing_region_replacement
+action: optimize-arithmetic
+state:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: pass
+  Slothy_run_by_user: pass
+  parse_slothy_result: pass
+  oracle_correctness: pass
+  full_path_benchmark: pass
+  score_candidate: pass
+  promotion_decision: pass
+hypothesis:
+  observation: tail repeats the old three-mulmod terminal map once, with six useful lanes and two padding lanes
+  primary_bottleneck_category: arithmetic or reduction
+  claim: tail-specific composite constants remove one general mulmod per column without changing layout or stores
+  exact_change: use two composite products, EXT by six bytes, ADD, and the same selective b1 resets as P13-B
+  expected_static_effect: 669 to 603 instructions, including 16 fewer MUL and 10 fewer SQRDMULH/MLS
+  expected_performance_effect: improve one-call tail and complete Inverse/Decaps by a measurable positive amount
+  expected_register_pressure_effect: allocatable v0-v31, no spill; four public table vectors per column
+  correctness_or_range_impact: no contract widening; output closes at 4303 below P8 limit 4577
+  falsifying_measurement: reject if Slothy cycles do not improve or complete Inverse/Decaps paired median regresses or is not reproducibly positive
+artifacts:
+  repo_probe: repo-probe.yml
+  baseline_region: baseline-region.S
+  baseline_contract: baseline-contract.yml
+  kernel_contract: kernel-contract.yml
+  instruction_dag: instruction-dag.yml
+candidate_status: promote

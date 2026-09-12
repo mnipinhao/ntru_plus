@@ -1,0 +1,28 @@
+promotion:
+  candidate_id: p13c_itail
+  status: promote
+  date: 2026-09-12
+  mode: existing_region_replacement
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  candidate_contract: candidate-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_output: candidate.opt.S
+  candidate_score: candidate-score.yml
+gates:
+  contract_preserved: true
+  approved_contract_changes: false
+  static_checks_passed: true
+  slothy_result_passed: true
+  oracle_correctness_passed: true
+  full_path_benchmark_passed: true
+metrics:
+  baseline_expected_cycles: 167
+  candidate_expected_cycles: 150
+  baseline_full_path: 40458.100
+  candidate_full_path: 40378.750
+  benchmark_metric: complete Decaps cycles
+decision:
+  reason: the single tail call saves exactly 66 instructions and 73.075 paired-median Decaps cycles with all correctness gates passing
+  follow_up: begin P14 ToBytes only from a static common-DAG candidate below the current P9 route

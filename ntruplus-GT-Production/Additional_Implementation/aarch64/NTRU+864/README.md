@@ -4,9 +4,10 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion is P13-B: the six main Inverse16 calls fuse terminal
-scale and top-CRT evaluation, saving 396 retired instructions and about 434
-Decaps cycles on Pi 5 while preserving the P8 raw-output bound and memory ABI.
+Latest production promotion is P13-C: the separately shaped tail Inverse16 now
+uses the same composite-terminal algebra with its own six-lane layout.  Together
+P13-B/C save 462 retired Inverse instructions and about 507 paired-median Decaps
+cycles on Pi 5 while preserving the P8 raw-output bound and memory ABI.
 Production also includes P10-A's direct-FR0 BaseInv, SIMD failure aggregation,
 scheduled pair+merge ToBytes, and P3-A's constant-resident `center864` path for
 the retained centered Inverse API.

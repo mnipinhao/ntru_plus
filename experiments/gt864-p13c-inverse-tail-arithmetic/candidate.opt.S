@@ -1,15 +1,14 @@
-/* P13-C Slothy allocated and bounded-window scheduled tail core. */
 #ifdef __APPLE__
-#define lazy_itail _lazy_itail
+#define p13c_itail _p13c_itail
 #endif
 .text
-.global lazy_itail
-lazy_itail:
+.global p13c_itail
+p13c_itail:
 // live-in: x0 output, x1 packed scratch, x3 stage table, x4 composite terminal table
 // live-out: exact natural-order coefficient stores at x0
 // coefficient range: input abs<=2617, I16 abs<=21397, output abs<=4303
 // reserved physical registers: x18-x30 and sp; no vector register is fixed
-        lazy_itail_slothy_start:
+        p13c_itail_slothy_start:
                                                  // Instructions:    603
                                                  // Expected cycles: 150
                                                  // Expected IPC:    4.02
@@ -1228,7 +1227,7 @@ lazy_itail:
         // umov w9, v6.h[2]                               // ......................................................................................................................................................*
         // strh w9, [x0, #814]                            // ......................................................................................................................................................*
 
-        lazy_itail_slothy_end:
+        p13c_itail_slothy_end:
 
 
     ret

@@ -1,0 +1,31 @@
+candidate:
+  id: p13c_itail
+  status: promote
+  mode: existing_region_replacement
+contract:
+  preserved: true
+  approved_changes: false
+  changed_fields: [internal public terminal table selection]
+  approval_note: no ABI representation range store-address or memory-boundary change
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 167
+  candidate_expected_cycles: 150
+  parity_justification:
+  log_json: slothy-result.json
+benchmark:
+  status: pass
+  command: taskset -c 3 paired inverse-to-ternary and complete Decaps PMU on Pi5
+  metric: complete Decaps cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.0
+  baseline: 40458.100
+  candidate: 40378.750
+decision:
+  reason: exact tail contract preserved and candidate improves Slothy model, Inverse-to-ternary, and complete Decaps
+  next_iteration: P14 ToBytes common routing-normalization DAG search

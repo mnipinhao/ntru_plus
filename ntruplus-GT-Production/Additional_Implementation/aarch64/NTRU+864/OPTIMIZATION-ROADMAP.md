@@ -47,7 +47,7 @@ Status meanings:
 | P12 | Done—Profile/selection | Reconcile remaining instruction/branch gap after P11 | Fresh selected-Official clean/profile/event campaign reproduces +9439 instructions/+152.5 branches and localizes the meaningful deficits without changing production |
 | P13-A | Done—Promoted | Widen exact Inverse tail initialization and 1792-byte scratch wipe from 16-byte scalar pairs to full-vector stores | Exact wipe/AAPCS/KAT/malformed gates pass; -291 instructions/-114 branches, paired -23.555 Inverse and -20.050 Decaps cycles |
 | P13-B | Done—Promoted | Fuse terminal scale and top-CRT linear forms in the six-call `lazy_i16` interior | Exact algebra/range/oracle, zero-spill Slothy, native KAT/rejection/alias/AAPCS/wipe and paired Pi 5 gates passed; Decaps improves by 434.350 paired-median cycles with exactly 396 fewer instructions |
-| P13-C | Next—Inverse tail arithmetic | Test the same composite terminal map on the separately shaped tail I16 kernel | Preserve the tail's exact addresses and P8 bound; require proof, no spill, and positive complete Inverse/Decaps paired timing before promotion |
+| P13-C | Done—Promoted | Tail-specific composite terminal map for the separately shaped six-useful-lane I16 kernel | Exact row-8 range/oracle, zero-spill Slothy, native KAT/rejection/alias/AAPCS/wipe and paired Pi 5 gates passed; Decaps improves 73.075 paired-median cycles with exactly 66 fewer instructions |
 | P14 | Next—ToBytes | Reduce the Decaps full+small composed route/normalize/pack boundary | Static common-DAG reduction must attack the measured +2886-instruction/+485-cycle aggregate; do not reopen P6 scratch storage |
 
 ## Fixed facts and non-tasks
@@ -69,6 +69,20 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed and promoted P13-C.  The single tail `lazy_itail` call now uses
+  its actual `[top0 components0..2 | top1 components0..2 | zero x2]` layout,
+  tail-specific composite constants, `EXT #6`, and the unchanged 96 scatter
+  addresses.  The exact final-row bound closes at 5028 before selective resets
+  and 4303 afterward, below P8's unchanged 4577 contract.  Static instructions
+  fall 669→603; same-mode Slothy timing is 167→150 with OPTIMAL no-spill RA.
+  Native KAT, malformed rejection, 4096 exact/alias/AAPCS/wipe cases and all
+  full-KEM checks pass.  Pi 5 paired medians improve Inverse-to-ternary by
+  71.586 cycles (IQR [-72.469,-70.004]) and Decaps by 73.075 (IQR
+  [-84.600,-66.350]), with exactly -66 instructions and unchanged branches.
+  Keygen/Encaps instructions are unchanged.  P14 ToBytes is next; the rejected
+  P6 storage-only direction remains closed.  Evidence:
+  `experiments/gt864-p13c-inverse-tail-arithmetic/`.
 
 - Completed and promoted P13-B.  The six main `lazy_i16` calls now fuse their
   terminal scale and two-row CRT map into two composite Algorithm-10 products
