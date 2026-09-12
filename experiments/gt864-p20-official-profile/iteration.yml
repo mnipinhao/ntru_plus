@@ -1,0 +1,27 @@
+experiment_id: GT864-P20-OFFICIAL-PROFILE-20260912
+action: benchmark
+state:
+  current_production_binding: pass
+  selected_official_binding: pass
+  no_competing_job: pass
+  correctness: pass
+  clean_pmu: pass
+  cycle_profile: pass
+  instruction_branch_profile: pass
+  bottleneck_decision: pass
+scope:
+  gt_revision: 126fb028
+  official: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+  official_upstream_latest_verified: false
+  host: pi@100.99.191.9
+  core: 3
+  hash_policy: SHAKE256
+  mutation: none
+
+decision:
+  gt_beats_selected_official:
+    keygen_cycles: -1044.875
+    encaps_cycles: -1350.950
+    decaps_cycles: -630.025
+  next_gate: P21
+  next_gate_focus: current-production Inverse-to-ternary interior decomposition

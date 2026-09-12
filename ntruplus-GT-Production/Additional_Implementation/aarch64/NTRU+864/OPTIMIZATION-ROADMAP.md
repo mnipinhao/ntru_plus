@@ -54,7 +54,8 @@ Status meanings:
 | P17 | Done—Profiler checkpoint | Re-measure production against the selected SUPERCOP 20260831 Official and refresh component/call-site attribution after P13/P16 | GT wins Keygen/Encaps/Decaps by 727.25/1148.45/434.55 cycles; remaining positive component gaps were ToBytes and inverse-to-ternary |
 | P18 | Done—Promotion candidate | Replace per-coefficient lane routing with class-local pruned 8x8 transposes and immediate normalization/packing | Exact/no-spill/Slothy gates pass; Full/Small save 31.368/149.117 boundary cycles and isolated Keygen/Encaps/Decaps save 334.125/194.400/182.825 cycles |
 | P19 | Done—Promoted | Link both exact P18 kernels and remove legacy P9 public wrappers from the active object set | Manifest, linked-symbol, exact bytes, disjoint-buffer canary/input immutability, AAPCS/cleanup, KAT/malformed and paired boundary/full-KEM gates pass |
-| P20 | Next—Profiler checkpoint | Refresh GT versus selected SUPERCOP after P19 | Choose the next DAG only from fresh positive cycle gaps |
+| P20 | Done—Profiler checkpoint | Refresh GT versus selected SUPERCOP after P19 | Fresh correctness/clean/cycle/event campaign passes; GT wins all full-KEM operations and residual positive gaps are localized |
+| P21 | Next—Inverse decomposition | Re-profile the current P13-B/P13-C/P8 Inverse-to-ternary interior | Isolate inverse9, main I16, tail I16, route/materialization, ternary conversion and wrapper/wipe; select a new DAG only from the largest measured stage |
 
 ## Fixed facts and non-tasks
 
@@ -75,6 +76,19 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed P20 without changing production.  A fresh manifest-bound build of
+  revision `126fb028fe9dfe640f37a391e9acb967896be234` beats the selected
+  SUPERCOP 20260831 Official by 1044.875/1350.950/630.025 cycles for
+  Keygen/Encaps/Decaps across 252 clean observations each.  Six exact/tampered
+  cross-implementation processes, twelve instrumentation-equivalence processes,
+  KEM and KAT pass; Pi 5 stayed unthrottled.
+- P19 reduced the aggregate ToBytes positive gaps to 153.250/237.150/243.125
+  cycles for Keygen/Encaps/Decaps.  The largest remaining matched positive gap
+  is now Decaps Inverse-to-ternary at +284.200 cycles and +3740 instructions
+  versus Official Inverse plus Crepmod3.  P21 therefore re-decomposes the
+  current optimized inverse interior before selecting another DAG; ToBytes is
+  retained second.  Evidence: `experiments/gt864-p20-official-profile/`.
 
 - Completed P17: the refreshed selected-SUPERCOP comparison shows production
   GT ahead by 727.25/1148.45/434.55 cycles for Keygen/Encaps/Decaps.  P18 then

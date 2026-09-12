@@ -148,6 +148,23 @@ Host: pi@100.99.191.9, Linux AArch64, GCC Debian 14.2.0-19.
 Remote directory: /home/pi/ntruplus-experiments/gt864-production-k1-validation/NTRU+864.
 Reference: /home/pi/ntruplus-experiments/gt864-p3b41-k1/raw.so.
 
+## P20 selected-Official profiler checkpoint — 2026-09-12
+
+Production revision `126fb028fe9dfe640f37a391e9acb967896be234` passed a
+fresh build, KEM test, 100-case KAT, six cross-implementation processes with
+100 exact and 100 tampered cases each, and twelve instrumentation-equivalence
+processes. The KAT digest remains
+`0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c`.
+The Pi 5 remained unthrottled from 58.7 to 63.1 C.
+
+Across 252 clean observations per operation, GT versus selected Official was
+43276.875 versus 44321.750 Keygen cycles, 45084.175 versus 46435.125 Encaps
+cycles, and 40134.675 versus 40764.700 Decaps cycles. The comparison target is
+`/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64`, tree SHA-256
+`40a284439eb5fe8dfef77f1a995ebc8dd16182835048d64e959fbcb6e3df0b59`;
+its independent latest-upstream status remains unverified. Full profiler
+evidence is in `experiments/gt864-p20-official-profile/`.
+
 ## Correctness and selection
 
 - `make -j4 check`: imported manifest passed, assembler/linker passed,
