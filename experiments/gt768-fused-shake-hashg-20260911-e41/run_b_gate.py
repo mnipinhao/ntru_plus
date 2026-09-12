@@ -11,7 +11,7 @@ import subprocess
 ap = argparse.ArgumentParser()
 ap.add_argument("root", type=Path)
 ap.add_argument("--name", default="b-gate-v1")
-ap.add_argument("--gate", choices=("B", "C"), default="B")
+ap.add_argument("--gate", choices=("B", "C", "D"), default="B")
 args = ap.parse_args()
 root = args.root.resolve()
 build = root / ".build" / args.name
@@ -19,8 +19,10 @@ build.mkdir(parents=True, exist_ok=False)
 sources = {"A": root / "baseline", "B": root / "candidate"}
 if args.gate == "C":
     sources["C"] = root / "candidate-c"
+if args.gate == "D":
+    sources = {"A": root / "baseline", "C": root / "candidate-c", "D": root / "candidate-d"}
 target_label = args.gate
-pair_count = 66 if args.gate == "C" else 62
+pair_count = 62 if args.gate == "B" else 66
 orders = list(itertools.permutations(sources))
 harness = root / "harness"
 flags = ["-march=armv8-a", "-mtune=cortex-a76", "-O3", "-fomit-frame-pointer",
@@ -64,8 +66,10 @@ testobj = build / "fips-test.o"
 run(["gcc", *flags, *includes, "-DGT_SECURE_CLEAR_AUDIT_HOOK",
      "-Dntruplus_keccak_f1600_x1_aarch64=counted_permute", "-c",
      src / "fips202.c", "-o", testobj])
-run(["gcc", *flags, *includes, "-DGT_SECURE_CLEAR_AUDIT_HOOK",
-     root / ("experiment/test_fixed.c" if args.gate == "C" else "experiment/test_prefix.c"), testobj, src / "symmetric.c",
+d_test = (["-DTEST_FUSED", root / "experiment/test_fused_frame.c",
+           root / "experiment/capture_fused_frame.S"] if args.gate == "D" else [])
+run(["gcc", *flags, *includes, "-DGT_SECURE_CLEAR_AUDIT_HOOK", *d_test,
+     root / ("experiment/test_prefix.c" if args.gate == "B" else "experiment/test_fixed.c"), testobj, src / "symmetric.c",
      src / "keccakf1600.S", "-o", build / "test-prefix"])
 test_result = run([build / "test-prefix"], "prefix-test.log").strip()
 print(test_result, flush=True)
@@ -106,10 +110,11 @@ for mode in ("hash_g", "encap", "decap"):
                     "paired_saved_cycles_vs_A": stats(delta),
                     "sink": next(iter(sinks)),
                     "percent_saved_from_medians": 100*(statistics.median(a)-statistics.median(b))/statistics.median(a)}
-    if args.gate == "C":
-        previous = samples[mode]["B"]
-        result[mode]["paired_saved_cycles_vs_B"] = stats([x-y for x,y in zip(previous,b)])
-        result[mode]["percent_saved_vs_B"] = 100*(statistics.median(previous)-statistics.median(b))/statistics.median(previous)
+    if args.gate != "B":
+        previous_label = "B" if args.gate == "C" else "C"
+        previous = samples[mode][previous_label]
+        result[mode]["paired_saved_cycles_vs_" + previous_label] = stats([x-y for x,y in zip(previous,b)])
+        result[mode]["percent_saved_vs_" + previous_label] = 100*(statistics.median(previous)-statistics.median(b))/statistics.median(previous)
     print(json.dumps({mode: result[mode]}), flush=True)
 
 # Long component runs reduce process-start overhead in external perf counts.
@@ -122,7 +127,7 @@ for label, src in sources.items():
          src / "symmetric.c", src / "fips202.c", src / "keccakf1600.S",
          harness / "perf_counter.c", "-Wl,--gc-sections", "-o", binary])
     bins[label, "pmu"] = binary
-for repeat in range(6 if args.gate == "C" else 4):
+for repeat in range(4 if args.gate == "B" else 6):
     for label in orders[repeat % len(orders)]:
         raw = run(["perf", "stat", "-x,", "-e",
                    "instructions:u,ld_spec:u,st_spec:u,stall_backend:u",
@@ -146,6 +151,7 @@ identities = {
 summary = {"experiment_id": "gt768-fused-shake-hashg-20260911-e41",
            "gate": args.gate, "baseline_revision": "a64e7035cb13410554af1c67870d4132a30037b4",
            "B_revision": "5300d169fa04b2459bf1093c435e9e22843cfee4",
+           "C_revision": "1493b298e790990038d15c146288280db943d79e",
            "host": run(["uname", "-a"]).strip(),
            "compiler": run(["gcc", "--version"]).splitlines()[0], "flags": flags,
            "core": 3, "pairs": pair_count, "operations_per_sample": 2000, "warmups": 100,

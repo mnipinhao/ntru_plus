@@ -3,14 +3,26 @@ mode: optimize-memory
 baseline_revision: a64e7035cb13410554af1c67870d4132a30037b4
 candidate_branch: codex/gt768-fused-shake-hashg-20260911-e41
 candidate_revision: 1493b298e790990038d15c146288280db943d79e
-previous_champion_revision: a64e7035cb13410554af1c67870d4132a30037b4
+previous_champion_revision: 1493b298e790990038d15c146288280db943d79e
 promotion_target: aarch64-production
 target: NTRU+768 AArch64 production
 kernel: hash_g fixed-size SHAKE256 path
 host: pi@100.99.191.9
 core: 3
 status: active
-current_gate: C completed; D not implemented
+current_gate: D completed; SUPERCOP export gate pending before promotion
+d_gate:
+  hypothesis_and_results: D_GATE.md
+  decision: accept as next experimental champion
+  production_promoted: false
+  previous_champion_revision: 1493b298e790990038d15c146288280db943d79e
+  summary: D-summary.json
+  paired_saved_cycles_vs_C:
+    hash_g: 311
+    encap: 306.5
+    decap: 303
+  text_section_growth_vs_C_bytes: 1184
+  next_gate: production-shaped SUPERCOP export and integration validation
 c_gate:
   category: memory access and code size
   hypothesis_and_results: C_GATE.md

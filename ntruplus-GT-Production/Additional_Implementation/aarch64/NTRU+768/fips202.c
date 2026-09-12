@@ -639,6 +639,7 @@ void shake256(uint8_t *output, size_t outlen,
 
 /* Fixed-input/output C control. memcpy expresses unaligned word access without
  * type-punning or an alignment precondition; generic SHAKE stays unchanged. */
+#if !defined(__aarch64__)
 static uint64_t hash_g_load64(const uint8_t *p) {
 #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     uint64_t x;
@@ -688,3 +689,12 @@ void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]) {
     hash_g_store_lanes(output + 136, s, 7);
     secure_clear(s, sizeof s);
 }
+#else
+/* D keeps state in GPRs, clears its own frame/state registers, and preserves
+ * the public fixed-size/overlap contract. Generic SHAKE uses standalone x1. */
+extern void ntruplus_hash_g_fused_aarch64(uint8_t *out, const uint8_t *input,
+                                        const uint64_t rc[24]);
+void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]) {
+    ntruplus_hash_g_fused_aarch64(output, input, KeccakF_RoundConstants);
+}
+#endif

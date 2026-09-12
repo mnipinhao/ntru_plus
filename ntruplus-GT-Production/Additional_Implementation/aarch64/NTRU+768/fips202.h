@@ -55,7 +55,8 @@ void shake256(uint8_t *output, size_t outlen,
               const uint8_t *input, size_t inlen);
 
 /* SHAKE256(0x01 || input[1152]), output[192]. Input/output may overlap.
- * All input is absorbed before output stores; the 200-byte state is cleared.
+ * All input precedes output stores. The C state or AArch64 frame/state
+ * registers are cleared before return.
  */
 void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]);
 

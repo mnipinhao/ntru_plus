@@ -158,6 +158,7 @@ DEFINE_ABI_SENTINEL abi_decap_ntt, poly_ntt_decap
 DEFINE_ABI_SENTINEL abi_crypto_kem_keypair, crypto_kem_keypair
 DEFINE_ABI_SENTINEL abi_crypto_kem_enc, crypto_kem_enc
 DEFINE_ABI_SENTINEL abi_crypto_kem_dec, crypto_kem_dec
+DEFINE_ABI_SENTINEL abi_hash_g_fixed, ntruplus_hash_g_fixed
 
 #undef C_SYM
 #ifdef __APPLE__

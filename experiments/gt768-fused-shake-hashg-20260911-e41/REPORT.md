@@ -5,10 +5,15 @@ Experiment ID: `gt768-fused-shake-hashg-20260911-e41`
 This experiment is based on `aarch64-production` revision
 `a64e7035cb13410554af1c67870d4132a30037b4`.  Production source is unchanged.
 
-Latest result (2026-09-12): C fixed-size wrapper passes. See C_GATE.md and
+Latest result (2026-09-12): D register-resident hash_g passes. See D_GATE.md
+and D-summary.json. Relative to C, paired savings are 311 hash_g, 306.5
+Encap and 303 Decap cycles, at 1184 bytes additional linked text. D is the
+experimental champion, not promoted or pushed. All 66 groups improve.
+
+Previous result: C fixed-size wrapper passes. See C_GATE.md and
 C-summary.json. It improves hash_g/Encap/Decap by 9.94%/3.26%/3.65% over B
 and shrinks the full KEM .text from B's 77296 to 73744 bytes. C is the next
-experimental champion; the B results below are retained as history.
+experimental champion at that gate; the B results below are retained as history.
 
 ## Gate 0: exact data flow
 

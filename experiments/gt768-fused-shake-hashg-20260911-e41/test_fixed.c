@@ -9,6 +9,9 @@
 #include "symmetric.h"
 
 static size_t clears, clear_bytes, bad_clear, permutations, cases;
+#ifdef TEST_FUSED
+int test_fused_frame(void);
+#endif
 static uint64_t rng = UINT64_C(0xc415eed);
 void ntruplus_keccak_f1600_x1_aarch64(uint64_t *, const uint64_t *);
 void counted_permute(uint64_t *s, const uint64_t *rc)
@@ -38,7 +41,11 @@ static void invoke(uint8_t *out, const uint8_t *msg)
 {
     clears = clear_bytes = permutations = 0;
     hash_g(out, msg);
+#ifdef TEST_FUSED
+    if (clears != 0 || clear_bytes != 0 || permutations != 0 || bad_clear)
+#else
     if (clears != 1 || clear_bytes != 200 || permutations != 10 || bad_clear)
+#endif
         abort();
     ++cases;
 }
@@ -92,7 +99,13 @@ int main(void)
     invoke(out, msg);
     if (memcmp(out, expected, 192)) abort();
     munmap(input_pages, 2 * page); munmap(output_pages, 2 * page);
+#ifdef TEST_FUSED
+    if (test_fused_frame()) abort();
+    printf("PASS %zu fused hash_g differential/alias/guard cases; "
+           "zero standalone calls; frame/register clear capture passed\n", cases);
+#else
     printf("PASS %zu fixed hash_g differential/alias/guard cases; "
            "10 permutations, 1 clear / 200 bytes\n", cases);
+#endif
     return 0;
 }
