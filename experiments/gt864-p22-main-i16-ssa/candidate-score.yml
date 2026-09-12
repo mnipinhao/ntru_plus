@@ -1,0 +1,30 @@
+candidate:
+  id: p22_i16_ssa
+  status: reject
+  mode: existing_region_replacement
+contract:
+  preserved: true
+  approved_changes: false
+  changed_fields: [internal two-output SSA butterfly DAG]
+correctness:
+  symbolic_oracle: pass_544_cases
+  native_exact_alias_aapcs_wipe: pass_4096_cases
+  kem_kat_malformed: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_instructions: 667
+  candidate_instructions: 635
+  baseline_expected_cycles: 166
+  candidate_expected_cycles: 158
+  spills: 0
+benchmark:
+  status: fail_full_path
+  main_i16_x6_paired_cycle_delta: -37.203
+  inverse_to_ternary_paired_cycle_delta: 5.610
+  decaps_paired_cycle_delta: 21.775
+  inverse_and_decaps_instruction_delta: -192
+decision:
+  reason: The scheduled candidate wins the isolated six-call boundary but reliably regresses complete Inverse-to-ternary and Decaps; RA-only is substantially worse.
+  production_changed: false
+  next_iteration: P23 new ToBytes coordinate-to-wire routing search under the P6 reopen threshold

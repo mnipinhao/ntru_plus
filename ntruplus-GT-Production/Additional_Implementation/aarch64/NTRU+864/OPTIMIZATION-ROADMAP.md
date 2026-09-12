@@ -56,7 +56,8 @@ Status meanings:
 | P19 | Done—Promoted | Link both exact P18 kernels and remove legacy P9 public wrappers from the active object set | Manifest, linked-symbol, exact bytes, disjoint-buffer canary/input immutability, AAPCS/cleanup, KAT/malformed and paired boundary/full-KEM gates pass |
 | P20 | Done—Profiler checkpoint | Refresh GT versus selected SUPERCOP after P19 | Fresh correctness/clean/cycle/event campaign passes; GT wins all full-KEM operations and residual positive gaps are localized |
 | P21 | Done—Inverse decomposition | Re-profile the current P13-B/P13-C/P8 Inverse-to-ternary interior | Fresh 258-observation stage PMU selects main I16 ×6 at 2117.531 cycles; no-store control remains 1960.406, so terminal scatter is rejected as the next target |
-| P22 | Next—Main-I16 arithmetic | Reconstruct and reduce the fixed-ABI P13-B main-I16 arithmetic/dependency DAG | Delete arithmetic/reduction work or shorten the critical path; preserve exact range/layout/memory ABI, no spill, and beat the 2117.531-cycle six-call Pi 5 boundary |
+| P22 | Done—Rejected | Replace 32 held-value `ORR` copies/call with two-output SSA butterflies | Exact/no-spill/model and isolated main-I16 gates pass, but complete Inverse and Decaps regress; production unchanged |
+| P23 | Next—ToBytes routing search | Find a smaller FR0-coordinate-to-wire DAG jointly consuming normalization, packing and routing | Before Slothy, statically remove at least about 829 instructions and 101 reads versus the rejected P6 route; preserve separate full/small contracts and exact bytes |
 
 ## Fixed facts and non-tasks
 
@@ -77,6 +78,19 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed P22 without changing production.  Two-output SSA butterflies delete
+  32 `ORR` copies per main-I16 call, reducing the region from 667 to 635
+  instructions.  Exact signed-int16/store-address oracles, 4096 native
+  exact/alias/AAPCS/wipe cases, KEM/KAT/malformed tests and no-spill Slothy pass;
+  the Cortex-A76 model improves from 166 to 158 cycles/call.
+- The scheduled kernel improves the direct six-call boundary by 37.203 paired-
+  median cycles and exactly 192 instructions, but this does not cross the real
+  consumer boundary: complete Inverse-to-ternary regresses by 5.610 cycles in
+  365/366 pairs and Decaps by 21.775 cycles in 173/186 pairs.  The RA-only
+  control is worse (+186.407 Inverse, +199.300 Decaps).  P22 is rejected and
+  P23 returns to the statically hard-gated ToBytes coordinate-to-wire search.
+  Evidence: `experiments/gt864-p22-main-i16-ssa/`.
 
 - Completed P21 without changing production.  The P20-byte-identical library
   passed a fresh manifest build, 64 valid/tampered KEM cases and the unchanged

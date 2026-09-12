@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: p22_i16
+  name: P13-B main inverse NTT16 with SSA butterflies
+  source: candidate.sym.S
+  scheme: NTRU+864 GT
+  operation: inverse NTT16 plus composite terminal map and natural scatter
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: functional RA then bounded fixed-allocation timing
+  allow_spills: false
+  driver: optimize.py
+  expected_outputs: [candidate.alloc.S, candidate.opt.S, slothy-ra.log, slothy-timing.log]
+region:
+  start_label: p22_i16_slothy_start
+  end_label: p22_i16_slothy_end
+  expected_instruction_count: 635
+  live_in: [x0 output base, x1 packed scratch, x3 stage table, x4 composite table]
+  live_out: [128 natural-order int16 stores at x0]
+abi:
+  inputs: [x0, x1, x3, x4]
+  outputs: [memory at x0]
+  clobbers: [w8, w9, allocated v0-v31]
+  concrete_gprs_allowed: [x0, x1, x3, x4, x8, x9, x11, x12, x13, x14, x15]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: unchanged P13-B arithmetic with two-output SSA butterflies and no held-value ORR nodes
+layout:
+  input_representation: sixteen vectors with top0 rows0-3 in lanes0-3 and top1 rows0-3 in lanes4-7
+  output_representation: unchanged natural-order raw R0 int16 coefficients
+  vector_lanes: signed 8x16-bit
+  packing: unchanged P13-B packed top halves
+memory_contract:
+  loads: [same 16 input Q vectors, same stage loads, same 64 composite Q-vector loads]
+  stores: [same 128 STRH offsets]
+  aliasing: unchanged outer scratch provides public exact alias safety
+  alignment: 16-byte input/table loads and halfword output stores
+  public_offsets_only: true
+  pointer_updates: []
+constant_contract:
+  constants: [q3457, unchanged inverse16 roots, unchanged P13-B composite constants, magic9]
+  modulus: 3457
+  representation: unchanged I9 R^-1 to natural R0
+  reduction_method: unchanged Algorithm-10 Barrett-Shoup and selective b=1 resets
+range_contract:
+  input_ranges: [abs <=2617]
+  intermediate_ranges: [unchanged I16 abs <=21397, terminal pre-reset abs <=5278]
+  output_ranges: [unchanged raw natural R0 abs <=4454]
+  narrowing_points: [unchanged signed int16 arithmetic]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed tables, fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: native exact main-I16 then complete KEM KAT malformed alias AAPCS wipe
+  full_path_benchmark_command: taskset CPU3 paired main-I16 and complete Decaps PMU on Pi5
+  benchmark_metric: cycles
+  lower_is_better: true

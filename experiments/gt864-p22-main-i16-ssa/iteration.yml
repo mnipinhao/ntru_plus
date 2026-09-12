@@ -1,0 +1,38 @@
+iteration:
+  id: P22
+  mode: existing_region_replacement
+  current_state: iteration_or_promote
+  hypothesis: Replace 32 in-place held-value ORR copies with two-output SSA butterflies, exposing independent ADD/SUB outputs to allocation and scheduling.
+  changed_artifacts: [main-I16 instruction DAG only]
+  earliest_state_to_revisit: instruction_dag
+artifacts:
+  baseline_region: baseline-region.S
+  baseline_contract: baseline-contract.yml
+  kernel_contract: kernel-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: candidate.sym.S
+  candidate_contract: candidate-contract.yml
+  slothy_driver: optimize.py
+gates:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass_32_orr_deleted
+  symbolic_asm: pass_635_instructions
+  static_checks: pass
+  Slothy_run_by_user: pass_local_authorized
+  parse_slothy_result: pass_manual_final_status
+  oracle_correctness: pass_symbolic_and_native
+  full_path_benchmark: fail_inverse_and_decaps_regress
+  score_candidate: reject
+  promotion_decision: reject
+  iteration_or_promote: complete_production_unchanged
+notes:
+  - Production revision is 15c326183f592044fbc67071d9459af86ce104e4.
+  - Slothy source root is /Users/chenpinhao/slothy, loaded through PYTHONPATH.
+  - Interpreter is /Users/chenpinhao/slothy_and_ra/.venv/bin/python.
+  - Target is Cortex-A76; spills are forbidden.
+  - P21 baseline is 2117.531 cycles for six calls and 1960.406 for the diagnostic no-store aggregate.
+  - Falsifier is contract/oracle failure, spill, no real DAG/critical-path reduction, or Pi 5 component/full-Decaps regression.
+  - Scheduled main-I16 improves 37.203 paired cycles and removes 192 instructions per six calls, but complete Inverse and Decaps regress by 5.610 and 21.775 paired-median cycles.
+  - RA-only regresses complete Inverse by 186.407 and Decaps by 199.300 cycles; no further P22 schedule is promoted.

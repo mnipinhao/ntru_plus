@@ -179,6 +179,23 @@ terminal lane scatters without touching production and established only an
 optimistic 175.016-cycle aggregate ceiling. Full evidence and interpretation
 are in `experiments/gt864-p21-inverse-decomposition/`.
 
+## P22 main-I16 two-output SSA experiment — 2026-09-12
+
+P22 changes only the six-call P13-B main-I16 interior.  It replaces 32
+held-value `ORR` copies per call with explicit two-output SSA butterflies,
+reducing 667 to 635 region instructions while preserving all roots, scales,
+ranges, table loads and exact halfword stores.  A 544-case exact symbolic
+oracle, no-spill Cortex-A76 Slothy allocation, 4096-case native exact/alias/
+AAPCS/wipe test, KEM test, unchanged 100-case KAT and malformed transcript pass.
+
+The scheduled candidate improves the isolated six-call boundary from 2129.531
+to 2092.344 cycles with exactly 192 fewer instructions.  It nevertheless
+regresses complete Inverse-to-ternary by a 5.610-cycle paired median and Decaps
+by 21.775 cycles.  The RA-only control regresses those boundaries by 186.407
+and 199.300 cycles.  The full-path gate therefore rejects P22; no production
+kernel or linked object was changed.  Complete evidence is in
+`experiments/gt864-p22-main-i16-ssa/`.
+
 ## Correctness and selection
 
 - `make -j4 check`: imported manifest passed, assembler/linker passed,

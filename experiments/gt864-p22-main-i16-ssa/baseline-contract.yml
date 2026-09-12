@@ -1,0 +1,81 @@
+mode: existing_region_replacement
+candidate_status: investigate
+baseline_status: extracted
+baseline:
+  id: p22-p13b-main-i16
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse16_lazy.S
+  extracted_region: baseline-region.S
+  function: lazy_i16
+  start_label: lazy_i16_slothy_start
+  end_label: lazy_i16_slothy_end
+  source_commit: 15c326183f592044fbc67071d9459af86ce104e4
+kernel:
+  id: lazy_i16
+  name: P13-B physical main inverse NTT16
+  source: baseline-region.S
+  scheme: NTRU+864 GT
+  operation: inverse NTT16 plus composite terminal map and natural scatter
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: existing physical region baseline
+  allow_spills: false
+  driver: optimize.py
+region:
+  instruction_count: 667
+  start_label: lazy_i16_slothy_start
+  end_label: lazy_i16_slothy_end
+  expected_instruction_count: 667
+  live_in: [x0 output base, x1 packed scratch, x3 stage table, x4 composite table]
+  live_out: [128 natural-order int16 stores at x0]
+abi:
+  inputs: [x0, x1, x3, x4]
+  outputs: [memory at x0]
+  clobbers: [w8, w9, w11-w15, v0-v31]
+  concrete_gprs_allowed: [x0, x1, x3, x4, x8, x9, x11, x12, x13, x14, x15]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: current four-layer CT I16, two composite terminal products, selective representative resets, exact scalar scatter
+layout:
+  input_representation: sixteen vectors with top0 rows0-3 in lanes0-3 and top1 rows0-3 in lanes4-7
+  output_representation: natural-order raw R0 int16 coefficients
+  vector_lanes: signed 8x16-bit
+  packing: unchanged P13-B packed top halves
+memory_contract:
+  loads: [16 packed input Q vectors, unchanged stage table Q vectors, 64 composite table Q vectors]
+  stores: [128 fixed-offset STRH]
+  aliasing: outer 1792-byte scratch makes exact public in-place use safe
+  alignment: 16-byte input/table loads and halfword output stores
+  public_offsets_only: true
+  pointer_updates: []
+constant_contract:
+  constants: [q3457, inverse16 roots, P13-B composite low/high constants, magic9]
+  modulus: 3457
+  representation: I9 R^-1 input to natural R0 output
+  reduction_method: Algorithm-10 Barrett-Shoup plus six selective b=1 resets
+range_contract:
+  input_ranges: [P7-C1 inverse9 output abs <=2617]
+  intermediate_ranges: [I16 abs <=21397, pre-reset terminal sums abs <=5278]
+  output_ranges: [raw natural R0 abs <=4454, within P8 abs4577 contract]
+  narrowing_points: [all arithmetic remains signed int16]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed tables, fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: integrated exact inverse alias AAPCS wipe KAT malformed tests
+  full_path_benchmark_command: taskset CPU3 paired main-I16 and Decaps PMU on Pi5
+  benchmark_metric: cycles
+  lower_is_better: true
+baseline_cost:
+  static_instruction_count: 667
+  slothy_expected_cycles: 166
+  full_path_benchmark: 2117.531 cycles for six calls in P21
+  benchmark_command: P21 six-process Cortex-A76 grouped PMU stage harness

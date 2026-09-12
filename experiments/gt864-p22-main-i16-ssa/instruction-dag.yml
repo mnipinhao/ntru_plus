@@ -1,0 +1,36 @@
+inputs:
+  - sixteen P7-C1 inverse9 output vectors at x1, abs <=2617, R^-1 scale
+  - q=3457 and fixed public stage/composite constants at x3/x4
+outputs:
+  - 128 natural-order raw R0 int16 coefficients at the baseline offsets
+nodes:
+  - id: input_loads
+    operation: load the same sixteen packed Q vectors
+  - id: ct_layers
+    operation: four radix-2 CT layers with the existing twiddle and reduction schedule
+    subgraph: each butterfly directly defines distinct sum and difference values from the same live left/right pair
+    deleted_scaffolding: 32 ORR held-left copies
+    range: unchanged peak abs <=21397
+  - id: terminal_products
+    operation: two Algorithm-10 packed composite products per column
+    range: each product abs <3457
+  - id: half_exchange
+    operation: same EXT #8 plus ADD for top0/top1 linear forms
+    range: pre-reset abs <=5278
+  - id: representative_resets
+    operation: same six b=1 SQRDMULH+MLS resets
+    range: final abs <=4454
+  - id: stores
+    operation: same 128 UMOV+STRH fixed public offsets
+dependencies:
+  - input_loads -> ct_layers -> terminal_products -> half_exchange -> representative_resets -> stores
+ordering:
+  - ADD and SUB of one butterfly share the same two input values and may be independently scheduled
+  - no mathematical, table, reduction, memory or output-order node may change
+  - stores may move only after their exact value and all aliased input loads are complete
+cost_model:
+  baseline_instructions_per_call: 667
+  candidate_instructions_per_call: 635
+  exact_deleted_per_call: 32 ORR
+  exact_deleted_per_inverse: 192 instructions over six calls
+  expected_effect: lower artificial dependency/copy pressure with unchanged arithmetic
