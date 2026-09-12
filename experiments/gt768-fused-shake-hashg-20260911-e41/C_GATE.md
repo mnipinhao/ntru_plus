@@ -45,6 +45,8 @@ controls. Production promotion is outside this gate.
 
 ## Result: accept C as the next experimental champion
 
+Measured candidate code: 1493b298e790990038d15c146288280db943d79e.
+
 Date: 2026-09-12. Production remains at
 a64e7035cb13410554af1c67870d4132a30037b4; the tracked SUPERCOP leaf is unchanged.
 The generic B helper is removed from the candidate package rather than kept
