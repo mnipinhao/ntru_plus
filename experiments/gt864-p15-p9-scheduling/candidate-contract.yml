@@ -1,0 +1,48 @@
+candidate:
+  id: gt864-p15-p9-fixed-schedule
+  status: rejected-combined-retained-full
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: build/p15-full.input.S and build/p15-small.input.S using the fixed GCC physical allocation
+  slothy_driver: optimize.py
+  slothy_log: build/slothy-full.log and build/slothy-small.log
+  generated_output: build/p15-full.opt.S and build/p15-small.opt.S
+contract_preservation:
+  baseline_compared: true
+  preserved: true
+  approved_changes: false
+  approved_by:
+  changed_fields: []
+region:
+  start_label: p15_full_window_N_slothy_start or p15_small_window_N_slothy_start
+  end_label: corresponding p15 mode Slothy window end
+  live_in: [output pointer, FR0 input pointer]
+  live_out: [648 exact output bytes per top]
+abi:
+  inputs: [x0 output, x1 one 432-coefficient FR0 top]
+  outputs: [648 canonical 12-bit bytes]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31]
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+memory_contract:
+  loads: [54 exact FR0 Q loads per top, fixed q and pack constants]
+  stores: [648 final bytes per top]
+  aliasing: input and output disjoint at every production KEM caller
+  alignment: FR0 16-byte aligned; output byte alignment unrestricted
+  public_offsets_only: true
+  pointer_updates: [none across the top helper ABI]
+constant_contract:
+  constants: [q=3457, Barrett reciprocal 9 in full, pack index]
+  modulus: 3457
+  representation: signed int16 FR0 to canonical unsigned 12-bit wire values
+  reduction_method: full Barrett plus sign correction; small sign correction only
+range_contract:
+  input_ranges: [full arbitrary signed int16, small strict -3457 to 3457]
+  intermediate_ranges: [canonical coefficient 0 to 3456]
+  output_ranges: [exact 648-byte Official wire encoding per top]
+  narrowing_points: [canonical uint16 to packed 12-bit bytes]
+constant_time_contract:
+  secret_inputs: [FR0 coefficients]
+  public_inputs: [mode and fixed addresses]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

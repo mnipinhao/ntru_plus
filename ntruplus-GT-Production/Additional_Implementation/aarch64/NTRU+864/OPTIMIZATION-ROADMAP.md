@@ -49,7 +49,8 @@ Status meanings:
 | P13-B | Done—Promoted | Fuse terminal scale and top-CRT linear forms in the six-call `lazy_i16` interior | Exact algebra/range/oracle, zero-spill Slothy, native KAT/rejection/alias/AAPCS/wipe and paired Pi 5 gates passed; Decaps improves by 434.350 paired-median cycles with exactly 396 fewer instructions |
 | P13-C | Done—Promoted | Tail-specific composite terminal map for the separately shaped six-useful-lane I16 kernel | Exact row-8 range/oracle, zero-spill Slothy, native KAT/rejection/alias/AAPCS/wipe and paired Pi 5 gates passed; Decaps improves 73.075 paired-median cycles with exactly 66 fewer instructions |
 | P14 | Done—Rejected | Replace P9 lane-edge routing with 15 retained-source TBL4 neighborhood classes | Exact/no-spill assembly removes 1120 full+small instructions, but Pi 5 regresses full/small by 198.993/104.583 cycles; production remains P9 |
-| P15 | Next—P9 scheduling | Preserve P9 input-once lane routing and jointly schedule output completion, normalization and pack | No added TBL, input load, scratch or spill; require lower same-boundary Pi 5 cycles in both full and small before KEM integration |
+| P15 | Done—Combined rejected, full retained | Preserve P9 input-once lane routing and jointly schedule output completion, normalization and pack | Exact fixed-allocation schedule improves full by 76.555 cycles but small regresses 1.586; strict two-mode gate fails and production remains P9 |
+| P16 | Next—Full-only integration | Replace only full ToBytes with the retained P15 schedule; keep P9 small unchanged | Complete KEM/KAT/malformed/object gates and lower paired Keygen, Encaps and Decaps cycles without instruction, branch or memory-count growth |
 
 ## Fixed facts and non-tasks
 
@@ -70,6 +71,18 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed P15 without combined production promotion.  Slothy timing-only
+  scheduling preserves the exact P9 instruction multiset, fixed allocation,
+  memory boundary and coefficient no-spill contract across 9 full and 8 small
+  bounded windows.  Both target packages pass KEM/KAT and 513 edge/random
+  differential cases per mode.  On Pi 5, full improves
+  1518.188→1441.633 cycles with identical retired instructions, branches and
+  reads, but small regresses 1174.282→1175.868 cycles.  The predeclared
+  both-mode gate therefore rejects P15 and skips full-KEM integration.
+  Because the modes are separate call boundaries, P16 retains the measured
+  full schedule for an independent full-only KEM gate while leaving P9 small
+  untouched.  Evidence: `experiments/gt864-p15-p9-scheduling/`.
 
 - Completed P14 without production promotion.  The exact composed route has
   only 15 distinct eight-source neighborhoods.  A maximum-overlap class path

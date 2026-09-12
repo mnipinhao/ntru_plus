@@ -1,0 +1,34 @@
+candidate:
+  id: gt864-p15-p9-fixed-allocation-schedule
+  status: reject-combined-retain-full
+contract:
+  preserved: true
+correctness:
+  target_kem: pass
+  kat: pass
+  differential_full_513: pass
+  differential_small_513: pass
+slothy:
+  root: /Users/chenpinhao/slothy
+  full_windows: 9
+  small_windows: 8
+  instruction_multiset_preserved: true
+  register_renaming: false
+  spills: 0
+static:
+  full_top_instructions: 1378
+  small_top_instructions: 1277
+  coefficient_q_stack_accesses: 0
+benchmark:
+  metric: paired median cycles
+  full_baseline: 1518.188
+  full_candidate: 1441.633
+  full_delta: -76.555
+  small_baseline: 1174.2815
+  small_candidate: 1175.8675
+  small_delta: 1.586
+decision:
+  promote_combined: false
+  production_changed: false
+  reason: small does not improve, violating the predeclared two-mode gate
+  retained_followup: P16 full-only KEM integration with P9 small unchanged

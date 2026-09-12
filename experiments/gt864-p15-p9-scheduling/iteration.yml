@@ -1,0 +1,32 @@
+experiment_id: GT864-P15-P9-SCHEDULE-20260912
+mode: existing_region_replacement
+action: optimize-scheduling
+state:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: pass exact instruction and stack-operation multisets
+  Slothy_run_by_user: pass authorized local Codex run
+  parse_slothy_result: pass
+  oracle_correctness: pass target KEM KAT and 513 cases per mode
+  full_path_benchmark: skipped after small same-boundary falsifier
+  score_candidate: pass
+  promotion_decision: reject combined retain full for P16
+hypothesis:
+  observation: GCC already interleaves routing completion with normalization and packing, but its physical schedule exposes long INS-to-normalize and pack-to-split-store chains
+  primary_bottleneck_category: scheduling or dependency
+  hypothesis: Cortex-A76 timing-only scheduling of bounded completion windows can overlap independent output chains better than GCC without changing P9 economics
+  exact_proposed_change: preserve GCC physical allocation and exact instruction multiset while reordering only inside bounded completion windows
+  expected_static_effect: zero instruction, load, store, branch and code-size change
+  expected_performance_effect: lower complete public ToBytes cycles in full and small modes
+  expected_register_pressure_effect: exactly unchanged because register renaming and spill are disabled
+  correctness_or_range_impact: none; exact dataflow and memory contract retained
+  falsifying_measurement: parser or scheduler failure, changed instruction multiset, failed bytes, or non-negative paired Pi 5 cycle delta in either mode
+environment:
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  target: cortex_a76
+  pi5: pi@100.99.191.9
+  remote: /home/pi/supercop-20260831/bench/pinhao/gt864-p15-20260912

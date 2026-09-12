@@ -1,0 +1,35 @@
+dag:
+  id: gt864-p15-p9-fixed-dag
+  contract: kernel-contract.yml
+  semantic_change: none
+inputs:
+  - name: routed_partial_vectors
+    representation: physical GCC vector registers containing zero to seven final lanes
+  - name: final_input_q
+    representation: one exact public-offset FR0 load
+  - name: constants
+    representation: q, reciprocal 9 for full, and pack-index vector
+operations:
+  - id: route_completion
+    operation: insert input lanes into their exact P9 output vectors
+    ordering: lane writes remain tied to the same physical source and destination
+  - id: normalization
+    operation: unchanged full Barrett or small sign correction
+    ordering: after the eighth lane of the relevant output vector
+  - id: pack
+    operation: UZP1 UZP2 SHL USHR ORR and TBL2
+    ordering: after normalization of the same output vector
+  - id: store
+    operation: unchanged eight-byte plus four-byte final write
+    ordering: after pack; address and width unchanged
+outputs:
+  - name: final_wire_bytes
+    representation: exact twelve bytes at each existing public output offset
+  - name: surviving_partial_vectors
+    representation: unchanged physical live-outs for later windows
+constraints:
+  - preserve exact instruction multiset
+  - preserve all physical register names
+  - preserve memory dependencies and public addresses
+  - no spill, new load, new store, scratch, TBL, or arithmetic
+  - only reorder within bounded completion windows

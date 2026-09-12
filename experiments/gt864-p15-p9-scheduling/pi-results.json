@@ -1,0 +1,96 @@
+{
+  "experiment": "P15",
+  "baseline_revision": "16da52ca6caa6ef08401a5d2e0417fc3bc4c9c9f",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p15-20260912",
+  "target_audit": {
+    "full": {
+      "baseline": {
+        "top_instructions": 1378,
+        "q_stack_accesses": 0
+      },
+      "candidate": {
+        "top_instructions": 1378,
+        "q_stack_accesses": 0
+      }
+    },
+    "small": {
+      "baseline": {
+        "top_instructions": 1277,
+        "q_stack_accesses": 0
+      },
+      "candidate": {
+        "top_instructions": 1277,
+        "q_stack_accesses": 0
+      }
+    }
+  },
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "modes": {
+    "full": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1518.188,
+          "instructions": 2823.156,
+          "branches": 9.031,
+          "mem_access_rd": 128.023,
+          "mem_access_wr": 231.062
+        },
+        "candidate": {
+          "cycles": 1441.633,
+          "instructions": 2823.156,
+          "branches": 9.031,
+          "mem_access_rd": 128.023,
+          "mem_access_wr": 231.125
+        }
+      },
+      "delta": {
+        "cycles": -76.55500000000006,
+        "instructions": 0.0,
+        "branches": 0.0,
+        "mem_access_rd": 0.0,
+        "mem_access_wr": 0.06299999999998818
+      },
+      "wins_cycles": true
+    },
+    "small": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1174.2815,
+          "instructions": 2621.156,
+          "branches": 9.031,
+          "mem_access_rd": 128.023,
+          "mem_access_wr": 231.078
+        },
+        "candidate": {
+          "cycles": 1175.8675,
+          "instructions": 2621.156,
+          "branches": 9.031,
+          "mem_access_rd": 128.023,
+          "mem_access_wr": 231.102
+        }
+      },
+      "delta": {
+        "cycles": 1.5860000000000127,
+        "instructions": 0.0,
+        "branches": 0.0,
+        "mem_access_rd": 0.0,
+        "mem_access_wr": 0.02400000000000091
+      },
+      "wins_cycles": false
+    }
+  },
+  "promotion_gate_passed": false,
+  "environment_before": [
+    "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc (Debian 14.2.0-19) 14.2.0",
+    "ondemand",
+    "temp=56.5'C",
+    "throttled=0x0"
+  ],
+  "environment_after": [
+    "temp=60.4'C",
+    "throttled=0x0"
+  ],
+  "source_manifest_sha256": "ac046e1091d19de563d083d5d55d94295cc3ac7d2024e65e46792eae1747a3ee"
+}

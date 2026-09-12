@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864-p15-p9-scheduling
+  name: GT864 P9 fixed-DAG bounded timing schedule
+  source: generated build/p15-full.input.S and build/p15-small.input.S
+  scheme: NTRU+864 GT
+  operation: FR0 full and small serialization
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: fixed-physical-register timing-only scheduling over bounded completion windows
+  driver: optimize.py
+  expected_outputs: [build/p15-full.opt.S, build/p15-small.opt.S, slothy-results.json]
+  allow_spills: false
+region:
+  start_label: p15_mode_window_N_slothy_start
+  end_label: p15_mode_window_N_slothy_end
+  expected_instruction_count: exactly the GCC baseline instruction multiset
+  live_in: [all physical registers read in each window]
+  live_out: [all physical registers and memory written in each window]
+abi:
+  inputs: [x0 output, x1 one 432-coefficient FR0 top]
+  outputs: [648 canonical 12-bit bytes per top]
+  clobbers: [unchanged GCC-selected GPRs and SIMD registers]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31]
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: unchanged P9 lane route, full or small normalization, pack8 and split final stores
+layout:
+  input_representation: P13-C production FR0 tile-major signed int16
+  output_representation: Official NTRU+864 canonical 12-bit byte ABI
+  vector_lanes: unchanged P9 composed-map output groups
+  packing: unchanged P9 eight-coefficient to twelve-byte pack
+memory_contract:
+  loads: [same addresses and multiplicity as GCC 14.2 P9]
+  stores: [same addresses, widths and multiplicity as GCC 14.2 P9]
+  aliasing: input and output disjoint at all production callers
+  alignment: FR0 16-byte aligned; output byte alignment unrestricted
+  public_offsets_only: true
+  pointer_updates: [unchanged]
+constant_contract:
+  constants: [q=3457, Barrett reciprocal 9 in full, pack index]
+  modulus: 3457
+  representation: unchanged FR0 and wire ABI
+  reduction_method: unchanged P9 full and small normalization
+range_contract:
+  input_ranges: [full arbitrary signed int16, small strict -3457 to 3457]
+  intermediate_ranges: [unchanged GCC dataflow and canonical coefficient 0 to 3456]
+  output_ranges: [exact Official wire encoding]
+  narrowing_points: [unchanged 12-bit packing]
+constant_time_contract:
+  secret_inputs: [FR0 coefficients]
+  public_inputs: [mode and fixed addresses]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: exact differential full and small serializer tests with guard edges
+  test_command: target object and complete KEM KAT malformed alias AAPCS and clear checks if timing wins
+  full_path_benchmark_command: paired Pi 5 public ToBytes then complete KEM if both modes win
+  benchmark_metric: cycles
+  lower_is_better: true
