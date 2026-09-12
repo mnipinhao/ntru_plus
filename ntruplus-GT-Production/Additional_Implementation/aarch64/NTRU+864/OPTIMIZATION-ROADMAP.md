@@ -44,7 +44,9 @@ Status meanings:
 | P10-A | Done—Promoted | Direct-FR0 BaseInv numerator/finish with one global inverse-scale correction | Approved 1972→2550 bound; all production gates pass. P9→P10 BaseInv success 5197.422→4139.985 and Keygen 45795.250→43670.500; selected Official two-call BaseInv 8366.875 vs P10 8188.250 |
 | P10-B | Dropped—Unneeded | Contract-preserving normalized finish fallback | Reopen only if a future consumer cannot accept the approved 2550 bound; current K1→BaseInv→D1 chain is fully closed |
 | P11 | Dropped | Joint terminal Inverse-to-ternary DAG after P7-C1/P8 | A0–A4 all correct/no-spill and removed up to 1,292 instructions, but every exact component candidate was slower. Best A2: +17.485 paired cycles, IQR [+15.961,+18.422]; production unchanged |
-| P12 | Active—Decaps | Reconcile remaining instruction/branch gap after P11 | Re-profile first; only keep subgraphs whose same-boundary static model can materially reduce the current +9437 instructions/+152 branches versus Official Decaps |
+| P12 | Done—Profile/selection | Reconcile remaining instruction/branch gap after P11 | Fresh selected-Official clean/profile/event campaign reproduces +9439 instructions/+152.5 branches and localizes the meaningful deficits without changing production |
+| P13 | Active—Inverse interior | Re-decompose the current post-P7-C1 Inverse-to-ternary interior below the rejected P11 terminal route | Select an arithmetic DAG with substantial same-boundary instruction and modeled-cycle margin; terminal store/routing deletion alone is excluded |
+| P14 | Next—ToBytes | Reduce the Decaps full+small composed route/normalize/pack boundary | Static common-DAG reduction must attack the measured +2886-instruction/+485-cycle aggregate; do not reopen P6 scratch storage |
 
 ## Fixed facts and non-tasks
 
@@ -65,6 +67,17 @@ Status meanings:
 ## Change log
 
 ### 2026-09-12
+
+- Completed P12 without changing production.  A fresh manifest-closed build of
+  production revision `dd8c3146` and the selected SUPERCOP source reproduces
+  Decaps 40761.450→40918.950 cycles (+157.500, +0.39%), +9439 instructions and
+  +152.5 branches.  Per-call-site event profiling assigns +4493 instructions/
+  +171 branches to GT Inverse-to-ternary versus Official Inverse+Crepmod3 and
+  +2886/-24 to aggregate ToBytes.  Their cycle deficits are +815.675 and
+  +485.000 respectively.  BaseMul R^-1 is cycle-tied despite +770/+73;
+  Forward and FromBytes are faster despite positive instruction gaps, so those
+  are not reopened.  P13 targets non-terminal Inverse arithmetic; P14 retains
+  ToBytes second.  Evidence: `experiments/gt864-p12-decaps-profile/`.
 
 - Completed and rejected P11. A0 replaced 1,728 terminal UMOV/STRH
   instructions with D records plus a joint ternary route, but regressed the
