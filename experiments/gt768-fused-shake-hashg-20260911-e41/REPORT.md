@@ -11,6 +11,10 @@ and E-summary.json. Against `/home/pi/supercop-20260831`, the final leaf is
 14.07%/21.30%/17.57% faster for Keygen/Encap/Decap. It is promotion-ready,
 but has not been merged or pushed.
 
+The benchmark-identical v3 leaf was subsequently materialized into the tracked
+SUPERCOP tree for the requested production merge. Its local tree hash remains
+`23cb63e0f6145535fbcc4801197617b264af7498ce0f649e1360192f8a5c58fe`.
+
 Previous result: D register-resident hash_g passes. See D_GATE.md
 and D-summary.json. Relative to C, paired savings are 311 hash_g, 306.5
 Encap and 303 Decap cycles, at 1184 bytes additional linked text. D is the
