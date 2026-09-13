@@ -1,0 +1,137 @@
+{
+  "approved_changes": true,
+  "baseline_contract": "baseline-contract.yml",
+  "candidate_contract": "kernel-contract.yml",
+  "differences": [
+    {
+      "baseline": [
+        "x2",
+        "x5-x9",
+        "v0-v31"
+      ],
+      "candidate": [
+        "x2",
+        "x5-x9",
+        "allocated v0-v25",
+        "v26-v31"
+      ],
+      "field": "abi.clobbers"
+    },
+    {
+      "baseline": [
+        "v0-v31 physical P18 allocation"
+      ],
+      "candidate": [
+        "v26",
+        "v27",
+        "v28",
+        "v29",
+        "v30",
+        "v31"
+      ],
+      "field": "abi.fixed_vector_registers"
+    },
+    {
+      "baseline": [
+        "q3457",
+        "reciprocal9",
+        "exact P18 pack-index"
+      ],
+      "candidate": [
+        "unchanged q3457",
+        "reciprocal9",
+        "exact P18 pack-index"
+      ],
+      "field": "constant_contract.constants"
+    },
+    {
+      "baseline": "Full Algorithm-10 b=1 normalization; Small sign correction only",
+      "candidate": "unchanged Full Algorithm-10 b=1 normalization; unchanged Small sign correction only",
+      "field": "constant_contract.reduction_method"
+    },
+    {
+      "baseline": "FR0 signed int16 to canonical unsigned 0 through 3456 before 12-bit packing",
+      "candidate": "unchanged FR0 signed int16 to canonical unsigned 0 through 3456 before 12-bit packing",
+      "field": "constant_contract.representation"
+    },
+    {
+      "baseline": "input and output are disjoint at the public serializer boundary",
+      "candidate": "unchanged disjoint serializer input and output",
+      "field": "memory_contract.aliasing"
+    },
+    {
+      "baseline": "coefficient Q loads are 16-byte aligned; D and W stores use public byte offsets",
+      "candidate": "unchanged aligned coefficient Q loads and public byte-offset D and W stores",
+      "field": "memory_contract.alignment"
+    },
+    {
+      "baseline": [
+        "64 coefficient Q loads plus one 16-byte public pack-index load per top"
+      ],
+      "candidate": [
+        "at most 61 coefficient Q loads plus one 16-byte public pack-index load per top"
+      ],
+      "field": "memory_contract.loads"
+    },
+    {
+      "baseline": [
+        "fixed public output-bank bases only"
+      ],
+      "candidate": [
+        "unchanged fixed public output-bank bases only"
+      ],
+      "field": "memory_contract.pointer_updates"
+    },
+    {
+      "baseline": [
+        "Full arbitrary signed int16; Small strict negative q to q producer range"
+      ],
+      "candidate": [
+        "unchanged Full arbitrary signed int16; unchanged Small strict negative q to q producer range"
+      ],
+      "field": "range_contract.input_ranges"
+    },
+    {
+      "baseline": [
+        "Full Algorithm-10 output within reduction contract; Small value after sign correction in 0 through 3456"
+      ],
+      "candidate": [
+        "unchanged normalization ranges; routing is only a lane permutation"
+      ],
+      "field": "range_contract.intermediate_ranges"
+    },
+    {
+      "baseline": [
+        "UZP and bit packing only after canonicalization"
+      ],
+      "candidate": [
+        "unchanged UZP and bit packing only after canonicalization"
+      ],
+      "field": "range_contract.narrowing_points"
+    },
+    {
+      "baseline": [
+        "each decoded 12-bit coefficient equals the canonical input residue modulo 3457"
+      ],
+      "candidate": [
+        "each decoded 12-bit coefficient equals the unchanged canonical input residue modulo 3457"
+      ],
+      "field": "range_contract.output_ranges"
+    },
+    {
+      "baseline": [
+        "x0 output top base",
+        "x1 FR0 input top base"
+      ],
+      "candidate": [
+        "x0 output top base",
+        "x1 FR0 input top base",
+        "v26 pack-index",
+        "v27 q3457",
+        "Full v28 reciprocal9"
+      ],
+      "field": "region.live_in"
+    }
+  ],
+  "preserved": false
+}

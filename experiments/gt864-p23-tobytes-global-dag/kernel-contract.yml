@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: candidate
+kernel:
+  id: p23_tobytes_global_dag
+  name: P23 register-capped global-DAG ToBytes
+  source: candidate.sym.S
+  scheme: NTRU+864 GT
+  operation: exact FR0 normalization, globally shared wire routing, and 12-bit packing
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: constructive 26-register allocation then bounded three-output fixed-allocation timing windows
+  allow_spills: false
+  driver: optimize.py
+  expected_outputs: [candidate.alloc.S, candidate.opt.S, slothy-ra.log, slothy-timing.log]
+region:
+  start_label: p23_top_full_slothy_start and p23_top_small_slothy_start
+  end_label: p23_top_full_slothy_end and p23_top_small_slothy_end
+  expected_instruction_count: Full at most 1051 and Small at most 941 per top helper including setup and ret
+  live_in: [x0 output top base, x1 FR0 input top base, v26 pack-index, v27 q3457, Full v28 reciprocal9]
+  live_out: [648 exact canonical wire bytes at x0]
+abi:
+  inputs: [x0, x1]
+  outputs: [memory at x0 through x0 plus 647]
+  clobbers: [x2, x5-x9, allocated v0-v25, v26-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x5, x6, x7, x8, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+  reserved_registers: [v26, v27, v28, v29, v30, v31, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: 61 source loads and the 224-node exact globally interned route per top, with each output immediately normalized and packed
+layout:
+  input_representation: one 432-coefficient top of unchanged production FR0 tile-major signed int16
+  output_representation: one 648-byte half of unchanged Official canonical 12-bit wire order
+  vector_lanes: signed 8x16-bit before byte packing
+  packing: unchanged D plus W stores at exact P18 public offsets
+memory_contract:
+  loads: [at most 61 coefficient Q loads plus one 16-byte public pack-index load per top]
+  stores: [54 fixed-offset D stores and 54 fixed-offset W stores per top]
+  aliasing: unchanged disjoint serializer input and output
+  alignment: unchanged aligned coefficient Q loads and public byte-offset D and W stores
+  public_offsets_only: true
+  pointer_updates: [unchanged fixed public output-bank bases only]
+constant_contract:
+  constants: [unchanged q3457, reciprocal9, exact P18 pack-index]
+  modulus: 3457
+  representation: unchanged FR0 signed int16 to canonical unsigned 0 through 3456 before 12-bit packing
+  reduction_method: unchanged Full Algorithm-10 b=1 normalization; unchanged Small sign correction only
+range_contract:
+  input_ranges: [unchanged Full arbitrary signed int16; unchanged Small strict negative q to q producer range]
+  intermediate_ranges: [unchanged normalization ranges; routing is only a lane permutation]
+  output_ranges: [each decoded 12-bit coefficient equals the unchanged canonical input residue modulo 3457]
+  narrowing_points: [unchanged UZP and bit packing only after canonicalization]
+constant_time_contract:
+  secret_inputs: [FR0 coefficient lanes]
+  public_inputs: [pointers, exact fixed coordinate map, pack-index]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: exact-byte differential with guarded edges plus alias AAPCS wipe and complete KEM validation
+  full_path_benchmark_command: Pi5 same-boundary paired complete ToBytes then Keygen Encaps Decaps PMU
+  benchmark_metric: cycles
+  lower_is_better: true

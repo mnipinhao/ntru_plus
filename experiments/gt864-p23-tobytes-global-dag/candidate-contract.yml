@@ -1,0 +1,29 @@
+candidate:
+  id: p23-global-dag-candidate
+  status: candidate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: external FR0 input, exact wire output, bounds, constant time, stores, ABI, and no coefficient scratch
+  approved_changes: internal public source-load schedule reduces 64 to 61 Q loads per top; external contract is unchanged
+region:
+  start_label: p23_top_full_slothy_start and p23_top_small_slothy_start
+  end_label: p23_top_full_slothy_end and p23_top_small_slothy_end
+  live_in: [x0 output top base, x1 FR0 input top base, v26 pack-index, v27 q3457, Full v28 reciprocal9]
+  live_out: [648 exact canonical wire bytes at x0]
+abi:
+  inputs: [x0, x1]
+  outputs: [memory at x0 through x0 plus 647]
+  clobbers: [x2, x5-x9, allocated v0-v25, v26-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x5, x6, x7, x8, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+memory_contract:
+  loads: [at most 61 coefficient Q loads plus one public pack-index load per top]
+  stores: [54 fixed-offset D stores and 54 fixed-offset W stores per top]
+  aliasing: unchanged disjoint serializer input and output
+  alignment: unchanged aligned coefficient Q loads and public byte-offset stores
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

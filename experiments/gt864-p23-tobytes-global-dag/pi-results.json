@@ -1,0 +1,164 @@
+{
+  "experiment": "GT864-P23-TOBYTES-GLOBAL-DAG-20260913-g3.opt",
+  "baseline_revision": "0777bb4a2812d1eb828490aed6a1efeba3ebc9e5",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p23-20260913-g3-opt",
+  "target_audit": {
+    "full": {
+      "baseline": {
+        "object_instructions": 1204,
+        "q_stack_accesses": 0
+      },
+      "candidate": {
+        "object_instructions": 1108,
+        "q_stack_accesses": 0
+      }
+    },
+    "small": {
+      "baseline": {
+        "object_instructions": 1096,
+        "q_stack_accesses": 0
+      },
+      "candidate": {
+        "object_instructions": 1000,
+        "q_stack_accesses": 0
+      }
+    }
+  },
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "modes": {
+    "full": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1409.828,
+          "instructions": 2362.156,
+          "branches": 8.031,
+          "mem_access_rd": 138.023,
+          "mem_access_wr": 223.023
+        },
+        "candidate": {
+          "cycles": 1393.453,
+          "instructions": 2168.156,
+          "branches": 8.031,
+          "mem_access_rd": 132.023,
+          "mem_access_wr": 223.023
+        }
+      },
+      "delta": {
+        "cycles": -16.375,
+        "instructions": -194.0,
+        "branches": 0.0,
+        "mem_access_rd": -6.0,
+        "mem_access_wr": 0.0
+      },
+      "wins_cycles": true
+    },
+    "small": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1031.719,
+          "instructions": 2142.156,
+          "branches": 8.031,
+          "mem_access_rd": 138.023,
+          "mem_access_wr": 223.023
+        },
+        "candidate": {
+          "cycles": 985.133,
+          "instructions": 1948.156,
+          "branches": 8.031,
+          "mem_access_rd": 132.023,
+          "mem_access_wr": 223.023
+        }
+      },
+      "delta": {
+        "cycles": -46.58600000000001,
+        "instructions": -194.0,
+        "branches": 0.0,
+        "mem_access_rd": -6.0,
+        "mem_access_wr": 0.0
+      },
+      "wins_cycles": true
+    }
+  },
+  "promotion_gate_passed": true,
+  "environment_before": [
+    "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc (Debian 14.2.0-19) 14.2.0",
+    "ondemand",
+    "temp=57.6'C",
+    "throttled=0x0"
+  ],
+  "environment_after": [
+    "temp=63.1'C",
+    "throttled=0x0"
+  ],
+  "source_manifest_sha256": "9db01b04f5a4dac9b57a44effb3bd5c7ff5c7e78f39ae94f3b137dc014923bec",
+  "slothy_results": [
+    "slothy-full.json",
+    "slothy-small.json"
+  ],
+  "full_kem_gate": {
+    "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+    "kem": {
+      "keygen": {
+        "baseline": {
+          "cycles": 43256.5,
+          "instructions": 94708.0,
+          "branches": 1563.0
+        },
+        "candidate": {
+          "cycles": 43131.875,
+          "instructions": 94126.0,
+          "branches": 1563.0
+        },
+        "paired_delta": {
+          "cycles": -131.375,
+          "instructions": -582.0,
+          "branches": 0.0
+        },
+        "observations": 252
+      },
+      "encaps": {
+        "baseline": {
+          "cycles": 45081.95,
+          "instructions": 123821.2,
+          "branches": 1003.6
+        },
+        "candidate": {
+          "cycles": 45003.1,
+          "instructions": 123433.2,
+          "branches": 1003.6
+        },
+        "paired_delta": {
+          "cycles": -81.12499999999636,
+          "instructions": -388.0,
+          "branches": 0.0
+        },
+        "observations": 252
+      },
+      "decaps": {
+        "baseline": {
+          "cycles": 40132.25,
+          "instructions": 94392.2,
+          "branches": 1116.1
+        },
+        "candidate": {
+          "cycles": 40067.55,
+          "instructions": 94004.2,
+          "branches": 1116.1
+        },
+        "paired_delta": {
+          "cycles": -64.5,
+          "instructions": -388.0,
+          "branches": 0.0
+        },
+        "observations": 252
+      }
+    },
+    "wins_all_kem_cycles": true,
+    "environment_after": [
+      "temp=64.2'C",
+      "throttled=0x0"
+    ]
+  }
+}

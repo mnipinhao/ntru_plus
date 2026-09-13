@@ -1,0 +1,35 @@
+kernel: P23 global ToBytes routing DAG
+source: exact structural interning of the P18 coordinate map
+map_sha256: 087b7193886e9f3e33ac457452642d64ae70ec780a0961d10036c8e5530da270
+per_top:
+  logical_outputs: 54
+  unique_sources: 54
+  source_load_instances: 61
+  unique_routing_nodes: 224
+  operations:
+    ext4: 12
+    ext6: 12
+    trn1_8h: 34
+    trn2_8h: 34
+    trn1_4s: 40
+    trn2_4s: 38
+    trn1_2d: 26
+    trn2_2d: 28
+  peak_live_route_values: 26
+  reserved_full_vectors: [v26 pack-index, v27 q3457, v28 reciprocal9, v29 normalization temporary, v30 pack-low, v31 pack-high]
+  output_policy: normalize and pack each completed routed vector immediately
+  coefficient_scratch: none
+searched_output_order: [51, 33, 9, 45, 15, 27, 3, 39, 21, 48, 12, 24, 0, 36, 6, 18, 42, 30, 1, 37, 7, 19, 43, 25, 49, 13, 22, 4, 31, 40, 28, 10, 34, 46, 16, 52, 20, 2, 26, 38, 8, 44, 5, 32, 14, 50, 11, 23, 29, 41, 17, 53, 35, 47]
+dependencies:
+  load: one exact P18 source vector selected by public fixed offset
+  ext: one load node rotated by four or six bytes
+  trn_8h: two exact row nodes
+  trn_4s: two exact trn_8h nodes
+  trn_2d: two exact trn_4s nodes and one logical routed output
+  consume: unchanged Full or Small normalization followed by exact 12-bit packing and D plus W stores
+hard_gates:
+  arithmetic_identity: every output root is the same interned P18 node
+  register_capacity: at most 26 routing values beside six reserved physical vectors
+  no_recomputation: all 224 non-load routing nodes execute exactly once per top
+  no_spill: no stack or coefficient scratch accesses
+  static_improvement: complete call removes at least 194 instructions versus P18 before any scheduling

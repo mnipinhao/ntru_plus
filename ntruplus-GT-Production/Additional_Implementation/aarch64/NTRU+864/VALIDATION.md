@@ -196,6 +196,31 @@ and 199.300 cycles.  The full-path gate therefore rejects P22; no production
 kernel or linked object was changed.  Complete evidence is in
 `experiments/gt864-p22-main-i16-ssa/`.
 
+## P23 global ToBytes routing candidate — 2026-09-13
+
+P23 leaves production unchanged and compares against the exact linked P18
+Full/Small serializers.  Structural interning plus a constructive 26-register
+cache reduces each complete call by 194 instructions and six coefficient Q
+loads, with no coefficient scratch and no vector stack accesses.  The exact
+coordinate-map SHA-256 remains
+`087b7193886e9f3e33ac457452642d64ae70ec780a0961d10036c8e5530da270`.
+
+Python passed 516 exact lane/byte cases.  Apple arm64 passed 513 Full, 513
+Small and two guard-page cases before and after Slothy.  Pi 5 packages passed
+KEM, exact boundary canaries, KAT SHA-256
+`0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c`
+and malformed transcript SHA-256
+`2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67`.
+
+The accepted three-output fixed-allocation Slothy schedule improves P18
+Full/Small boundaries by 16.375/46.586 cycles.  Frozen full-KEM integration
+improves Keygen/Encaps/Decaps by 131.375/81.125/64.500 paired-median cycles and
+exactly 582/388/388 retired instructions.  The Pi remained unthrottled.  A
+one-output-window control is explicitly rejected because it regressed despite
+the same smaller instruction multiset.  P24 must still copy the exact
+artifacts into production and repeat all production-package gates.  Evidence:
+`experiments/gt864-p23-tobytes-global-dag/RESULTS.md`.
+
 ## Correctness and selection
 
 - `make -j4 check`: imported manifest passed, assembler/linker passed,

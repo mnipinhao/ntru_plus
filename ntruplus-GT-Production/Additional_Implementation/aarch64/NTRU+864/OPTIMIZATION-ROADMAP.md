@@ -57,7 +57,8 @@ Status meanings:
 | P20 | Done—Profiler checkpoint | Refresh GT versus selected SUPERCOP after P19 | Fresh correctness/clean/cycle/event campaign passes; GT wins all full-KEM operations and residual positive gaps are localized |
 | P21 | Done—Inverse decomposition | Re-profile the current P13-B/P13-C/P8 Inverse-to-ternary interior | Fresh 258-observation stage PMU selects main I16 ×6 at 2117.531 cycles; no-store control remains 1960.406, so terminal scatter is rejected as the next target |
 | P22 | Done—Rejected | Replace 32 held-value `ORR` copies/call with two-output SSA butterflies | Exact/no-spill/model and isolated main-I16 gates pass, but complete Inverse and Decaps regress; production unchanged |
-| P23 | Next—ToBytes routing search | Find a smaller FR0-coordinate-to-wire DAG jointly consuming normalization, packing and routing | Before Slothy, statically remove at least about 829 instructions and 101 reads versus the rejected P6 route; preserve separate full/small contracts and exact bytes |
+| P23 | Done—Promotion candidate | Globally intern P18's repeated source rotations and transpose nodes, then jointly schedule three output consumers | Exact 26-register/no-scratch DAG removes 194 instructions and 6 reads per call; Full/Small and all three isolated full-KEM boundaries win on Pi 5 |
+| P24 | Next—Production promotion | Link the exact P23 three-output schedules as production Full/Small ToBytes | Rebuild from committed production; repeat manifest/symbol/object, exact-byte/canary/input immutability, AAPCS/wipe, KAT/malformed/rejection and paired boundary/full-KEM gates |
 
 ## Fixed facts and non-tasks
 
@@ -76,6 +77,24 @@ Status meanings:
   is explicitly approved and production uses P10-A.
 
 ## Change log
+
+### 2026-09-13
+
+- Completed P23 without changing production.  The historical P6-D3 threshold
+  was rebased because P18 had already surpassed it.  Against current P18, an
+  exact globally interned routing graph has 54 sources, 24 rotations and 200
+  transpose nodes per top.  A constructive 26-register schedule executes all
+  224 routing nodes once and reloads seven evicted sources, reducing complete
+  Full/Small calls by exactly 194 instructions and six Q loads with no
+  coefficient scratch or vector spill.
+- The one-output Slothy control is rejected: it lost 53.813/10.648 Full/Small
+  cycles because its fine windows serialized normalization and packing.  The
+  retained 18-window, three-output schedule restores cross-output ILP and
+  improves P18 by 16.375/46.586 cycles.  Frozen integration improves
+  Keygen/Encaps/Decaps by 131.375/81.125/64.500 cycles with exact instruction
+  deltas -582/-388/-388.  KAT, malformed transcript, exact bytes, canaries and
+  no-spill object gates pass.  P24 is the separate production promotion gate.
+  Evidence: `experiments/gt864-p23-tobytes-global-dag/`.
 
 ### 2026-09-12
 

@@ -1,0 +1,11 @@
+experiment: GT864-P23-TOBYTES-GLOBAL-DAG-20260913
+action: optimize-layout
+observation: P18 rebuilds repeated EXT and TRN intermediate nodes independently in fifteen class-local partial transposes.
+primary_bottleneck: layout and permutation
+hypothesis: A global output order can retain reused transpose intermediates inside the 26 routing registers left by Full normalization and packing.
+exact_change: Search only output order and intermediate lifetime; preserve FR0, wire bytes, Full/Small normalization, memory ABI, and immediate output consumption.
+expected_static_effect: Approach the 278-instruction per-top unique-node lower bound, versus P18's 382 source-load plus routing instructions.
+expected_performance_effect: Only candidates with a material static reduction relative to current P18 proceed to physical assembly.
+expected_register_pressure: At most 26 routing values plus six fixed Full-mode constant/packing values, with no spill.
+correctness_or_range_impact: None; the graph is structurally interned from the exact P18 permutation and does not alter arithmetic or bounds.
+falsifying_measurement: A 26-register search that cannot retain enough common nodes for a material reduction, or any need for coefficient scratch/reloads beyond the model.
