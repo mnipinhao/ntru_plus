@@ -4,14 +4,14 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion is P19: Full and Small ToBytes now use
-P18's class-local partial-transpose assembly.  The new kernels keep the FR0 and
-wire-byte contracts, immediately consume each routed column in normalization
-and packing, and use no coefficient scratch.  P18's isolated Pi 5 gate saved
-31/149 cycles at the Full/Small boundaries and 334/194/183 cycles in
-Keygen/Encaps/Decaps.  P19 reproduced the result from the production package,
-including manifest, linked-symbol, KAT, malformed-input, ABI/cleanup and PMU
-gates.
+Latest production promotion is P24: Full and Small ToBytes now use P23's
+globally interned rotation/transpose DAG and accepted three-output schedules.
+The kernels keep the P18 FR0/wire-byte ABI and no-coefficient-scratch contract,
+but retire 194 fewer instructions and six fewer reads per call.  Against P18,
+Pi 5 Full/Small improve by 15.906/39.660 cycles and complete
+Keygen/Encaps/Decaps by 147.000/67.325/62.625 paired-median cycles.  P24 passed
+manifest, linked-symbol/object, exact-byte, KAT, malformed-input,
+input-immutability, ABI/cleanup and PMU gates from exact commit archives.
 P13-C previously changed the separately shaped tail Inverse16 so it now
 uses the same composite-terminal algebra with its own six-lane layout.  Together
 P13-B/C save 462 retired Inverse instructions and about 507 paired-median Decaps
@@ -51,7 +51,7 @@ Read in this order:
 5. `gt864_fr0_basemul_d1.c`, inverse assembly and tables.
 6. `gt864_tobytes.h`, `gt864_tobytes.c`, `gt864_p18_tobytes.h`, and
    `gt864_p18_tobytes_{full,small}.S`: active caller-selected full/small
-   normalization, partial-transpose routing and byte packing.  The P9/P16 and
+   normalization, globally interned routing and byte packing.  The P9/P16 and
    other ToBytes cores are retained historical/compatibility sources but are
    not selected by the production Makefile.
    `byte_api.c`: legacy ToBytes → r9_to; candidate FromBytes → cluster transpose.

@@ -1,5 +1,24 @@
 # K1 production integration evidence
 
+## P24 ToBytes production promotion — 2026-09-13
+
+Production now links the exact P23 globally interned, three-output scheduled
+Full and Small ToBytes artifacts under the unchanged P18 public symbol names.
+The committed comparison used `git archive`: P18 baseline
+`32481d08aae9135803379499c68c12b20a3856d4` and P24 candidate
+`4b7a3b83085045694f8861cea61660d3345816ac`.  It therefore does not depend on
+the benchmark-time working tree or an older target file.
+
+Manifest, active-symbol/object, 513 Full + 513 Small exact-byte, guarded edge,
+input immutability, output canary, AAPCS/SIMD cleanup, KEM, KAT and malformed
+rejection gates pass on Pi 5.  Both target objects have zero Q-register stack
+access.  Full/Small improve 1409.773→1393.867 and 1024.633→984.973 cycles,
+with exactly 194 fewer instructions and six fewer reads per call.  Across 252
+observations, complete Keygen/Encaps/Decaps improve by paired medians
+147.000/67.325/62.625 cycles and 582/388/388 instructions.  The Pi remained
+unthrottled.  Complete evidence is in
+`experiments/gt864-p24-p23-production/`.
+
 ## P19 production promotion — 2026-09-12
 
 Full and Small ToBytes link the exact P18 partial-transpose assembly artifacts,
@@ -217,8 +236,8 @@ Full/Small boundaries by 16.375/46.586 cycles.  Frozen full-KEM integration
 improves Keygen/Encaps/Decaps by 131.375/81.125/64.500 paired-median cycles and
 exactly 582/388/388 retired instructions.  The Pi remained unthrottled.  A
 one-output-window control is explicitly rejected because it regressed despite
-the same smaller instruction multiset.  P24 must still copy the exact
-artifacts into production and repeat all production-package gates.  Evidence:
+the same smaller instruction multiset.  P24 subsequently copied these exact
+artifacts into production and repeated all production-package gates.  Evidence:
 `experiments/gt864-p23-tobytes-global-dag/RESULTS.md`.
 
 ## Correctness and selection

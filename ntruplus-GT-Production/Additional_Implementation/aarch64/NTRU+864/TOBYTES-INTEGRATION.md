@@ -1,8 +1,9 @@
-# Input-once dual-entry ToBytes — P16 Full schedule promoted 2026-09-12
+# Input-once dual-entry ToBytes — P24 global DAG promoted 2026-09-13
 
-Production uses the P9 input-once composed-map DAG.  P16 replaces only the Full
-core's GCC order with the exact retained P15 Cortex-A76 schedule; Small remains
-the original P9 C/GCC object.  Each top branch
+Production uses P23's global common-subexpression DAG and accepted three-output
+schedule, promoted by P24 for both Full and Small.  It interns repeated source
+rotations and transpose nodes across consumers instead of rebuilding them per
+output class.  Each top branch
 loads its 54 FR0 Q vectors once, retires a routed eight-coefficient output as
 soon as its last source lane arrives, normalizes it, packs it to twelve bytes,
 and writes its final wire address.  The complete call has 108 coefficient
@@ -36,6 +37,15 @@ Keygen/Encaps/Decaps by 74.875/77.775/71.050 cycles with zero retired-instructio
 or branch delta.  Evidence is in `experiments/gt864-p15-p9-scheduling/` and
 `experiments/gt864-p16-full-tobytes-integration/`.
 
+P18 replaced lane-edge routing with class-local partial transposes.  P23 then
+globally interned the repeated rotation/transpose graph and jointly scheduled
+three consumers; P24 promoted those exact artifacts.  Relative to P18,
+Full/Small save 15.906/39.660 cycles, 194 instructions and six reads per call.
+Complete Keygen/Encaps/Decaps save 147.000/67.325/62.625 paired-median cycles.
+The public ABI and range contracts are unchanged.  Evidence is in
+`experiments/gt864-p23-tobytes-global-dag/` and
+`experiments/gt864-p24-p23-production/`.
+
 ## Previous implementation
 
 The original dual-entry integration is retained below as history.  Production
@@ -55,11 +65,11 @@ It selects `gt864_fr0_tobytes_full` for f, r and r1. `poly_tobytes` and the old
 P3B12 adapters remain as legacy internal helpers, not the active KEM path.
 The small entry is not a generic signed-int16 serializer.
 
-Active sources are `gt864_tobytes.c/.h`, `gt864_p16_tobytes_full.S`,
-`gt864_p9_tobytes_small.c`, and `p9_tobytes_public.S`.  They are self-contained,
-with no experiment-tree build dependency.  The P16 Full source is the
-hash-checked P15 allocated assembly (`2a59fbf9...0a46deb2`); the production
-object keeps the existing P9 inner/public symbols and ABI.
+Active sources are `gt864_tobytes.c/.h`, `gt864_p18_tobytes.h`, and
+`gt864_p18_tobytes_{full,small}.S`.  They are self-contained, with no
+experiment-tree build dependency.  P24 deliberately retains the existing P18
+public symbol names and ABI while replacing both implementations with the
+hash-checked P23 three-output schedules.
 
 ## Range and security review
 

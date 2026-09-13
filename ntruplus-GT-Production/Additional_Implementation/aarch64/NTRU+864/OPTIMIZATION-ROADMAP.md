@@ -58,7 +58,8 @@ Status meanings:
 | P21 | Done—Inverse decomposition | Re-profile the current P13-B/P13-C/P8 Inverse-to-ternary interior | Fresh 258-observation stage PMU selects main I16 ×6 at 2117.531 cycles; no-store control remains 1960.406, so terminal scatter is rejected as the next target |
 | P22 | Done—Rejected | Replace 32 held-value `ORR` copies/call with two-output SSA butterflies | Exact/no-spill/model and isolated main-I16 gates pass, but complete Inverse and Decaps regress; production unchanged |
 | P23 | Done—Promotion candidate | Globally intern P18's repeated source rotations and transpose nodes, then jointly schedule three output consumers | Exact 26-register/no-scratch DAG removes 194 instructions and 6 reads per call; Full/Small and all three isolated full-KEM boundaries win on Pi 5 |
-| P24 | Next—Production promotion | Link the exact P23 three-output schedules as production Full/Small ToBytes | Rebuild from committed production; repeat manifest/symbol/object, exact-byte/canary/input immutability, AAPCS/wipe, KAT/malformed/rejection and paired boundary/full-KEM gates |
+| P24 | Done—Promoted | Link the exact P23 three-output schedules as production Full/Small ToBytes | Commit-archive rebuild passed manifest/symbol/object, exact-byte/canary/input immutability, AAPCS/wipe, KAT/malformed and paired boundary/full-KEM gates; all three KEM operations win |
+| P25 | Next—Profiler checkpoint | Refresh production versus selected SUPERCOP 20260831 Official after P24 | Re-run exact/tampered compatibility, instrumentation-equivalence, component/call-site cycles and PMU; select the next measured positive gap without assuming upstream-latest provenance |
 
 ## Fixed facts and non-tasks
 
@@ -79,6 +80,17 @@ Status meanings:
 ## Change log
 
 ### 2026-09-13
+
+- Completed and promoted P24 from exact commit archives: P18 baseline
+  `32481d08aae9135803379499c68c12b20a3856d4` versus P24 candidate
+  `4b7a3b83085045694f8861cea61660d3345816ac`.  Full/Small improve by
+  15.906/39.660 cycles and exactly 194 instructions plus six reads per call.
+  Across 252 observations, complete Keygen/Encaps/Decaps improve by paired
+  medians 147.000/67.325/62.625 cycles and exactly 582/388/388 instructions.
+  Manifest, active-symbol/object, 513+513 exact-byte, guard, input-immutability,
+  AAPCS/SIMD-wipe, KAT and malformed-rejection gates pass unthrottled on Pi 5.
+  P25 is the selected-Official profiler checkpoint.  Evidence:
+  `experiments/gt864-p24-p23-production/`.
 
 - Completed P23 without changing production.  The historical P6-D3 threshold
   was rebased because P18 had already surpassed it.  Against current P18, an

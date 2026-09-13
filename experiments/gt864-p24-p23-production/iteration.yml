@@ -1,0 +1,10 @@
+iteration: P24
+state: promoted
+baseline_revision: 4b7a3b83^
+candidate_revision: 4b7a3b83
+baseline: committed P18 production ToBytes
+candidate: committed P23 three-output Full and Small schedules
+required_gates: [manifest, linked symbols, exact bytes, guard pages, input immutability, AAPCS, SIMD wipe, KAT, malformed rejection, object no-spill, paired ToBytes, paired full KEM]
+result: all required promotion gates passed on Pi 5; P23 schedules are production
+next: P25 selected-Official profiler checkpoint after P24
+next_if_fail: revert only the P24 production code commit and retain P23 as experimental evidence
