@@ -12,6 +12,12 @@ Pi 5 Full/Small improve by 15.906/39.660 cycles and complete
 Keygen/Encaps/Decaps by 147.000/67.325/62.625 paired-median cycles.  P24 passed
 manifest, linked-symbol/object, exact-byte, KAT, malformed-input,
 input-immutability, ABI/cleanup and PMU gates from exact commit archives.
+P25 then re-profiled this exact production against the selected SUPERCOP
+20260831 AArch64 source: GT leads Keygen/Encaps/Decaps by
+1167.750/1440.450/694.525 cycles.  The largest remaining positive matched
+boundary is Inverse-to-ternary (+280.675 cycles); aggregate ToBytes is second.
+The comparison target remains a fixed selected snapshot, not an independently
+verified latest-upstream claim.
 P13-C previously changed the separately shaped tail Inverse16 so it now
 uses the same composite-terminal algebra with its own six-lane layout.  Together
 P13-B/C save 462 retired Inverse instructions and about 507 paired-median Decaps

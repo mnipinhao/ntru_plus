@@ -59,7 +59,8 @@ Status meanings:
 | P22 | Done—Rejected | Replace 32 held-value `ORR` copies/call with two-output SSA butterflies | Exact/no-spill/model and isolated main-I16 gates pass, but complete Inverse and Decaps regress; production unchanged |
 | P23 | Done—Promotion candidate | Globally intern P18's repeated source rotations and transpose nodes, then jointly schedule three output consumers | Exact 26-register/no-scratch DAG removes 194 instructions and 6 reads per call; Full/Small and all three isolated full-KEM boundaries win on Pi 5 |
 | P24 | Done—Promoted | Link the exact P23 three-output schedules as production Full/Small ToBytes | Commit-archive rebuild passed manifest/symbol/object, exact-byte/canary/input immutability, AAPCS/wipe, KAT/malformed and paired boundary/full-KEM gates; all three KEM operations win |
-| P25 | Next—Profiler checkpoint | Refresh production versus selected SUPERCOP 20260831 Official after P24 | Re-run exact/tampered compatibility, instrumentation-equivalence, component/call-site cycles and PMU; select the next measured positive gap without assuming upstream-latest provenance |
+| P25 | Done—Profiler checkpoint | Refresh production versus selected SUPERCOP 20260831 Official after P24 | Exact/tampered and instrumentation-equivalence gates pass; GT wins Keygen/Encaps/Decaps by 1167.750/1440.450/694.525 cycles; Inverse-to-ternary is the largest positive matched gap |
+| P26 | Next—Inverse deficit audit | Align Official Inverse+Crepmod3 with GT inverse9/main-I16/tail-I16/raw-ternary/wrapper work and classify the +3740 instructions | Do not repeat P21 decomposition or P22 copies; nominate a new DAG only from exact removable arithmetic/reduction/routing work with no added memory pass |
 
 ## Fixed facts and non-tasks
 
@@ -80,6 +81,20 @@ Status meanings:
 ## Change log
 
 ### 2026-09-13
+
+- Completed P25 without changing production.  Exact P24 revision
+  `d76a8289a8652e156665aff78bee6946183b2923` beats the selected SUPERCOP
+  20260831 Official by 1167.750/1440.450/694.525 clean cycles for
+  Keygen/Encaps/Decaps across 252 observations each.  Cross-implementation
+  exact/tampered and instrumentation-equivalence gates pass; Pi 5 remained
+  unthrottled.  The selected Official tree hash remains
+  `40a284439eb5fe8dfef77f1a995ebc8dd16182835048d64e959fbcb6e3df0b59`;
+  independent upstream-latest provenance is still unverified.
+- The largest positive matched boundary is Decaps Inverse-to-ternary at
+  +280.675 cycles and +3740 instructions.  Aggregate ToBytes follows at
+  +47.000/+174.350/+178.000 cycles for Keygen/Encaps/Decaps.  P26 first aligns
+  the Official and GT Inverse work to find an exact new removable DAG; ToBytes
+  remains second.  Evidence: `experiments/gt864-p25-official-profile/`.
 
 - Completed and promoted P24 from exact commit archives: P18 baseline
   `32481d08aae9135803379499c68c12b20a3856d4` versus P24 candidate

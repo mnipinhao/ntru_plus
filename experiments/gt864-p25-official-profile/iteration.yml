@@ -1,0 +1,34 @@
+experiment_id: GT864-P25-OFFICIAL-PROFILE-20260913
+action: benchmark
+state: complete
+scope:
+  gt_revision: d76a8289
+  official: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+  official_upstream_latest_verified: false
+  host: pi@100.99.191.9
+  core: 3
+  hash_policy: SHAKE256
+  mutation: none
+required_gates:
+  - exact committed GT source
+  - selected Official source hashes
+  - no competing SUPERCOP job
+  - GT manifest, KEM, and KAT
+  - cross-implementation exact and tampered transcripts
+  - instrumentation equivalence
+  - clean full-KEM PMU
+  - call-site cycles, instructions, and branches
+result:
+  correctness: pass
+  gt_cycle_delta:
+    keygen: -1167.750
+    encaps: -1440.450
+    decaps: -694.525
+  largest_positive_boundary:
+    name: decaps Inverse-to-ternary
+    cycles: 280.675
+    instructions: 3740
+decision:
+  next_gate: P26
+  focus: matched-boundary Inverse deficit audit
+  second_priority: aggregate ToBytes

@@ -1,5 +1,26 @@
 # K1 production integration evidence
 
+## P25 selected-Official profiler checkpoint — 2026-09-13
+
+Exact P24 production revision
+`d76a8289a8652e156665aff78bee6946183b2923`, extracted by `git archive`, passed
+a fresh manifest build, KEM test, KAT, six-process exact/tampered
+cross-implementation comparison and all instrumentation-equivalence gates.
+The Pi 5 remained unthrottled from 57.6 to 60.4 C.
+
+Across 252 clean observations, GT versus selected SUPERCOP 20260831 Official
+was 43137.875 versus 44305.625 Keygen cycles, 44982.175 versus 46422.625
+Encaps cycles, and 40067.250 versus 40761.775 Decaps cycles.  The Official tree
+SHA-256 remains
+`40a284439eb5fe8dfef77f1a995ebc8dd16182835048d64e959fbcb6e3df0b59`;
+its independent upstream-latest status is unverified.
+
+The largest remaining positive matched boundary is GT fused
+Inverse-to-ternary versus Official Inverse+Crepmod3 at +280.675 cycles and
++3740 instructions.  Aggregate ToBytes is +47.000/+174.350/+178.000 cycles in
+Keygen/Encaps/Decaps.  Complete distributions, event data and linked-object
+provenance are in `experiments/gt864-p25-official-profile/`.
+
 ## P24 ToBytes production promotion — 2026-09-13
 
 Production now links the exact P23 globally interned, three-output scheduled
