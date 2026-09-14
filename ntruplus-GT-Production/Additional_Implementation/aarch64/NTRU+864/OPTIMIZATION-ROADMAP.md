@@ -60,7 +60,8 @@ Status meanings:
 | P23 | Done—Promotion candidate | Globally intern P18's repeated source rotations and transpose nodes, then jointly schedule three output consumers | Exact 26-register/no-scratch DAG removes 194 instructions and 6 reads per call; Full/Small and all three isolated full-KEM boundaries win on Pi 5 |
 | P24 | Done—Promoted | Link the exact P23 three-output schedules as production Full/Small ToBytes | Commit-archive rebuild passed manifest/symbol/object, exact-byte/canary/input immutability, AAPCS/wipe, KAT/malformed and paired boundary/full-KEM gates; all three KEM operations win |
 | P25 | Done—Profiler checkpoint | Refresh production versus selected SUPERCOP 20260831 Official after P24 | Exact/tampered and instrumentation-equivalence gates pass; GT wins Keygen/Encaps/Decaps by 1167.750/1440.450/694.525 cycles; Inverse-to-ternary is the largest positive matched gap |
-| P26 | Next—Inverse deficit audit | Align Official Inverse+Crepmod3 with GT inverse9/main-I16/tail-I16/raw-ternary/wrapper work and classify the +3740 instructions | Do not repeat P21 decomposition or P22 copies; nominate a new DAG only from exact removable arithmetic/reduction/routing work with no added memory pass |
+| P26 | Done—Inverse deficit audit | Align Official Inverse+Crepmod3 with GT inverse9/main-I16/tail-I16/raw-ternary/wrapper work and classify the +3740 instructions | Exact dynamic source ledger reconciles to P25 PMU; GT has 151 fewer modular-multiply instructions, while lane extraction/load/store fragmentation dominates |
+| P27 | Next—Lane-basis search | Search an inverse9→I16 physical basis that directly feeds vector raw-to-ternary output | Machine-only first: exact coordinates/roots/scale/range, no extra pass/scratch, no P11 post-store route or lane ST3, ≤32 vector registers and full-vector terminal stores |
 
 ## Fixed facts and non-tasks
 
@@ -79,6 +80,23 @@ Status meanings:
   is explicitly approved and production uses P10-A.
 
 ## Change log
+
+### 2026-09-14
+
+- Completed P26 without changing production.  Exact loop/call expansion gives
+  4583 source instructions for selected Official Inverse+Crepmod3 and 8324 for
+  GT fused Inverse-to-ternary.  The matched profiler shells contribute 22/21,
+  reproducing P25's exact 4605→8345 and +3740-instruction deficit.
+- GT already has 151 fewer `mul/sqrdmulh/mls` instructions.  The dominant
+  excess is +864 lane extracts, +788 loads, +1159 stores and +438 scalar
+  setup/address/control instructions.  Of GT's 1044 loads, 706 are constants,
+  including 448 composite-terminal loads repeated across six main I16 calls
+  and the tail.
+- P21 proves scatter-only removal cannot close the 280.675-cycle gap; P11's
+  store-then-route and P22's copy-only DAG remain rejected.  P27 instead
+  searches the inverse9→I16 lane/bank basis for a naturally vector-consumable
+  raw-to-ternary ABI before assembly.  Evidence:
+  `experiments/gt864-p26-inverse-deficit-audit/`.
 
 ### 2026-09-13
 

@@ -1,0 +1,380 @@
+{
+  "experiment": "GT864-P26-INVERSE-DEFICIT-AUDIT-20260914",
+  "production_revision": "d76a8289a8652e156665aff78bee6946183b2923",
+  "official_tree_sha256": "40a284439eb5fe8dfef77f1a995ebc8dd16182835048d64e959fbcb6e3df0b59",
+  "source_sha256": {
+    "official_ntt": "1ce17e36da0ac3ef474090f12624d57cf8c86bc1b49d1d4d1ee7195ff354b74b",
+    "official_crepmod3": "dc2ba83e8feda8297e14e6e1b27f6a8d6e4dd28f9b875c12d435016d22d963db",
+    "gt864_native_inverse9.S": "785b5cadc139a25e029e7b1ddfeafc20ee51b70b95c4d42b8fe7075ca29eeea9",
+    "gt864_native_inverse16_lazy.S": "1bddede73c529686140c2a12f7e3c51aed8c1332ed485e1550df3f9285933705",
+    "gt864_native_inverse_tail_lazy.S": "dc5ff4433170923064d7e6f387caf8f7ad9a0d79cbaf25ed2a814d68f78258fe",
+    "gt864_crepmod3_raw.S": "ddeb67ba9b2030821a867cd18a68d13d2ec2d102cee553f866a76fdb6d28dff3",
+    "gt864_native_public.S": "c49a7454c5ea60a575e6f69794b6a2a548a76f1f85d49e4f4c440eb34d258e71"
+  },
+  "measured_p25": {
+    "official_instructions": 4605,
+    "gt_instructions": 8345,
+    "deficit": 3740
+  },
+  "exact_dynamic_source_ledger": {
+    "official_inverse": {
+      "instructions": 3820,
+      "categories": {
+        "control_transfer": 25,
+        "load": 228,
+        "mls": 684,
+        "mul": 594,
+        "scalar_setup_control": 28,
+        "sqrdmulh": 684,
+        "store": 148,
+        "vector_integer": 1105,
+        "vector_routing": 324
+      },
+      "mnemonics": {
+        "add": 492,
+        "adr": 1,
+        "b.ne": 24,
+        "ld1": 110,
+        "ldp": 4,
+        "ldr": 114,
+        "mls": 684,
+        "mov": 3,
+        "mul": 594,
+        "ret": 1,
+        "sqrdmulh": 684,
+        "st1": 36,
+        "stp": 4,
+        "str": 108,
+        "sub": 613,
+        "subs": 24,
+        "trn1": 162,
+        "trn2": 162
+      }
+    },
+    "official_crepmod3": {
+      "instructions": 763,
+      "categories": {
+        "control_transfer": 28,
+        "load": 28,
+        "mls": 108,
+        "scalar_setup_control": 31,
+        "sqrdmulh": 108,
+        "store": 27,
+        "vector_integer": 433
+      },
+      "mnemonics": {
+        "add": 108,
+        "adr": 1,
+        "b.ne": 27,
+        "cmgt": 216,
+        "ld1": 28,
+        "mls": 108,
+        "mov": 2,
+        "movi": 1,
+        "neg": 1,
+        "ret": 1,
+        "sqrdmulh": 108,
+        "st1": 27,
+        "sub": 108,
+        "subs": 27
+      }
+    },
+    "official_total": {
+      "instructions": 4583,
+      "categories": {
+        "control_transfer": 53,
+        "load": 256,
+        "mls": 792,
+        "mul": 594,
+        "scalar_setup_control": 59,
+        "sqrdmulh": 792,
+        "store": 175,
+        "vector_integer": 1538,
+        "vector_routing": 324
+      },
+      "mnemonics": {
+        "add": 600,
+        "adr": 2,
+        "b.ne": 51,
+        "cmgt": 216,
+        "ld1": 138,
+        "ldp": 4,
+        "ldr": 114,
+        "mls": 792,
+        "mov": 5,
+        "movi": 1,
+        "mul": 594,
+        "neg": 1,
+        "ret": 2,
+        "sqrdmulh": 792,
+        "st1": 63,
+        "stp": 4,
+        "str": 108,
+        "sub": 721,
+        "subs": 51,
+        "trn1": 162,
+        "trn2": 162
+      }
+    },
+    "gt_stages": {
+      "inverse9_x12": {
+        "instructions": 2220,
+        "categories": {
+          "control_transfer": 12,
+          "load": 324,
+          "mls": 228,
+          "mul": 228,
+          "scalar_setup_control": 180,
+          "sqrdmulh": 228,
+          "store": 288,
+          "vector_integer": 540,
+          "vector_routing": 192
+        },
+        "mnemonics": {
+          "add": 252,
+          "dup": 84,
+          "ldr": 324,
+          "mls": 228,
+          "mov": 96,
+          "mul": 228,
+          "ret": 12,
+          "sqrdmulh": 228,
+          "st1": 192,
+          "str": 96,
+          "sub": 288,
+          "trn1": 96,
+          "trn2": 96
+        }
+      },
+      "main_i16_x6": {
+        "instructions": 4008,
+        "categories": {
+          "control_transfer": 6,
+          "lane_extract": 768,
+          "load": 516,
+          "mls": 336,
+          "mul": 294,
+          "scalar_setup_control": 24,
+          "sqrdmulh": 336,
+          "store": 768,
+          "vector_copy": 192,
+          "vector_integer": 576,
+          "vector_routing": 192
+        },
+        "mnemonics": {
+          "add": 384,
+          "dup": 12,
+          "ext": 192,
+          "ldr": 516,
+          "mls": 336,
+          "mov": 12,
+          "mul": 294,
+          "orr": 192,
+          "ret": 6,
+          "sqrdmulh": 336,
+          "strh": 768,
+          "sub": 192,
+          "umov": 768
+        }
+      },
+      "tail_i16": {
+        "instructions": 604,
+        "categories": {
+          "control_transfer": 1,
+          "lane_extract": 96,
+          "load": 86,
+          "mls": 56,
+          "mul": 49,
+          "scalar_setup_control": 4,
+          "sqrdmulh": 56,
+          "store": 96,
+          "vector_copy": 32,
+          "vector_integer": 96,
+          "vector_routing": 32
+        },
+        "mnemonics": {
+          "add": 64,
+          "dup": 2,
+          "ext": 32,
+          "ldr": 86,
+          "mls": 56,
+          "mov": 2,
+          "mul": 49,
+          "orr": 32,
+          "ret": 1,
+          "sqrdmulh": 56,
+          "strh": 96,
+          "sub": 32,
+          "umov": 96
+        }
+      },
+      "raw_to_ternary": {
+        "instructions": 954,
+        "categories": {
+          "control_transfer": 28,
+          "load": 108,
+          "mls": 108,
+          "scalar_setup_control": 35,
+          "sqrdmulh": 108,
+          "store": 108,
+          "vector_integer": 459
+        },
+        "mnemonics": {
+          "add": 135,
+          "b.ne": 27,
+          "cmgt": 216,
+          "dup": 3,
+          "ldr": 108,
+          "mls": 108,
+          "mov": 4,
+          "movi": 1,
+          "ret": 1,
+          "sqrdmulh": 108,
+          "str": 108,
+          "sub": 108,
+          "subs": 27
+        }
+      },
+      "wrapper_control_wipe": {
+        "instructions": 538,
+        "categories": {
+          "control_transfer": 64,
+          "load": 10,
+          "scalar_setup_control": 254,
+          "store": 74,
+          "vector_integer": 136
+        },
+        "mnemonics": {
+          "add": 135,
+          "b.ne": 43,
+          "bl": 20,
+          "cmp": 29,
+          "ldp": 10,
+          "madd": 66,
+          "mov": 111,
+          "movi": 34,
+          "ret": 1,
+          "stp": 74,
+          "sub": 1,
+          "subs": 14
+        }
+      }
+    },
+    "gt_total": {
+      "instructions": 8324,
+      "categories": {
+        "control_transfer": 111,
+        "lane_extract": 864,
+        "load": 1044,
+        "mls": 728,
+        "mul": 571,
+        "scalar_setup_control": 497,
+        "sqrdmulh": 728,
+        "store": 1334,
+        "vector_copy": 224,
+        "vector_integer": 1807,
+        "vector_routing": 416
+      },
+      "mnemonics": {
+        "add": 970,
+        "b.ne": 70,
+        "bl": 20,
+        "cmgt": 216,
+        "cmp": 29,
+        "dup": 101,
+        "ext": 224,
+        "ldp": 10,
+        "ldr": 1034,
+        "madd": 66,
+        "mls": 728,
+        "mov": 225,
+        "movi": 35,
+        "mul": 571,
+        "orr": 224,
+        "ret": 21,
+        "sqrdmulh": 728,
+        "st1": 192,
+        "stp": 74,
+        "str": 204,
+        "strh": 864,
+        "sub": 621,
+        "subs": 41,
+        "trn1": 96,
+        "trn2": 96,
+        "umov": 864
+      }
+    },
+    "gt_wrapper_pieces": {
+      "prefix": 30,
+      "i9_control": 284,
+      "main_control": 85,
+      "tail_control": 6,
+      "raw_ternary_control": 2,
+      "wipe": 88,
+      "restore": 43
+    }
+  },
+  "load_instruction_breakdown": {
+    "official": {
+      "coefficient_or_intermediate": 171,
+      "constant_table": 81,
+      "callee_restore": 4,
+      "total": 256
+    },
+    "gt": {
+      "coefficient_or_intermediate": 328,
+      "constant_table": 706,
+      "callee_restore": 10,
+      "total": 1044,
+      "constant_detail": {
+        "inverse9_twist_x3": 216,
+        "i16_stage_x3": 42,
+        "i16_composite_x4": 448
+      }
+    }
+  },
+  "historical_constraints": {
+    "P21_scatter_ideal_removal_ceiling_cycles": 175.016,
+    "P25_inverse_cycle_deficit": 280.675,
+    "scatter_only_cannot_close_gap": true,
+    "P11_full_or_D_store_route_candidates": "all slower",
+    "P22_copy_free_main_i16": "local win but complete Inverse/Decaps regression"
+  },
+  "current_call_coordinate_proof": {
+    "formula": "natural_index = 27*k + 3*row + component",
+    "main_call": "fixed component, four rows, k=0..31",
+    "tail_call": "fixed row=8, all three components, k=0..31",
+    "main_fixed_component_implies_index_mod_3": true,
+    "max_consecutive_natural_coefficients_from_one_main_call": 1,
+    "direct_natural_q_store_from_one_current_main_call": false
+  },
+  "category_delta_gt_minus_official": {
+    "control_transfer": 58,
+    "lane_extract": 864,
+    "load": 788,
+    "mls": -64,
+    "mul": -23,
+    "scalar_setup_control": 438,
+    "sqrdmulh": -64,
+    "store": 1159,
+    "vector_copy": 224,
+    "vector_integer": 269,
+    "vector_routing": 92
+  },
+  "source_to_pmu_reconciliation": {
+    "official": 22,
+    "gt": 21
+  },
+  "decision": {
+    "modular_multiply_instruction_delta": -151,
+    "reduction_is_not_the_deficit": true,
+    "dominant_excess": {
+      "lane_extract": 864,
+      "load": 788,
+      "store": 1159,
+      "scalar_setup_control": 438
+    },
+    "next_gate": "P27 consumer-oriented I16 lane-basis search",
+    "required_change": "change the producer lane/bank basis before terminal materialization; do not replay P11's store-then-route or P22's copy-only DAG"
+  }
+}

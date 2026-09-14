@@ -1,0 +1,23 @@
+experiment_id: GT864-P26-INVERSE-DEFICIT-AUDIT-20260914
+action: audit
+state: complete
+scope:
+  gt_revision: d76a8289a8652e156665aff78bee6946183b2923
+  official_tree_sha256: 40a284439eb5fe8dfef77f1a995ebc8dd16182835048d64e959fbcb6e3df0b59
+  boundary: Official Inverse+Crepmod3 versus GT fused Inverse-to-ternary
+  mutation: none
+gates:
+  exact_source_hashes: pass
+  exact_loop_and_call_expansion: pass
+  source_to_pmu_reconciliation: pass
+  measured_instruction_deficit: 3740
+decision:
+  reduction_is_not_the_deficit: true
+  modular_multiply_instruction_delta: -151
+  dominant_excess:
+    lane_extract: 864
+    loads: 788
+    stores: 1159
+    scalar_setup_control: 438
+  next_gate: P27
+  next_gate_focus: consumer-oriented I16 lane-basis search

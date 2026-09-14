@@ -1,5 +1,18 @@
 # K1 production integration evidence
 
+## P26 matched Inverse deficit audit — 2026-09-14
+
+P26 changes no production source.  Exact source-loop and helper-call expansion
+reconciles selected Official Inverse+Crepmod3 at 4583 source plus 22 profiler
+instructions and GT fused Inverse-to-ternary at 8324 source plus 21 profiler
+instructions.  This exactly reproduces P25's 4605/8345 counts and +3740 gap.
+
+GT has 151 fewer combined `mul/sqrdmulh/mls` instructions, so reduction is not
+the deficit.  The dominant deltas are +864 lane extracts, +788 loads, +1159
+stores and +438 scalar setup/address/control.  Exact source hashes, per-stage
+and per-mnemonic counts, load provenance and historical P11/P21/P22 exclusions
+are recorded in `experiments/gt864-p26-inverse-deficit-audit/`.
+
 ## P25 selected-Official profiler checkpoint — 2026-09-13
 
 Exact P24 production revision

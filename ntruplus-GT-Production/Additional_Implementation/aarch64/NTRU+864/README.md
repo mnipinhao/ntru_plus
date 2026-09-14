@@ -18,6 +18,11 @@ P25 then re-profiled this exact production against the selected SUPERCOP
 boundary is Inverse-to-ternary (+280.675 cycles); aggregate ToBytes is second.
 The comparison target remains a fixed selected snapshot, not an independently
 verified latest-upstream claim.
+P26 then reconciled that Inverse gap instruction-for-instruction.  GT already
+uses 151 fewer modular-multiply instructions; fragmented lane extraction,
+stores and repeated constant loads dominate.  P27 therefore searches an
+inverse9→I16 lane basis that directly feeds full-vector raw-to-ternary output,
+without replaying P11's post-store routing.
 P13-C previously changed the separately shaped tail Inverse16 so it now
 uses the same composite-terminal algebra with its own six-lane layout.  Together
 P13-B/C save 462 retired Inverse instructions and about 507 paired-median Decaps
