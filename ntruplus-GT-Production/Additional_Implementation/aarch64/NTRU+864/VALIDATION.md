@@ -1,5 +1,24 @@
 # K1 production integration evidence
 
+## P27 consumer-oriented I16 lane-basis gate — 2026-09-14
+
+P27 changes no production source.  Its checker exhausts all 15 perfect
+matchings of the six current main P8 records and selects one unique minimum-
+arity basis.  The selected three paired regions overwrite only their consumed
+P8 blocks; dense tail output occupies twelve Q records.  All 864 tagged
+coordinates form a bijection over 108 dense source Q records and 108 natural
+output Q records.  The generated consumer plan loads each source once, has a
+four-Q live maximum and uses consecutive `v0-v3` TBL sources.
+
+Machine checks retain the exact inverse roots, table scale, R0 output and the
+closed 2497/2617/21397/4577 range chain.  No extra coefficient pass, larger
+scratch, lane ST3, terminal UMOV/STRH or P11 D-record route is introduced.
+The 32-vector/eight-GPR budget and conservative -1314-instruction ledger are
+not physical allocation or timing claims.  P28 must still pass Slothy/no-spill,
+complete Inverse/KEM correctness, ABI/cleanup and paired Pi 5 gates.  Complete
+route masks and source identities are recorded in
+`experiments/gt864-p27-consumer-i16-lane-basis/audit-results.json`.
+
 ## P26 matched Inverse deficit audit — 2026-09-14
 
 P26 changes no production source.  Exact source-loop and helper-call expansion

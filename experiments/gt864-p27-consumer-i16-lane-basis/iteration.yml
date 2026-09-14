@@ -1,0 +1,41 @@
+experiment_id: GT864-P27-CONSUMER-I16-LANE-BASIS-20260914
+status: pass-machine-only
+action: optimize-layout
+baseline:
+  production_commit: d76a8289a8652e156665aff78bee6946183b2923
+  measured_boundary: P25 GT fused Inverse-to-ternary
+  cycles_deficit_vs_selected_official: 280.675
+  instructions_deficit_vs_selected_official: 3740
+observation: >-
+  Six current main I16 calls each carry four rows of one component and both top
+  branches.  Their terminal values cannot form natural eight-coefficient stores.
+hypothesis: >-
+  Pair the six existing P8 records into three eight-channel banks, execute each
+  pair in one 32-state I16 region, densely compact the tail, and let a single
+  raw-to-ternary consumer normalize and route 108 full vectors.
+exact_change:
+  - keep the inverse9 producer and its P8 records unchanged
+  - pair six main records according to the selected perfect matching
+  - overwrite each consumed 32-Q pair in place with two-top bank outputs
+  - compact 16 padded tail records to 12 full records
+  - route and normalize 108 records into 108 natural full-vector stores
+expected_static_effect:
+  terminal_materialization_instructions: 1728 -> 216
+  main_constant_loads_saved: 210
+  consumer_route_tbl4: 108
+  conservative_net_instruction_reduction_before_wrapper_changes: 1314
+expected_performance_effect: >-
+  Recover a material part of P25's 280.675-cycle deficit; Pi 5 timing is deferred
+  until a physical no-spill kernel exists.
+expected_register_pressure: >-
+  Paired main has 32 coefficient states.  Reserve three to four vector auxiliaries
+  by parking at most four Q states in eight caller-saved GPRs; peak 32 vector and
+  eight parking GPRs, with no memory spill.
+correctness_and_range: >-
+  Pure independent-channel pairing preserves current roots, R0 scale and the
+  2497 -> 2617 -> 21397 -> 4577 -> ternary range chain.
+falsification: >-
+  Reject if no perfect matching routes with at most TBL4, if tagged coordinates
+  fail, if scratch grows or gains a pass, if physical RA spills, or if complete
+  Inverse/Decaps do not improve on Pi 5.
+next_gate: P28 physical paired-I16 and dense-tail symbolic realization

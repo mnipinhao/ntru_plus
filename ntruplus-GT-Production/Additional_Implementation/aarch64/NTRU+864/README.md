@@ -23,6 +23,13 @@ uses 151 fewer modular-multiply instructions; fragmented lane extraction,
 stores and repeated constant loads dominate.  P27 therefore searches an
 inverse9→I16 lane basis that directly feeds full-vector raw-to-ternary output,
 without replaying P11's post-store routing.
+P27 has now passed that machine-only search.  Its unique best matching pairs
+the six existing main P8 blocks into three 32-state I16 regions, compacts the
+tail to twelve Q records, and maps exactly 108 dense scratch records to 108
+natural output records with at most four live TBL sources.  The static budget
+removes at least 1,314 instructions after conservative parking/routing charges.
+Production remains unchanged until P28 proves physical allocation, complete
+correctness and Pi 5 Inverse/Decaps improvement.
 P13-C previously changed the separately shaped tail Inverse16 so it now
 uses the same composite-terminal algebra with its own six-lane layout.  Together
 P13-B/C save 462 retired Inverse instructions and about 507 paired-median Decaps

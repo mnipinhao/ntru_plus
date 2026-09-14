@@ -1,0 +1,5347 @@
+{
+  "coordinate_gate": {
+    "bijective": true,
+    "candidate_dense_source_q": 108,
+    "coordinates": 864,
+    "extra_coefficient_passes": 0,
+    "natural_formula": "n = top*432 + t*27 + row*3 + component",
+    "natural_q_never_crosses_top": true,
+    "scratch_q_capacity_unchanged": 112,
+    "unused_existing_tail_q": 4
+  },
+  "decision": "advance exact selected DAG to P28 physical realization",
+  "experiment": "GT864-P27-CONSUMER-I16-LANE-BASIS-20260914",
+  "hard_gates": {
+    "at_most_32_vector_registers_no_memory_spill": "pass-budget-only",
+    "exact_coordinates_roots_scale_range": "pass",
+    "exact_natural_ternary_output": "pass-machine-map",
+    "full_vector_terminal_stores_at_most_108": "pass",
+    "no_extra_pass_or_larger_scratch": "pass",
+    "no_lane_ST3_scalar_terminal_or_P11_D_route": "pass-design",
+    "physical_RA_schedule_KAT_Pi5": "deferred-P28",
+    "real_materialization_removed": "pass-static"
+  },
+  "limitations": [
+    "No assembly, Slothy allocation, KAT, binary audit or Pi 5 timing was run.",
+    "GPR parking is a bounded design, not yet an allocated instruction stream.",
+    "The static instruction ledger is conservative accounting, not a cycle estimate."
+  ],
+  "memory_contract": {
+    "P8_scratch_bytes": 1792,
+    "UMOV_STRH_terminal_pairs": 0,
+    "coefficient_vector_stores_before_cleanup": 108,
+    "dense_source_bytes": 1728,
+    "lane_ST3": 0,
+    "main_in_place_pairs": "three disjoint pairs of two consumed 16-Q blocks",
+    "natural_output_bytes": 1728,
+    "post_store_D_record_route": false,
+    "tail_in_place": "16-Q input block becomes 12 dense Q records; four Q unused"
+  },
+  "normalization_gate": {
+    "exhaustive_raw_inputs": 9155,
+    "normalize_before_route_equivalent": true,
+    "outputs": [
+      -1,
+      0,
+      1
+    ],
+    "raw_bound": 4577
+  },
+  "production_changed": false,
+  "range_gate": {
+    "basemul_rinv": 2497,
+    "changed_arithmetic_nodes": 0,
+    "inverse16_peak": 21397,
+    "inverse9_terminal": 2617,
+    "raw_R0": 4577,
+    "ternary": 1
+  },
+  "register_budget": {
+    "available_parking_and_control_gprs_x5_x17": 13,
+    "coefficient_state_q": 32,
+    "max_parked_q_in_gprs": 4,
+    "max_parking_gprs": 8,
+    "memory_spill_required": false,
+    "peak_vector_registers": 32,
+    "physical_allocation_proved": false,
+    "stage_aux_q": 3,
+    "terminal_aux_q": 4,
+    "warning": "P28 must prove the cross-class exchanges and timing with real assembly"
+  },
+  "search": {
+    "all_scores": [
+      {
+        "arity": {
+          "2": 48,
+          "3": 44,
+          "4": 16
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          4,
+          184
+        ]
+      },
+      {
+        "arity": {
+          "2": 44,
+          "3": 48,
+          "4": 12,
+          "5": 4
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          5,
+          192
+        ]
+      },
+      {
+        "arity": {
+          "2": 44,
+          "3": 48,
+          "4": 12,
+          "5": 4
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          5,
+          192
+        ]
+      },
+      {
+        "arity": {
+          "2": 44,
+          "3": 48,
+          "4": 12,
+          "5": 4
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "score": [
+          5,
+          192
+        ]
+      },
+      {
+        "arity": {
+          "2": 44,
+          "3": 48,
+          "4": 12,
+          "5": 4
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          5,
+          192
+        ]
+      },
+      {
+        "arity": {
+          "2": 40,
+          "3": 52,
+          "4": 8,
+          "5": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "score": [
+          5,
+          200
+        ]
+      },
+      {
+        "arity": {
+          "2": 40,
+          "3": 52,
+          "4": 8,
+          "5": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          5,
+          200
+        ]
+      },
+      {
+        "arity": {
+          "2": 40,
+          "3": 52,
+          "4": 8,
+          "5": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          5,
+          200
+        ]
+      },
+      {
+        "arity": {
+          "2": 40,
+          "3": 52,
+          "4": 8,
+          "5": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "score": [
+          5,
+          200
+        ]
+      },
+      {
+        "arity": {
+          "3": 68,
+          "4": 24,
+          "5": 8,
+          "6": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          6,
+          280
+        ]
+      },
+      {
+        "arity": {
+          "3": 68,
+          "4": 24,
+          "5": 8,
+          "6": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "score": [
+          6,
+          280
+        ]
+      },
+      {
+        "arity": {
+          "3": 68,
+          "4": 24,
+          "5": 8,
+          "6": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          [
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          6,
+          280
+        ]
+      },
+      {
+        "arity": {
+          "3": 68,
+          "4": 24,
+          "5": 8,
+          "6": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          6,
+          280
+        ]
+      },
+      {
+        "arity": {
+          "3": 68,
+          "4": 24,
+          "5": 8,
+          "6": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "score": [
+          6,
+          280
+        ]
+      },
+      {
+        "arity": {
+          "3": 68,
+          "4": 24,
+          "5": 8,
+          "6": 8
+        },
+        "matching": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "score": [
+          6,
+          280
+        ]
+      }
+    ],
+    "consumer_tbl4_outputs": 108,
+    "peak_live_source_q": 4,
+    "perfect_matchings_exhausted": 15,
+    "route_plan": [
+      {
+        "loads": [
+          {
+            "record": 0,
+            "tbl_slot": 0
+          },
+          {
+            "record": 16,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 0,
+        "source_records": [
+          0,
+          16
+        ],
+        "tagged_output": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          8,
+          9,
+          24,
+          25,
+          2,
+          3,
+          10,
+          11,
+          26,
+          27,
+          4,
+          5,
+          12,
+          13
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 48,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 1,
+        "source_records": [
+          16,
+          0,
+          48
+        ],
+        "tagged_output": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          6,
+          7,
+          14,
+          15,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 2,
+        "source_records": [
+          48,
+          16
+        ],
+        "tagged_output": [
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "tbl4_byte_indices": [
+          34,
+          35,
+          42,
+          43,
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 96,
+            "tbl_slot": 0
+          },
+          {
+            "record": 1,
+            "tbl_slot": 1
+          },
+          {
+            "record": 17,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 3,
+        "source_records": [
+          96,
+          1,
+          17
+        ],
+        "tagged_output": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 4,
+        "source_records": [
+          17,
+          1
+        ],
+        "tagged_output": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ],
+        "tbl4_byte_indices": [
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 49,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 5,
+        "source_records": [
+          49,
+          17
+        ],
+        "tagged_output": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47
+        ],
+        "tbl4_byte_indices": [
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37,
+          20,
+          21,
+          28,
+          29
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 2,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 6,
+        "source_records": [
+          17,
+          49,
+          96,
+          2
+        ],
+        "tagged_output": [
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ],
+        "tbl4_byte_indices": [
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          48,
+          49,
+          56,
+          57
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 18,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 7,
+        "source_records": [
+          18,
+          2
+        ],
+        "tagged_output": [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63
+        ],
+        "tbl4_byte_indices": [
+          24,
+          25,
+          50,
+          51,
+          58,
+          59,
+          26,
+          27,
+          52,
+          53,
+          60,
+          61,
+          28,
+          29,
+          54,
+          55
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 50,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 8,
+        "source_records": [
+          2,
+          18,
+          50
+        ],
+        "tagged_output": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71
+        ],
+        "tbl4_byte_indices": [
+          62,
+          63,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19,
+          34,
+          35,
+          42,
+          43
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 9,
+        "source_records": [
+          18,
+          50,
+          96
+        ],
+        "tagged_output": [
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 97,
+            "tbl_slot": 0
+          },
+          {
+            "record": 3,
+            "tbl_slot": 1
+          },
+          {
+            "record": 19,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 10,
+        "source_records": [
+          97,
+          3,
+          19
+        ],
+        "tagged_output": [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27,
+          42,
+          43,
+          20,
+          21
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 51,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 11,
+        "source_records": [
+          3,
+          19,
+          51
+        ],
+        "tagged_output": [
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33,
+          48,
+          49,
+          56,
+          57
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 12,
+        "source_records": [
+          19,
+          51
+        ],
+        "tagged_output": [
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ],
+        "tbl4_byte_indices": [
+          34,
+          35,
+          50,
+          51,
+          58,
+          59,
+          36,
+          37,
+          52,
+          53,
+          60,
+          61,
+          38,
+          39,
+          54,
+          55
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 4,
+            "tbl_slot": 1
+          },
+          {
+            "record": 20,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 13,
+        "source_records": [
+          51,
+          97,
+          4,
+          20
+        ],
+        "tagged_output": [
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111
+        ],
+        "tbl4_byte_indices": [
+          62,
+          63,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 14,
+        "source_records": [
+          4,
+          20
+        ],
+        "tagged_output": [
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119
+        ],
+        "tbl4_byte_indices": [
+          26,
+          27,
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 52,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 15,
+        "source_records": [
+          20,
+          52
+        ],
+        "tagged_output": [
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127
+        ],
+        "tbl4_byte_indices": [
+          32,
+          33,
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37,
+          20,
+          21
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 5,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 16,
+        "source_records": [
+          52,
+          20,
+          97,
+          5
+        ],
+        "tagged_output": [
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          48,
+          49
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 21,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 17,
+        "source_records": [
+          5,
+          21
+        ],
+        "tagged_output": [
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143
+        ],
+        "tbl4_byte_indices": [
+          56,
+          57,
+          24,
+          25,
+          50,
+          51,
+          58,
+          59,
+          26,
+          27,
+          52,
+          53,
+          60,
+          61,
+          28,
+          29
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 53,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 18,
+        "source_records": [
+          5,
+          21,
+          53
+        ],
+        "tagged_output": [
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151
+        ],
+        "tbl4_byte_indices": [
+          54,
+          55,
+          62,
+          63,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19,
+          34,
+          35
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 19,
+        "source_records": [
+          53,
+          21,
+          97
+        ],
+        "tagged_output": [
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159
+        ],
+        "tbl4_byte_indices": [
+          42,
+          43,
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 98,
+            "tbl_slot": 0
+          },
+          {
+            "record": 6,
+            "tbl_slot": 1
+          },
+          {
+            "record": 22,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 20,
+        "source_records": [
+          98,
+          6,
+          22
+        ],
+        "tagged_output": [
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          2,
+          3,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27,
+          42,
+          43
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 54,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 21,
+        "source_records": [
+          6,
+          22,
+          54
+        ],
+        "tagged_output": [
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33,
+          48,
+          49
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 22,
+        "source_records": [
+          54,
+          22
+        ],
+        "tagged_output": [
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183
+        ],
+        "tbl4_byte_indices": [
+          56,
+          57,
+          34,
+          35,
+          50,
+          51,
+          58,
+          59,
+          36,
+          37,
+          52,
+          53,
+          60,
+          61,
+          38,
+          39
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 7,
+            "tbl_slot": 1
+          },
+          {
+            "record": 23,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 23,
+        "source_records": [
+          54,
+          98,
+          7,
+          23
+        ],
+        "tagged_output": [
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191
+        ],
+        "tbl4_byte_indices": [
+          54,
+          55,
+          62,
+          63,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 24,
+        "source_records": [
+          7,
+          23
+        ],
+        "tagged_output": [
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199
+        ],
+        "tbl4_byte_indices": [
+          18,
+          19,
+          26,
+          27,
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 55,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 25,
+        "source_records": [
+          23,
+          55
+        ],
+        "tagged_output": [
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207
+        ],
+        "tbl4_byte_indices": [
+          46,
+          47,
+          32,
+          33,
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 26,
+        "source_records": [
+          55,
+          23,
+          98
+        ],
+        "tagged_output": [
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          28,
+          29,
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 8,
+            "tbl_slot": 0
+          },
+          {
+            "record": 24,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 27,
+        "source_records": [
+          8,
+          24
+        ],
+        "tagged_output": [
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          8,
+          9,
+          24,
+          25,
+          2,
+          3,
+          10,
+          11,
+          26,
+          27,
+          4,
+          5,
+          12,
+          13
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 56,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 28,
+        "source_records": [
+          24,
+          8,
+          56
+        ],
+        "tagged_output": [
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          6,
+          7,
+          14,
+          15,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 29,
+        "source_records": [
+          56,
+          24
+        ],
+        "tagged_output": [
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239
+        ],
+        "tbl4_byte_indices": [
+          34,
+          35,
+          42,
+          43,
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 99,
+            "tbl_slot": 0
+          },
+          {
+            "record": 9,
+            "tbl_slot": 1
+          },
+          {
+            "record": 25,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 30,
+        "source_records": [
+          99,
+          9,
+          25
+        ],
+        "tagged_output": [
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 31,
+        "source_records": [
+          25,
+          9
+        ],
+        "tagged_output": [
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255
+        ],
+        "tbl4_byte_indices": [
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 57,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 32,
+        "source_records": [
+          57,
+          25
+        ],
+        "tagged_output": [
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263
+        ],
+        "tbl4_byte_indices": [
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37,
+          20,
+          21,
+          28,
+          29
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 10,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 33,
+        "source_records": [
+          25,
+          57,
+          99,
+          10
+        ],
+        "tagged_output": [
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271
+        ],
+        "tbl4_byte_indices": [
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          48,
+          49,
+          56,
+          57
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 26,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 34,
+        "source_records": [
+          26,
+          10
+        ],
+        "tagged_output": [
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279
+        ],
+        "tbl4_byte_indices": [
+          24,
+          25,
+          50,
+          51,
+          58,
+          59,
+          26,
+          27,
+          52,
+          53,
+          60,
+          61,
+          28,
+          29,
+          54,
+          55
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 58,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 35,
+        "source_records": [
+          10,
+          26,
+          58
+        ],
+        "tagged_output": [
+          280,
+          281,
+          282,
+          283,
+          284,
+          285,
+          286,
+          287
+        ],
+        "tbl4_byte_indices": [
+          62,
+          63,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19,
+          34,
+          35,
+          42,
+          43
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 36,
+        "source_records": [
+          26,
+          58,
+          99
+        ],
+        "tagged_output": [
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 100,
+            "tbl_slot": 0
+          },
+          {
+            "record": 11,
+            "tbl_slot": 1
+          },
+          {
+            "record": 27,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 37,
+        "source_records": [
+          100,
+          11,
+          27
+        ],
+        "tagged_output": [
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27,
+          42,
+          43,
+          20,
+          21
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 59,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 38,
+        "source_records": [
+          11,
+          27,
+          59
+        ],
+        "tagged_output": [
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33,
+          48,
+          49,
+          56,
+          57
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 39,
+        "source_records": [
+          27,
+          59
+        ],
+        "tagged_output": [
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319
+        ],
+        "tbl4_byte_indices": [
+          34,
+          35,
+          50,
+          51,
+          58,
+          59,
+          36,
+          37,
+          52,
+          53,
+          60,
+          61,
+          38,
+          39,
+          54,
+          55
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 12,
+            "tbl_slot": 1
+          },
+          {
+            "record": 28,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 40,
+        "source_records": [
+          59,
+          100,
+          12,
+          28
+        ],
+        "tagged_output": [
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327
+        ],
+        "tbl4_byte_indices": [
+          62,
+          63,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 41,
+        "source_records": [
+          12,
+          28
+        ],
+        "tagged_output": [
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334,
+          335
+        ],
+        "tbl4_byte_indices": [
+          26,
+          27,
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 60,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 42,
+        "source_records": [
+          28,
+          60
+        ],
+        "tagged_output": [
+          336,
+          337,
+          338,
+          339,
+          340,
+          341,
+          342,
+          343
+        ],
+        "tbl4_byte_indices": [
+          32,
+          33,
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37,
+          20,
+          21
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 13,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 43,
+        "source_records": [
+          60,
+          28,
+          100,
+          13
+        ],
+        "tagged_output": [
+          344,
+          345,
+          346,
+          347,
+          348,
+          349,
+          350,
+          351
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          48,
+          49
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 29,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 44,
+        "source_records": [
+          13,
+          29
+        ],
+        "tagged_output": [
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          358,
+          359
+        ],
+        "tbl4_byte_indices": [
+          56,
+          57,
+          24,
+          25,
+          50,
+          51,
+          58,
+          59,
+          26,
+          27,
+          52,
+          53,
+          60,
+          61,
+          28,
+          29
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 61,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 45,
+        "source_records": [
+          13,
+          29,
+          61
+        ],
+        "tagged_output": [
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          366,
+          367
+        ],
+        "tbl4_byte_indices": [
+          54,
+          55,
+          62,
+          63,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19,
+          34,
+          35
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 46,
+        "source_records": [
+          61,
+          29,
+          100
+        ],
+        "tagged_output": [
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375
+        ],
+        "tbl4_byte_indices": [
+          42,
+          43,
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 101,
+            "tbl_slot": 0
+          },
+          {
+            "record": 14,
+            "tbl_slot": 1
+          },
+          {
+            "record": 30,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 47,
+        "source_records": [
+          101,
+          14,
+          30
+        ],
+        "tagged_output": [
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          2,
+          3,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27,
+          42,
+          43
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 62,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 48,
+        "source_records": [
+          14,
+          30,
+          62
+        ],
+        "tagged_output": [
+          384,
+          385,
+          386,
+          387,
+          388,
+          389,
+          390,
+          391
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33,
+          48,
+          49
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 49,
+        "source_records": [
+          62,
+          30
+        ],
+        "tagged_output": [
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          398,
+          399
+        ],
+        "tbl4_byte_indices": [
+          56,
+          57,
+          34,
+          35,
+          50,
+          51,
+          58,
+          59,
+          36,
+          37,
+          52,
+          53,
+          60,
+          61,
+          38,
+          39
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 15,
+            "tbl_slot": 1
+          },
+          {
+            "record": 31,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 50,
+        "source_records": [
+          62,
+          101,
+          15,
+          31
+        ],
+        "tagged_output": [
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407
+        ],
+        "tbl4_byte_indices": [
+          54,
+          55,
+          62,
+          63,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 51,
+        "source_records": [
+          15,
+          31
+        ],
+        "tagged_output": [
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415
+        ],
+        "tbl4_byte_indices": [
+          18,
+          19,
+          26,
+          27,
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 63,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 52,
+        "source_records": [
+          31,
+          63
+        ],
+        "tagged_output": [
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          423
+        ],
+        "tbl4_byte_indices": [
+          46,
+          47,
+          32,
+          33,
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 53,
+        "source_records": [
+          63,
+          31,
+          101
+        ],
+        "tagged_output": [
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          28,
+          29,
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 32,
+            "tbl_slot": 0
+          },
+          {
+            "record": 64,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 54,
+        "source_records": [
+          32,
+          64
+        ],
+        "tagged_output": [
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          439
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          8,
+          9,
+          24,
+          25,
+          2,
+          3,
+          10,
+          11,
+          26,
+          27,
+          4,
+          5,
+          12,
+          13
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 80,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 55,
+        "source_records": [
+          64,
+          32,
+          80
+        ],
+        "tagged_output": [
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          447
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          6,
+          7,
+          14,
+          15,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 56,
+        "source_records": [
+          80,
+          64
+        ],
+        "tagged_output": [
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          455
+        ],
+        "tbl4_byte_indices": [
+          34,
+          35,
+          42,
+          43,
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 102,
+            "tbl_slot": 0
+          },
+          {
+            "record": 33,
+            "tbl_slot": 1
+          },
+          {
+            "record": 65,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 57,
+        "source_records": [
+          102,
+          33,
+          65
+        ],
+        "tagged_output": [
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          463
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 58,
+        "source_records": [
+          65,
+          33
+        ],
+        "tagged_output": [
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          471
+        ],
+        "tbl4_byte_indices": [
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 81,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 59,
+        "source_records": [
+          81,
+          65
+        ],
+        "tagged_output": [
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          479
+        ],
+        "tbl4_byte_indices": [
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37,
+          20,
+          21,
+          28,
+          29
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 34,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 60,
+        "source_records": [
+          65,
+          81,
+          102,
+          34
+        ],
+        "tagged_output": [
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          487
+        ],
+        "tbl4_byte_indices": [
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          48,
+          49,
+          56,
+          57
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 66,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 61,
+        "source_records": [
+          66,
+          34
+        ],
+        "tagged_output": [
+          488,
+          489,
+          490,
+          491,
+          492,
+          493,
+          494,
+          495
+        ],
+        "tbl4_byte_indices": [
+          24,
+          25,
+          50,
+          51,
+          58,
+          59,
+          26,
+          27,
+          52,
+          53,
+          60,
+          61,
+          28,
+          29,
+          54,
+          55
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 82,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 62,
+        "source_records": [
+          34,
+          66,
+          82
+        ],
+        "tagged_output": [
+          496,
+          497,
+          498,
+          499,
+          500,
+          501,
+          502,
+          503
+        ],
+        "tbl4_byte_indices": [
+          62,
+          63,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19,
+          34,
+          35,
+          42,
+          43
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 63,
+        "source_records": [
+          66,
+          82,
+          102
+        ],
+        "tagged_output": [
+          504,
+          505,
+          506,
+          507,
+          508,
+          509,
+          510,
+          511
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 103,
+            "tbl_slot": 0
+          },
+          {
+            "record": 35,
+            "tbl_slot": 1
+          },
+          {
+            "record": 67,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 64,
+        "source_records": [
+          103,
+          35,
+          67
+        ],
+        "tagged_output": [
+          512,
+          513,
+          514,
+          515,
+          516,
+          517,
+          518,
+          519
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27,
+          42,
+          43,
+          20,
+          21
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 83,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 65,
+        "source_records": [
+          35,
+          67,
+          83
+        ],
+        "tagged_output": [
+          520,
+          521,
+          522,
+          523,
+          524,
+          525,
+          526,
+          527
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33,
+          48,
+          49,
+          56,
+          57
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 66,
+        "source_records": [
+          67,
+          83
+        ],
+        "tagged_output": [
+          528,
+          529,
+          530,
+          531,
+          532,
+          533,
+          534,
+          535
+        ],
+        "tbl4_byte_indices": [
+          34,
+          35,
+          50,
+          51,
+          58,
+          59,
+          36,
+          37,
+          52,
+          53,
+          60,
+          61,
+          38,
+          39,
+          54,
+          55
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 36,
+            "tbl_slot": 1
+          },
+          {
+            "record": 68,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 67,
+        "source_records": [
+          83,
+          103,
+          36,
+          68
+        ],
+        "tagged_output": [
+          536,
+          537,
+          538,
+          539,
+          540,
+          541,
+          542,
+          543
+        ],
+        "tbl4_byte_indices": [
+          62,
+          63,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 68,
+        "source_records": [
+          36,
+          68
+        ],
+        "tagged_output": [
+          544,
+          545,
+          546,
+          547,
+          548,
+          549,
+          550,
+          551
+        ],
+        "tbl4_byte_indices": [
+          26,
+          27,
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 84,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 69,
+        "source_records": [
+          68,
+          84
+        ],
+        "tagged_output": [
+          552,
+          553,
+          554,
+          555,
+          556,
+          557,
+          558,
+          559
+        ],
+        "tbl4_byte_indices": [
+          32,
+          33,
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37,
+          20,
+          21
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 37,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 70,
+        "source_records": [
+          84,
+          68,
+          103,
+          37
+        ],
+        "tagged_output": [
+          560,
+          561,
+          562,
+          563,
+          564,
+          565,
+          566,
+          567
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          48,
+          49
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 69,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 71,
+        "source_records": [
+          37,
+          69
+        ],
+        "tagged_output": [
+          568,
+          569,
+          570,
+          571,
+          572,
+          573,
+          574,
+          575
+        ],
+        "tbl4_byte_indices": [
+          56,
+          57,
+          24,
+          25,
+          50,
+          51,
+          58,
+          59,
+          26,
+          27,
+          52,
+          53,
+          60,
+          61,
+          28,
+          29
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 85,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 72,
+        "source_records": [
+          37,
+          69,
+          85
+        ],
+        "tagged_output": [
+          576,
+          577,
+          578,
+          579,
+          580,
+          581,
+          582,
+          583
+        ],
+        "tbl4_byte_indices": [
+          54,
+          55,
+          62,
+          63,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19,
+          34,
+          35
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 73,
+        "source_records": [
+          85,
+          69,
+          103
+        ],
+        "tagged_output": [
+          584,
+          585,
+          586,
+          587,
+          588,
+          589,
+          590,
+          591
+        ],
+        "tbl4_byte_indices": [
+          42,
+          43,
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 104,
+            "tbl_slot": 0
+          },
+          {
+            "record": 38,
+            "tbl_slot": 1
+          },
+          {
+            "record": 70,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 74,
+        "source_records": [
+          104,
+          38,
+          70
+        ],
+        "tagged_output": [
+          592,
+          593,
+          594,
+          595,
+          596,
+          597,
+          598,
+          599
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          2,
+          3,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27,
+          42,
+          43
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 86,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 75,
+        "source_records": [
+          38,
+          70,
+          86
+        ],
+        "tagged_output": [
+          600,
+          601,
+          602,
+          603,
+          604,
+          605,
+          606,
+          607
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33,
+          48,
+          49
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 76,
+        "source_records": [
+          86,
+          70
+        ],
+        "tagged_output": [
+          608,
+          609,
+          610,
+          611,
+          612,
+          613,
+          614,
+          615
+        ],
+        "tbl4_byte_indices": [
+          56,
+          57,
+          34,
+          35,
+          50,
+          51,
+          58,
+          59,
+          36,
+          37,
+          52,
+          53,
+          60,
+          61,
+          38,
+          39
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 39,
+            "tbl_slot": 1
+          },
+          {
+            "record": 71,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 77,
+        "source_records": [
+          86,
+          104,
+          39,
+          71
+        ],
+        "tagged_output": [
+          616,
+          617,
+          618,
+          619,
+          620,
+          621,
+          622,
+          623
+        ],
+        "tbl4_byte_indices": [
+          54,
+          55,
+          62,
+          63,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 78,
+        "source_records": [
+          39,
+          71
+        ],
+        "tagged_output": [
+          624,
+          625,
+          626,
+          627,
+          628,
+          629,
+          630,
+          631
+        ],
+        "tbl4_byte_indices": [
+          18,
+          19,
+          26,
+          27,
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 87,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 79,
+        "source_records": [
+          71,
+          87
+        ],
+        "tagged_output": [
+          632,
+          633,
+          634,
+          635,
+          636,
+          637,
+          638,
+          639
+        ],
+        "tbl4_byte_indices": [
+          46,
+          47,
+          32,
+          33,
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 80,
+        "source_records": [
+          87,
+          71,
+          104
+        ],
+        "tagged_output": [
+          640,
+          641,
+          642,
+          643,
+          644,
+          645,
+          646,
+          647
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          28,
+          29,
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 40,
+            "tbl_slot": 0
+          },
+          {
+            "record": 72,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 81,
+        "source_records": [
+          40,
+          72
+        ],
+        "tagged_output": [
+          648,
+          649,
+          650,
+          651,
+          652,
+          653,
+          654,
+          655
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          8,
+          9,
+          24,
+          25,
+          2,
+          3,
+          10,
+          11,
+          26,
+          27,
+          4,
+          5,
+          12,
+          13
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 88,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 82,
+        "source_records": [
+          72,
+          40,
+          88
+        ],
+        "tagged_output": [
+          656,
+          657,
+          658,
+          659,
+          660,
+          661,
+          662,
+          663
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          6,
+          7,
+          14,
+          15,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 83,
+        "source_records": [
+          88,
+          72
+        ],
+        "tagged_output": [
+          664,
+          665,
+          666,
+          667,
+          668,
+          669,
+          670,
+          671
+        ],
+        "tbl4_byte_indices": [
+          34,
+          35,
+          42,
+          43,
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 105,
+            "tbl_slot": 0
+          },
+          {
+            "record": 41,
+            "tbl_slot": 1
+          },
+          {
+            "record": 73,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 84,
+        "source_records": [
+          105,
+          41,
+          73
+        ],
+        "tagged_output": [
+          672,
+          673,
+          674,
+          675,
+          676,
+          677,
+          678,
+          679
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 85,
+        "source_records": [
+          73,
+          41
+        ],
+        "tagged_output": [
+          680,
+          681,
+          682,
+          683,
+          684,
+          685,
+          686,
+          687
+        ],
+        "tbl4_byte_indices": [
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 89,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 86,
+        "source_records": [
+          89,
+          73
+        ],
+        "tagged_output": [
+          688,
+          689,
+          690,
+          691,
+          692,
+          693,
+          694,
+          695
+        ],
+        "tbl4_byte_indices": [
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37,
+          20,
+          21,
+          28,
+          29
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 42,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 87,
+        "source_records": [
+          73,
+          89,
+          105,
+          42
+        ],
+        "tagged_output": [
+          696,
+          697,
+          698,
+          699,
+          700,
+          701,
+          702,
+          703
+        ],
+        "tbl4_byte_indices": [
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          48,
+          49,
+          56,
+          57
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 74,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 88,
+        "source_records": [
+          74,
+          42
+        ],
+        "tagged_output": [
+          704,
+          705,
+          706,
+          707,
+          708,
+          709,
+          710,
+          711
+        ],
+        "tbl4_byte_indices": [
+          24,
+          25,
+          50,
+          51,
+          58,
+          59,
+          26,
+          27,
+          52,
+          53,
+          60,
+          61,
+          28,
+          29,
+          54,
+          55
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 90,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 89,
+        "source_records": [
+          42,
+          74,
+          90
+        ],
+        "tagged_output": [
+          712,
+          713,
+          714,
+          715,
+          716,
+          717,
+          718,
+          719
+        ],
+        "tbl4_byte_indices": [
+          62,
+          63,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19,
+          34,
+          35,
+          42,
+          43
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 90,
+        "source_records": [
+          74,
+          90,
+          105
+        ],
+        "tagged_output": [
+          720,
+          721,
+          722,
+          723,
+          724,
+          725,
+          726,
+          727
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 106,
+            "tbl_slot": 0
+          },
+          {
+            "record": 43,
+            "tbl_slot": 1
+          },
+          {
+            "record": 75,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 91,
+        "source_records": [
+          106,
+          43,
+          75
+        ],
+        "tagged_output": [
+          728,
+          729,
+          730,
+          731,
+          732,
+          733,
+          734,
+          735
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27,
+          42,
+          43,
+          20,
+          21
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 91,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 92,
+        "source_records": [
+          43,
+          75,
+          91
+        ],
+        "tagged_output": [
+          736,
+          737,
+          738,
+          739,
+          740,
+          741,
+          742,
+          743
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33,
+          48,
+          49,
+          56,
+          57
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 93,
+        "source_records": [
+          75,
+          91
+        ],
+        "tagged_output": [
+          744,
+          745,
+          746,
+          747,
+          748,
+          749,
+          750,
+          751
+        ],
+        "tbl4_byte_indices": [
+          34,
+          35,
+          50,
+          51,
+          58,
+          59,
+          36,
+          37,
+          52,
+          53,
+          60,
+          61,
+          38,
+          39,
+          54,
+          55
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 44,
+            "tbl_slot": 1
+          },
+          {
+            "record": 76,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 94,
+        "source_records": [
+          91,
+          106,
+          44,
+          76
+        ],
+        "tagged_output": [
+          752,
+          753,
+          754,
+          755,
+          756,
+          757,
+          758,
+          759
+        ],
+        "tbl4_byte_indices": [
+          62,
+          63,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 95,
+        "source_records": [
+          44,
+          76
+        ],
+        "tagged_output": [
+          760,
+          761,
+          762,
+          763,
+          764,
+          765,
+          766,
+          767
+        ],
+        "tbl4_byte_indices": [
+          26,
+          27,
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 92,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 96,
+        "source_records": [
+          76,
+          92
+        ],
+        "tagged_output": [
+          768,
+          769,
+          770,
+          771,
+          772,
+          773,
+          774,
+          775
+        ],
+        "tbl4_byte_indices": [
+          32,
+          33,
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37,
+          20,
+          21
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 45,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 97,
+        "source_records": [
+          92,
+          76,
+          106,
+          45
+        ],
+        "tagged_output": [
+          776,
+          777,
+          778,
+          779,
+          780,
+          781,
+          782,
+          783
+        ],
+        "tbl4_byte_indices": [
+          28,
+          29,
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          48,
+          49
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 77,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 98,
+        "source_records": [
+          45,
+          77
+        ],
+        "tagged_output": [
+          784,
+          785,
+          786,
+          787,
+          788,
+          789,
+          790,
+          791
+        ],
+        "tbl4_byte_indices": [
+          56,
+          57,
+          24,
+          25,
+          50,
+          51,
+          58,
+          59,
+          26,
+          27,
+          52,
+          53,
+          60,
+          61,
+          28,
+          29
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 93,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 99,
+        "source_records": [
+          45,
+          77,
+          93
+        ],
+        "tagged_output": [
+          792,
+          793,
+          794,
+          795,
+          796,
+          797,
+          798,
+          799
+        ],
+        "tbl4_byte_indices": [
+          54,
+          55,
+          62,
+          63,
+          30,
+          31,
+          16,
+          17,
+          32,
+          33,
+          40,
+          41,
+          18,
+          19,
+          34,
+          35
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 100,
+        "source_records": [
+          93,
+          77,
+          106
+        ],
+        "tagged_output": [
+          800,
+          801,
+          802,
+          803,
+          804,
+          805,
+          806,
+          807
+        ],
+        "tbl4_byte_indices": [
+          42,
+          43,
+          20,
+          21,
+          36,
+          37,
+          44,
+          45,
+          22,
+          23,
+          38,
+          39,
+          46,
+          47,
+          14,
+          15
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 107,
+            "tbl_slot": 0
+          },
+          {
+            "record": 46,
+            "tbl_slot": 1
+          },
+          {
+            "record": 78,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 101,
+        "source_records": [
+          107,
+          46,
+          78
+        ],
+        "tagged_output": [
+          808,
+          809,
+          810,
+          811,
+          812,
+          813,
+          814,
+          815
+        ],
+        "tbl4_byte_indices": [
+          0,
+          1,
+          2,
+          3,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41,
+          18,
+          19,
+          26,
+          27,
+          42,
+          43
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 94,
+            "tbl_slot": 3
+          }
+        ],
+        "output_q": 102,
+        "source_records": [
+          46,
+          78,
+          94
+        ],
+        "tagged_output": [
+          816,
+          817,
+          818,
+          819,
+          820,
+          821,
+          822,
+          823
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31,
+          46,
+          47,
+          32,
+          33,
+          48,
+          49
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 103,
+        "source_records": [
+          94,
+          78
+        ],
+        "tagged_output": [
+          824,
+          825,
+          826,
+          827,
+          828,
+          829,
+          830,
+          831
+        ],
+        "tbl4_byte_indices": [
+          56,
+          57,
+          34,
+          35,
+          50,
+          51,
+          58,
+          59,
+          36,
+          37,
+          52,
+          53,
+          60,
+          61,
+          38,
+          39
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 47,
+            "tbl_slot": 1
+          },
+          {
+            "record": 79,
+            "tbl_slot": 2
+          }
+        ],
+        "output_q": 104,
+        "source_records": [
+          94,
+          107,
+          47,
+          79
+        ],
+        "tagged_output": [
+          832,
+          833,
+          834,
+          835,
+          836,
+          837,
+          838,
+          839
+        ],
+        "tbl4_byte_indices": [
+          54,
+          55,
+          62,
+          63,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          16,
+          17,
+          24,
+          25,
+          40,
+          41
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 105,
+        "source_records": [
+          47,
+          79
+        ],
+        "tagged_output": [
+          840,
+          841,
+          842,
+          843,
+          844,
+          845,
+          846,
+          847
+        ],
+        "tbl4_byte_indices": [
+          18,
+          19,
+          26,
+          27,
+          42,
+          43,
+          20,
+          21,
+          28,
+          29,
+          44,
+          45,
+          22,
+          23,
+          30,
+          31
+        ]
+      },
+      {
+        "loads": [
+          {
+            "record": 95,
+            "tbl_slot": 1
+          }
+        ],
+        "output_q": 106,
+        "source_records": [
+          79,
+          95
+        ],
+        "tagged_output": [
+          848,
+          849,
+          850,
+          851,
+          852,
+          853,
+          854,
+          855
+        ],
+        "tbl4_byte_indices": [
+          46,
+          47,
+          32,
+          33,
+          16,
+          17,
+          24,
+          25,
+          34,
+          35,
+          18,
+          19,
+          26,
+          27,
+          36,
+          37
+        ]
+      },
+      {
+        "loads": [],
+        "output_q": 107,
+        "source_records": [
+          95,
+          79,
+          107
+        ],
+        "tagged_output": [
+          856,
+          857,
+          858,
+          859,
+          860,
+          861,
+          862,
+          863
+        ],
+        "tbl4_byte_indices": [
+          20,
+          21,
+          28,
+          29,
+          38,
+          39,
+          22,
+          23,
+          30,
+          31,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    ],
+    "route_source_arity": {
+      "2": 48,
+      "3": 44,
+      "4": 16
+    },
+    "score": "minimize maximum source arity, then excess source joins",
+    "selected_banks": [
+      {
+        "bank": 0,
+        "channels": [
+          0,
+          3,
+          6,
+          9,
+          1,
+          4,
+          7,
+          10
+        ],
+        "groups": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "input_q_blocks": [
+          0,
+          2
+        ]
+      },
+      {
+        "bank": 1,
+        "channels": [
+          12,
+          15,
+          18,
+          21,
+          2,
+          5,
+          8,
+          11
+        ],
+        "groups": [
+          [
+            0,
+            1
+          ],
+          [
+            2,
+            0
+          ]
+        ],
+        "input_q_blocks": [
+          1,
+          4
+        ]
+      },
+      {
+        "bank": 2,
+        "channels": [
+          13,
+          16,
+          19,
+          22,
+          14,
+          17,
+          20,
+          23
+        ],
+        "groups": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ]
+        ],
+        "input_q_blocks": [
+          3,
+          5
+        ]
+      }
+    ],
+    "source_q_loaded_once": true,
+    "source_q_loads": 108,
+    "tbl_register_contract": "v0-v3 consecutive; output-specific 16-byte mask",
+    "unique_best": true
+  },
+  "source_sha256": {
+    "gt864_crepmod3_raw.S": "ddeb67ba9b2030821a867cd18a68d13d2ec2d102cee553f866a76fdb6d28dff3",
+    "gt864_native_inverse16_lazy.S": "1bddede73c529686140c2a12f7e3c51aed8c1332ed485e1550df3f9285933705",
+    "gt864_native_inverse9.S": "785b5cadc139a25e029e7b1ddfeafc20ee51b70b95c4d42b8fe7075ca29eeea9",
+    "gt864_native_inverse_tail_lazy.S": "dc5ff4433170923064d7e6f387caf8f7ad9a0d79cbaf25ed2a814d68f78258fe",
+    "gt864_native_public.S": "c49a7454c5ea60a575e6f69794b6a2a548a76f1f85d49e4f4c440eb34d258e71",
+    "gt864_native_scaled_tables.h": "7fe7e1cdb65667e1cde77ea0dbb28baa1be89eda51f65b477629ad37f63b3067"
+  },
+  "static_instruction_ledger": {
+    "candidate": {
+      "main_full_q_stores": 96,
+      "main_join_d_halves": 96,
+      "tail_dense_tbl": 12,
+      "tail_full_q_stores": 12,
+      "total_terminal_materialization": 216
+    },
+    "conservative_net_instruction_reduction": 1314,
+    "consumer_tbl4_plus_mask_load_allowance": 216,
+    "current": {
+      "main_lane_extract_and_strh": 1536,
+      "tail_lane_extract_and_strh": 192,
+      "total_terminal_materialization": 1728
+    },
+    "gpr_parking_instruction_allowance": 192,
+    "main_stage_and_composite_constant_loads_saved": 210,
+    "note": "static bound only; no cycle or allocated-code claim",
+    "terminal_materialization_removed": 1512
+  },
+  "status": "pass-machine-only",
+  "table_scale_gate": {
+    "main_scale_entries": 256,
+    "paired_groups_share_stage_and_terminal_constants": true,
+    "roots_scale_and_R0_domain_unchanged_by_lane_pairing": true,
+    "stage_entries": 64,
+    "tail_scale_entries": 256
+  },
+  "top_phase_gate": {
+    "conclusion": "top recombination cannot move before I16 as a cyclic lane rotation",
+    "omega16": 3413,
+    "ratio_is_omega16_power": false,
+    "ratio_power_16": 2734,
+    "top1_over_top0_step": 3100,
+    "top_scale_geometric_steps": [
+      2816,
+      675
+    ]
+  }
+}

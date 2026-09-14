@@ -61,7 +61,8 @@ Status meanings:
 | P24 | Done—Promoted | Link the exact P23 three-output schedules as production Full/Small ToBytes | Commit-archive rebuild passed manifest/symbol/object, exact-byte/canary/input immutability, AAPCS/wipe, KAT/malformed and paired boundary/full-KEM gates; all three KEM operations win |
 | P25 | Done—Profiler checkpoint | Refresh production versus selected SUPERCOP 20260831 Official after P24 | Exact/tampered and instrumentation-equivalence gates pass; GT wins Keygen/Encaps/Decaps by 1167.750/1440.450/694.525 cycles; Inverse-to-ternary is the largest positive matched gap |
 | P26 | Done—Inverse deficit audit | Align Official Inverse+Crepmod3 with GT inverse9/main-I16/tail-I16/raw-ternary/wrapper work and classify the +3740 instructions | Exact dynamic source ledger reconciles to P25 PMU; GT has 151 fewer modular-multiply instructions, while lane extraction/load/store fragmentation dominates |
-| P27 | Next—Lane-basis search | Search an inverse9→I16 physical basis that directly feeds vector raw-to-ternary output | Machine-only first: exact coordinates/roots/scale/range, no extra pass/scratch, no P11 post-store route or lane ST3, ≤32 vector registers and full-vector terminal stores |
+| P27 | Done—Machine candidate | Search an inverse9→I16 physical basis that directly feeds vector raw-to-ternary output | All 15 P8-record matchings exhausted; unique three-bank basis gives exact 108-Q dense scratch/108-Q natural route, max four live TBL sources, unchanged root/scale/range and conservative -1314 instructions; production unchanged |
+| P28 | Next—Physical realization | Author paired main-I16, dense-tail and raw-route symbolic regions for the P27 basis | Real v0-v31/GPR allocation without stack spill, exact complete-Inverse oracle/ABI/KAT, then paired Pi 5 Inverse and Decaps improvement before promotion |
 
 ## Fixed facts and non-tasks
 
@@ -82,6 +83,24 @@ Status meanings:
 ## Change log
 
 ### 2026-09-14
+
+- Completed P27 as a machine-only candidate without changing production.  All
+  15 perfect matchings of the six current `(component,four-row-half)` P8
+  records were exhausted.  The unique best basis pairs blocks `(0,2)`, `(1,4)`
+  and `(3,5)`; each paired I16 region consumes and overwrites its own two dead
+  16-Q blocks.  Dense tail compaction uses 12 Q records, so the complete
+  intermediate has exactly 108 Q records inside the existing 1792-byte
+  scratch, with four old tail-padding records unused.
+- The exact 864-tag consumer route loads and normalizes every source Q once,
+  needs at most four live sources in consecutive `v0-v3`, and emits 108 natural
+  full-Q stores.  Its source arity is 48 TBL2-equivalent, 44 TBL3-equivalent
+  and 16 TBL4 records.  Roots, R0 scale and the
+  `2497→2617→21397→4577→ternary` range chain are unchanged.  Terminal
+  materialization falls from 1728 instructions to a 216-instruction budget;
+  after conservative GPR-parking and route/mask charges the static model still
+  predicts at least 1314 fewer instructions.  P28 now owns real symbolic
+  allocation, correctness and Pi 5 timing.  Evidence:
+  `experiments/gt864-p27-consumer-i16-lane-basis/`.
 
 - Completed P26 without changing production.  Exact loop/call expansion gives
   4583 source instructions for selected Official Inverse+Crepmod3 and 8324 for
