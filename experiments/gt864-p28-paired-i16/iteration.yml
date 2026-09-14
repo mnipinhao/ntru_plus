@@ -1,0 +1,35 @@
+experiment_id: GT864-P28-PAIRED-I16-20260914
+mode: existing_region_replacement
+status: rejected
+state: measured_full_path
+repo_probe:
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  module: /Users/chenpinhao/slothy/slothy/__init__.py
+  arch: /Users/chenpinhao/slothy/slothy/targets/aarch64/aarch64_neon.py
+  target: /Users/chenpinhao/slothy/slothy/targets/aarch64/cortex_a76.py
+  target_model: cortex_a76
+  target_host: pi@100.99.191.9
+  target_supercop: /home/pi/supercop-20260831
+baseline:
+  production_commit: d76a8289a8652e156665aff78bee6946183b2923
+  p25_inverse_to_ternary_instructions: 8345
+  p25_deficit_vs_selected_official_cycles: 280.675
+  p25_deficit_vs_selected_official_instructions: 3740
+hypothesis: >-
+  Pair P27's selected P8 blocks in a 32-state main I16, densely compact tail,
+  and normalize-route 108 scratch Q records to natural output.  Explicit GPR
+  parking should make the changed layout schedulable without a stack spill.
+contract_change:
+  scope: experimental-only
+  approved_action: user requested P28 after reviewing P27
+  promotion_requires_new_explicit_decision: true
+result: >-
+  Static, exact-oracle, Slothy no-spill, KAT, malformed-input and isolated
+  same-boundary gates pass.  The isolated boundary improves 107.281 cycles,
+  but complete Inverse-to-ternary regresses 147.266 paired-median cycles and
+  Decaps regresses 146.000 cycles, so P28 is not promoted.
+next_state: >-
+  Retain production P13-C/P8.  A successor must reduce the 1303-instruction,
+  5216-byte route or fuse routing into the paired terminal stores before any
+  further full-path attempt.

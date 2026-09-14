@@ -1,0 +1,77 @@
+mode: existing_region_replacement
+candidate_status: reject
+kernel:
+  id: gt864_p28_paired_i16
+  name: P27 selected paired-I16 dense-tail raw-route candidate
+  source: candidate-main.sym.S
+  scheme: NTRU+864 GT
+  operation: consumer-oriented replacement of main-I16 tail-I16 raw-to-ternary boundary
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: explicit GPR parking plus two-phase RA-only bounded solves
+  drivers: [optimize-main.py, optimize-tail.py]
+  expected_outputs: [candidate-main.alloc.S, candidate-tail.alloc.S]
+  allow_spills: false
+region:
+  start_label: p28_main_slothy_start
+  end_label: p28_main_slothy_end
+  expected_instruction_count: 840
+  live_in: [x0, x1, x3, x4]
+  live_out: [dense raw R0 scratch records]
+abi:
+  inputs: [same outer inverse pointers and tables]
+  outputs: [same 864 natural ternary coefficients]
+  clobbers: [caller-saved x5-x16 and allocated v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact P27 selected layout and unchanged arithmetic
+layout:
+  input_representation: unchanged P8 producer layout
+  output_representation: changed dense source-Q scratch consumed into unchanged natural ternary output
+  vector_lanes: signed 8x16-bit
+  packing: P27 selected banks and dense tail
+memory_contract:
+  loads: [112 coefficient P8 Q, 108 raw consumer Q, 216 route-mask Q]
+  stores: [108 dense scratch Q, 108 natural output Q]
+  aliasing: outer output and scratch remain disjoint; paired blocks overwrite only after complete input load
+  alignment: all candidate coefficient accesses 16-byte aligned
+  public_offsets_only: true
+  pointer_updates: [fixed public loops]
+constant_contract:
+  constants: [unchanged q roots composite tables and raw ternary constants, new public TBL masks]
+  modulus: 3457
+  representation: unchanged R^-1 to raw R0 to ternary chain
+  reduction_method: unchanged arithmetic; normalization before pure route
+range_contract:
+  input_ranges: [abs <=2617]
+  intermediate_ranges: [I16 abs <=21397, raw abs <=4577]
+  output_ranges: [ternary abs <=1]
+  narrowing_points: [none]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers tables masks fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: compile oracle.c with allocated main tail route and P13 references, then run 1001 cases
+  test_command: integrated inverse differential KAT alias AAPCS wipe malformed tests
+  full_path_benchmark_command: taskset -c 3 paired Inverse-to-ternary and Decaps PMU on Pi5
+  benchmark_metric: cycles
+  lower_is_better: true
+measured_result:
+  isolated_boundary_cycles: {baseline: 3219.750, candidate: 3112.469, delta: -107.281}
+  inverse_to_ternary_paired_median_cycles: {baseline: 4894.656, candidate: 5040.828, delta: 147.266}
+  decaps_paired_median_cycles: {baseline: 40082.550, candidate: 40230.350, delta: 146.000}
+  retired_instruction_delta_per_call: -1261
+  decision: reject
+contract_changes:
+  approved_for_experiment: [internal P8 consumer layout, caller-saved x5-x14 parking]
+  unchanged_public_contract: [natural ternary output, constant-time policy, scratch size, public ABI]
+  promotion_requires_explicit_user_decision: true

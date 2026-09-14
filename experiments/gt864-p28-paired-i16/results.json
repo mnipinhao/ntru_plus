@@ -1,0 +1,69 @@
+{
+  "experiment": "GT864-P28-PAIRED-I16-20260914",
+  "status": "reject",
+  "correctness": {
+    "exact_oracle_cases": 1001,
+    "kem_round_trips": 64,
+    "kat_cases": 100,
+    "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+    "malformed_transcript_bytes": 417216,
+    "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+    "inverse_exact_alias_aapcs_wipe_cases": 4096
+  },
+  "isolated_boundary": {
+    "baseline": {"cycles": 3219.750, "instructions": 5640.219, "branches": 49.344},
+    "candidate": {"cycles": 3112.469, "instructions": 4429.219, "branches": 13.344},
+    "delta": {"cycles": -107.281, "instructions": -1211.0, "branches": -36.0},
+    "cycle_delta_percent": -3.33197
+  },
+  "full_path": {
+    "inverse_to_ternary": {
+      "baseline": {"cycles": 4894.656, "instructions": 8343.125, "branches": 114.188},
+      "candidate": {"cycles": 5040.828, "instructions": 7082.125, "branches": 72.188},
+      "paired_median_delta": {"cycles": 147.266, "instructions": -1261.0, "branches": -42.0},
+      "cycle_delta_iqr": [135.715, 150.351],
+      "wins": 0,
+      "pairs": 366
+    },
+    "keygen": {
+      "baseline_cycles": 43095.750,
+      "candidate_cycles": 43121.125,
+      "paired_median_cycle_delta": 21.125,
+      "instruction_delta": 0.0
+    },
+    "encaps": {
+      "baseline_cycles": 45003.225,
+      "candidate_cycles": 45034.125,
+      "paired_median_cycle_delta": 8.525,
+      "instruction_delta": 0.0
+    },
+    "decaps": {
+      "baseline": {"cycles": 40082.550, "instructions": 94010.950, "branches": 1116.600},
+      "candidate": {"cycles": 40230.350, "instructions": 92749.950, "branches": 1074.600},
+      "paired_median_delta": {"cycles": 146.000, "instructions": -1261.0, "branches": -42.0},
+      "cycle_delta_iqr": [129.887, 166.175],
+      "wins": 0,
+      "pairs": 186
+    }
+  },
+  "static": {
+    "main_body_instructions_per_pair": 840,
+    "tail_body_instructions": 541,
+    "route_body_instructions": 1303,
+    "replacement_body_instructions": 4364,
+    "route_mask_bytes": 3456,
+    "no_spill": true
+  },
+  "environment": {
+    "host": "pi@100.99.191.9",
+    "kernel": "Linux 6.18.33+rpt-rpi-2712 aarch64",
+    "compiler": "gcc 14.2.0",
+    "cpu": 3,
+    "governor": "ondemand",
+    "throttled": "0x0",
+    "supercop_root": "/home/pi/supercop-20260831",
+    "baseline_binary_sha256": "7e71af800dbcf220977d0f6344bcf92542e279edf6d64ca66de2844d2125aff0",
+    "candidate_binary_sha256": "dc7338905cf8b8b9bbb1db0e303210304a5288e970b8fb6fd27dc4c9cdf38480"
+  },
+  "decision_reason": "The candidate wins the isolated boundary but reproducibly regresses complete Inverse-to-ternary and Decaps."
+}

@@ -1,0 +1,54 @@
+kernel: gt864_p28_paired_i16_dense_tail_route
+inputs:
+  - six current main P8 blocks G(component,half), each 16 Q
+  - current padded tail block, 16 Q
+  - unchanged stage and P13-B/P13-C composite tables
+outputs:
+  - 864 natural-order ternary int16 coefficients in 108 Q stores
+constants:
+  - q=3457 and Algorithm-10 precomputed constants
+  - current inverse16 stage roots and composite terminal constants
+  - raw threshold +/-1728, magic10923 and modulus3
+nodes:
+  - id: main_pair_0
+    operation: run unchanged CT I16 for P8 blocks 0 and 2, sharing constants
+    output: B0 channels [0,3,6,9,1,4,7,10]
+  - id: main_pair_1
+    operation: run unchanged CT I16 for P8 blocks 1 and 4, sharing constants
+    output: B1 channels [12,15,18,21,2,5,8,11]
+  - id: main_pair_2
+    operation: run unchanged CT I16 for P8 blocks 3 and 5, sharing constants
+    output: B2 channels [13,16,19,22,14,17,20,23]
+  - id: gpr_parking
+    operation: park six completed Q states in x5-x16 while the second CT DAG and terminal map execute
+    constraints: no stack access; restore exact two 64-bit halves before consumption
+  - id: main_terminal_join
+    operation: unchanged composite low/high forms per group, then join two D halves and store full Q
+  - id: dense_tail
+    operation: unchanged tail CT and composite forms, then 96 fixed INS lane moves into twelve zeroed Q records
+  - id: normalize_sources
+    operation: load each of 108 source Q once and apply current raw-to-ternary pointwise arithmetic
+  - id: route_sources
+    operation: use P27 interval coloring in v0-v3 and lower each exact TBL4 to two TBL2 plus ORR per natural Q
+  - id: natural_stores
+    operation: 108 full-Q stores in natural coefficient order
+dependencies:
+  - main_pair_0 -> main_terminal_join -> normalize_sources
+  - main_pair_1 -> main_terminal_join -> normalize_sources
+  - main_pair_2 -> main_terminal_join -> normalize_sources
+  - dense_tail -> normalize_sources
+  - normalize_sources -> route_sources -> natural_stores
+ordering:
+  - each paired region loads or parks all inputs before overwriting its two P8 blocks
+  - bank pairs touch disjoint P8 blocks and may be called in any public order
+  - raw source records are retained through last use and loaded exactly once
+  - stores are fixed natural order and may issue after their TBL output is ready
+memory_accesses:
+  - 112 existing P8 Q loads across main and tail
+  - 108 dense in-place scratch Q stores
+  - 108 dense scratch Q loads and 108 natural output Q stores
+  - 216 route-mask Q loads from a 3456-byte public compile-time table
+  - no additional coefficient pass and no larger scratch
+range_changes:
+  - lane pairing and TBL routing are permutations and do not change bounds
+  - current chain remains 2497 -> 2617 -> 21397 -> 4577 -> 1

@@ -1,0 +1,13 @@
+experiment_id: GT864-P28-PAIRED-I16-20260914
+candidate: paired main I16 plus dense tail and standalone TBL2 route
+baseline: committed P13-C/P8 production inverse-to-ternary
+status: rejected
+production_changed: false
+positive_evidence:
+  - exact semantics, KAT, malformed rejection, alias, AAPCS and wipe pass
+  - isolated boundary saves 107.281 cycles and 1211 retired instructions
+negative_evidence:
+  - complete inverse regresses 147.266 paired-median cycles with zero wins in 366 pairs
+  - complete Decaps regresses 146.000 cycles with zero wins in 186 pairs
+  - standalone route costs 1303 instructions, 5216 bytes of text and 3456 bytes of masks
+next_reopen_condition: fuse terminal production into natural routing or find a substantially smaller route before scheduling

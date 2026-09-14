@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p28_paired_i16
+  name: paired main-I16 dense-tail consumer-oriented inverse terminal
+  source: candidate-main.sym.S
+  scheme: NTRU+864 GT
+  operation: unchanged I16 arithmetic with P27 bank pairing, dense scratch and fused normalize-route consumer
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: explicit GPR parking then RA-only per bounded symbolic region followed by timing windows
+  driver: optimize.py
+  expected_outputs: [candidate-main.alloc.S, candidate-tail.alloc.S, candidate-route.alloc.S, slothy-results.json]
+  allow_spills: false
+region:
+  start_label: p28_main_slothy_start
+  end_label: p28_main_slothy_end
+  expected_instruction_count: 840
+  live_in: [x0, x1, x3, x4]
+  live_out: [32 dense main output Q records in two consumed P8 blocks]
+abi:
+  inputs: [x0 first dead P8 block, x1 second dead P8 block, x3 stage table, x4 composite terminal table]
+  outputs: [16 top0 Q in first block and 16 top1 Q in second block]
+  clobbers: [x5-x14 parking, x15-x17 public addressing, allocated v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: two independent current CT I16 DAGs share public constants then join four-lane terminal outputs into full Q records
+layout:
+  input_representation: two selected current P8 blocks; each Q is top0 four rows followed by top1 four rows
+  output_representation: one eight-channel bank, 16 Q per natural top branch
+  vector_lanes: signed 8x16-bit
+  packing: selected P27 group A lanes0-3 followed by group B lanes4-7
+memory_contract:
+  loads: [exactly 32 coefficient Q from two disjoint consumed P8 blocks, shared stage and composite constants]
+  stores: [exactly 32 full Q into the same two dead P8 blocks]
+  aliasing: in-place only after all 32 inputs are loaded or parked
+  alignment: all coefficient and table Q accesses 16-byte aligned
+  public_offsets_only: true
+  pointer_updates: [none inside main region]
+constant_contract:
+  constants: [q3457, unchanged inverse16 stage roots, unchanged P13-B composite tables, b1 magic9]
+  modulus: 3457
+  representation: I9 R^-1 input to dense raw R0 output
+  reduction_method: unchanged Algorithm-10 Barrett-Shoup plus selective b1 reset
+range_contract:
+  input_ranges: [I9 output abs <=2617]
+  intermediate_ranges: [I16 abs <=21397, composite products abs <3457]
+  output_ranges: [raw R0 abs <=4577]
+  narrowing_points: [none; signed int16 throughout]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, tables, fixed offsets, selected bank id]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: python3 verify.py then integrated inverse/KEM/ABI/cleanup tests
+  full_path_benchmark_command: taskset -c 3 paired Inverse-to-ternary and Decaps PMU on Pi5
+  benchmark_metric: cycles
+  lower_is_better: true

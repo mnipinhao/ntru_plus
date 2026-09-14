@@ -1,0 +1,16 @@
+experiment_id: GT864-P28-PAIRED-I16-20260914
+decision: reject
+gates:
+  exact_oracle: pass_1001
+  slothy_no_spill: pass_main_and_tail
+  object_no_spill: pass_main_tail_route
+  kem_test: pass_both
+  kat: pass_100_identical
+  malformed_rejection: pass_identical_417216_bytes
+  inverse_exact_alias_aapcs_wipe: pass_4096
+  isolated_boundary_cycles: pass_minus_107_281
+  complete_inverse_cycles: fail_plus_147_266
+  complete_decaps_cycles: fail_plus_146_000
+promotion:
+  allowed: false
+  reason: complete Inverse-to-ternary and Decaps reproducibly regress
