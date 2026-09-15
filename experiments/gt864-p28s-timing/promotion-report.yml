@@ -1,0 +1,15 @@
+candidate: P28-S
+promotion: rejected
+production_changed: false
+passed:
+  - fixed allocation and no spill
+  - exact executable instruction multisets
+  - exact oracle KEM KAT malformed alias AAPCS and scratch wipe
+  - improves complete Inverse and Decaps versus unscheduled P28
+failed:
+  - did not recover the required 147.266 complete-Inverse cycles
+  - complete Inverse remains 83.875 cycles slower than production
+  - Decaps remains 96.25 cycles slower than production
+next_reopen_condition: >-
+  Replace the standalone route DAG by directly producing natural ternary Q
+  records; do not reschedule the unchanged P28 instruction multiset again.

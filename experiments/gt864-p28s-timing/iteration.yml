@@ -1,0 +1,34 @@
+experiment_id: GT864-P28S-TIMING-20260915
+mode: existing_region_replacement
+status: rejected
+state: measured
+parent: ../gt864-p28-paired-i16
+hypothesis: >-
+  Fixed-allocation Cortex-A76 timing scheduling can raise P28 IPC enough to
+  recover its measured 147.266-cycle complete Inverse regression without
+  changing arithmetic, layout, range, memory boundaries, or public ABI.
+repo_probe:
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  module: /Users/chenpinhao/slothy/slothy/__init__.py
+  target: cortex_a76
+  execution: local_authorized
+baseline:
+  source: ../gt864-p28-paired-i16/candidate-main.alloc.S plus candidate-tail.alloc.S plus candidate-route.S
+  inverse_cycles: 5040.828
+  inverse_ipc: 1.404953
+  decaps_cycles: 40230.350
+hard_gate:
+  - exact instruction multiset per region/window
+  - fixed physical allocation and no spill
+  - exact oracle KAT malformed alias AAPCS wipe
+  - complete Inverse must improve by at least 147.266 cycles versus unscheduled P28
+  - complete Decaps must beat committed production baseline, not merely unscheduled P28
+promotion_requires_explicit_user_decision: true
+result:
+  exact_oracle: 1001/1001
+  inverse_delta_vs_p28_cycles: -60.3125
+  inverse_delta_vs_production_cycles: 83.875
+  decaps_delta_vs_p28_cycles: -49.25
+  decaps_delta_vs_production_cycles: 96.25
+  decision: reject_no_production_change

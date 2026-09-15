@@ -1,0 +1,19 @@
+kernel: gt864_p28s_fixed_allocation_timing
+source_dag: ../gt864-p28-paired-i16/instruction-dag.yml
+inputs: [exact P28 live-ins and fixed physical allocation]
+outputs: [exact P28 dense scratch and natural ternary stores]
+constants: [exact P28 constants and masks]
+nodes:
+  - id: main
+    operation: reorder only within fixed-allocation paired-main region
+  - id: tail
+    operation: reorder only within fixed-allocation dense-tail region
+  - id: route_output_q
+    operation: reorder normalization source loads, mask load, two TBL2, ORR and one natural Q store
+dependencies:
+  - preserve all register RAW WAR WAW dependencies
+  - preserve all memory dependencies and x2 postincrement order
+  - do not move instructions across main tail or individual route-output windows
+memory_accesses:
+  - exactly equal instruction multiset per source and candidate region
+range_changes: none

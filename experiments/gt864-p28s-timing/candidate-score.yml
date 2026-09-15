@@ -1,0 +1,20 @@
+candidate: P28-S
+status: rejected
+correctness:
+  exact_oracle: 1001/1001
+  kem_round_trips: 64/64
+  inverse_exact_alias_aapcs_wipe: 4096/4096
+  kat_equal: true
+  malformed_transcript_equal: true
+static:
+  instruction_multiset_equal: true
+  spills: 0
+  text_and_mask_size_change: 0
+pi5:
+  inverse_delta_vs_p28_cycles: -60.3125
+  decaps_delta_vs_p28_cycles: -49.25
+  inverse_delta_vs_production_cycles: 83.875
+  decaps_delta_vs_production_cycles: 96.25
+decision: >-
+  Timing schedule is effective but fails both complete-path promotion gates;
+  keep P13-C/P8 production unchanged.
