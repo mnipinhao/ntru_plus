@@ -72,7 +72,8 @@ Status meanings:
 | P34 | Done—Selected successor | Re-profile and select a non-materializing Inverse DAG that removes arithmetic or scatter/routing work rather than only table loads | Exact P8 domain and terminal range audit selects KEM-only reset pruning; P35 later finds one additional dead tail constant setup, making the exact delta -74 instructions |
 | P35 | Done—Promoted | Distinct KEM-only main/tail I16 helpers retaining only main high-column-8 reset | Exact/no-spill/Slothy/arm64/alias/AAPCS/wipe/KAT/malformed gates pass; Inverse-to-ternary -139.485 cycles and Decaps -138.825 cycles with exactly -74 instructions |
 | P36 | Done—Retained | Revisit the sole remaining main high-column-8 reset with a correlation-aware reachable-range or equivalent composite-representative search | Current constants are minimax; strict integer correlation proof did not close abs<=5185, so deletion gate fails and P35 production remains unchanged |
-| P37 | Next—Profiler checkpoint | Refresh P35 production versus selected SUPERCOP 20260831 Official and update component/call-site attribution | Exact/tampered compatibility, instrumentation equivalence and balanced PMU must identify the next material bottleneck before another assembly DAG |
+| P37 | Done—Profiler checkpoint | Refresh P35 production versus selected SUPERCOP 20260831 Official and update component/call-site attribution | All gates pass; GT wins Keygen/Encaps/Decaps by 1158.250/1432.075/849.325 cycles; Full ToBytes is +301--305 cycles/call while Small already wins |
+| P38 | Next—Full-ToBytes co-DAG | Co-design direct-Forward terminal representatives with Full route/normalization/packing; freeze Small and P35 Inverse | Exact quotient/range ledger must remove at least 108 of 216 Full-only normalization instructions, add no memory pass/scratch/spill and target at least 150 cycles/call |
 
 ## Fixed facts and non-tasks
 
@@ -93,6 +94,28 @@ Status meanings:
 ## Change log
 
 ### 2026-09-15
+
+- Completed P37 without changing production. Exact committed P35 revision
+  `88fb877e` and the selected SUPERCOP 20260831 AArch64 tree passed fresh
+  manifest/KEM/KAT, six 100-case exact plus tampered cross-implementation
+  processes, all instrumentation-equivalence gates and balanced cycle/event
+  PMU. The Pi 5 remained unthrottled. GT beats Official by 1158.250 Keygen,
+  1432.075 Encaps and 849.325 Decaps cycles despite retiring 4790/2607/7282
+  more instructions.
+- Component attribution now separates ToBytes modes. GT Small is about
+  125--126.5 cycles faster than an Official call, but GT Full is 301--305
+  cycles slower; each operation has exactly one Full call. Aggregate ToBytes
+  gaps are therefore only +48/+180/+179 cycles. Decaps fused
+  Inverse-to-ternary is the second positive boundary at +147.075 cycles.
+  Forward, BaseInv, R0 BaseMul, BaseMulAdd, FromBytes and R-inverse BaseMul all
+  meet or beat Official cycles at their matched boundaries.
+- P38 is selected as a direct-Forward terminal-representative plus Full-ToBytes
+  normalization co-DAG. All Full producers are direct Forward results. The
+  static gate must eliminate at least 108 of the 216 Full-only
+  `SQRDMULH+MLS` instructions rather than relocate them, preserve every other
+  FR0 consumer contract, add no coefficient memory boundary/scratch/spill and
+  target at least 150 cycles per Full call before Slothy or Pi 5. Evidence:
+  `experiments/gt864-p37-official-profile/`.
 
 - Completed P36 without changing production.  The remaining P35 reset protects
   main high column 8, whose old interval bound is 5278 versus P8's exact 5185

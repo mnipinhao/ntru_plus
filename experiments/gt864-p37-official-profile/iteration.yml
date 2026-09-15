@@ -1,0 +1,37 @@
+experiment_id: GT864-P37-OFFICIAL-PROFILE-20260915
+action: benchmark
+state: complete
+scope:
+  gt_revision: 88fb877e
+  official: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+  official_upstream_latest_verified: false
+  host: pi@100.99.191.9
+  core: 3
+  hash_policy: SHAKE256
+  mutation: none
+required_gates:
+  - exact committed GT source
+  - selected Official source hashes
+  - no competing SUPERCOP job
+  - GT manifest, KEM, and KAT
+  - cross-implementation exact and tampered transcripts
+  - instrumentation equivalence
+  - clean full-KEM PMU
+  - call-site cycles, instructions, and branches
+result:
+  correctness: pass
+  gt_cycle_delta:
+    keygen: -1158.250
+    encaps: -1432.075
+    decaps: -849.325
+  positive_matched_boundaries:
+    full_tobytes_per_call: 301_to_305_cycles
+    aggregate_tobytes:
+      keygen: 48.000
+      encaps: 180.000
+      decaps: 179.000
+    decaps_inverse_to_ternary: 147.075
+decision:
+  next_gate: P38
+  focus: direct-Forward terminal representative plus Full-ToBytes normalization co-DAG
+  frozen: Small ToBytes and P35 Inverse
