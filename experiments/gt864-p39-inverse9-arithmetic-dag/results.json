@@ -1,0 +1,59 @@
+{
+  "experiment": "P39",
+  "source": "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse9.S",
+  "source_sha256": "785b5cadc139a25e029e7b1ddfeafc20ee51b70b95c4d42b8fe7075ca29eeea9",
+  "baseline": {
+    "static_instructions_per_block": 184,
+    "operations": {
+      "add": 21,
+      "dup": 7,
+      "ldr": 27,
+      "mls": 19,
+      "mov": 8,
+      "mul": 19,
+      "sqrdmulh": 19,
+      "st1": 16,
+      "str": 8,
+      "sub": 24,
+      "trn1": 8,
+      "trn2": 8
+    },
+    "algorithm10_per_block": 19,
+    "algorithm10_classes": {
+      "b3": 6,
+      "eta": 4,
+      "terminal": 9
+    },
+    "calls_per_inverse": 12,
+    "physical_terminal_maps_checked": 288
+  },
+  "search": {
+    "b3_orientation_masks_checked": 64,
+    "minimum_algorithm10_per_block": 19,
+    "terminal_vectors_checked": 36,
+    "terminal_identity_vectors": 0,
+    "uniform_terminal_vectors": 4,
+    "geometric_contexts_checked": 32,
+    "factorization": "k(top,column,s) = -384 * lambda(top,column)^s mod 3457"
+  },
+  "s0_delay": {
+    "constant": -384,
+    "meaning": "inverse of 9 modulo 3457",
+    "unscaled_abs_bound": 22473,
+    "two_input_i16_sum_abs_bound": 44946,
+    "direct_delay_safe": false,
+    "identity_reset_instructions": 2,
+    "net_instruction_saving_per_block": 1
+  },
+  "gate": {
+    "required_instruction_saving_per_block": 3,
+    "achieved_instruction_saving_per_block": 1,
+    "required_instruction_saving_per_inverse": 36,
+    "achieved_instruction_saving_per_inverse": 12,
+    "pass": false,
+    "slothy_run": false,
+    "pi5_run": false,
+    "production_changed": false
+  },
+  "next": "broaden only the inverse9-to-I16 representation contract and prove the geometric phase/row-rotation ABI before assembly"
+}

@@ -1,0 +1,23 @@
+experiment: P39
+mode: optimize-arithmetic
+baseline:
+  revision: 3c6fe3c7
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse9.S
+  symbol: packed_i9
+  region: [packed_i9_slothy_start, packed_i9_slothy_end]
+  static_instructions_per_block: 184
+  calls_per_inverse: 12
+fixed_contract:
+  input: nine FR0 row vectors, eight public columns per vector
+  input_bound: 2497
+  input_scale: R-inverse
+  output: P8 main and tail scratch
+  output_bound: 2617
+  output_scale: R-inverse
+  memory:
+    coefficient_loads: 9
+    terminal_constant_loads: 18
+    main_stores: 16
+    tail_stores: 8
+  consumer: P35 I16 and P35 tail, with unchanged physical memory ABI
+  constant_time: no secret branches or addresses

@@ -74,7 +74,8 @@ Status meanings:
 | P36 | Done—Retained | Revisit the sole remaining main high-column-8 reset with a correlation-aware reachable-range or equivalent composite-representative search | Current constants are minimax; strict integer correlation proof did not close abs<=5185, so deletion gate fails and P35 production remains unchanged |
 | P37 | Done—Profiler checkpoint | Refresh P35 production versus selected SUPERCOP 20260831 Official and update component/call-site attribution | All gates pass; GT wins Keygen/Encaps/Decaps by 1158.250/1432.075/849.325 cycles; Full ToBytes is +301--305 cycles/call while Small already wins |
 | P38 | Done—Rejected statically | Co-design direct-Forward terminal representatives with Full route/normalization/packing; freeze Small and P35 Inverse | Every coordinate has a valid small/keygen input outside `(-q,q)`; post-pass/store canonicalization only relocates all 216 instructions and quotient reuse fails, so best net deletion is zero |
-| P39 | Next—Inverse9 arithmetic DAG | Search the twelve inverse9 blocks for a new identity, composite constant or redundant reduction while freezing P35 I16 and memory ABI | Must remove at least one complete Algorithm-10 multiplication per block (36 instructions/Inverse), pass exact root/scale/range proof, then no-spill Slothy and Decaps timing |
+| P39 | Done—Rejected statically | Search the twelve inverse9 blocks for a new identity, composite constant or redundant reduction while freezing P35 I16 and memory ABI | All 64 B3 orientations and 36 terminal vectors checked; best exact in-contract rewrite saves only 1 instruction/block, below the required complete Algorithm-10 triple, so production remains unchanged |
+| P40 | Next—Inverse9→I16 phase ABI | Widen only the internal stage boundary and test whether the exact `-384*lambda^s` terminal factor can become safe resets plus row-dependent I16 rotation/composite tables | Must save at least 36 net instructions/Inverse after resets/routing/wrapper work, preserve P35 natural output with no new memory pass, then pass exact range/root/scale proof, no-spill Slothy and paired Pi 5 timing |
 
 ## Fixed facts and non-tasks
 
@@ -93,6 +94,24 @@ Status meanings:
   is explicitly approved and production uses P10-A.
 
 ## Change log
+
+### 2026-09-16
+
+- Completed and statically rejected P39 without changing production. The exact
+  184-instruction inverse9 body contains 19 Algorithm-10 products: six B3,
+  four eta and nine terminal. All 288 physical terminal maps, all 64 known B3
+  orientations and all 36 terminal constant vectors were machine-checked.
+- The terminal table has the exact form
+  `k(top,column,s) = -384 * lambda(top,column)^s (mod 3457)`. Only `s=0` is a
+  column-independent full vector. Moving its `-384 = 9^-1` factor through I16
+  exposes an input bound of 22473; the next legal pair can reach 44946 and
+  therefore violates the frozen int16 I16 contract. A prior `b=1` reset makes
+  the move safe but saves only one instruction/block (12/Inverse), below P39's
+  required 36. Per the gate, no Slothy or Pi 5 run was performed. Evidence:
+  `experiments/gt864-p39-inverse9-arithmetic-dag/`.
+- P40 is the explicit inverse9-to-I16 phase-ABI gate. It may alter only this
+  internal representation and tables/row ordering; it must first prove a net
+  36-instruction saving with no extra memory pass before physical assembly.
 
 ### 2026-09-15
 

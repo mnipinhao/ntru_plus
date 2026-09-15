@@ -1,0 +1,17 @@
+experiment: P39
+status: reject
+correctness:
+  physical_terminal_maps: 288_pass
+  b3_orientation_masks: 64_pass
+  terminal_geometric_factorization: 32_pass
+contract:
+  frozen_p35_i16_memory_abi: pass
+  direct_s0_factor_delay_range: fail
+static:
+  required_removed_instructions_per_block: 3
+  best_net_removed_instructions_per_block: 1
+  required_removed_instructions_per_inverse: 36
+  best_net_removed_instructions_per_inverse: 12
+slothy: not_applicable_after_static_rejection
+pi5: not_applicable_after_static_rejection
+promotion: false

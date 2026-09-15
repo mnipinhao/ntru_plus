@@ -1,0 +1,26 @@
+experiment: P39
+action: optimize-arithmetic
+region:
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse9.S
+  function: packed_i9
+  start_label: packed_i9_slothy_start
+  end_label: packed_i9_slothy_end
+  live_in: [x0, x1, x2, x3]
+  live_out: [memory]
+arithmetic:
+  modulus: 3457
+  algorithm10: [mul, sqrdmulh, mls]
+  b3_products: 6
+  eta_products: 4
+  terminal_products: 9
+  total_products_per_block: 19
+gate:
+  required_true_deletion_per_block:
+    algorithm10_products: 1
+    instructions: 3
+  required_true_deletion_per_inverse: 36
+  range_proof: exact I9 through P35 I16 and raw consumer
+  allocation: no spill using v0-v31
+  benchmark: paired Pi5 Inverse-to-ternary and Decaps
+decision: reject_before_candidate
+decision_reason: no in-contract arithmetic candidate reaches the three-instruction threshold

@@ -1,0 +1,34 @@
+experiment: P39
+baseline_nodes_per_block:
+  coefficient_loads: 9
+  first_level_b3: 3
+  eta_products: 4
+  second_level_b3: 3
+  terminal_products: 9
+  transpose_instructions: 16
+  terminal_constant_loads: 18
+  stores: 24
+one_product_b3:
+  inputs: [a, b, c]
+  difference: b-c
+  product: Algorithm10(difference, 722, 6844)
+  outputs:
+    - (a+b)+c
+    - (a-c)+product
+    - (a-b)-product
+terminal:
+  exact_factorization: k(top,column,s) = inverse9 * lambda(top,column)^s
+  inverse9: -384
+  rows: 9
+  note: only s=0 is a column-independent full vector
+rejected_rewrites:
+  - name: omit_s0_terminal_product
+    reason: unscaled row-0 bound is 22473 and breaks the unchanged I16 int16 add chain
+  - name: reset_s0_then_delay_inverse9
+    replacement: two-instruction b=1 representative reset plus an I16 table correction
+    saving_per_block: 1
+    reason: below the required three-instruction gate
+  - name: delete_eta_or_rho_product
+    reason: changes the exact modular linear map; no product has identity constant
+  - name: fuse_adjacent_products
+    reason: no multiplication result has a sole multiplication consumer; every path crosses an add/sub fanout

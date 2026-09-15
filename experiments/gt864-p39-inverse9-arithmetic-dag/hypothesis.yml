@@ -1,0 +1,10 @@
+experiment: P39
+action: optimize-arithmetic
+primary_bottleneck: inverse9 fixed-constant arithmetic
+observation: P37 leaves fused Inverse-to-ternary 147.075 cycles behind selected Official, while inverse9 is called twelve times
+hypothesis: a root identity, composite terminal constant, or unnecessary representative reduction can remove at least one complete Algorithm-10 product per inverse9 block
+exact_proposed_change: exhaust the known B3 orientations, bind every production terminal constant, factor its geometric phase, and test deletion/delay against the next int16 consumer bound
+expected_static_effect: at least 3 instructions per block and 36 per complete Inverse
+expected_performance_effect: enough arithmetic reduction to justify Slothy and paired Decaps timing
+correctness_or_range_impact: preserve roots, R-inverse scale, P8 scratch coordinates, P35 I16 input range and all memory boundaries
+falsifying_measurement: best exact rewrite saves fewer than 3 instructions per block or requires a wider stage ABI
