@@ -1,0 +1,17 @@
+{
+  "status": "approved-contract-change",
+  "unchanged": [
+    "calling convention and reserved registers",
+    "input representation and input/intermediate bounds",
+    "coefficient load count and addresses",
+    "coefficient store count and addresses",
+    "alias, alignment, constant-time and scratch contracts"
+  ],
+  "changed": {
+    "consumer": "KEM-only P8 raw-to-ternary instead of centered general Inverse",
+    "output_range": "main <=5143 except retained high8 <=1821; tail <=5028; all <= P8 limit 5185",
+    "reset_set": "main high column8 only; tail none",
+    "internal_symbols": ["p35_i16", "p35_itail"]
+  },
+  "approval": "User explicitly requested P35 after P34 selected this KEM-only contract change."
+}

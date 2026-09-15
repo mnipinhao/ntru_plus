@@ -1,0 +1,15 @@
+iteration_id: P35
+date: 2026-09-15
+mode: existing_region_replacement
+status: validating
+action: optimize-arithmetic
+observation: P34 proved that P8 accepts raw representatives through abs 5185 while five main and all six tail representative resets are below that consumer limit.
+primary_bottleneck_category: terminal arithmetic dependency before the raw-to-ternary consumer
+hypothesis: deleting consumer-redundant b=1 resets without adding a boundary lowers complete Inverse and Decaps cycles.
+exact_proposed_change: add KEM-only main/tail I16 helpers; retain only main high-column8 reset; keep the centered general Inverse on the original helpers.
+expected_static_effect: main 667 to 657 instructions per call; tail 603 to 589; total minus 74 instructions per Decaps with no memory or routing change.
+expected_performance_effect: Slothy A76 estimate main 166 to 164 cycles and tail 150 to 147 cycles.
+expected_register_pressure_effect: lower; deleted reset quotients shorten live ranges and allocation has no spills.
+correctness_or_range_impact: KEM-only raw outputs widen to main 5143 and tail 5028, both within exact P8 abs 5185; centered API unchanged.
+falsifying_measurement: reject if exact consumer oracle, physical tests, complete Inverse, or paired Decaps do not pass and improve.
+next_iteration: decided after paired Pi5 PMU

@@ -1,0 +1,47 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: gt864_production_i16_main_tail
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse16_lazy.S and gt864_native_inverse_tail_lazy.S
+  extracted_region: baseline-main.S and baseline-tail.S
+  function: lazy_i16 and lazy_itail
+  start_label: lazy_i16_slothy_start and lazy_itail_slothy_start
+  end_label: lazy_i16_slothy_end and lazy_itail_slothy_end
+  source_commit: 4a386aac
+region:
+  instruction_count: 667 main and 603 tail
+  live_in: [x0 output, x1 post-I9 scratch, x3 stage table, x4 composite table]
+  live_out: [exact natural raw R0 coefficient stores]
+  clobbers: [x2, x8, x9, v0-v31, flags]
+abi:
+  inputs: [post-I9 R-inverse coefficients and public tables]
+  outputs: [natural raw R0 int16 coefficients]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8, x9]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+memory_contract:
+  loads: [16 coefficient Q records per call, stage and composite public Q tables]
+  stores: [128 main or 96 tail public-offset halfwords]
+  aliasing: public wrapper supports in-place input/output after inputs are consumed
+  alignment: 16-byte Q loads and halfword stores
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457, magic-one9, P7-C stages, P13-B/P13-C composites]
+  modulus: 3457
+  representation: post-I9 R-inverse to natural raw R0
+  reduction_method: Algorithm-10 plus six representative resets
+range_contract:
+  input_ranges: [abs<=2617]
+  intermediate_ranges: [I16 abs<=21397]
+  output_ranges: [main abs<=4454 and tail abs<=4303]
+  narrowing_points: [signed int16 throughout]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers offsets tables loop counters]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 6*667+603
+  slothy_expected_cycles: 6*166+150
+  full_path_benchmark: P34 complete Inverse-to-ternary 4888.141 cycles
+  benchmark_command: paired Pi5 complete Inverse-to-ternary and Decaps PMU

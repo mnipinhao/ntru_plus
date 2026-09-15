@@ -1,0 +1,44 @@
+mode: existing_region_replacement
+candidate:
+  id: gt864_p35_kem_reset_pruning
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate-main.sym.S and candidate-tail.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: false
+  approved_changes: true
+  approval_note: user requested P35 after P34 selected the KEM-only P8-consumer range widening; centered general Inverse remains unchanged
+region:
+  start_label: p35_i16_slothy_start and p35_itail_slothy_start
+  end_label: p35_i16_slothy_end and p35_itail_slothy_end
+  live_in: [x0 output, x1 scratch, x3 stage table, x4 composite table]
+  live_out: [exact natural raw R0 stores]
+abi:
+  inputs: [post-I9 R-inverse coefficients and public tables]
+  outputs: [P8-accepted natural raw R0 representatives]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8, x9]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+memory_contract:
+  loads: [unchanged coefficient and public-table loads]
+  stores: [unchanged natural halfword stores]
+  aliasing: public wrapper supports in-place input/output after inputs are consumed
+  alignment: 16-byte Q loads and halfword stores
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457, main high-column8 magic-one9, P7-C stages, P13-B/P13-C composites]
+  modulus: 3457
+  representation: post-I9 R-inverse to natural raw R0
+  reduction_method: Algorithm-10; retain only main high-column8 representative reset
+range_contract:
+  input_ranges: [abs<=2617]
+  intermediate_ranges: [I16 abs<=21397]
+  output_ranges: [main unreset abs<=5143; retained high8 abs<=1821; tail abs<=5028; P8 limit5185]
+  narrowing_points: [signed int16 throughout]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers offsets tables loop counters]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+changed_fields: [internal helper symbols, KEM-only raw output range, reset set]

@@ -69,8 +69,9 @@ Status meanings:
 | P31 | Done—Rejected | Produce rows 0--3 early from pair2 and rows 4--7 from pair1 | Removes 1536 scratch bytes but adds 159 instructions versus P29 and regresses production Inverse/Decaps by 418.617/439.000 cycles |
 | P32 | Done—Rejected | Split six I16 prefixes from one column-major six-bank composite terminal consumer | Exact/no-spill/KAT/alias/wipe pass and -173 complete-Inverse instructions, but IPC falls and Inverse/Decaps regress 106.664/111.300 cycles |
 | P33 | Done—Rejected | Reusable two-bank hybrid: materialize one prefix, compute one live prefix, then share terminal constants across the pair | Retires 147 fewer complete-Inverse instructions, but main-I16/Inverse/Decaps regress 132.110/95.297/104.150 cycles as IPC falls |
-| P34 | Done—Selected successor | Re-profile and select a non-materializing Inverse DAG that removes arithmetic or scatter/routing work rather than only table loads | Exact P8 domain and terminal range audit selects KEM-only reset pruning: -72 dependent arithmetic instructions with zero memory/routing growth |
-| P35 | Next—Physical gate | Implement distinct KEM-only main/tail I16 helpers retaining only main high-column-8 reset | Exact/no-spill/fixed-timing gates, then alias/AAPCS/wipe/KAT/malformed and paired complete-Inverse plus Decaps PMU must both improve |
+| P34 | Done—Selected successor | Re-profile and select a non-materializing Inverse DAG that removes arithmetic or scatter/routing work rather than only table loads | Exact P8 domain and terminal range audit selects KEM-only reset pruning; P35 later finds one additional dead tail constant setup, making the exact delta -74 instructions |
+| P35 | Done—Promoted | Distinct KEM-only main/tail I16 helpers retaining only main high-column-8 reset | Exact/no-spill/Slothy/arm64/alias/AAPCS/wipe/KAT/malformed gates pass; Inverse-to-ternary -139.485 cycles and Decaps -138.825 cycles with exactly -74 instructions |
+| P36 | Next—Decision gate | Revisit the sole remaining main high-column-8 reset with a correlation-aware reachable-range or equivalent composite-representative search | Must prove every reachable value stays in P8's exact abs<=5185 domain, remove arithmetic without a memory boundary, then improve complete Inverse and Decaps |
 
 ## Fixed facts and non-tasks
 
@@ -92,6 +93,23 @@ Status meanings:
 
 ### 2026-09-15
 
+- Completed and promoted P35.  Separate KEM-only main/tail helpers preserve the
+  current P8 memory layout and stores, retain only the necessary main high
+  column-8 reset, and leave the centered general Inverse on its original
+  reset-complete helpers.  The tail's now-unused `mov`/`dup` constant setup is
+  deleted too, correcting the P34 estimate from -72 to exactly -74 retired
+  instructions per Decaps.  Local Cortex-A76 Slothy allocates without spills;
+  fixed-allocation timing is main `667/166 -> 657/164` instructions/cycles and
+  tail `603/150 -> 589/147`.
+- The exact symbolic oracle passed 1,088 main/tail cases with identical store
+  addresses, mod-3457 residues and P8 ternary outputs.  Physical arm64, 64-case
+  KEM/tamper, identical 100-case KAT, identical 417216-byte malformed
+  transcript, exhaustive 9,155-value raw conversion, and 1,024 complete
+  inverse/alias/AAPCS/wipe cases pass.  Six balanced Pi 5 runs measure
+  Inverse-to-ternary `4893.594 -> 4754.109` cycles (-139.485, -2.85%) and
+  Decaps `40072.400 -> 39933.575` (-138.825, -0.346%); Keygen and Encaps retire
+  zero changed instructions.  Evidence:
+  `experiments/gt864-p35-kem-reset-pruning/`.  P36 is the next decision gate.
 - Completed P34 without changing production.  A fresh six-process Pi 5 stage
   profile of the exact production library reproduces main I16 as the largest
   stage: inverse9/main-I16/tail/raw/complete are

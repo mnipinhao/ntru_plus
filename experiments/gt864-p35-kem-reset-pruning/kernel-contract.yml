@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p35_kem_reset_pruning
+  name: KEM-only inverse16 terminal reset pruning
+  source: candidate.sym.S
+  scheme: NTRU+864 GT
+  operation: main and tail I16 helpers consumed only by raw-to-ternary
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: functional RA then fixed-allocation bounded timing per helper
+  driver: optimize.py
+  expected_outputs: [candidate-main.alloc.S, candidate-tail.alloc.S, candidate-main.opt.S, candidate-tail.opt.S]
+  allow_spills: false
+region:
+  start_label: p35_i16_slothy_start
+  end_label: p35_i16_slothy_end
+  expected_instruction_count: 657 main and 589 tail
+  live_in: [x0 output, x1 post-I9 scratch, x3 stage table, x4 composite table]
+  live_out: [exact natural raw R0 coefficient stores]
+abi:
+  inputs: [post-I9 R-inverse coefficients and public tables]
+  outputs: [natural raw R0 representatives accepted by P8 raw-to-ternary]
+  clobbers: [x2, x8, x9, v0-v31, flags]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8, x9]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact P13 prefix/composite/store DAG minus consumer-proved redundant b=1 reset nodes
+layout:
+  input_representation: unchanged P8 post-I9 banks
+  output_representation: natural raw R0 accepted by P8
+  vector_lanes: eight signed int16 lanes; main top halves 4+4 and tail components 3+3+zero2
+  packing: unchanged
+memory_contract:
+  loads: [unchanged coefficient stage and composite loads]
+  stores: [unchanged exact natural halfword stores]
+  aliasing: unchanged in-place wrapper behavior
+  alignment: 16-byte Q loads and halfword stores
+  public_offsets_only: true
+  pointer_updates: [unchanged public main and tail loops]
+constant_contract:
+  constants: [q3457, magic-one9 only for main high column8, P7-C stages, P13 composites]
+  modulus: 3457
+  representation: post-I9 R-inverse to natural raw R0
+  reduction_method: Algorithm-10; retain only main high-column8 representative reset
+range_contract:
+  input_ranges: [abs<=2617]
+  intermediate_ranges: [I16 abs<=21397]
+  output_ranges: [main unreset abs<=5143; retained high8 abs<=1821; tail abs<=5028; P8 limit5185]
+  narrowing_points: [signed int16 throughout]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers offsets tables loop counters]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: integrated exact alias AAPCS wipe KAT malformed tests
+  full_path_benchmark_command: paired Pi5 complete Inverse-to-ternary and Decaps PMU
+  benchmark_metric: cycles
+  lower_is_better: true

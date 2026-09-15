@@ -1,0 +1,31 @@
+promotion:
+  candidate_id: gt864_p35_kem_reset_pruning
+  status: promote
+  date: 2026-09-15
+  mode: existing_region_replacement
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  candidate_contract: candidate-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_sources: [candidate-main.sym.S, candidate-tail.sym.S]
+  slothy_outputs: [candidate-main.opt.S, candidate-tail.opt.S]
+  slothy_result: slothy-result.json
+  benchmark: pi-results.json
+gates:
+  approved_contract_change: true
+  exact_consumer_oracle: pass
+  no_spill_allocation: pass
+  fixed_allocation_timing: pass
+  arm64_assembly: pass
+  alias_aapcs_wipe: pass
+  kat_and_malformed: pass
+  complete_inverse_benchmark: pass
+  full_decaps_benchmark: pass
+metrics:
+  retired_instructions_per_decaps: -74
+  inverse_to_ternary_cycles: {baseline: 4893.594, candidate: 4754.109, delta: -139.485}
+  decaps_cycles: {baseline: 40072.400, candidate: 39933.575, delta: -138.825}
+decision:
+  reason: arithmetic is removed at the existing boundary with no added memory/routing and the cycle win reaches Decaps
+  follow_up: test whether the sole remaining high-column8 reset is avoidable under a tighter correlated producer model

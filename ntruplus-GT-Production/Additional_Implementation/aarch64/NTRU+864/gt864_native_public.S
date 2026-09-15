@@ -376,7 +376,8 @@ C(gt864_inverse_ternary_asm):
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(lazy_i16)
+    // P35 KEM-only helper: representatives are closed against the P8 consumer.
+    bl C(p35_i16)
     add x27, x27, #1
     cmp x27, #2
     b.ne .Lp8inv_main
@@ -388,7 +389,7 @@ C(gt864_inverse_ternary_asm):
     mov x2, #0
     mov x3, x22
     mov x4, x24
-    bl C(lazy_itail)
+    bl C(p35_itail)
     // P8: one raw-to-ternary pass; constants stay resident.
     mov x0, x19
     bl C(gt864_crepmod3_raw)

@@ -1,0 +1,29 @@
+candidate:
+  id: gt864_p35_kem_reset_pruning
+  status: promote
+  mode: existing_region_replacement
+contract:
+  preserved: false
+  approved_changes: true
+  changed_fields: [KEM-only raw representative range, reset set, internal helper names]
+  approval_note: P35 was explicitly requested after P34 selected this consumer-closed contract; centered general Inverse is unchanged
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  main_expected_cycles: 164
+  tail_expected_cycles: 147
+  log_json: slothy-result.json
+benchmark:
+  status: pass
+  command: taskset -c 3 balanced paired Inverse-to-ternary and full-KEM PMU on Pi5
+  metric: cycles
+  lower_is_better: true
+  baseline: 40072.400
+  candidate: 39933.575
+decision:
+  reason: exact P8 consumer contract, physical correctness, and both complete Inverse-to-ternary and Decaps timing gates improve
+  next_iteration: P36 remaining main high-column8 reset decision gate

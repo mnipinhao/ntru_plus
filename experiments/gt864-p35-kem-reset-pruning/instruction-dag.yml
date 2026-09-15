@@ -1,0 +1,62 @@
+dag:
+  id: gt864_p35_kem_reset_pruning
+  kernel_contract: kernel-contract.yml
+  description: P13 main/tail I16 DAG with only consumer-required representative reset retained
+inputs: [sixteen post-I9 Q states, stage table, composite table, output pointer]
+constants: [q3457, main high-column8 magic-one9; tail has no magic-one9 setup]
+nodes:
+  - id: i16_prefix
+    op: unchanged four-layer CT inverse16
+    inputs: [post-I9 Q states, stage table]
+    outputs: [sixteen preterminal Q states]
+    instruction_shape: unchanged production adds subs and Algorithm-10 products
+    tied_operands: []
+    range_before: abs<=2617
+    range_after: abs<=21397
+    may_reorder_with: [independent butterflies]
+    must_precede: [terminal]
+  - id: terminal
+    op: unchanged two-product composite top CRT
+    inputs: [preterminal Q states, composite table]
+    outputs: [low and high raw R0 vectors]
+    instruction_shape: two Algorithm-10 products plus EXT and ADD per column
+    tied_operands: []
+    range_before: abs<=21397
+    range_after: main<=5278 tail<=5028
+    may_reorder_with: [other columns]
+    must_precede: [required_reset, stores]
+  - id: required_reset
+    op: main high column8 only
+    inputs: [main high column8]
+    outputs: [main high column8 reduced]
+    instruction_shape: SQRDMULH plus MLS
+    tied_operands: []
+    range_before: abs<=5278
+    range_after: abs<=1821
+    may_reorder_with: [other columns]
+    must_precede: [stores]
+  - id: stores
+    op: unchanged UMOV STRH natural scatter
+    inputs: [raw R0 vectors]
+    outputs: [natural raw polynomial]
+    instruction_shape: exact public-offset lane extraction and halfword stores
+    tied_operands: []
+    range_before: all outputs abs<=5185
+    range_after: unchanged
+    may_reorder_with: [independent terminal columns]
+    must_precede: []
+memory:
+  loads: [unchanged input and public tables]
+  stores: [unchanged natural halfword addresses]
+  ordering_constraints: [all aliased input Q loads precede overlapping stores]
+outputs: [864 raw R0 values accepted by P8]
+live_out: [memory output only]
+static_delta:
+  main: 667 to 657 instructions per call; five reset chains removed
+  tail: 603 to 589 instructions; six reset chains and dead mov-plus-dup constant setup removed
+  decaps: 6*(-10)+(-14) = -74 instructions
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true
