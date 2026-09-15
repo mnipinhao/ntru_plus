@@ -117,6 +117,17 @@ The required procedure is:
 6. Preserve randombytes accounting and correctness checks.
 7. Treat PMU region counters as attribution only, not as the headline KEM
    benchmark.
+8. Pin every measuring process to one documented physical-core class and do
+   not schedule a competing benchmark on its SMT sibling.
+9. Run multiple fresh measuring processes and aggregate all native
+   observations with StQ2; one warm process is not a formal KEM result.
+10. For a strict nominal-frequency result, disable Turbo/boost and select the
+    performance governor before measurement, record those settings, and
+    restore the host afterward.  If privilege is unavailable, label the run
+    `host-default frequency` rather than silently claiming the strict setup.
+11. Keep ASLR enabled for the headline implementation result so fresh process
+    launches include randomized image placement.  Address-caged or ASLR-off
+    runs remain causal diagnostics, not the headline result.
 
 The old Normal/Reversed, batched-100k, paired AB/BA harness remains useful for
 diagnosing code-layout sensitivity.  It is no longer the promotion benchmark
