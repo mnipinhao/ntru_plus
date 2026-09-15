@@ -1,17 +1,38 @@
-candidate: gt864_p33_two_bank_terminal
-status: investigate
-correctness: pass_local
+candidate:
+  id: gt864_p33_two_bank_terminal
+  status: reject
+  mode: existing_region_replacement
+
+contract:
+  preserved: false
+  approved_changes: true
+  changed_fields:
+    - internal_inverse16_boundary
+    - component_pair_materialization
+  approval_note: experimental internal ABI change only; public FR0 output, scratch size, wipe policy, and KEM ABI remain unchanged
+
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+
 slothy:
-  allocation: pass_no_spill
-  timing_windows: pass_32
-  generic_parser: false_negative_due_to_intermediate_binary_search_signals
-static:
-  production_main_instructions: 4002
-  candidate_main_instructions: 3906
-  instruction_delta: -96
-  p32_terminal_text_bytes: 10932
-  p33_pair_text_bytes: 4448
-performance:
-  pi5_complete_inverse: pending_explicit_upload_authorization
-  pi5_decaps: pending_explicit_upload_authorization
-decision: investigate until paired Pi 5 full-path evidence is available
+  status: pass
+  baseline_expected_cycles: 332
+  candidate_expected_cycles: 1225
+  parity_justification: per-pair bounded-window sum only; it is not a whole-helper throughput prediction and is retained as negative scheduling evidence
+  log_json: experiments/gt864-p33-two-bank-terminal/slothy-summary.json
+
+benchmark:
+  status: pass
+  command: ssh pi@100.99.191.9 /home/pi/gt864-p33-20260915/pi-run.sh
+  metric: complete_inverse_cycles
+  lower_is_better: true
+  neutral_threshold_percent: 1.0
+  baseline: 4891.594
+  candidate: 4983.688
+
+decision:
+  reason: reject because main-I16, complete Inverse, and Decaps regress with positive IQR despite fewer retired instructions
+  next_iteration: P34 must search for a non-materializing producer DAG that removes arithmetic or scatter/routing before any new assembly is written

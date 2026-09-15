@@ -68,7 +68,8 @@ Status meanings:
 | P30 | Done—Rejected | Schedule adjacent direct-ST3 records jointly | Slothy model predicts -240 route cycles, but Pi 5 regresses complete Inverse by 10.336 cycles versus P29; model mismatch recorded |
 | P31 | Done—Rejected | Produce rows 0--3 early from pair2 and rows 4--7 from pair1 | Removes 1536 scratch bytes but adds 159 instructions versus P29 and regresses production Inverse/Decaps by 418.617/439.000 cycles |
 | P32 | Done—Rejected | Split six I16 prefixes from one column-major six-bank composite terminal consumer | Exact/no-spill/KAT/alias/wipe pass and -173 complete-Inverse instructions, but IPC falls and Inverse/Decaps regress 106.664/111.300 cycles |
-| P33 | Active—Pi 5 pending | Reusable two-bank hybrid: materialize one prefix, compute one live prefix, then share terminal constants across the pair | Static `4002→3906`, 17-live-vector no-spill allocation, 4448-byte pair body and all local correctness gates pass; paired complete Inverse/Decaps PMU still required |
+| P33 | Done—Rejected | Reusable two-bank hybrid: materialize one prefix, compute one live prefix, then share terminal constants across the pair | Retires 147 fewer complete-Inverse instructions, but main-I16/Inverse/Decaps regress 132.110/95.297/104.150 cycles as IPC falls |
+| P34 | Next—Decision gate | Re-profile and select a non-materializing Inverse DAG that removes arithmetic or scatter/routing work rather than only table loads | No assembly until the static model avoids a new scratch boundary and predicts a critical-path/IPC win; P32/P33 batching family is closed |
 
 ## Fixed facts and non-tasks
 
@@ -90,16 +91,18 @@ Status meanings:
 
 ### 2026-09-15
 
-- P33 passed its local physical gate without changing production.  Each
-  component materializes half zero's exact preterminal state, keeps half one's
-  sixteen states live, and loads each four-Q composite group once for the pair.
-  Local Cortex-A76 Slothy allocation is spill-free with 17 live vectors; 32
-  bounded terminal windows schedule successfully.  Main-I16 static work falls
-  `4002→3906` instructions and composite loads fall `384→192`; the reusable
-  pair body is 4448 bytes versus P32's 10932-byte terminal.  Exact 4096-case
-  inverse/alias/AAPCS/wipe, 64-case KEM/tamper, 100-case KAT and malformed
-  transcript gates pass.  Status remains investigate until explicitly
-  authorized Pi 5 upload and paired complete-Inverse/Decaps PMU.  Evidence:
+- Completed and rejected P33 without changing production.  The two-bank hybrid
+  passes manifest, no-spill Slothy, arm64 object, 64-case KEM/tamper, identical
+  100-case KAT, 4096 inverse/alias/AAPCS/wipe and identical 417216-byte
+  malformed-transcript gates.  It reduces main static work `4002→3906`, and
+  complete-Inverse PMU confirms -147 instructions/-6 branches.  Nevertheless,
+  paired Pi 5 main-I16 regresses 132.110 cycles (0/546 wins, IQR
+  `[+129.531,+133.062]`), complete Inverse regresses 95.297 cycles (0/366,
+  `[+93.156,+102.328]`), and Decaps regresses 104.150 cycles (1/186,
+  `[+89.687,+120.212]`).  Main-I16 IPC falls 1.9604→1.7978.  A fixed-register
+  joint timing rescue emitted `t=0..2` but did not converge at `t=3`; unbounded
+  scheduling is not justified.  P32/P33 therefore close the materialized
+  terminal-sharing family.  Evidence:
   `experiments/gt864-p33-two-bank-terminal/`.
 - Completed P32 without changing production.  Six exact 190-instruction I16
   prefixes overwrite their consumed P8 blocks; one column-major terminal loads

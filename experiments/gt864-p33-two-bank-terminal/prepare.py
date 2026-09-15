@@ -18,10 +18,10 @@ def copy(label):
     return dst
 
 
-def refresh_manifest(dst):
+def refresh_manifest(dst, extras=()):
     manifest = dst / "SOURCE-MANIFEST.sha256"
     names = [line.split(None, 1)[1].strip() for line in manifest.read_text().splitlines()]
-    for name in ("gt864_p33_i16_prefix.S", "gt864_p33_i16_pair.S"):
+    for name in extras:
         if name not in names:
             names.append(name)
     manifest.write_text("".join(
@@ -67,11 +67,15 @@ def patch_candidate(dst):
 """
     suffix = suffix[:start] + replacement + suffix[end:]
     public.write_text(head + marker + suffix)
-    refresh_manifest(dst)
+    refresh_manifest(dst, ("gt864_p33_i16_prefix.S", "gt864_p33_i16_pair.S"))
 
 
 BUILD.mkdir(exist_ok=True)
-copy("production")
+production = copy("production")
+# The repository Roadmap changes every experiment but is covered by the source
+# manifest.  Refresh the frozen package so its manifest describes this exact
+# checkout rather than the preceding optimization round.
+refresh_manifest(production)
 candidate = copy("p33")
 patch_candidate(candidate)
 print(BUILD)

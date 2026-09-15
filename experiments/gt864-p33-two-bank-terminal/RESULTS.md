@@ -1,11 +1,11 @@
-# P33 results — local physical and correctness gates
+# P33 results — two-bank inverse16 terminal sharing
 
 ## Current decision
 
-P33 is **investigate / Pi 5 pending**.  It passes the static, no-spill and
-local correctness gates.  Production is unchanged.  Complete Inverse and
-Decaps timing cannot begin until the isolated source payload is explicitly
-authorized for upload to `pi@100.99.191.9`.
+P33 is **rejected for production**.  It passes the static, no-spill and all
+correctness gates, and it retires 147 fewer instructions in complete Inverse,
+but the main-I16 boundary loses 132.110 cycles and complete Inverse/Decaps lose
+95.297/104.150 cycles.  Production is unchanged.
 
 ## Realized data flow
 
@@ -62,9 +62,39 @@ body and has no global six-bank phase barrier.
   SHA-256
   `2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67`.
 
-## Remaining hard gate
+## Raspberry Pi 5 paired PMU
 
-Run paired Pi 5 PMU for main-I16, complete Inverse and full KEM.  Promotion
-requires production-like IPC and strictly negative upper IQR bounds for both
-complete Inverse and Decaps.  Until that evidence exists the status remains
-`investigate` and no production source is changed.
+Environment: core 3, Linux `6.18.33+rpt-rpi-2712`, `ondemand`,
+`get_throttled=0x0`, 57.6 C after measurement.  Six processes produced 546
+paired main-I16, 366 paired complete-Inverse and 186 paired samples per KEM
+operation.
+
+| Operation | Production cycles | P33 cycles | paired delta | instruction delta | P33 wins | IPC production → P33 |
+|---|---:|---:|---:|---:|---:|---:|
+| main-I16 ×6 | 2279.000 | 2411.266 | **+132.110** | -132.875 | 0/546 | 1.9604 → 1.7978 |
+| Inverse-to-ternary | 4891.594 | 4983.688 | **+95.297** | -147 | 0/366 | 1.7056 → 1.6446 |
+| Keygen control | 43092.750 | 43078.250 | -18.625 | 0 | 121/186 | unchanged work |
+| Encaps control | 45002.725 | 44989.575 | -6.550 | 0 | 112/186 | unchanged work |
+| Decaps | 40073.050 | 40184.000 | **+104.150** | -147 | 1/186 | 2.3460 → 2.3359 |
+
+Main-I16 cycle-delta IQR is `[+129.531,+133.062]`, complete Inverse is
+`[+93.156,+102.328]`, and Decaps is `[+89.687,+120.212]`.  The two required
+full-path gates fail decisively.
+
+## P33-S timing-only rescue
+
+The first P33 allocation used separate A and B scheduling windows.  A
+timing-only rescue fixed every physical register, disabled renaming and tried
+to schedule each complete A+B column jointly.  `t=0..2` emitted schedules;
+`t=3` did not converge inside the bounded experiment and the run was stopped.
+Because the already measured candidate loses all 546 main-I16 pairs by at
+least 129.531 cycles at the first quartile, unbounded solver work is not
+justified.
+
+## Conclusion
+
+P32 and P33 now establish the same A76 economics at two batching widths:
+removing repeated composite loads through a preterminal memory boundary lowers
+retired instructions but lowers IPC by more, so cycles regress.  This family
+should not be reopened unless a new DAG removes arithmetic or scatter/routing
+work and does not materialize preterminal state.

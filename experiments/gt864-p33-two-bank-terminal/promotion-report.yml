@@ -1,0 +1,16 @@
+candidate: gt864_p33_two_bank_terminal
+decision: reject
+production_changed: false
+gates:
+  contract: pass_for_isolated_internal_boundary_experiment
+  symbolic_and_allocation: pass_no_spill_17_live_vectors
+  arm64_assembly: pass
+  kem_roundtrip_and_tamper: pass_64_both_packages
+  kat: pass_100_identical_hash
+  exact_inverse: pass_256_in_full_harness
+  inverse_alias_aapcs_wipe: pass_4096
+  malformed_transcript: pass_identical_417216_bytes
+  pi5_main_i16: fail_plus_132_110_cycles
+  pi5_complete_inverse: fail_plus_95_297_cycles
+  pi5_decaps: fail_plus_104_150_cycles
+reopen_condition: a non-materializing DAG must remove arithmetic or scatter-routing work, not merely share composite loads

@@ -1,8 +1,8 @@
 iteration_id: P33
 date: 2026-09-15
 mode: existing_region_replacement
-state: full_path_benchmark
-status: investigate
+state: iteration_or_promote
+status: reject
 repo_probe:
   source_commit: 0a3009340d657218dfc2ed5404d0623fb99dd72e
   slothy_root: /Users/chenpinhao/slothy
@@ -33,5 +33,14 @@ evidence:
   malformed_transcript: pass_identical_417216_bytes
   static_main_instructions: 3906
   production_main_instructions: 4002
-blocking_condition: explicit authorization is required to upload the P33 source payload to the Pi 5
-next_state: paired Pi 5 main-I16 complete-Inverse and Decaps benchmark
+pi5_evidence:
+  main_i16_paired_cycle_delta: 132.1095
+  main_i16_cycle_delta_iqr: [129.531, 133.062]
+  complete_inverse_paired_cycle_delta: 95.297
+  complete_inverse_cycle_delta_iqr: [93.156, 102.328]
+  decaps_paired_cycle_delta: 104.150
+  decaps_cycle_delta_iqr: [89.687, 120.212]
+  complete_inverse_instruction_delta: -147
+  complete_inverse_branch_delta: -6
+decision: reject; production remains unchanged
+next_state: do not reopen materialized terminal sharing without a non-materializing arithmetic or routing reduction
