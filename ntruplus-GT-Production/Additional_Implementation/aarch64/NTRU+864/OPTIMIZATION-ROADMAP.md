@@ -71,7 +71,8 @@ Status meanings:
 | P33 | Done—Rejected | Reusable two-bank hybrid: materialize one prefix, compute one live prefix, then share terminal constants across the pair | Retires 147 fewer complete-Inverse instructions, but main-I16/Inverse/Decaps regress 132.110/95.297/104.150 cycles as IPC falls |
 | P34 | Done—Selected successor | Re-profile and select a non-materializing Inverse DAG that removes arithmetic or scatter/routing work rather than only table loads | Exact P8 domain and terminal range audit selects KEM-only reset pruning; P35 later finds one additional dead tail constant setup, making the exact delta -74 instructions |
 | P35 | Done—Promoted | Distinct KEM-only main/tail I16 helpers retaining only main high-column-8 reset | Exact/no-spill/Slothy/arm64/alias/AAPCS/wipe/KAT/malformed gates pass; Inverse-to-ternary -139.485 cycles and Decaps -138.825 cycles with exactly -74 instructions |
-| P36 | Next—Decision gate | Revisit the sole remaining main high-column-8 reset with a correlation-aware reachable-range or equivalent composite-representative search | Must prove every reachable value stays in P8's exact abs<=5185 domain, remove arithmetic without a memory boundary, then improve complete Inverse and Decaps |
+| P36 | Done—Retained | Revisit the sole remaining main high-column-8 reset with a correlation-aware reachable-range or equivalent composite-representative search | Current constants are minimax; strict integer correlation proof did not close abs<=5185, so deletion gate fails and P35 production remains unchanged |
+| P37 | Next—Profiler checkpoint | Refresh P35 production versus selected SUPERCOP 20260831 Official and update component/call-site attribution | Exact/tampered compatibility, instrumentation equivalence and balanced PMU must identify the next material bottleneck before another assembly DAG |
 
 ## Fixed facts and non-tasks
 
@@ -93,6 +94,19 @@ Status meanings:
 
 ### 2026-09-15
 
+- Completed P36 without changing production.  The remaining P35 reset protects
+  main high column 8, whose old interval bound is 5278 versus P8's exact 5185
+  limit.  Enumeration proves the current `(b,bhat)` pairs `(335,3175)` and
+  `(120,1137)` are already minimax across signed-int16 congruent
+  representatives, so a table-only correction cannot close the 93-value gap.
+- Exact integer MILPs globally closed all 32 one-product NTT9 row-6 min/max
+  bounds.  A 236-variable CT-NTT16 envelope was then audited.  A
+  continuous-state trial reporting 5187 failed independent scalar replay and
+  was rejected; restoring integer states left the 5186 feasibility query at a
+  300-second timeout with neither primal nor infeasibility proof.  Because
+  deletion requires a positive bound proof, P36 retains the reset and performs
+  no Slothy/Pi run.  P37 is now the fresh profiler checkpoint.  Evidence:
+  `experiments/gt864-p36-last-reset-decision/`.
 - Completed and promoted P35.  Separate KEM-only main/tail helpers preserve the
   current P8 memory layout and stores, retain only the necessary main high
   column-8 reset, and leave the centered general Inverse on its original

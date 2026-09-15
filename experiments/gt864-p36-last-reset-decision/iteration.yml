@@ -1,0 +1,13 @@
+iteration_id: P36
+date: 2026-09-15
+mode: decision_gate
+status: done_retain_production
+action: prove-or-reject-reduction-deletion
+observation: P35 leaves only main high-column8 reset because interval propagation reaches 5278 while P8 accepts abs<=5185.
+primary_bottleneck_category: final representative reset arithmetic
+hypothesis: NTT9/NTT16 correlations or an equivalent composite constant may prove the pre-reset value stays within the P8 domain.
+exact_proposed_change: delete the last main high-column8 SQRDMULH-plus-MLS only if a machine proof closes the current KEM producer through P8.
+result: rejected; equivalent signed-int16 composite representatives cannot improve the minimax image, and the strict correlation-aware integer model did not close the required bound.
+production_effect: none; P35 remains active production.
+correctness_or_range_impact: none; the reset remains and P35 output contract is unchanged.
+next_iteration: P37 fresh production-versus-selected-Official profiler checkpoint after P35
