@@ -1,0 +1,35 @@
+candidate:
+  id: gt864_p30_paired_route_pipeline
+  status: reject
+  mode: existing_region_replacement
+contract:
+  preserved: true
+  approved_changes: false
+  changed_fields: [vector allocation and instruction schedule only]
+  approval_note: no arithmetic layout range memory or public ABI change
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 928
+  candidate_expected_cycles: 688
+  parity_justification: 32 single-record windows become 16 two-record windows with an exact instruction multiset
+  log_json: slothy-result.json
+benchmark:
+  status: pass
+  command: six alternating paired-PMU processes pinned to Pi 5 CPU 3
+  metric: complete Inverse-to-ternary cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.0
+  baseline: 4970.859
+  candidate: 4980.836
+decision:
+  reason: >-
+    The A76 model predicts a 240-cycle route gain, but complete Inverse
+    regresses 10.336 cycles and Decaps regresses 6.700 cycles against P29.
+  next_iteration: >-
+    Do not widen the P29 ST3 scheduling window again. Return to a producer DAG
+    that avoids synchronizing three paired records before normalization/store.

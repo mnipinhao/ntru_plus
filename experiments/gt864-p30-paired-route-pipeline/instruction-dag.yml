@@ -1,0 +1,35 @@
+kernel: gt864_p30_paired_route_pipeline
+inputs:
+  - three P29 paired Q vectors for record A
+  - three P29 paired Q vectors for adjacent record B
+  - four resident ternary constants
+outputs:
+  - four natural-order ST3 records for adjacent top/t values
+constants:
+  - threshold high 1728 and threshold low -1728
+  - Barrett reciprocal 10923 and modulus 3
+nodes:
+  - id: load_A_B
+    operation: load exactly three public-offset Q vectors for each record
+  - id: threshold_A_B
+    operation: independent signed upper/lower threshold correction per vector
+  - id: mod3_A_B
+    operation: independent SQRDMULH plus MLS exact Barrett modulo 3 per vector
+  - id: expose_A_B
+    operation: three EXT-by-8 operations per record expose upper four-row halves
+  - id: store_A_B
+    operation: two ordered full-vector ST3.4h stores per record followed by public six-byte skip
+dependencies:
+  - every vector follows load then threshold masks then adjustment then quotient then MLS
+  - each EXT follows its normalized source
+  - each ST3 follows its three normalized or exposed operands
+  - record A stores precede record B stores to preserve exact natural output order and x2 updates
+  - arithmetic and loads from B may move before A stores when register and alias constraints permit
+memory_accesses:
+  - exact P29 96 Q loads over all 32 records
+  - exact P29 64 full-vector ST3.4h stores over all 32 records
+  - no mask loads, coefficient scratch, lane ST3, or stack access
+range_changes:
+  - raw abs <= 4577
+  - threshold-adjusted abs <= 4576
+  - exact ternary output is one of -1 0 1

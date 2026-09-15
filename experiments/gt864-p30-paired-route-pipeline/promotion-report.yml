@@ -1,0 +1,19 @@
+candidate: P30
+promotion: rejected
+production_changed: false
+passed:
+  - exact P29 instruction opcode and scratch-load-offset multisets
+  - exact P29 pointer-bearing store sequence
+  - local Cortex-A76 Slothy allocation with no spill
+  - exact oracle KEM KAT malformed alias AAPCS and scratch wipe
+failed:
+  - complete Inverse regresses 10.336 cycles versus P29
+  - Decaps regresses 6.700 cycles versus P29
+  - complete Inverse remains 73.414 cycles slower than production
+  - Decaps remains 90.775 cycles slower than production
+model_warning: >-
+  Slothy predicts 688 versus 928 route cycles, but that improvement reverses
+  on Pi5. Do not use the current A76 ST3 model to promote this scheduling shape.
+next_reopen_condition: >-
+  Change the producer/consumer DAG; do not retry larger scheduling windows over
+  the same P29 route instruction graph.

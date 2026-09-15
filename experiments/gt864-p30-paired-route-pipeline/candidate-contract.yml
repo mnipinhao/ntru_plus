@@ -1,0 +1,43 @@
+mode: existing_region_replacement
+candidate:
+  id: gt864_p30_paired_route_pipeline
+  status: reject
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate-route.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: [function ABI, arithmetic, layout, memory sequence, ranges, constant-time policy]
+  approved_changes: [physical vector reallocation only; semantic contract is unchanged]
+region:
+  start_label: p29_main_route_slothy_start
+  end_label: p29_main_route_slothy_end
+  live_in: [x0 natural output, x1 paired main scratch]
+  live_out: [rows 0 through 7 in natural ternary order]
+abi:
+  inputs: [natural output pointer, paired main scratch pointer]
+  outputs: [768 natural-order ternary coefficients]
+  clobbers: [x2, x3, v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x3]
+  fixed_vector_registers: []
+memory_contract:
+  loads: [96 scratch Q]
+  stores: [64 full-vector ST3.4h]
+  aliasing: output distinct from scratch
+  alignment: scratch 16-byte aligned; natural output may be 2-byte aligned
+  public_offsets_only: true
+  pointer_updates: [two 24-byte postincrement ST3 then one 6-byte ADD per record]
+constant_contract:
+  constants: [1728, -1728, 10923, 3]
+  modulus: 3 after unchanged q-domain terminal transform
+  representation: signed raw R0 to ternary
+  reduction_method: exact P29 threshold adjustment and Barrett modulo 3
+range_contract:
+  input_ranges: [raw abs <= 4577]
+  intermediate_ranges: [adjusted raw abs <= 4576]
+  output_ranges: [ternary abs <= 1]
+  narrowing_points: [none]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

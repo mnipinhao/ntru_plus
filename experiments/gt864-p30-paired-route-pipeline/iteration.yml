@@ -1,0 +1,47 @@
+experiment_id: GT864-P30-PAIRED-ROUTE-PIPELINE-20260915
+mode: existing_region_replacement
+status: rejected
+state: measured
+parent: ../gt864-p29-direct-st3
+action: optimize-scheduling
+primary_bottleneck: scheduling dependency
+observation: >-
+  P29 retires 1452 fewer complete-Inverse instructions than production but
+  sustains only 1.387 IPC because every top/t route record is scheduled in an
+  isolated window.
+hypothesis: >-
+  Scheduling two adjacent top/t records together lets the second record's
+  loads and normalization cover the first record's normalization-to-ST3
+  latency without changing arithmetic, layout, memory accesses, or output.
+exact_change: >-
+  Replace 32 single-record Slothy windows by 16 two-record windows, without
+  crossing a top boundary and with x0 x1 x2 plus four constants kept live.
+expected_static_effect: exact instruction and load/store multiset parity
+expected_performance_effect: recover at least 40 complete-Inverse cycles from P29
+expected_register_pressure_effect: higher overlap but no spill in v0-v31
+correctness_and_range_impact: none
+post_slothy_audit_note: >-
+  The first run exposed unsafe x2 renaming across post-index ST3 writebacks;
+  reject that artifact and rerun with every concrete GPR reserved.
+falsifier: >-
+  Reject if allocation spills/fails, instruction or memory parity changes, or
+  complete Inverse and Decaps do not both improve against P29 on Pi5.
+repo_probe:
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  pythonpath: /Users/chenpinhao/slothy
+  module: /Users/chenpinhao/slothy/slothy/__init__.py
+  target: cortex_a76
+baseline:
+  source_commit: 7c8dc0bc
+  route_instructions: 873
+  complete_inverse_cycles: 4967.594
+  complete_inverse_instructions: 6891.125
+  decaps_cycles: 40194.750
+hard_gate:
+  - exact executable instruction and memory-access multiset parity with P29 route
+  - two-record local Slothy allocation and A76 timing with no spill
+  - exact KEM KAT malformed alias AAPCS and scratch-wipe checks
+  - complete Inverse and Decaps must both improve against P29
+  - promotion still requires beating committed production
+production_change_authorized: false

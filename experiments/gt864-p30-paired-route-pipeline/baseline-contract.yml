@@ -1,0 +1,59 @@
+mode: existing_region_replacement
+baseline_status: candidate
+baseline:
+  id: gt864_p29_single_record_route
+  source: ../gt864-p29-direct-st3/candidate-main-route.alloc.S
+  extracted_region: baseline-route-region.S
+  function: p29_main_route
+  start_label: p29_main_route_slothy_start
+  end_label: p29_main_route_slothy_end
+  source_commit: 7c8dc0bc
+region:
+  instruction_count: 873
+  start_label: p29_main_route_slothy_start
+  end_label: p29_main_route_slothy_end
+  live_in: [x0 natural output, x1 paired main scratch]
+  live_out: [rows 0 through 7 in natural ternary order]
+abi:
+  inputs: [natural output pointer, paired main scratch pointer]
+  outputs: [768 natural-order ternary coefficients]
+  live_in: [x0, x1]
+  live_out: [public output memory]
+  clobbers: [x2, x3, v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x3]
+  fixed_vector_registers: [v0-v31]
+  reserved_registers: [x4-x30, sp]
+layout:
+  input_representation: 96 paired Q records in P29 equal-half scratch order
+  output_representation: rows 0 through 7 at natural top/t/component order
+memory_contract:
+  loads: [96 scratch Q]
+  stores: [64 full-vector ST3.4h]
+  alignment: scratch 16-byte aligned; natural output may be 2-byte aligned
+  aliasing: output distinct from scratch
+  public_offsets_only: true
+  pointer_updates: [two 24-byte postincrement ST3 then one 6-byte ADD per record]
+constant_contract:
+  constants: [1728, -1728, 10923, 3]
+  modulus: 3 after unchanged q-domain terminal transform
+  representation: signed raw R0 to ternary
+  reduction_method: exact P29 threshold adjustment and Barrett modulo 3
+range_contract:
+  input_ranges: [raw abs <= 4577]
+  intermediate_ranges: [adjusted raw abs <= 4576]
+  output_ranges: [ternary abs <= 1]
+  narrowing_points: [none]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+benchmark:
+  command: taskset -c 3 paired P29 versus P30 Inverse-to-ternary and Decaps PMU on Pi5
+  metric: cycles
+  lower_is_better: true
+  baseline_cycles: 4967.594
+baseline_cost:
+  static_instruction_count: 873
+  complete_inverse_retired_instructions: 6891.125
+  benchmark_command: taskset -c 3 paired P29 versus P30 Inverse-to-ternary and Decaps PMU on Pi5
