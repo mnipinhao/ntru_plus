@@ -12,6 +12,11 @@ GT_COPY = (
 GT_ASM = {'ntt.S':'ntt.s','base.S':'base.s','pack.S':'pack.s',
           'add.S':'add.s','kem_api.S':'kem_api.s',
           'keccakf1600.S':'keccakf1600.s'}
+# Keep feature-gated assembly in preprocessed form.  SUPERCOP supplies the
+# effective target flags (normally -march=native) for each compiler record;
+# preprocessing this file while packaging would freeze the packager host's
+# feature set into the checked-in leaf.
+GT_FEATURE_ASM = ('keccakf1600_v84a.S',)
 
 def write(path,data):
     path.parent.mkdir(parents=True,exist_ok=True)
@@ -31,7 +36,10 @@ def build(gt,official,target):
     for name in GT_COPY:
         add(name,(gt/name).read_bytes())
     for source,name in GT_ASM.items():
+        # The checked-in SUPERCOP leaf targets ELF AArch64.  Do not let the
+        # packaging host (for example macOS) select Mach-O assembly branches.
         data=subprocess.check_output(['gcc','-E','-P','-x','assembler-with-cpp',
+                                      '-U__APPLE__','-D__ELF__=1',
                                       '-I'+str(gt),str(gt/source)])
         if source == 'keccakf1600.S':
             data=b'''/*
@@ -43,6 +51,8 @@ def build(gt,official,target):
  */
 '''+data
         add(name,data)
+    for name in GT_FEATURE_ASM:
+        add(name,(gt/name).read_bytes())
     adapter='''#include "poly.h"\n#include <string.h>\n\nextern void official_poly_crepmod3(poly *r);\n\n/* GT uses a two-pointer exact-alias contract; Official is in-place. */\nvoid poly_crepmod3(poly *out, const poly *in)\n{\n    if (out != in)\n        memcpy(out, in, sizeof(*out));\n    official_poly_crepmod3(out);\n}\n'''
     add('crepmod3_adapter.c',adapter)
     add('LICENSE',(gt/'LICENSE').read_bytes())
@@ -54,7 +64,10 @@ The NTT, inverse NTT, base arithmetic, pack/unpack and their operation-specific
 KEM call sites use the GT Production backend. The public SHAKE and symmetric
 hash APIs remain unchanged. Hash-f/hash-h retain their existing construction;
 hash-g uses the fixed-size register-resident AArch64 sponge. Generic SHAKE uses
-the standalone scalar AArch64 x1 Keccak-f[1600] backend.
+the standalone AArch64 x1 Keccak-f[1600] backend. The lowercase scalar
+assembly is always available. The uppercase feature-gated assembly and
+`fips202.c` select the Arm SHA3 backend only when the SUPERCOP compiler flags
+define `__ARM_FEATURE_SHA3`; otherwise the leaf remains safe on Cortex-A76.
 ''')
 
 def compare(expected,actual):
