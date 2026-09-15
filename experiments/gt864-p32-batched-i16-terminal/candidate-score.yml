@@ -1,0 +1,14 @@
+candidate: gt864_p32_batched_i16_terminal
+status: reject
+correctness: pass
+static:
+  production_main_instructions: 4002
+  candidate_main_instructions: 3873
+  predicted_delta: -129
+  pmu_complete_inverse_instruction_delta: -173
+performance:
+  complete_inverse_cycle_delta: 106.664
+  complete_inverse_cycle_delta_iqr: [104.821, 107.996]
+  decaps_cycle_delta: 111.300
+  decaps_cycle_delta_iqr: [96.525, 124.237]
+decision: reject because complete Inverse and Decaps both regress with entirely positive IQR

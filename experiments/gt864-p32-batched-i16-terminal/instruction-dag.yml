@@ -1,0 +1,25 @@
+inputs:
+  - six independent 16-Q post-I9 blocks
+  - one shared 64-Q composite terminal table
+nodes:
+  - id: producers
+    count: 6
+    operation: exact production CT inverse16 prefix through sixteen preterminal X_t vectors
+  - id: materialize
+    operation: overwrite each fully consumed 256-byte input block with its sixteen X_t vectors
+  - id: column_terminal
+    count: 16
+    operation: load four constants once, then apply the exact P13-B low/high terminal DAG to all six X_t values
+  - id: scatter
+    operation: exact production UMOV plus STRH natural-order addresses
+dependencies:
+  - producers -> materialize -> column_terminal -> scatter
+cost_ledger:
+  removed_composite_q_loads: 320
+  added_preterminal_q_stores: 96
+  added_preterminal_q_loads: 96
+  predicted_net_instruction_delta: -128
+  removed_table_bytes_read: 5120
+  added_scratch_bytes_written: 1536
+  added_scratch_bytes_read: 1536
+  predicted_net_memory_bytes: -2048

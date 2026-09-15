@@ -1,0 +1,6 @@
+mode: existing_region_replacement
+baseline: six production lazy_i16 calls
+candidate: six split producers plus one column-major terminal consumer
+approved_contract_change: internal extra preterminal scratch write/read with zero scratch growth
+candidate_status: reject
+next_action: archive P32; P33 may test a two-bank hybrid without the T6 phase barrier

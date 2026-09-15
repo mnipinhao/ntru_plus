@@ -62,7 +62,13 @@ Status meanings:
 | P25 | Done—Profiler checkpoint | Refresh production versus selected SUPERCOP 20260831 Official after P24 | Exact/tampered and instrumentation-equivalence gates pass; GT wins Keygen/Encaps/Decaps by 1167.750/1440.450/694.525 cycles; Inverse-to-ternary is the largest positive matched gap |
 | P26 | Done—Inverse deficit audit | Align Official Inverse+Crepmod3 with GT inverse9/main-I16/tail-I16/raw-ternary/wrapper work and classify the +3740 instructions | Exact dynamic source ledger reconciles to P25 PMU; GT has 151 fewer modular-multiply instructions, while lane extraction/load/store fragmentation dominates |
 | P27 | Done—Machine candidate | Search an inverse9→I16 physical basis that directly feeds vector raw-to-ternary output | All 15 P8-record matchings exhausted; unique three-bank basis gives exact 108-Q dense scratch/108-Q natural route, max four live TBL sources, unchanged root/scale/range and conservative -1314 instructions; production unchanged |
-| P28 | Next—Physical realization | Author paired main-I16, dense-tail and raw-route symbolic regions for the P27 basis | Real v0-v31/GPR allocation without stack spill, exact complete-Inverse oracle/ABI/KAT, then paired Pi 5 Inverse and Decaps improvement before promotion |
+| P28 | Done—Rejected | Realize P27 as paired main-I16, dense tail and standalone routed ternary consumer | Correct/no-spill and isolated replacement wins, but complete Inverse regresses 147.266 cycles; production unchanged |
+| P28-S | Done—Rejected | Timing-schedule fixed P28 allocation with bounded local Slothy windows | Recovers 60.313 cycles versus P28 but remains 83.875 cycles slower than production complete Inverse |
+| P29 | Done—Rejected | Replace standalone TBL route with equal-half pairs and direct full-vector ST3 | Removes masks and 1452 production instructions, but complete Inverse/Decaps regress 76.844/108.625 cycles |
+| P30 | Done—Rejected | Schedule adjacent direct-ST3 records jointly | Slothy model predicts -240 route cycles, but Pi 5 regresses complete Inverse by 10.336 cycles versus P29; model mismatch recorded |
+| P31 | Done—Rejected | Produce rows 0--3 early from pair2 and rows 4--7 from pair1 | Removes 1536 scratch bytes but adds 159 instructions versus P29 and regresses production Inverse/Decaps by 418.617/439.000 cycles |
+| P32 | Done—Rejected | Split six I16 prefixes from one column-major six-bank composite terminal consumer | Exact/no-spill/KAT/alias/wipe pass and -173 complete-Inverse instructions, but IPC falls and Inverse/Decaps regress 106.664/111.300 cycles |
+| P33 | Next—Static/physical gate | Test a reusable two-bank hybrid: materialize one prefix, compute one live prefix, then share terminal constants across the pair | Must avoid P32's T6 barrier/10.9 KiB body, allocate without spill, and show production-like IPC plus complete Inverse/Decaps wins before promotion |
 
 ## Fixed facts and non-tasks
 
@@ -81,6 +87,27 @@ Status meanings:
   is explicitly approved and production uses P10-A.
 
 ## Change log
+
+### 2026-09-15
+
+- Completed P32 without changing production.  Six exact 190-instruction I16
+  prefixes overwrite their consumed P8 blocks; one column-major terminal loads
+  each four-Q composite group once and consumes all six banks.  This removes
+  320 repeated table loads, adds 96 Q stores plus 96 Q reloads, and reduces the
+  complete-Inverse PMU count by exactly 173 instructions and one branch.  The
+  root/scale/range/output ABI and 1792-byte scratch are unchanged; local Slothy
+  allocation and four bounded terminal timing shapes are spill-free.
+- Exact 64-case KEM/tamper, 100-case KAT, 256 direct Inverse, 4096
+  alias/AAPCS/wipe and 417216-byte malformed-transcript gates pass.  On Pi 5,
+  however, Inverse regresses 106.664 cycles with IQR
+  `[+104.821,+107.996]`, and Decaps regresses 111.300 cycles with IQR
+  `[+96.525,+124.237]`; both lose every paired sample.  IPC falls
+  1.7044→1.6326 and the terminal text is 10932 bytes.  P32 is rejected;
+  P33 may test a smaller reusable two-bank hybrid.  Evidence:
+  `experiments/gt864-p32-batched-i16-terminal/`.
+- Reconciled the persistent ledger for P28/P28-S/P29/P30/P31.  All remain
+  rejected experimental evidence; none changed the frozen P13-C/P8 production
+  inverse.
 
 ### 2026-09-14
 

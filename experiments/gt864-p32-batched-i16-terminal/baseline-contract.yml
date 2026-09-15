@@ -1,0 +1,34 @@
+mode: existing_region_replacement
+kernel: six production calls to lazy_i16
+source:
+  wrapper: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_public.S
+  helper: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse16_lazy.S
+live_in: [x19 natural output, x25 P8 scratch, x22 I16 table, x23 composite table]
+live_out: [864 natural raw int16 coefficients, except unchanged tail]
+memory:
+  input_q_loads: 96
+  composite_q_loads: 384
+  output_halfword_stores: 768
+range: {input_abs: 2617, i16_abs: 21397, raw_abs: 4454}
+scale: I9 R^-1 to natural R0
+region:
+  live_in: [six contiguous production P8 main blocks, I16 table, composite table]
+  live_out: [same 768 main raw int16 coefficients at exact production offsets]
+abi:
+  inputs: [same complete Inverse public inputs]
+  outputs: [byte-for-byte identical natural raw coefficient array]
+memory_contract:
+  scratch_bytes: 1792
+  internal_change: none
+  aliasing: unchanged public in-place support
+  alignment: 16-byte scratch/table and halfword output
+constant_contract:
+  modulus: 3457
+  tables: exact P13-B main composite and P7-C I16 tables
+range_contract:
+  input_abs: 2617
+  i16_abs: 21397
+  raw_abs: 4454
+constant_time_contract:
+  secret_dependent_control_flow: false
+  secret_dependent_addressing: false

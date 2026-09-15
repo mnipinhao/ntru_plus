@@ -1,0 +1,18 @@
+candidate: gt864_p32_batched_i16_terminal
+decision: reject
+production_changed: false
+gates:
+  contract: pass
+  symbolic_and_allocation: pass_no_spill
+  arm64_assembly: pass
+  kem_roundtrip_and_tamper: pass_64
+  kat: pass_100_identical_hash
+  exact_inverse: pass_256
+  inverse_alias_aapcs_wipe: pass_4096
+  malformed_transcript: pass_identical_417216_bytes
+  pi5_complete_inverse: fail_plus_106_664_cycles
+  pi5_decaps: fail_plus_111_300_cycles
+reopen_condition: >-
+  Share constants in a smaller two-bank helper without the six-bank phase
+  barrier and 10.9 KiB terminal body, and predeclare a production-like IPC
+  target before another Pi run.

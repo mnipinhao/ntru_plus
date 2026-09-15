@@ -1,0 +1,77 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p32_batched_i16_terminal
+  name: split-I16 producer plus six-bank composite terminal consumer
+  source: candidate-prefix.sym.S and candidate-terminal.sym.S
+  operation: six main inverse16 transforms and composite terminal maps
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_root: /Users/chenpinhao/slothy
+abi:
+  inputs: [x0 natural output or in-place scratch, x1 scratch, x3 I16 table, x4 composite table]
+  outputs: [same 768 main raw int16 coefficients at exact production offsets]
+  concrete_gprs_allowed: [x0, x1, x3, x4, x8, x9]
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+  public_change: none
+  producer_live_in: [x0 in-place 256-byte block, x1 same block, x3 I16 table]
+  consumer_live_in: [x0 natural output, x1 six contiguous 256-byte preterminal blocks, x4 composite table]
+  live_out: [same 768 main raw int16 coefficients at exact production offsets]
+  reserved_gprs: [x18-x30, sp, xzr]
+memory_contract:
+  loads: [six times 16 input Q, unchanged stage table, 96 preterminal Q, 64 composite Q]
+  stores: [96 preterminal Q, same 768 STRH output stores]
+  aliasing: producer x0 equals x1 and is safe because all sixteen inputs are loaded before stores
+  alignment: 16-byte scratch/table Q accesses and halfword natural-output stores
+  producer: load 16 Q then overwrite the same dead 16-Q block
+  consumer: load six preterminal Q per column and four composite Q per column
+  added_boundary: 96 Q stores plus 96 Q loads inside existing 1792-byte scratch
+  removed_loads: 320 repeated composite Q loads
+  scratch_growth: 0
+  public_offsets_only: true
+constant_contract:
+  constants: exact P13-B main composite table and P7-C inverse16 stage table
+  sharing_change: four composite Q values loaded once per column rather than once per bank
+  modulus: 3457
+  representation: I9 R^-1 input through natural R0 raw output
+range_contract:
+  input_abs: 2617
+  preterminal_i16_abs: 21397
+  raw_output_abs: 4454
+  change_from_production: none
+  input_ranges: [post-I9 coefficients abs <= 2617]
+  output_ranges: [raw natural R0 coefficients abs <= 4454]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, loop-free offsets, stage and composite tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+  scratch_wipe: unchanged outer 1792-byte wipe
+slothy:
+  workflow: allocate producer once and allocate/schedule sixteen bounded consumer columns
+  mode: allocate then timing schedule
+  allow_spills: false
+  local_root: /Users/chenpinhao/slothy
+validation:
+  oracle_command: exact complete inverse differential harness
+  test_command: KEM KAT malformed alias AAPCS and scratch-wipe tests
+  full_path_benchmark_command: paired PMU on Pi 5 core 3
+  exact_oracle: compare complete inverse output against frozen production
+  kem: roundtrip, tampered ciphertext, KAT and malformed transcript
+  abi: in-place alias, callee-saved register preservation and full scratch wipe
+  benchmark: paired PMU on Pi 5 core 3
+promotion_gate:
+  required: complete Inverse and Decaps paired medians improve and both cycle-delta IQRs remain below zero
+region:
+  start_label: p32_i16_prefix_slothy_start
+  end_label: p32_i16_prefix_slothy_end
+  live_in: [x0, x1, x3]
+  live_out: [sixteen preterminal Q records in memory at x0]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact I16 prefix, internal materialization, six-bank shared-constant terminal, exact scatter
+layout:
+  input_representation: six contiguous production P8 blocks, each sixteen packed top-row vectors
+  output_representation: unchanged natural-order raw R0 int16 coefficients

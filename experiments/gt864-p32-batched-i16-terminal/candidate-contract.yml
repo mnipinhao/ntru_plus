@@ -1,0 +1,25 @@
+kernel:
+  id: gt864_p32_batched_i16_terminal
+  role: experimental_candidate
+  production: false
+region:
+  live_in: [six contiguous production P8 main blocks, I16 table, composite table]
+  live_out: [same 768 main raw int16 coefficients at exact production offsets]
+abi:
+  inputs: [same complete Inverse public inputs]
+  outputs: [byte-for-byte identical natural raw coefficient array]
+memory_contract:
+  scratch_bytes: 1792
+  internal_change: add 96 Q preterminal stores and 96 Q reloads; remove 320 Q composite-table reloads
+  aliasing: unchanged public in-place support
+  alignment: 16-byte scratch/table and halfword output
+constant_contract:
+  modulus: 3457
+  tables: exact P13-B main composite and P7-C I16 tables
+range_contract:
+  input_abs: 2617
+  i16_abs: 21397
+  raw_abs: 4454
+constant_time_contract:
+  secret_dependent_control_flow: false
+  secret_dependent_addressing: false
