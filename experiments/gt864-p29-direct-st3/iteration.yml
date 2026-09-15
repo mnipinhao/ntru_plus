@@ -1,0 +1,38 @@
+experiment_id: GT864-P29-DIRECT-ST3-20260915
+mode: existing_region_replacement
+status: rejected
+state: measured
+parent: ../gt864-p28s-timing
+hypothesis: >-
+  Pair equal-row-half component groups, normalize completed main records once,
+  and use full-vector ST3.4h plus direct tail stores to produce natural ternary
+  order without P28's standalone TBL2/mask route.
+approved_experimental_contract_changes:
+  - paired bank matching
+  - tail writes directly to public output instead of dense scratch
+  - route removes public masks and uses full-vector ST3.4h
+  - main scratch records remain unchanged in count and lifetime
+production_change_authorized: false
+repo_probe:
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  module: /Users/chenpinhao/slothy/slothy/__init__.py
+  target: cortex_a76
+  execution: local_authorized
+baseline:
+  source: ../gt864-p28s-timing/candidate-main.timing.S plus candidate-tail.timing.S plus candidate-route.timing.S
+  inverse_cycles: 4974.9375
+  inverse_instructions: 7082.125
+  decaps_cycles: 40166.55
+production_comparator:
+  inverse_cycles: 4893.992
+  inverse_instructions: 8343.125
+  decaps_cycles: 40075.475
+hard_gate:
+  - exact 864-coordinate tagged route and exhaustive raw-to-ternary identity
+  - strictly fewer executable instructions and no route-mask data
+  - full-vector ST3 only; no lane ST3
+  - no additional coefficient memory boundary or stack spill
+  - exact oracle KAT malformed alias AAPCS and scratch wipe
+  - complete Inverse and Decaps must both beat committed production
+promotion_requires_explicit_user_decision: true

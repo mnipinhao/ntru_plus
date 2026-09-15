@@ -1,0 +1,53 @@
+candidate:
+  id: gt864_p29_direct_st3
+  status: reject
+  mode: existing_region_replacement
+contract:
+  preserved: false
+  approved_changes: true
+  changed_fields: [paired group matching, tail direct stores, route masks removed, full-vector ST3 output]
+  approval_note: all changes are internal to the inverse-to-ternary consumer and machine-audited
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 4369
+  candidate_expected_cycles: 4180
+  parity_justification: >-
+    These are exact executable instruction counts, not Cortex-A76 cycle
+    predictions; Pi 5 PMU is authoritative for the changed ST3 dependency DAG.
+  log_json: slothy-tail-result.json plus slothy-route-result.json
+benchmark:
+  status: pass
+  command: six alternating paired-PMU processes pinned to Pi 5 CPU 3
+  metric: complete Inverse-to-ternary cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.0
+  baseline: 4891.570
+  candidate: 4967.594
+static:
+  executable_instructions_vs_p28s: -189
+  complete_inverse_retired_instructions_vs_p28s: -191
+  complete_inverse_retired_instructions_vs_production: -1452
+  route_mask_bytes_removed: 3456
+  full_vector_st3: 64
+  lane_st3: 0
+  spills: 0
+pi5:
+  inverse_delta_vs_p28s_cycles: -7.1795
+  decaps_delta_vs_p28s_cycles: 4.075
+  inverse_delta_vs_production_cycles: 76.844
+  decaps_delta_vs_production_cycles: 108.625
+  inverse_ipc_p29: 1.3872
+  inverse_ipc_p28s: 1.4235
+  inverse_ipc_production: 1.7056
+decision:
+  reason: >-
+    P29 removes the standalone TBL/mask route and retires less work, but fails
+    both complete-path production gates. Keep P13-C/P8 production unchanged.
+  next_iteration: >-
+    Search a producer/consumer pipeline without P29's three-pair
+    synchronization point; do not reschedule P29 or optimize only its stores.

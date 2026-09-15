@@ -1,0 +1,41 @@
+kernel: gt864_p29_direct_st3
+inputs:
+  - six main P8 blocks containing channels G(component, four-row-half)
+  - padded tail P8 block containing row 8 components
+  - unchanged inverse16 and composite constant tables
+outputs:
+  - 864 ternary coefficients at n=top*432+t*27+row*3+component
+constants:
+  - q=3457 and unchanged terminal constants
+  - raw-to-ternary thresholds 1728 and -1728, reciprocal 10923, modulus 3
+nodes:
+  - id: pair_equal_halves
+    operation: run unchanged P28-S paired I16 on G00+G10, G01+G11, G20+G21
+  - id: tail_terminal
+    operation: unchanged tail I16 and terminal scale, followed immediately by pointwise ternary normalization
+  - id: tail_exact_store
+    operation: write three low halfwords as one 32-bit store and one 16-bit store at each public top/t tail address
+  - id: main_load
+    operation: load one Q from each equal-half paired bank for fixed top/t
+  - id: main_normalize
+    operation: normalize all three Q independently with the exact P28 Barrett sequence
+  - id: expose_high_halves
+    operation: use EXT by 8 bytes to expose component-1 and high-half component-2 D values
+  - id: full_st3
+    operation: two full-vector ST3.4h stores emit rows 0..3 and 4..7 in component-interleaved natural order
+dependencies:
+  - each paired main input block is fully loaded before its records overwrite that block
+  - tail terminal scale and top reset precede tail normalization
+  - raw normalization precedes every natural output store
+  - each ST3 consumes three component vectors belonging to the same top t and four-row half
+  - public output pointer advances 24 plus 24 plus 6 bytes for every top/t
+memory_accesses:
+  - 96 main scratch Q stores and 96 main scratch Q reloads
+  - no dense tail scratch stores or reloads
+  - 64 full-vector ST3.4h main stores
+  - 32 32-bit plus 32 16-bit tail stores
+  - no route mask loads and no coefficient-dependent addresses
+range_changes:
+  - I16 terminal output raw abs <= 4577
+  - threshold adjustment abs <= 4576
+  - Barrett output is exactly one of -1 0 1

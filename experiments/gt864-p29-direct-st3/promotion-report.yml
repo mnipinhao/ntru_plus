@@ -1,0 +1,19 @@
+candidate: P29
+promotion: rejected
+production_changed: false
+passed:
+  - exact 864-coordinate map and exhaustive raw-to-ternary identity
+  - local Slothy allocation with no spill
+  - full-vector ST3 only and no route masks
+  - exact oracle KEM KAT malformed alias AAPCS and scratch wipe
+  - fewer instructions and slightly faster complete Inverse than P28-S
+failed:
+  - complete Inverse is 76.844 cycles slower than production
+  - Decaps is 108.625 cycles slower than production
+interpretation: >-
+  Removing TBL and mask loads is not sufficient: P29's equal-half pairing,
+  normalization, EXT exposure and dependent ST3 stream lower complete-Inverse
+  IPC from production's 1.706 to 1.387.
+next_reopen_condition: >-
+  A successor needs a producer/consumer DAG with production-like issue width,
+  not another store-only or timing-only rewrite of P29.

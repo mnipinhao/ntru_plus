@@ -1,0 +1,58 @@
+mode: existing_region_replacement
+baseline_status: candidate
+baseline:
+  id: gt864_p29_p28s_baseline
+  source: ../gt864-p28s-timing/candidate-main.timing.S plus candidate-tail.timing.S plus candidate-route.timing.S
+  extracted_region: baseline-main-region.S plus baseline-tail-region.S plus baseline-route-region.S
+  function: p28_paired_i16 plus p28_dense_tail plus p28_route_ternary
+  start_label: p28_main_slothy_start
+  end_label: p28_route_slothy_end
+  source_commit: 0807a7fd
+region:
+  instruction_count: 2687
+  start_label: p28_main_slothy_start
+  end_label: p28_route_slothy_end
+  live_in: [public output pointer, P8 scratch pointer, I16 table pointer, composite table pointer]
+  live_out: [864 natural ternary coefficients]
+abi:
+  inputs: [P8 scratch, inverse tables, route masks]
+  outputs: [dense tail scratch then 864 natural ternary coefficients]
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [public output memory]
+  clobbers: [x5-x16, v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: [v0-v31]
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+layout:
+  input_representation: six P8 main blocks plus one padded tail block
+  output_representation: P28 dense records then natural ternary
+memory_contract:
+  loads: [P8 coefficients, inverse constants, composite constants, 108 dense source Q, 216 route-mask Q]
+  stores: [96 main scratch Q, 12 dense tail scratch Q, 108 natural output Q]
+  alignment: 16-byte scratch and table accesses
+  aliasing: public output is distinct from internal scratch; in-place external input is copied to scratch before this region
+  public_offsets_only: true
+  pointer_updates: [fixed public offsets and route-mask postincrements]
+constant_contract:
+  constants: [q, inverse roots, composite constants, raw ternary constants, 3456 route-mask bytes]
+  modulus: 3457
+  representation: I16 to raw R0 to ternary
+  reduction_method: Algorithm-10 terminal products and Barrett raw-to-ternary
+range_contract:
+  input_ranges: [P8 abs <= 2617]
+  intermediate_ranges: [I16 abs <= 21397, raw abs <= 4577]
+  output_ranges: [ternary abs <= 1]
+  narrowing_points: [none]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, tables, masks, fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+benchmark:
+  command: taskset -c 3 paired complete Inverse-to-ternary and Decaps PMU on Pi5
+  metric: cycles
+  lower_is_better: true
+  baseline_cycles: 4974.9375
+baseline_cost:
+  static_instruction_count: 2687
+  benchmark_command: taskset -c 3 paired complete Inverse-to-ternary and Decaps PMU on Pi5

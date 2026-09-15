@@ -1,0 +1,71 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p29_direct_st3
+  name: paired I16 with full-vector ST3 natural-order consumer
+  source: candidate-tail.sym.S plus candidate-main-route.sym.S
+  scheme: NTRU+864 GT
+  operation: inverse P8 consumer to natural ternary coefficients
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: reuse P28-S main; allocate and timing-schedule tail and main-route in bounded windows
+  driver: optimize.py
+  expected_outputs: [candidate-tail.alloc.S, candidate-main-route.alloc.S]
+  allow_spills: false
+region:
+  start_label: p29_tail_slothy_start
+  end_label: p29_main_route_slothy_end
+  expected_instruction_count: below 2465 including unchanged P28-S main
+  live_in: [public output pointer, P8 scratch pointer, I16 table pointer, composite table pointer]
+  live_out: [864 natural ternary coefficients]
+abi:
+  inputs: [six P8 main blocks, one padded tail block, inverse tables]
+  outputs: [864 natural-order ternary coefficients]
+  clobbers: [x5-x16, v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: unchanged paired-I16 arithmetic; direct tail stores and normalized ST3 main route
+layout:
+  input_representation: paired groups G00+G10, G01+G11, and G20+G21 in existing P8 blocks
+  output_representation: direct natural n=top*432+t*27+row*3+component ternary order
+  vector_lanes: signed 8x16-bit; low/high D halves are four rows of one component
+  packing: full-vector ST3.4h for 24 main coefficients and exact 6-byte tail store per top/t
+memory_contract:
+  loads: [same P8/table loads, 96 main scratch Q]
+  stores: [same 96 main scratch Q, 64 full-vector ST3.4h main stores, 64 exact scalar tail stores]
+  aliasing: public output remains distinct from internal scratch; paired overwrites occur only after complete input load
+  alignment: scratch and tables 16-byte aligned; natural output stores may be 2-byte aligned
+  public_offsets_only: true
+  pointer_updates: [fixed 54-byte natural top/t stride]
+constant_contract:
+  constants: [q, unchanged inverse roots and composite constants, raw ternary constants 1728 -1728 10923 and 3]
+  modulus: 3457
+  representation: unchanged I16 to raw R0 to ternary
+  reduction_method: unchanged terminal Algorithm-10 and exact raw-to-ternary Barrett arithmetic
+range_contract:
+  input_ranges: [P8 abs <= 2617]
+  intermediate_ranges: [I16 abs <= 21397, raw abs <= 4577, adjusted raw abs <= 4576]
+  output_ranges: [ternary abs <= 1]
+  narrowing_points: [none]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, tables, fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: exact tagged coordinate plus exhaustive raw normalization then 1001-case C/assembly inverse oracle
+  test_command: integrated KEM KAT malformed alias AAPCS scratch-wipe and object no-spill checks
+  full_path_benchmark_command: taskset -c 3 paired production versus P29 Inverse-to-ternary and Decaps PMU on Pi5
+  benchmark_metric: cycles
+  lower_is_better: true
+contract_changes:
+  approved_for_experiment: [paired group matching, internal tail scratch removal, removal of route masks, natural output store granularity]
+  unchanged_public_contract: [function ABI, natural ternary output, scratch size, ranges, constant-time policy]
+  promotion_requires_explicit_user_decision: true
