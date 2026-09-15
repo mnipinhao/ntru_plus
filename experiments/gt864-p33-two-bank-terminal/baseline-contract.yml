@@ -1,0 +1,48 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: gt864_production_lazy_i16_x6
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse16_lazy.S
+  extracted_region: baseline-region.S
+  function: lazy_i16
+  start_label: lazy_i16_slothy_start
+  end_label: lazy_i16_slothy_end
+  source_commit: 0a3009340d657218dfc2ed5404d0623fb99dd72e
+region:
+  instruction_count: 667 per bank and 4002 for six calls
+  live_in: [x0 bank-specific natural output base, x1 one 256-byte post-I9 block, x3 inverse16 stage table, x4 composite terminal table]
+  live_out: [128 exact raw int16 natural coefficient stores per bank]
+  clobbers: [x2, x8, x9, v0-v31, condition flags]
+abi:
+  inputs: [six contiguous post-I9 blocks, inverse16 stage table, composite terminal table]
+  outputs: [same 768 main raw int16 coefficients at exact production offsets]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8, x9]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+memory_contract:
+  loads: [96 input Q, 36 stage-table Q, 384 composite-table Q]
+  stores: [768 halfword natural-output stores]
+  aliasing: input and output may alias through the public inverse wrapper because each bank loads all inputs before its stores
+  alignment: 16-byte input and table loads; halfword output stores
+  public_offsets_only: true
+  pointer_updates: [outer wrapper selects component and four-row half with public loop counters]
+constant_contract:
+  constants: [q=3457, magic-one=9, exact P7-C inverse16 stages, exact P13-B composite terminal table]
+  modulus: 3457
+  representation: post-I9 R^-1 input to natural R0 raw output
+  reduction_method: Algorithm-10 Barrett-Shoup fixed-constant multiplication and selective magic-one reset
+range_contract:
+  input_ranges: [post-I9 coefficient absolute value at most 2617]
+  intermediate_ranges: [preterminal inverse16 absolute value at most 21397]
+  output_ranges: [raw R0 coefficient absolute value at most 4454]
+  narrowing_points: [all arithmetic remains signed int16; exact range proof is inherited from P13-B and P10-A]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed offsets, stage tables, composite tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 4002
+  slothy_expected_cycles: 996 for six isolated helper estimates
+  full_path_benchmark: P32 frozen production Inverse median 4894.938 cycles and Decaps median 40075.550 cycles
+  benchmark_command: paired PMU on Pi 5 core 3 using the isolated P33 harness

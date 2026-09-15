@@ -1,0 +1,60 @@
+kernel: gt864_p33_two_bank_terminal
+layout:
+  pair_order: [(component0 half0 half1), (component1 half0 half1), (component2 half0 half1)]
+  state_order: [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15]
+inputs:
+  - id: A_input
+    location: sixteen Q records at x1
+    range: abs at most 2617
+  - id: B_input
+    location: sixteen Q records at x2
+    range: abs at most 2617
+  - id: stage_table
+    location: x3
+    public: true
+  - id: composite_table
+    location: x4
+    public: true
+nodes:
+  - id: A_prefix
+    operation: exact production inverse16 DAG through sixteen preterminal A_t values
+    output: A_preterminal
+    range: abs at most 21397
+  - id: A_materialize
+    operation: overwrite the dead A input block with sixteen A_t Q records
+    ordering: after every A input load and before pair helper
+  - id: B_prefix
+    operation: exact production inverse16 DAG through sixteen register-resident B_t values
+    output: B_preterminal
+    range: abs at most 21397
+  - id: constants_t
+    count: 16
+    operation: load low b low magic high b high magic once for column t
+  - id: A_terminal_t
+    count: 16
+    operation: load A_t then exact low/high Algorithm-10 maps ext-add selective reset and scatter
+  - id: B_terminal_t
+    count: 16
+    operation: consume live B_t with the same constants then exact low/high maps ext-add selective reset and scatter at half-one offset
+outputs:
+  - id: natural_raw_pair
+    location: 256 public halfword stores at x0
+    range: abs at most 4454
+dependencies:
+  - A_input -> A_prefix -> A_materialize -> A_terminal_t -> natural_raw_pair
+  - B_input -> B_prefix -> B_terminal_t -> natural_raw_pair
+  - composite_table -> constants_t -> A_terminal_t
+  - constants_t -> B_terminal_t
+ordering_constraints:
+  - all B input loads precede any B output scatter because public in-place aliasing is supported
+  - A_terminal_t precedes B_terminal_t only to shorten A temporaries; their arithmetic otherwise commutes
+  - constants_t remain live across exactly the A_t and B_t terminal nodes
+  - B_t becomes dead after its B_terminal_t store and its physical register may be recycled
+cost_ledger:
+  production_composite_q_loads: 384
+  candidate_composite_q_loads: 192
+  added_preterminal_q_stores: 48
+  added_preterminal_q_loads: 48
+  predicted_net_instruction_delta: -96
+  predicted_main_instruction_count: 3906
+  code_size_goal: reusable pair helper materially below P32 terminal6 10932-byte body

@@ -1,0 +1,71 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p33_two_bank_terminal
+  name: reusable two-bank inverse16 hybrid
+  source: candidate-prefix.sym.S and candidate-pair.sym.S
+  operation: three pairs of main inverse16 transforms with one materialized prefix and one register-resident prefix per pair
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: allocate materialized prefix; allocate live prefix; allocate and timing-schedule sixteen pair-terminal windows
+  driver: optimize.py
+  expected_outputs: [candidate-prefix.alloc.S, candidate-pair.alloc.S, Slothy logs]
+  allow_spills: false
+region:
+  start_label: p33_i16_pair_slothy_start
+  end_label: p33_i16_pair_slothy_end
+  expected_instruction_count: less than 1144 instructions for prefix plus pair helper, or less than 4002 across three pairs
+  live_in: [x0 component natural output base, x1 materialized half-zero preterminal block, x2 live half-one post-I9 block, x3 inverse16 stage table, x4 composite terminal table]
+  live_out: [256 exact raw int16 natural coefficient stores for the two halves]
+abi:
+  inputs: [six contiguous post-I9 blocks, inverse16 stage table, composite terminal table]
+  outputs: [same 768 main raw int16 coefficients at exact production offsets]
+  clobbers: [x8, x9, v0-v31, condition flags]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8, x9]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact A prefix materialization; exact register-resident B prefix; per-column shared constants; A then B terminal and exact scatters
+layout:
+  input_representation: each component owns adjacent 256-byte half-zero and half-one post-I9 blocks
+  output_representation: unchanged natural-order raw R0 int16 coefficients with half-one at byte offset 24 from half-zero
+  vector_lanes: eight signed int16 coefficients per Q register
+  packing: P8 post-I9 bank layout and P13-B natural scatter layout are unchanged
+memory_contract:
+  loads: [96 input Q, unchanged stage-table loads, 48 materialized preterminal Q, 192 composite Q]
+  stores: [48 materialized preterminal Q, same 768 halfword natural-output stores]
+  aliasing: the materialized half-zero block overwrites only its fully consumed input; half-one stays read-only until its live prefix is complete
+  alignment: 16-byte scratch and table Q accesses; halfword natural-output stores
+  public_offsets_only: true
+  pointer_updates: [three public component iterations; fixed half offset 256 bytes and output offset 24 bytes]
+  scratch_growth: 0
+  internal_change: one extra 256-byte write and read per component inside the existing 1792-byte scratch
+constant_contract:
+  constants: [q=3457, magic-one=9, exact P7-C inverse16 stages, exact P13-B composite terminal table]
+  modulus: 3457
+  representation: post-I9 R^-1 input to natural R0 raw output
+  reduction_method: unchanged Algorithm-10 Barrett-Shoup fixed-constant multiplication and selective magic-one reset
+  sharing_change: four composite Q constants are loaded once per column for two halves instead of twice
+range_contract:
+  input_ranges: [post-I9 coefficient absolute value at most 2617]
+  intermediate_ranges: [preterminal inverse16 absolute value at most 21397]
+  output_ranges: [raw R0 coefficient absolute value at most 4454]
+  narrowing_points: [none changed from P13-B]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed offsets, stage tables, composite tables, component loop counter]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: exact complete inverse differential test against frozen production for random bounded FR0 inputs
+  test_command: KEM roundtrip tamper KAT malformed transcript alias AAPCS and scratch-wipe tests
+  full_path_benchmark_command: paired PMU main-I16 complete Inverse and Decaps on Pi 5 core 3
+  benchmark_metric: cycles
+  lower_is_better: true
+promotion_gate:
+  required: no spill; static main count below 4002; production-like IPC; complete Inverse and Decaps paired cycle-delta upper IQR below zero

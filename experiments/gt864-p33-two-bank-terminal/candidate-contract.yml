@@ -1,0 +1,25 @@
+mode: existing_region_replacement
+candidate:
+  id: gt864_p33_two_bank_terminal
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate-prefix.sym.S and candidate-pair.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: [external ABI, FR0 scale, natural output order, arithmetic DAG, range, constant-time behavior, scratch size, tail and raw-to-ternary]
+  approved_changes: [P33 experiment only uses one internal 256-byte preterminal materialization per component; production promotion remains gated]
+region:
+  start_label: p33_i16_pair_slothy_start
+  end_label: p33_i16_pair_slothy_end
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [exact 256 raw int16 natural coefficient stores per pair]
+abi:
+  inputs: [same six post-I9 blocks and tables]
+  outputs: [same 768 main raw int16 natural coefficients]
+memory_contract:
+  loads: [same input/stage loads, 48 internal preterminal Q loads, 192 composite Q loads]
+  stores: [48 internal preterminal Q stores, same 768 output STRH]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

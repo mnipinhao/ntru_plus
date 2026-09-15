@@ -1,0 +1,25 @@
+{
+  "status": "pass_with_parser_false_positive_reviewed",
+  "actor": "authorized_codex_local_run",
+  "command_prefix": "PYTHONPATH=/Users/chenpinhao/slothy /Users/chenpinhao/slothy_and_ra/.venv/bin/python",
+  "slothy_module": "/Users/chenpinhao/slothy/slothy/__init__.py",
+  "target_model": "cortex_a76",
+  "allow_spills": false,
+  "prefix": {
+    "executable_instructions_including_ret": 190,
+    "slothy_region_instructions": 189,
+    "expected_cycles": 48,
+    "sha256_symbolic": "343364388cf16b2ec34b721f7d15f4ad8a6cf0cd106f1f1e6e67c8a0031d048d",
+    "sha256_allocated": "f6164b2000ce2a861b5b9d964e40fd969c002bbe1a85832aa2aa2c7a993b0d1c"
+  },
+  "pair": {
+    "live_vector_outputs": 17,
+    "terminal_windows": 32,
+    "executable_instructions_including_ret": 1112,
+    "slothy_region_instruction_sum": 1111,
+    "bounded_expected_cycle_sum_not_a_whole_helper_estimate": 1177,
+    "sha256_symbolic": "f608970f74f0f65cd8b81e91af49dcff9c7e3525a626de09f9e03af5c726c366",
+    "sha256_allocated": "adc9f745239c02b8e9ff86ae2e04670edbd1b4a728744ad864f55720f402692b"
+  },
+  "review": "The generic parser sees timeout/infeasible words from failed intermediate binary-search probes. Every final bounded solve emitted an allocated region; both complete allocated sources contain no executable symbolic operands and assemble for arm64."
+}

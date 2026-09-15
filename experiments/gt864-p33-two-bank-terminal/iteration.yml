@@ -1,0 +1,37 @@
+iteration_id: P33
+date: 2026-09-15
+mode: existing_region_replacement
+state: full_path_benchmark
+status: investigate
+repo_probe:
+  source_commit: 0a3009340d657218dfc2ed5404d0623fb99dd72e
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  slothy_module: /Users/chenpinhao/slothy_and_ra/extern/slothy/slothy/__init__.py
+  target: cortex_a76
+  production_source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse16_lazy.S
+  production_wrapper: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_public.S
+observation: P32 removed 173 complete-Inverse instructions but its six-bank phase barrier and 10932-byte terminal body reduced IPC from 1.7044 to 1.6326 and regressed Inverse by 106.664 cycles.
+primary_bottleneck_category: instruction-fetch and scheduling locality around terminal constant sharing
+hypothesis: sharing terminal constants within a reusable two-bank helper retains half of P32's load reduction while avoiding its global six-bank barrier and oversized terminal body.
+exact_proposed_change: materialize half-zero prefix in its consumed block; keep half-one prefix in registers; load each column's four terminal constants once and consume both halves before advancing.
+expected_static_effect: remove 192 composite Q loads and add 48 preterminal Q stores plus 48 Q loads, for a predicted net reduction of 96 main instructions versus production.
+expected_performance_effect: recover production-like IPC while reducing the complete Inverse and Decaps cycle counts.
+expected_register_pressure_effect: sixteen live B states plus q; each terminal window must fit constants, one A state and temporary values in v0-v31 without spill.
+correctness_or_range_impact: none; exact P13-B terminal math, output offsets, scale and bounds are unchanged.
+falsifying_measurement: allocation spills or fails, static main count is not below 4002, pair helper remains P32-sized, or the upper quartile of paired complete-Inverse or Decaps cycle deltas is nonnegative.
+changed_artifacts: [P33 isolated experiment only, optimization roadmap after evidence]
+evidence:
+  contract: pass
+  symbolic_static_checks: pass
+  slothy_allocation: pass_no_spill_17_live_vectors
+  slothy_timing: pass_32_bounded_windows
+  arm64_assembly: pass
+  inverse_alias_aapcs_wipe: pass_4096
+  kem_roundtrip_tamper: pass_64
+  kat_sha256: 0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c
+  malformed_transcript: pass_identical_417216_bytes
+  static_main_instructions: 3906
+  production_main_instructions: 4002
+blocking_condition: explicit authorization is required to upload the P33 source payload to the Pi 5
+next_state: paired Pi 5 main-I16 complete-Inverse and Decaps benchmark
