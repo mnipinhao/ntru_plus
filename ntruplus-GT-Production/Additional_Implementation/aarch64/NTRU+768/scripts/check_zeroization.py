@@ -32,6 +32,9 @@ assert 'uint8_t data[' not in g
 require('fips202.c', ('void ntruplus_hash_g_fixed(', 'secure_clear(s, sizeof s);'))
 require('keccakf1600.S', ('ntruplus_hash_g_fused_aarch64:',
                          'mov x17, xzr', 'stp xzr, xzr, [sp, #128]'))
+require('keccakf1600_v84a.S',
+        ('ntruplus_hash_g_fused_v84a_aarch64:',
+         'movi v0.16b, #0', 'movi v31.16b, #0'))
 for start, end in [('void hash_h', None)]:
     section = s[s.index(start):s.index(end) if end else len(s)]
     assert 'secure_clear(data, sizeof data);' in section

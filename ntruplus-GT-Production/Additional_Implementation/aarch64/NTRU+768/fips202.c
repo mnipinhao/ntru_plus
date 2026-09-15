@@ -694,11 +694,20 @@ void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]) {
     secure_clear(s, sizeof s);
 }
 #else
-/* D keeps state in GPRs, clears its own frame/state registers, and preserves
- * the public fixed-size/overlap contract. Generic SHAKE uses standalone x1. */
+/* Both AArch64 backends keep the state live across all ten permutations and
+ * preserve the public fixed-size/overlap contract. */
+#if defined(__ARM_FEATURE_SHA3)
+extern void ntruplus_hash_g_fused_v84a_aarch64(
+    uint8_t *out, const uint8_t *input, const uint64_t rc[24]);
+void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]) {
+    ntruplus_hash_g_fused_v84a_aarch64(output, input,
+                                       KeccakF_RoundConstants);
+}
+#else
 extern void ntruplus_hash_g_fused_aarch64(uint8_t *out, const uint8_t *input,
                                         const uint64_t rc[24]);
 void ntruplus_hash_g_fixed(uint8_t output[192], const uint8_t input[1152]) {
     ntruplus_hash_g_fused_aarch64(output, input, KeccakF_RoundConstants);
 }
+#endif
 #endif

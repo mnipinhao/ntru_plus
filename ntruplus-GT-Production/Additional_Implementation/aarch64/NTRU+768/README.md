@@ -57,10 +57,10 @@ provides a concise comparison with KPQC final.
 
 ## Build
 
-The public SHAKE implementation is unchanged. On AArch64, its standalone
-permutation is selected at compile time: FEAT_SHA3 builds use the namespaced
-v8.4-A backend, while other builds retain the scalar AArch64 fallback. The
-fixed-size `hash_g` remains on its separately validated fused scalar path.
+The public SHAKE implementation is unchanged. On AArch64, both its standalone
+permutation and the fixed-size register-resident `hash_g` are selected at
+compile time: FEAT_SHA3 builds use namespaced v8.4-A backends, while other
+builds retain the scalar AArch64 implementations.
 
 ```sh
 make
