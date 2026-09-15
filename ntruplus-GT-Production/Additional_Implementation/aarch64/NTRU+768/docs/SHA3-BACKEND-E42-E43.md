@@ -86,4 +86,3 @@ claims; Pi 5 intentionally retains the scalar path.
 
 Ephemeral objects, binaries, raw samples, and differential harnesses remain in
 the gitignored worktree experiment directories and are not committed.
-
