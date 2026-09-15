@@ -73,7 +73,8 @@ Status meanings:
 | P35 | Done—Promoted | Distinct KEM-only main/tail I16 helpers retaining only main high-column-8 reset | Exact/no-spill/Slothy/arm64/alias/AAPCS/wipe/KAT/malformed gates pass; Inverse-to-ternary -139.485 cycles and Decaps -138.825 cycles with exactly -74 instructions |
 | P36 | Done—Retained | Revisit the sole remaining main high-column-8 reset with a correlation-aware reachable-range or equivalent composite-representative search | Current constants are minimax; strict integer correlation proof did not close abs<=5185, so deletion gate fails and P35 production remains unchanged |
 | P37 | Done—Profiler checkpoint | Refresh P35 production versus selected SUPERCOP 20260831 Official and update component/call-site attribution | All gates pass; GT wins Keygen/Encaps/Decaps by 1158.250/1432.075/849.325 cycles; Full ToBytes is +301--305 cycles/call while Small already wins |
-| P38 | Next—Full-ToBytes co-DAG | Co-design direct-Forward terminal representatives with Full route/normalization/packing; freeze Small and P35 Inverse | Exact quotient/range ledger must remove at least 108 of 216 Full-only normalization instructions, add no memory pass/scratch/spill and target at least 150 cycles/call |
+| P38 | Done—Rejected statically | Co-design direct-Forward terminal representatives with Full route/normalization/packing; freeze Small and P35 Inverse | Every coordinate has a valid small/keygen input outside `(-q,q)`; post-pass/store canonicalization only relocates all 216 instructions and quotient reuse fails, so best net deletion is zero |
+| P39 | Next—Inverse9 arithmetic DAG | Search the twelve inverse9 blocks for a new identity, composite constant or redundant reduction while freezing P35 I16 and memory ABI | Must remove at least one complete Algorithm-10 multiplication per block (36 instructions/Inverse), pass exact root/scale/range proof, then no-spill Slothy and Decaps timing |
 
 ## Fixed facts and non-tasks
 
@@ -94,6 +95,27 @@ Status meanings:
 ## Change log
 
 ### 2026-09-15
+
+- Completed and statically rejected P38 without changing production. The
+  current Full serializer executes 108 `SQRDMULH+MLS` normalization pairs per
+  call. A local Apple-arm64 executable linked the exact production K1 Forward
+  and ran 32,768 valid small plus 32,768 valid Keygen-f inputs. Every one of
+  864 physical output coordinates has a constructive witness outside
+  `(-3457,3457)`; observed unions were `[-16667,15974]` and
+  `[-18539,18288]`. Therefore no coordinate can safely use Small under the
+  unchanged representative contract.
+- A normalization post-pass and normalization immediately before current
+  Forward stores each remove 216 Full instructions but add the same 216
+  instructions to Forward; the former also adds a memory pass and the latter
+  changes the FR0 representation. Exact local B3 enumeration also shows the
+  existing rho-product quotient cannot determine the three output quotients.
+  P38's required 108 true deletions therefore fails with best net zero. Per the
+  hard gate, no candidate assembly, Slothy or Pi 5 run was performed.
+- P39 is now the inverse9 arithmetic-DAG search. It targets P37's remaining
+  +147.075-cycle fused-Inverse gap without repeating rejected P27--P33 routing
+  experiments. A candidate must delete at least one complete Algorithm-10
+  multiplication from each of twelve inverse9 blocks before Slothy. Evidence:
+  `experiments/gt864-p38-forward-full-tobytes-codag/`.
 
 - Completed P37 without changing production. Exact committed P35 revision
   `88fb877e` and the selected SUPERCOP 20260831 AArch64 tree passed fresh

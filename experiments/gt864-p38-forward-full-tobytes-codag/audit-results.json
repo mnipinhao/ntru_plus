@@ -1,0 +1,120 @@
+{
+  "experiment": "GT864-P38-FORWARD-FULL-TOBYTES-CODAG-20260915",
+  "status": "reject_static",
+  "baseline_revision": "18091661a78d1d9e0911302661335a08a3a01a7f",
+  "production_symbols": {
+    "forward": "gt864_forward_poly_ntt_p41_k1_kem_only",
+    "full": "gt864_p18_tobytes_full_asm",
+    "small": "gt864_p18_tobytes_small_asm"
+  },
+  "full_only_instruction_delta": {
+    "full": {
+      "sqrdmulh": 108,
+      "mls": 108
+    },
+    "small": {
+      "sqrdmulh": 0,
+      "mls": 0
+    },
+    "total": 216
+  },
+  "valid_input_diagnostic": {
+    "small": {
+      "trials": 32768,
+      "coordinates_observed_outside_small_contract": 864,
+      "observed_output_range": [
+        -16667,
+        15974
+      ],
+      "latest_first_witness_trial": 1758
+    },
+    "keygen_f": {
+      "trials": 32768,
+      "coordinates_observed_outside_small_contract": 864,
+      "observed_output_range": [
+        -18539,
+        18288
+      ],
+      "latest_first_witness_trial": 1746
+    },
+    "sha256": "2f6b5fa1f263305160345243374afcd49c66f4903a55d15f487638f7c9f8afd3"
+  },
+  "normalization_exhaustive_i16": {
+    "full_mismatches": 0,
+    "small_mismatches": 58622,
+    "full_output": [
+      0,
+      3456
+    ],
+    "full_residual": [
+      -3291,
+      3291
+    ]
+  },
+  "candidate_families": {
+    "unchanged_forward_selective_small": {
+      "removed_full_only_instructions": 0,
+      "reason": "every coordinate has a constructive valid-input witness outside the Small contract"
+    },
+    "canonical_postpass_then_small": {
+      "removed_full_only_instructions": 216,
+      "added_forward_instructions": 216,
+      "net_removed_instructions": 0,
+      "added_coefficient_memory_pass": true
+    },
+    "canonicalize_before_existing_forward_stores_then_small": {
+      "removed_full_only_instructions": 216,
+      "added_forward_instructions": 216,
+      "net_removed_instructions": 0,
+      "fr0_representation_changed": true
+    },
+    "reuse_one_product_rho_quotient": {
+      "removed_full_only_instructions": 0,
+      "reason": "the existing rho-product quotient does not determine the three output quotients",
+      "counterexample": {
+        "rho_product_quotient": 0,
+        "input_a": [
+          -16,
+          -16,
+          -16
+        ],
+        "output_quotients_a": [
+          -1,
+          0,
+          0
+        ],
+        "input_b": [
+          -16,
+          -16,
+          -15
+        ],
+        "output_quotients_b": [
+          -1,
+          0,
+          -1
+        ]
+      }
+    }
+  },
+  "hard_gate": {
+    "required_removed_instructions": 108,
+    "best_net_removed_instructions": 0,
+    "passed": false
+  },
+  "execution": {
+    "slothy": "not run: no candidate passed the arithmetic gate",
+    "pi5": "not run: no candidate passed the arithmetic gate",
+    "production_changed": false
+  },
+  "source_hashes": {
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_forward_poly_ntt.S": "c62b35872056ddba9bfe3b3796b5378f960b7e9d014a538cd7da02cee27fcdb7",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_forward_six_bank.S": "5759ed65e6f42fecda5b3a1fd8041c3dd7d8cc39d73a51e8502b22d62ee593b0",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_top_split.s": "9bd698ae1f0ea1acc4dddfd423a7162a578cbe7ccbc9bef81a8a5f08ea671aa9",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/tail_variants.S": "03e57b13f7e46b536024240ab2ce7346da244a8bd0f4d094154179576ca702e2",
+    "experiments/gt864-p38-forward-full-tobytes-codag/audit.py": "c6d9ad828496feb09fa8273d622f2fdb92a3f2f72fe5d545a5de91ff701ce437",
+    "experiments/gt864-p38-forward-full-tobytes-codag/witness.c": "e3aa94e42504e2dd93aa7bfd478693aadc420a87d316fd75f2830acc6778fa79",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S": "1b2b72019f621c35f760bc8ccc2cd8038a23f326b03f39739e224da5d372f775",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_small.S": "860f1c7b83ce77064af0488e7fc69e121716180a0cb5d8dafd4efade991b2b21",
+    "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/kem.c": "a8d70fa3bfcf301383f12b0605ab2aa74dee761999678e59f1bf945e912b9d26"
+  }
+}

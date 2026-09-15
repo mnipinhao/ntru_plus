@@ -1,0 +1,21 @@
+experiment_id: GT864-P38-FORWARD-FULL-TOBYTES-CODAG-20260915
+operation: direct Forward plus Full ToBytes normalization co-design
+modulus: 3457
+parameter: NTRU+864
+inputs:
+  coefficients: 864 signed int16 in the valid KEM small-producer domain
+outputs:
+  transform: existing R0 FR0 values for all non-byte consumers
+  bytes: exact existing 1296-byte canonical encoding
+memory_contract:
+  added_coefficient_passes: 0
+  added_coefficient_scratch_bytes: 0
+  spills: forbidden
+constant_time:
+  secret_branches: forbidden
+  secret_addresses: forbidden
+success_gate:
+  minimum_true_instruction_deletion: 108
+  minimum_full_call_cycle_target: 150
+  small_tobytes_regression: forbidden
+candidate_generation: forbidden until the static arithmetic gate passes

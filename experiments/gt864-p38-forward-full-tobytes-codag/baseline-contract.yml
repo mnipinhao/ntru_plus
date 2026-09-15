@@ -1,0 +1,27 @@
+experiment_id: GT864-P38-FORWARD-FULL-TOBYTES-CODAG-20260915
+kind: producer_consumer_boundary
+baseline_revision: 18091661
+producer:
+  symbol: gt864_forward_poly_ntt_p41_k1_kem_only
+  input: 864 signed int16 coefficients from current KEM small producers
+  output: 864 signed int16 R0 FR0 coefficients
+  memory: one existing 1728-byte output, no extra metadata
+consumer:
+  symbol: gt864_p18_tobytes_full_asm
+  input: same immutable FR0 array
+  output: exact 1296 canonical bytes
+  full_only_arithmetic: 108 SQRDMULH plus 108 MLS
+other_consumers:
+  - BaseInv
+  - BaseMul R0
+  - BaseMulAdd
+fixed:
+  - logical roots
+  - R0 scale
+  - FR0 physical coordinate order
+  - coefficient load/store boundaries
+  - wire bytes
+  - constant-time behavior
+measured_baseline:
+  full_tobytes_cycles: 1410_to_1413
+  selected_official_equivalent_cycles: 1107_to_1109

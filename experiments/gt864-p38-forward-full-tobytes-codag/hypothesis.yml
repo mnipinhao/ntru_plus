@@ -1,0 +1,27 @@
+experiment_id: GT864-P38-FORWARD-FULL-TOBYTES-CODAG-20260915
+action: optimize-arithmetic
+primary_bottleneck: arithmetic/reduction
+observation: >-
+  P37 measures GT Full ToBytes 301--305 cycles slower per call than selected
+  Official, while GT Small ToBytes is 125--126.5 cycles faster. Full alone
+  contains 108 extra SQRDMULH+MLS normalization pairs.
+hypothesis: >-
+  The three Full callers all serialize direct KEM Forward results, so exact
+  producer quotient classes or final Forward quotient state may let at least
+  half of the 108 Full normalizations be removed rather than relocated.
+exact_proposed_change: >-
+  Audit every current K1 Forward output coordinate under valid small KEM input,
+  classify the normalization requirement, and price unchanged-representative,
+  post-pass, terminal-store, and existing-quotient-reuse DAG families before
+  generating assembly.
+expected_static_effect: at least 108 of 216 Full-only vector instructions removed
+expected_performance_effect: at least 150 cycles per Full call
+expected_register_pressure_effect: >-
+  no increase unless a surviving quotient is proven reusable; any such lifetime
+  must fit the current one-bank output frontier without spill
+correctness_or_range_impact: >-
+  exact wire bytes and all FR0 consumers must remain unchanged, or a complete
+  representation/range ledger and explicit ABI approval are required
+falsifying_measurement: >-
+  every output coordinate needs data-dependent quotient recovery and all
+  realizable families merely move or add the same 216 instructions

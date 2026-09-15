@@ -1,0 +1,15 @@
+experiment_id: GT864-P38-FORWARD-FULL-TOBYTES-CODAG-20260915
+status: reject
+correctness:
+  production_forward_executable_witness: pass
+  full_normalization_exhaustive_int16: pass
+contract:
+  unchanged_forward_selective_small: fail
+  canonical_postpass: fails no-new-memory-pass gate
+  terminal_canonicalization: changes FR0 ABI and has zero static saving
+static:
+  required_removed_instructions: 108
+  best_net_removed_instructions: 0
+slothy: not_applicable_after_static_rejection
+full_path_benchmark: not_applicable_after_static_rejection
+promotion: false

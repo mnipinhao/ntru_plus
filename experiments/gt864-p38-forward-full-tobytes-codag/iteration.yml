@@ -1,0 +1,27 @@
+experiment_id: GT864-P38-FORWARD-FULL-TOBYTES-CODAG-20260915
+mode: existing_region_replacement
+state: instruction_dag_rejected
+baseline_revision: 18091661
+production_symbol: gt864_forward_poly_ntt_p41_k1_kem_only
+full_serializer_symbol: gt864_p18_tobytes_full_asm
+small_serializer_symbol: gt864_p18_tobytes_small_asm
+host_oracle: local Apple arm64
+target_benchmark_host: pi@100.99.191.9
+target_microarchitecture: Cortex-A76
+selected_official: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+static_gate:
+  minimum_removed_full_only_instructions: 108
+  forbidden:
+    - added coefficient memory pass
+    - added coefficient scratch
+    - spill
+    - secret-dependent control or addressing
+  target_cycles_per_full_call: -150
+result:
+  status: reject
+  static_gate: fail
+  best_true_instruction_deletion: 0
+  slothy: not run because no arithmetic candidate passed
+  pi5: not run because no arithmetic candidate passed
+  production_changed: false
+next_gate: P39 inverse9 arithmetic identity and reduction search
