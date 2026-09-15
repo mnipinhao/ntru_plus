@@ -1,0 +1,672 @@
+{
+  "schema": "gt32-exact-elf-dynamic-map-055-pmu-analysis-v1",
+  "warning": "Sampling estimates classify where events occur. They are not exact component-cycle measurements and include skid.",
+  "rows": [
+    {
+      "implementation": "official",
+      "event_class": "cycles",
+      "event": "cpu_core/cycles/u",
+      "period": 5000,
+      "perf_data": "official-cycles.data",
+      "encap_samples": 3011,
+      "estimated_events_per_encap": 4900.716145833333,
+      "top_symbols": [
+        {
+          "symbol": "__KeccakF1600",
+          "samples": 2510,
+          "share": 0.8336100963135171,
+          "estimated_events_per_encap": 4085.2864583333335
+        },
+        {
+          "symbol": "_looptop_start_3456",
+          "samples": 113,
+          "share": 0.037529060112919295,
+          "estimated_events_per_encap": 183.91927083333334
+        },
+        {
+          "symbol": "_looptop_poly_tobytes",
+          "samples": 51,
+          "share": 0.01693789438724676,
+          "estimated_events_per_encap": 83.0078125
+        },
+        {
+          "symbol": "_looptop_basemul",
+          "samples": 39,
+          "share": 0.012952507472600464,
+          "estimated_events_per_encap": 63.4765625
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedLoop",
+          "samples": 35,
+          "share": 0.011624045167718366,
+          "estimated_events_per_encap": 56.966145833333336
+        },
+        {
+          "symbol": "KeccakP1600_Permute_24rounds",
+          "samples": 34,
+          "share": 0.011291929591497841,
+          "estimated_events_per_encap": 55.338541666666664
+        },
+        {
+          "symbol": "_looptop_j_1",
+          "samples": 26,
+          "share": 0.008635004981733644,
+          "estimated_events_per_encap": 42.317708333333336
+        },
+        {
+          "symbol": "_looptop_poly_frombytes",
+          "samples": 24,
+          "share": 0.007970773829292593,
+          "estimated_events_per_encap": 39.0625
+        },
+        {
+          "symbol": "__memset_avx2_unaligned_erms",
+          "samples": 21,
+          "share": 0.006974427100631019,
+          "estimated_events_per_encap": 34.1796875
+        },
+        {
+          "symbol": "_looptop_poly_cbd1_1",
+          "samples": 17,
+          "share": 0.005645964795748921,
+          "estimated_events_per_encap": 27.669270833333332
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedCheck",
+          "samples": 17,
+          "share": 0.005645964795748921,
+          "estimated_events_per_encap": 27.669270833333332
+        },
+        {
+          "symbol": "_looptop_start_2",
+          "samples": 16,
+          "share": 0.005313849219528396,
+          "estimated_events_per_encap": 26.041666666666668
+        },
+        {
+          "symbol": "fips202avx_shake256",
+          "samples": 16,
+          "share": 0.005313849219528396,
+          "estimated_events_per_encap": 26.041666666666668
+        },
+        {
+          "symbol": "_reduce_R2_loop",
+          "samples": 13,
+          "share": 0.004317502490866822,
+          "estimated_events_per_encap": 21.158854166666668
+        },
+        {
+          "symbol": "KeccakP1600_ExtractBytes_LaneAlignedLoop",
+          "samples": 12,
+          "share": 0.003985386914646297,
+          "estimated_events_per_encap": 19.53125
+        },
+        {
+          "symbol": "_looptop_poly_sotp_1",
+          "samples": 12,
+          "share": 0.003985386914646297,
+          "estimated_events_per_encap": 19.53125
+        },
+        {
+          "symbol": "_looptop_j_0",
+          "samples": 8,
+          "share": 0.002656924609764198,
+          "estimated_events_per_encap": 13.020833333333334
+        },
+        {
+          "symbol": "hash_f",
+          "samples": 7,
+          "share": 0.002324809033543673,
+          "estimated_events_per_encap": 11.393229166666666
+        },
+        {
+          "symbol": "crypto_kem_enc_derand",
+          "samples": 6,
+          "share": 0.0019926934573231483,
+          "estimated_events_per_encap": 9.765625
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes",
+          "samples": 5,
+          "share": 0.0016605778811026237,
+          "estimated_events_per_encap": 8.138020833333334
+        }
+      ]
+    },
+    {
+      "implementation": "official",
+      "event_class": "frontend",
+      "event": "cpu_core/idq_uops_not_delivered.core/u",
+      "period": 500,
+      "perf_data": "official-frontend.data",
+      "encap_samples": 2421,
+      "estimated_events_per_encap": 394.04296875,
+      "top_symbols": [
+        {
+          "symbol": "__KeccakF1600",
+          "samples": 623,
+          "share": 0.2573316811235027,
+          "estimated_events_per_encap": 101.39973958333333
+        },
+        {
+          "symbol": "__memset_avx2_unaligned_erms",
+          "samples": 175,
+          "share": 0.07228418009087154,
+          "estimated_events_per_encap": 28.483072916666668
+        },
+        {
+          "symbol": "KeccakP1600_ExtractBytes_LaneAlignedLoop",
+          "samples": 168,
+          "share": 0.06939281288723669,
+          "estimated_events_per_encap": 27.34375
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedLoop",
+          "samples": 163,
+          "share": 0.06732755059892606,
+          "estimated_events_per_encap": 26.529947916666668
+        },
+        {
+          "symbol": "KeccakP1600_Permute_24rounds",
+          "samples": 162,
+          "share": 0.06691449814126393,
+          "estimated_events_per_encap": 26.3671875
+        },
+        {
+          "symbol": "fips202avx_shake256",
+          "samples": 144,
+          "share": 0.05947955390334572,
+          "estimated_events_per_encap": 23.4375
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedCheck",
+          "samples": 113,
+          "share": 0.04667492771581991,
+          "estimated_events_per_encap": 18.391927083333332
+        },
+        {
+          "symbol": "crypto_kem_enc_derand",
+          "samples": 110,
+          "share": 0.04543577034283354,
+          "estimated_events_per_encap": 17.903645833333332
+        },
+        {
+          "symbol": "__explicit_bzero_chk",
+          "samples": 101,
+          "share": 0.041718298223874434,
+          "estimated_events_per_encap": 16.438802083333332
+        },
+        {
+          "symbol": "KeccakP1600_ExtractBytes_Exit",
+          "samples": 65,
+          "share": 0.026848409748038,
+          "estimated_events_per_encap": 10.579427083333334
+        },
+        {
+          "symbol": "KeccakP1600_AddByte",
+          "samples": 55,
+          "share": 0.02271788517141677,
+          "estimated_events_per_encap": 8.951822916666666
+        },
+        {
+          "symbol": "hash_h",
+          "samples": 51,
+          "share": 0.021065675340768277,
+          "estimated_events_per_encap": 8.30078125
+        },
+        {
+          "symbol": "_looptop_poly_cbd1_1",
+          "samples": 50,
+          "share": 0.020652622883106153,
+          "estimated_events_per_encap": 8.138020833333334
+        },
+        {
+          "symbol": "_looptop_poly_sotp_1",
+          "samples": 45,
+          "share": 0.01858736059479554,
+          "estimated_events_per_encap": 7.32421875
+        },
+        {
+          "symbol": "hash_f",
+          "samples": 37,
+          "share": 0.015282940933498555,
+          "estimated_events_per_encap": 6.022135416666667
+        },
+        {
+          "symbol": "hash_g",
+          "samples": 35,
+          "share": 0.014456836018174308,
+          "estimated_events_per_encap": 5.696614583333333
+        },
+        {
+          "symbol": "KeccakP1600_ExtractBytes",
+          "samples": 35,
+          "share": 0.014456836018174308,
+          "estimated_events_per_encap": 5.696614583333333
+        },
+        {
+          "symbol": "poly_cbd1",
+          "samples": 29,
+          "share": 0.01197852127220157,
+          "estimated_events_per_encap": 4.720052083333333
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes",
+          "samples": 29,
+          "share": 0.01197852127220157,
+          "estimated_events_per_encap": 4.720052083333333
+        },
+        {
+          "symbol": "_looptop_poly_tobytes",
+          "samples": 26,
+          "share": 0.0107393638992152,
+          "estimated_events_per_encap": 4.231770833333333
+        }
+      ]
+    },
+    {
+      "implementation": "official",
+      "event_class": "load_pending",
+      "event": "cpu_core/l1d_pend_miss.pending_cycles/u",
+      "period": 500,
+      "perf_data": "official-load_pending.data",
+      "encap_samples": 13,
+      "estimated_events_per_encap": 2.1158854166666665,
+      "top_symbols": [
+        {
+          "symbol": "_looptop_start_3456",
+          "samples": 4,
+          "share": 0.3076923076923077,
+          "estimated_events_per_encap": 0.6510416666666666
+        },
+        {
+          "symbol": "_looptop_poly_frombytes",
+          "samples": 3,
+          "share": 0.23076923076923078,
+          "estimated_events_per_encap": 0.48828125
+        },
+        {
+          "symbol": "_looptop_poly_sotp_1",
+          "samples": 1,
+          "share": 0.07692307692307693,
+          "estimated_events_per_encap": 0.16276041666666666
+        },
+        {
+          "symbol": "__memmove_avx_unaligned_erms",
+          "samples": 1,
+          "share": 0.07692307692307693,
+          "estimated_events_per_encap": 0.16276041666666666
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedLoop",
+          "samples": 1,
+          "share": 0.07692307692307693,
+          "estimated_events_per_encap": 0.16276041666666666
+        },
+        {
+          "symbol": "_looptop_basemul",
+          "samples": 1,
+          "share": 0.07692307692307693,
+          "estimated_events_per_encap": 0.16276041666666666
+        },
+        {
+          "symbol": "[unknown]",
+          "samples": 1,
+          "share": 0.07692307692307693,
+          "estimated_events_per_encap": 0.16276041666666666
+        },
+        {
+          "symbol": "__KeccakF1600",
+          "samples": 1,
+          "share": 0.07692307692307693,
+          "estimated_events_per_encap": 0.16276041666666666
+        }
+      ]
+    },
+    {
+      "implementation": "gt",
+      "event_class": "cycles",
+      "event": "cpu_core/cycles/u",
+      "period": 5000,
+      "perf_data": "gt-cycles.data",
+      "encap_samples": 2767,
+      "estimated_events_per_encap": 4503.580729166667,
+      "top_symbols": [
+        {
+          "symbol": "__KeccakF1600",
+          "samples": 2303,
+          "share": 0.8323093603180339,
+          "estimated_events_per_encap": 3748.3723958333335
+        },
+        {
+          "symbol": "ntruplus768_ntt_m_avx2",
+          "samples": 93,
+          "share": 0.033610408384531984,
+          "estimated_events_per_encap": 151.3671875
+        },
+        {
+          "symbol": "ntruplus768_basemul_general_m_avx2",
+          "samples": 57,
+          "share": 0.02059992771955186,
+          "estimated_events_per_encap": 92.7734375
+        },
+        {
+          "symbol": "ntruplus768_ntt_frontend_avx2",
+          "samples": 56,
+          "share": 0.020238525478857967,
+          "estimated_events_per_encap": 91.14583333333333
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedLoop",
+          "samples": 33,
+          "share": 0.011926273942898446,
+          "estimated_events_per_encap": 53.7109375
+        },
+        {
+          "symbol": "KeccakP1600_Permute_24rounds",
+          "samples": 32,
+          "share": 0.011564871702204554,
+          "estimated_events_per_encap": 52.083333333333336
+        },
+        {
+          "symbol": "ntruplus768_pack_m_lazy10788_avx2",
+          "samples": 32,
+          "share": 0.011564871702204554,
+          "estimated_events_per_encap": 52.083333333333336
+        },
+        {
+          "symbol": "ntruplus768_unpack_m_body_avx2",
+          "samples": 27,
+          "share": 0.009757860498735092,
+          "estimated_events_per_encap": 43.9453125
+        },
+        {
+          "symbol": "_looptop_poly_cbd1_1",
+          "samples": 19,
+          "share": 0.0068666425731839535,
+          "estimated_events_per_encap": 30.924479166666668
+        },
+        {
+          "symbol": "ntruplus768_pack_m_sum_highrange12699_avx2",
+          "samples": 19,
+          "share": 0.0068666425731839535,
+          "estimated_events_per_encap": 30.924479166666668
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedCheck",
+          "samples": 17,
+          "share": 0.006143838091796169,
+          "estimated_events_per_encap": 27.669270833333332
+        },
+        {
+          "symbol": "KeccakP1600_ExtractBytes_LaneAlignedLoop",
+          "samples": 12,
+          "share": 0.0043368268883267076,
+          "estimated_events_per_encap": 19.53125
+        },
+        {
+          "symbol": "_looptop_poly_sotp_1",
+          "samples": 12,
+          "share": 0.0043368268883267076,
+          "estimated_events_per_encap": 19.53125
+        },
+        {
+          "symbol": "fips202avx_shake256",
+          "samples": 11,
+          "share": 0.003975424647632815,
+          "estimated_events_per_encap": 17.903645833333332
+        },
+        {
+          "symbol": "ntruplus768_enc_derand_impl",
+          "samples": 9,
+          "share": 0.0032526201662450307,
+          "estimated_events_per_encap": 14.6484375
+        },
+        {
+          "symbol": "__memset_avx2_unaligned_erms",
+          "samples": 9,
+          "share": 0.0032526201662450307,
+          "estimated_events_per_encap": 14.6484375
+        },
+        {
+          "symbol": "__memmove_avx_unaligned_erms",
+          "samples": 7,
+          "share": 0.002529815684857246,
+          "estimated_events_per_encap": 11.393229166666666
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_Exit",
+          "samples": 3,
+          "share": 0.0010842067220816769,
+          "estimated_events_per_encap": 4.8828125
+        },
+        {
+          "symbol": "hash_h",
+          "samples": 2,
+          "share": 0.0007228044813877846,
+          "estimated_events_per_encap": 3.2552083333333335
+        },
+        {
+          "symbol": "__explicit_bzero_chk@plt",
+          "samples": 2,
+          "share": 0.0007228044813877846,
+          "estimated_events_per_encap": 3.2552083333333335
+        }
+      ]
+    },
+    {
+      "implementation": "gt",
+      "event_class": "frontend",
+      "event": "cpu_core/idq_uops_not_delivered.core/u",
+      "period": 500,
+      "perf_data": "gt-frontend.data",
+      "encap_samples": 2190,
+      "estimated_events_per_encap": 356.4453125,
+      "top_symbols": [
+        {
+          "symbol": "__KeccakF1600",
+          "samples": 490,
+          "share": 0.2237442922374429,
+          "estimated_events_per_encap": 79.75260416666667
+        },
+        {
+          "symbol": "KeccakP1600_Permute_24rounds",
+          "samples": 207,
+          "share": 0.09452054794520548,
+          "estimated_events_per_encap": 33.69140625
+        },
+        {
+          "symbol": "__memset_avx2_unaligned_erms",
+          "samples": 161,
+          "share": 0.07351598173515982,
+          "estimated_events_per_encap": 26.204427083333332
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedLoop",
+          "samples": 154,
+          "share": 0.07031963470319634,
+          "estimated_events_per_encap": 25.065104166666668
+        },
+        {
+          "symbol": "fips202avx_shake256",
+          "samples": 142,
+          "share": 0.06484018264840183,
+          "estimated_events_per_encap": 23.111979166666668
+        },
+        {
+          "symbol": "KeccakP1600_ExtractBytes_LaneAlignedLoop",
+          "samples": 131,
+          "share": 0.059817351598173515,
+          "estimated_events_per_encap": 21.321614583333332
+        },
+        {
+          "symbol": "ntruplus768_enc_derand_impl",
+          "samples": 106,
+          "share": 0.048401826484018265,
+          "estimated_events_per_encap": 17.252604166666668
+        },
+        {
+          "symbol": "__explicit_bzero_chk",
+          "samples": 93,
+          "share": 0.04246575342465753,
+          "estimated_events_per_encap": 15.13671875
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedCheck",
+          "samples": 90,
+          "share": 0.0410958904109589,
+          "estimated_events_per_encap": 14.6484375
+        },
+        {
+          "symbol": "_looptop_poly_sotp_1",
+          "samples": 52,
+          "share": 0.023744292237442923,
+          "estimated_events_per_encap": 8.463541666666666
+        },
+        {
+          "symbol": "_looptop_poly_cbd1_1",
+          "samples": 52,
+          "share": 0.023744292237442923,
+          "estimated_events_per_encap": 8.463541666666666
+        },
+        {
+          "symbol": "KeccakP1600_ExtractBytes",
+          "samples": 49,
+          "share": 0.02237442922374429,
+          "estimated_events_per_encap": 7.975260416666667
+        },
+        {
+          "symbol": "hash_h",
+          "samples": 44,
+          "share": 0.02009132420091324,
+          "estimated_events_per_encap": 7.161458333333333
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LastIncompleteLane",
+          "samples": 43,
+          "share": 0.019634703196347032,
+          "estimated_events_per_encap": 6.998697916666667
+        },
+        {
+          "symbol": "KeccakP1600_ExtractBytes_Exit",
+          "samples": 38,
+          "share": 0.017351598173515982,
+          "estimated_events_per_encap": 6.184895833333333
+        },
+        {
+          "symbol": "ntruplus768_pack_m_sum_highrange12699_avx2",
+          "samples": 35,
+          "share": 0.01598173515981735,
+          "estimated_events_per_encap": 5.696614583333333
+        },
+        {
+          "symbol": "__memmove_avx_unaligned_erms",
+          "samples": 35,
+          "share": 0.01598173515981735,
+          "estimated_events_per_encap": 5.696614583333333
+        },
+        {
+          "symbol": "hash_g",
+          "samples": 31,
+          "share": 0.014155251141552512,
+          "estimated_events_per_encap": 5.045572916666667
+        },
+        {
+          "symbol": "ntruplus768_pack_m_lazy10788_avx2",
+          "samples": 28,
+          "share": 0.012785388127853882,
+          "estimated_events_per_encap": 4.557291666666667
+        },
+        {
+          "symbol": "KeccakP1600_AddByte",
+          "samples": 26,
+          "share": 0.011872146118721462,
+          "estimated_events_per_encap": 4.231770833333333
+        }
+      ]
+    },
+    {
+      "implementation": "gt",
+      "event_class": "load_pending",
+      "event": "cpu_core/l1d_pend_miss.pending_cycles/u",
+      "period": 500,
+      "perf_data": "gt-load_pending.data",
+      "encap_samples": 83,
+      "estimated_events_per_encap": 13.509114583333334,
+      "top_symbols": [
+        {
+          "symbol": "ntruplus768_ntt_frontend_avx2",
+          "samples": 27,
+          "share": 0.3253012048192771,
+          "estimated_events_per_encap": 4.39453125
+        },
+        {
+          "symbol": "ntruplus768_unpack_m_body_avx2",
+          "samples": 20,
+          "share": 0.24096385542168675,
+          "estimated_events_per_encap": 3.2552083333333335
+        },
+        {
+          "symbol": "ntruplus768_ntt_m_avx2",
+          "samples": 14,
+          "share": 0.1686746987951807,
+          "estimated_events_per_encap": 2.2786458333333335
+        },
+        {
+          "symbol": "ntruplus768_basemul_general_m_avx2",
+          "samples": 9,
+          "share": 0.10843373493975904,
+          "estimated_events_per_encap": 1.46484375
+        },
+        {
+          "symbol": "__KeccakF1600",
+          "samples": 3,
+          "share": 0.03614457831325301,
+          "estimated_events_per_encap": 0.48828125
+        },
+        {
+          "symbol": "KeccakP1600_AddBytes_LaneAlignedLoop",
+          "samples": 2,
+          "share": 0.024096385542168676,
+          "estimated_events_per_encap": 0.3255208333333333
+        },
+        {
+          "symbol": "[unknown]",
+          "samples": 2,
+          "share": 0.024096385542168676,
+          "estimated_events_per_encap": 0.3255208333333333
+        },
+        {
+          "symbol": "__memset_avx2_unaligned_erms",
+          "samples": 2,
+          "share": 0.024096385542168676,
+          "estimated_events_per_encap": 0.3255208333333333
+        },
+        {
+          "symbol": "ntruplus768_pack_m_sum_highrange12699_avx2",
+          "samples": 1,
+          "share": 0.012048192771084338,
+          "estimated_events_per_encap": 0.16276041666666666
+        },
+        {
+          "symbol": "_looptop_poly_sotp_1",
+          "samples": 1,
+          "share": 0.012048192771084338,
+          "estimated_events_per_encap": 0.16276041666666666
+        },
+        {
+          "symbol": "KeccakP1600_Permute_24rounds",
+          "samples": 1,
+          "share": 0.012048192771084338,
+          "estimated_events_per_encap": 0.16276041666666666
+        },
+        {
+          "symbol": "ntruplus768_enc_derand_impl",
+          "samples": 1,
+          "share": 0.012048192771084338,
+          "estimated_events_per_encap": 0.16276041666666666
+        }
+      ]
+    }
+  ]
+}

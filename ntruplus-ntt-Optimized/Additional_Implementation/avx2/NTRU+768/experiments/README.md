@@ -15,6 +15,13 @@ index is the decision map for experiments 030 through 059E, including
 supersession, fixed-geometry versus exact-image evidence, the formal
 Official/GT benchmark, and current reopening rules.
 
+Experiments 072 through 128 are summarized in
+[GT32_EXPERIMENT_INDEX_072_128.md](GT32_EXPERIMENT_INDEX_072_128.md).  The
+later index is deliberately a compact decision ledger: superseded untracked
+campaign workspaces and large raw PMU/LBR captures are kept outside the Git
+worktree, while production results and the experiments that remain useful for
+reproduction stay here.
+
 ## Encap consumer-native retirement
 
 [Experiment 068](gt32_encap_consumer_abi_068/) derives the exact checked

@@ -1,0 +1,7143 @@
+{
+  "schema": "gt32-encap-perf-profile-127-lbr-v1",
+  "warning": "leaf LBR medians are descriptive, not an additive reconstruction of full Encap",
+  "summaries": {
+    "official": {
+      "add_m": {
+        "observations": 37,
+        "median": 25,
+        "p10": 25,
+        "p90": 34
+      },
+      "basemul": {
+        "observations": 30,
+        "median": 524.0,
+        "p10": 517,
+        "p90": 532
+      },
+      "cbd_r": {
+        "observations": 64,
+        "median": 118.75,
+        "p10": 115,
+        "p90": 131
+      },
+      "decode": {
+        "observations": 64,
+        "median": 169.0,
+        "p10": 164,
+        "p90": 178
+      },
+      "ntt_m": {
+        "observations": 47,
+        "median": 722,
+        "p10": 711,
+        "p90": 732
+      },
+      "ntt_r": {
+        "observations": 63,
+        "median": 729.5,
+        "p10": 719.0,
+        "p90": 740
+      },
+      "pack_ct": {
+        "observations": 31,
+        "median": 232.0,
+        "p10": 223,
+        "p90": 238
+      },
+      "pack_rhat": {
+        "observations": 63,
+        "median": 212.0,
+        "p10": 208.5,
+        "p90": 215.0
+      },
+      "sotp_m": {
+        "observations": 56,
+        "median": 126.0,
+        "p10": 108.5,
+        "p90": 150
+      }
+    },
+    "gt": {
+      "add_pack_ct": {
+        "observations": 21,
+        "median": 275,
+        "p10": 272,
+        "p90": 278
+      },
+      "basemul": {
+        "observations": 36,
+        "median": 509.0,
+        "p10": 495,
+        "p90": 547
+      },
+      "cbd_r": {
+        "observations": 64,
+        "median": 144.0,
+        "p10": 132,
+        "p90": 146.0
+      },
+      "decode_body": {
+        "observations": 64,
+        "median": 203.0,
+        "p10": 196,
+        "p90": 211.0
+      },
+      "frontend_m": {
+        "observations": 57,
+        "median": 245,
+        "p10": 237,
+        "p90": 250
+      },
+      "frontend_r": {
+        "observations": 64,
+        "median": 244.25,
+        "p10": 240.5,
+        "p90": 249.0
+      },
+      "ntt_m": {
+        "observations": 43,
+        "median": 430,
+        "p10": 418.0,
+        "p90": 441
+      },
+      "ntt_r": {
+        "observations": 64,
+        "median": 430.0,
+        "p10": 423.0,
+        "p90": 436
+      },
+      "pack_rhat": {
+        "observations": 64,
+        "median": 257.0,
+        "p10": 253.0,
+        "p90": 260.5
+      },
+      "sotp_m": {
+        "observations": 59,
+        "median": 137,
+        "p10": 120.0,
+        "p90": 144
+      }
+    }
+  },
+  "semantic_leaf_map": {
+    "decode": {
+      "official_core_cycles": 169.0,
+      "gt_core_cycles": 203.0,
+      "gt_minus_official": 34.0
+    },
+    "cbd_r": {
+      "official_core_cycles": 118.75,
+      "gt_core_cycles": 144.0,
+      "gt_minus_official": 25.25
+    },
+    "r_producer": {
+      "official_core_cycles": 729.5,
+      "gt_core_cycles": 674.25,
+      "gt_minus_official": -55.25
+    },
+    "rhat_serializer": {
+      "official_core_cycles": 212.0,
+      "gt_core_cycles": 257.0,
+      "gt_minus_official": 45.0
+    },
+    "sotp_m": {
+      "official_core_cycles": 126.0,
+      "gt_core_cycles": 137,
+      "gt_minus_official": 11.0
+    },
+    "m_producer": {
+      "official_core_cycles": 722,
+      "gt_core_cycles": 675,
+      "gt_minus_official": -47
+    },
+    "basemul": {
+      "official_core_cycles": 524.0,
+      "gt_core_cycles": 509.0,
+      "gt_minus_official": -15.0
+    },
+    "sum_and_ct_serializer": {
+      "official_core_cycles": 257.0,
+      "gt_core_cycles": 275,
+      "gt_minus_official": 18.0
+    },
+    "mapped_leaf_total": {
+      "official_core_cycles": 2858.25,
+      "gt_core_cycles": 2874.25,
+      "gt_minus_official": 16.0
+    }
+  },
+  "rows": [
+    {
+      "block": 1,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "001-official.data",
+      "intervals": {
+        "ntt_r": {
+          "observations": 4,
+          "median": 739.0,
+          "p10": 730,
+          "p90": 944
+        },
+        "cbd_r": {
+          "observations": 3,
+          "median": 115,
+          "p10": 112,
+          "p90": 160
+        },
+        "decode": {
+          "observations": 3,
+          "median": 168,
+          "p10": 167,
+          "p90": 169
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 527,
+          "p10": 527,
+          "p90": 527
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 722.0,
+          "p10": 715,
+          "p90": 729
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 128.5,
+          "p10": 124,
+          "p90": 146
+        },
+        "pack_rhat": {
+          "observations": 2,
+          "median": 219.5,
+          "p10": 213,
+          "p90": 226
+        }
+      }
+    },
+    {
+      "block": 1,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "001-gt.data",
+      "intervals": {
+        "basemul": {
+          "observations": 1,
+          "median": 1075,
+          "p10": 1075,
+          "p90": 1075
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 427,
+          "p10": 416,
+          "p90": 428
+        },
+        "frontend_m": {
+          "observations": 3,
+          "median": 247,
+          "p10": 245,
+          "p90": 258
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 141.0,
+          "p10": 123,
+          "p90": 189
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 253,
+          "p10": 252,
+          "p90": 262
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 432.5,
+          "p10": 409,
+          "p90": 439
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 247,
+          "p10": 229,
+          "p90": 250
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 119,
+          "p10": 113,
+          "p90": 147
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 208,
+          "p10": 194,
+          "p90": 216
+        }
+      }
+    },
+    {
+      "block": 2,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "002-gt.data",
+      "intervals": {
+        "frontend_r": {
+          "observations": 7,
+          "median": 244,
+          "p10": 236,
+          "p90": 254
+        },
+        "cbd_r": {
+          "observations": 8,
+          "median": 145.0,
+          "p10": 143,
+          "p90": 149
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 207.5,
+          "p10": 196,
+          "p90": 212
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 255,
+          "p10": 250,
+          "p90": 262
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 429,
+          "p10": 420,
+          "p90": 432
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 136.5,
+          "p10": 132,
+          "p90": 141
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 292,
+          "p10": 292,
+          "p90": 292
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 547,
+          "p10": 547,
+          "p90": 547
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 431,
+          "p10": 431,
+          "p90": 431
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 245,
+          "p10": 245,
+          "p90": 245
+        }
+      }
+    },
+    {
+      "block": 2,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "002-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 131,
+          "p10": 117,
+          "p90": 142
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 213.5,
+          "p10": 208,
+          "p90": 214
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 712.5,
+          "p10": 705,
+          "p90": 720
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 131.5,
+          "p10": 111,
+          "p90": 134
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 693,
+          "p10": 693,
+          "p90": 693
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 101,
+          "p10": 101,
+          "p90": 101
+        }
+      }
+    },
+    {
+      "block": 3,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "003-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 7,
+          "median": 169,
+          "p10": 166,
+          "p90": 172
+        },
+        "pack_rhat": {
+          "observations": 10,
+          "median": 210.5,
+          "p10": 209,
+          "p90": 222
+        },
+        "ntt_r": {
+          "observations": 10,
+          "median": 730.0,
+          "p10": 715,
+          "p90": 741
+        },
+        "cbd_r": {
+          "observations": 8,
+          "median": 116.5,
+          "p10": 113,
+          "p90": 148
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 154,
+          "p10": 154,
+          "p90": 154
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 226,
+          "p10": 226,
+          "p90": 226
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 37,
+          "p10": 37,
+          "p90": 37
+        }
+      }
+    },
+    {
+      "block": 3,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "003-gt.data",
+      "intervals": {
+        "cbd_r": {
+          "observations": 7,
+          "median": 142,
+          "p10": 119,
+          "p90": 144
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 254.0,
+          "p10": 253,
+          "p90": 255
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 145,
+          "p10": 145,
+          "p90": 145
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 261.5,
+          "p10": 255,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 430,
+          "p10": 418,
+          "p90": 448
+        },
+        "decode_body": {
+          "observations": 4,
+          "median": 204.5,
+          "p10": 196,
+          "p90": 210
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 249.0,
+          "p10": 243,
+          "p90": 253
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 274,
+          "p10": 274,
+          "p90": 274
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 495,
+          "p10": 495,
+          "p90": 495
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 434,
+          "p10": 434,
+          "p90": 434
+        }
+      }
+    },
+    {
+      "block": 4,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "004-gt.data",
+      "intervals": {
+        "ntt_r": {
+          "observations": 9,
+          "median": 433,
+          "p10": 419,
+          "p90": 447
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 248.0,
+          "p10": 239,
+          "p90": 254
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 143.0,
+          "p10": 114,
+          "p90": 145
+        },
+        "decode_body": {
+          "observations": 7,
+          "median": 202,
+          "p10": 188,
+          "p90": 212
+        },
+        "pack_rhat": {
+          "observations": 8,
+          "median": 252.5,
+          "p10": 251,
+          "p90": 259
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 278,
+          "p10": 278,
+          "p90": 278
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 539.0,
+          "p10": 532,
+          "p90": 546
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 437.0,
+          "p10": 430,
+          "p90": 444
+        },
+        "frontend_m": {
+          "observations": 3,
+          "median": 248,
+          "p10": 241,
+          "p90": 248
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 132,
+          "p10": 128,
+          "p90": 139
+        }
+      }
+    },
+    {
+      "block": 4,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "004-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 210.5,
+          "p10": 204,
+          "p90": 213
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 728,
+          "p10": 715,
+          "p90": 732
+        },
+        "cbd_r": {
+          "observations": 9,
+          "median": 117,
+          "p10": 114,
+          "p90": 154
+        },
+        "decode": {
+          "observations": 5,
+          "median": 170,
+          "p10": 168,
+          "p90": 177
+        }
+      }
+    },
+    {
+      "block": 5,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "005-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 10,
+          "median": 172.5,
+          "p10": 164,
+          "p90": 179
+        },
+        "pack_rhat": {
+          "observations": 9,
+          "median": 212,
+          "p10": 207,
+          "p90": 214
+        },
+        "ntt_r": {
+          "observations": 9,
+          "median": 730,
+          "p10": 716,
+          "p90": 739
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 115,
+          "p10": 114,
+          "p90": 116
+        }
+      }
+    },
+    {
+      "block": 5,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "005-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 8,
+          "median": 212.0,
+          "p10": 200,
+          "p90": 735
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 251,
+          "p10": 249,
+          "p90": 260
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 436,
+          "p10": 419,
+          "p90": 454
+        },
+        "frontend_r": {
+          "observations": 7,
+          "median": 248,
+          "p10": 240,
+          "p90": 251
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 143,
+          "p10": 116,
+          "p90": 147
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 269,
+          "p10": 269,
+          "p90": 269
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 491,
+          "p10": 491,
+          "p90": 491
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 434,
+          "p10": 434,
+          "p90": 434
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 247,
+          "p10": 247,
+          "p90": 247
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 140,
+          "p10": 140,
+          "p90": 140
+        }
+      }
+    },
+    {
+      "block": 6,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "006-gt.data",
+      "intervals": {
+        "frontend_r": {
+          "observations": 6,
+          "median": 247.0,
+          "p10": 234,
+          "p90": 253
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 144.0,
+          "p10": 142,
+          "p90": 150
+        },
+        "ntt_m": {
+          "observations": 4,
+          "median": 434.0,
+          "p10": 421,
+          "p90": 443
+        },
+        "frontend_m": {
+          "observations": 4,
+          "median": 241.0,
+          "p10": 235,
+          "p90": 242
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 142,
+          "p10": 138,
+          "p90": 152
+        },
+        "decode_body": {
+          "observations": 4,
+          "median": 194.5,
+          "p10": 189,
+          "p90": 200
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 260.5,
+          "p10": 258,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 430.0,
+          "p10": 422,
+          "p90": 438
+        },
+        "add_pack_ct": {
+          "observations": 2,
+          "median": 273.5,
+          "p10": 272,
+          "p90": 275
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 539.0,
+          "p10": 514,
+          "p90": 564
+        }
+      }
+    },
+    {
+      "block": 6,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "006-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 212.5,
+          "p10": 206,
+          "p90": 215
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 718.0,
+          "p10": 707,
+          "p90": 731
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 137.5,
+          "p10": 117,
+          "p90": 212
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 711,
+          "p10": 698,
+          "p90": 720
+        },
+        "sotp_m": {
+          "observations": 7,
+          "median": 122,
+          "p10": 121,
+          "p90": 133
+        },
+        "decode": {
+          "observations": 3,
+          "median": 165,
+          "p10": 165,
+          "p90": 178
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 525,
+          "p10": 525,
+          "p90": 525
+        }
+      }
+    },
+    {
+      "block": 7,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "007-official.data",
+      "intervals": {
+        "cbd_r": {
+          "observations": 7,
+          "median": 117,
+          "p10": 113,
+          "p90": 128
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 232,
+          "p10": 232,
+          "p90": 232
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 527,
+          "p10": 527,
+          "p90": 527
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 714.5,
+          "p10": 696,
+          "p90": 733
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 211,
+          "p10": 207,
+          "p90": 212
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 730,
+          "p10": 725,
+          "p90": 737
+        },
+        "decode": {
+          "observations": 7,
+          "median": 171,
+          "p10": 170,
+          "p90": 180
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 138,
+          "p10": 138,
+          "p90": 138
+        }
+      }
+    },
+    {
+      "block": 7,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "007-gt.data",
+      "intervals": {
+        "ntt_r": {
+          "observations": 8,
+          "median": 431.0,
+          "p10": 421,
+          "p90": 440
+        },
+        "frontend_r": {
+          "observations": 7,
+          "median": 247,
+          "p10": 242,
+          "p90": 255
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 145,
+          "p10": 143,
+          "p90": 146
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 191,
+          "p10": 141,
+          "p90": 193
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 258.5,
+          "p10": 249,
+          "p90": 262
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 425.5,
+          "p10": 415,
+          "p90": 436
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 248.5,
+          "p10": 248,
+          "p90": 249
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 120.0,
+          "p10": 87,
+          "p90": 146
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 520,
+          "p10": 520,
+          "p90": 520
+        }
+      }
+    },
+    {
+      "block": 8,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "008-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 6,
+          "median": 205.0,
+          "p10": 200,
+          "p90": 209
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 253.5,
+          "p10": 245,
+          "p90": 259
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 422,
+          "p10": 419,
+          "p90": 439
+        },
+        "frontend_r": {
+          "observations": 7,
+          "median": 246,
+          "p10": 245,
+          "p90": 252
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 145,
+          "p10": 144,
+          "p90": 146
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 124,
+          "p10": 124,
+          "p90": 124
+        }
+      }
+    },
+    {
+      "block": 8,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "008-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 9,
+          "median": 212,
+          "p10": 205,
+          "p90": 214
+        },
+        "ntt_r": {
+          "observations": 10,
+          "median": 741.0,
+          "p10": 711,
+          "p90": 764
+        },
+        "cbd_r": {
+          "observations": 11,
+          "median": 63,
+          "p10": 59,
+          "p90": 123
+        },
+        "decode": {
+          "observations": 10,
+          "median": 167.5,
+          "p10": 161,
+          "p90": 182
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 75.5,
+          "p10": 70,
+          "p90": 81
+        },
+        "pack_ct": {
+          "observations": 2,
+          "median": 234.0,
+          "p10": 229,
+          "p90": 239
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 32,
+          "p10": 32,
+          "p90": 32
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 523,
+          "p10": 523,
+          "p90": 523
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 736,
+          "p10": 736,
+          "p90": 736
+        }
+      }
+    },
+    {
+      "block": 9,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "009-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 172,
+          "p10": 167,
+          "p90": 186
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 211,
+          "p10": 210,
+          "p90": 224
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 730,
+          "p10": 704,
+          "p90": 756
+        },
+        "cbd_r": {
+          "observations": 8,
+          "median": 128.5,
+          "p10": 117,
+          "p90": 138
+        }
+      }
+    },
+    {
+      "block": 9,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "009-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 7,
+          "median": 209,
+          "p10": 193,
+          "p90": 218
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 253.5,
+          "p10": 233,
+          "p90": 256
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 427.5,
+          "p10": 421,
+          "p90": 435
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 240,
+          "p10": 236,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 148,
+          "p10": 144,
+          "p90": 153
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 537,
+          "p10": 537,
+          "p90": 537
+        },
+        "ntt_m": {
+          "observations": 4,
+          "median": 446.0,
+          "p10": 416,
+          "p90": 454
+        },
+        "frontend_m": {
+          "observations": 4,
+          "median": 248.5,
+          "p10": 247,
+          "p90": 251
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 129.0,
+          "p10": 118,
+          "p90": 140
+        }
+      }
+    },
+    {
+      "block": 10,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "010-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 260.5,
+          "p10": 251,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 421,
+          "p10": 415,
+          "p90": 427
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 243.5,
+          "p10": 235,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 96.5,
+          "p10": 63,
+          "p90": 97
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 431.5,
+          "p10": 420,
+          "p90": 443
+        },
+        "frontend_m": {
+          "observations": 3,
+          "median": 245,
+          "p10": 236,
+          "p90": 247
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 112,
+          "p10": 110,
+          "p90": 123
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 208.0,
+          "p10": 190,
+          "p90": 212
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 509,
+          "p10": 509,
+          "p90": 509
+        }
+      }
+    },
+    {
+      "block": 10,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "010-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 7,
+          "median": 212,
+          "p10": 209,
+          "p90": 221
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 732.5,
+          "p10": 712,
+          "p90": 750
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 120.5,
+          "p10": 114,
+          "p90": 166
+        },
+        "decode": {
+          "observations": 7,
+          "median": 169,
+          "p10": 166,
+          "p90": 182
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 126,
+          "p10": 122,
+          "p90": 145
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 720,
+          "p10": 720,
+          "p90": 720
+        }
+      }
+    },
+    {
+      "block": 11,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "011-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 10,
+          "median": 169.0,
+          "p10": 161,
+          "p90": 179
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 210.0,
+          "p10": 203,
+          "p90": 214
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 729.0,
+          "p10": 714,
+          "p90": 733
+        },
+        "cbd_r": {
+          "observations": 3,
+          "median": 115,
+          "p10": 114,
+          "p90": 166
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 532,
+          "p10": 532,
+          "p90": 532
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 722,
+          "p10": 722,
+          "p90": 722
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 123.0,
+          "p10": 120,
+          "p90": 126
+        }
+      }
+    },
+    {
+      "block": 11,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "011-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 4,
+          "median": 245.0,
+          "p10": 238,
+          "p90": 252
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 422,
+          "p10": 416,
+          "p90": 453
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 195.5,
+          "p10": 193,
+          "p90": 212
+        },
+        "frontend_r": {
+          "observations": 3,
+          "median": 248,
+          "p10": 243,
+          "p90": 251
+        },
+        "cbd_r": {
+          "observations": 3,
+          "median": 144,
+          "p10": 118,
+          "p90": 147
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 239.0,
+          "p10": 235,
+          "p90": 243
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 137.5,
+          "p10": 136,
+          "p90": 139
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 431,
+          "p10": 431,
+          "p90": 431
+        }
+      }
+    },
+    {
+      "block": 12,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "012-gt.data",
+      "intervals": {
+        "basemul": {
+          "observations": 1,
+          "median": 579,
+          "p10": 579,
+          "p90": 579
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 419,
+          "p10": 419,
+          "p90": 419
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 242,
+          "p10": 242,
+          "p90": 242
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 143,
+          "p10": 143,
+          "p90": 143
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 265,
+          "p10": 250,
+          "p90": 268
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 432,
+          "p10": 421,
+          "p90": 447
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 198.0,
+          "p10": 185,
+          "p90": 201
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 242,
+          "p10": 241,
+          "p90": 245
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 144,
+          "p10": 115,
+          "p90": 149
+        }
+      }
+    },
+    {
+      "block": 12,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "012-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 7,
+          "median": 214,
+          "p10": 210,
+          "p90": 218
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 726,
+          "p10": 710,
+          "p90": 727
+        },
+        "cbd_r": {
+          "observations": 2,
+          "median": 115.0,
+          "p10": 113,
+          "p90": 117
+        },
+        "decode": {
+          "observations": 5,
+          "median": 164,
+          "p10": 140,
+          "p90": 168
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 120,
+          "p10": 120,
+          "p90": 120
+        }
+      }
+    },
+    {
+      "block": 13,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "013-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 178,
+          "p10": 166,
+          "p90": 230
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 210.5,
+          "p10": 205,
+          "p90": 215
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 730,
+          "p10": 717,
+          "p90": 733
+        },
+        "cbd_r": {
+          "observations": 8,
+          "median": 124.5,
+          "p10": 116,
+          "p90": 159
+        },
+        "ntt_m": {
+          "observations": 4,
+          "median": 721.5,
+          "p10": 716,
+          "p90": 727
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 132.0,
+          "p10": 117,
+          "p90": 157
+        }
+      }
+    },
+    {
+      "block": 13,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "013-gt.data",
+      "intervals": {
+        "cbd_r": {
+          "observations": 8,
+          "median": 144.0,
+          "p10": 141,
+          "p90": 150
+        },
+        "frontend_m": {
+          "observations": 4,
+          "median": 244.0,
+          "p10": 234,
+          "p90": 255
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 134.5,
+          "p10": 118,
+          "p90": 148
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 202,
+          "p10": 193,
+          "p90": 209
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 256.5,
+          "p10": 247,
+          "p90": 260
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 423.0,
+          "p10": 416,
+          "p90": 439
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 244.5,
+          "p10": 237,
+          "p90": 246
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 274,
+          "p10": 274,
+          "p90": 274
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 501,
+          "p10": 501,
+          "p90": 501
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 437.5,
+          "p10": 436,
+          "p90": 439
+        }
+      }
+    },
+    {
+      "block": 14,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "014-gt.data",
+      "intervals": {
+        "frontend_r": {
+          "observations": 7,
+          "median": 242,
+          "p10": 239,
+          "p90": 243
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 145,
+          "p10": 144,
+          "p90": 148
+        },
+        "decode_body": {
+          "observations": 8,
+          "median": 211.0,
+          "p10": 196,
+          "p90": 215
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 257,
+          "p10": 248,
+          "p90": 266
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 426.5,
+          "p10": 414,
+          "p90": 433
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 127.5,
+          "p10": 120,
+          "p90": 135
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 240,
+          "p10": 240,
+          "p90": 240
+        }
+      }
+    },
+    {
+      "block": 14,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "014-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 8,
+          "median": 168.0,
+          "p10": 161,
+          "p90": 172
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 164,
+          "p10": 164,
+          "p90": 164
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 208,
+          "p10": 205,
+          "p90": 235
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 744,
+          "p10": 722,
+          "p90": 760
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 125.5,
+          "p10": 112,
+          "p90": 136
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 231,
+          "p10": 231,
+          "p90": 231
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        }
+      }
+    },
+    {
+      "block": 15,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "015-official.data",
+      "intervals": {
+        "sotp_m": {
+          "observations": 1,
+          "median": 142,
+          "p10": 142,
+          "p90": 142
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 209.0,
+          "p10": 206,
+          "p90": 212
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 731.0,
+          "p10": 698,
+          "p90": 739
+        },
+        "decode": {
+          "observations": 4,
+          "median": 163.5,
+          "p10": 158,
+          "p90": 170
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 130,
+          "p10": 117,
+          "p90": 161
+        },
+        "pack_ct": {
+          "observations": 2,
+          "median": 233.0,
+          "p10": 232,
+          "p90": 234
+        },
+        "add_m": {
+          "observations": 2,
+          "median": 25.0,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 517,
+          "p10": 517,
+          "p90": 517
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 731,
+          "p10": 731,
+          "p90": 731
+        }
+      }
+    },
+    {
+      "block": 15,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "015-gt.data",
+      "intervals": {
+        "cbd_r": {
+          "observations": 6,
+          "median": 145.5,
+          "p10": 140,
+          "p90": 147
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 276,
+          "p10": 276,
+          "p90": 276
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 552,
+          "p10": 552,
+          "p90": 552
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 422,
+          "p10": 422,
+          "p90": 422
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 241.5,
+          "p10": 239,
+          "p90": 244
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 243,
+          "p10": 239,
+          "p90": 251
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 137.0,
+          "p10": 136,
+          "p90": 138
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 196,
+          "p10": 186,
+          "p90": 199
+        },
+        "pack_rhat": {
+          "observations": 3,
+          "median": 255,
+          "p10": 253,
+          "p90": 262
+        },
+        "ntt_r": {
+          "observations": 3,
+          "median": 421,
+          "p10": 419,
+          "p90": 434
+        }
+      }
+    },
+    {
+      "block": 16,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "016-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 5,
+          "median": 203,
+          "p10": 182,
+          "p90": 1145
+        },
+        "pack_rhat": {
+          "observations": 8,
+          "median": 258.5,
+          "p10": 254,
+          "p90": 261
+        },
+        "ntt_r": {
+          "observations": 8,
+          "median": 435.0,
+          "p10": 424,
+          "p90": 440
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 243.0,
+          "p10": 230,
+          "p90": 255
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 146.5,
+          "p10": 142,
+          "p90": 147
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 528.5,
+          "p10": 518,
+          "p90": 539
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 418.0,
+          "p10": 417,
+          "p90": 419
+        },
+        "frontend_m": {
+          "observations": 3,
+          "median": 246,
+          "p10": 242,
+          "p90": 260
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 129.0,
+          "p10": 123,
+          "p90": 133
+        }
+      }
+    },
+    {
+      "block": 16,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "016-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 3,
+          "median": 183,
+          "p10": 158,
+          "p90": 218
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 119,
+          "p10": 114,
+          "p90": 156
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 745,
+          "p10": 745,
+          "p90": 745
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 126,
+          "p10": 120,
+          "p90": 127
+        },
+        "pack_rhat": {
+          "observations": 1,
+          "median": 210,
+          "p10": 210,
+          "p90": 210
+        },
+        "ntt_r": {
+          "observations": 1,
+          "median": 745,
+          "p10": 745,
+          "p90": 745
+        }
+      }
+    },
+    {
+      "block": 17,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "017-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 8,
+          "median": 212.5,
+          "p10": 208,
+          "p90": 214
+        },
+        "ntt_r": {
+          "observations": 9,
+          "median": 724,
+          "p10": 712,
+          "p90": 735
+        },
+        "cbd_r": {
+          "observations": 9,
+          "median": 118,
+          "p10": 117,
+          "p90": 165
+        },
+        "decode": {
+          "observations": 8,
+          "median": 170.0,
+          "p10": 161,
+          "p90": 184
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 150,
+          "p10": 150,
+          "p90": 150
+        }
+      }
+    },
+    {
+      "block": 17,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "017-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 7,
+          "median": 259,
+          "p10": 252,
+          "p90": 261
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 428.5,
+          "p10": 419,
+          "p90": 436
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 244.5,
+          "p10": 241,
+          "p90": 249
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 143,
+          "p10": 116,
+          "p90": 146
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 197.5,
+          "p10": 189,
+          "p90": 205
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 249,
+          "p10": 249,
+          "p90": 249
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 137,
+          "p10": 137,
+          "p90": 137
+        }
+      }
+    },
+    {
+      "block": 18,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "018-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 8,
+          "median": 207.0,
+          "p10": 195,
+          "p90": 216
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 256,
+          "p10": 251,
+          "p90": 261
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 430,
+          "p10": 423,
+          "p90": 438
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 244,
+          "p10": 238,
+          "p90": 250
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 144,
+          "p10": 113,
+          "p90": 145
+        }
+      }
+    },
+    {
+      "block": 18,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "018-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 8,
+          "median": 179.0,
+          "p10": 171,
+          "p90": 182
+        },
+        "ntt_r": {
+          "observations": 2,
+          "median": 727.5,
+          "p10": 712,
+          "p90": 743
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 117.0,
+          "p10": 112,
+          "p90": 164
+        },
+        "pack_rhat": {
+          "observations": 2,
+          "median": 212.5,
+          "p10": 209,
+          "p90": 216
+        }
+      }
+    },
+    {
+      "block": 19,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "019-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 173,
+          "p10": 164,
+          "p90": 185
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 214,
+          "p10": 205,
+          "p90": 224
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 724.5,
+          "p10": 711,
+          "p90": 738
+        },
+        "cbd_r": {
+          "observations": 8,
+          "median": 116.0,
+          "p10": 112,
+          "p90": 155
+        },
+        "pack_ct": {
+          "observations": 2,
+          "median": 227.5,
+          "p10": 224,
+          "p90": 231
+        },
+        "add_m": {
+          "observations": 3,
+          "median": 25,
+          "p10": 25,
+          "p90": 31
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 519.0,
+          "p10": 514,
+          "p90": 524
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 701,
+          "p10": 701,
+          "p90": 701
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 160,
+          "p10": 160,
+          "p90": 160
+        }
+      }
+    },
+    {
+      "block": 19,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "019-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 6,
+          "median": 197.5,
+          "p10": 159,
+          "p90": 209
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 254.0,
+          "p10": 248,
+          "p90": 259
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 422.5,
+          "p10": 419,
+          "p90": 444
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 243,
+          "p10": 236,
+          "p90": 264
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 145.0,
+          "p10": 115,
+          "p90": 148
+        },
+        "add_pack_ct": {
+          "observations": 2,
+          "median": 277.5,
+          "p10": 275,
+          "p90": 280
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 510.0,
+          "p10": 501,
+          "p90": 519
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 443,
+          "p10": 443,
+          "p90": 443
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 223,
+          "p10": 223,
+          "p90": 223
+        }
+      }
+    },
+    {
+      "block": 20,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "020-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 9,
+          "median": 204,
+          "p10": 193,
+          "p90": 216
+        },
+        "pack_rhat": {
+          "observations": 10,
+          "median": 254.5,
+          "p10": 248,
+          "p90": 268
+        },
+        "ntt_r": {
+          "observations": 10,
+          "median": 431.5,
+          "p10": 423,
+          "p90": 448
+        },
+        "frontend_r": {
+          "observations": 10,
+          "median": 243.0,
+          "p10": 238,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 10,
+          "median": 146.5,
+          "p10": 115,
+          "p90": 147
+        },
+        "sotp_m": {
+          "observations": 6,
+          "median": 143.5,
+          "p10": 140,
+          "p90": 146
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 509.5,
+          "p10": 496,
+          "p90": 523
+        },
+        "ntt_m": {
+          "observations": 5,
+          "median": 430,
+          "p10": 422,
+          "p90": 435
+        },
+        "frontend_m": {
+          "observations": 5,
+          "median": 237,
+          "p10": 227,
+          "p90": 247
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 276,
+          "p10": 276,
+          "p90": 276
+        }
+      }
+    },
+    {
+      "block": 20,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "020-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 7,
+          "median": 176,
+          "p10": 163,
+          "p90": 182
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 167,
+          "p10": 167,
+          "p90": 167
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 211.0,
+          "p10": 207,
+          "p90": 213
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 716,
+          "p10": 712,
+          "p90": 725
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 128,
+          "p10": 110,
+          "p90": 166
+        }
+      }
+    },
+    {
+      "block": 21,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "021-official.data",
+      "intervals": {
+        "cbd_r": {
+          "observations": 9,
+          "median": 117,
+          "p10": 115,
+          "p90": 155
+        },
+        "decode": {
+          "observations": 5,
+          "median": 169,
+          "p10": 148,
+          "p90": 175
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 209.5,
+          "p10": 207,
+          "p90": 211
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 719.0,
+          "p10": 703,
+          "p90": 738
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 238,
+          "p10": 238,
+          "p90": 238
+        },
+        "add_m": {
+          "observations": 2,
+          "median": 26.5,
+          "p10": 25,
+          "p90": 28
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 521.5,
+          "p10": 516,
+          "p90": 527
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 721.0,
+          "p10": 717,
+          "p90": 725
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 142.5,
+          "p10": 125,
+          "p90": 160
+        }
+      }
+    },
+    {
+      "block": 21,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "021-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 12,
+          "median": 209.0,
+          "p10": 192,
+          "p90": 225
+        },
+        "pack_rhat": {
+          "observations": 9,
+          "median": 258,
+          "p10": 253,
+          "p90": 267
+        },
+        "ntt_r": {
+          "observations": 9,
+          "median": 428,
+          "p10": 417,
+          "p90": 437
+        },
+        "frontend_r": {
+          "observations": 8,
+          "median": 243.0,
+          "p10": 235,
+          "p90": 253
+        },
+        "cbd_r": {
+          "observations": 9,
+          "median": 144,
+          "p10": 117,
+          "p90": 149
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 250.0,
+          "p10": 236,
+          "p90": 264
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 117.0,
+          "p10": 109,
+          "p90": 125
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 422,
+          "p10": 422,
+          "p90": 422
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 274,
+          "p10": 274,
+          "p90": 274
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 508,
+          "p10": 508,
+          "p90": 508
+        }
+      }
+    },
+    {
+      "block": 22,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "022-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 4,
+          "median": 204.5,
+          "p10": 193,
+          "p90": 210
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 254,
+          "p10": 249,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 439,
+          "p10": 420,
+          "p90": 457
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 242.5,
+          "p10": 232,
+          "p90": 244
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 143.5,
+          "p10": 112,
+          "p90": 145
+        },
+        "add_pack_ct": {
+          "observations": 2,
+          "median": 272.5,
+          "p10": 272,
+          "p90": 273
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 523.5,
+          "p10": 495,
+          "p90": 552
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 411.0,
+          "p10": 409,
+          "p90": 413
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 249.0,
+          "p10": 248,
+          "p90": 250
+        }
+      }
+    },
+    {
+      "block": 22,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "022-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 9,
+          "median": 213,
+          "p10": 211,
+          "p90": 218
+        },
+        "ntt_r": {
+          "observations": 10,
+          "median": 718.0,
+          "p10": 711,
+          "p90": 739
+        },
+        "cbd_r": {
+          "observations": 10,
+          "median": 117.5,
+          "p10": 113,
+          "p90": 134
+        },
+        "decode": {
+          "observations": 9,
+          "median": 174,
+          "p10": 166,
+          "p90": 181
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 214,
+          "p10": 214,
+          "p90": 214
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 527.0,
+          "p10": 524,
+          "p90": 530
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 708,
+          "p10": 698,
+          "p90": 742
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 141.0,
+          "p10": 123,
+          "p90": 165
+        }
+      }
+    },
+    {
+      "block": 23,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "023-official.data",
+      "intervals": {
+        "sotp_m": {
+          "observations": 4,
+          "median": 124.5,
+          "p10": 118,
+          "p90": 150
+        },
+        "pack_rhat": {
+          "observations": 3,
+          "median": 215,
+          "p10": 214,
+          "p90": 219
+        },
+        "ntt_r": {
+          "observations": 3,
+          "median": 740,
+          "p10": 692,
+          "p90": 745
+        },
+        "decode": {
+          "observations": 3,
+          "median": 170,
+          "p10": 164,
+          "p90": 175
+        },
+        "cbd_r": {
+          "observations": 3,
+          "median": 116,
+          "p10": 113,
+          "p90": 116
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 234,
+          "p10": 234,
+          "p90": 234
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 36,
+          "p10": 36,
+          "p90": 36
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 511.5,
+          "p10": 500,
+          "p90": 523
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 699,
+          "p10": 699,
+          "p90": 699
+        }
+      }
+    },
+    {
+      "block": 23,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "023-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 5,
+          "median": 256,
+          "p10": 253,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 427,
+          "p10": 411,
+          "p90": 440
+        },
+        "frontend_r": {
+          "observations": 4,
+          "median": 241.5,
+          "p10": 239,
+          "p90": 254
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 146.0,
+          "p10": 140,
+          "p90": 150
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 199.0,
+          "p10": 185,
+          "p90": 207
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 497,
+          "p10": 497,
+          "p90": 497
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 421,
+          "p10": 421,
+          "p90": 421
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 252,
+          "p10": 252,
+          "p90": 252
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 125,
+          "p10": 125,
+          "p90": 125
+        }
+      }
+    },
+    {
+      "block": 24,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "024-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 11,
+          "median": 202,
+          "p10": 197,
+          "p90": 212
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 431,
+          "p10": 418,
+          "p90": 435
+        },
+        "frontend_m": {
+          "observations": 4,
+          "median": 242.5,
+          "p10": 237,
+          "p90": 247
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 139.5,
+          "p10": 139,
+          "p90": 151
+        },
+        "pack_rhat": {
+          "observations": 9,
+          "median": 254,
+          "p10": 249,
+          "p90": 264
+        },
+        "ntt_r": {
+          "observations": 10,
+          "median": 425.5,
+          "p10": 419,
+          "p90": 446
+        },
+        "frontend_r": {
+          "observations": 9,
+          "median": 243,
+          "p10": 232,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 11,
+          "median": 145,
+          "p10": 117,
+          "p90": 148
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 528,
+          "p10": 528,
+          "p90": 528
+        }
+      }
+    },
+    {
+      "block": 24,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "024-official.data",
+      "intervals": {
+        "sotp_m": {
+          "observations": 2,
+          "median": 120.0,
+          "p10": 117,
+          "p90": 123
+        },
+        "decode": {
+          "observations": 7,
+          "median": 172,
+          "p10": 158,
+          "p90": 182
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 237,
+          "p10": 237,
+          "p90": 237
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 727,
+          "p10": 727,
+          "p90": 727
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 212,
+          "p10": 209,
+          "p90": 214
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 732,
+          "p10": 715,
+          "p90": 748
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 119,
+          "p10": 118,
+          "p90": 120
+        }
+      }
+    },
+    {
+      "block": 25,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "025-official.data",
+      "intervals": {
+        "cbd_r": {
+          "observations": 6,
+          "median": 117.5,
+          "p10": 112,
+          "p90": 120
+        },
+        "decode": {
+          "observations": 4,
+          "median": 170.0,
+          "p10": 163,
+          "p90": 209
+        },
+        "pack_rhat": {
+          "observations": 2,
+          "median": 216.5,
+          "p10": 214,
+          "p90": 219
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 723.5,
+          "p10": 715,
+          "p90": 762
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 34,
+          "p10": 34,
+          "p90": 34
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 522,
+          "p10": 522,
+          "p90": 522
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 713,
+          "p10": 713,
+          "p90": 713
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 121.0,
+          "p10": 120,
+          "p90": 122
+        }
+      }
+    },
+    {
+      "block": 25,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "025-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 7,
+          "median": 208,
+          "p10": 204,
+          "p90": 217
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 257,
+          "p10": 253,
+          "p90": 261
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 428,
+          "p10": 421,
+          "p90": 432
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 241.5,
+          "p10": 236,
+          "p90": 251
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 129.5,
+          "p10": 113,
+          "p90": 148
+        },
+        "frontend_m": {
+          "observations": 3,
+          "median": 233,
+          "p10": 232,
+          "p90": 241
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 138,
+          "p10": 137,
+          "p90": 156
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 428,
+          "p10": 428,
+          "p90": 428
+        }
+      }
+    },
+    {
+      "block": 26,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "026-gt.data",
+      "intervals": {
+        "ntt_m": {
+          "observations": 2,
+          "median": 419.0,
+          "p10": 418,
+          "p90": 420
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 242.5,
+          "p10": 242,
+          "p90": 243
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 136,
+          "p10": 127,
+          "p90": 151
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 258,
+          "p10": 257,
+          "p90": 266
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 425,
+          "p10": 421,
+          "p90": 440
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 235,
+          "p10": 231,
+          "p90": 246
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 132,
+          "p10": 106,
+          "p90": 144
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 212.5,
+          "p10": 196,
+          "p90": 215
+        }
+      }
+    },
+    {
+      "block": 26,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "026-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 4,
+          "median": 168.5,
+          "p10": 160,
+          "p90": 179
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 213.0,
+          "p10": 211,
+          "p90": 216
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 732,
+          "p10": 720,
+          "p90": 734
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 117.0,
+          "p10": 115,
+          "p90": 121
+        },
+        "pack_ct": {
+          "observations": 2,
+          "median": 224.5,
+          "p10": 224,
+          "p90": 225
+        },
+        "add_m": {
+          "observations": 4,
+          "median": 26.5,
+          "p10": 25,
+          "p90": 34
+        },
+        "basemul": {
+          "observations": 3,
+          "median": 523,
+          "p10": 516,
+          "p90": 530
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 720,
+          "p10": 703,
+          "p90": 742
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 145,
+          "p10": 126,
+          "p90": 154
+        }
+      }
+    },
+    {
+      "block": 27,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "027-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 182,
+          "p10": 173,
+          "p90": 247
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 213,
+          "p10": 209,
+          "p90": 216
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 726,
+          "p10": 708,
+          "p90": 760
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 118,
+          "p10": 116,
+          "p90": 160
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 122.0,
+          "p10": 101,
+          "p90": 156
+        },
+        "add_m": {
+          "observations": 3,
+          "median": 25,
+          "p10": 25,
+          "p90": 30
+        },
+        "basemul": {
+          "observations": 3,
+          "median": 526,
+          "p10": 525,
+          "p90": 528
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 709,
+          "p10": 708,
+          "p90": 710
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 239,
+          "p10": 239,
+          "p90": 239
+        }
+      }
+    },
+    {
+      "block": 27,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "027-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 5,
+          "median": 197,
+          "p10": 170,
+          "p90": 211
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 261.5,
+          "p10": 257,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 427.5,
+          "p10": 413,
+          "p90": 440
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 244.0,
+          "p10": 232,
+          "p90": 252
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 143.0,
+          "p10": 136,
+          "p90": 147
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 243.0,
+          "p10": 242,
+          "p90": 244
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 142,
+          "p10": 142,
+          "p90": 142
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 272,
+          "p10": 272,
+          "p90": 272
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 497,
+          "p10": 497,
+          "p90": 497
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 434,
+          "p10": 434,
+          "p90": 434
+        }
+      }
+    },
+    {
+      "block": 28,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "028-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 6,
+          "median": 202.0,
+          "p10": 191,
+          "p90": 213
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 258.0,
+          "p10": 251,
+          "p90": 261
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 430.0,
+          "p10": 423,
+          "p90": 433
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 240.0,
+          "p10": 232,
+          "p90": 245
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 144.0,
+          "p10": 122,
+          "p90": 146
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 441,
+          "p10": 441,
+          "p90": 441
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 250,
+          "p10": 250,
+          "p90": 250
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 138.5,
+          "p10": 136,
+          "p90": 141
+        }
+      }
+    },
+    {
+      "block": 28,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "028-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 213.0,
+          "p10": 208,
+          "p90": 214
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 737.5,
+          "p10": 710,
+          "p90": 738
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 134.5,
+          "p10": 117,
+          "p90": 159
+        },
+        "decode": {
+          "observations": 6,
+          "median": 170.0,
+          "p10": 165,
+          "p90": 175
+        }
+      }
+    },
+    {
+      "block": 29,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "029-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 7,
+          "median": 209,
+          "p10": 208,
+          "p90": 212
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 733,
+          "p10": 712,
+          "p90": 740
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 137,
+          "p10": 111,
+          "p90": 165
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 724,
+          "p10": 724,
+          "p90": 724
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 108,
+          "p10": 107,
+          "p90": 148
+        },
+        "decode": {
+          "observations": 7,
+          "median": 166,
+          "p10": 146,
+          "p90": 170
+        }
+      }
+    },
+    {
+      "block": 29,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "029-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 7,
+          "median": 189,
+          "p10": 168,
+          "p90": 195
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 264,
+          "p10": 249,
+          "p90": 265
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 435,
+          "p10": 421,
+          "p90": 442
+        },
+        "frontend_r": {
+          "observations": 4,
+          "median": 241.0,
+          "p10": 238,
+          "p90": 249
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 145.5,
+          "p10": 145,
+          "p90": 150
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 427.5,
+          "p10": 427,
+          "p90": 428
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 246.0,
+          "p10": 242,
+          "p90": 250
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 139.0,
+          "p10": 138,
+          "p90": 140
+        }
+      }
+    },
+    {
+      "block": 30,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "030-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 8,
+          "median": 255.0,
+          "p10": 249,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 8,
+          "median": 430.0,
+          "p10": 418,
+          "p90": 441
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 201,
+          "p10": 191,
+          "p90": 207
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 247,
+          "p10": 236,
+          "p90": 252
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 145,
+          "p10": 142,
+          "p90": 153
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 236,
+          "p10": 236,
+          "p90": 236
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 120,
+          "p10": 120,
+          "p90": 120
+        }
+      }
+    },
+    {
+      "block": 30,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "030-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 6,
+          "median": 168.5,
+          "p10": 147,
+          "p90": 177
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 236,
+          "p10": 236,
+          "p90": 236
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 732,
+          "p10": 732,
+          "p90": 732
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 122.0,
+          "p10": 121,
+          "p90": 123
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 214.0,
+          "p10": 209,
+          "p90": 216
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 725.5,
+          "p10": 715,
+          "p90": 739
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 116.5,
+          "p10": 114,
+          "p90": 131
+        }
+      }
+    },
+    {
+      "block": 31,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "031-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 214.0,
+          "p10": 207,
+          "p90": 217
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 735.0,
+          "p10": 714,
+          "p90": 762
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 115.5,
+          "p10": 111,
+          "p90": 126
+        },
+        "decode": {
+          "observations": 4,
+          "median": 122.0,
+          "p10": 120,
+          "p90": 122
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 234,
+          "p10": 234,
+          "p90": 234
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 525,
+          "p10": 525,
+          "p90": 525
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 714.5,
+          "p10": 712,
+          "p90": 717
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 105,
+          "p10": 102,
+          "p90": 157
+        }
+      }
+    },
+    {
+      "block": 31,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "031-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 5,
+          "median": 195,
+          "p10": 174,
+          "p90": 218
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 261,
+          "p10": 255,
+          "p90": 271
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 423,
+          "p10": 421,
+          "p90": 440
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 248.0,
+          "p10": 240,
+          "p90": 253
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 147.0,
+          "p10": 142,
+          "p90": 148
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 427,
+          "p10": 427,
+          "p90": 427
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 249.5,
+          "p10": 247,
+          "p90": 252
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 139.0,
+          "p10": 132,
+          "p90": 146
+        }
+      }
+    },
+    {
+      "block": 32,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "032-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 250.5,
+          "p10": 237,
+          "p90": 253
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 434.5,
+          "p10": 431,
+          "p90": 445
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 246.5,
+          "p10": 239,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 144.5,
+          "p10": 114,
+          "p90": 150
+        },
+        "decode_body": {
+          "observations": 7,
+          "median": 210,
+          "p10": 201,
+          "p90": 215
+        }
+      }
+    },
+    {
+      "block": 32,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "032-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 8,
+          "median": 173.0,
+          "p10": 164,
+          "p90": 185
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 213.0,
+          "p10": 209,
+          "p90": 217
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 728.0,
+          "p10": 720,
+          "p90": 730
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 120,
+          "p10": 115,
+          "p90": 153
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 723,
+          "p10": 723,
+          "p90": 723
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 125,
+          "p10": 125,
+          "p90": 125
+        }
+      }
+    },
+    {
+      "block": 33,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "033-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 6,
+          "median": 164.0,
+          "p10": 162,
+          "p90": 170
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 211,
+          "p10": 208,
+          "p90": 216
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 735,
+          "p10": 728,
+          "p90": 750
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 64,
+          "p10": 63,
+          "p90": 65
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 227,
+          "p10": 227,
+          "p90": 227
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 724.0,
+          "p10": 710,
+          "p90": 738
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 130,
+          "p10": 74,
+          "p90": 135
+        }
+      }
+    },
+    {
+      "block": 33,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "033-gt.data",
+      "intervals": {
+        "frontend_m": {
+          "observations": 3,
+          "median": 238,
+          "p10": 235,
+          "p90": 238
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 145,
+          "p10": 141,
+          "p90": 145
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 257.0,
+          "p10": 246,
+          "p90": 262
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 430.5,
+          "p10": 428,
+          "p90": 450
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 199,
+          "p10": 196,
+          "p90": 201
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 509.0,
+          "p10": 497,
+          "p90": 521
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 433.5,
+          "p10": 419,
+          "p90": 448
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 143.5,
+          "p10": 143,
+          "p90": 148
+        },
+        "frontend_r": {
+          "observations": 3,
+          "median": 250,
+          "p10": 246,
+          "p90": 259
+        }
+      }
+    },
+    {
+      "block": 34,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "034-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 7,
+          "median": 256,
+          "p10": 249,
+          "p90": 259
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 439,
+          "p10": 416,
+          "p90": 452
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 251,
+          "p10": 251,
+          "p90": 251
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 136,
+          "p10": 136,
+          "p90": 136
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 204.0,
+          "p10": 200,
+          "p90": 214
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 240,
+          "p10": 236,
+          "p90": 254
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 146,
+          "p10": 141,
+          "p90": 150
+        }
+      }
+    },
+    {
+      "block": 34,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "034-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 2,
+          "median": 215.5,
+          "p10": 210,
+          "p90": 221
+        },
+        "ntt_r": {
+          "observations": 2,
+          "median": 744.5,
+          "p10": 739,
+          "p90": 750
+        },
+        "cbd_r": {
+          "observations": 2,
+          "median": 137.5,
+          "p10": 118,
+          "p90": 157
+        },
+        "decode": {
+          "observations": 3,
+          "median": 167,
+          "p10": 166,
+          "p90": 170
+        },
+        "add_m": {
+          "observations": 2,
+          "median": 25.0,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 522.5,
+          "p10": 519,
+          "p90": 526
+        },
+        "ntt_m": {
+          "observations": 4,
+          "median": 716.5,
+          "p10": 705,
+          "p90": 740
+        },
+        "sotp_m": {
+          "observations": 5,
+          "median": 122,
+          "p10": 118,
+          "p90": 162
+        }
+      }
+    },
+    {
+      "block": 35,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "035-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 8,
+          "median": 165.0,
+          "p10": 157,
+          "p90": 180
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 208,
+          "p10": 204,
+          "p90": 217
+        },
+        "ntt_r": {
+          "observations": 9,
+          "median": 711,
+          "p10": 702,
+          "p90": 745
+        },
+        "cbd_r": {
+          "observations": 11,
+          "median": 118,
+          "p10": 112,
+          "p90": 131
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 723,
+          "p10": 715,
+          "p90": 726
+        },
+        "sotp_m": {
+          "observations": 5,
+          "median": 136,
+          "p10": 124,
+          "p90": 161
+        }
+      }
+    },
+    {
+      "block": 35,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "035-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 7,
+          "median": 258,
+          "p10": 258,
+          "p90": 262
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 436,
+          "p10": 424,
+          "p90": 447
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 251.0,
+          "p10": 236,
+          "p90": 255
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 145.0,
+          "p10": 112,
+          "p90": 147
+        },
+        "decode_body": {
+          "observations": 4,
+          "median": 210.0,
+          "p10": 189,
+          "p90": 217
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 491,
+          "p10": 491,
+          "p90": 491
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 436,
+          "p10": 436,
+          "p90": 436
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 244.0,
+          "p10": 243,
+          "p90": 245
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 121.0,
+          "p10": 113,
+          "p90": 134
+        }
+      }
+    },
+    {
+      "block": 36,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "036-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 8,
+          "median": 201.5,
+          "p10": 152,
+          "p90": 212
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 251,
+          "p10": 246,
+          "p90": 258
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 436,
+          "p10": 427,
+          "p90": 444
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 243.5,
+          "p10": 239,
+          "p90": 245
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 141,
+          "p10": 139,
+          "p90": 145
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 461,
+          "p10": 461,
+          "p90": 461
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 248,
+          "p10": 248,
+          "p90": 248
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 138,
+          "p10": 138,
+          "p90": 138
+        }
+      }
+    },
+    {
+      "block": 36,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "036-official.data",
+      "intervals": {
+        "add_m": {
+          "observations": 2,
+          "median": 34.0,
+          "p10": 28,
+          "p90": 40
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 514.0,
+          "p10": 513,
+          "p90": 515
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 717,
+          "p10": 696,
+          "p90": 726
+        },
+        "sotp_m": {
+          "observations": 5,
+          "median": 123,
+          "p10": 120,
+          "p90": 158
+        },
+        "cbd_r": {
+          "observations": 3,
+          "median": 127,
+          "p10": 111,
+          "p90": 133
+        },
+        "decode": {
+          "observations": 2,
+          "median": 178.5,
+          "p10": 178,
+          "p90": 179
+        }
+      }
+    },
+    {
+      "block": 37,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "037-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 4,
+          "median": 213.5,
+          "p10": 205,
+          "p90": 229
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 729.5,
+          "p10": 701,
+          "p90": 746
+        },
+        "decode": {
+          "observations": 2,
+          "median": 169.0,
+          "p10": 167,
+          "p90": 171
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 115.5,
+          "p10": 114,
+          "p90": 158
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 28,
+          "p10": 28,
+          "p90": 28
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 511,
+          "p10": 511,
+          "p90": 511
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 720.0,
+          "p10": 708,
+          "p90": 732
+        },
+        "sotp_m": {
+          "observations": 5,
+          "median": 124,
+          "p10": 123,
+          "p90": 155
+        }
+      }
+    },
+    {
+      "block": 37,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "037-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 5,
+          "median": 208,
+          "p10": 197,
+          "p90": 1146
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 260.0,
+          "p10": 248,
+          "p90": 267
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 427,
+          "p10": 415,
+          "p90": 464
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 244,
+          "p10": 236,
+          "p90": 250
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 144,
+          "p10": 118,
+          "p90": 149
+        },
+        "frontend_m": {
+          "observations": 3,
+          "median": 253,
+          "p10": 238,
+          "p90": 262
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 134,
+          "p10": 119,
+          "p90": 146
+        }
+      }
+    },
+    {
+      "block": 38,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "038-gt.data",
+      "intervals": {
+        "sotp_m": {
+          "observations": 1,
+          "median": 112,
+          "p10": 112,
+          "p90": 112
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 255,
+          "p10": 254,
+          "p90": 260
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 422,
+          "p10": 413,
+          "p90": 437
+        },
+        "frontend_r": {
+          "observations": 4,
+          "median": 244.5,
+          "p10": 239,
+          "p90": 256
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 133.0,
+          "p10": 113,
+          "p90": 153
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 197.5,
+          "p10": 192,
+          "p90": 204
+        }
+      }
+    },
+    {
+      "block": 38,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "038-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 5,
+          "median": 214,
+          "p10": 210,
+          "p90": 214
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 726,
+          "p10": 715,
+          "p90": 750
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 127.5,
+          "p10": 115,
+          "p90": 153
+        },
+        "decode": {
+          "observations": 5,
+          "median": 166,
+          "p10": 133,
+          "p90": 181
+        },
+        "add_m": {
+          "observations": 3,
+          "median": 25,
+          "p10": 25,
+          "p90": 37
+        },
+        "basemul": {
+          "observations": 3,
+          "median": 525,
+          "p10": 512,
+          "p90": 528
+        },
+        "ntt_m": {
+          "observations": 4,
+          "median": 724.0,
+          "p10": 721,
+          "p90": 738
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 132.0,
+          "p10": 116,
+          "p90": 154
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 222,
+          "p10": 222,
+          "p90": 222
+        }
+      }
+    },
+    {
+      "block": 39,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "039-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 169,
+          "p10": 144,
+          "p90": 174
+        },
+        "pack_rhat": {
+          "observations": 3,
+          "median": 208,
+          "p10": 208,
+          "p90": 213
+        },
+        "ntt_r": {
+          "observations": 3,
+          "median": 740,
+          "p10": 740,
+          "p90": 741
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 128,
+          "p10": 115,
+          "p90": 157
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 726,
+          "p10": 707,
+          "p90": 728
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 145,
+          "p10": 123,
+          "p90": 154
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 223,
+          "p10": 223,
+          "p90": 223
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 29,
+          "p10": 29,
+          "p90": 29
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 520,
+          "p10": 520,
+          "p90": 520
+        }
+      }
+    },
+    {
+      "block": 39,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "039-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 8,
+          "median": 205.0,
+          "p10": 197,
+          "p90": 215
+        },
+        "pack_rhat": {
+          "observations": 8,
+          "median": 257.5,
+          "p10": 254,
+          "p90": 260
+        },
+        "ntt_r": {
+          "observations": 9,
+          "median": 432,
+          "p10": 425,
+          "p90": 444
+        },
+        "frontend_r": {
+          "observations": 7,
+          "median": 245,
+          "p10": 238,
+          "p90": 253
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 144,
+          "p10": 142,
+          "p90": 145
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 250,
+          "p10": 250,
+          "p90": 250
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 141.5,
+          "p10": 141,
+          "p90": 142
+        }
+      }
+    },
+    {
+      "block": 40,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "040-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 7,
+          "median": 258,
+          "p10": 252,
+          "p90": 275
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 436,
+          "p10": 425,
+          "p90": 438
+        },
+        "frontend_r": {
+          "observations": 8,
+          "median": 247.5,
+          "p10": 241,
+          "p90": 261
+        },
+        "cbd_r": {
+          "observations": 8,
+          "median": 141.0,
+          "p10": 137,
+          "p90": 145
+        },
+        "decode_body": {
+          "observations": 8,
+          "median": 207.0,
+          "p10": 196,
+          "p90": 217
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 409,
+          "p10": 409,
+          "p90": 409
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 253,
+          "p10": 253,
+          "p90": 253
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 137,
+          "p10": 137,
+          "p90": 137
+        }
+      }
+    },
+    {
+      "block": 40,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "040-official.data",
+      "intervals": {
+        "sotp_m": {
+          "observations": 5,
+          "median": 84,
+          "p10": 77,
+          "p90": 102
+        },
+        "decode": {
+          "observations": 11,
+          "median": 169,
+          "p10": 133,
+          "p90": 180
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 726,
+          "p10": 711,
+          "p90": 734
+        },
+        "pack_rhat": {
+          "observations": 11,
+          "median": 210,
+          "p10": 205,
+          "p90": 221
+        },
+        "ntt_r": {
+          "observations": 11,
+          "median": 738,
+          "p10": 727,
+          "p90": 751
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 64,
+          "p10": 61,
+          "p90": 67
+        }
+      }
+    },
+    {
+      "block": 41,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "041-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 5,
+          "median": 214,
+          "p10": 209,
+          "p90": 221
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 721,
+          "p10": 696,
+          "p90": 750
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 129,
+          "p10": 119,
+          "p90": 164
+        },
+        "decode": {
+          "observations": 6,
+          "median": 166.5,
+          "p10": 164,
+          "p90": 174
+        },
+        "pack_ct": {
+          "observations": 3,
+          "median": 242,
+          "p10": 232,
+          "p90": 249
+        },
+        "add_m": {
+          "observations": 3,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 3,
+          "median": 523,
+          "p10": 520,
+          "p90": 526
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 726,
+          "p10": 724,
+          "p90": 738
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 106.5,
+          "p10": 102,
+          "p90": 111
+        }
+      }
+    },
+    {
+      "block": 41,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "041-gt.data",
+      "intervals": {
+        "ntt_r": {
+          "observations": 7,
+          "median": 435,
+          "p10": 427,
+          "p90": 440
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 239,
+          "p10": 234,
+          "p90": 243
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 144.5,
+          "p10": 116,
+          "p90": 153
+        },
+        "add_pack_ct": {
+          "observations": 2,
+          "median": 273.0,
+          "p10": 268,
+          "p90": 278
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 257.5,
+          "p10": 255,
+          "p90": 263
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 199,
+          "p10": 188,
+          "p90": 216
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 425,
+          "p10": 425,
+          "p90": 425
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 241,
+          "p10": 241,
+          "p90": 241
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 152,
+          "p10": 152,
+          "p90": 152
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 502,
+          "p10": 502,
+          "p90": 502
+        }
+      }
+    },
+    {
+      "block": 42,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "042-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 7,
+          "median": 210,
+          "p10": 187,
+          "p90": 218
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 260.0,
+          "p10": 254,
+          "p90": 262
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 429.0,
+          "p10": 418,
+          "p90": 445
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 239.5,
+          "p10": 237,
+          "p90": 240
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 145.0,
+          "p10": 115,
+          "p90": 147
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 134,
+          "p10": 134,
+          "p90": 134
+        }
+      }
+    },
+    {
+      "block": 42,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "042-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 4,
+          "median": 215.0,
+          "p10": 213,
+          "p90": 218
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 724.0,
+          "p10": 712,
+          "p90": 726
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 117,
+          "p10": 117,
+          "p90": 133
+        },
+        "decode": {
+          "observations": 5,
+          "median": 163,
+          "p10": 155,
+          "p90": 656
+        },
+        "pack_ct": {
+          "observations": 2,
+          "median": 232.0,
+          "p10": 227,
+          "p90": 237
+        },
+        "add_m": {
+          "observations": 2,
+          "median": 25.0,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 529.0,
+          "p10": 527,
+          "p90": 531
+        },
+        "ntt_m": {
+          "observations": 4,
+          "median": 732.5,
+          "p10": 719,
+          "p90": 745
+        },
+        "sotp_m": {
+          "observations": 5,
+          "median": 126,
+          "p10": 121,
+          "p90": 143
+        }
+      }
+    },
+    {
+      "block": 43,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "043-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 174,
+          "p10": 163,
+          "p90": 230
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 215,
+          "p10": 208,
+          "p90": 219
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 730,
+          "p10": 713,
+          "p90": 740
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 119,
+          "p10": 116,
+          "p90": 137
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 730,
+          "p10": 720,
+          "p90": 742
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 125.5,
+          "p10": 112,
+          "p90": 144
+        }
+      }
+    },
+    {
+      "block": 43,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "043-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 12,
+          "median": 213.0,
+          "p10": 191,
+          "p90": 236
+        },
+        "pack_rhat": {
+          "observations": 9,
+          "median": 260,
+          "p10": 253,
+          "p90": 265
+        },
+        "ntt_r": {
+          "observations": 11,
+          "median": 428,
+          "p10": 419,
+          "p90": 444
+        },
+        "frontend_r": {
+          "observations": 10,
+          "median": 245.0,
+          "p10": 241,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 12,
+          "median": 144.0,
+          "p10": 117,
+          "p90": 148
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 437.5,
+          "p10": 427,
+          "p90": 448
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 246.5,
+          "p10": 244,
+          "p90": 249
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 137.5,
+          "p10": 134,
+          "p90": 141
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 278,
+          "p10": 278,
+          "p90": 278
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 504,
+          "p10": 504,
+          "p90": 504
+        }
+      }
+    },
+    {
+      "block": 44,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "044-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 253.0,
+          "p10": 248,
+          "p90": 261
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 429,
+          "p10": 428,
+          "p90": 440
+        },
+        "frontend_r": {
+          "observations": 7,
+          "median": 252,
+          "p10": 248,
+          "p90": 257
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 141,
+          "p10": 120,
+          "p90": 148
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 201,
+          "p10": 195,
+          "p90": 216
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 249.0,
+          "p10": 248,
+          "p90": 250
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 130.0,
+          "p10": 118,
+          "p90": 142
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 484,
+          "p10": 484,
+          "p90": 484
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 426,
+          "p10": 426,
+          "p90": 426
+        }
+      }
+    },
+    {
+      "block": 44,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "044-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 5,
+          "median": 212,
+          "p10": 210,
+          "p90": 217
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 714,
+          "p10": 708,
+          "p90": 717
+        },
+        "cbd_r": {
+          "observations": 9,
+          "median": 131,
+          "p10": 118,
+          "p90": 163
+        },
+        "decode": {
+          "observations": 7,
+          "median": 180,
+          "p10": 174,
+          "p90": 182
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 231,
+          "p10": 231,
+          "p90": 231
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 526,
+          "p10": 526,
+          "p90": 526
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 712.5,
+          "p10": 710,
+          "p90": 715
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 127,
+          "p10": 120,
+          "p90": 148
+        }
+      }
+    },
+    {
+      "block": 45,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "045-official.data",
+      "intervals": {
+        "pack_ct": {
+          "observations": 1,
+          "median": 235,
+          "p10": 235,
+          "p90": 235
+        },
+        "add_m": {
+          "observations": 2,
+          "median": 25.0,
+          "p10": 25,
+          "p90": 25
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 743.0,
+          "p10": 695,
+          "p90": 754
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 120,
+          "p10": 114,
+          "p90": 162
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 719.5,
+          "p10": 719,
+          "p90": 720
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 127,
+          "p10": 122,
+          "p90": 143
+        },
+        "decode": {
+          "observations": 2,
+          "median": 172.5,
+          "p10": 167,
+          "p90": 178
+        },
+        "pack_rhat": {
+          "observations": 2,
+          "median": 221.0,
+          "p10": 215,
+          "p90": 227
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 538,
+          "p10": 538,
+          "p90": 538
+        }
+      }
+    },
+    {
+      "block": 45,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "045-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 5,
+          "median": 204,
+          "p10": 196,
+          "p90": 224
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 256,
+          "p10": 250,
+          "p90": 264
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 436.0,
+          "p10": 426,
+          "p90": 442
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 247,
+          "p10": 241,
+          "p90": 250
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 136,
+          "p10": 108,
+          "p90": 141
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 238,
+          "p10": 238,
+          "p90": 238
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 125,
+          "p10": 125,
+          "p90": 125
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 277,
+          "p10": 277,
+          "p90": 277
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 506,
+          "p10": 506,
+          "p90": 506
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 424,
+          "p10": 424,
+          "p90": 424
+        }
+      }
+    },
+    {
+      "block": 46,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "046-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 5,
+          "median": 254,
+          "p10": 243,
+          "p90": 268
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 430.5,
+          "p10": 425,
+          "p90": 435
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 246,
+          "p10": 232,
+          "p90": 254
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 141,
+          "p10": 114,
+          "p90": 144
+        },
+        "decode_body": {
+          "observations": 7,
+          "median": 201,
+          "p10": 195,
+          "p90": 205
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 278,
+          "p10": 278,
+          "p90": 278
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 510,
+          "p10": 510,
+          "p90": 510
+        }
+      }
+    },
+    {
+      "block": 46,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "046-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 8,
+          "median": 175.5,
+          "p10": 165,
+          "p90": 184
+        },
+        "pack_rhat": {
+          "observations": 8,
+          "median": 214.0,
+          "p10": 209,
+          "p90": 225
+        },
+        "ntt_r": {
+          "observations": 8,
+          "median": 724.5,
+          "p10": 719,
+          "p90": 751
+        },
+        "cbd_r": {
+          "observations": 9,
+          "median": 121,
+          "p10": 113,
+          "p90": 148
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 715,
+          "p10": 715,
+          "p90": 715
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 145.0,
+          "p10": 129,
+          "p90": 161
+        }
+      }
+    },
+    {
+      "block": 47,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "047-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 174,
+          "p10": 167,
+          "p90": 222
+        },
+        "pack_rhat": {
+          "observations": 8,
+          "median": 211.5,
+          "p10": 209,
+          "p90": 218
+        },
+        "ntt_r": {
+          "observations": 8,
+          "median": 739.0,
+          "p10": 732,
+          "p90": 765
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 125,
+          "p10": 119,
+          "p90": 159
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 226,
+          "p10": 226,
+          "p90": 226
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 536,
+          "p10": 536,
+          "p90": 536
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 730,
+          "p10": 730,
+          "p90": 730
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 117,
+          "p10": 117,
+          "p90": 117
+        }
+      }
+    },
+    {
+      "block": 47,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "047-gt.data",
+      "intervals": {
+        "ntt_m": {
+          "observations": 2,
+          "median": 436.5,
+          "p10": 423,
+          "p90": 450
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 246.5,
+          "p10": 245,
+          "p90": 248
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 150.0,
+          "p10": 118,
+          "p90": 150
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 257,
+          "p10": 250,
+          "p90": 259
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 433,
+          "p10": 425,
+          "p90": 456
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 201,
+          "p10": 196,
+          "p90": 220
+        },
+        "frontend_r": {
+          "observations": 3,
+          "median": 245,
+          "p10": 239,
+          "p90": 250
+        },
+        "cbd_r": {
+          "observations": 3,
+          "median": 142,
+          "p10": 115,
+          "p90": 144
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 507,
+          "p10": 507,
+          "p90": 507
+        }
+      }
+    },
+    {
+      "block": 48,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "048-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 5,
+          "median": 210,
+          "p10": 196,
+          "p90": 215
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 432.0,
+          "p10": 418,
+          "p90": 442
+        },
+        "frontend_r": {
+          "observations": 4,
+          "median": 240.5,
+          "p10": 237,
+          "p90": 244
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 147.0,
+          "p10": 120,
+          "p90": 160
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 228,
+          "p10": 228,
+          "p90": 228
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 137.5,
+          "p10": 137,
+          "p90": 138
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 255,
+          "p10": 249,
+          "p90": 260
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 272,
+          "p10": 272,
+          "p90": 272
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 496,
+          "p10": 496,
+          "p90": 496
+        }
+      }
+    },
+    {
+      "block": 48,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "048-official.data",
+      "intervals": {
+        "cbd_r": {
+          "observations": 5,
+          "median": 115,
+          "p10": 114,
+          "p90": 161
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 210,
+          "p10": 207,
+          "p90": 216
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 727,
+          "p10": 721,
+          "p90": 736
+        },
+        "decode": {
+          "observations": 6,
+          "median": 173.5,
+          "p10": 166,
+          "p90": 177
+        }
+      }
+    },
+    {
+      "block": 49,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "049-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 8,
+          "median": 166.0,
+          "p10": 153,
+          "p90": 168
+        },
+        "pack_rhat": {
+          "observations": 8,
+          "median": 213.0,
+          "p10": 211,
+          "p90": 215
+        },
+        "ntt_r": {
+          "observations": 8,
+          "median": 729.0,
+          "p10": 720,
+          "p90": 737
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 107,
+          "p10": 103,
+          "p90": 113
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 118,
+          "p10": 118,
+          "p90": 118
+        }
+      }
+    },
+    {
+      "block": 49,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "049-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 7,
+          "median": 258,
+          "p10": 251,
+          "p90": 265
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 425,
+          "p10": 420,
+          "p90": 437
+        },
+        "frontend_r": {
+          "observations": 8,
+          "median": 244.0,
+          "p10": 236,
+          "p90": 249
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 141,
+          "p10": 116,
+          "p90": 144
+        },
+        "decode_body": {
+          "observations": 5,
+          "median": 196,
+          "p10": 192,
+          "p90": 216
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 274,
+          "p10": 274,
+          "p90": 274
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 509,
+          "p10": 509,
+          "p90": 509
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 418,
+          "p10": 418,
+          "p90": 418
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 245,
+          "p10": 245,
+          "p90": 245
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 122,
+          "p10": 122,
+          "p90": 122
+        }
+      }
+    },
+    {
+      "block": 50,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "050-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 8,
+          "median": 212.0,
+          "p10": 204,
+          "p90": 218
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 255.5,
+          "p10": 241,
+          "p90": 259
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 423.5,
+          "p10": 407,
+          "p90": 435
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 244,
+          "p10": 234,
+          "p90": 261
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 133,
+          "p10": 102,
+          "p90": 146
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 497,
+          "p10": 497,
+          "p90": 497
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 447,
+          "p10": 447,
+          "p90": 447
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 241,
+          "p10": 241,
+          "p90": 241
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 147,
+          "p10": 147,
+          "p90": 147
+        }
+      }
+    },
+    {
+      "block": 50,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "050-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 6,
+          "median": 170.0,
+          "p10": 160,
+          "p90": 172
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 213,
+          "p10": 208,
+          "p90": 216
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 733,
+          "p10": 714,
+          "p90": 739
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 119,
+          "p10": 114,
+          "p90": 129
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 122,
+          "p10": 122,
+          "p90": 122
+        }
+      }
+    },
+    {
+      "block": 51,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "051-official.data",
+      "intervals": {
+        "pack_ct": {
+          "observations": 1,
+          "median": 236,
+          "p10": 236,
+          "p90": 236
+        },
+        "add_m": {
+          "observations": 3,
+          "median": 28,
+          "p10": 25,
+          "p90": 53
+        },
+        "basemul": {
+          "observations": 3,
+          "median": 519,
+          "p10": 511,
+          "p90": 527
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 715,
+          "p10": 712,
+          "p90": 748
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 210.0,
+          "p10": 202,
+          "p90": 216
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 730.0,
+          "p10": 729,
+          "p90": 736
+        },
+        "cbd_r": {
+          "observations": 3,
+          "median": 131,
+          "p10": 116,
+          "p90": 157
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 147.0,
+          "p10": 122,
+          "p90": 153
+        },
+        "decode": {
+          "observations": 4,
+          "median": 170.5,
+          "p10": 163,
+          "p90": 177
+        }
+      }
+    },
+    {
+      "block": 51,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "051-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 11,
+          "median": 197,
+          "p10": 192,
+          "p90": 222
+        },
+        "pack_rhat": {
+          "observations": 9,
+          "median": 255,
+          "p10": 248,
+          "p90": 264
+        },
+        "ntt_r": {
+          "observations": 10,
+          "median": 431.5,
+          "p10": 427,
+          "p90": 447
+        },
+        "frontend_r": {
+          "observations": 9,
+          "median": 243,
+          "p10": 231,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 9,
+          "median": 144,
+          "p10": 121,
+          "p90": 147
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 510,
+          "p10": 510,
+          "p90": 510
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 438.0,
+          "p10": 436,
+          "p90": 440
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 242.0,
+          "p10": 235,
+          "p90": 249
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 143,
+          "p10": 121,
+          "p90": 144
+        }
+      }
+    },
+    {
+      "block": 52,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "052-gt.data",
+      "intervals": {
+        "sotp_m": {
+          "observations": 2,
+          "median": 110.5,
+          "p10": 81,
+          "p90": 140
+        },
+        "decode_body": {
+          "observations": 8,
+          "median": 200.5,
+          "p10": 192,
+          "p90": 211
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 255,
+          "p10": 255,
+          "p90": 255
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 260.5,
+          "p10": 255,
+          "p90": 264
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 428.0,
+          "p10": 420,
+          "p90": 431
+        },
+        "frontend_r": {
+          "observations": 4,
+          "median": 251.5,
+          "p10": 243,
+          "p90": 257
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 143.0,
+          "p10": 140,
+          "p90": 146
+        }
+      }
+    },
+    {
+      "block": 52,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "052-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 6,
+          "median": 166.0,
+          "p10": 139,
+          "p90": 168
+        },
+        "pack_rhat": {
+          "observations": 3,
+          "median": 216,
+          "p10": 211,
+          "p90": 217
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 732.5,
+          "p10": 724,
+          "p90": 744
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 115,
+          "p10": 108,
+          "p90": 151
+        },
+        "pack_ct": {
+          "observations": 2,
+          "median": 228.0,
+          "p10": 227,
+          "p90": 229
+        },
+        "add_m": {
+          "observations": 3,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 526.5,
+          "p10": 524,
+          "p90": 529
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 720,
+          "p10": 720,
+          "p90": 720
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 120,
+          "p10": 120,
+          "p90": 120
+        }
+      }
+    },
+    {
+      "block": 53,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "053-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 10,
+          "median": 163.0,
+          "p10": 149,
+          "p90": 173
+        },
+        "pack_rhat": {
+          "observations": 11,
+          "median": 213,
+          "p10": 207,
+          "p90": 219
+        },
+        "ntt_r": {
+          "observations": 11,
+          "median": 724,
+          "p10": 710,
+          "p90": 754
+        },
+        "cbd_r": {
+          "observations": 12,
+          "median": 120.5,
+          "p10": 115,
+          "p90": 137
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 232,
+          "p10": 232,
+          "p90": 232
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 534,
+          "p10": 534,
+          "p90": 534
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 726,
+          "p10": 726,
+          "p90": 726
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 124,
+          "p10": 124,
+          "p90": 124
+        }
+      }
+    },
+    {
+      "block": 53,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "053-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 5,
+          "median": 255,
+          "p10": 250,
+          "p90": 262
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 440.5,
+          "p10": 424,
+          "p90": 448
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 243.0,
+          "p10": 232,
+          "p90": 249
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 145,
+          "p10": 117,
+          "p90": 151
+        },
+        "decode_body": {
+          "observations": 9,
+          "median": 210,
+          "p10": 196,
+          "p90": 213
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 246,
+          "p10": 246,
+          "p90": 246
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 123,
+          "p10": 123,
+          "p90": 123
+        }
+      }
+    },
+    {
+      "block": 54,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "054-gt.data",
+      "intervals": {
+        "frontend_m": {
+          "observations": 1,
+          "median": 248,
+          "p10": 248,
+          "p90": 248
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 141,
+          "p10": 141,
+          "p90": 141
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 256.5,
+          "p10": 253,
+          "p90": 259
+        },
+        "decode_body": {
+          "observations": 7,
+          "median": 194,
+          "p10": 185,
+          "p90": 206
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 434,
+          "p10": 419,
+          "p90": 442
+        },
+        "frontend_r": {
+          "observations": 4,
+          "median": 246.0,
+          "p10": 244,
+          "p90": 252
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 147.5,
+          "p10": 141,
+          "p90": 148
+        }
+      }
+    },
+    {
+      "block": 54,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "054-official.data",
+      "intervals": {
+        "pack_ct": {
+          "observations": 2,
+          "median": 234.0,
+          "p10": 233,
+          "p90": 235
+        },
+        "add_m": {
+          "observations": 2,
+          "median": 291.0,
+          "p10": 25,
+          "p90": 557
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 527.5,
+          "p10": 527,
+          "p90": 528
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 728,
+          "p10": 723,
+          "p90": 779
+        },
+        "sotp_m": {
+          "observations": 5,
+          "median": 138,
+          "p10": 121,
+          "p90": 374
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 208,
+          "p10": 201,
+          "p90": 212
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 724,
+          "p10": 702,
+          "p90": 727
+        },
+        "decode": {
+          "observations": 5,
+          "median": 169,
+          "p10": 147,
+          "p90": 185
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 119.0,
+          "p10": 106,
+          "p90": 143
+        }
+      }
+    },
+    {
+      "block": 55,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "055-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 8,
+          "median": 166.0,
+          "p10": 162,
+          "p90": 168
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 115,
+          "p10": 114,
+          "p90": 119
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 215.0,
+          "p10": 211,
+          "p90": 217
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 731.0,
+          "p10": 717,
+          "p90": 739
+        }
+      }
+    },
+    {
+      "block": 55,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "055-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 7,
+          "median": 213,
+          "p10": 194,
+          "p90": 216
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 260,
+          "p10": 249,
+          "p90": 265
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 425,
+          "p10": 413,
+          "p90": 432
+        },
+        "frontend_r": {
+          "observations": 5,
+          "median": 249,
+          "p10": 244,
+          "p90": 253
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 131.0,
+          "p10": 115,
+          "p90": 141
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 438.5,
+          "p10": 434,
+          "p90": 443
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 243.5,
+          "p10": 238,
+          "p90": 249
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 121,
+          "p10": 121,
+          "p90": 121
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 275,
+          "p10": 275,
+          "p90": 275
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 497,
+          "p10": 497,
+          "p90": 497
+        }
+      }
+    },
+    {
+      "block": 56,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "056-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 4,
+          "median": 201.0,
+          "p10": 195,
+          "p90": 208
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 254.5,
+          "p10": 249,
+          "p90": 259
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 427.5,
+          "p10": 412,
+          "p90": 428
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 247.5,
+          "p10": 241,
+          "p90": 249
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 104,
+          "p10": 99,
+          "p90": 105
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 507,
+          "p10": 507,
+          "p90": 507
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 414,
+          "p10": 414,
+          "p90": 414
+        },
+        "frontend_m": {
+          "observations": 3,
+          "median": 237,
+          "p10": 231,
+          "p90": 244
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 119,
+          "p10": 115,
+          "p90": 120
+        }
+      }
+    },
+    {
+      "block": 56,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "056-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 3,
+          "median": 211,
+          "p10": 206,
+          "p90": 211
+        },
+        "ntt_r": {
+          "observations": 3,
+          "median": 725,
+          "p10": 717,
+          "p90": 746
+        },
+        "decode": {
+          "observations": 3,
+          "median": 170,
+          "p10": 167,
+          "p90": 172
+        },
+        "cbd_r": {
+          "observations": 1,
+          "median": 117,
+          "p10": 117,
+          "p90": 117
+        },
+        "add_m": {
+          "observations": 2,
+          "median": 32.5,
+          "p10": 25,
+          "p90": 40
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 519.5,
+          "p10": 510,
+          "p90": 529
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 723,
+          "p10": 719,
+          "p90": 726
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 123,
+          "p10": 121,
+          "p90": 147
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 221,
+          "p10": 221,
+          "p90": 221
+        }
+      }
+    },
+    {
+      "block": 57,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "057-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 5,
+          "median": 168,
+          "p10": 139,
+          "p90": 205
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 208,
+          "p10": 207,
+          "p90": 212
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 735,
+          "p10": 714,
+          "p90": 1918
+        },
+        "cbd_r": {
+          "observations": 8,
+          "median": 130.5,
+          "p10": 114,
+          "p90": 163
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 235,
+          "p10": 235,
+          "p90": 235
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        }
+      }
+    },
+    {
+      "block": 57,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "057-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 11,
+          "median": 207,
+          "p10": 170,
+          "p90": 217
+        },
+        "pack_rhat": {
+          "observations": 11,
+          "median": 261,
+          "p10": 254,
+          "p90": 268
+        },
+        "ntt_r": {
+          "observations": 11,
+          "median": 434,
+          "p10": 417,
+          "p90": 445
+        },
+        "frontend_r": {
+          "observations": 9,
+          "median": 247,
+          "p10": 243,
+          "p90": 258
+        },
+        "cbd_r": {
+          "observations": 9,
+          "median": 144,
+          "p10": 142,
+          "p90": 148
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 242,
+          "p10": 242,
+          "p90": 242
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 132.0,
+          "p10": 120,
+          "p90": 144
+        }
+      }
+    },
+    {
+      "block": 58,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "058-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 9,
+          "median": 198,
+          "p10": 193,
+          "p90": 209
+        },
+        "pack_rhat": {
+          "observations": 8,
+          "median": 260.5,
+          "p10": 252,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 10,
+          "median": 434.5,
+          "p10": 418,
+          "p90": 444
+        },
+        "frontend_r": {
+          "observations": 8,
+          "median": 240.5,
+          "p10": 238,
+          "p90": 246
+        },
+        "cbd_r": {
+          "observations": 8,
+          "median": 146.0,
+          "p10": 143,
+          "p90": 149
+        },
+        "frontend_m": {
+          "observations": 4,
+          "median": 242.0,
+          "p10": 242,
+          "p90": 255
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 144,
+          "p10": 142,
+          "p90": 147
+        },
+        "basemul": {
+          "observations": 2,
+          "median": 533.0,
+          "p10": 501,
+          "p90": 565
+        },
+        "ntt_m": {
+          "observations": 3,
+          "median": 423,
+          "p10": 409,
+          "p90": 444
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 278,
+          "p10": 278,
+          "p90": 278
+        }
+      }
+    },
+    {
+      "block": 58,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "058-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 6,
+          "median": 175.0,
+          "p10": 132,
+          "p90": 184
+        },
+        "pack_rhat": {
+          "observations": 6,
+          "median": 208.5,
+          "p10": 207,
+          "p90": 212
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 729.5,
+          "p10": 714,
+          "p90": 736
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 118.5,
+          "p10": 111,
+          "p90": 149
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 142.5,
+          "p10": 121,
+          "p90": 164
+        }
+      }
+    },
+    {
+      "block": 59,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "059-official.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 215.0,
+          "p10": 206,
+          "p90": 219
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 726.0,
+          "p10": 711,
+          "p90": 730
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 119,
+          "p10": 113,
+          "p90": 131
+        },
+        "decode": {
+          "observations": 5,
+          "median": 167,
+          "p10": 160,
+          "p90": 183
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 746,
+          "p10": 746,
+          "p90": 746
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 131.5,
+          "p10": 115,
+          "p90": 148
+        }
+      }
+    },
+    {
+      "block": 59,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "059-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 5,
+          "median": 259,
+          "p10": 250,
+          "p90": 262
+        },
+        "ntt_r": {
+          "observations": 5,
+          "median": 427,
+          "p10": 418,
+          "p90": 447
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 205.0,
+          "p10": 202,
+          "p90": 214
+        },
+        "frontend_r": {
+          "observations": 3,
+          "median": 246,
+          "p10": 246,
+          "p90": 252
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 146.0,
+          "p10": 141,
+          "p90": 150
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 412,
+          "p10": 412,
+          "p90": 412
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 247,
+          "p10": 247,
+          "p90": 247
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 140.5,
+          "p10": 138,
+          "p90": 143
+        }
+      }
+    },
+    {
+      "block": 60,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "060-gt.data",
+      "intervals": {
+        "frontend_m": {
+          "observations": 1,
+          "median": 233,
+          "p10": 233,
+          "p90": 233
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 111.5,
+          "p10": 109,
+          "p90": 114
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 203.0,
+          "p10": 193,
+          "p90": 216
+        },
+        "pack_rhat": {
+          "observations": 3,
+          "median": 257,
+          "p10": 255,
+          "p90": 266
+        },
+        "ntt_r": {
+          "observations": 3,
+          "median": 445,
+          "p10": 419,
+          "p90": 447
+        },
+        "frontend_r": {
+          "observations": 4,
+          "median": 243.0,
+          "p10": 237,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 4,
+          "median": 78.5,
+          "p10": 63,
+          "p90": 99
+        }
+      }
+    },
+    {
+      "block": 60,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "060-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 7,
+          "median": 175,
+          "p10": 172,
+          "p90": 175
+        },
+        "pack_rhat": {
+          "observations": 3,
+          "median": 206,
+          "p10": 204,
+          "p90": 215
+        },
+        "ntt_r": {
+          "observations": 3,
+          "median": 725,
+          "p10": 717,
+          "p90": 740
+        },
+        "cbd_r": {
+          "observations": 5,
+          "median": 126,
+          "p10": 118,
+          "p90": 160
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 244,
+          "p10": 244,
+          "p90": 244
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 160.0,
+          "p10": 159,
+          "p90": 161
+        }
+      }
+    },
+    {
+      "block": 61,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "061-official.data",
+      "intervals": {
+        "ntt_m": {
+          "observations": 2,
+          "median": 714.5,
+          "p10": 691,
+          "p90": 738
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 143.0,
+          "p10": 120,
+          "p90": 163
+        },
+        "pack_rhat": {
+          "observations": 4,
+          "median": 212.0,
+          "p10": 205,
+          "p90": 215
+        },
+        "ntt_r": {
+          "observations": 4,
+          "median": 733.0,
+          "p10": 725,
+          "p90": 746
+        },
+        "decode": {
+          "observations": 3,
+          "median": 178,
+          "p10": 163,
+          "p90": 180
+        },
+        "cbd_r": {
+          "observations": 3,
+          "median": 118,
+          "p10": 114,
+          "p90": 129
+        },
+        "pack_ct": {
+          "observations": 2,
+          "median": 226.5,
+          "p10": 225,
+          "p90": 228
+        },
+        "add_m": {
+          "observations": 2,
+          "median": 30.5,
+          "p10": 25,
+          "p90": 36
+        }
+      }
+    },
+    {
+      "block": 61,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "061-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 258.5,
+          "p10": 247,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 438.5,
+          "p10": 419,
+          "p90": 450
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 250.5,
+          "p10": 243,
+          "p90": 252
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 144.5,
+          "p10": 142,
+          "p90": 145
+        },
+        "decode_body": {
+          "observations": 6,
+          "median": 207.5,
+          "p10": 187,
+          "p90": 212
+        },
+        "add_pack_ct": {
+          "observations": 1,
+          "median": 283,
+          "p10": 283,
+          "p90": 283
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 484,
+          "p10": 484,
+          "p90": 484
+        },
+        "ntt_m": {
+          "observations": 1,
+          "median": 421,
+          "p10": 421,
+          "p90": 421
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 235.5,
+          "p10": 233,
+          "p90": 238
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 141.5,
+          "p10": 141,
+          "p90": 142
+        }
+      }
+    },
+    {
+      "block": 62,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "062-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 7,
+          "median": 198,
+          "p10": 193,
+          "p90": 215
+        },
+        "pack_rhat": {
+          "observations": 7,
+          "median": 256,
+          "p10": 251,
+          "p90": 259
+        },
+        "ntt_r": {
+          "observations": 8,
+          "median": 429.5,
+          "p10": 422,
+          "p90": 441
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 247.5,
+          "p10": 240,
+          "p90": 248
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 144.5,
+          "p10": 141,
+          "p90": 149
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 141,
+          "p10": 141,
+          "p90": 141
+        }
+      }
+    },
+    {
+      "block": 62,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "062-official.data",
+      "intervals": {
+        "ntt_m": {
+          "observations": 2,
+          "median": 735.5,
+          "p10": 720,
+          "p90": 751
+        },
+        "sotp_m": {
+          "observations": 4,
+          "median": 108.5,
+          "p10": 101,
+          "p90": 158
+        },
+        "decode": {
+          "observations": 10,
+          "median": 163.5,
+          "p10": 160,
+          "p90": 177
+        },
+        "pack_rhat": {
+          "observations": 10,
+          "median": 210.5,
+          "p10": 207,
+          "p90": 216
+        },
+        "ntt_r": {
+          "observations": 10,
+          "median": 731.0,
+          "p10": 713,
+          "p90": 748
+        },
+        "cbd_r": {
+          "observations": 7,
+          "median": 128,
+          "p10": 115,
+          "p90": 151
+        }
+      }
+    },
+    {
+      "block": 63,
+      "order": 0,
+      "implementation": "official",
+      "perf_data": "063-official.data",
+      "intervals": {
+        "ntt_m": {
+          "observations": 1,
+          "median": 729,
+          "p10": 729,
+          "p90": 729
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 141.5,
+          "p10": 121,
+          "p90": 162
+        },
+        "decode": {
+          "observations": 6,
+          "median": 167.5,
+          "p10": 159,
+          "p90": 177
+        },
+        "pack_rhat": {
+          "observations": 3,
+          "median": 213,
+          "p10": 207,
+          "p90": 213
+        },
+        "ntt_r": {
+          "observations": 2,
+          "median": 729.0,
+          "p10": 720,
+          "p90": 738
+        },
+        "cbd_r": {
+          "observations": 2,
+          "median": 128.0,
+          "p10": 118,
+          "p90": 138
+        }
+      }
+    },
+    {
+      "block": 63,
+      "order": 1,
+      "implementation": "gt",
+      "perf_data": "063-gt.data",
+      "intervals": {
+        "decode_body": {
+          "observations": 7,
+          "median": 217,
+          "p10": 193,
+          "p90": 219
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 258,
+          "p10": 252,
+          "p90": 263
+        },
+        "ntt_r": {
+          "observations": 6,
+          "median": 433.0,
+          "p10": 419,
+          "p90": 441
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 243.5,
+          "p10": 230,
+          "p90": 246
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 146.0,
+          "p10": 142,
+          "p90": 152
+        },
+        "frontend_m": {
+          "observations": 2,
+          "median": 245.0,
+          "p10": 244,
+          "p90": 246
+        },
+        "sotp_m": {
+          "observations": 2,
+          "median": 139.0,
+          "p10": 137,
+          "p90": 141
+        }
+      }
+    },
+    {
+      "block": 64,
+      "order": 0,
+      "implementation": "gt",
+      "perf_data": "064-gt.data",
+      "intervals": {
+        "pack_rhat": {
+          "observations": 6,
+          "median": 254.0,
+          "p10": 250,
+          "p90": 266
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 424,
+          "p10": 420,
+          "p90": 438
+        },
+        "decode_body": {
+          "observations": 7,
+          "median": 203,
+          "p10": 194,
+          "p90": 211
+        },
+        "frontend_r": {
+          "observations": 6,
+          "median": 247.5,
+          "p10": 235,
+          "p90": 252
+        },
+        "cbd_r": {
+          "observations": 6,
+          "median": 140.5,
+          "p10": 116,
+          "p90": 144
+        },
+        "frontend_m": {
+          "observations": 1,
+          "median": 239,
+          "p10": 239,
+          "p90": 239
+        },
+        "sotp_m": {
+          "observations": 1,
+          "median": 145,
+          "p10": 145,
+          "p90": 145
+        }
+      }
+    },
+    {
+      "block": 64,
+      "order": 1,
+      "implementation": "official",
+      "perf_data": "064-official.data",
+      "intervals": {
+        "decode": {
+          "observations": 6,
+          "median": 169.0,
+          "p10": 164,
+          "p90": 187
+        },
+        "pack_rhat": {
+          "observations": 5,
+          "median": 211,
+          "p10": 209,
+          "p90": 217
+        },
+        "ntt_r": {
+          "observations": 7,
+          "median": 724,
+          "p10": 717,
+          "p90": 738
+        },
+        "cbd_r": {
+          "observations": 9,
+          "median": 118,
+          "p10": 112,
+          "p90": 152
+        },
+        "pack_ct": {
+          "observations": 1,
+          "median": 224,
+          "p10": 224,
+          "p90": 224
+        },
+        "add_m": {
+          "observations": 1,
+          "median": 25,
+          "p10": 25,
+          "p90": 25
+        },
+        "basemul": {
+          "observations": 1,
+          "median": 523,
+          "p10": 523,
+          "p90": 523
+        },
+        "ntt_m": {
+          "observations": 2,
+          "median": 727.5,
+          "p10": 721,
+          "p90": 734
+        },
+        "sotp_m": {
+          "observations": 3,
+          "median": 148,
+          "p10": 118,
+          "p90": 155
+        }
+      }
+    }
+  ]
+}
