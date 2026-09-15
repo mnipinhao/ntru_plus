@@ -21,7 +21,8 @@ shape used by other NTRU+ implementations:
 | `cbd.S` | CBD and SOTP conversion |
 | `add.S` | ABI-safe subtraction and two-pointer triple |
 | `crepmod3.S` | Center modulo q, then reduce modulo 3 |
-| `keccakf1600.S` | Scalar AArch64 Keccak-f[1600] permutation backend |
+| `keccakf1600.S` | Baseline AArch64 Keccak-f[1600] backend and fused fixed-size `hash_g` |
+| `keccakf1600_v84a.S` | FEAT_SHA3 x1 permutation selected at compile time when available |
 | `util.h` | Portable secure_clear and optional test audit hook |
 | `kem_api.S` | AAPCS64 boundary for the public KEM API |
 | `kem.c` | Key generation, encapsulation, and decapsulation |
@@ -56,7 +57,10 @@ provides a concise comparison with KPQC final.
 
 ## Build
 
-The default build uses portable C SHAKE:
+The public SHAKE implementation is unchanged. On AArch64, its standalone
+permutation is selected at compile time: FEAT_SHA3 builds use the namespaced
+v8.4-A backend, while other builds retain the scalar AArch64 fallback. The
+fixed-size `hash_g` remains on its separately validated fused scalar path.
 
 ```sh
 make

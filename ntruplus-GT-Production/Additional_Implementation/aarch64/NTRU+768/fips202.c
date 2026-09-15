@@ -336,19 +336,23 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
 }
 #else
 
-/*
- * AArch64 scalar Keccak-f[1600] backend.
- *
- * The sponge API, state layout, padding, absorption, and squeezing remain in
- * this file.  The assembly receives the same 25 little-endian uint64_t lanes
- * plus the existing 24-round constant table.
- */
+/* The sponge contract is independent of the compile-time AArch64 backend. */
+#if defined(__ARM_FEATURE_SHA3)
+extern void ntruplus_keccak_f1600_x1_v84a_aarch64(
+    uint64_t state[25], const uint64_t rc[NROUNDS]);
+
+static void KeccakF1600_StatePermute(uint64_t *state) {
+    ntruplus_keccak_f1600_x1_v84a_aarch64(state,
+                                          KeccakF_RoundConstants);
+}
+#else
 extern void ntruplus_keccak_f1600_x1_aarch64(
     uint64_t state[25], const uint64_t rc[NROUNDS]);
 
 static void KeccakF1600_StatePermute(uint64_t *state) {
     ntruplus_keccak_f1600_x1_aarch64(state, KeccakF_RoundConstants);
 }
+#endif
 #endif
 
 /*************************************************

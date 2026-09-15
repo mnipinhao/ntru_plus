@@ -121,6 +121,7 @@ expected = {
     "crepmod3.S",
     "kem_api.S",
     "keccakf1600.S",
+    "keccakf1600_v84a.S",
     "kem.c",
     "poly.h",
     "Makefile",

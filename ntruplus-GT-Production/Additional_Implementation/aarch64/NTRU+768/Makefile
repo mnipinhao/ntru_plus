@@ -38,7 +38,8 @@ PUBLIC_ASM := \
 
 INTERNAL_ASM := \
 	add.S \
-	keccakf1600.S
+	keccakf1600.S \
+	keccakf1600_v84a.S
 
 INTERNAL_C := \
 	keygen.c \
