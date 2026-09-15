@@ -1,0 +1,48 @@
+{
+  "status": "static_pass_timing_reject",
+  "instruction_count": {
+    "p29_runtime_kernel_sum": 4180,
+    "p31_runtime_kernel_sum": 4337,
+    "delta": 157,
+    "p31_components": {
+      "pair0_p28": 841,
+      "pair2": 1500,
+      "pair1": 1212,
+      "tail_p29": 784
+    },
+    "opcode_delta_p31_minus_p29": {
+      "add": 64,
+      "dup": 23,
+      "ins": 32,
+      "ldr": -32,
+      "movi": 13,
+      "orr": 64,
+      "ret": -1,
+      "str": -32,
+      "sub": 6,
+      "umov": 20
+    }
+  },
+  "memory_boundary": {
+    "removed_q_load_instructions": 32,
+    "removed_q_store_instructions": 32,
+    "coefficient_scratch_bytes_removed": 1536,
+    "retained_b2_high_d_store_instructions": 32,
+    "retained_b2_high_d_load_instructions": 32,
+    "full_vector_st3_4h": 64,
+    "lane_st3": 0,
+    "coefficient_spill": 0
+  },
+  "object_text_bytes_pi5": {
+    "pair0_p28": 3364,
+    "pair2": 6000,
+    "pair1": 4848,
+    "tail_p29": 3136
+  },
+  "slothy": {
+    "root": "/Users/chenpinhao/slothy",
+    "allow_spills": false,
+    "allocation": "pass for both producers and all bounded windows",
+    "timing_mode": "functional no-reordering allocation; measured final objects on Pi 5"
+  }
+}

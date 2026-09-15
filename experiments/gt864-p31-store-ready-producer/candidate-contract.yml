@@ -1,0 +1,23 @@
+kernel:
+  id: gt864_p31_store_ready_producer
+  role: experimental_candidate
+  production: false
+
+boundary:
+  input: identical to P29
+  output: byte-for-byte identical natural-order ternary int16 coefficients
+  runtime_structure:
+    - one unchanged 841-instruction P28 bank0 producer
+    - one 1500-instruction pair2 producer/store kernel
+    - one 1212-instruction pair1 producer/store kernel
+    - one unchanged 784-instruction P29 tail
+  instruction_sum: 4337
+  coefficient_scratch_traffic_bytes: 1536
+
+hard_constraints:
+  secret_dependent_control_flow: false
+  secret_dependent_addressing: false
+  coefficient_spill: false
+  lane_st3: false
+  full_vector_st3_4h: 64
+  exact_output_required: true

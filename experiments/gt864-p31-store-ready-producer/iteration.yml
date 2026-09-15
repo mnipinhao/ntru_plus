@@ -1,0 +1,23 @@
+iteration:
+  id: GT864-P31-STORE-READY-PRODUCER-20260915
+  hypothesis: >-
+    Producing rows 0-3 from pair2 and rows 4-7 from pair1 will recover more
+    cycles from 1536 fewer scratch bytes than it spends on store-ready state.
+  baseline: P29 direct-ST3 experimental inverse
+  production_control: P13-C/P8 frozen production inverse
+  changed_surface:
+    - main inverse producer/routing DAG
+    - public inverse wrapper call sequence and 16-byte metadata slot
+  unchanged_surface:
+    - FR0 input ABI
+    - inverse mathematics and range chain
+    - P29 tail
+    - natural ternary output ABI
+  gates:
+    symbolic_no_spill: pass
+    mac_assembly: pass
+    pi5_build: pass
+    exact_inverse_256: pass
+    kem_roundtrip_and_tamper: pass
+    paired_pmu: fail
+  decision: reject

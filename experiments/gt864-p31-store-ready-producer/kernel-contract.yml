@@ -1,0 +1,57 @@
+kernel:
+  id: gt864_p31_store_ready_producer
+  target: AArch64 Neon / Cortex-A76
+  status: rejected_after_pi5_timing
+  algorithm: exact P29 inverse arithmetic and ternary normalization
+
+abi:
+  pair2_live_in:
+    - x0/x1: pair2 P8 input blocks at scratch+1024/+1280
+    - x2/x17: natural output row-0 cursors for top0/top1
+    - x3/x4: I16 and composite tables
+  pair1_live_in:
+    - x0/x1: pair1 P8 input blocks at scratch+256/+768
+    - x2/x17: natural output row-4 cursors for top0/top1
+    - x3/x4: I16 and composite tables
+  wrapper_state_reserved: [x25, x29, x30, sp, xzr]
+  dead_or_duplicated_saved_wrapper_registers_used_for_parking: [x19, x20, x21, x22, x23, x24, x26, x27, x28]
+  x19_restore: reconstructed from the final x2 output cursor before return
+  x23_restore: copied back from duplicate x4 table pointer before return
+  x22_restore: helper preserves the I16 pointer in x25 and reconstructs the scratch base from x0
+  x24_restore: public wrapper saves the tail-table pointer in a 16-byte metadata slot
+  additional_caller_saved_parking: [x18]
+
+memory:
+  public_output: exact P29 natural component-interleaved int16 ternary layout
+  pair0_scratch_before_pair2: 32 Q records at scratch+0 and scratch+512
+  pair2_retained_state: normalized B2 high D forms one dense low/high stream over consumed pair0 top0 storage
+  pair1_scratch_output: none
+  memory_pass_change: removes B1 Q store/reload and replaces B2 Q store/reload with D store/reload
+  st3_consecutive_register_bridge: one B2 copy in pair2 and one B1 copy in pair1 per record
+  secret_dependent_addressing: false
+
+range:
+  producer_input_abs: 2617
+  inverse16_abs: 21397
+  raw_terminal_abs: 4577
+  normalized_output_abs: 1
+  change_from_p29: none
+
+constants:
+  q_and_composite_tables: exact P28/P29 values
+  normalization: [1728, -1728, 10923, 3]
+  change_from_p29: lifetime only
+
+slothy:
+  workflow: RA prefix then RA terminal; timing scheduling only after correctness
+  spills_allowed: false
+  regions:
+    - p31_pair2_slothy_start:p31_pair2_terminal_start
+    - thirty-two pair2 compute, B0-normalize, and store windows
+    - p31_pair1_slothy_start:p31_pair1_terminal_start
+    - thirty-two pair1 side compute windows plus thirty-two side route windows
+
+decision:
+  correctness: pass
+  promotion: reject
+  reason: 343.508 cycles slower than P29 and 418.617 cycles slower than production

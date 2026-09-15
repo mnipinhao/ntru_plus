@@ -1,0 +1,18 @@
+kernel:
+  id: gt864_p29_direct_st3
+  role: comparison_only
+  production: false
+
+boundary:
+  input: FR0 coefficients accepted by the frozen P8 inverse producer chain
+  output: 864 natural-order component-interleaved ternary int16 coefficients
+  runtime_structure:
+    - three calls to the 841-instruction P28 paired producer
+    - one 873-instruction P29 main route
+    - one 784-instruction P29 tail
+  instruction_sum: 4180
+  coefficient_scratch_traffic_bytes: 3072
+
+correctness:
+  reference: frozen P13-C/P8 production inverse-to-ternary output
+  aliasing: in-place supported
