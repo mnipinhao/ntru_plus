@@ -1,0 +1,24 @@
+mode: decision_gate
+candidate_status: selected_successor
+kernel:
+  id: gt864_p34_nonmaterializing_inverse_dag
+  operation: select a smaller fixed-layout terminal DAG for production gt864_inverse_ternary_asm
+contract:
+  public_output: 864 natural-order ternary int16 coefficients
+  input: FR0 R-inverse leaves from the first Decaps BaseMul with abs<=2497
+  scale_chain: BaseMul R-inverse -> inverse9 R-inverse -> I16/composite terminal R0 -> raw ternary
+  layout: unchanged P8 scratch and P13-B/P13-C scalar natural scatter
+  memory: unchanged 1792-byte scratch and wipe; no new coefficient boundary
+  constant_time: fixed public columns and fixed instruction trace
+  alias: preserve production in-place behavior
+  general_inverse: unchanged centered gt864_inverse_rinv_asm path
+range:
+  inverse9_output_abs: 2617
+  inverse16_peak_abs: 21397
+  p8_one_q_wrap_abs: 5185
+  selected_main_preconsumer_abs: 5143
+  retained_main_high_column_8_abs: 1821
+  selected_tail_preconsumer_abs: 5028
+oracle:
+  static: exhaustive raw-consumer interval plus exact P7-C0/P13 main and tail interval models
+  physical_successor: exact inverse alias AAPCS wipe KAT malformed ciphertext and Pi5 paired PMU

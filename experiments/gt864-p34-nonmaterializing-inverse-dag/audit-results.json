@@ -1,0 +1,185 @@
+{
+  "status": "select-p35",
+  "production_revision": "334e5a3d4e0172220b5c6f06a0ba7cbd167bae7a",
+  "source_sha256": {
+    "gt864_native_public.S": "c49a7454c5ea60a575e6f69794b6a2a548a76f1f85d49e4f4c440eb34d258e71",
+    "gt864_native_inverse16_lazy.S": "1bddede73c529686140c2a12f7e3c51aed8c1332ed485e1550df3f9285933705",
+    "gt864_native_inverse_tail_lazy.S": "dc5ff4433170923064d7e6f387caf8f7ad9a0d79cbaf25ed2a814d68f78258fe",
+    "gt864_crepmod3_raw.S": "ddeb67ba9b2030821a867cd18a68d13d2ec2d102cee553f866a76fdb6d28dff3",
+    "gt864_p13b_composite_tables.h": "3760ba9c9c221d77b3e50af59c9fa26626125c5f99d3e1f35f6acf3afba9e57f"
+  },
+  "consumer": {
+    "symmetric_accepted_radius": 5185,
+    "accepted_endpoints": [
+      -5185,
+      5185
+    ],
+    "first_rejected_witnesses": [
+      -5186,
+      5186
+    ],
+    "reason": "one conditional q-wrap encoded modulo 3; q=3457 is congruent to 1 modulo 3"
+  },
+  "main_pre_reset_bounds": {
+    "0": {
+      "low": 4831,
+      "high": 5143
+    },
+    "1": {
+      "low": 3804,
+      "high": 4230
+    },
+    "2": {
+      "low": 3939,
+      "high": 4679
+    },
+    "3": {
+      "low": 3762,
+      "high": 3765
+    },
+    "4": {
+      "low": 4150,
+      "high": 4147
+    },
+    "5": {
+      "low": 3657,
+      "high": 4211
+    },
+    "6": {
+      "low": 4258,
+      "high": 4060
+    },
+    "7": {
+      "low": 3914,
+      "high": 4002
+    },
+    "8": {
+      "low": 3764,
+      "high": 5278
+    },
+    "9": {
+      "low": 3892,
+      "high": 3648
+    },
+    "10": {
+      "low": 4204,
+      "high": 4680
+    },
+    "11": {
+      "low": 3502,
+      "high": 3961
+    },
+    "12": {
+      "low": 4703,
+      "high": 4454
+    },
+    "13": {
+      "low": 3902,
+      "high": 3815
+    },
+    "14": {
+      "low": 4052,
+      "high": 4251
+    },
+    "15": {
+      "low": 3983,
+      "high": 3612
+    }
+  },
+  "tail_pre_reset_bounds": {
+    "0": {
+      "low": 4615,
+      "high": 4909
+    },
+    "1": {
+      "low": 3781,
+      "high": 4164
+    },
+    "2": {
+      "low": 3883,
+      "high": 4533
+    },
+    "3": {
+      "low": 3741,
+      "high": 3733
+    },
+    "4": {
+      "low": 4040,
+      "high": 4058
+    },
+    "5": {
+      "low": 3652,
+      "high": 4168
+    },
+    "6": {
+      "low": 4160,
+      "high": 3974
+    },
+    "7": {
+      "low": 3886,
+      "high": 3961
+    },
+    "8": {
+      "low": 3720,
+      "high": 5028
+    },
+    "9": {
+      "low": 3866,
+      "high": 3639
+    },
+    "10": {
+      "low": 4113,
+      "high": 4542
+    },
+    "11": {
+      "low": 3499,
+      "high": 3930
+    },
+    "12": {
+      "low": 4489,
+      "high": 4303
+    },
+    "13": {
+      "low": 3877,
+      "high": 3803
+    },
+    "14": {
+      "low": 3974,
+      "high": 4160
+    },
+    "15": {
+      "low": 3944,
+      "high": 3604
+    }
+  },
+  "selected_resets": {
+    "main_low": [],
+    "main_high": [
+      8
+    ],
+    "tail_low": [],
+    "tail_high": []
+  },
+  "selected_output_bounds": {
+    "main_unreset": 5143,
+    "main_high_column_8_after_reset": 1821,
+    "tail": 5028
+  },
+  "static_delta": {
+    "deleted_main_reset_chains_per_call": 5,
+    "main_calls": 6,
+    "deleted_tail_reset_chains": 6,
+    "instructions_per_chain": 2,
+    "deleted_instructions_per_decaps": 72,
+    "added_loads": 0,
+    "added_stores": 0,
+    "added_routes": 0,
+    "added_scratch_bytes": 0
+  },
+  "decision": {
+    "selected": "P35 KEM-only terminal-reset pruning",
+    "general_centered_inverse": "retain current reset-complete helpers",
+    "why_not_remove_main_high_8": "bound 5278 exceeds exact P8 radius 5185; witnesses at +/-5186 fail",
+    "why_not_materialize": "P32/P33 measured lower IPC from the added preterminal boundary"
+  }
+}

@@ -69,7 +69,8 @@ Status meanings:
 | P31 | Done—Rejected | Produce rows 0--3 early from pair2 and rows 4--7 from pair1 | Removes 1536 scratch bytes but adds 159 instructions versus P29 and regresses production Inverse/Decaps by 418.617/439.000 cycles |
 | P32 | Done—Rejected | Split six I16 prefixes from one column-major six-bank composite terminal consumer | Exact/no-spill/KAT/alias/wipe pass and -173 complete-Inverse instructions, but IPC falls and Inverse/Decaps regress 106.664/111.300 cycles |
 | P33 | Done—Rejected | Reusable two-bank hybrid: materialize one prefix, compute one live prefix, then share terminal constants across the pair | Retires 147 fewer complete-Inverse instructions, but main-I16/Inverse/Decaps regress 132.110/95.297/104.150 cycles as IPC falls |
-| P34 | Next—Decision gate | Re-profile and select a non-materializing Inverse DAG that removes arithmetic or scatter/routing work rather than only table loads | No assembly until the static model avoids a new scratch boundary and predicts a critical-path/IPC win; P32/P33 batching family is closed |
+| P34 | Done—Selected successor | Re-profile and select a non-materializing Inverse DAG that removes arithmetic or scatter/routing work rather than only table loads | Exact P8 domain and terminal range audit selects KEM-only reset pruning: -72 dependent arithmetic instructions with zero memory/routing growth |
+| P35 | Next—Physical gate | Implement distinct KEM-only main/tail I16 helpers retaining only main high-column-8 reset | Exact/no-spill/fixed-timing gates, then alias/AAPCS/wipe/KAT/malformed and paired complete-Inverse plus Decaps PMU must both improve |
 
 ## Fixed facts and non-tasks
 
@@ -91,6 +92,20 @@ Status meanings:
 
 ### 2026-09-15
 
+- Completed P34 without changing production.  A fresh six-process Pi 5 stage
+  profile of the exact production library reproduces main I16 as the largest
+  stage: inverse9/main-I16/tail/raw/complete are
+  `1682.172/2117.821/341.453/430.156/4888.141` net cycles.  Exhaustive
+  signed-int16 checking proves P8 raw-to-ternary's exact one-q-wrap domain is
+  `[-5185,5185]`, with `±5186` as first failure witnesses.  Re-closing every
+  P13 terminal interval shows only main high column 8 exceeds it (`5278`);
+  all other main resets peak at 5143 and the tail peaks at 5028.  P35 is
+  selected to retain that one reset while deleting five reset chains in each
+  of six main calls and all six tail chains: -72 dependent vector arithmetic
+  instructions per Decaps, with no new load, store, route, scratch boundary or
+  register-pressure requirement.  The centered general Inverse remains on its
+  reset-complete helpers.  Evidence:
+  `experiments/gt864-p34-nonmaterializing-inverse-dag/`.
 - Completed and rejected P33 without changing production.  The two-bank hybrid
   passes manifest, no-spill Slothy, arm64 object, 64-case KEM/tamper, identical
   100-case KAT, 4096 inverse/alias/AAPCS/wipe and identical 417216-byte

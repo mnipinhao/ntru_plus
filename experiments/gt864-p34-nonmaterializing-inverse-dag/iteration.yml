@@ -1,0 +1,15 @@
+iteration_id: P34
+date: 2026-09-15
+mode: decision_gate
+status: selected_successor
+action: optimize-arithmetic
+observation: P32 and P33 save terminal table loads and retired instructions but regress because preterminal materialization and wider batching lower IPC.
+primary_bottleneck_category: arithmetic dependency at the existing terminal-to-raw-consumer boundary
+hypothesis: the P8 raw-to-ternary consumer accepts a wider one-q-wrap interval than the historical 4577 producer contract, so terminal b=1 resets whose exact bounds stay in that interval are redundant for the KEM-only Inverse-to-ternary path.
+exact_proposed_change: keep the current P13-B/P13-C layout and stores; retain only main high-column-8 reset; delete the other five main reset chains and all six tail reset chains in a KEM-only pair of I16 helpers.
+expected_static_effect: remove 72 dependent vector arithmetic instructions per Decaps with zero added loads stores routes or scratch bytes.
+expected_performance_effect: reduce output-ready critical chains in main and tail I16; unlike P32/P33 there is no phase barrier or new memory traffic.
+expected_register_pressure_effect: unchanged or lower because every deletion removes a temporary reset quotient.
+correctness_or_range_impact: raw R0 producer bound widens to 5143 except main high column 8 which remains reduced; all values stay inside the proved P8 one-q-wrap domain abs<=5185.
+falsifying_measurement: reject the successor if fixed-allocation scheduling or paired Pi5 complete Inverse and Decaps fail to improve despite exact correctness.
+next_iteration: P35 KEM-only terminal-reset pruning physical implementation
