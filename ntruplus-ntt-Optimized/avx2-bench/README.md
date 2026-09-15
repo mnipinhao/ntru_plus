@@ -101,7 +101,6 @@ AVX-512:
 make build
 make asm-audit
 make validate
-make kpqc-audit
 ```
 
 `BENCH_LDFLAGS` may be used for benchmark-linker controls.  The recorded
@@ -114,7 +113,8 @@ Official Main's current AVX2 API uses in-place `poly_ntt` and
 compatibility path copies prepared inputs outside timed regions and calls the
 native in-place API inside them; its complete polymul uses
 `poly_basemul_scale` with the matching scaled inverse.  The default remains the
-KPQC/out-of-place API.
+selected `NTRU_ROOT` out-of-place API used by this historical prototype
+harness.
 
 Default target flags:
 
@@ -126,11 +126,9 @@ Default target flags:
 boundary/differential tests, and the benchmark harness's round-trip,
 schoolbook-polymul, and GT-reference checks.
 
-`make kpqc-audit` verifies that the production arithmetic sources linked here
-(`ntt.s`, `invntt.s`, `basemul.s`, `consts.c`, and `poly.c`) are byte-identical
-to `ntruplus-KpqC-Final/Additional_Implementation/avx2/NTRU+768`.  Therefore
-the production NTT/basemul/inverse/polymul rows are also the KPQC Final AVX2
-baseline when compiler and target flags are held fixed.
+Official-versus-GT production claims are not derived from source identity in
+this local harness. Use the fixed-ELF SUPERcop qualification described by the
+NTRU+768 AVX2 production `BENCHMARK.md`.
 
 ## Reproducible benchmark run
 

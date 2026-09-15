@@ -1,23 +1,28 @@
 # NTRU+ Bench Suite
 
-`bench/` is the unified entry point for comparing two implementation directories:
+`bench/` is the local entry point for comparing two implementation directories:
 
 1. KAT-based correctness validation
 2. Cycle benchmarking for the shared KEM/poly APIs
 3. Auto-generated comparison reports under `bench/results/`
 
-The important change is that the compare flow no longer hardcodes one "baseline" tree and one "optimized" tree. It now accepts any two implementation directories that already ship a working `Makefile`, such as:
+Formal NTRU+768 AVX2 performance qualification uses the SUPERcop workflow in
+`ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/BENCHMARK.md`.
+This directory remains useful for KAT and diagnostic cycle checks; its timing
+output is not a replacement for the fixed-ELF SUPERcop result.
 
-- `../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768`
+The compare flow accepts any two implementation directories that already ship a working `Makefile`, such as:
+
+- `../third_party/NTRUplus-official-main/Additional_Implementation/aarch64/NTRU+768`
 - `../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768`
-- `../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768`
+- `../third_party/NTRUplus-official-main/Reference_Implementation/NTRU+768`
 
 ## Core Commands
 
 ```bash
 cd bench
 
-# default: KpqC reference vs ntt-Optimized optimized for the selected PARAM_SET
+# default: Official reference vs ntt-Optimized optimized for the selected PARAM_SET
 make compare
 
 # correctness only
@@ -33,9 +38,9 @@ make cycles-compare
 cd bench
 
 make impl-compare \
-  IMPL_A=../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+  IMPL_A=../third_party/NTRUplus-official-main/Additional_Implementation/aarch64/NTRU+768 \
   IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 \
-  LABEL_A=kpqc_aarch64 \
+  LABEL_A=official_aarch64 \
   LABEL_B=ntt_opt
 ```
 
@@ -43,9 +48,9 @@ Reference vs optimized:
 
 ```bash
 make impl-compare \
-  IMPL_A=../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768 \
+  IMPL_A=../third_party/NTRUplus-official-main/Reference_Implementation/NTRU+768 \
   IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 \
-  LABEL_A=kpqc_ref \
+  LABEL_A=official_ref \
   LABEL_B=ntt_opt
 ```
 
@@ -53,7 +58,7 @@ Correctness only for arbitrary paths:
 
 ```bash
 make impl-compare-kat \
-  IMPL_A=../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+  IMPL_A=../third_party/NTRUplus-official-main/Additional_Implementation/aarch64/NTRU+768 \
   IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768
 ```
 

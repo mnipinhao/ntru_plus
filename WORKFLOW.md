@@ -12,12 +12,12 @@ cd "$REPO_ROOT"
 
 | Path | Role | Edit policy |
 | --- | --- | --- |
-| `ntruplus-KpqC-Final/` | Frozen comparison baseline | Do not edit during optimization work |
+| `third_party/NTRUplus-official-main/` | Upstream Official comparison source | Keep unchanged; refresh only as an explicit vendor update |
 | `ntruplus-ntt-Optimized/` | Active implementation workspace | Edit the selected parameter/lane only |
-| `bench/` | Portable KAT and cycle comparison front door | Keep implementation-neutral |
+| `bench/` | Portable local KAT/diagnostic harness | Keep implementation-neutral; do not use as formal AVX2 timing evidence |
 | `ntruplus-ntt-Optimized/aarch64-bench/` | Pi 5 and PMU harnesses | AArch64 host only |
 
-The active and frozen roots contain `NTRU+768`, `NTRU+864`, and `NTRU+1152`
+The active and Official roots contain `NTRU+768`, `NTRU+864`, and `NTRU+1152`
 across scalar reference, scalar optimized, AVX2, and AArch64 lanes. The active
 root also retains a Cortex-M-oriented legacy source lane. Do not assume that
 similarly named lanes share a Makefile or source contract.
@@ -41,9 +41,9 @@ In the submission-compatible Makefiles, `test` commonly means "build the test
 binary" rather than "execute every correctness test". Use a KAT or an explicit
 run/check target as the correctness gate.
 
-## Portable scalar comparison
+## Portable local comparison
 
-The default comparison is the frozen reference implementation versus the
+The default comparison is the Official reference implementation versus the
 active optimized implementation for the same parameter set:
 
 ```sh
@@ -55,14 +55,19 @@ Compare arbitrary implementation directories with:
 
 ```sh
 make -C bench impl-compare-kat \
-  IMPL_A=../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768 \
+  IMPL_A=../third_party/NTRUplus-official-main/Reference_Implementation/NTRU+768 \
   IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 \
-  LABEL_A=frozen_ref \
+  LABEL_A=official_ref \
   LABEL_B=active_opt
 ```
 
 `IMPL_A` and `IMPL_B` must use the same parameter set. AVX2 and AArch64 lanes
 still require a compatible host even when invoked through `bench/`.
+
+This harness is useful for correctness and local diagnostics. Formal NTRU+768
+AVX2 performance comparisons must install Official and GT Clean into the same
+SUPERcop tree and follow
+`ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/BENCHMARK.md`.
 
 ## End-to-end validation wrapper
 
@@ -76,7 +81,7 @@ Optional overrides:
 
 ```sh
 PARAM_SET=NTRU+864 \
-IMPL_A="$REPO_ROOT/ntruplus-KpqC-Final/Reference_Implementation/NTRU+864" \
+IMPL_A="$REPO_ROOT/third_party/NTRUplus-official-main/Reference_Implementation/NTRU+864" \
 IMPL_B="$REPO_ROOT/ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+864" \
 CYCLE_ITERATIONS=500 \
 ./scripts/validate_optimization.sh

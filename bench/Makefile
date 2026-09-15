@@ -1,4 +1,4 @@
-BASELINE_ROOT = ../ntruplus-KpqC-Final
+BASELINE_ROOT = ../third_party/NTRUplus-official-main
 OPTIMIZED_ROOT = ../ntruplus-ntt-Optimized
 PARAM_SET ?= NTRU+768
 
@@ -56,7 +56,7 @@ help:
 	@echo "  make compare-kat"
 	@echo ""
 	@echo "Compare arbitrary implementations:"
-	@echo "  make impl-compare IMPL_A=../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 LABEL_A=kpqc_aarch64 LABEL_B=ntt_opt"
+	@echo "  make impl-compare IMPL_A=../third_party/NTRUplus-official-main/Additional_Implementation/aarch64/NTRU+768 IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 LABEL_A=official_aarch64 LABEL_B=ntt_opt"
 	@echo ""
 	@echo "Useful vars:"
 	@echo "  PARAM_SET=<NTRU+768|NTRU+864|NTRU+1152>    # default compare only"

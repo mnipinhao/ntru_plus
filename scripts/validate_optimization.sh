@@ -1,5 +1,6 @@
 #!/bin/bash
-# Validate the portable baseline-vs-optimized workflow end-to-end.
+# Validate the portable Official-vs-optimized local workflow end-to-end.
+# This is a correctness/diagnostic wrapper, not the formal SUPERcop benchmark.
 
 set -euo pipefail
 
@@ -17,7 +18,7 @@ case "${PARAM_SET}" in
     ;;
 esac
 
-IMPL_A="${IMPL_A:-${ROOT_DIR}/ntruplus-KpqC-Final/Reference_Implementation/${PARAM_SET}}"
+IMPL_A="${IMPL_A:-${ROOT_DIR}/third_party/NTRUplus-official-main/Reference_Implementation/${PARAM_SET}}"
 IMPL_B="${IMPL_B:-${ROOT_DIR}/ntruplus-ntt-Optimized/Optimized_Implementation/${PARAM_SET}}"
 
 echo "[validate] root: ${ROOT_DIR}"

@@ -1,21 +1,33 @@
 # NTRU+
 
-This repository keeps a frozen KpqC baseline beside an active NTRU+
+This repository keeps an upstream Official snapshot beside an active NTRU+
 optimization workspace. It supports parameter sets 768, 864, and 1152 across
 scalar, AVX2, AArch64, and preserved Cortex-M-oriented source lanes.
 
 ## Quick start
 
-Run the portable scalar KAT comparison from the repository root:
+For the current NTRU+768 AVX2 work, install GT Clean into a SUPERcop tree and
+use the production-owned layout audit/build recipe:
+
+```sh
+./ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/install-supercop.sh \
+  /path/to/supercop
+python3 /path/to/supercop/crypto_kem/ntruplus768/avx2-gt32-clean/qualified/build-supercop.py \
+  --supercop-root /path/to/supercop
+```
+
+See the implementation's
+[BENCHMARK.md](ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/BENCHMARK.md)
+and
+[QUALIFICATION.md](ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/QUALIFICATION.md)
+for the fixed-ELF Official/GT protocol. The generic `bench/` harness remains
+available for local correctness and diagnostic comparisons, but it is not the
+formal performance authority.
+
+Run a local portable KAT comparison against the Official snapshot with:
 
 ```sh
 make -C bench PARAM_SET=NTRU+768 compare-kat
-```
-
-Run the KAT-gated comparison and cycle harness:
-
-```sh
-make -C bench PARAM_SET=NTRU+768 compare
 ```
 
 See [WORKFLOW.md](WORKFLOW.md) before editing an implementation, and see
@@ -25,12 +37,12 @@ engineering records.
 
 ## Directory policy
 
-- `ntruplus-KpqC-Final/`: frozen clean baseline; do not edit during optimization work.
+- `third_party/NTRUplus-official-main/`: upstream Official comparison source.
 - `ntruplus-ntt-Optimized/Reference_Implementation/`: active workspace reference lane.
 - `ntruplus-ntt-Optimized/Optimized_Implementation/`: active scalar optimization lane.
 - `ntruplus-ntt-Optimized/Cortex-M_Optimized_Implementation/`: preserved legacy/Cortex-M-oriented source lane; not a validated MCU build by itself.
 - `ntruplus-ntt-Optimized/Additional_Implementation/`: AVX2 and AArch64 implementations.
-- `bench/`: portable KAT and cycle comparison front door.
+- `bench/`: portable local KAT/diagnostic comparison harness; not the formal SUPERcop timing path.
 - `ntruplus-ntt-Optimized/aarch64-bench/`: Pi 5 and PMU-specific benchmark harnesses.
 
 ## Current optimization focus
