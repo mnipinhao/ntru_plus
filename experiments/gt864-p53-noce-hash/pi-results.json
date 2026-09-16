@@ -1,0 +1,103 @@
+{
+  "experiment": "GT864-P53-NOCE-HASH-G-20260916",
+  "baseline_revision": "03f8ba296666cdb96d143816e676ea625fc428da",
+  "reference_revision": "631274d51bd4ce488bebbaef9f5d7f92a1e2b8d9",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p53-noce-hash-20260916",
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+  "object_audit": {
+    "no_sha3_extension_instructions": true,
+    "static_instructions": 702,
+    "stack_wipe_pairs": 9,
+    "state_zero_moves": 22
+  },
+  "measurements": {
+    "decaps": {
+      "baseline": {
+        "cycles": 39757.5,
+        "instructions": 93802.1,
+        "branches": 1016.6
+      },
+      "candidate": {
+        "cycles": 35438.850000000006,
+        "instructions": 76423.1,
+        "branches": 1036.6
+      },
+      "paired_delta": {
+        "cycles": -4312.950000000001,
+        "instructions": -17379.0,
+        "branches": 19.999999999999886
+      },
+      "paired_observations": 62
+    },
+    "encaps": {
+      "baseline": {
+        "cycles": 44884.5,
+        "instructions": 123152.1,
+        "branches": 978.6
+      },
+      "candidate": {
+        "cycles": 40630.5,
+        "instructions": 105958.1,
+        "branches": 1022.6
+      },
+      "paired_delta": {
+        "cycles": -4252.2249999999985,
+        "instructions": -17194.0,
+        "branches": 44.0
+      },
+      "paired_observations": 62
+    },
+    "hash_g": {
+      "baseline": {
+        "cycles": 14455.3595,
+        "instructions": 47904.906,
+        "branches": 265.312
+      },
+      "candidate": {
+        "cycles": 10096.531500000001,
+        "instructions": 30525.906,
+        "branches": 285.312
+      },
+      "paired_delta": {
+        "cycles": -4358.2345000000005,
+        "instructions": -17379.000000000004,
+        "branches": 20.0
+      },
+      "paired_observations": 122
+    },
+    "keygen": {
+      "baseline": {
+        "cycles": 43086.625,
+        "instructions": 94013.25,
+        "branches": 1560.5
+      },
+      "candidate": {
+        "cycles": 43099.875,
+        "instructions": 94013.25,
+        "branches": 1560.5
+      },
+      "paired_delta": {
+        "cycles": 7.75,
+        "instructions": 0.0,
+        "branches": 0.0
+      },
+      "paired_observations": 62
+    }
+  },
+  "promotion_candidate": true,
+  "environment_before": [
+    "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc (Debian 14.2.0-19) 14.2.0",
+    "ondemand",
+    "temp=57.1'C",
+    "throttled=0x0",
+    "Model name:                              Cortex-A76"
+  ],
+  "environment_after": [
+    "temp=61.5'C",
+    "throttled=0x0"
+  ],
+  "source_manifest_sha256": "02e93a4b70d4d89e5f4bcc92de4999a6a1f9c2f3fbde2c079172f1df849cb21b"
+}

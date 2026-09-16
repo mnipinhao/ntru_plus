@@ -5,6 +5,11 @@ HEADERS := $(wildcard *.h NO_CE/*.h)
 TOBYTES_OBJECTS := gt864_p47_decaps_compare.o gt864_p18_tobytes_full.o gt864_p18_tobytes_small.o gt864_tobytes.o gt864_tobytes_public.o gt864_tobytes_full_core.o gt864_tobytes_small_core.o gt864_tobytes_merge_core.o gt864_pair_merge_small.o gt864_pair_merge_full.o
 NATIVE_OBJECTS := gt864_native.o gt864_native_public.o gt864_native_baseinv_num.o gt864_native_baseinv_prefix.o gt864_native_baseinv_inverse.o gt864_native_baseinv_recover.o gt864_native_baseinv_finish.o
 NATIVE_OBJECTS += gt864_p35_inverse16_ternary.o gt864_p35_inverse_tail_ternary.o
+HASH_OBJECTS := hash_g_fixed.o keccakf1600.o
+hash_g_fixed.o: hash_g_fixed.c
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+keccakf1600.o: keccakf1600.S
+	$(CC) $(CFLAGS) -I. -x assembler-with-cpp -c $< -o $@
 NATIVE_OBJECTS += gt864_crepmod3_raw.o gt864_native_basemul.o gt864_native_center864.o gt864_native_inverse9.o gt864_native_inverse16_lazy.o gt864_native_inverse_tail_lazy.o gt864_support_abi.o
 $(NATIVE_OBJECTS): $(HEADERS) Makefile
 gt864_native.o: gt864_native.c
@@ -27,8 +32,7 @@ $(patsubst %.c,%.o,$(wildcard *.c)): $(HEADERS) Makefile
 $(patsubst %.s,%.o,$(wildcard *.s)): $(HEADERS) Makefile
 $(patsubst %.S,%.o,$(wildcard *.S)): $(HEADERS) Makefile
 fips202.o raw_pack.o kem-normal.o: $(HEADERS) Makefile
-.PHONY: all check manifest-check test kat
-all: libgt864.so
+.PHONY: all check manifest-check test kat shared
 symmetric.o: symmetric.c
 	$(CC) $(CFLAGS) -I. -x c -c symmetric.c -o symmetric.o
 poly.o: poly.c
@@ -81,8 +85,23 @@ stock_wrapper.o: stock_wrapper.S
 	$(CC) $(CFLAGS) -I. -x assembler-with-cpp -c stock_wrapper.S -o stock_wrapper.o
 kem-normal.o: kem.c
 	$(CC) $(CFLAGS) -I. -Dpoly_ntt=gt_d1_poly_ntt -Dpoly_invntt=gt_d1_poly_invntt -Dpoly_baseinv=gt864_native_poly_baseinv -Dpoly_basemul=gt_d1_poly_basemul -Dpoly_basemul_add=gt_d1_poly_basemul_add -Dpoly_frombytes=p3b12_candidate_frombytes -c kem.c -o kem-normal.o
-libgt864.so: symmetric.o poly.o fips202.o gt864_poly_api.o gt864_fr0_basemul.o gt864_fr0_basemul_d1.o gt864_fr0_inverse_asm_wrapper.o add.o ntt.o base.o crepmod3.o pack.o cbd.o gt864_forward_poly_ntt.o gt864_forward_six_bank.o gt864_top_split.o gt864_fr0_inverse9_block.o gt864_inverse16_blocks.o cluster_transpose_frombytes.o byte_api.o input_once_frombytes.o byte_boundary.o route9.o raw_pack.o stock_wrapper.o kem-normal.o tail_variants.o $(TOBYTES_OBJECTS) $(NATIVE_OBJECTS)
-	$(CC) -shared -Wl,-Bsymbolic -Wl,--gc-sections symmetric.o poly.o fips202.o gt864_poly_api.o gt864_fr0_basemul.o gt864_fr0_basemul_d1.o gt864_fr0_inverse_asm_wrapper.o add.o ntt.o base.o crepmod3.o pack.o cbd.o gt864_forward_poly_ntt.o gt864_forward_six_bank.o gt864_top_split.o gt864_fr0_inverse9_block.o gt864_inverse16_blocks.o cluster_transpose_frombytes.o byte_api.o input_once_frombytes.o byte_boundary.o route9.o raw_pack.o stock_wrapper.o kem-normal.o tail_variants.o $(TOBYTES_OBJECTS) $(NATIVE_OBJECTS) -o libgt864.so
+KEM_OBJECTS := symmetric.o poly.o fips202.o gt864_poly_api.o
+KEM_OBJECTS += gt864_fr0_basemul.o gt864_fr0_basemul_d1.o gt864_fr0_inverse_asm_wrapper.o
+KEM_OBJECTS += add.o ntt.o base.o crepmod3.o pack.o cbd.o
+KEM_OBJECTS += gt864_forward_poly_ntt.o gt864_forward_six_bank.o gt864_top_split.o
+KEM_OBJECTS += gt864_fr0_inverse9_block.o gt864_inverse16_blocks.o
+KEM_OBJECTS += cluster_transpose_frombytes.o byte_api.o input_once_frombytes.o byte_boundary.o route9.o
+KEM_OBJECTS += raw_pack.o stock_wrapper.o kem-normal.o tail_variants.o
+KEM_OBJECTS += $(TOBYTES_OBJECTS) $(NATIVE_OBJECTS) $(HASH_OBJECTS)
+
+# The production contract is the directly linked KEM/KAT executables.  The
+# shared object remains only as a benchmark/profiling compatibility target.
+all: test_kem
+
+shared: libgt864.so
+
+libgt864.so: $(KEM_OBJECTS)
+	$(CC) -shared -Wl,-Bsymbolic -Wl,--gc-sections $^ -o $@
 
 tail_variants.o: tail_variants.S
 	$(CC) $(CFLAGS) -I. -x assembler-with-cpp -c $< -o $@
@@ -93,11 +112,11 @@ manifest-check:
 test: test_kem
 	./test_kem
 
-test_kem: test/test_kem.c randombytes.c libgt864.so
-	$(CC) $(CFLAGS) -I. test/test_kem.c randombytes.c -L. -lgt864 -Wl,-rpath,'$$ORIGIN' -o $@
+test_kem: test/test_kem.c randombytes.c $(KEM_OBJECTS)
+	$(CC) $(CFLAGS) -I. $^ -Wl,--gc-sections -o $@
 
-PQCgenKAT_kem: kat/PQCgenKAT_kem.c kat/rng.c kat/aes.c libgt864.so
-	$(CC) $(CFLAGS) -I. -Ikat kat/PQCgenKAT_kem.c kat/rng.c kat/aes.c -L. -lgt864 -Wl,-rpath,'$$ORIGIN' -o $@
+PQCgenKAT_kem: kat/PQCgenKAT_kem.c kat/rng.c kat/aes.c $(KEM_OBJECTS)
+	$(CC) $(CFLAGS) -I. -Ikat $^ -Wl,--gc-sections -o $@
 
 kat: PQCgenKAT_kem
 	./PQCgenKAT_kem

@@ -17,6 +17,7 @@
 #define HASH_H_OUTBYTES (NTRUPLUS_SSBYTES + NTRUPLUS_N / 4)
 
 void gt864_p18_tobytes_full_asm(uint8_t *, const int16_t *);
+void ntruplus_hash_g_fixed(uint8_t output[216], const uint8_t input[1296]);
 
 void hash_f(uint8_t *buf, const uint8_t *msg)
 {
@@ -29,20 +30,15 @@ void hash_f(uint8_t *buf, const uint8_t *msg)
 
 void hash_g(uint8_t *buf, const uint8_t *msg)
 {
-    uint8_t data[1 + HASH_G_INBYTES];
-
-    data[0] = 0x01;
-    memcpy(data + 1, msg, HASH_G_INBYTES);
-    shake256(buf, HASH_G_OUTBYTES, data, HASH_G_INBYTES + 1);
+    ntruplus_hash_g_fixed(buf, msg);
 }
 
 void hash_g_fr0(uint8_t *buf, const int16_t coeffs[NTRUPLUS_N])
 {
-    uint8_t data[1 + HASH_G_INBYTES];
+    uint8_t data[HASH_G_INBYTES];
 
-    data[0] = 0x01;
-    gt864_p18_tobytes_full_asm(data + 1, coeffs);
-    shake256(buf, HASH_G_OUTBYTES, data, HASH_G_INBYTES + 1);
+    gt864_p18_tobytes_full_asm(data, coeffs);
+    ntruplus_hash_g_fixed(buf, data);
 }
 
 void hash_h(uint8_t *buf, const uint8_t *msg)

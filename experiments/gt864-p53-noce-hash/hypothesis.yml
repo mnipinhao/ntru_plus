@@ -1,0 +1,28 @@
+experiment_id: GT864-P53-NOCE-HASH-G-20260916
+action: optimize-arithmetic
+status: passed_promoted_noce
+observation: >-
+  P52 measures hash_g at about 14.5k cycles in Encaps/Decaps. The P50 GT864
+  NO_CE path materializes 0x01 || 1296 bytes and invokes generic C SHAKE256.
+primary_bottleneck_category: arithmetic and fixed-size sponge organization
+hypothesis: >-
+  The GT768 aarch64-production fixed hash_g design can be parameterized for
+  NTRU+864: virtual-prefix absorb plus a register-resident scalar AArch64
+  Keccak sponge will remove the domain-image copy and repeated state
+  load/store boundaries without requiring Arm SHA3 instructions.
+exact_change: >-
+  Add a candidate-only SHAKE256(0x01 || input[1296]) -> output[216] endpoint;
+  adapt the 768 scalar fused assembly to 9 full absorb blocks, a 73-byte tail,
+  and 136+80 output bytes; route hash_g and hash_g_fr0 through it.
+expected_static_effect: one 1297-byte stack image/copy removed per hash_g and state retained across 11 permutations
+expected_performance_effect: hash_g and complete Encaps/Decaps cycles decrease
+expected_register_pressure_effect: uses the full caller-saved/callee-saved GPR state with one fixed public frame; no SIMD pressure
+correctness_impact: SHAKE transcript and output are byte-identical; input/output alias remains supported; all input is consumed before output stores
+range_impact: none; this changes only the hash backend
+falsifying_measurement: >-
+  Reject if random/alias differential, KAT, malformed rejection, ABI or wipe
+  checks fail, or if paired Pi 5 hash_g/full-KEM timing does not improve.
+reference:
+  revision: 631274d51bd4ce488bebbaef9f5d7f92a1e2b8d9
+  path: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+768
+  policy: reuse fixed-size sponge and release contract only; no 768 transform/layout/range transfer

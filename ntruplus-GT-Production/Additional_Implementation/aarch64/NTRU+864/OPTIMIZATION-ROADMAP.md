@@ -88,7 +88,8 @@ Status meanings:
 | P50 | Done—Selected-Official profiler checkpoint | Re-run exact P48 production versus selected SUPERCOP 20260831 Official with explicit P47/P48 fused-boundary attribution | All correctness/instrumentation gates pass; GT wins Keygen/Encaps/Decaps by 1182.125/1586.900/995.875 cycles; largest isolated gaps are Decaps Full-compare +176.050 and fused Inverse +153.725 cycles |
 | P51 | Done—Experimental, not promoted | Retain recovered FR0 `f`, regenerate into dead `c`, and compare congruence directly in identical FR0/R0 coordinates instead of routing 1296 canonical bytes | All gates pass and the experiment saves 988.525 Decaps cycles, but user policy keeps it outside production; P47 serializer/compare remains linked |
 | P52 | Done—Profiler checkpoint | Profile exact P51 against selected SUPERCOP 20260831 and identify the next boundary | All gates pass; P51 GT wins Keygen/Encaps/Decaps by 1182.000/1525.950/1987.425 cycles; fixed-size NO_CE `hash_g` selected for P53 |
-| P53 | Active—NO_CE fixed `hash_g` | Parameterize the 768 production register-resident scalar sponge for SHAKE256(`0x01 || 1296 bytes`) → 216 bytes | Differential/alias, KAT/malformed, object/ABI/wipe, isolated hash and full-KEM paired Pi 5 gates must pass; no Arm SHA3 extension |
+| P53 | Done—Promoted NO_CE | Parameterize the 768 production register-resident scalar sponge for SHAKE256(`0x01 || 1296 bytes`) → 216 bytes | All gates pass; hash_g -4358.235, Encaps -4252.225 and Decaps -4312.950 cycles with no SHA3-extension instruction; Keygen retires zero changed instructions |
+| P54 | Active—Production package shell | Adopt 768's layered release gates and export contract without copying its transform implementation | Audit linked endpoints; separate owned production/reference/test/docs/scripts; direct executable/KAT, ABI, canonical, zeroization, exact-KAT and deterministic-export gates; no experiment artifacts in export |
 
 ## ToBytes priority policy
 
@@ -170,6 +171,16 @@ must not be mixed into a generic same-boundary result.
   production fixed-size, register-resident scalar sponge organization for
   864; no 768 NTT/layout/range fact is reused. Evidence:
   `experiments/gt864-p52-official-profile/`.
+
+- Completed and promoted P53 for the NO_CE build. The fixed transcript is
+  SHAKE256(`0x01 || input[1296]`) to 216 bytes: nine full absorb blocks, a
+  73-byte tail, then 136+80 output bytes. State remains in GPRs over eleven
+  scalar permutations. Differential/alias, KAT, malformed, object/wipe and
+  paired PMU gates pass. `hash_g` improves by 4358.235 cycles and complete
+  Encaps/Decaps by 4252.225/4312.950 cycles. Keygen retires exactly zero
+  changed instructions. P54 now applies the 768 production package/release
+  structure without importing its transform math. Evidence:
+  `experiments/gt864-p53-noce-hash/`.
 
 - Completed P50 without changing production. Exact commit `53ba4e27` and the
   selected SUPERCOP 20260831 AArch64 tree passed fresh manifest/build/KEM/KAT,
