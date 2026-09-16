@@ -1,0 +1,15 @@
+id: A1
+action: optimize-layout
+observation: current_tail_gathers_16_halfwords_per_bank_and_repeats_six_packed_ntt16s
+primary_bottleneck: layout_and_permutation
+hypothesis: >-
+  Bank-major input may remove gather cost; six-bank SIMD may expose more ILP,
+  but must overcome twelve extra Algorithm-10 products and output transpose.
+variants:
+  T0: current_column_major_six_packed_ntt16
+  T1: bank_major_six_packed_ntt16
+  T2: column_major_six_bank_lane_simd_plus_transpose
+falsifier: no_tail_only_gain_or_any_full_forward_regression_after_same_boundary_measurement
+slothy: deferred; architecture selected before scheduling
+result: T1_bank_major_selected
+production_linked: false

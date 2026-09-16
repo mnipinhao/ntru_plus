@@ -1,0 +1,24 @@
+baseline:
+  id: M5U_CF5_A_duplicated_producer_forward
+  source: ../gt_friso2_ntt16_producer_pair_link/gt864_forward_six_bank_cf5.S
+  extracted_region: baseline-region.S
+  function: gt864_forward_six_bank_pass2_cf5
+  start_label: gt864_forward_six_bank_pass2_cf5
+  end_label: end_of_CF5_A_text_and_constant_tables
+region:
+  instruction_count: 3283
+  live_in: [x0_FRISO2_output, x1_P8_top_split, x30_caller_return]
+  live_out: [FRISO2_output_memory, x0_x7_x16_x30_and_v0_v31_clobbered]
+abi:
+  inputs: [1728_byte_natural_polynomial_via_wrapper, 1792_byte_P8_workspace]
+  outputs: [1728_byte_FRISO2_transform]
+memory_contract:
+  loads: [one_top_split_read_plus_one_pass2_read_per_meaningful_coefficient, public_constant_tables]
+  stores: [one_top_split_write_plus_one_pass2_write_per_meaningful_coefficient]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 3283
+  benchmark_command: deferred_CF5_A_not_code_size_faithful

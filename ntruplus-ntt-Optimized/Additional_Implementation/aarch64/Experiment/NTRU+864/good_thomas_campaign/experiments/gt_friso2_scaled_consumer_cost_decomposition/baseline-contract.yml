@@ -1,0 +1,24 @@
+baseline:
+  id: M5R_D_FR0_scaled_bank_control
+  source: ../gt_forward_level2_one_mul_b3/gt864_forward_six_bank_all_one_mul_b3.S
+  extracted_region: ../gt_forward_level2_one_mul_b3/slothy-output/gt864_forward_one_bank_all_one_mul_b3.n1.opt.S
+  function: gt864_forward_six_bank_pass2_all_one_mul_b3
+  start_label: gt864_forward_one_bank_all_one_mul_b3_slothy_start
+  end_label: gt864_forward_one_bank_all_one_mul_b3_slothy_end
+region:
+  instruction_count: 569
+  live_in: [one_P8_bank, strided_tail, NTT16_table, NTT9_table, v13_bitrev, v14_q, v15_roots]
+  live_out: [eighteen_FR0_vectors]
+abi:
+  inputs: [P8_bank_and_public_tables]
+  outputs: [eighteen_FR0_vectors]
+memory_contract:
+  loads: [sixteen_main_vectors, sixteen_tail_halfwords, sixty_nine_public_table_vectors]
+  stores: [eighteen_final_vectors_outside_scheduled_region]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 569
+  benchmark_command: python3_run_pi5.py_isolated_four_case_PMU

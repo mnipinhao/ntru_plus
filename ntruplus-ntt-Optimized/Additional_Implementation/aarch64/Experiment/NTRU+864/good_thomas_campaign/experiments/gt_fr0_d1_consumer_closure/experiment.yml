@@ -1,0 +1,26 @@
+experiment:
+  id: D1-C1-C2
+  status: C1_pass_C2_pass
+  parameter_set: NTRU+864
+  production_linked: false
+baseline:
+  forward: M5R-D_FR0
+  basemul: B1-0_GCC_FR0
+  inverse: M5E_FR0
+  serializer: stock_NTRU+864_poly_tobytes
+candidate:
+  basemul: B1-D1_direct_signed_s32_Barrett
+contracts:
+  input_scale: R0
+  output_scale: R0
+  old_output_bound: 2205
+  d1_output_bound: 2911
+  inverse_reclosed_maximum: 17220
+gates:
+  D1-C1: two_Forward_plus_BaseMul_plus_Inverse_correctness_alias_sentinel_and_PMU
+  D1-C2a: BaseMulAdd_to_actual_serializer_byte_exact_for_boundary_random_and_encap_shaped_inputs
+  D1-C2b: real_Encapsulation_generated_h_r_m_plus_GT_coordinate_ABI_byte_exact
+non_claims:
+  - no_Production_change
+  - no_production_linked_KEM_or_SUPERCOP_claim
+  - test_only_coordinate_bridge_not_yet_a_Production_wrapper

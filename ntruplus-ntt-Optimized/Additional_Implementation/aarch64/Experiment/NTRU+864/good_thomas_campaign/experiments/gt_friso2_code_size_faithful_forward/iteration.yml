@@ -1,0 +1,24 @@
+id: M5U-CF5-B
+mode: existing_region_replacement
+hypothesis: sharing_the_exact_CF5_A_NTT16_producer_reduces_static_text_without_changing_dynamic_DAG_or_boundary_cost_and_improves_Pi5_forward_cycles
+state: iteration_or_promote
+status: rejected_performance_after_correct_integration
+repo_probe:
+  local_slothy: none
+  remote_slothy_host: pinhao@172.25.166.141:51208
+  remote_slothy_path: /home/pinhao/slothy
+  remote_slothy_python: /home/pinhao/slothy/venv/bin/python
+  inherited_regions: [producer_345, t0c1_309, t0c2_309, t1c1_279, t1c2_279]
+changed_artifacts: [generate_cf5b.py, audit_cf5b.py, gt864_forward_six_bank_cf5b.S, gt864_forward_poly_ntt_cf5b.S]
+hard_gates:
+  - exact_reused_region_hashes
+  - one_static_producer_and_four_dynamic_calls
+  - zero_boundary_moves_spills_and_coefficient_memory_ops
+  - exact_4726_dynamic_arithmetic_ledger
+  - full_forward_oracle_and_ABI
+  - Pi5_PMU_against_M5R_D_CF0_and_Official
+result:
+  structural_integration: pass
+  correctness_and_ABI: pass
+  performance: reject
+  next: decompose_scaled_consumer_cycle_delta_and_require_at_least_184_840_cycles_saved_per_forward_before_reopening_FRISO2_pipeline

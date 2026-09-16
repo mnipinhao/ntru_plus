@@ -1,0 +1,23 @@
+candidate.id: P3B37
+candidate.status: investigate
+candidate.mode: existing_region_replacement
+contract.preserved: true
+contract.approved_changes: false
+correctness.oracle: pass
+correctness.tests: pass
+correctness.abi: pass
+correctness.constant_time_review: pass
+slothy.status: pass
+slothy.baseline_expected_cycles: null
+slothy.candidate_expected_cycles: null
+slothy.parity_justification: Fixed allocation and identical arithmetic; overlapping window estimates are not aggregate cycle estimates.
+slothy.log_json: build/reviewed-slothy.json
+benchmark.status: pass
+benchmark.command: python3 run_pi.py --run --repeat --summarize
+benchmark.metric: cycles
+benchmark.lower_is_better: true
+benchmark.neutral_threshold_percent: 1.0
+benchmark.baseline: 3524.9355
+benchmark.candidate: 3518.28
+decision.reason: Tiny measured improvement; no aggregate model estimate and no production promotion.
+decision.next_iteration: Retain both candidates; prioritize arithmetic or consumer DAG improvements over more scheduling.

@@ -1,0 +1,23 @@
+id: M5U-CF5-F
+mode: oracle_scaffold_only
+scope: explore
+action: compare_small_signed_weight_leaf_bases_and_search_current_NTT9_topology
+observation: two_constant_is_stricter_than_needed_but_small_absolute_weight_is_required_to_delete_widening_BaseMul_reductions
+hypothesis: one_of_H_176_464_752_preserves_direct_wide_BaseMul_and_has_a_cheaper_Forward_scale_cut_than_H_32
+exact_change: machine_check_four_row_slopes_and_search_the_same_oriented_NTT9_DAG
+expected_performance_effect: retain_the_334_194_cycle_BaseMul_saving_with_less_than_CF5_B_Forward_overhead
+correctness_and_range_impact: new_public_signed_leaf_weights_and_basis_map_only
+falsification: no_sign4_slope_produces_a_concrete_forward_witness_at_or_below_21_mulmods_per_block_or_inverse_cost_breaks_the_complete_ledger
+state: stop_or_reformulate
+status: algebra_pass_current_forward_topology_rejected
+result:
+  exact_minimum_postadd_mulmods: 8
+  H176_case_upper_bounds: [26, 26, 26, 26]
+  H464_case_upper_bounds: [26, 26, 26, 27]
+  H752_case_upper_bounds: [26, 27, 26, 27]
+  at_most_21_bounded_search: no_witness_in_twelve_120_second_runs_no_infeasibility_certificate
+  BaseMul_signed_direct_wide: pass
+  inverse_row_mulmods: 64
+  assembly_created: false
+  slothy_run: false
+  next: change_NTT9_arithmetic_topology_or_find_an_exact_identity_lower_bound_before_reopening_FR_SIGN4

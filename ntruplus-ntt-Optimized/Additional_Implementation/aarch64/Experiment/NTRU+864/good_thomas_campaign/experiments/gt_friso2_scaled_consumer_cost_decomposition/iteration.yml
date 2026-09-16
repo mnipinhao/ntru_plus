@@ -1,0 +1,31 @@
+id: M5U-CF5-C
+mode: post_slothy_review
+action: benchmark_and_understand
+observation: CF5_B_is_351_936_cycles_slower_than_M5R_D_despite_only_280_extra_dynamic_instructions
+hypothesis: isolated_case_PMU_will_separate_the_shared_sixteen_mulmod_penalty_from_top0_specific_constant_load_pressure_and_show_whether_184_839_cycles_can_be_removed_without_changing_FRISO2
+exact_change: benchmark_only_generation_of_eight_case_specific_functions_from_unchanged_returned_assembly
+expected_static_effect: none_on_candidate_kernels
+expected_performance_effect: isolated_deltas_sum_close_to_full_forward_351_936_cycle_delta
+expected_register_pressure_effect: none
+correctness_and_range_impact: none_because_instruction_sequences_are_exactly_reused
+falsification: isolated_deltas_do_not_reproduce_direction_or_scale_of_full_forward_delta
+state: iteration_or_promote
+status: passed_cost_decomposition_no_candidate_promotion
+repo_probe:
+  local_slothy: none
+  remote_slothy_host: pinhao@172.25.166.141:51208
+  inherited_slothy_python: /home/pinhao/slothy/venv/bin/python
+  pi5_host: pi@100.99.191.9
+hard_gates:
+  - exact_instruction_identity_and_count
+  - isolated_output_matches_full_pass2_per_case
+  - paired_PMU_for_all_four_scaled_banks
+  - reconcile_isolated_sum_with_full_forward_delta
+  - classify_reopen_or_reject_against_184_839_cycle_required_saving
+result:
+  isolated_delta_sum_p50: 355.0362
+  full_forward_delta_p50: 351.93645
+  reconciliation_residual_cycles: -3.09975
+  primary_bottleneck: extra_mulmods_and_dependency_schedule
+  rejected_hypothesis: top0_extra_constant_loads_are_the_primary_cycle_cost
+  next: CF5_D_joint_arithmetic_DAG_and_bounded_schedule_search

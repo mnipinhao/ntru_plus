@@ -1,0 +1,45 @@
+candidate:
+  id: A1_S_T1_same_DAG_schedule
+  status: reject
+  kernel_contract: kernel-contract.yml
+  symbolic_source: gt864_t1_one_bank.sym.S
+  slothy_driver: optimize.py
+  physical_live_out: [out0_v10,out1_v22,out2_v28,out3_v7,out4_v1,out5_v30,out6_v8,out7_v29,out8_v9,out9_v11,out10_v19,out11_v6,out12_v2,out13_v3,out14_v4,out15_v27,out16_v25,out17_v21]
+contract_preservation:
+  preserved: [T1_bank_major_input,552_instruction_DAG,90_Algorithm10_products,no_coefficient_stores,FR0_outputs,G0_ranges,constant_time_shape]
+  approved_changes: no_contract_changes
+region:
+  start_label: gt864_t1_one_bank_slothy_start
+  end_label: gt864_t1_one_bank_slothy_end
+  live_in: [x0_main_P8, x1_two_contiguous_tail_vectors, x2_NTT16_table, x3_NTT9_table, v13_bitrev, v14_q, v15_roots]
+  live_out: [out0-out17_FR0_roles,x0,x1,x2,x3,v13,v14,v15]
+  clobbers: [x0,x2,x3,v0-v12,v16-v31]
+abi:
+  inputs: [one_bank_128_main_plus_16_bank_major_tail_coefficients, public_tables, fixed_common_vectors]
+  outputs: [eighteen_FR0_row_vectors_in_current_physical_store_order]
+  concrete_gprs_allowed: [x0,x1,x2,x3]
+  fixed_vector_registers: [v13,v14,v15,v16,v17]
+memory_contract:
+  loads: [one_32_byte_coefficient_ldp, sixteen_16_byte_main_coefficient_loads, fifty_three_public_vector_loads]
+  stores: none_inside_region
+  aliasing: coefficient_inputs_are_read_only_and_public_tables_are_disjoint
+  alignment: x0_x1_x2_x3_are_16_byte_aligned
+  public_offsets_only: true
+  pointer_updates: [x0_plus_256,x1_unchanged,x2_plus_352,x3_plus_496]
+constant_contract:
+  constants: [q,rho,rho_prime,rho2,rho2_prime,eta,eta_prime,eta_inv,eta_inv_prime,NTT16_and_twist_tables]
+  modulus: 3457
+  representation: R0_signed_int16_with_Algorithm10_fixed_constants
+  reduction_method: mul_sqrdmulh_mls
+range_contract:
+  input_ranges: [G0_P8_contract]
+  intermediate_ranges: [NTT16_abs_at_most_9342,twist_abs_at_most_3436,NTT9_abs_at_most_25569]
+  output_ranges: [FR0_abs_at_most_25569]
+constant_time_contract:
+  secret_inputs: [all_144_coefficients]
+  public_inputs: [pointers,tables,top,component,fixed_control_flow]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+slothy_result: local_0_2_0_RA_OPTIMAL_split_window_full_OK_zero_spill
+full_path_benchmark: 4208_34680_cycles_p50_vs_4165_04040_T1_baseline_rejected
+production_linked: false

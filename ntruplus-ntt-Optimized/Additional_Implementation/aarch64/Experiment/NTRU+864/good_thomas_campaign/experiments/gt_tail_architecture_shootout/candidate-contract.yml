@@ -1,0 +1,17 @@
+id: A1_T1_T2
+common_output_layout: "tail[bank][column0..column15]"
+T1:
+  input_layout: "tail[bank][t0..t15]"
+  arithmetic: six_packed_ntt16
+  algorithm10_products: 36
+  coefficient_loads: 12_vectors
+T2:
+  input_layout: "tail[t][bank0..bank5,pad,pad]"
+  arithmetic: one_ntt16_DAG_with_six_independent_banks_in_lanes
+  algorithm10_products: 48
+  coefficient_loads: 16_vectors
+  output_routing: two_8x8_halfword_transposes_and_12_vector_stores
+scale: R0
+range_contract: unchanged_from_G0
+slothy: not_run
+production_linked: false

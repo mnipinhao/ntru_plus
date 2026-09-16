@@ -1,0 +1,25 @@
+CC ?= gcc
+CFLAGS ?= -O3 -std=c11 -Wall -Wextra -Werror -march=armv8-a+simd
+CFLAGS += -ffixed-v8 -ffixed-v9 -ffixed-v10 -ffixed-v11 -ffixed-v12 \
+	-ffixed-v13 -ffixed-v14 -ffixed-v15
+
+.PHONY: all clean check
+all: build/bench-candidate build/test-candidate
+
+COMMON = build/tail_variants.S build/pass2_t1.S build/pass2_t1_slothy.S \
+	build/full_t1_wrapper.S build/full_t1_slothy_wrapper.S deps/top_split.s deps/official_ntt.s
+
+build/bench-candidate: bench_candidate_pmu.c $(COMMON)
+	$(CC) $(CFLAGS) -o $@ $^
+
+build/test_candidate.o: test_candidate.c build/gt864_fr0_to_official_map.h
+	$(CC) $(CFLAGS) -mgeneral-regs-only -Ibuild -c -o $@ $<
+
+build/test-candidate: build/test_candidate.o $(COMMON)
+	$(CC) $(CFLAGS) -o $@ $^
+
+check: build/test-candidate
+	./build/test-candidate
+
+clean:
+	rm -f build/bench-candidate build/test-candidate build/test_candidate.o

@@ -1,0 +1,50 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: A1_T1_unscheduled_one_bank
+  source: ../gt_tail_architecture_shootout/build/pass2_t1.S
+  extracted_region: build/baseline-region.S
+  function: gt864_forward_six_bank_pass2_a1_t1 internal one-bank helper
+  start_label: .Lgt864_a1t1_one_bank
+  end_label: gt864_forward_six_bank_pass2_a1_t1_end
+  source_sha256: 1cf9efd21be0774ee094f4683b7cf7f0db1670d7f1e48ab997098496d16a84d3
+  region_sha256: 61ff4ca39adbca242925ddd5b21f4d3740948af0ab99b1eabdaa27f690a2fd4f
+  physical_live_out: [out0_v31,out1_v1,out2_v9,out3_v26,out4_v20,out5_v24,out6_v30,out7_v29,out8_v22,out9_v19,out10_v21,out11_v23,out12_v8,out13_v10,out14_v12,out15_v6,out16_v27,out17_v0]
+region:
+  instruction_count: 553_including_ret_552_schedulable
+  live_in: [x0_main_P8, x1_two_contiguous_tail_vectors, x2_NTT16_table, x3_NTT9_table, v13_bitrev, v14_q, v15_roots]
+  live_out: [out0-out17_FR0_roles,x0,x1,x2,x3,v13,v14,v15]
+  clobbers: [x0,x2,x3,v0-v12,v16-v31]
+abi:
+  inputs: [one_bank_128_main_plus_16_bank_major_tail_coefficients, public_tables, fixed_common_vectors]
+  outputs: [eighteen_FR0_row_vectors_in_current_physical_store_order]
+  concrete_gprs_allowed: [x0,x1,x2,x3]
+  fixed_vector_registers: [v13,v14,v15,v16,v17]
+  reserved_registers: [x4-x30,sp,v13-v17]
+memory_contract:
+  loads: [one_32_byte_coefficient_ldp, sixteen_16_byte_main_coefficient_loads, fifty_three_public_vector_loads]
+  stores: none_inside_region
+  aliasing: coefficient_inputs_are_read_only_and_public_tables_are_disjoint
+  alignment: x0_x1_x2_x3_are_16_byte_aligned
+  public_offsets_only: true
+  pointer_updates: [x0_plus_256,x1_unchanged,x2_plus_352,x3_plus_496]
+constant_contract:
+  constants: [q,rho,rho_prime,rho2,rho2_prime,eta,eta_prime,eta_inv,eta_inv_prime,NTT16_and_twist_tables]
+  modulus: 3457
+  representation: R0_signed_int16_with_Algorithm10_fixed_constants
+  reduction_method: mul_sqrdmulh_mls
+range_contract:
+  input_ranges: [G0_P8_contract]
+  intermediate_ranges: [NTT16_abs_at_most_9342,twist_abs_at_most_3436,NTT9_abs_at_most_25569]
+  output_ranges: [FR0_abs_at_most_25569]
+constant_time_contract:
+  secret_inputs: [all_144_coefficients]
+  public_inputs: [pointers,tables,top,component,fixed_control_flow]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 552
+  one_bank_cycles_p50: 579.67210
+  six_bank_cycles_p50: 3471.47075
+  complete_forward_cycles_p50: 4165.07555
+  benchmark_command: python3 ../gt_tail_architecture_shootout/run_pi5_full.py

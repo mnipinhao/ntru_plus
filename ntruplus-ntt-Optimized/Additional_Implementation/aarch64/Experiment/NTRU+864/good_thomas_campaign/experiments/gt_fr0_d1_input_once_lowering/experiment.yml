@@ -1,0 +1,25 @@
+id: gt_fr0_d1_input_once_lowering
+gate: D1-P3B7
+status: rejected_inline_asm_scheduling_regression
+parameter_set: NTRU+864
+production_linked: false
+control: gt864_fr0_input_once_tobytes
+candidates:
+  - gt864_fr0_input_once_l1_tobytes
+  - gt864_fr0_input_once_l12_tobytes
+pi5_status: correctness_and_no_spill_passed_pmu_regressed
+local_correctness: passed_256_complete_inputs
+local_object_audit:
+  control_top_instructions: 1358
+  l1_top_instructions: 1304
+  l12_top_instructions: 1250
+  coefficient_spills: 0
+pi5_results:
+  p3b6_cycles: 1502.453
+  l1_cycles: 1659.185
+  l12_cycles: 1643.030
+  p3b6_instructions: 2769.057
+  l1_instructions: 2696.057
+  l12_instructions: 2614.057
+  coefficient_spills: 0
+decision: reject_inline_asm_form_retain_scheduled_asm_hypothesis

@@ -1,0 +1,24 @@
+candidate:
+  id: M5U_CF5_C_cost_decomposition
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  symbolic_source: inherited_CF5_A_producer_and_four_fixed_livein_consumers
+  slothy_driver: inherited_remote_outputs_no_new_candidate_schedule
+contract_preservation:
+  preserved: [FRISO2_ABI, arithmetic_order, register_allocation, ranges, constants, coefficient_memory_boundary]
+  approved_changes: [none_benchmark_scaffold_only]
+region:
+  start_label: generated_case_specific_isolated_bank_start
+  end_label: generated_case_specific_isolated_bank_end
+  live_in: [one_P8_bank, strided_tail, public_tables]
+  live_out: [eighteen_FRISO2_vectors]
+abi:
+  inputs: [P8_workspace]
+  outputs: [one_144_coefficient_FRISO2_bank]
+memory_contract:
+  loads: [exact_CF5_B_dynamic_load_sequence_for_selected_bank]
+  stores: [same_eighteen_public_offset_vector_stores]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

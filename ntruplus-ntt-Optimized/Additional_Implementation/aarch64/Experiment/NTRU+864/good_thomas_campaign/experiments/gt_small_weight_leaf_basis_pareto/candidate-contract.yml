@@ -1,0 +1,17 @@
+candidate:
+  id: M5U_CF5_F_FR_SIGN4
+  status: investigate
+  slopes: [176, 464, 752]
+  basis: D_u_equals_diag_1_u_u_squared
+contract_preservation:
+  preserved: [NTRUplus864_ring, GT_coordinates, logical_leaf_order, R0_scale]
+  approved_changes: [leaf_basis, signed_BaseMul_weight, inverse_basis]
+hard_gates:
+  - exact_z_over_u_cubed_identity
+  - exact_2592_basis_product_homomorphisms_per_slope
+  - signed_direct_wide_int32_range
+  - signed_weight_add_sub_polarity_equivalence
+  - exact_or_explicitly_bounded_forward_cost_search
+  - inverse_correction_derivation
+  - complete_twoF_BaseMul_Inverse_ledger
+promotion_forbidden_without: concrete_forward_DAG_at_or_below_21_mulmods_per_block

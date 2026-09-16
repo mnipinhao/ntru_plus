@@ -1,0 +1,15 @@
+#define _GNU_SOURCE
+#include "pair_wait_tobytes.h"
+#include "p3b15_tables.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <unistd.h>
+static uint32_t rng=1;
+static uint32_t next_u32(void){rng=rng*1664525u+1013904223u;return rng;}
+static int16_t canon(int16_t x){int32_t r=x%3457;return(int16_t)(r<0?r+3457:r);}
+static void oracle(uint8_t out[1296],const int16_t in[864]){for(int p=0;p<432;p++){uint16_t a=(uint16_t)canon(in[p3b15_map[2*p]]),b=(uint16_t)canon(in[p3b15_map[2*p+1]]);out[3*p]=(uint8_t)a;out[3*p+1]=(uint8_t)((a>>8)|(b<<4));out[3*p+2]=(uint8_t)(b>>4);}}
+static void compare(const uint8_t*a,const uint8_t*b,int t){for(int i=0;i<1296;i++)if(a[i]!=b[i]){fprintf(stderr,"fail test=%d byte=%d expected=%u actual=%u\n",t,i,a[i],b[i]);exit(1);}}
+int main(void){int16_t in[864];uint8_t e[1296],a[1296];for(int t=0;t<256;t++){for(int i=0;i<864;i++)in[i]=t==0?(int16_t)i:t==1?INT16_MIN:t==2?INT16_MAX:(int16_t)next_u32();oracle(e,in);gt864_fr0_pair_wait_tobytes(a,in);compare(e,a,t);}long ps=sysconf(_SC_PAGESIZE);if(ps<=0)return 2;size_t page=(size_t)ps;uint8_t*x=mmap(NULL,3*page,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,-1,0),*y=mmap(NULL,3*page,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,-1,0);if(x==MAP_FAILED||y==MAP_FAILED)return 2;if(mprotect(x,page,PROT_NONE)||mprotect(x+2*page,page,PROT_NONE)||mprotect(y,page,PROT_NONE)||mprotect(y+2*page,page,PROT_NONE))return 2;for(int edge=0;edge<2;edge++){int16_t*ip=(int16_t*)(x+page+(edge?page-1728:0));uint8_t*op=y+page+(edge?page-1296:0);for(int i=0;i<864;i++)ip[i]=(int16_t)(i-432);oracle(e,ip);gt864_fr0_pair_wait_tobytes(op,ip);compare(e,op,256+edge);}munmap(x,3*page);munmap(y,3*page);puts("p3b15_correctness=pass cases=256 guarded_edges=2");return 0;}

@@ -1,0 +1,36 @@
+CC := gcc
+CFLAGS := -O3 -std=c11 -Wall -Wextra -Werror -Wmissing-prototypes -march=armv8-a+simd -D_DEFAULT_SOURCE -ffunction-sections -fdata-sections
+LDFLAGS := -Wl,--gc-sections
+BUILD := build
+
+.PHONY: all check clean
+
+all: $(BUILD)/bench
+
+$(BUILD):
+	mkdir -p $@
+
+$(BUILD)/raw_pack.o: pack.s | $(BUILD)
+	$(CC) -x assembler-with-cpp \
+		-Dpoly_tobytes_asm=raw_to -Dpoly_frombytes_asm=raw_from \
+		-Dpoly_shuffle_asm=raw_shuffle -Dpoly_shuffle2_asm=raw_shuffle2 \
+		-D_poly_tobytes_asm=_raw_to -D_poly_frombytes_asm=_raw_from \
+		-D_poly_shuffle_asm=_raw_shuffle -D_poly_shuffle2_asm=_raw_shuffle2 \
+		-c $< -o $@
+
+$(BUILD)/%.o: %.c | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+
+$(BUILD)/%.o: %.S | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+
+$(BUILD)/bench: $(BUILD)/bench_pi5.o $(BUILD)/input_once_tobytes.o \
+	$(BUILD)/baseline_r9_to.o $(BUILD)/route9.o $(BUILD)/stock_wrapper.o \
+	$(BUILD)/raw_pack.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+check: $(BUILD)/bench
+	./$(BUILD)/bench
+
+clean:
+	rm -rf $(BUILD)

@@ -1,0 +1,49 @@
+mode: existing_region_replacement
+candidate_status: reject
+kernel:
+  id: gt864_friso2_code_size_faithful_forward
+  name: GT864 CF5-B shared-producer FR-ISO2 Forward
+  source: gt864_forward_six_bank_cf5b.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_on_raspberry_pi_5
+slothy:
+  workflow: reuse_exact_CF5_A_allocated_regions_no_new_scheduling
+  allow_spills: false
+region:
+  start_label: gt864_forward_six_bank_pass2_cf5b
+  end_label: end_of_CF5_B_text_and_constant_tables
+  live_in: [x0_FRISO2_output, x1_P8_top_split, x30_caller_return]
+  live_out: [FRISO2_output_memory, x0_x7_x16_x30_and_v0_v31_clobbered]
+abi:
+  inputs: [1728_byte_natural_polynomial_via_wrapper, 1792_byte_P8_workspace]
+  outputs: [1728_byte_FRISO2_transform]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x16, x30, sp]
+  reserved_registers: [v13_bitrev, v14_modulus, v15_roots]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: natural_R0_then_existing_LD3_P8_top_split
+  output_representation: FRISO2_in_CF3_row_order
+memory_contract:
+  loads: [unchanged_top_split_coefficient_reads, unchanged_pass2_coefficient_reads, public_constant_tables]
+  stores: [unchanged_top_split_workspace_writes, unchanged_final_FRISO2_writes]
+  aliasing: exact_in_place_and_out_of_place_oracle_modes
+  alignment: sixteen_byte_vector_tables_and_existing_coefficient_contract
+  public_offsets_only: true
+constant_contract:
+  constants: [q_3457, Algorithm10_b_and_bhat_pairs, bitrev, NTT16_roots, FRISO2_scaled_NTT9_tables]
+  modulus: 3457
+  representation: R0_input_and_FRISO2_output
+range_contract:
+  input_ranges: signed_int16_full_domain_and_existing_scheme_bounds
+  output_ranges: producer_abs_le_9342_consumer_intermediate_abs_le_19427
+constant_time_contract:
+  secret_inputs: polynomial_coefficients
+  public_inputs: table_addresses_and_fixed_offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: make check-full
+  test_command: make check
+  full_path_benchmark_command: make bench_pi5

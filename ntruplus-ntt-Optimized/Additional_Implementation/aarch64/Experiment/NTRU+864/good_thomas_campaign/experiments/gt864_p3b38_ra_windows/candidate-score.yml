@@ -1,0 +1,23 @@
+candidate.id: P3B38
+candidate.status: investigate
+candidate.mode: existing_region_replacement
+contract.preserved: true
+contract.approved_changes: false
+correctness.oracle: pass
+correctness.tests: pass
+correctness.abi: pass
+correctness.constant_time_review: pass
+slothy.status: pass
+slothy.baseline_expected_cycles: null
+slothy.candidate_expected_cycles: null
+slothy.parity_justification: Renamed internals, fixed boundary and identical exact DAG; overlapping window estimates are not aggregate cycle estimates.
+slothy.log_json: build/reviewed-slothy.json
+benchmark.status: pass
+benchmark.command: python3 run_pi.py --run --repeat --summarize
+benchmark.metric: cycles
+benchmark.lower_is_better: true
+benchmark.neutral_threshold_percent: 1.0
+benchmark.baseline: 3517.0860000000002
+benchmark.candidate: 3522.816
+decision.reason: Judge same-boundary Pi result; aggregate model estimate unavailable; no production promotion.
+decision.next_iteration: Retain both candidates; prioritize arithmetic or consumer DAG improvements over more scheduling.

@@ -95,7 +95,7 @@
       "status": "passed",
       "role": "ntt16_arithmetic_and_range_contract",
       "production_linked": false,
-      "artifact_budget_waiver": 15,
+      "artifact_budget_waiver": 17,
       "artifact_budget_waiver_reason": "The bounded range gate keeps the executable Neon schedule, compile-time tables, exact/direct differential test, machine range proof, and compiler spill inventory independently auditable; generated binaries and JSON remain ignored.",
       "next": "gt_fr0_basemul_arithmetic"
     },
@@ -415,6 +415,318 @@
       "artifact_budget_waiver": 14,
       "artifact_budget_waiver_reason": "The complete-operation closure keeps the fused direct-Inverse implementation and generated tables, full quotient-ring test, factor and range proofs, exact cost ledger, baseline/candidate contracts, lifecycle, explanation, evidence and split correctness/performance decision independently auditable; generated headers, maps, JSON and binary remain ignored.",
       "next": "retain the executable complete-operation oracle, but integrate the CF3 scaled-NTT9 pair with the frozen NTT16 producer and recompute the whole-operation ledger before any new Pi5 run"
+    },
+    {
+      "id": "gt_pipeline_structural_audits",
+      "path": "gt_pipeline_structural_audits",
+      "question": "Which GT864 end-to-end optimization principles are complete, partial, or open before another Forward implementation gate?",
+      "status": "passed",
+      "role": "end_to_end_structural_research_control_plane",
+      "production_linked": false,
+      "next": "gt_ntt9_first_axis_layout_model"
+    },
+    {
+      "id": "gt_ntt9_first_axis_layout_model",
+      "path": "gt_ntt9_first_axis_layout_model",
+      "question": "Can top-split to NTT9 to NTT16 preserve the CF5-A FR-ISO2 transform with a no-spill two-load/two-store layout and a static cost below NTT16-first?",
+      "status": "rejected",
+      "role": "exact_LD3_register_CRT_phase_permutation_memory_and_static_axis_order_gate",
+      "production_linked": false,
+      "next": "retain NTT16-first and build the code-size-faithful CF5-B Forward; reopen only with an exact 2D phase-absorption DAG below 4726 instructions"
+    },
+    {
+      "id": "gt_friso2_code_size_faithful_forward",
+      "path": "gt_friso2_code_size_faithful_forward",
+      "question": "Can one shared NTT16 producer and four inline scaled NTT9 consumers preserve CF5-A exactly, reduce real code size, and make the FR-ISO2 complete-operation ledger viable?",
+      "status": "rejected",
+      "role": "code_size_faithful_forward_correctness_ABI_Pi5_PMU_and_early_whole_operation_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 19,
+      "artifact_budget_waiver_reason": "The closed integration keeps six lifecycle/contract documents, an exact nonduplicating baseline include, deterministic generator and audit, generated pass2/wrapper, correctness and five-way PMU harnesses, and one Makefile; benchmark raw data stays ignored.",
+      "next": "decompose the scaled-consumer cycle delta and require at least 184.840 cycles saved per Forward before reopening the FR-ISO2 pipeline"
+    },
+    {
+      "id": "gt_friso2_scaled_consumer_cost_decomposition",
+      "path": "gt_friso2_scaled_consumer_cost_decomposition",
+      "question": "Under the frozen FR-ISO2 ABI, which per-bank arithmetic, constant-load, and dependency costs explain the CF5-B Forward regression?",
+      "status": "passed",
+      "role": "exact_scaled_consumer_instruction_ledger_isolated_Pi5_PMU_and_bottleneck_classification_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 14,
+      "artifact_budget_waiver_reason": "The research gate keeps six lifecycle/contract documents, exact static audit, deterministic benchmark-only assembly generator, correctness-aware PMU harness, remote runner and Makefile; generated assembly, headers, objects and raw samples remain gitignored.",
+      "next": "search a new FR-ISO2 scaled-NTT9 arithmetic DAG and bounded producer-consumer schedule that saves at least 184.839 cycles per Forward versus CF5-B"
+    },
+    {
+      "id": "gt_friso2_scaled_ntt9_arithmetic_dag_gate",
+      "path": "gt_friso2_scaled_ntt9_arithmetic_dag_gate",
+      "question": "Can affine rescaling of the fixed M5R-D oriented NTT9 topology reach at most 21 mulmods per FR-ISO2 block, the screening budget implied by the CF5-C cycle deficit?",
+      "status": "rejected",
+      "role": "exact_scaled_NTT9_arithmetic_budget_gate_before_assembly_or_slothy",
+      "production_linked": false,
+      "artifact_budget_waiver": 13,
+      "artifact_budget_waiver_reason": "The closed algebra gate retains six lifecycle documents, the explicit DAG contract, two independent exact solver encodings, the lazy modular-theory solver, one independent accepted-witness cost audit, and gitignore; there is intentionally no assembly or benchmark scaffold.",
+      "next": "change the scaled NTT9 arithmetic topology while preserving FR-ISO2, and require a concrete at-most-21-mulmod witness before any bounded Slothy scheduling"
+    },
+    {
+      "id": "gt_b3_basemul_leaf_basis_codesign",
+      "path": "gt_b3_basemul_leaf_basis_codesign",
+      "question": "Can the current oriented NTT9 keep every B3 add/sub island at common scale while a geometric degree-3 leaf basis moves row dependence into BaseMul without losing FR-ISO2's direct-wide benefit?",
+      "status": "rejected",
+      "role": "exact_B3_scale_connectivity_geometric_leaf_basis_BaseMul_weight_and_range_gate",
+      "production_linked": false,
+      "next": "derive the minimum post-add scale cut required for row slope 32 or change NTT9 topology, while retaining a complete two-Forward plus BaseMul plus Inverse ledger"
+    },
+    {
+      "id": "gt_small_weight_leaf_basis_pareto",
+      "path": "gt_small_weight_leaf_basis_pareto",
+      "question": "Can H in {176,464,752} produce four signed small BaseMul weights, retain direct-wide accumulation, and reduce the current oriented NTT9 Forward cost enough to beat the H32 FR-ISO2 route?",
+      "status": "rejected",
+      "role": "small_signed_weight_leaf_basis_exact_scale_cut_forward_witness_range_inverse_and_complete_arithmetic_ledger_gate",
+      "production_linked": false,
+      "next": "retain H176 as an algebra target only, and change NTT9 topology or derive an at-most-21-mulmod identity construction before any assembly or Slothy work"
+    },
+    {
+      "id": "gt_m5rd_fr0_range_chain_closure",
+      "path": "gt_m5rd_fr0_range_chain_closure",
+      "question": "Does the actual 9342 M5R-D one-product Forward remain range, scale, and layout safe through M5C BaseMul/BaseMulAdd and M5E-r1 Inverse without another reduction?",
+      "status": "passed",
+      "role": "authoritative_current_M5R-D_FR0_range_scale_source_closure_and_linked_polynomial_differential_gate",
+      "production_linked": false,
+      "next": "use G0 as the range premise for subsequent M5R-D FR0 experiments; make no cycle or Production claim from this closure"
+    },
+    {
+      "id": "gt_tail_architecture_shootout",
+      "path": "gt_tail_architecture_shootout",
+      "question": "Which current, bank-major, or six-bank-SIMD NTT16 tail architecture wins at equal tail, one-bank, six-bank, and complete-Forward boundaries?",
+      "status": "passed",
+      "role": "tail_layout_architecture_correctness_static_ledger_and_paired_Pi5_PMU_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 17,
+      "artifact_budget_waiver_reason": "The architecture shootout keeps contracts, generator, three-boundary correctness and PMU harnesses, remote runners, build files, results and decision separately auditable; all generated assembly and raw samples remain ignored.",
+      "next": "carry only T1 bank-major into a separate Slothy scheduling experiment, then repeat linked complete-Forward correctness and timing"
+    },
+    {
+      "id": "gt_inverse_st1_lane_store",
+      "path": "gt_inverse_st1_lane_store",
+      "question": "Does replacing the M5E inverse UMOV plus STRH scatter with direct ST1 lane improve both I16-only and complete inverse?",
+      "status": "rejected",
+      "role": "inverse_scatter_instruction_path_correctness_and_paired_Pi5_PMU_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 14,
+      "artifact_budget_waiver_reason": "The isolated store-path shootout keeps the deterministic candidate generator, exact test, PMU harness, remote runner, build files, contracts, result and decision records independently auditable; generated assembly and raw samples remain ignored.",
+      "next": "retain UMOV plus STRH and do not pursue scratch plus ST3 unless a separate design reduces store count or address dependency"
+    },
+    {
+      "id": "gt_t1_slothy_scheduling",
+      "path": "gt_t1_slothy_scheduling",
+      "question": "How much Cortex-A76 scheduling headroom remains in the fixed T1 bank-major unified one-bank Stage16-through-two-NTT9 DAG?",
+      "status": "rejected",
+      "role": "fixed_T1_same_DAG_local_Slothy_allocation_schedule_correctness_and_paired_Pi5_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "The closed scheduling gate retains lifecycle contracts, exact symbolic generator, local Slothy driver and logs, allocated/scheduled assembly, post-audit, integration generator, correctness/PMU harness and decision; raw Pi samples and transient build products remain ignored.",
+      "next": "retain T1 bank-major and its original physical register allocation; preserve the schedule-only minus-8.462-cycle artifact as an oracle, but reopen only with a Cortex-A76 model or changed arithmetic DAG"
+    },
+    {
+      "id": "gt_fr0_handwritten_basemul",
+      "path": "gt_fr0_handwritten_basemul",
+      "question": "Can either same-DAG scheduling or a direct final R0 signed-int32 Barrett boundary outperform the exact Pi 5 GCC FR0 BaseMul object while keeping their benefits independently attributable?",
+      "status": "B1-0 closed; K1 rejected; D1 promoted experimental arithmetic baseline; old H1/H2 deferred",
+      "role": "exact_GCC_object_baseline_parallel_arithmetic_reduction_and_handwritten_scheduling_campaign",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "The campaign keeps one shared baseline, exact K0/K1/D0/D1 proof, separate baseline and D1 PMU harnesses/runners, returned-object audits, result ledger and later H1/H2 candidates; generated objects, disassembly and raw PMU samples remain ignored under build.",
+      "next": "decompose D1-P1 boundary costs; if handwritten scheduling reopens, use D1-H1 and separate D1-H2-U/D1-H2-P controls over the 57-instruction DAG"
+    },
+    {
+      "id": "gt_fr0_d1_consumer_closure",
+      "path": "gt_fr0_d1_consumer_closure",
+      "question": "Does the D1 [-2911,2911] representative survive the complete M5R-D-to-M5E polynomial consumer and the actual NTRU+864 serializer without correction?",
+      "status": "D1-C1 and D1-C2 passed; 24 real Encapsulation ciphertext cases byte-exact",
+      "role": "complete_polynomial_consumer_PMU_and_actual_serializer_representative_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 10,
+      "artifact_budget_waiver_reason": "The gate retains one combined correctness harness, complete-chain PMU harness, exact remote runner, audit, contracts and decisions; generated tables, binaries and raw PMU samples remain ignored under build.",
+      "next": "use the completed D1-P1 evidence; do not enter KAT or SUPERCOP until the complete GT path closes its Official cycle deficit"
+    },
+    {
+      "id": "gt_fr0_d1_production_shaped",
+      "path": "gt_fr0_d1_production_shaped",
+      "question": "Does D1 survive the unchanged stock KEM caller graph, and how does the production-shaped GT864 path compare with both GT-old and Official?",
+      "status": "passed",
+      "role": "production_shaped_poly_API_normalization_coordinate_bridge_full_KEM_correctness_and_Pi5_PMU_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "The gate retains lifecycle records, one explicit GT poly API bridge, the unchanged KEM multi-namespace build, deterministic full-KEM test, five-boundary PMU harness, runner and audit; generated objects, tables, maps and raw samples remain ignored.",
+      "next": "use D1-P2's closed ledger and run D1-P3 GT byte-boundary architecture before any production assembly or Slothy"
+    },
+    {
+      "id": "gt_fr0_d1_boundary_cost_decomposition",
+      "path": "gt_fr0_d1_boundary_cost_decomposition",
+      "question": "Which production boundaries explain GT-D1's remaining Keypair, Encaps and Decaps deficits relative to Official?",
+      "status": "passed",
+      "role": "paired_component_PMU_exact_stock_KEM_call_count_and_full_API_cost_reconciliation",
+      "production_linked": false,
+      "artifact_budget_waiver": 16,
+      "artifact_budget_waiver_reason": "The profiling gate retains lifecycle records, diagnostic declarations, correctness and PMU harnesses, exact remote runner and audit; it reuses the P1 wrapper source and keeps generated objects, maps, tables and raw samples ignored.",
+      "next": "D1-P3A selected route9 and direct pre/post-shuffle byte composition; proceed to isolated D1-P3B implementation and Pi 5 shootout"
+    },
+    {
+      "id": "gt_fr0_d1_byte_abi_architecture",
+      "path": "gt_fr0_d1_byte_abi_architecture",
+      "question": "Is the exact FR0/Official/protocol-byte map structured enough to justify a direct Neon boundary kernel?",
+      "status": "passed",
+      "role": "exact_864_map_factorization_stock_shuffle_composition_and_route9_architecture_selection_gate",
+      "production_linked": false,
+      "next": "D1-P3B0 proved cyclic lane labels but mandatory Official lane repair; emit isolated R9-A and R9-B candidates before direct-byte integration"
+    },
+    {
+      "id": "gt_fr0_d1_route9_network_search",
+      "path": "gt_fr0_d1_route9_network_search",
+      "question": "Are route9 lane labels regular enough for concrete transpose-and-repair and TBL Neon candidates?",
+      "status": "passed",
+      "role": "exact_lane_label_canonicalization_cyclic_matching_and_instruction_family_screening_gate",
+      "production_linked": false,
+      "next": "D1-P3B1 selected R9-A by exact tagged correctness, object audit and paired Pi5 coordinate-only PMU"
+    },
+    {
+      "id": "gt_fr0_d1_route9_pmu",
+      "path": "gt_fr0_d1_route9_pmu",
+      "question": "Do reusable R9-A or R9-B Neon route9 bodies beat current and factorized scalar coordinate bridges in both directions on Cortex-A76?",
+      "status": "passed",
+      "role": "exact_bidirectional_route9_correctness_object_shape_and_paired_Pi5_PMU_gate",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "The architecture shootout keeps lifecycle contracts, authoritative table generator, shared declarations, four implementations, tagged/random differential test, PMU harness, remote runner, machine audit, results and decision independently auditable; generated tables, binaries and raw PMU samples remain ignored.",
+      "next": "D1-P3B2 proved the composed maps and retained direct lane-load and two-TBL4 candidates"
+    },
+    {
+      "id": "gt_fr0_d1_composed_byte_routing_search",
+      "path": "gt_fr0_d1_composed_byte_routing_search",
+      "question": "What exact direct networks map FR0 to post-shuffle coefficients and pre-shuffle coefficients to FR0 without an Official[864] intermediate?",
+      "status": "passed",
+      "role": "exact_byte_layout_map_composition_q_graph_and_multi_metric_machine_candidate_gate",
+      "production_linked": false,
+      "next": "Closed by P3B3 Pi5 gate; retain the 16/14 input-once witnesses for future factorized routing"
+    },
+    {
+      "id": "gt_fr0_d1_byte_boundary_pmu",
+      "path": "gt_fr0_d1_byte_boundary_pmu",
+      "question": "Which complete FR0 byte boundary wins per direction on Cortex-A76?",
+      "status": "passed",
+      "role": "complete_byte_boundary_correctness_and_per_direction_PMU",
+      "production_linked": false,
+      "artifact_budget_waiver": 18,
+      "artifact_budget_waiver_reason": "Source, generated-input driver, guarded correctness and PMU harness, portable stock ABI wrapper, runner, local emitted-code audit and lifecycle records; outputs ignored under build.",
+      "next": "Closed by P3B4 full-caller gate; retain R9-A ToBytes and C1 FromBytes as the experimental selection"
+    },
+    {
+      "id": "gt_fr0_d1_selected_byte_production_shaped",
+      "path": "gt_fr0_d1_selected_byte_production_shaped",
+      "question": "Do the independently selected P3B3 byte paths retain their advantage at real Keypair, Encaps and Decaps callers?",
+      "status": "passed",
+      "role": "production_shaped_selected_byte_boundary_full_caller_gate",
+      "production_linked": false,
+      "next": "Fix the selected bytes and remeasure the remaining BaseInv and Inverse components before choosing the next kernel target"
+    },
+    {
+      "id": "gt_fr0_d1_input_once_frombytes",
+      "path": "gt_fr0_d1_input_once_frombytes",
+      "question": "Can each packed twelve-byte group be decoded once and routed into FR0 without coefficient scratch while beating selected C1 FromBytes?",
+      "status": "passed isolated; pending full-KEM caller closure",
+      "role": "exact_input_once_FromBytes_correctness_guard_object_and_paired_Pi5_gate",
+      "production_linked": false,
+      "next": "replace only C1 FromBytes in the frozen P3B4 full-KEM candidate and measure Encaps and Decaps"
+    },
+    {
+      "id": "gt_fr0_d1_input_once_frombytes_full_kem",
+      "path": "gt_fr0_d1_input_once_frombytes_full_kem",
+      "question": "Does P3B11 input-once FromBytes retain its isolated saving in real Encaps and Decaps callers?",
+      "status": "passed; experimental full-caller FromBytes champion",
+      "role": "single_boundary_substitution_full_KEM_correctness_relocation_call_ledger_and_paired_Pi5_gate",
+      "production_linked": false,
+      "next": "keep FromBytes fixed and open a separate ToBytes structured-routing completion-order gate"
+    },
+    {
+      "id": "gt_fr0_d1_pair_aware_tobytes_frontier",
+      "path": "gt_fr0_d1_pair_aware_tobytes_frontier",
+      "question": "Can P3B6 retain adjacent output q-vector pairs for P3B9 pack16 without coefficient scratch or spill?",
+      "status": "rejected static register gate",
+      "role": "exact_pair_completion_schedule_and_register_frontier_gate",
+      "production_linked": false,
+      "next": "synthesize a route9-pair and byte-packing DAG that destroys intermediates earlier"
+    },
+    {
+      "id": "gt_fr0_d1_paired_input_frombytes_frontier",
+      "path": "gt_fr0_d1_paired_input_frombytes_frontier",
+      "question": "Can adjacent 24-byte serialized pairs use LD3-style input-once decode without scratch or spill?",
+      "status": "rejected static register gate",
+      "role": "exact_paired_input_schedule_atomic_LD3_and_register_frontier_gate",
+      "production_linked": false,
+      "next": "retain P3B11 and search a structured vector-routing subnetwork that replaces lane moves"
+    },
+    {
+      "id": "gt_fr0_d1_pair_wait_tobytes",
+      "path": "gt_fr0_d1_pair_wait_tobytes",
+      "question": "Can the saturated 28-output pair-wait schedule lower to a correct fast object despite the conservative register gate?",
+      "status": "rejected after Pi5",
+      "role": "no_scratch_pair_wait_correctness_object_spill_and_paired_Pi5_gate",
+      "production_linked": false,
+      "next": "retain P3B6; reopen pair waiting only at peak <=26 or with a proven lower-spill symbolic allocation"
+    },
+    {
+      "id": "gt_fr0_d1_route9_pair_bytepack_dag",
+      "path": "gt_fr0_d1_route9_pair_bytepack_dag",
+      "question": "Can complete route9 stream pairs feed byte packing early without scratch, reloads or excessive live state?",
+      "status": "rejected static macro-DAG gate",
+      "role": "exact_shuffle_pair_identity_route9_fanout_register_and_reload_ledger",
+      "production_linked": false,
+      "next": "optimize the partial-output pair schedule rather than materializing complete route9 streams"
+    },
+    {
+      "id": "gt_fr0_d1_frombytes_remaining_cost",
+      "path": "gt_fr0_d1_frombytes_remaining_cost",
+      "question": "What is P3B11's directly measured remaining cost versus complete Official native FromBytes?",
+      "status": "passed measurement",
+      "role": "same_binary_exact_map_and_paired_Pi5_native_FromBytes_gap",
+      "production_linked": false,
+      "next": "replace repeated P3B11 lane-move subgraphs with structured vector routing"
+    },
+    {
+      "id": "gt_fr0_d1_cluster_tbl_frombytes",
+      "path": "gt_fr0_d1_cluster_tbl_frombytes",
+      "question": "Can exact repeated destination-set clusters replace P3B11 lane moves with TBL2/TBL4 routing and recover at least 145 cycles?",
+      "status": "rejected after Pi5",
+      "role": "exact_clustered_TBL_FromBytes_correctness_object_spill_and_paired_Pi5_gate",
+      "production_linked": false,
+      "next": "retain P3B11; reopen only with a smaller local structured-routing subgraph and spill-free object"
+    },
+    {
+      "id": "gt_fr0_d1_peak26_pair_wait_tobytes",
+      "path": "gt_fr0_d1_peak26_pair_wait_tobytes",
+      "question": "Does an exact-class-DP peak-26 pair-wait schedule remove ToBytes spills and beat P3B6?",
+      "status": "rejected after Pi5",
+      "role": "exact_peak26_pair_wait_correctness_object_spill_and_paired_Pi5_gate",
+      "production_linked": false,
+      "next": "retain P3B6; change the joint route-normalize-pack lifetime DAG before scheduling"
+    },
+    {
+      "id": "gt_fr0_d1_pair_local_tobytes_gate",
+      "path": "gt_fr0_d1_pair_local_tobytes_gate",
+      "question": "Can any input-once order co-complete an adjacent serialized q-vector pair for immediate pack16 without retention?",
+      "status": "rejected exact static gate",
+      "role": "all_orders_adjacent_pair_neighborhood_disjointness_proof",
+      "production_linked": false,
+      "next": "retain P3B6; optimize independent pack8 or explicitly change one memory premise"
+    },
+    {
+      "id": "gt_fr0_d1_cluster_transpose_frombytes",
+      "path": "gt_fr0_d1_cluster_transpose_frombytes",
+      "question": "Can aligned local TRN/ZIP clusters remove repeated P3B11 lane moves without TBL masks, scratch or spill and recover at least 145 cycles?",
+      "status": "accepted isolated experimental champion",
+      "role": "exact_local_TRN_ZIP_FromBytes_correctness_object_and_paired_Pi5_gate",
+      "production_linked": false,
+      "next": "replace only P3B11 in the frozen full-KEM candidate and measure Encaps and Decaps"
     }
   ]
 }

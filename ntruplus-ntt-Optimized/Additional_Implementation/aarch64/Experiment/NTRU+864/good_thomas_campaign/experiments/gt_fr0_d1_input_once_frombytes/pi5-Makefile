@@ -1,0 +1,17 @@
+CC := gcc
+CFLAGS := -O3 -std=c11 -Wall -Wextra -Werror -Wmissing-prototypes -march=armv8-a+simd -D_DEFAULT_SOURCE -ffunction-sections -fdata-sections
+LDFLAGS := -Wl,--gc-sections
+BUILD := build
+
+.PHONY: all check clean
+all: $(BUILD)/bench
+$(BUILD):
+	mkdir -p $@
+$(BUILD)/%.o: %.c | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/bench: $(BUILD)/bench_pi5.o $(BUILD)/input_once_frombytes.o $(BUILD)/baseline_c1_from.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+check: $(BUILD)/bench
+	./$(BUILD)/bench
+clean:
+	rm -rf $(BUILD)

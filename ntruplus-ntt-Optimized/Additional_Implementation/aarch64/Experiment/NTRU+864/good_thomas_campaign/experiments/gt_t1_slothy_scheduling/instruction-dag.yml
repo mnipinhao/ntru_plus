@@ -1,0 +1,68 @@
+dag:
+  id: gt864_t1_one_bank_fixed_arithmetic_DAG
+  kernel_contract: kernel-contract.yml
+  description: same_552_instruction_T1_arithmetic_and_memory_DAG_with_no_algebra_or_layout_change
+inputs: [main_P8_16_vectors,tail_T1_2_vectors,NTT16_tables,NTT9_tables,v13_bitrev,v14_q,v15_roots]
+constants: [all_existing_M5R_D_Algorithm10_pairs]
+nodes:
+  - id: tail_load_and_NTT16
+    op: ldp_then_twist_and_four_radix2_layers
+    inputs: [tail_T1_2_vectors,NTT16_tables,v14_q]
+    outputs: [v17_tail_columns_0_7,v16_tail_columns_8_15]
+    instruction_shape: one_ldp_then_48_arithmetic_shuffle_and_public_load_instructions
+    tied_operands: [Algorithm10_product_mls,destructive_butterfly_states]
+    range_before: G0_P8
+    range_after: abs_at_most_9342
+    may_reorder_with: [independent_main_load_twist_nodes]
+    must_precede: [NTT9_block0,NTT9_block1]
+  - id: main_NTT16
+    op: sixteen_load_twists_and_four_radix2_layers
+    inputs: [main_P8_16_vectors,NTT16_tables,v14_q]
+    outputs: [sixteen_column_vectors]
+    instruction_shape: unchanged_M5R_D_main_producer
+    tied_operands: [all_Algorithm10_product_mls_pairs]
+    range_before: G0_P8
+    range_after: abs_at_most_9342
+    may_reorder_with: [tail_NTT16_independent_work]
+    must_precede: [transpose]
+  - id: transpose
+    op: trn_network
+    inputs: [sixteen_column_vectors]
+    outputs: [two_nine_row_NTT9_blocks_with_tail]
+    instruction_shape: unchanged_trn1_trn2_network
+    tied_operands: []
+    range_before: abs_at_most_9342
+    range_after: unchanged
+    may_reorder_with: [independent_twist_constant_loads]
+    must_precede: [NTT9_block0,NTT9_block1]
+  - id: NTT9_block0
+    op: twist_eta_and_two_levels_of_one_product_oriented_B3
+    inputs: [columns_0_7,v17,v15,v14,NTT9_tables]
+    outputs: [out0-out8]
+    instruction_shape: unchanged_M5R_D_90_Algorithm10_products_per_complete_bank_total
+    tied_operands: [destructive_one_product_B3]
+    range_before: NTT16_abs_at_most_9342
+    range_after: abs_at_most_25569
+    may_reorder_with: [independent_NTT9_block1_nodes_after_their_inputs_exist]
+    must_precede: [liveout_out0_out8]
+  - id: NTT9_block1
+    op: twist_eta_and_two_levels_of_one_product_oriented_B3
+    inputs: [columns_8_15,v16,v15,v14,NTT9_tables]
+    outputs: [out9-out17]
+    instruction_shape: unchanged_M5R_D_second_block
+    tied_operands: [destructive_one_product_B3]
+    range_before: NTT16_abs_at_most_9342
+    range_after: abs_at_most_25569
+    may_reorder_with: [independent_NTT9_block0_nodes_after_their_inputs_exist]
+    must_precede: [liveout_out9_out17]
+memory:
+  loads: [one_tail_ldp,sixteen_main_coefficient_loads,fifty_three_public_loads]
+  stores: []
+  ordering_constraints: [preserve_each_public_pointer_postincrement_chain,x1_has_no_writeback,no_coefficient_store]
+outputs: [out0-out17_in_exact_FR0_logical_order]
+live_out: [out0-out17,x0,x1,x2,x3,v13,v14,v15]
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

@@ -1,0 +1,33 @@
+dag:
+  id: gt864_cf5b_code_placement
+  semantic_change_from_CF5_A: none
+nodes:
+  - id: pass2_common_setup
+    inputs: [x0, x1, x30]
+    outputs: [x6_output, x7_workspace, x16_saved_return, x4_stride16, v13_bitrev, v14_q, v15_roots]
+  - id: unscaled_bank_top0_component0
+    implementation: exact_M5R_D_569_instruction_helper
+  - id: scaled_bank_top0_component1
+    chain: [shared_345_instruction_producer, inline_309_instruction_t0c1_consumer, eighteen_stores]
+  - id: scaled_bank_top0_component2
+    chain: [shared_345_instruction_producer, inline_309_instruction_t0c2_consumer, eighteen_stores]
+  - id: unscaled_bank_top1_component0
+    implementation: exact_M5R_D_569_instruction_helper
+  - id: scaled_bank_top1_component1
+    chain: [shared_345_instruction_producer, inline_279_instruction_t1c1_consumer, eighteen_stores]
+  - id: scaled_bank_top1_component2
+    chain: [shared_345_instruction_producer, inline_279_instruction_t1c2_consumer, eighteen_stores]
+  - id: shared_producer
+    instructions: 345
+    invocation_count: 4
+    static_copy_count: 1
+    live_out: [eighteen_CF5_A_fixed_physical_vector_registers, v13, v14, v15, x0, x1, x2, x3]
+edges:
+  - producer_returns_to_the_unique_inline_consumer_at_each_call_site
+  - no_instruction_between_producer_return_and_consumer_first_instruction
+  - no_boundary_copy_or_coefficient_memory_operation
+  - consumer_outputs_feed_existing_eighteen_public_offset_stores
+ordering_constraints:
+  - preserve_CF5_A_instruction_order_inside_each_reused_scheduled_region
+  - preserve_six_bank_order_and_table_pointer_setup
+  - preserve_output_store_offsets

@@ -1,8 +1,8 @@
 PYTHON ?= python3
 
-.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm check-forward-reduction-search check-forward-symbolic-dag check-forward-ntt9-level1 check-forward-ntt9-core check-forward-ntt16-ntt9-handoff check-forward-two-ntt9-blocks check-forward-tail-ntt16 check-forward-one-bank check-forward-six-bank-pass2 check-forward-full-poly-ntt check-forward-dynamic-cost check-forward-full-register check-forward-fused-twist check-delayed-twist-abi check-forward-composition check-forward-one-mul-b3 check-forward-level2-one-mul-b3 check-friso2-leaf-basis check-friso2-absorption-cost check-friso2-basemul-cycle check-pipeline-structural-audits
+.PHONY: check check-reference check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm check-forward-reduction-search check-forward-symbolic-dag check-forward-ntt9-level1 check-forward-ntt9-core check-forward-ntt16-ntt9-handoff check-forward-two-ntt9-blocks check-forward-tail-ntt16 check-forward-one-bank check-forward-six-bank-pass2 check-forward-full-poly-ntt check-forward-dynamic-cost check-forward-full-register check-forward-fused-twist check-delayed-twist-abi check-forward-composition check-forward-one-mul-b3 check-forward-level2-one-mul-b3 check-friso2-leaf-basis check-friso2-absorption-cost check-friso2-basemul-cycle check-pipeline-structural-audits check-m5rd-range-chain check-tail-architecture check-inverse-st1-lane check-d1-consumer-closure check-d1-production-shaped check-d1-boundary-cost check-d1-byte-abi-architecture check-d1-route9-network check-d1-route9-pmu check-d1-composed-byte-routing
 
-check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm check-forward-reduction-search check-forward-symbolic-dag check-forward-ntt9-level1 check-forward-ntt9-core check-forward-ntt16-ntt9-handoff check-forward-two-ntt9-blocks check-forward-tail-ntt16 check-forward-one-bank check-forward-six-bank-pass2 check-forward-full-poly-ntt check-forward-dynamic-cost check-forward-full-register check-forward-fused-twist check-delayed-twist-abi check-forward-composition check-forward-one-mul-b3 check-forward-level2-one-mul-b3 check-friso2-leaf-basis check-friso2-absorption-cost check-friso2-basemul-cycle check-pipeline-structural-audits
+check: check-registry check-root-topology check-scalar-reference check-montgomery-reference check-radix3-orientation check-ld3-top-split check-layout-consumer-abi check-tile-abi-search check-boundary-cost check-fr0-realization check-ntt16-producer-range check-fr0-basemul check-fr0-inverse check-fr0-inverse-asm check-forward-reduction-search check-forward-symbolic-dag check-forward-ntt9-level1 check-forward-ntt9-core check-forward-ntt16-ntt9-handoff check-forward-two-ntt9-blocks check-forward-tail-ntt16 check-forward-one-bank check-forward-six-bank-pass2 check-forward-full-poly-ntt check-forward-dynamic-cost check-forward-full-register check-forward-fused-twist check-delayed-twist-abi check-forward-composition check-forward-one-mul-b3 check-forward-level2-one-mul-b3 check-friso2-leaf-basis check-friso2-absorption-cost check-friso2-basemul-cycle check-pipeline-structural-audits check-m5rd-range-chain check-tail-architecture check-inverse-st1-lane check-d1-consumer-closure check-d1-production-shaped check-d1-boundary-cost check-d1-byte-abi-architecture check-d1-route9-network check-d1-route9-pmu check-d1-composed-byte-routing
 
 check-reference: check-montgomery-reference
 
@@ -110,3 +110,41 @@ check-friso2-basemul-cycle:
 
 check-pipeline-structural-audits:
 	$(MAKE) -C experiments/gt_pipeline_structural_audits check
+
+check-m5rd-range-chain:
+	$(MAKE) -C experiments/gt_m5rd_fr0_range_chain_closure check PYTHON=$(PYTHON)
+
+check-tail-architecture:
+	$(MAKE) -C experiments/gt_tail_architecture_shootout check PYTHON=$(PYTHON)
+
+check-inverse-st1-lane:
+	$(MAKE) -C experiments/gt_inverse_st1_lane_store check PYTHON=$(PYTHON)
+
+check-d1-consumer-closure:
+	$(MAKE) -C experiments/gt_fr0_d1_consumer_closure audit PYTHON=$(PYTHON)
+
+check-d1-production-shaped:
+	$(MAKE) -C experiments/gt_fr0_d1_production_shaped audit PYTHON=$(PYTHON)
+
+check-d1-boundary-cost:
+	$(MAKE) -C experiments/gt_fr0_d1_boundary_cost_decomposition audit PYTHON=$(PYTHON)
+
+check-d1-byte-abi-architecture:
+	$(MAKE) -C experiments/gt_fr0_d1_byte_abi_architecture audit PYTHON=$(PYTHON)
+
+check-d1-route9-network:
+	$(MAKE) -C experiments/gt_fr0_d1_route9_network_search audit PYTHON=$(PYTHON)
+
+check-d1-route9-pmu:
+	$(MAKE) -C experiments/gt_fr0_d1_route9_pmu audit PYTHON=$(PYTHON)
+
+check-d1-composed-byte-routing:
+	$(MAKE) -C experiments/gt_fr0_d1_composed_byte_routing_search audit PYTHON=$(PYTHON)
+
+.PHONY: check-d1-byte-boundary-local
+check-d1-byte-boundary-local:
+	$(MAKE) -C experiments/gt_fr0_d1_byte_boundary_pmu audit PYTHON=$(PYTHON)
+
+.PHONY: check-d1-selected-byte-production-shaped
+check-d1-selected-byte-production-shaped:
+	$(MAKE) -C experiments/gt_fr0_d1_selected_byte_production_shaped audit PYTHON=$(PYTHON)

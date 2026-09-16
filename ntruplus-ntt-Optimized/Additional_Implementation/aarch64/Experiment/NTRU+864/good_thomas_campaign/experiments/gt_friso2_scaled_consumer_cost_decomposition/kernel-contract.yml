@@ -1,0 +1,49 @@
+mode: post_slothy_review
+candidate_status: investigate
+kernel:
+  id: gt864_friso2_scaled_consumer_cost_decomposition
+  name: GT864 FR-ISO2 scaled NTT9 consumer cost decomposition
+  source: build/isolated-banks.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_on_raspberry_pi_5
+slothy:
+  workflow: analyze_existing_CF5_A_producer_and_fixed_livein_consumer_outputs
+  allow_spills: false
+region:
+  start_label: generated_case_specific_isolated_bank_start
+  end_label: generated_case_specific_isolated_bank_end
+  live_in: [one_P8_bank, strided_tail, public_tables]
+  live_out: [eighteen_case_specific_output_vectors]
+abi:
+  inputs: [P8_workspace]
+  outputs: [one_144_coefficient_bank_in_full_output_offsets]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x16, x30]
+  reserved_registers: [v13_bitrev, v14_modulus, v15_roots]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: existing_P8_plus_tail
+  output_representation: baseline_FR0_or_candidate_FRISO2_for_same_top_component
+memory_contract:
+  loads: [exact_inherited_coefficient_and_public_table_loads]
+  stores: [same_eighteen_public_offset_vector_stores]
+  aliasing: disjoint_benchmark_buffers
+  alignment: sixteen_byte_output_and_main_P8_vectors
+  public_offsets_only: true
+constant_contract:
+  constants: [q_3457, Algorithm10_b_bhat, bitrev, NTT16_roots, case_specific_NTT9_tables]
+  modulus: 3457
+  representation: R0_input_with_FR0_control_or_FRISO2_candidate_output
+range_contract:
+  input_ranges: exact_existing_P8_contract
+  output_ranges: producer_abs_le_9342_and_scaled_consumer_intermediate_abs_le_19427
+constant_time_contract:
+  secret_inputs: polynomial_coefficients
+  public_inputs: case_selector_and_table_offsets
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: generated_isolated_banks_match_their_full_pass2_outputs
+  test_command: python3_audit.py
+  full_path_benchmark_command: python3_run_pi5.py

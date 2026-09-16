@@ -1,0 +1,30 @@
+candidate:
+  id: M5U-CF5-B
+  status: reject
+  mode: existing_region_replacement
+contract:
+  preserved: true
+  approved_changes: true
+  changed_fields: [static_code_placement]
+  approval_note: user_authorized_CF5_B_hard_gate
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 0
+  candidate_expected_cycles: 0
+  parity_justification: exact_CF5_A_scheduled_instruction_sequences_reused_without_DAG_or_order_change
+benchmark:
+  status: pass
+  command: python3_run_pi5.py_five_way_paired_PMU
+  metric: cycles
+  lower_is_better: true
+  neutral_threshold_percent: 1.0
+  baseline: 4230.9395
+  candidate: 4582.946075
+decision:
+  reason: Forward_regresses_versus_M5R_D_and_two_Forward_penalties_exceed_BaseMul_saving_before_Inverse
+  next_iteration: scaled_consumer_cycle_decomposition_with_184_840_cycle_per_Forward_minimum_saving

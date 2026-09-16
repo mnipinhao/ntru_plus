@@ -1,0 +1,14 @@
+experiment: D1-P3B0
+candidates:
+  R9-A:
+    design: per-row cyclic EXT plus 8x8 TRN network plus diagonal and output-lane repair
+  R9-B:
+    design: three-bank TBL gather plus OR merge
+  R9-C:
+    design: transpose/TBL hybrid retained for instruction-selection search
+constraints:
+  - one reusable route9 body, not twelve unrolled copies
+  - no coefficient scratch inside coordinate-only kernel
+  - public fixed addresses and table indices only
+  - no arithmetic, range, scale or byte-order change
+next: emit exact benchmark-only Neon R9-A/R9-B bodies and measure on Pi5

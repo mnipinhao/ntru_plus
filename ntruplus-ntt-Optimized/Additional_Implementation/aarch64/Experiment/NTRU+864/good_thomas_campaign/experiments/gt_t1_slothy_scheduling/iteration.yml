@@ -1,0 +1,38 @@
+iteration:
+  id: A1-S-001
+  mode: existing_region_replacement
+  current_state: iteration_or_promote
+  hypothesis: T1_bank_major_has_at_least_20_complete_Forward_cycles_of_schedule_headroom_without_DAG_or_boundary_change
+  changed_artifacts: [contracts,symbolic_source,local_Slothy_artifacts,Pi5_correctness_and_PMU,decision]
+  earliest_state_to_revisit: instruction_dag
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: gt864_t1_one_bank.sym.S
+  slothy_driver: optimize.py
+  slothy_log: slothy-output/local-ra-schedule.log
+  candidate_contract: candidate-contract.yml
+  candidate_score: candidate-score.yml
+  promotion_report: DECISION.md
+gates:
+  repo_probe: pass_local_repo_no_venv_remote_required
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass_same_552_instruction_multiset
+  symbolic_asm: pass
+  static_checks: pass_with_documented_generic_LDP_checker_limitation
+  Slothy_run_by_user: pass_local_dedicated_venv
+  parse_slothy_result: pass_exact_log_markers_generic_parser_has_timeout_word_false_positive
+  oracle_correctness: pass_64_one_bank_64_six_bank_64_full_vs_Official
+  full_path_benchmark: fail_4208_34680_vs_4165_04040_cycles
+  score_candidate: fail_plus_43_30640_cycles
+  promotion_decision: reject_candidate_retain_T1
+  iteration_or_promote: closed
+notes:
+  - T1_ABI_and_552_instruction_DAG_are_frozen
+  - no_layout_algorithm_instruction_selection_or_Algorithm10_count_change_is_allowed
+  - minimum_meaningful_complete_Forward_gain_is_20_cycles
+  - remote_target_is_pinhao_at_172_25_166_141_port_51208
+  - user_authorized_local_Slothy_after_remote_timeout
+  - local_Slothy_checkout_f8462d0deb9973565b525f7e63636630fa679bd7f_version_0_2_0

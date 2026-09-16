@@ -1,0 +1,17 @@
+candidate:
+  id: M5U_CF5_E_common_scale_B3_hybrid_basis
+  status: investigate
+  family: D_u_equals_diag_1_u_u_squared
+contract_preservation:
+  preserved: [NTRUplus864_ring, GT_leaf_coordinates, R0_scale, logical_leaf_order]
+  approved_changes: [leaf_basis, BaseMul_weight_table, inverse_consumer_basis]
+hard_constraints:
+  post_add_rescales: 0
+  B3_add_sub_islands: common_scale
+  coefficient_memory_boundaries_added: 0
+hard_gates:
+  - exact_B3_scale_connectivity
+  - exact_basis_homomorphism_for_all_288_leaves_and_9_basis_pairs
+  - derive_minimum_BaseMul_weight_classes
+  - direct_wide_int32_feasibility
+  - optimistic_complete_operation_arithmetic_ledger

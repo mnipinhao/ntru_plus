@@ -1,0 +1,38 @@
+iteration:
+  id: A1-S-002
+  mode: existing_region_replacement
+  current_state: iteration_or_promote
+  hypothesis: preserving_the_original_T1_physical_register_allocation_during_schedule_only_may_avoid_the_A1-S-001_RA_regression
+  changed_artifacts: [Slothy_workflow_and_candidate_selection_only]
+  earliest_state_to_revisit: repo_probe
+artifacts:
+  baseline_region: rerun-002/baseline-region.skill.S
+  repo_probe: rerun-002/repo-probe.txt
+  symbolic_source: gt864_t1_one_bank.sym.S
+  ra_only: rerun-002/t1.ra_only.S
+  schedule_only: rerun-002/t1.schedule_only.S
+  ra_schedule: rerun-002/t1.ra_schedule.opt.S
+  logs: rerun-002
+  candidate_score: candidate-score-002.yml
+gates:
+  repo_probe: pass_local_dedicated_venv
+  baseline_contract: pass_rechecked
+  kernel_contract: pass_rechecked
+  instruction_dag: frozen_552_instruction_T1_DAG
+  symbolic_asm: pass_strict_local_audit_with_documented_generic_LDP_parser_limitation
+  static_checks: pass
+  Slothy_run_by_user: pass_local_dedicated_venv
+  parse_slothy_result: pass_exact_success_markers_generic_parser_has_timeout_word_false_positive
+  oracle_correctness: pass_64_one_bank_64_six_bank_64_full_vs_Official
+  full_path_benchmark: fail_8_46205_cycle_gain_below_20_cycle_gate
+  score_candidate: reject_below_predeclared_minimum_gain
+  promotion_decision: reject_candidate_retain_T1
+  iteration_or_promote: closed
+notes:
+  - use_/Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  - use_checkout_f8462d0deb9973565b525f7e63636630fa679bd7f
+  - compare_schedule_only_separately_from_RA_plus_schedule
+  - do_not_overwrite_A1-S-001_evidence
+  - schedule_only_complete_Forward_4165_44485_to_4156_98280_cycles
+  - three_repetition_deltas_minus_8_75395_minus_7_79995_minus_8_66550
+  - result_proves_A1-S-001_regression_came_from_RA_not_scheduling_alone

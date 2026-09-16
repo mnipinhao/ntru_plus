@@ -1,0 +1,19 @@
+CC ?= gcc
+CFLAGS ?= -O3 -std=c11 -Wall -Wextra -Wpedantic -march=armv8-a+simd
+BENCH_ABI_CFLAGS := -ffixed-v8 -ffixed-v9 -ffixed-v10 -ffixed-v11 -ffixed-v12 -ffixed-v13 -ffixed-v14 -ffixed-v15
+BUILD := build
+DEPS := deps
+.PHONY: all clean
+all: $(BUILD)/bench_pmu
+$(BUILD):
+	mkdir -p $@
+$(BUILD)/%.o: $(DEPS)/% | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ $<
+OBJECTS := $(BUILD)/official_ntt.s.o $(BUILD)/top_split.s.o \
+	$(BUILD)/m5rd_pass2.S.o $(BUILD)/m5rd_wrapper.S.o \
+	$(BUILD)/cf0_pass2.S.o $(BUILD)/cf0_wrapper.S.o \
+	$(BUILD)/cf5b_pass2.S.o $(BUILD)/cf5b_wrapper.S.o $(BUILD)/noop.S.o
+$(BUILD)/bench_pmu: bench_pmu.c $(DEPS)/gt864_fr0_to_official_map.h $(OBJECTS)
+	$(CC) $(CFLAGS) $(BENCH_ABI_CFLAGS) -I$(DEPS) -o $@ bench_pmu.c $(OBJECTS)
+clean:
+	rm -f -r $(BUILD)

@@ -1,0 +1,27 @@
+id: G0_current_M5R-D_FR0_range_chain
+scope: proof_and_linked_correctness_only
+forward:
+  ntt16_bound: 9342
+  b3: one_Algorithm10_product_at_both_radix3_levels
+  fr0_output_union: [-25569, 25566]
+  scale: R0
+basemul:
+  implementation: M5C
+  operand_bound: 25569
+  output_bound: 2148
+  add_output_bound: 2205
+  scale: R0
+inverse:
+  implementation: M5E-r1
+  input_bound: 2205
+  maximum_halfword_bound: 17220
+  output_bound: 6888
+  scale: R0
+required_gates:
+  - all_forward_nodes_fit_signed_int16
+  - all_288_leaf_zeta_paths_fit_signed_int32
+  - m5e_all_constant_all_signed_halfword_exhaustive_proof
+  - actual_linked_2F_BaseMul_Inverse_schoolbook_differential
+  - actual_linked_2F_BaseMulAdd_Inverse_schoolbook_differential
+  - no_performance_or_production_claim
+production_linked: false

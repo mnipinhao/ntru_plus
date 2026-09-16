@@ -1,0 +1,33 @@
+mode: oracle_scaffold_only
+candidate_status: investigate
+kernel:
+  id: gt864_friso2_scaled_ntt9_arithmetic_dag_gate
+  name: GT864 FR-ISO2 scaled NTT9 arithmetic DAG feasibility
+  source: none_until_gate_passes
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76_on_raspberry_pi_5
+region:
+  live_in: [nine_NTT16_column_vectors, public_constants]
+  live_out: [nine_FRISO2_row_vectors]
+abi:
+  inputs: [one_top_component_NTT9_block]
+  outputs: [same_FRISO2_logical_rows_as_CF5_B]
+layout:
+  input_representation: frozen_M5R_D_NTT16_outputs
+  output_representation: frozen_FRISO2_leaf_ABI
+constant_contract:
+  modulus: 3457
+  multiplication: Algorithm10_Barrett_mul_sqrdmulh_mls
+  representation: R0
+range_contract:
+  requirement: signed_halfword_safe_exact_constant_specific_proof
+constant_time_contract:
+  secret_inputs: polynomial_coefficients
+  public_inputs: top_component_column_and_constant_tables
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  algebra_gate_command: PYTHONPATH=/tmp/cf5d-z3 python3 search_lazy_sat.py --all --max-mulmods 21
+  witness_command: inherited_verify_witnesses.py_if_feasible
+  slothy_command: forbidden_until_algebra_gate_passes

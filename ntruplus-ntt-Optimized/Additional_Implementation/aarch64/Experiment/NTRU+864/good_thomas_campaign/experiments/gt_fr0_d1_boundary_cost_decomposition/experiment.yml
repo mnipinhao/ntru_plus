@@ -1,0 +1,13 @@
+experiment:
+  id: D1-P2
+  status: passed
+  parameter_set: NTRU+864
+  production_linked: false
+gates:
+  correctness: every_component_preserves_exact_or_modq_contract
+  benchmark: paired_Pi5_PMU_for_11_boundaries
+  reconciliation: static_KEM_call_ledger_explains_D1-P1_gap
+non_claims:
+  - no_arithmetic_or_layout_candidate
+  - no_Slothy
+  - no_KAT_SUPERCOP_or_Production

@@ -1,0 +1,43 @@
+CC := gcc
+CFLAGS := -O3 -std=c11 -Wall -Wextra -Werror -march=armv8-a+simd \
+	-D_DEFAULT_SOURCE \
+	-ffunction-sections -fdata-sections
+LDFLAGS := -Wl,--gc-sections
+SOURCES := test_consumers.c gt864_forward_poly_ntt.S gt864_forward_six_bank.S \
+	gt864_top_split.s gt864_fr0_basemul.c gt864_fr0_basemul_d1.c \
+	gt864_fr0_inverse_asm_wrapper.c gt864_fr0_inverse9_block_pp.S \
+	gt864_inverse16_blocks.s poly.c pack.s
+KERNELS := gt864_forward_poly_ntt.S gt864_forward_six_bank.S \
+	gt864_top_split.s gt864_fr0_basemul.c gt864_fr0_basemul_d1.c \
+	gt864_fr0_inverse_asm_wrapper.c gt864_fr0_inverse9_block_pp.S \
+	gt864_inverse16_blocks.s
+BUILD := build
+
+.PHONY: all check check-real-encap clean
+
+all: $(BUILD)/test-consumers $(BUILD)/bench-chain
+
+$(BUILD):
+	mkdir -p $@
+
+$(BUILD)/test-consumers: $(SOURCES) | $(BUILD)
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -o $@ $(SOURCES)
+
+$(BUILD)/bench-chain: bench_chain_pmu.c $(KERNELS) | $(BUILD)
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -o $@ bench_chain_pmu.c $(KERNELS)
+
+check: $(BUILD)/test-consumers
+	./$(BUILD)/test-consumers
+
+STOCK_SOURCES := test_real_encap.c kem_stock.c symmetric.c poly.c randombytes.c \
+	add.s ntt.s base.s crepmod3.s pack.s cbd.s NO_CE/fips202.c \
+	gt864_fr0_basemul.c gt864_fr0_basemul_d1.c
+
+$(BUILD)/test-real-encap: $(STOCK_SOURCES) | $(BUILD)
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -o $@ $(STOCK_SOURCES)
+
+check-real-encap: $(BUILD)/test-real-encap
+	./$(BUILD)/test-real-encap
+
+clean:
+	rm -rf $(BUILD)

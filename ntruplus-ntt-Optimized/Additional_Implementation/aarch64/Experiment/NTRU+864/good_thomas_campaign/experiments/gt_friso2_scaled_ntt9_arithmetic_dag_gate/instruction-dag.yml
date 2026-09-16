@@ -1,0 +1,15 @@
+dag:
+  topology: inherited_fixed_M5R_D_oriented_radix3_NTT9
+  source: ../gt_friso2_scaled_ntt9_search/search_scaled_dag.py
+  inputs: 9
+  radix3_butterflies: 6
+  additions_and_subtractions: 42
+  explicit_internal_multiplications: 10
+  eta_corrections: 4
+search_space:
+  node_scale: generator_exponent_A_times_column_plus_B_mod_3456
+  add_modes: [all_equal_free, left_output_equal, right_output_equal, inputs_equal, all_distinct]
+  removable_operations: [input_twist_mulmod, existing_internal_mulmod]
+fixed_outputs:
+  order: [g0_y0, g1_y0, g2_y1, g0_y1, g1_y1, g2_y2, g0_y2, g1_y2, g2_y0]
+  representation: FRISO2

@@ -1,0 +1,28 @@
+candidate:
+  status: reject
+contract:
+  preserved: true
+  approved_changes: false
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 138
+  candidate_expected_cycles: 138
+  parity_justification: same_552_instruction_DAG_with_original_physical_RA_and_split_window_schedule
+benchmark:
+  status: pass
+  metric: complete_Forward_cycles_p50
+  baseline: 4165.44485
+  candidate: 4156.98280
+  lower_is_better: true
+  # A negative threshold encodes this campaign's predeclared requirement that
+  # scheduling-only must improve complete Forward by at least 20 cycles.
+  neutral_threshold_percent: -0.48014070
+  hardware: Raspberry_Pi_5_Cortex_A76_core_3
+  repetitions: 3
+  orders_per_repetition: 2
+  samples_per_order: 61

@@ -1,0 +1,29 @@
+dag:
+  id: CF5_C_existing_region_cost_ledger
+  mathematical_change: none
+nodes:
+  - id: common_NTT16_producer
+    control_and_candidate_instructions: 345
+    control_and_candidate_proxy_cycles: 86
+  - id: M5R_D_FR0_NTT9_pair
+    control_total_instructions: 569
+    control_mulmods: 90
+    control_public_vector_loads: 69
+    control_proxy_cycles: 142
+  - id: CF5_B_top0_scaled_NTT9_pair
+    candidate_total_instructions: 654
+    candidate_mulmods: 106
+    candidate_public_vector_loads: 106
+    candidate_proxy_cycles: 163
+  - id: CF5_B_top1_scaled_NTT9_pair
+    candidate_total_instructions: 624
+    candidate_mulmods: 106
+    candidate_public_vector_loads: 76
+    candidate_proxy_cycles: 155
+edges:
+  - exact_existing_producer_registers_feed_exact_fixed_livein_consumers
+  - no_boundary_instruction_or_coefficient_memory_operation
+static_delta:
+  per_top0_bank: [sixteen_extra_mulmods_equals_48_instructions, thirty_seven_extra_constant_loads, total_plus_85]
+  per_top1_bank: [sixteen_extra_mulmods_equals_48_instructions, seven_extra_constant_loads, total_plus_55]
+  full_forward: [sixty_four_extra_mulmods_equals_192_instructions, eighty_eight_extra_constant_loads, total_plus_280]

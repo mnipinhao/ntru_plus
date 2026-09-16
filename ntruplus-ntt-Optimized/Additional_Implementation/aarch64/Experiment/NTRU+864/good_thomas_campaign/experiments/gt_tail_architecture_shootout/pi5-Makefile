@@ -1,0 +1,13 @@
+CC ?= gcc
+CFLAGS ?= -O3 -std=c11 -Wall -Wextra -Werror -march=armv8-a+simd
+CFLAGS += -ffixed-v8 -ffixed-v9 -ffixed-v10 -ffixed-v11 -ffixed-v12 \
+	-ffixed-v13 -ffixed-v14 -ffixed-v15
+
+.PHONY: all clean
+all: build/bench-pmu
+
+build/bench-pmu: bench_pmu.c build/tail_variants.S
+	$(CC) $(CFLAGS) -o $@ $^
+
+clean:
+	rm -f build/bench-pmu

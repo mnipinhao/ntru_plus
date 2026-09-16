@@ -1,0 +1,15 @@
+experiment: M5A-E2E-AUDIT1
+candidate: NTT9_first
+axis_order: [top_split, NTT9, NTT16]
+required_output: exact_CF5_A_FR_ISO2_leaves
+allowed_vector_registers: 32
+forbidden:
+  - coefficient_spill
+  - additional_coefficient_memory_pass
+  - runtime_full_buffer_permutation
+pass_condition:
+  - exact_layout_map
+  - phase_identity_or_free_permutation
+  - static_instruction_count_strictly_below_4726
+status: rejected
+production_linked: false

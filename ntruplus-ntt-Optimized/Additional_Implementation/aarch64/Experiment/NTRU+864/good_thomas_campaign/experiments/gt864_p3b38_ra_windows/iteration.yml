@@ -1,0 +1,23 @@
+iteration:
+  id: P3B38
+  mode: existing_region_replacement
+  current_state: iteration_or_promote
+  status: investigate
+authorization: User explicitly asks agent to run Slothy locally on Mac; this authorizes
+  agent execution of user-run stage.
+workflow: fixed-order functional RA followed by fixed-allocation small scheduling
+  windows
+gates:
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  static_checks: pass
+  oracle_correctness: pass
+  full_path_benchmark: pass
+  exact_ssa_addresses: pass
+  RA_order_preserved: pass
+  score_candidate: investigate
+decision: Do not adopt P3B38; retain P3B37. No repeatable speedup; missing aggregate model estimate. Production unchanged.
+attempts:
+  global_RA: UNKNOWN after 30 seconds, not infeasibility
+  split_RA_and_scheduling: completed in 46.006 seconds, no spill

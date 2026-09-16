@@ -1,0 +1,14 @@
+baseline:
+  id: M5U_CF5_B_FRISO2_complete_forward
+  source: ../gt_friso2_code_size_faithful_forward/build/gt864_forward_friso2_cf5b.S
+  comparison: M5R_D_FR0_complete_forward
+arithmetic:
+  topology: fixed_M5R_D_paper_oriented_radix3_NTT9
+  cases: [t0c1, t0c2, t1c1, t1c2]
+  blocks_per_forward_per_case: 2
+  mulmods_per_block: 26
+  extra_mulmods_vs_M5R_D_per_block: 8
+performance:
+  CF5_B_minus_M5R_D_cycles_per_forward: 351.93645
+  BaseMul_saving_cycles: 334.19372
+  required_saving_per_forward_for_zero_inverse_penalty: 184.83945

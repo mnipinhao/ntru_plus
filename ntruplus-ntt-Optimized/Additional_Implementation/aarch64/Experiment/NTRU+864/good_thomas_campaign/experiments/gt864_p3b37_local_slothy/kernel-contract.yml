@@ -1,0 +1,188 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: P3B37
+  name: P3B36 fixed-register window scheduling
+  source: build/candidate.sym.S
+  scheme: NTRU+864
+  operation: schedule_the_fixed_T1_tail_and_main_NTT16_transpose_twist_and_two_oriented_NTT9_DAG
+target:
+  arch: aarch64_neon
+  microarchitecture: neoverse_n1_proxy_with_Cortex_A76_final_measurement
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.neoverse_n1_experimental
+slothy:
+  workflow: physical_register_preserving_split_window_schedule
+  driver: optimize.py
+  expected_outputs:
+    - build/scheduled.S
+  allow_spills: false
+region:
+  start_label: p3b37_slothy_start
+  end_label: p3b37_slothy_end
+  expected_instruction_count: 513
+  live_in: &id001
+    - x0
+    - x1
+    - x2
+    - x3
+    - v13
+    - v14
+    - v15
+  live_out: &id002
+    - v31
+    - v1
+    - v9
+    - v26
+    - v20
+    - v24
+    - v30
+    - v29
+    - v22
+    - v19
+    - v21
+    - v23
+    - v8
+    - v10
+    - v12
+    - v6
+    - v27
+    - v0
+    - x0
+    - x1
+    - x2
+    - x3
+    - v13
+    - v14
+    - v15
+abi:
+  inputs: *id001
+  outputs: *id002
+  clobbers:
+    - all_nonfixed_vector_temporaries
+    - x0
+    - x2
+    - x3
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+  fixed_vector_registers:
+    - v0
+    - v1
+    - v2
+    - v3
+    - v4
+    - v5
+    - v6
+    - v7
+    - v8
+    - v9
+    - v10
+    - v11
+    - v12
+    - v13
+    - v14
+    - v15
+    - v16
+    - v17
+    - v18
+    - v19
+    - v20
+    - v21
+    - v22
+    - v23
+    - v24
+    - v25
+    - v26
+    - v27
+    - v28
+    - v29
+    - v30
+    - v31
+  reserved_registers:
+    - x4
+    - x5
+    - x6
+    - x7
+    - x8
+    - x9
+    - x10
+    - x11
+    - x12
+    - x13
+    - x14
+    - x15
+    - x16
+    - x17
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+    - sp
+    - v13
+    - v14
+    - v15
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact_M5R_D_one_product_DAG_with_only_the_A1_T1_contiguous_tail_load_contract
+layout:
+  input_representation: T1_bank_major_tail_two_contiguous_vectors_plus_current_main_P8_vectors
+  output_representation: exact_current_FR0_eighteen_vector_consumer_ABI
+  vector_lanes: eight_s_coordinates_before_transpose_and_eight_columns_after_transpose
+  packing: unchanged_packed_Algorithm10_constants
+memory_contract:
+  loads:
+    - one tail LDP
+    - sixteen main LDR
+    - fifty constant LDR
+  stores: none_inside_region
+  aliasing: coefficient_inputs_read_only_and_tables_disjoint
+  alignment: coefficient_and_public_vector_pointers_16_byte_aligned
+  public_offsets_only: true
+  pointer_updates:
+    - x0+256
+    - x1 unchanged
+    - x2+336
+    - x3+512
+constant_contract:
+  constants:
+    - unchanged_M5R_D_compile_time_tables
+  modulus: 3457
+  representation: R0_signed_int16
+  reduction_method: Algorithm10_mul_sqrdmulh_mls
+range_contract:
+  input_ranges:
+    - P3B35 exact raw top producers from natural coefficients [-3,4]
+  intermediate_ranges:
+    - P3B35 exact NTT16 marginal theorem; Forward abs<=26731
+  output_ranges:
+    - FR0 R0 int16 abs<=26731
+  narrowing_points: []
+constant_time_contract:
+  secret_inputs:
+    - all_144_coefficients
+  public_inputs:
+    - pointers
+    - tables
+    - top
+    - component
+    - fixed_instruction_sequence
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 run_pi.py --run
+  test_command: python3 run_pi.py --validate
+  full_path_benchmark_command: python3 run_pi.py --repeat --summarize
+  benchmark_metric: complete Forward PMU median
+  lower_is_better: true

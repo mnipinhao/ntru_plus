@@ -1,0 +1,23 @@
+{
+  "parameter": 864,
+  "production_changed": false,
+  "frozen_parent": "P3B25 GT with P3B23 FromBytes and D1 BaseMul",
+  "experimental_forward_baseline": {
+    "experiment": "P3B26",
+    "variant": "t1",
+    "source": "gt_tail_architecture_shootout/build/full_t1_wrapper.S",
+    "layout": "A1 T1 bank-major tail including in-place preparation",
+    "allocation": "original T1; no additional Slothy schedule",
+    "tobytes": "r9_to unchanged",
+    "decision": "accept for subsequent experimental Forward work"
+  },
+  "independent_tobytes_integration": {
+    "experiment": "P3B27",
+    "variant": "tb",
+    "tobytes": "P3B6 input-once",
+    "forward": "M5R-D T0 unchanged",
+    "decision": "accept as independently validated experimental substitution"
+  },
+  "combined_t1_p3b6": "not yet built or measured",
+  "comparison": "P3B25 SUPERCOP source snapshot; upstream latest not verified"
+}

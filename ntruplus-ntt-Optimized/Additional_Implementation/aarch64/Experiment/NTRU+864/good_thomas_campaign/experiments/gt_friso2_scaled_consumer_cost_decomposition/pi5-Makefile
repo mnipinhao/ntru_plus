@@ -1,0 +1,16 @@
+CC ?= gcc
+CFLAGS := -O3 -std=c11 -Wall -Wextra -Wpedantic -march=armv8-a+simd
+FIXED := -ffixed-v8 -ffixed-v9 -ffixed-v10 -ffixed-v11 -ffixed-v12 -ffixed-v13 -ffixed-v14 -ffixed-v15
+BUILD := build
+DEPS := deps
+.PHONY: all clean
+all: $(BUILD)/bench_bank
+$(BUILD):
+	mkdir -p $@
+$(BUILD)/%.o: $(DEPS)/% | $(BUILD)
+	$(CC) $(CFLAGS) -c -o $@ $<
+OBJECTS := $(BUILD)/isolated-banks.S.o $(BUILD)/m5rd-pass2.S.o $(BUILD)/cf5b-pass2.S.o $(BUILD)/top-split.s.o $(BUILD)/noop.S.o
+$(BUILD)/bench_bank: bench_bank.c bank_offsets.h $(OBJECTS)
+	$(CC) $(CFLAGS) $(FIXED) -I. -o $@ bench_bank.c $(OBJECTS)
+clean:
+	rm -f -r $(BUILD)

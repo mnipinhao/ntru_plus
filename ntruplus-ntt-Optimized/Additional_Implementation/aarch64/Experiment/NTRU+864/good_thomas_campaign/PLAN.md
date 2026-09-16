@@ -405,6 +405,17 @@ paired Algorithm-10 `mul/sqrdmulh/mls` and groups independent operations by
 register budget. It retains the two-pass boundary, proves a 6888 final bound,
 uses 7,292 code bytes, and is locally 48.8% faster than the M5D intrinsic
 combined median-of-medians. The wrapper retains a 48-byte GPR call frame.
+
+G0 `gt_m5rd_fr0_range_chain_closure` supersedes the historical range premises
+in the preceding M5B/M5C/M5D checkpoint. Starting from the actual M5R-D
+Algorithm-10 producer bound `9342`, it replays both one-product NTT9 levels,
+all 288 leaf-specific M5C zetas, and both M5D/M5E inverse schedules. The
+authoritative current chain is `9342 -> 25569 -> 2148/2205`; M5D reaches a
+maximum lazy halfword magnitude of `19845`, while M5E reaches `17220` and a
+final bound of `6888`. The linked `2F + BaseMul/BaseMulAdd + I` differential
+also passes. The older `8874 -> 24438 -> 2168` chain remains historical
+evidence only.
+
 M5F `gt_forward_composition_barrett` now closes the forward composition ABI.
 It packs each bank's tail NTT16 into two registers, keeps both column blocks
 live beside the main NTT16, and proves exactly 864 meaningful loads plus 864
@@ -505,3 +516,19 @@ The next steps are:
    permutation.  Compare Forward + BaseMul + Inverse, never Forward alone.
 4. Run full KEM/KAT and SUPERCOP only after a candidate beats M5R-B and
    approaches or beats Official in the relevant complete path.
+
+## A1-S fixed-T1 Slothy closure
+
+The scheduling-only hard gate is closed and rejected. The exact T1 ABI,
+552-instruction arithmetic DAG, 90 Algorithm-10 products, FR0 output layout,
+and coefficient boundaries were frozen. Local Slothy functional RA is
+OPTIMAL, split-window scheduling is full self-check OK, and the returned code
+has no spill or stack access. Pi 5 correctness passes at one-bank, six-bank,
+and complete-Forward boundaries, but complete Forward changes from 4165.040
+to 4208.347 cycles (+43.306) with no instruction-count change.
+
+Keep bank-major T1 with the current hand schedule. Do not spend another round
+on the same N1 scheduling proxy. The next local campaign from the agreed
+roadmap is B1 handwritten BaseMul; a Forward scheduling revisit requires a
+Cortex-A76-specific model or an arithmetic-DAG change with an explicit
+critical-path/resource hypothesis.

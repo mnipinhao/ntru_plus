@@ -1,0 +1,38 @@
+CC := gcc
+CFLAGS := -O3 -std=c11 -Wall -Wextra -Werror -Wmissing-prototypes -march=armv8-a+simd -D_DEFAULT_SOURCE -ffunction-sections -fdata-sections
+LDFLAGS := -Wl,--gc-sections
+BUILD := build
+CORE := $(BUILD)/symmetric.o $(BUILD)/poly.o $(BUILD)/fips202.o $(BUILD)/gt864_poly_api.o $(BUILD)/gt864_fr0_basemul.o $(BUILD)/gt864_fr0_basemul_d1.o $(BUILD)/gt864_fr0_inverse_asm_wrapper.o $(BUILD)/add.o $(BUILD)/ntt.o $(BUILD)/base.o $(BUILD)/crepmod3.o $(BUILD)/pack.o $(BUILD)/cbd.o $(BUILD)/gt864_forward_poly_ntt.o $(BUILD)/gt864_forward_six_bank.o $(BUILD)/gt864_top_split.o $(BUILD)/gt864_fr0_inverse9_block.o $(BUILD)/gt864_inverse16_blocks.o
+BYTE := $(BUILD)/byte_api.o $(BUILD)/input_once_frombytes.o $(BUILD)/byte_boundary.o $(BUILD)/route9.o $(BUILD)/raw_pack.o $(BUILD)/stock_wrapper.o
+KEMS := $(BUILD)/kem_official.o $(BUILD)/kem_gt_base.o $(BUILD)/kem_gt_bytes.o
+GT_COMMON := -Dpoly_ntt=gt_d1_poly_ntt -Dpoly_invntt=gt_d1_poly_invntt -Dpoly_baseinv=gt_d1_poly_baseinv -Dpoly_basemul=gt_d1_poly_basemul -Dpoly_basemul_add=gt_d1_poly_basemul_add
+GT_BASE := -Dcrypto_kem_keypair=gt_base_crypto_kem_keypair -Dcrypto_kem_enc=gt_base_crypto_kem_enc -Dcrypto_kem_dec=gt_base_crypto_kem_dec $(GT_COMMON) -Dpoly_tobytes=p3b12_base_tobytes -Dpoly_frombytes=p3b12_base_frombytes
+GT_BYTES := -Dcrypto_kem_keypair=gt_bytes_crypto_kem_keypair -Dcrypto_kem_enc=gt_bytes_crypto_kem_enc -Dcrypto_kem_dec=gt_bytes_crypto_kem_dec $(GT_COMMON) -Dpoly_tobytes=p3b12_candidate_tobytes -Dpoly_frombytes=p3b12_candidate_frombytes
+.PHONY: all check clean
+all: $(BUILD)/test-kem $(BUILD)/bench-kem
+$(BUILD):
+	mkdir -p $@
+$(BUILD)/kem_official.o: kem_stock.c | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/kem_gt_base.o: kem_stock.c | $(BUILD)
+	$(CC) $(CFLAGS) $(GT_BASE) -I. -c $< -o $@
+$(BUILD)/kem_gt_bytes.o: kem_stock.c | $(BUILD)
+	$(CC) $(CFLAGS) $(GT_BYTES) -I. -c $< -o $@
+$(BUILD)/fips202.o: NO_CE/fips202.c | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/raw_pack.o: pack.s | $(BUILD)
+	$(CC) -x assembler-with-cpp -Dpoly_tobytes_asm=raw_to -Dpoly_frombytes_asm=raw_from -Dpoly_shuffle_asm=raw_shuffle -Dpoly_shuffle2_asm=raw_shuffle2 -D_poly_tobytes_asm=_raw_to -D_poly_frombytes_asm=_raw_from -D_poly_shuffle_asm=_raw_shuffle -D_poly_shuffle2_asm=_raw_shuffle2 -c $< -o $@
+$(BUILD)/%.o: %.c | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/%.o: %.S | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/%.o: %.s | $(BUILD)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+$(BUILD)/test-kem: test_kem.c $(KEMS) $(CORE) $(BYTE)
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -o $@ test_kem.c $(KEMS) $(CORE) $(BYTE)
+$(BUILD)/bench-kem: bench_kem_pmu.c $(KEMS) $(CORE) $(BYTE)
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -o $@ bench_kem_pmu.c $(KEMS) $(CORE) $(BYTE)
+check: $(BUILD)/test-kem
+	./$(BUILD)/test-kem
+clean:
+	rm -rf $(BUILD)

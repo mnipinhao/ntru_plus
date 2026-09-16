@@ -1,0 +1,14 @@
+CC ?= gcc
+CFLAGS ?= -O3 -std=c11 -Wall -Wextra -Werror -march=armv8-a+simd
+
+.PHONY: all clean
+all: build/bench-pmu
+
+build/bench-pmu: bench_pmu.c gt864_inverse_st1_wrapper.c \
+		build/gt864_inverse16_blocks_st1.s deps/gt864_fr0_inverse_asm_wrapper.c \
+		deps/gt864_fr0_inverse9_block.s deps/gt864_inverse16_blocks.s \
+		build/gt864_fr0_inverse_tables.h build/gt864_fr0_inverse_barrett_tables.h
+	$(CC) $(CFLAGS) -Ibuild -Ideps -o $@ $^
+
+clean:
+	$(RM) build/bench-pmu
