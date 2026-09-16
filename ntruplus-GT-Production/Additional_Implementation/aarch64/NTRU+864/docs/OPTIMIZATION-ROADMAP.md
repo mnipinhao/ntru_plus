@@ -89,7 +89,7 @@ Status meanings:
 | P51 | Done—Experimental, not promoted | Retain recovered FR0 `f`, regenerate into dead `c`, and compare congruence directly in identical FR0/R0 coordinates instead of routing 1296 canonical bytes | All gates pass and the experiment saves 988.525 Decaps cycles, but user policy keeps it outside production; P47 serializer/compare remains linked |
 | P52 | Done—Profiler checkpoint | Profile exact P51 against selected SUPERCOP 20260831 and identify the next boundary | All gates pass; P51 GT wins Keygen/Encaps/Decaps by 1182.000/1525.950/1987.425 cycles; fixed-size NO_CE `hash_g` selected for P53 |
 | P53 | Done—Promoted NO_CE | Parameterize the 768 production register-resident scalar sponge for SHAKE256(`0x01 || 1296 bytes`) → 216 bytes | All gates pass; hash_g -4358.235, Encaps -4252.225 and Decaps -4312.950 cycles with no SHA3-extension instruction; Keygen retires zero changed instructions |
-| P54 | Active—Production package shell | Adopt 768's layered release gates and export contract without copying its transform implementation | Audit linked endpoints; separate owned production/reference/test/docs/scripts; direct executable/KAT, ABI, canonical, zeroization, exact-KAT and deterministic-export gates; no experiment artifacts in export |
+| P54 | Done—Release hardened | Adopt 768's layered release gates and export contract without copying its transform implementation | Direct-link closure contains only selected P53/P47/P46/P35/P10/K1 sources; legacy candidates/evidence removed; KEM, ABI, canonical rejection, zeroization, exact-KAT and deterministic-export gates pass on Pi 5 |
 
 ## ToBytes priority policy
 
@@ -137,6 +137,18 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-16
+
+- Completed P54 release hardening without changing transform arithmetic. The
+  direct source closure removes legacy stock transforms, T0/T2 tail variants,
+  retired inverse/ToBytes candidates, compatibility adapters and raw evidence.
+  Pi 5 passes 64 valid/tampered KEM iterations, zero AAPCS64 sentinel bits for
+  eleven endpoints, all 10,368 noncanonical public/ciphertext/secret-key cases,
+  runtime zeroization (`25` calls, `26,904` bytes, zero uncleared bytes), and
+  exact KAT response SHA-256
+  `0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c`.
+  The deterministic flat SUPERCOP export independently compiles and passes the
+  same 64-case direct KEM test on Pi 5. P54 is packaging/release work, so it
+  intentionally makes no cycle-performance claim.
 
 - Completed P51 at the Decaps re-encryption equality boundary, then withdrew
   its production binding at the user's request. The kernel, proof and timing

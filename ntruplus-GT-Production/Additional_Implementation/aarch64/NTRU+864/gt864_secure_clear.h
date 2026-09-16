@@ -15,8 +15,15 @@
 #include <windows.h>
 #endif
 
+#ifdef GT_SECURE_CLEAR_AUDIT_HOOK
+void gt_secure_clear_audit_hook(const void *address, size_t length);
+#endif
+
 static inline void secure_clear(void *v, size_t len)
 {
+#ifdef GT_SECURE_CLEAR_AUDIT_HOOK
+    const size_t audit_len = len;
+#endif
 #if defined(_WIN32)
     SecureZeroMemory(v, len);
 #elif defined(__APPLE__)
@@ -28,6 +35,9 @@ static inline void secure_clear(void *v, size_t len)
 
     while (len-- > 0)
         *p++ = 0;
+#endif
+#ifdef GT_SECURE_CLEAR_AUDIT_HOOK
+    gt_secure_clear_audit_hook(v, audit_len);
 #endif
 }
 

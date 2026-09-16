@@ -1,5 +1,6 @@
 #include <string.h>
 #include "symmetric.h"
+#include "gt864_secure_clear.h"
 
 #ifdef SUPPORTS_SHAKE256_ASM
 #include "CE/fips202.h"
@@ -26,6 +27,7 @@ void hash_f(uint8_t *buf, const uint8_t *msg)
     data[0] = 0x00;
     memcpy(data + 1, msg, HASH_F_INBYTES);
     shake256(buf, HASH_F_OUTBYTES, data, HASH_F_INBYTES + 1);
+    secure_clear(data, sizeof data);
 }
 
 void hash_g(uint8_t *buf, const uint8_t *msg)
@@ -39,6 +41,7 @@ void hash_g_fr0(uint8_t *buf, const int16_t coeffs[NTRUPLUS_N])
 
     gt864_p18_tobytes_full_asm(data, coeffs);
     ntruplus_hash_g_fixed(buf, data);
+    secure_clear(data, sizeof data);
 }
 
 void hash_h(uint8_t *buf, const uint8_t *msg)
@@ -48,4 +51,5 @@ void hash_h(uint8_t *buf, const uint8_t *msg)
     data[0] = 0x02;
     memcpy(data + 1, msg, HASH_H_INBYTES);
     shake256(buf, HASH_H_OUTBYTES, data, HASH_H_INBYTES + 1);
+    secure_clear(data, sizeof data);
 }

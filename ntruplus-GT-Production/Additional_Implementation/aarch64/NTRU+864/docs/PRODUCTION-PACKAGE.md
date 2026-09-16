@@ -21,27 +21,19 @@ The default `make` target directly links `test_kem`. `libgt864.so` is retained
 only as the `shared` compatibility target used by paired profiler harnesses; it
 is not the production linkage contract.
 
-## P54 cleanup ledger
+## P54 closure
 
-The first linked-symbol audit after P53 found that the integration-era shared
-object still exports legacy/oracle/campaign endpoints such as `p3b12_*`, tail
-architecture controls, legacy ToBytes cores, and generic stock transforms.
-Those symbols do not imply that KEM callers use them, but they show why the
-shared object cannot define the release source closure.
+P54 completed the direct-link audit after P53. The accepted closure now
+contains one tail layout, one checked decoder, the selected serializers, and
+the selected Forward/BaseInv/BaseMul/Inverse kernels. Legacy stock transforms,
+campaign candidates, differential oracles and raw PMU evidence are outside the
+production package.
 
-The package is therefore being cleaned in this order:
-
-1. Freeze direct KEM/KAT `KEM_OBJECTS` and record each caller relocation.
-2. Separate production-owned endpoints from test/reference endpoints.
-3. Consolidate accepted transform, base, pack, and support source ownership.
-4. Move differential oracles to `test/reference/`.
-5. Move raw PMU/evidence logs out of the package.
-6. Add ABI, canonical/malformed, zeroization, and exact checked-in KAT gates.
-7. Add a deterministic SUPERCOP exporter driven by the Makefile closure.
-8. Regenerate-and-compare the SUPERCOP leaf; never edit that leaf manually.
-
-Until steps 2–8 pass, P54 remains active and this directory must not be called
-as clean/self-contained as the NTRU+768 production package.
+`make check` runs release hygiene and manifest checks, direct KEM tests, an
+AAPCS64 sentinel over public and selected internal endpoints, all-position
+noncanonical rejection, runtime/source zeroization checks, exact checked-in
+KAT comparison, and deterministic export regeneration. The flattened export
+also builds and passes the direct KEM test on Pi 5.
 
 ## Promotion gate order
 
