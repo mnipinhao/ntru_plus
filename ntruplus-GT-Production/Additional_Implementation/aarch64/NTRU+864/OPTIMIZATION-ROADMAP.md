@@ -86,7 +86,8 @@ Status meanings:
 | P48 | Done—Promoted | Let the Encaps Full serializer feed the exact `0x01 || bytes` SHAKE input directly, eliminating the immediate 1296-byte copy | Exact transcript/native/KAT/malformed/KEM and object gates pass; Encaps saves 121.225 cycles, 175 instructions and 24 branches; controls are unchanged |
 | P49 | Done—Rejected statically | Specialize only the Keygen Full producer/serializer boundary using its proven K1 range | All 288 leaves exceed the Small contract and no exact uniform shifted/biased/scaled three-instruction reduction exists; no assembly, Slothy or Pi timing warranted |
 | P50 | Done—Selected-Official profiler checkpoint | Re-run exact P48 production versus selected SUPERCOP 20260831 Official with explicit P47/P48 fused-boundary attribution | All correctness/instrumentation gates pass; GT wins Keygen/Encaps/Decaps by 1182.125/1586.900/995.875 cycles; largest isolated gaps are Decaps Full-compare +176.050 and fused Inverse +153.725 cycles |
-| P51 | Next—Transform-domain re-encryption equality | Retain recovered FR0 `f`, regenerate the candidate into a dead poly slot, and compare congruence in the transform domain instead of routing 1296 canonical bytes | Must prove coordinate/root/scale identity, transform injectivity, exact zero-test range and rejection equivalence before assembly; no new scratch/pass/spill or secret-dependent control/addressing |
+| P51 | Done—Promoted | Retain recovered FR0 `f`, regenerate into dead `c`, and compare congruence directly in identical FR0/R0 coordinates instead of routing 1296 canonical bytes | Exhaustive residue proof, native differential, KAT/malformed/object and Pi 5 gates pass; Decaps saves 988.525 cycles and 2014 instructions with no stores, spill, scratch, or secret-dependent control/addressing |
+| P52 | Next—Post-P51 selected-Official profiler | Refresh complete KEM and component attribution after the P51 boundary removal | Confirm the new dominant gap before selecting another arithmetic or routing DAG; keep P51 fixed |
 
 ## ToBytes priority policy
 
@@ -133,6 +134,29 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-16
+
+- Completed and promoted P51 at the Decaps re-encryption equality boundary.
+  Both operands are the same FR0 coordinate permutation, logical root set and
+  R0 Montgomery scale, so the injective wire permutation and canonical 12-bit
+  packing are unnecessary for equality.  Exact producer closure gives K1
+  regenerated leaves inside `[-24799,24794]`, recovered D1 leaves inside
+  `[-3023,3023]`, and differences inside signed int16.  Exhaustive evaluation
+  of every signed-int16 input proves the `SQRDMULH(9)+MLS(3457)` residue lies
+  in `[-3291,3291]` and is zero exactly for multiples of q.
+- The selected 86-instruction object reads each 1728-byte operand once, writes
+  nothing, uses no stack or scratch, has one fixed nine-iteration branch, and
+  wipes its secret SIMD temporaries.  Native differential, alias/immutability,
+  KAT, malformed ciphertext and six-process exact/tampered gates all pass.
+  Against exact P50 production on Pi 5, 252 paired observations retire 2014
+  fewer instructions and improve Decaps by 988.525 cycles.  Keygen and Encaps
+  retire exactly zero changed instructions.
+- A separate all-29-register Slothy candidate preserved the exact 60-loop-
+  instruction multiset without spill and reduced the Cortex-A76 model from
+  128 to 62 cycles.  It did not improve the complete Pi 5 boundary after its
+  larger wipe footprint (`-989.550` cycles versus baseline, statistically tied
+  with the compact candidate), so production deliberately retains the smaller
+  compact allocation.  P52 is a fresh selected-Official profiler checkpoint.
+  Evidence: `experiments/gt864-p51-transform-equality/`.
 
 - Completed P50 without changing production. Exact commit `53ba4e27` and the
   selected SUPERCOP 20260831 AArch64 tree passed fresh manifest/build/KEM/KAT,

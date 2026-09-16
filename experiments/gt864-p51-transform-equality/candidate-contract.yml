@@ -1,0 +1,24 @@
+candidate:
+  id: p51_simple_physical
+  status: promote
+  kernel_contract: kernel-contract.yml
+  symbolic_source: candidate-equal.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: [FR0 root order, R0 scale, modulo-q equality, constant-time rejection]
+  approved_changes: [compare before wire permutation and canonical 12-bit packing]
+region:
+  start_label: p51_loop_slothy_start
+  end_label: p51_loop_slothy_end
+  live_in: [x0, x1, v0, v5, v6, v30, v31]
+  live_out: [x0, x1, v0, v5, v6]
+abi:
+  inputs: [two FR0 int16 arrays]
+  outputs: [w0 mismatch]
+memory_contract:
+  loads: [216 Q loads]
+  stores: [none]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

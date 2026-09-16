@@ -1,0 +1,28 @@
+experiment_id: GT864-P51-TRANSFORM-EQUALITY-20260916
+operation: constant-time equality of two 864-coefficient FR0 polynomials modulo 3457
+inputs:
+  a: 1728 readable bytes, 16-byte aligned, regenerated K1 Forward FR0 R0
+  b: 1728 readable bytes, 16-byte aligned, recovered D1 FR0 R0
+output: w0 equals zero iff every paired coefficient is congruent modulo q; otherwise one
+memory:
+  loads: exactly both 1728-byte inputs once, sequentially
+  stores: none
+  scratch: none
+  alias: exact a==b and arbitrary overlap are read-only safe
+security:
+  control_flow: fixed public trip count
+  addresses: fixed sequential access independent of values
+  failure: aggregate every lane before returning one bit
+arithmetic:
+  difference_storage: signed int16, proof-required
+  reduction: SQRDMULH by 9 then MLS by 3457
+  equality: residual zero iff original difference is zero modulo q
+platform: AArch64 Armv8-A Neon, Cortex-A76 timing target
+validation:
+  - exhaustive signed-int16 Barrett zero-test theorem
+  - exact caller leaf-range closure
+  - canonical-byte-equivalence model
+  - native boundary differential including q-multiple perturbations
+  - object spill/control/memory audit
+  - KAT and malformed ciphertext transcript
+  - paired complete-KEM PMU

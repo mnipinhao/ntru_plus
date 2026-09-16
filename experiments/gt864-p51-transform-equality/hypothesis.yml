@@ -1,0 +1,31 @@
+experiment_id: GT864-P51-TRANSFORM-EQUALITY-20260916
+delivery_level: production-candidate
+action: optimize-arithmetic-and-representation-boundary
+observation: >-
+  P50 measures the Decaps regenerated-f Full serializer plus byte verification
+  176.050 cycles slower than the selected Official boundary. P47 already
+  removed the candidate byte buffer but still pays FR0 routing, canonicalization,
+  12-bit packing, and expected-byte comparison.
+primary_bottleneck: representation-boundary arithmetic
+hypothesis: >-
+  Retaining recovered f in FR0 and comparing it modulo q with regenerated FR0
+  f is exactly equivalent to canonical wire-byte equality and removes the
+  entire second serializer/routing DAG.
+exact_change: >-
+  Keep recovered f in its existing poly slot, regenerate into dead slot c,
+  and call a fixed-length Neon modular-zero comparison over 864 paired int16
+  coefficients.
+expected_static_effect:
+  removed: [P47 route9, Full normalization, 12-bit packing, expected-byte loads]
+  added: [216 sequential Q loads, 108 b=1 Barrett reductions, fixed reduction to one fail bit]
+expected_performance_effect: complete Decaps improves by at least 100 cycles
+expected_register_pressure_effect: >-
+  Three persistent mismatch accumulators, two difference vectors, two quotient
+  vectors, and two constants; no callee-saved SIMD use and no spill.
+correctness_or_range_impact: >-
+  New comparison boundary; requires exact FR0 coordinate/root/R0-scale identity,
+  transform injectivity, difference-range closure, and proof that the Barrett
+  residue is zero iff the difference is divisible by q.
+falsifying_measurement: >-
+  Reject on any proof/KAT/malformed/alias/constant-time failure, spill or new
+  coefficient pass, or if paired complete Decaps does not beat P48 production.

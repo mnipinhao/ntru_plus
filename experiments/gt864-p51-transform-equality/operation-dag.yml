@@ -1,0 +1,26 @@
+experiment_id: GT864-P51-TRANSFORM-EQUALITY-20260916
+baseline:
+  - recovered_f_FR0
+  - Small_ToBytes_to_buf1
+  - hash_g
+  - regenerate_f_in_same_slot
+  - P47_Full_route_normalize_pack_compare_buf1
+candidate:
+  - recovered_f_FR0
+  - Small_ToBytes_to_buf1
+  - hash_g
+  - retain_recovered_f
+  - regenerate_f_in_dead_c_slot
+  - paired_FR0_subtract
+  - b1_Barrett_residue
+  - fixed_length_mismatch_OR
+  - scalar_fail_bit
+unchanged:
+  - all prior Decaps arithmetic and hashes
+  - Small ToBytes and buf1 hash input
+  - public ciphertext and secret-key byte ABI
+  - final shared-secret masking
+removed:
+  - regenerated FR0 to wire coordinate routing
+  - regenerated Full canonical byte materialization
+  - expected wire loads and byte comparison

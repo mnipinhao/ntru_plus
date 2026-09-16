@@ -1,0 +1,26 @@
+scheme_id: ntruplus
+variant_family: ntru-like
+repository_revision: 03f8ba296666cdb96d143816e676ea625fc428da
+parameter_set: NTRU+864
+ring:
+  coefficient_ring: Z_q
+  q: 3457
+  q_bits: 12
+  polynomial_modulus: x^864-x^432+1
+  degree: 864
+  transform: existing 2x9x16 Good-Thomas with terminal degree-3 leaves
+representations:
+  recovered_input: FR0 tile-major signed-int16 R0 from D1 BaseMul
+  regenerated_input: same FR0 tile-major signed-int16 R0 from K1 Forward
+  existing_decision: equality of canonical 12-bit wire encodings
+  candidate_decision: component-wise congruence modulo q in FR0
+ranges:
+  recovered: [-3023, 3023]
+  regenerated_source: K1 small-input leaf intervals from P3B40
+  regenerated_envelope: [-24799, 24794]
+  difference_envelope: [-27822, 27817]
+validation:
+  reference: P47 Full serializer plus byte compare
+  kats: package PQCgenKAT_kem SHA256 oracle
+  differential: exact modular-equality versus canonical-byte equality
+  benchmark: paired complete KEM PMU on Cortex-A76 Pi 5

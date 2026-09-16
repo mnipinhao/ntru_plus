@@ -300,9 +300,10 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
     hash_h(buf3, msg);
 
-    poly_cbd1(&f, buf3 + NTRUPLUS_SSBYTES);
-    poly_ntt(&f, &f);
-    fail |= gt864_fr0_tobytes_full_compare(buf1, &f);
+    /* P51: retain recovered f and regenerate into the now-dead c slot. */
+    poly_cbd1(&c, buf3 + NTRUPLUS_SSBYTES);
+    poly_ntt(&c, &c);
+    fail |= gt864_fr0_equal_modq_asm(c.coeffs, f.coeffs);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf3[i] & ~(-fail);

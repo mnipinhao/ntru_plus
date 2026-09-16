@@ -1,0 +1,67 @@
+mode: new_kernel_baseline_then_iterate
+candidate_status: promote
+kernel:
+  id: gt864_p51_equal
+  name: GT864 FR0 transform-domain equality
+  source: candidate-equal.S
+  scheme: NTRU+864
+  operation: decapsulation re-encryption equality
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: fixed-allocation timing comparison after measured baseline
+  driver: optimize.py
+  expected_outputs: [candidate-equal-wide.slothy.S, slothy-results.json, slothy.log]
+  allow_spills: false
+region:
+  start_label: p51_loop_slothy_start
+  end_label: p51_loop_slothy_end
+  expected_instruction_count: 60
+  live_in: [x0, x1, v0, v5, v6, v30, v31]
+  live_out: [x0, x1, v0, v5, v6]
+abi:
+  inputs: [x0 regenerated-FR0 pointer, x1 recovered-FR0 pointer]
+  outputs: [w0 mismatch bit]
+  clobbers: [x8, nzcv, v0-v6, v30-v31]
+  concrete_gprs_allowed: [x0, x1, x8]
+  fixed_vector_registers: [v0-v6, v30-v31]
+  reserved_registers: [x18, x19-x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: 54 independent 16-lane residue tests accumulated into three OR chains
+layout:
+  input_representation: 864 contiguous signed int16 coefficients in GT FR0 R0 coordinates
+  output_representation: public integer zero for equal modulo q and one otherwise
+  vector_lanes: eight signed halfwords per Q register
+  packing: six 16-coefficient chunks per public loop iteration
+memory_contract:
+  loads: [108 Q regenerated loads, 108 Q recovered loads]
+  stores: [none]
+  aliasing: exact alias and disjoint inputs are both supported
+  alignment: unaligned AArch64 LDP Q is permitted and there is no overread
+  public_offsets_only: true
+  pointer_updates: [x0 advances 1728 bytes, x1 advances 1728 bytes]
+constant_contract:
+  constants: [q 3457 in v30.8h, reciprocal 9 in v31.8h]
+  modulus: 3457
+  representation: both inputs are R0 residues at identical roots
+  reduction_method: Algorithm-10-style SQRDMULH plus MLS zero-residue test
+range_contract:
+  input_ranges: [regenerated envelope -24799 to 24794, recovered -3023 to 3023]
+  intermediate_ranges: [difference envelope -27822 to 27817, residue -3291 to 3291]
+  output_ranges: [w0 is zero or one]
+  narrowing_points: [none]
+constant_time_contract:
+  secret_inputs: [all coefficient values]
+  public_inputs: [fixed coefficient count 864]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 proof.py
+  test_command: clang -arch arm64 test.c candidate-equal.S and execute
+  full_path_benchmark_command: python3 run_pi5.py
+  benchmark_metric: cycles
+  lower_is_better: true

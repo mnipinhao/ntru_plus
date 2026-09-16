@@ -1,0 +1,24 @@
+baseline:
+  id: p50_decaps_full_compare
+  source: P50 production package
+  extracted_region: Decaps regenerated-f equality boundary
+  function: crypto_kem_dec
+  start_label: regenerated Forward producer
+  end_label: full canonical-byte comparison return
+region:
+  instruction_count: 2098 dynamic retired instructions replaced by P51 path
+  live_in: [buf1 canonical ciphertext bytes, buf3 regenerated seed]
+  live_out: [fail accumulator]
+abi:
+  inputs: [recovered FR0 f, regenerated seed]
+  outputs: [constant-time failure bit]
+memory_contract:
+  loads: [FR0 coefficients and 1296 expected bytes]
+  stores: [serializer output scratch and comparison state]
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: P47 serializer-compare plus regenerated Forward caller
+  benchmark_command: python3 run_pi5.py with candidate-equal.S selected
