@@ -1,0 +1,1631 @@
+{
+  "method": "Self samples, object/address based; Keygen uses cpu-clock:u at 997Hz, Encap/Decap use cycles:u period 100003. Separate unsampled PMU totals. No call-time instrumentation; percentages are estimates.",
+  "profiles": {
+    "GT": {
+      "Keygen": {
+        "sample_event": "cpu-clock:u 997Hz",
+        "sample_count": 22675,
+        "repetitions": [
+          {
+            "rep": 0,
+            "samples": 7570,
+            "pmu_per_operation": {
+              "cycles:u": 36373.31873,
+              "instructions:u": 83251.53184,
+              "ld_spec:u": 10715.58982,
+              "st_spec:u": 6507.41904,
+              "stall_backend:u": 11230.34195
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.796565389696169,
+              "Base inversion": 18.599735799207398,
+              "Base multiplication": 9.841479524438574,
+              "Hash/SHAKE": 47.14663143989432,
+              "Polynomial support": 0.9907529722589168,
+              "Forward NTT": 14.821664464993395,
+              "Packing": 4.504623513870542,
+              "CBD sampling": 1.6512549537648615,
+              "Clear/memory runtime": 0.3566710700132101,
+              "Benchmark RNG": 0.2906208718626156
+            }
+          },
+          {
+            "rep": 1,
+            "samples": 7552,
+            "pmu_per_operation": {
+              "cycles:u": 36374.40639,
+              "instructions:u": 83251.53203,
+              "ld_spec:u": 10715.51647,
+              "st_spec:u": 6507.30133,
+              "stall_backend:u": 11230.4035
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.6551906779661019,
+              "Base multiplication": 9.917902542372882,
+              "Hash/SHAKE": 46.86175847457627,
+              "Base inversion": 19.279661016949152,
+              "Forward NTT": 14.671610169491526,
+              "Packing": 4.277012711864407,
+              "Polynomial support": 1.0328389830508475,
+              "CBD sampling": 1.4565677966101693,
+              "Benchmark RNG": 0.3840042372881356,
+              "Clear/memory runtime": 0.46345338983050843
+            }
+          },
+          {
+            "rep": 2,
+            "samples": 7553,
+            "pmu_per_operation": {
+              "cycles:u": 36357.14522,
+              "instructions:u": 83251.53214,
+              "ld_spec:u": 10716.012,
+              "st_spec:u": 6507.72183,
+              "stall_backend:u": 11228.95097
+            },
+            "percent": {
+              "Base inversion": 18.985833443664767,
+              "Hash/SHAKE": 47.26598702502317,
+              "KEM glue / runtime / unresolved": 1.4563749503508538,
+              "Forward NTT": 14.841784721302794,
+              "Packing": 4.170528266913809,
+              "Base multiplication": 9.731232622798888,
+              "CBD sampling": 1.707930623593274,
+              "Polynomial support": 0.992982920693764,
+              "Benchmark RNG": 0.4501522573811731,
+              "Clear/memory runtime": 0.39719316827750556
+            }
+          }
+        ],
+        "pmu_p50": {
+          "cycles:u": 36373.31873,
+          "instructions:u": 83251.53203,
+          "ld_spec:u": 10715.58982,
+          "st_spec:u": 6507.41904,
+          "stall_backend:u": 11230.34195
+        },
+        "components": {
+          "Hash/SHAKE": {
+            "percent": 47.09145897983125,
+            "rep_min": 46.86175847457627,
+            "rep_max": 47.26598702502317
+          },
+          "Base inversion": {
+            "percent": 18.955076753273772,
+            "rep_min": 18.599735799207398,
+            "rep_max": 19.279661016949152
+          },
+          "Forward NTT": {
+            "percent": 14.778353118595907,
+            "rep_min": 14.671610169491526,
+            "rep_max": 14.841784721302794
+          },
+          "Base multiplication": {
+            "percent": 9.830204896536781,
+            "rep_min": 9.731232622798888,
+            "rep_max": 9.917902542372882
+          },
+          "Packing": {
+            "percent": 4.317388164216252,
+            "rep_min": 4.170528266913809,
+            "rep_max": 4.504623513870542
+          },
+          "KEM glue / runtime / unresolved": {
+            "percent": 1.6360436726710417,
+            "rep_min": 1.4563749503508538,
+            "rep_max": 1.796565389696169
+          },
+          "CBD sampling": {
+            "percent": 1.6052511246561016,
+            "rep_min": 1.4565677966101693,
+            "rep_max": 1.707930623593274
+          },
+          "Polynomial support": {
+            "percent": 1.0055249586678427,
+            "rep_min": 0.9907529722589168,
+            "rep_max": 1.0328389830508475
+          },
+          "Clear/memory runtime": {
+            "percent": 0.40577254270707475,
+            "rep_min": 0.3566710700132101,
+            "rep_max": 0.46345338983050843
+          },
+          "Benchmark RNG": {
+            "percent": 0.37492578884397476,
+            "rep_min": 0.2906208718626156,
+            "rep_max": 0.4501522573811731
+          }
+        },
+        "files": {
+          "fips202.c": 47.082641791479965,
+          "base.s": 18.871321049099272,
+          "ntt.s": 14.778353118595907,
+          "keygen.c": 9.913960600711281,
+          "pack.s": 4.317388164216252,
+          "external/runtime": 1.93596156951827,
+          "cbd.s": 1.6052511246561016,
+          "support.s": 1.0055249586678427,
+          "/tmp/ccuOjzE4.o": 0.37492578884397476,
+          "kem.c": 0.07938384342473709,
+          "/tmp/ccgJKkaT.o": 0.017654198466430446,
+          "symmetric.c": 0.008817188351282567,
+          "kem_api.s": 0.008816603968678581
+        },
+        "entries": [
+          {
+            "source": "fips202.c",
+            "entry": "KeccakF1600_StatePermute",
+            "percent": 42.267030044527075
+          },
+          {
+            "source": "ntt.s",
+            "entry": "gt768_e19_poly_ntt_keygen_cq",
+            "percent": 14.778353118595907
+          },
+          {
+            "source": "base.s",
+            "entry": "gt768_e19_gt_keygen_baseinv_cq_prepare",
+            "percent": 10.694583712262762
+          },
+          {
+            "source": "keygen.c",
+            "entry": "gt768_e19_poly_basemul_keygen_cq_scaled_r",
+            "percent": 9.830204896536781
+          },
+          {
+            "source": "pack.s",
+            "entry": "gt768_e19_poly_tobytes_keygen_cq",
+            "percent": 4.317388164216252
+          },
+          {
+            "source": "fips202.c",
+            "entry": "keccak_absorb.constprop.0",
+            "percent": 3.9909685635229093
+          },
+          {
+            "source": "base.s",
+            "entry": "gt768_e19_gt_keygen_baseinv_hier_k8",
+            "percent": 3.4179878063731883
+          },
+          {
+            "source": "base.s",
+            "entry": "gt768_e19_gt_keygen_baseinv_cq_finish",
+            "percent": 3.404732840149568
+          },
+          {
+            "source": "cbd.s",
+            "entry": "gt768_e19_poly_cbd1",
+            "percent": 1.6052511246561016
+          },
+          {
+            "source": "external/runtime",
+            "entry": "[unknown]",
+            "percent": 1.4508063521516665
+          },
+          {
+            "source": "base.s",
+            "entry": "gt768_e19_gt_fqinv15_asm",
+            "percent": 1.3540166903137543
+          },
+          {
+            "source": "support.s",
+            "entry": "gt768_e19_poly_triple",
+            "percent": 1.0055249586678427
+          },
+          {
+            "source": "fips202.c",
+            "entry": "gt768_e19_shake256",
+            "percent": 0.8246431834299892
+          },
+          {
+            "source": "/tmp/ccuOjzE4.o",
+            "entry": "randombytes",
+            "percent": 0.37492578884397476
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero",
+            "percent": 0.3396104029422012
+          },
+          {
+            "source": "keygen.c",
+            "entry": "gt768_e19_poly_baseinv_keygen_cq_scaled_r",
+            "percent": 0.08375570417450012
+          },
+          {
+            "source": "kem.c",
+            "entry": "gt768_e19_crypto_kem_keypair_internal",
+            "percent": 0.07938384342473709
+          },
+          {
+            "source": "external/runtime",
+            "entry": "memcpy@plt",
+            "percent": 0.07938267465952913
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero@plt",
+            "percent": 0.06616213976487359
+          },
+          {
+            "source": "/tmp/ccgJKkaT.o",
+            "entry": "main",
+            "percent": 0.017654198466430446
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "gt768_e19_hash_f",
+            "percent": 0.008817188351282567
+          },
+          {
+            "source": "kem_api.s",
+            "entry": "gt768_e19_crypto_kem_keypair",
+            "percent": 0.008816603968678581
+          }
+        ]
+      },
+      "Encap": {
+        "sample_event": "cycles:u period 100003",
+        "sample_count": 111806,
+        "repetitions": [
+          {
+            "rep": 0,
+            "samples": 37237,
+            "pmu_per_operation": {
+              "cycles:u": 37200.44899,
+              "instructions:u": 106767.71583,
+              "ld_spec:u": 15253.69066,
+              "st_spec:u": 9227.61729,
+              "stall_backend:u": 6882.3596
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.4474850283320355,
+              "Benchmark RNG": 0.6391492332894702,
+              "Hash/SHAKE": 73.67403389102238,
+              "Forward NTT": 11.056207535515751,
+              "Basemul-add": 5.585842038832344,
+              "Packing": 4.291430566372157,
+              "SOTP encode/decode": 0.8217632999436045,
+              "CBD sampling": 0.776109783280071,
+              "Checked unpack": 1.3642344979455918,
+              "Clear/memory runtime": 0.3437441254666058
+            }
+          },
+          {
+            "rep": 1,
+            "samples": 37289,
+            "pmu_per_operation": {
+              "cycles:u": 37254.84051,
+              "instructions:u": 106775.71591,
+              "ld_spec:u": 15251.66019,
+              "st_spec:u": 9225.0542,
+              "stall_backend:u": 6906.6909
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.4052401512510393,
+              "CBD sampling": 0.6436214433210866,
+              "Hash/SHAKE": 73.92528627745448,
+              "Forward NTT": 10.8584301000295,
+              "Packing": 4.7413446324653385,
+              "Basemul-add": 5.40373836788329,
+              "Clear/memory runtime": 0.3754458419373006,
+              "SOTP encode/decode": 0.8849794845664942,
+              "Benchmark RNG": 0.5470782268229236,
+              "Checked unpack": 1.214835474268551
+            }
+          },
+          {
+            "rep": 2,
+            "samples": 37280,
+            "pmu_per_operation": {
+              "cycles:u": 37228.03005,
+              "instructions:u": 106779.7158,
+              "ld_spec:u": 15252.12581,
+              "st_spec:u": 9225.55955,
+              "stall_backend:u": 6905.43831
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.365343347639485,
+              "Hash/SHAKE": 73.8197424892704,
+              "Forward NTT": 10.879828326180258,
+              "Basemul-add": 5.544527896995708,
+              "Checked unpack": 1.3358369098712446,
+              "CBD sampling": 0.7993562231759656,
+              "Packing": 4.434012875536481,
+              "SOTP encode/decode": 0.8905579399141631,
+              "Benchmark RNG": 0.6035407725321889,
+              "Clear/memory runtime": 0.3272532188841202
+            }
+          }
+        ],
+        "pmu_p50": {
+          "cycles:u": 37228.03005,
+          "instructions:u": 106775.71591,
+          "ld_spec:u": 15252.12581,
+          "st_spec:u": 9225.55955,
+          "stall_backend:u": 6905.43831
+        },
+        "components": {
+          "Hash/SHAKE": {
+            "percent": 73.80635421924907,
+            "rep_min": 73.67403389102238,
+            "rep_max": 73.92528627745448
+          },
+          "Forward NTT": {
+            "percent": 10.9314886539085,
+            "rep_min": 10.8584301000295,
+            "rep_max": 11.056207535515751
+          },
+          "Basemul-add": {
+            "percent": 5.511369434570447,
+            "rep_min": 5.40373836788329,
+            "rep_max": 5.585842038832344
+          },
+          "Packing": {
+            "percent": 4.4889293581246585,
+            "rep_min": 4.291430566372157,
+            "rep_max": 4.7413446324653385
+          },
+          "KEM glue / runtime / unresolved": {
+            "percent": 1.4060228424075198,
+            "rep_min": 1.365343347639485,
+            "rep_max": 1.4474850283320355
+          },
+          "Checked unpack": {
+            "percent": 1.3049689606951294,
+            "rep_min": 1.214835474268551,
+            "rep_max": 1.3642344979455918
+          },
+          "SOTP encode/decode": {
+            "percent": 0.8657669081414207,
+            "rep_min": 0.8217632999436045,
+            "rep_max": 0.8905579399141631
+          },
+          "CBD sampling": {
+            "percent": 0.7396958165923745,
+            "rep_min": 0.6436214433210866,
+            "rep_max": 0.7993562231759656
+          },
+          "Benchmark RNG": {
+            "percent": 0.5965894108815275,
+            "rep_min": 0.5470782268229236,
+            "rep_max": 0.6391492332894702
+          },
+          "Clear/memory runtime": {
+            "percent": 0.34881439542934217,
+            "rep_min": 0.3272532188841202,
+            "rep_max": 0.3754458419373006
+          }
+        },
+        "files": {
+          "fips202.c": 73.74910187429911,
+          "ntt.s": 10.9314886539085,
+          "pack.s": 5.793898318819788,
+          "base.s": 5.511369434570447,
+          "cbd.s": 1.6054627247337951,
+          "external/runtime": 1.6036839771835936,
+          "/tmp/ccuOjzE4.o": 0.5965894108815275,
+          "kem.c": 0.12879667838866185,
+          "symmetric.c": 0.05725234494995172,
+          "kem_api.s": 0.013411323230589703,
+          "/tmp/ccgJKkaT.o": 0.00894525903401709
+        },
+        "entries": [
+          {
+            "source": "fips202.c",
+            "entry": "KeccakF1600_StatePermute",
+            "percent": 67.14028817383412
+          },
+          {
+            "source": "fips202.c",
+            "entry": "keccak_absorb.constprop.0",
+            "percent": 5.825316347110189
+          },
+          {
+            "source": "base.s",
+            "entry": "gt768_e19_poly_basemul_add_encap",
+            "percent": 5.511369434570447
+          },
+          {
+            "source": "ntt.s",
+            "entry": "gt768_e19_poly_ntt_keygen_cq",
+            "percent": 5.185761802285521
+          },
+          {
+            "source": "ntt.s",
+            "entry": "gt768_e19_poly_ntt_encap_small",
+            "percent": 4.8504218828263665
+          },
+          {
+            "source": "pack.s",
+            "entry": "gt768_e19_poly_tobytes_encap",
+            "percent": 4.4889293581246585
+          },
+          {
+            "source": "pack.s",
+            "entry": "gt768_e19_poly_frombytes_encap",
+            "percent": 1.3049689606951294
+          },
+          {
+            "source": "external/runtime",
+            "entry": "[unknown]",
+            "percent": 1.2047817168154058
+          },
+          {
+            "source": "ntt.s",
+            "entry": "gt768_e19_poly_ntt_encap_small_lazy",
+            "percent": 0.8953049687966141
+          },
+          {
+            "source": "cbd.s",
+            "entry": "gt768_e19_poly_sotp_encode",
+            "percent": 0.8657669081414207
+          },
+          {
+            "source": "fips202.c",
+            "entry": "gt768_e19_shake256",
+            "percent": 0.7834973533548133
+          },
+          {
+            "source": "cbd.s",
+            "entry": "gt768_e19_poly_cbd1",
+            "percent": 0.7396958165923745
+          },
+          {
+            "source": "/tmp/ccuOjzE4.o",
+            "entry": "randombytes",
+            "percent": 0.5965894108815275
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero",
+            "percent": 0.3112481116292694
+          },
+          {
+            "source": "kem.c",
+            "entry": "crypto_kem_enc_derand",
+            "percent": 0.09570471890977891
+          },
+          {
+            "source": "external/runtime",
+            "entry": "memcpy@plt",
+            "percent": 0.04561452661607913
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero@plt",
+            "percent": 0.0375662838000728
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "gt768_e19_hash_h",
+            "percent": 0.036679469965594874
+          },
+          {
+            "source": "kem.c",
+            "entry": "gt768_e19_crypto_kem_enc_internal",
+            "percent": 0.03309195947888294
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "gt768_e19_hash_g",
+            "percent": 0.015207467214919248
+          },
+          {
+            "source": "kem_api.s",
+            "entry": "gt768_e19_crypto_kem_enc",
+            "percent": 0.013411323230589703
+          },
+          {
+            "source": "/tmp/ccgJKkaT.o",
+            "entry": "main",
+            "percent": 0.00894525903401709
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "gt768_e19_hash_f",
+            "percent": 0.005365407769437588
+          },
+          {
+            "source": "external/runtime",
+            "entry": "qsort_r",
+            "percent": 0.0008951669934026194
+          },
+          {
+            "source": "external/runtime",
+            "entry": "setlocale",
+            "percent": 0.0008951669934026194
+          },
+          {
+            "source": "external/runtime",
+            "entry": "__call_tls_dtors",
+            "percent": 0.0008951669934026194
+          },
+          {
+            "source": "external/runtime",
+            "entry": "getenv",
+            "percent": 0.000893918671279287
+          },
+          {
+            "source": "external/runtime",
+            "entry": "strcmp",
+            "percent": 0.000893918671279287
+          }
+        ]
+      },
+      "Decap": {
+        "sample_event": "cycles:u period 100003",
+        "sample_count": 97313,
+        "repetitions": [
+          {
+            "rep": 0,
+            "samples": 32450,
+            "pmu_per_operation": {
+              "cycles:u": 32448.19197,
+              "instructions:u": 71989.7157,
+              "ld_spec:u": 9279.39391,
+              "st_spec:u": 5786.7377,
+              "stall_backend:u": 10452.62778
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 2.317411402157165,
+              "Hash/SHAKE": 48.43759630200309,
+              "Forward NTT": 16.533127889060093,
+              "Packing": 4.468412942989214,
+              "Fused checked decode + first basemul": 6.508474576271187,
+              "Inverse NTT": 10.859784283513097,
+              "Base multiplication": 6.101694915254238,
+              "SOTP encode/decode": 0.9768875192604005,
+              "Checked unpack": 0.9583975346687211,
+              "CBD sampling": 0.9861325115562404,
+              "Centered mod3": 1.066255778120185,
+              "Polynomial support": 0.6101694915254238,
+              "Clear/memory runtime": 0.17565485362095531
+            }
+          },
+          {
+            "rep": 1,
+            "samples": 32433,
+            "pmu_per_operation": {
+              "cycles:u": 32424.32505,
+              "instructions:u": 71993.71618,
+              "ld_spec:u": 9279.31582,
+              "st_spec:u": 5786.70257,
+              "stall_backend:u": 10446.91688
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 2.0411309468750964,
+              "Hash/SHAKE": 48.5339006567385,
+              "Packing": 4.668084975179601,
+              "Fused checked decode + first basemul": 6.675299848919311,
+              "Inverse NTT": 10.865476520827553,
+              "Centered mod3": 1.13773008972343,
+              "Forward NTT": 16.53254401381309,
+              "SOTP encode/decode": 0.921900533407332,
+              "Base multiplication": 6.144975796256899,
+              "Clear/memory runtime": 0.16033052754910124,
+              "CBD sampling": 0.9280670921592205,
+              "Checked unpack": 0.9650664446705516,
+              "Polynomial support": 0.42549255388030716
+            }
+          },
+          {
+            "rep": 2,
+            "samples": 32430,
+            "pmu_per_operation": {
+              "cycles:u": 32433.27165,
+              "instructions:u": 71993.71591,
+              "ld_spec:u": 9278.72863,
+              "st_spec:u": 5787.25706,
+              "stall_backend:u": 10477.81968
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.9734813444341657,
+              "Hash/SHAKE": 48.461301264261486,
+              "Inverse NTT": 10.872648781991982,
+              "Forward NTT": 16.45081714461918,
+              "Base multiplication": 6.040703052728954,
+              "Fused checked decode + first basemul": 6.722170829478878,
+              "Packing": 4.7147702744372495,
+              "Centered mod3": 1.251927227875424,
+              "SOTP encode/decode": 0.9744064138143694,
+              "Polynomial support": 0.48103607770582796,
+              "CBD sampling": 0.9250693802035153,
+              "Clear/memory runtime": 0.2127659574468085,
+              "Checked unpack": 0.9189022510021585
+            }
+          }
+        ],
+        "pmu_p50": {
+          "cycles:u": 32433.27165,
+          "instructions:u": 71993.71591,
+          "ld_spec:u": 9279.31582,
+          "st_spec:u": 5786.7377,
+          "stall_backend:u": 10452.62778
+        },
+        "components": {
+          "Hash/SHAKE": {
+            "percent": 48.4775994076677,
+            "rep_min": 48.43759630200309,
+            "rep_max": 48.5339006567385
+          },
+          "Forward NTT": {
+            "percent": 16.50549634916412,
+            "rep_min": 16.45081714461918,
+            "rep_max": 16.533127889060093
+          },
+          "Inverse NTT": {
+            "percent": 10.865969862110877,
+            "rep_min": 10.859784283513097,
+            "rep_max": 10.872648781991982
+          },
+          "Fused checked decode + first basemul": {
+            "percent": 6.635315084889792,
+            "rep_min": 6.508474576271187,
+            "rep_max": 6.722170829478878
+          },
+          "Base multiplication": {
+            "percent": 6.095791254746697,
+            "rep_min": 6.040703052728954,
+            "rep_max": 6.144975796256899
+          },
+          "Packing": {
+            "percent": 4.617089397535355,
+            "rep_min": 4.468412942989214,
+            "rep_max": 4.7147702744372495
+          },
+          "KEM glue / runtime / unresolved": {
+            "percent": 2.1106745644888085,
+            "rep_min": 1.9734813444341657,
+            "rep_max": 2.317411402157165
+          },
+          "Centered mod3": {
+            "percent": 1.1519710319063463,
+            "rep_min": 1.066255778120185,
+            "rep_max": 1.251927227875424
+          },
+          "SOTP encode/decode": {
+            "percent": 0.9577314888273674,
+            "rep_min": 0.921900533407332,
+            "rep_max": 0.9768875192604005
+          },
+          "Checked unpack": {
+            "percent": 0.9474554101138104,
+            "rep_min": 0.9189022510021585,
+            "rep_max": 0.9650664446705516
+          },
+          "CBD sampling": {
+            "percent": 0.9464229946396585,
+            "rep_min": 0.9250693802035153,
+            "rep_max": 0.9861325115562404
+          },
+          "Polynomial support": {
+            "percent": 0.5055660410371863,
+            "rep_min": 0.42549255388030716,
+            "rep_max": 0.6101694915254238
+          },
+          "Clear/memory runtime": {
+            "percent": 0.18291711287228835,
+            "rep_min": 0.16033052754910124,
+            "rep_max": 0.2127659574468085
+          }
+        },
+        "files": {
+          "fips202.c": 48.39950236252608,
+          "ntt.s": 27.371466211275,
+          "base.s": 12.731106339636488,
+          "pack.s": 5.564544807649165,
+          "cbd.s": 1.904154483467026,
+          "external/runtime": 1.6975854647661066,
+          "support.s": 1.1519710319063463,
+          "kem.c": 0.5764818800034033,
+          "decap_add.s": 0.5055660410371863,
+          "symmetric.c": 0.07809704514161615,
+          "kem_api.s": 0.01335875561634169,
+          "/tmp/ccgJKkaT.o": 0.006165576975245883
+        },
+        "entries": [
+          {
+            "source": "fips202.c",
+            "entry": "KeccakF1600_StatePermute",
+            "percent": 44.199682468720155
+          },
+          {
+            "source": "ntt.s",
+            "entry": "gt768_e19_poly_ntt_decap",
+            "percent": 16.50549634916412
+          },
+          {
+            "source": "ntt.s",
+            "entry": "gt768_e19_poly_invntt_decap_scale",
+            "percent": 10.865969862110877
+          },
+          {
+            "source": "base.s",
+            "entry": "gt768_e19_poly_frombytes_basemul_decap_scale",
+            "percent": 6.635315084889792
+          },
+          {
+            "source": "base.s",
+            "entry": "gt768_e19_poly_basemul_decap",
+            "percent": 6.095791254746697
+          },
+          {
+            "source": "pack.s",
+            "entry": "gt768_e19_poly_tobytes_decap",
+            "percent": 4.617089397535355
+          },
+          {
+            "source": "fips202.c",
+            "entry": "keccak_absorb.constprop.0",
+            "percent": 3.5072202534195274
+          },
+          {
+            "source": "external/runtime",
+            "entry": "[unknown]",
+            "percent": 1.461234185102654
+          },
+          {
+            "source": "support.s",
+            "entry": "gt768_e19_poly_crepmod3",
+            "percent": 1.1519710319063463
+          },
+          {
+            "source": "cbd.s",
+            "entry": "gt768_e19_poly_sotp_decode",
+            "percent": 0.9577314888273674
+          },
+          {
+            "source": "pack.s",
+            "entry": "gt768_e19_poly_frombytes_decap",
+            "percent": 0.9474554101138104
+          },
+          {
+            "source": "cbd.s",
+            "entry": "gt768_e19_poly_cbd1",
+            "percent": 0.9464229946396585
+          },
+          {
+            "source": "fips202.c",
+            "entry": "gt768_e19_shake256",
+            "percent": 0.6925996403863904
+          },
+          {
+            "source": "kem.c",
+            "entry": "gt768_e19_crypto_kem_dec_internal",
+            "percent": 0.5764818800034033
+          },
+          {
+            "source": "decap_add.s",
+            "entry": "gt768_e19_poly_sub_decap",
+            "percent": 0.5055660410371863
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero",
+            "percent": 0.1438670856128251
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "gt768_e19_hash_h",
+            "percent": 0.07090405665034312
+          },
+          {
+            "source": "external/runtime",
+            "entry": "memcpy@plt",
+            "percent": 0.04932357097410432
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero@plt",
+            "percent": 0.03905002725946328
+          },
+          {
+            "source": "kem_api.s",
+            "entry": "gt768_e19_crypto_kem_dec",
+            "percent": 0.01335875561634169
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "gt768_e19_hash_g",
+            "percent": 0.007192988491273053
+          },
+          {
+            "source": "/tmp/ccgJKkaT.o",
+            "entry": "main",
+            "percent": 0.006165576975245883
+          },
+          {
+            "source": "external/runtime",
+            "entry": "__strcasecmp_l",
+            "percent": 0.0010278548668927949
+          },
+          {
+            "source": "external/runtime",
+            "entry": "__libc_early_init",
+            "percent": 0.0010277597919814182
+          },
+          {
+            "source": "external/runtime",
+            "entry": "__ctype_b_loc",
+            "percent": 0.0010277597919814182
+          },
+          {
+            "source": "external/runtime",
+            "entry": "__tunable_get_val",
+            "percent": 0.001027221366204417
+          }
+        ]
+      }
+    },
+    "Official": {
+      "Keygen": {
+        "sample_event": "cpu-clock:u 997Hz",
+        "sample_count": 23980,
+        "repetitions": [
+          {
+            "rep": 0,
+            "samples": 7992,
+            "pmu_per_operation": {
+              "cycles:u": 38418.26045,
+              "instructions:u": 80292.35812,
+              "ld_spec:u": 9732.8751,
+              "st_spec:u": 6219.45237,
+              "stall_backend:u": 13220.62699
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.5640640640640642,
+              "Base inversion": 18.405905905905907,
+              "Packing": 6.068568568568568,
+              "Forward NTT": 14.401901901901901,
+              "Hash/SHAKE": 44.65715715715716,
+              "Base multiplication": 11.536536536536536,
+              "Polynomial support": 0.8883883883883883,
+              "Benchmark RNG": 0.43793793793793795,
+              "CBD sampling": 1.664164164164164,
+              "Clear/memory runtime": 0.37537537537537535
+            }
+          },
+          {
+            "rep": 1,
+            "samples": 7996,
+            "pmu_per_operation": {
+              "cycles:u": 38429.61669,
+              "instructions:u": 80332.36035,
+              "ld_spec:u": 9732.88746,
+              "st_spec:u": 6219.55279,
+              "stall_backend:u": 13215.51251
+            },
+            "percent": {
+              "Hash/SHAKE": 44.78489244622311,
+              "Forward NTT": 14.757378689344671,
+              "Packing": 5.590295147573787,
+              "Base inversion": 18.52176088044022,
+              "Base multiplication": 11.680840420210105,
+              "Polynomial support": 0.8504252126063032,
+              "CBD sampling": 1.8009004502251125,
+              "KEM glue / runtime / unresolved": 1.3256628314157077,
+              "Benchmark RNG": 0.3501750875437719,
+              "Clear/memory runtime": 0.3376688344172086
+            }
+          },
+          {
+            "rep": 2,
+            "samples": 7992,
+            "pmu_per_operation": {
+              "cycles:u": 38441.72868,
+              "instructions:u": 80332.36012,
+              "ld_spec:u": 9732.95185,
+              "st_spec:u": 6221.35438,
+              "stall_backend:u": 13242.72814
+            },
+            "percent": {
+              "Base inversion": 18.455955955955954,
+              "Base multiplication": 11.461461461461461,
+              "Hash/SHAKE": 44.4944944944945,
+              "Forward NTT": 14.852352352352352,
+              "CBD sampling": 1.4389389389389389,
+              "Packing": 5.918418418418418,
+              "Polynomial support": 1.0885885885885884,
+              "Clear/memory runtime": 0.3253253253253253,
+              "KEM glue / runtime / unresolved": 1.5765765765765765,
+              "Benchmark RNG": 0.3878878878878879
+            }
+          }
+        ],
+        "pmu_p50": {
+          "cycles:u": 38429.61669,
+          "instructions:u": 80332.36012,
+          "ld_spec:u": 9732.88746,
+          "st_spec:u": 6219.55279,
+          "stall_backend:u": 13220.62699
+        },
+        "components": {
+          "Hash/SHAKE": {
+            "percent": 44.64551469929159,
+            "rep_min": 44.4944944944945,
+            "rep_max": 44.78489244622311
+          },
+          "Base inversion": {
+            "percent": 18.46120758076736,
+            "rep_min": 18.405905905905907,
+            "rep_max": 18.52176088044022
+          },
+          "Forward NTT": {
+            "percent": 14.670544314532973,
+            "rep_min": 14.401901901901901,
+            "rep_max": 14.852352352352352
+          },
+          "Base multiplication": {
+            "percent": 11.559612806069367,
+            "rep_min": 11.461461461461461,
+            "rep_max": 11.680840420210105
+          },
+          "Packing": {
+            "percent": 5.859094044853591,
+            "rep_min": 5.590295147573787,
+            "rep_max": 6.068568568568568
+          },
+          "CBD sampling": {
+            "percent": 1.6346678511094053,
+            "rep_min": 1.4389389389389389,
+            "rep_max": 1.8009004502251125
+          },
+          "KEM glue / runtime / unresolved": {
+            "percent": 1.488767824018783,
+            "rep_min": 1.3256628314157077,
+            "rep_max": 1.5765765765765765
+          },
+          "Polynomial support": {
+            "percent": 0.94246739652776,
+            "rep_min": 0.8504252126063032,
+            "rep_max": 1.0885885885885884
+          },
+          "Benchmark RNG": {
+            "percent": 0.39200030445653256,
+            "rep_min": 0.3501750875437719,
+            "rep_max": 0.43793793793793795
+          },
+          "Clear/memory runtime": {
+            "percent": 0.3461231783726364,
+            "rep_min": 0.3253253253253253,
+            "rep_max": 0.37537537537537535
+          }
+        },
+        "files": {
+          "fips202.c": 44.64551469929159,
+          "base.s": 22.23104795641064,
+          "ntt.s": 14.670544314532973,
+          "poly.c": 7.78977243042609,
+          "pack.s": 5.859094044853591,
+          "external/runtime": 1.7389742585673889,
+          "cbd.s": 1.6346678511094053,
+          "add.s": 0.94246739652776,
+          "/tmp/cckhOkdx.o": 0.39200030445653256,
+          "kem.c": 0.07090006464693807,
+          "/tmp/cc3eOFRb.o": 0.025016679177092715
+        },
+        "entries": [
+          {
+            "source": "fips202.c",
+            "entry": "KeccakF1600_StatePermute",
+            "percent": 40.50038032029028
+          },
+          {
+            "source": "ntt.s",
+            "entry": "poly_ntt",
+            "percent": 14.670544314532973
+          },
+          {
+            "source": "base.s",
+            "entry": "poly_basemul",
+            "percent": 11.559612806069367
+          },
+          {
+            "source": "base.s",
+            "entry": "poly_baseinv_1",
+            "percent": 10.67143515034127
+          },
+          {
+            "source": "poly.c",
+            "entry": "poly_baseinv",
+            "percent": 7.78977243042609
+          },
+          {
+            "source": "pack.s",
+            "entry": "poly_tobytes",
+            "percent": 5.859094044853591
+          },
+          {
+            "source": "fips202.c",
+            "entry": "keccak_absorb.constprop.0",
+            "percent": 3.452896368103972
+          },
+          {
+            "source": "cbd.s",
+            "entry": "poly_cbd1",
+            "percent": 1.6346678511094053
+          },
+          {
+            "source": "external/runtime",
+            "entry": "[unknown]",
+            "percent": 1.321953102009797
+          },
+          {
+            "source": "add.s",
+            "entry": "poly_triple",
+            "percent": 0.94246739652776
+          },
+          {
+            "source": "fips202.c",
+            "entry": "shake256",
+            "percent": 0.6922380108973405
+          },
+          {
+            "source": "/tmp/cckhOkdx.o",
+            "entry": "randombytes",
+            "percent": 0.39200030445653256
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero",
+            "percent": 0.2627210335231012
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero@plt",
+            "percent": 0.08340214484953522
+          },
+          {
+            "source": "kem.c",
+            "entry": "crypto_kem_keypair",
+            "percent": 0.07090006464693807
+          },
+          {
+            "source": "external/runtime",
+            "entry": "memcpy@plt",
+            "percent": 0.07089797818495501
+          },
+          {
+            "source": "/tmp/cc3eOFRb.o",
+            "entry": "main",
+            "percent": 0.025016679177092715
+          }
+        ]
+      },
+      "Encap": {
+        "sample_event": "cycles:u period 100003",
+        "sample_count": 115984,
+        "repetitions": [
+          {
+            "rep": 0,
+            "samples": 38661,
+            "pmu_per_operation": {
+              "cycles:u": 38745.31605,
+              "instructions:u": 103940.66104,
+              "ld_spec:u": 14556.29959,
+              "st_spec:u": 8626.98779,
+              "stall_backend:u": 8887.99209
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.1613770983678642,
+              "Hash/SHAKE": 71.23457748118258,
+              "Inverse NTT": 0.0025865859651845527,
+              "Basemul-add": 5.876723312899304,
+              "Forward NTT": 14.924601019114869,
+              "CBD sampling": 0.7552831018338894,
+              "Packing": 3.76089599337834,
+              "SOTP encode/decode": 0.6880318667390911,
+              "Benchmark RNG": 0.5276635368976488,
+              "Clear/memory runtime": 0.3103903158221464,
+              "Checked unpack": 0.757869687799074
+            }
+          },
+          {
+            "rep": 1,
+            "samples": 38657,
+            "pmu_per_operation": {
+              "cycles:u": 38681.65106,
+              "instructions:u": 103952.66093,
+              "ld_spec:u": 14556.73102,
+              "st_spec:u": 8627.50868,
+              "stall_backend:u": 8828.51845
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.1796052461391209,
+              "Hash/SHAKE": 71.17986393150012,
+              "Basemul-add": 5.810073207957162,
+              "Forward NTT": 14.8304317458675,
+              "Packing": 3.7845668313630134,
+              "Checked unpack": 0.6906899138577748,
+              "SOTP encode/decode": 0.778642936596218,
+              "Benchmark RNG": 0.6027368911193315,
+              "CBD sampling": 0.8459011304550277,
+              "Clear/memory runtime": 0.2974881651447344
+            }
+          },
+          {
+            "rep": 2,
+            "samples": 38666,
+            "pmu_per_operation": {
+              "cycles:u": 38676.54941,
+              "instructions:u": 103952.66074,
+              "ld_spec:u": 14556.34375,
+              "st_spec:u": 8625.19965,
+              "stall_backend:u": 8844.8994
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 1.0836393730926395,
+              "Hash/SHAKE": 71.33916102001758,
+              "Basemul-add": 5.875963378678943,
+              "Forward NTT": 14.951119846893912,
+              "Packing": 3.8224796979258264,
+              "SOTP encode/decode": 0.6879428955671649,
+              "Checked unpack": 0.5689753271608131,
+              "CBD sampling": 0.7758754461283816,
+              "Clear/memory runtime": 0.2974189210158796,
+              "Benchmark RNG": 0.5974240935188537
+            }
+          }
+        ],
+        "pmu_p50": {
+          "cycles:u": 38681.65106,
+          "instructions:u": 103952.66074,
+          "ld_spec:u": 14556.34375,
+          "st_spec:u": 8626.98779,
+          "stall_backend:u": 8844.8994
+        },
+        "components": {
+          "Hash/SHAKE": {
+            "percent": 71.2512008109001,
+            "rep_min": 71.17986393150012,
+            "rep_max": 71.33916102001758
+          },
+          "Forward NTT": {
+            "percent": 14.902050870625427,
+            "rep_min": 14.8304317458675,
+            "rep_max": 14.951119846893912
+          },
+          "Basemul-add": {
+            "percent": 5.854253299845135,
+            "rep_min": 5.810073207957162,
+            "rep_max": 5.876723312899304
+          },
+          "Packing": {
+            "percent": 3.7893141742223935,
+            "rep_min": 3.76089599337834,
+            "rep_max": 3.8224796979258264
+          },
+          "KEM glue / runtime / unresolved": {
+            "percent": 1.1415405725332082,
+            "rep_min": 1.0836393730926395,
+            "rep_max": 1.1796052461391209
+          },
+          "CBD sampling": {
+            "percent": 0.7923532261390996,
+            "rep_min": 0.7552831018338894,
+            "rep_max": 0.8459011304550277
+          },
+          "SOTP encode/decode": {
+            "percent": 0.718205899634158,
+            "rep_min": 0.6879428955671649,
+            "rep_max": 0.778642936596218
+          },
+          "Checked unpack": {
+            "percent": 0.6725116429392206,
+            "rep_min": 0.5689753271608131,
+            "rep_max": 0.757869687799074
+          },
+          "Benchmark RNG": {
+            "percent": 0.5759415071786113,
+            "rep_min": 0.5276635368976488,
+            "rep_max": 0.6027368911193315
+          },
+          "Clear/memory runtime": {
+            "percent": 0.30176580066092007,
+            "rep_min": 0.2974189210158796,
+            "rep_max": 0.3103903158221464
+          },
+          "Inverse NTT": {
+            "percent": 0.0008621953217281843,
+            "rep_min": 0,
+            "rep_max": 0.0025865859651845527
+          }
+        },
+        "files": {
+          "fips202.c": 71.20119363787279,
+          "ntt.s": 14.902913065947157,
+          "base.s": 5.854253299845135,
+          "pack.s": 4.461825817161613,
+          "cbd.s": 1.5105591257732576,
+          "external/runtime": 1.3570863718382844,
+          "/tmp/cckhOkdx.o": 0.5759415071786113,
+          "kem.c": 0.07846051100123047,
+          "symmetric.c": 0.05000717302730919,
+          "/tmp/cc3eOFRb.o": 0.007759490354613501
+        },
+        "entries": [
+          {
+            "source": "fips202.c",
+            "entry": "KeccakF1600_StatePermute",
+            "percent": 65.73747737981371
+          },
+          {
+            "source": "ntt.s",
+            "entry": "poly_ntt",
+            "percent": 14.902050870625427
+          },
+          {
+            "source": "base.s",
+            "entry": "poly_basemul_add",
+            "percent": 5.854253299845135
+          },
+          {
+            "source": "fips202.c",
+            "entry": "keccak_absorb.constprop.0",
+            "percent": 4.730855647258433
+          },
+          {
+            "source": "pack.s",
+            "entry": "poly_tobytes",
+            "percent": 3.7893141742223935
+          },
+          {
+            "source": "external/runtime",
+            "entry": "[unknown]",
+            "percent": 1.0053130413941918
+          },
+          {
+            "source": "cbd.s",
+            "entry": "poly_cbd1",
+            "percent": 0.7923532261390996
+          },
+          {
+            "source": "fips202.c",
+            "entry": "shake256",
+            "percent": 0.7328606108006493
+          },
+          {
+            "source": "cbd.s",
+            "entry": "poly_sotp_encode",
+            "percent": 0.718205899634158
+          },
+          {
+            "source": "pack.s",
+            "entry": "poly_frombytes",
+            "percent": 0.6725116429392206
+          },
+          {
+            "source": "/tmp/cckhOkdx.o",
+            "entry": "randombytes",
+            "percent": 0.5759415071786113
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero",
+            "percent": 0.27762495584550495
+          },
+          {
+            "source": "kem.c",
+            "entry": "crypto_kem_enc_derand",
+            "percent": 0.06638937497796667
+          },
+          {
+            "source": "external/runtime",
+            "entry": "memcpy@plt",
+            "percent": 0.049145245246521155
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "hash_h",
+            "percent": 0.035349272609014375
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero@plt",
+            "percent": 0.024140844815415126
+          },
+          {
+            "source": "kem.c",
+            "entry": "crypto_kem_enc",
+            "percent": 0.012071136023263821
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "hash_g",
+            "percent": 0.008622577721744382
+          },
+          {
+            "source": "/tmp/cc3eOFRb.o",
+            "entry": "main",
+            "percent": 0.007759490354613501
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "hash_f",
+            "percent": 0.006035322696550431
+          },
+          {
+            "source": "external/runtime",
+            "entry": "_IO_flush_all",
+            "percent": 0.0008622845366514042
+          },
+          {
+            "source": "ntt.s",
+            "entry": "poly_invntt_scale",
+            "percent": 0.0008621953217281843
+          }
+        ]
+      },
+      "Decap": {
+        "sample_event": "cycles:u period 100003",
+        "sample_count": 100484,
+        "repetitions": [
+          {
+            "rep": 0,
+            "samples": 33474,
+            "pmu_per_operation": {
+              "cycles:u": 33454.10471,
+              "instructions:u": 72244.66093,
+              "ld_spec:u": 9141.68306,
+              "st_spec:u": 5525.1834,
+              "stall_backend:u": 11158.56605
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 2.5243472545856482,
+              "Hash/SHAKE": 46.33148114954891,
+              "Forward NTT": 17.32986795722053,
+              "CBD sampling": 0.9738901834259425,
+              "SOTP encode/decode": 1.0246758678377248,
+              "Clear/memory runtime": 0.20314273764712915,
+              "Packing": 4.460178048634762,
+              "Base multiplication": 11.895799725159826,
+              "Centered mod3": 1.2009320666786163,
+              "Inverse NTT": 10.850212104917249,
+              "Checked unpack": 2.7095656330286193,
+              "Polynomial support": 0.49590727131505047
+            }
+          },
+          {
+            "rep": 1,
+            "samples": 33515,
+            "pmu_per_operation": {
+              "cycles:u": 33502.70599,
+              "instructions:u": 72244.66116,
+              "ld_spec:u": 9141.65972,
+              "st_spec:u": 5524.18781,
+              "stall_backend:u": 11122.76045
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 2.5570640011934955,
+              "Hash/SHAKE": 45.80635536327018,
+              "Packing": 4.48455915261823,
+              "Base multiplication": 11.985678054602417,
+              "Forward NTT": 17.56526928241086,
+              "Inverse NTT": 10.860808593167238,
+              "Checked unpack": 2.8345516932716692,
+              "CBD sampling": 1.008503655079815,
+              "Centered mod3": 1.2710726540355064,
+              "SOTP encode/decode": 0.9249589735939132,
+              "Polynomial support": 0.4923168730419215,
+              "Clear/memory runtime": 0.2088617037147546
+            }
+          },
+          {
+            "rep": 2,
+            "samples": 33495,
+            "pmu_per_operation": {
+              "cycles:u": 33460.95322,
+              "instructions:u": 72244.66112,
+              "ld_spec:u": 9141.81045,
+              "st_spec:u": 5524.1921,
+              "stall_backend:u": 11131.04702
+            },
+            "percent": {
+              "KEM glue / runtime / unresolved": 2.600388117629497,
+              "Forward NTT": 17.253321391252427,
+              "Centered mod3": 1.1852515300791162,
+              "Inverse NTT": 10.932975070906105,
+              "Base multiplication": 11.795790416480072,
+              "Checked unpack": 2.794446932377967,
+              "Packing": 4.463352739214808,
+              "CBD sampling": 0.9702940737423495,
+              "Hash/SHAKE": 46.275563516942825,
+              "Clear/memory runtime": 0.2477981788326616,
+              "Polynomial support": 0.5433646812957158,
+              "SOTP encode/decode": 0.9374533512464547
+            }
+          }
+        ],
+        "pmu_p50": {
+          "cycles:u": 33460.95322,
+          "instructions:u": 72244.66112,
+          "ld_spec:u": 9141.68306,
+          "st_spec:u": 5524.1921,
+          "stall_backend:u": 11131.04702
+        },
+        "components": {
+          "Hash/SHAKE": {
+            "percent": 46.13780000992063,
+            "rep_min": 45.80635536327018,
+            "rep_max": 46.33148114954891
+          },
+          "Forward NTT": {
+            "percent": 17.38281954362794,
+            "rep_min": 17.253321391252427,
+            "rep_max": 17.56526928241086
+          },
+          "Base multiplication": {
+            "percent": 11.892422732080771,
+            "rep_min": 11.795790416480072,
+            "rep_max": 11.985678054602417
+          },
+          "Inverse NTT": {
+            "percent": 10.881331922996864,
+            "rep_min": 10.850212104917249,
+            "rep_max": 10.932975070906105
+          },
+          "Packing": {
+            "percent": 4.469363313489266,
+            "rep_min": 4.460178048634762,
+            "rep_max": 4.48455915261823
+          },
+          "Checked unpack": {
+            "percent": 2.7795214195594182,
+            "rep_min": 2.7095656330286193,
+            "rep_max": 2.8345516932716692
+          },
+          "KEM glue / runtime / unresolved": {
+            "percent": 2.5605997911362133,
+            "rep_min": 2.5243472545856482,
+            "rep_max": 2.600388117629497
+          },
+          "Centered mod3": {
+            "percent": 1.2190854169310796,
+            "rep_min": 1.1852515300791162,
+            "rep_max": 1.2710726540355064
+          },
+          "CBD sampling": {
+            "percent": 0.9842293040827024,
+            "rep_min": 0.9702940737423495,
+            "rep_max": 1.008503655079815
+          },
+          "SOTP encode/decode": {
+            "percent": 0.9623627308926975,
+            "rep_min": 0.9249589735939132,
+            "rep_max": 1.0246758678377248
+          },
+          "Polynomial support": {
+            "percent": 0.5105296085508959,
+            "rep_min": 0.4923168730419215,
+            "rep_max": 0.5433646812957158
+          },
+          "Clear/memory runtime": {
+            "percent": 0.21993420673151512,
+            "rep_min": 0.20314273764712915,
+            "rep_max": 0.2477981788326616
+          }
+        },
+        "files": {
+          "fips202.c": 46.05520941834191,
+          "ntt.s": 28.264151466624803,
+          "base.s": 11.892422732080771,
+          "pack.s": 7.248884733048684,
+          "external/runtime": 2.1246959606980265,
+          "cbd.s": 1.9465920349753998,
+          "crepmod3.s": 1.2190854169310796,
+          "kem.c": 0.6498669358016431,
+          "add.s": 0.5105296085508959,
+          "symmetric.c": 0.08259059157873144,
+          "/tmp/cc3eOFRb.o": 0.0059711013680594045
+        },
+        "entries": [
+          {
+            "source": "fips202.c",
+            "entry": "KeccakF1600_StatePermute",
+            "percent": 41.59279952774529
+          },
+          {
+            "source": "ntt.s",
+            "entry": "poly_ntt",
+            "percent": 17.38281954362794
+          },
+          {
+            "source": "ntt.s",
+            "entry": "poly_invntt_scale",
+            "percent": 10.881331922996864
+          },
+          {
+            "source": "base.s",
+            "entry": "poly_basemul",
+            "percent": 6.848856695358428
+          },
+          {
+            "source": "base.s",
+            "entry": "poly_basemul_scale",
+            "percent": 5.043566036722344
+          },
+          {
+            "source": "pack.s",
+            "entry": "poly_tobytes",
+            "percent": 4.469363313489266
+          },
+          {
+            "source": "fips202.c",
+            "entry": "keccak_absorb.constprop.0",
+            "percent": 3.8075852692597354
+          },
+          {
+            "source": "pack.s",
+            "entry": "poly_frombytes",
+            "percent": 2.7795214195594182
+          },
+          {
+            "source": "external/runtime",
+            "entry": "[unknown]",
+            "percent": 1.8271350911689983
+          },
+          {
+            "source": "crepmod3.s",
+            "entry": "poly_crepmod3",
+            "percent": 1.2190854169310796
+          },
+          {
+            "source": "cbd.s",
+            "entry": "poly_cbd1",
+            "percent": 0.9842293040827024
+          },
+          {
+            "source": "cbd.s",
+            "entry": "poly_sotp_decode",
+            "percent": 0.9623627308926975
+          },
+          {
+            "source": "fips202.c",
+            "entry": "shake256",
+            "percent": 0.6548246213368834
+          },
+          {
+            "source": "kem.c",
+            "entry": "crypto_kem_dec",
+            "percent": 0.6498669358016431
+          },
+          {
+            "source": "add.s",
+            "entry": "poly_sub",
+            "percent": 0.5105296085508959
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero",
+            "percent": 0.19008119718960947
+          },
+          {
+            "source": "external/runtime",
+            "entry": "memcpy@plt",
+            "percent": 0.07762666279751282
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "hash_h",
+            "percent": 0.06368264701879404
+          },
+          {
+            "source": "external/runtime",
+            "entry": "explicit_bzero@plt",
+            "percent": 0.029853009541905638
+          },
+          {
+            "source": "symmetric.c",
+            "entry": "hash_g",
+            "percent": 0.01890794455993737
+          },
+          {
+            "source": "/tmp/cc3eOFRb.o",
+            "entry": "main",
+            "percent": 0.0059711013680594045
+          }
+        ]
+      }
+    }
+  }
+}

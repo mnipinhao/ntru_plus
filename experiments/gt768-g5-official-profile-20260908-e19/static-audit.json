@@ -1,0 +1,92 @@
+{
+  "inventory": {
+    "encap_frontend": {
+      "sub": 1,
+      "stp": 4,
+      "str": 1,
+      "ldr": 194,
+      "mov": 96,
+      "bl": 12,
+      "ldp": 4,
+      "add": 1
+    },
+    "loose_reducer": {
+      "ldr": 1,
+      "sqdmulh": 8,
+      "srshr": 8,
+      "mls": 8
+    },
+    "bitpack_core": {
+      "sshr": 8,
+      "and": 8,
+      "add": 8,
+      "trn1": 21,
+      "trn2": 21,
+      "shl": 6,
+      "ushr": 4,
+      "eor": 6,
+      "st1": 2
+    },
+    "checked_unpack": {
+      "sub": 1,
+      "stp": 4,
+      "ldr": 1,
+      "mov": 1,
+      "movi": 4,
+      "ld1": 24,
+      "trn2": 252,
+      "trn1": 252,
+      "ushr": 72,
+      "and": 96,
+      "shl": 48,
+      "eor": 48,
+      "umax": 99,
+      "umov": 97,
+      "str": 192,
+      "cmhs": 1,
+      "umaxv": 1,
+      "cmp": 1,
+      "cset": 1,
+      "ldp": 4,
+      "add": 1
+    }
+  },
+  "reciprocal9": {
+    "input": [
+      -32768,
+      32767
+    ],
+    "residual": [
+      -3291,
+      3291
+    ],
+    "canonical_exact_all_65536": true
+  },
+  "mod3": {
+    "checked_interval": [
+      -2135,
+      2135
+    ],
+    "different_count": 814,
+    "examples": {
+      "-1729": {
+        "GT": -1,
+        "Official": 0
+      },
+      "1728": {
+        "GT": 0,
+        "Official": 0
+      },
+      "1729": {
+        "GT": 1,
+        "Official": 0
+      },
+      "2135": {
+        "GT": -1,
+        "Official": 1
+      }
+    },
+    "centered_interval_equal": true
+  },
+  "decap_add_normalized_identical": true
+}
