@@ -1,0 +1,118 @@
+{
+  "experiment": "GT864-P44-ROUTE-CACHE-BORROWING-20260916",
+  "model": "phase-local borrowed route cache; exact collapse to 26 before every unchanged consumer",
+  "p24_route_per_top": {
+    "instructions": 285,
+    "source_loads": 61,
+    "routing_arithmetic": 224
+  },
+  "p41_route_per_top": {
+    "instructions": 320,
+    "source_loads": 76,
+    "routing_arithmetic": 244
+  },
+  "hard_gate": {
+    "max_source_loads": 61,
+    "max_route_instructions": 300
+  },
+  "search": {
+    "iterations_per_seed": 30000,
+    "seeds_per_capacity": 1
+  },
+  "results": [
+    {
+      "route_capacity_during_construction": 27,
+      "route_capacity_at_consumer": 26,
+      "output_order": [
+        26,
+        14,
+        50,
+        38,
+        32,
+        8,
+        20,
+        44,
+        52,
+        16,
+        46,
+        34,
+        2,
+        3,
+        39,
+        15,
+        27,
+        48,
+        45,
+        9,
+        21,
+        6,
+        30,
+        42,
+        18,
+        12,
+        24,
+        36,
+        0,
+        13,
+        22,
+        10,
+        49,
+        4,
+        28,
+        31,
+        40,
+        43,
+        25,
+        1,
+        19,
+        7,
+        33,
+        51,
+        37,
+        29,
+        53,
+        41,
+        11,
+        35,
+        5,
+        17,
+        47,
+        23
+      ],
+      "precedence_verified": true,
+      "route_per_top": {
+        "instructions": 306,
+        "source_loads": 70,
+        "routing_arithmetic": 236,
+        "peak_route_registers": 27,
+        "peak_boundary_route_registers": 26,
+        "borrowed_registers_live_at_consumer": 0,
+        "dropped_values_at_boundaries": 22,
+        "counts": {
+          "ext4": 14,
+          "ext6": 12,
+          "load": 70,
+          "trn1.2d": 26,
+          "trn1.4s": 41,
+          "trn1.8h": 35,
+          "trn2.2d": 28,
+          "trn2.4s": 39,
+          "trn2.8h": 41
+        }
+      },
+      "static_gate": {
+        "loads_at_most_61": false,
+        "instructions_at_most_300": false,
+        "consumer_boundary_at_most_26": true,
+        "borrowed_live_at_consumer_zero": true
+      },
+      "net_delta_vs_p24_complete_call": {
+        "instructions": -66,
+        "coefficient_loads": 18,
+        "stores": -54,
+        "vector_to_gpr_moves": -108
+      },
+      "trace_records": 360
+    }
+  ]
+}

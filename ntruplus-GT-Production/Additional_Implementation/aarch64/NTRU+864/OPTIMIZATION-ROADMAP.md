@@ -79,7 +79,34 @@ Status meanings:
 | P41 | Done—Rejected at exact boundary | Pair adjacent 12-byte Full records as overlapping Q/S/D stores while preserving P24 normalization, packing and wire ABI | Exact/no-spill/KAT/KEM pass and -38 instructions, but A-before-B routing adds 30 reads and Full boundary regresses 2.253 cycles; production remains P24 |
 | P42 | Done—Rejected on Pi 5 | Replace each ToBytes `SSHR+AND+ADD` sign correction with `CMLT+MLS` while freezing P24 routing, packing and memory ABI | Exact/no-spill/KAT/KEM pass and -108 instructions/call, but multiply-pipeline pressure lowers IPC; Full/Small regress 7.438/14.774 cycles |
 | P43 | Done—Profiler checkpoint | Re-run exact current GT production versus selected SUPERCOP 20260831 Official with clean KEM and component/event profiling | All correctness/instrumentation gates pass; GT wins Keygen/Encaps/Decaps by 1170.500/1411.075/852.100 cycles; remaining positive gaps are Full ToBytes and fused Inverse-to-ternary |
-| P44 | Next—Precedence-aware route-cache borrowing | Retain P41's overlapping stores but remove the A-before-B schedule's coefficient reloads by borrowing a transient 27th route register between consumers | Before Slothy: at most 61 coefficient loads and 300 route instructions/top, no spill/scratch/new pass; then exact Full boundary must improve before KEM promotion |
+| P44 | Done—Rejected statically | Retain P41's overlapping Q/S/D stores and borrow `v29` (then phase-local `v30-v31`) while routing; every consumer boundary returns to the exact P24 26-register route-cache contract | Best instruction/load Pareto points were 306/70 and 311/66 per top, missing the required 300/61 gate even in an optimistic no-relocation-cost model; no assembly or Slothy run was warranted |
+| P45 | Next—Two-record joint packing | Replace P41's independently packed A/B records with one exact two-record packing DAG and Q/D-granularity stores | Static Full instruction/read ledger must beat both P24 and the best P44 candidate, preserve 24 exact output bytes and need no scratch/spill before Slothy |
+| P46 | Deferred—Full normalization DAG | Search a new arbitrary-signed-int16 normalization DAG under the actual A76 multiply/load/permute pipeline constraints | Must preserve the Full contract for every signed int16, delete real critical-path work rather than only source instructions, and beat P24 at the exact Full boundary |
+| P47 | Deferred—Decaps Full-ToBytes-to-compare | Let the Decaps re-encryption serializer feed the ciphertext comparison consumer directly without materializing an avoidable generic boundary | Exact valid/tampered/malformed rejection behavior, constant-time comparison and wipe policy must pass; full Decaps cycles are the promotion metric |
+| P48 | Deferred—Encaps Full-ToBytes-to-SHAKE | Let the Encaps Full serializer feed the SHAKE consumer in its required byte order and granularity | Exact ciphertext/transcript/KAT bytes and cleanup must pass; full Encaps cycles are the promotion metric |
+| P49 | Deferred—Keygen Full normalization | Specialize only the Keygen Full producer/serializer boundary using its proven producer range | Re-close the exact Keygen producer range, preserve wire bytes/KAT/cleanup and improve full Keygen; no contract narrowing may leak into generic Full ToBytes |
+
+## ToBytes priority policy
+
+Keep two ordered tracks because a faster generic serializer and the fastest
+complete KEM do not necessarily select the same boundary.
+
+For improving the reusable production ToBytes entry point, use this order:
+
+1. P44 route-cache borrowing plus overlapping stores.
+2. P45 two-record joint packing plus Q/D-granularity stores.
+3. P46 a new Full normalization DAG.
+
+For improving complete KEM operations as quickly as possible, use this order:
+
+1. P47 Decaps Full-ToBytes-to-compare.
+2. P48 Encaps Full-ToBytes-to-SHAKE.
+3. P44 generic serializer work.
+4. P49 Keygen Full normalization.
+
+P44 is now closed at its static gate, so P45 is the next generic serializer
+experiment. P47--P49 remain separately recorded and must not be mixed into a
+generic same-boundary result.
 
 ## Fixed facts and non-tasks
 
@@ -100,6 +127,19 @@ Status meanings:
 ## Change log
 
 ### 2026-09-16
+
+- Completed and statically rejected P44 without changing production. The exact
+  P24 Full top region and contracts were frozen before search. A phase-aware
+  model allowed 27--29 route registers during construction but forced every
+  consumer boundary back into `v0-v25`, so `v29-v31` were genuinely available
+  to unchanged normalization and packing. Across 300,000 precedence-preserving
+  mutations, the best instruction-first point was 306 route instructions and
+  70 coefficient loads/top; the best load-first point was 311/66. Both miss the
+  predeclared 300/61 gate, and the model does not yet charge possible physical
+  relocation, so symbolic assembly and Slothy were correctly skipped. P41's
+  reloads require cross-consumer retention, not merely transient route space.
+  Evidence: `experiments/gt864-p44-route-cache-borrowing/`. P45 is now the next
+  generic serializer gate.
 
 - Completed P43, a measurement-only exact-production profiler checkpoint.
   Commit `34d2c758` was archived and compared with selected SUPERCOP 20260831

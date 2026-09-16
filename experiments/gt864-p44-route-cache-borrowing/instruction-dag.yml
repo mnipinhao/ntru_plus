@@ -1,0 +1,41 @@
+experiment_id: GT864-P44-ROUTE-CACHE-BORROWING-20260916
+inputs:
+  - name: source_q_0_to_53
+    source: 54 fixed public input Q-vector coordinates for one 432-coefficient top
+  - name: route_constants
+    source: v26 pack index, v27 q3457, v28 reciprocal9
+outputs:
+  - name: wire_records_0_to_53
+    destination: 54 exact 12-byte records at fixed public offsets
+nodes:
+  - name: route_dag
+    operations: [LDR Q, EXT, TRN1 8H, TRN2 8H, TRN1 4S, TRN2 4S, TRN1 2D, TRN2 2D]
+    dependencies: exact globally interned P24 coordinate DAG
+  - name: borrow_collapse
+    operations: [cache eviction, optional ORR relocation]
+    dependencies: route_dag
+    constraint: v29-v31 may hold route nodes only between consumers; before every normalization the completed output and all retained route nodes occupy v0-v25 only
+  - name: normalize_full
+    operations: [SQRDMULH, MLS, SSHR, AND, ADD]
+    dependencies: borrow_collapse, q3457, reciprocal9
+  - name: pack12
+    operations: [UZP1, UZP2, SHL, ORR, USHR, TBL2]
+    dependencies: normalize_full, pack_index
+  - name: paired_store
+    operations: [A STUR Q, B STUR S, B EXT 4, B STUR D]
+    dependencies: pack12
+ordering_constraints:
+  - each even A output precedes its adjacent odd B output
+  - each output is normalized and packed immediately after its route root is completed
+  - borrowed route registers are empty at every consumer boundary
+  - stores use the fixed public wire offsets and B overwrites only A's temporary bytes 12 through 15
+commutative_or_reorderable:
+  - independent route nodes and independent record consumers may be reordered subject to A-before-B
+range_changes:
+  - routing is a bit-exact lane permutation
+  - Full normalization maps arbitrary signed int16 to 0 through 3456
+  - packing emits the exact canonical 12-bit byte image
+memory_accesses:
+  - at most 61 aligned coefficient Q loads per top
+  - exactly 27 Q plus 27 S plus 27 D public stores per top
+  - no coefficient scratch, spill or additional pass

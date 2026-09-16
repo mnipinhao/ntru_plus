@@ -1,0 +1,25 @@
+experiment_id: GT864-P44-ROUTE-CACHE-BORROWING-20260916
+date: 2026-09-16
+mode: existing_region_replacement
+state: static_checks
+repo_probe:
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  target: cortex_a76
+  production_revision: 9f3fef6bf2e6ab03741524555f72063c56d99049
+  production_source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
+baseline:
+  extracted_region: baseline-region.S
+  source_hash: ea76a08d8b5f60bbc9da4412a8deb4f5e7367ecf
+  region_hash: edf7c137afea02501145dded726988667c328b85
+  static_instructions_per_top: 1041
+  coefficient_loads_per_top: 61
+static_search:
+  mutations_evaluated: 300000
+  capacities_checked: [26, 27, 28, 29]
+  best_instruction_point: 306 route instructions and 70 coefficient loads per top at capacity 27
+  best_load_point: 311 route instructions and 66 coefficient loads per top at capacity 27
+  hard_gate: failed; required at most 300 route instructions and at most 61 coefficient loads
+candidate_status: reject
+promotion: false
+decision: stop before symbolic assembly and Slothy because even the optimistic phase-aware cache model misses both static gates

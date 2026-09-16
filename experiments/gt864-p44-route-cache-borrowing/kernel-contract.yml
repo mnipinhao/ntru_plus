@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: reject
+kernel:
+  id: gt864_p44_route_cache_borrowing
+  name: P44 phase-aware route-cache borrowing Full ToBytes top
+  source: candidate-full.sym.S
+  scheme: NTRU+864 GT
+  operation: FR0 routing, Full normalization, 12-bit packing and overlapping paired wire stores
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: phase-aware constructive allocation then bounded timing windows
+  driver: optimize.py
+  expected_outputs: [candidate-full.opt.S, slothy-full.log]
+  allow_spills: false
+region:
+  start_label: p44_top_full_slothy_start
+  end_label: p44_top_full_slothy_end
+  expected_instruction_count: 1002
+  live_in: [x0 output top base, x1 FR0 input top base, v26 pack index, v27 q3457, v28 reciprocal9]
+  live_out: [648 exact canonical wire bytes at x0]
+abi:
+  inputs: [x0, x1]
+  outputs: [memory x0 through x0 plus 647]
+  clobbers: [x5, x6, x7, x8, v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x5, x6, x7, x8]
+  fixed_vector_registers: [v26, v27, v28]
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact P24 interned route DAG with P41 A-before-B precedence, transient route slots v29-v31 and mandatory collapse to v0-v25 before each unchanged Full consumer
+layout:
+  input_representation: unchanged production P24 FR0 tile-major signed int16
+  output_representation: unchanged Official canonical 12-bit wire order
+  vector_lanes: signed 8x16 before packing; each output is one wire-adjacent eight-coefficient record
+  packing: unchanged six-instruction P24 pack; paired A Q store followed by B S overwrite plus EXT and D store
+memory_contract:
+  loads: [at most 61 coefficient Q loads per top, one public pack-index load outside the region]
+  stores: [27 fixed-offset Q stores, 27 fixed-offset S stores, 27 fixed-offset D stores per top]
+  aliasing: unchanged disjoint serializer input and output
+  alignment: aligned coefficient Q loads; public unscaled output offsets
+  public_offsets_only: true
+  pointer_updates: [none inside region]
+constant_contract:
+  constants: [unchanged q3457, reciprocal9, exact P24 pack index]
+  modulus: 3457
+  representation: unchanged FR0 to canonical unsigned 0 through 3456
+  reduction_method: unchanged Full Algorithm-10 b=1 Barrett and sign correction
+range_contract:
+  input_ranges: [arbitrary signed int16]
+  intermediate_ranges: [unchanged P24 route and Full normalization]
+  output_ranges: [exact unchanged 648-byte top wire image]
+  narrowing_points: [unchanged 12-bit byte packing]
+constant_time_contract:
+  secret_inputs: [FR0 coefficient lanes]
+  public_inputs: [pointers, fixed coordinate map and pack index]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: exact-byte differential plus canary input-immutability AAPCS wipe KAT and malformed rejection
+  full_path_benchmark_command: paired Pi5 exact Full ToBytes then Keygen Encaps Decaps PMU
+  benchmark_metric: cycles
+  lower_is_better: true

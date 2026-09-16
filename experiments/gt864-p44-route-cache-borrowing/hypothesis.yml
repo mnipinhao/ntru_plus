@@ -1,0 +1,11 @@
+experiment_id: GT864-P44-ROUTE-CACHE-BORROWING-20260916
+action: optimize-register-pressure
+primary_bottleneck: P41 A-before-B routing reloads under the permanent 26-register cache cap
+observation: P41 saves 54 terminal instructions per top but adds 35 route instructions and 15 coefficient loads per top; its exact Full boundary is 2.253 cycles slower than P24
+hypothesis: during route construction v29 and possibly v30-v31 can temporarily cache route nodes, provided every output-consume boundary first collapses the cache back into v0-v25 and frees normalization/packing temporaries
+exact_proposed_change: preserve P41 A-before-B output precedence and Q/S/D stores; replace its fixed-capacity route search with a phase-aware 26-plus-borrowed cache whose borrowed slots cannot cross a normalization/packing consumer boundary
+expected_static_effect: no more than 61 coefficient loads and 300 total route instructions per top, yielding at least 78 fewer complete-call instructions than P24 after the 108 terminal-instruction saving
+expected_performance_effect: remove P41's read-pressure regression while retaining fewer vector-to-GPR moves and stores
+expected_register_pressure_effect: route peak may reach 27-29 vectors, but is exactly at most 26 immediately before every consumer; v26-v28 remain fixed and v29-v31 are returned before normalization/packing
+correctness_or_range_impact: none; P24 routing identities, Full normalization, packing, exact wire bytes, memory-pass count and public offsets remain unchanged
+falsifying_measurement: every exact phase-aware schedule exceeds 61 coefficient loads or 300 route instructions per top, needs a borrowed value across a consumer, spills, or fails exact-byte equivalence
