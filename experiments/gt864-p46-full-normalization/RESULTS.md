@@ -1,12 +1,9 @@
 # P46 — Full normalization DAG
 
-P46 is complete as a **promotion candidate**, but it is not automatically
-promoted.  The exact Pi 5 boundary and every full-KEM caller improve; the
-Cortex-A76 Slothy proxy moves in the opposite direction, so the canonical
-promotion scorer returns `candidate`, not `promote`.
-
-Production therefore remains P24 until that proxy mismatch is explicitly
-accepted or a schedule with a non-regressing Slothy score is found.
+P46 is complete and **promoted for Full ToBytes only**.  The exact Pi 5
+boundary and every full-KEM caller improve.  The Cortex-A76 Slothy proxy moves
+in the opposite direction; the user explicitly approved that recorded
+broader-full-path tradeoff on 2026-09-16.  Small remains the exact P24 kernel.
 
 ## Candidate
 
@@ -75,8 +72,9 @@ unthrottled and ended at 60.4 C.
 ## Decision
 
 P46 passes algebra, range, allocation, assembly, exact bytes, KAT, malformed
-input, object audit and target-silicon performance.  It does not pass the
-current automatic Slothy promotion condition because `1562 > 1495`.
-`candidate-score.yml` records this disagreement without changing either
-measurement.  Promotion needs an explicit proxy override or a new schedule
-that removes the modeled regression.
+input, object audit and target-silicon performance.  The automatic scorer does
+not encode a worse-cycle override, so `candidate-score.yml` and
+`promotion-report.yml` explicitly preserve both the `1562 > 1495` proxy result
+and the user's approval.  Production contains the exact Pi-tested scheduled
+Full source under the existing public symbol; no source instruction or timing
+number was altered to manufacture parity.

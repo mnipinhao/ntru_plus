@@ -1,0 +1,30 @@
+candidate:
+  id: gt864_p46_ushr_mla_full_normalization
+  status: promote
+  approved_by: user on 2026-09-16
+  production_source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
+  promoted_source_sha256: f7997129031e9996caba08ce28e6b7459bc67d6fe94b9450a4cf68fc337108f6
+contract:
+  external_preserved: true
+  approved_change: normalization lowering SSHR AND ADD to exact USHR MLA
+correctness:
+  exhaustive_signed_int16: pass
+  exact_wire_bytes: pass
+  kat: pass
+  malformed_ciphertext: pass
+  no_spill: pass
+slothy:
+  status: pass
+  baseline_expected_cycles: 1495
+  candidate_expected_cycles: 1562
+  override: explicitly approved broader full-path tradeoff; measured regression remains recorded
+pi5:
+  root: /home/pi/supercop-20260831
+  full_tobytes_cycles: [1395.125, 1386.7615]
+  keygen_paired_delta_cycles: -13.5
+  encaps_paired_delta_cycles: -13.65
+  decaps_paired_delta_cycles: -5.45
+  retired_instructions_per_full_call: -108
+production:
+  full: P46 exact Pi-tested scheduled candidate
+  small: unchanged P24

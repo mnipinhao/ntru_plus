@@ -1,5 +1,21 @@
 # K1 production integration evidence
 
+## P46 Full normalization promotion — 2026-09-16
+
+Only Full ToBytes changes.  Each post-Algorithm-10 residual correction changes
+from `SSHR+AND+ADD` to the exhaustive signed-int16 identity `USHR #15; MLA q`;
+Small remains exact P24.  The promoted source is the exact scheduled assembly
+used by the Pi 5 candidate package, renamed only to the existing public symbol.
+
+Exhaustive arithmetic, exact wire bytes, 18/18 no-spill Slothy windows, object
+audit, KAT and malformed-ciphertext gates pass.  Full changes 1395.125 to
+1386.762 cycles and retires exactly 108 fewer instructions/call.  Across 252
+observations, Keygen/Encaps/Decaps improve by 13.500/13.650/5.450 paired-median
+cycles.  The A76 Slothy proxy regresses 1495 to 1562 modeled cycles; the user
+explicitly approved promotion on the broader target-silicon evidence without
+altering that recorded result.  Complete evidence is in
+`experiments/gt864-p46-full-normalization/`.
+
 ## P27 consumer-oriented I16 lane-basis gate — 2026-09-14
 
 P27 changes no production source.  Its checker exhausts all 15 perfect

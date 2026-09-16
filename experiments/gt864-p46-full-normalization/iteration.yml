@@ -1,7 +1,7 @@
 experiment_id: GT864-P46-FULL-NORMALIZATION-20260916
 date: 2026-09-16
 mode: existing_region_replacement
-state: score_candidate
+state: iteration_or_promote
 repo_probe:
   slothy_root: /Users/chenpinhao/slothy
   interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
@@ -11,6 +11,6 @@ baseline:
   source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
   extracted_region: baseline-region.S
   static_instructions_per_top: 1041
-candidate_status: candidate
-promotion: false
-decision: target silicon wins at the exact Full boundary and all KEM callers, but canonical promotion is blocked by the 1495 to 1562 Slothy proxy regression
+candidate_status: promote
+promotion: true
+decision: user explicitly approved the documented 1495 to 1562 Slothy proxy regression because exact Pi5 Full and all KEM callers improve; exact Pi-tested Full source promoted and Small unchanged

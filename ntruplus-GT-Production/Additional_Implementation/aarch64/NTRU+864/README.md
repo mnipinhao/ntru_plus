@@ -4,7 +4,15 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion is P24: Full and Small ToBytes now use P23's
+Latest production promotion is P46: Full ToBytes uses P24's globally interned
+rotation/transpose DAG with the exact two-instruction `USHR+MLA` residual
+canonicalization; Small remains P24. The Full candidate removes 108 retired
+instructions/call and improves the exact Pi 5 boundary by 8.364 cycles.
+Keygen/Encaps/Decaps improve by 13.500/13.650/5.450 paired-median cycles. The
+user explicitly approved this target-silicon promotion despite the preserved
+Slothy proxy regression from 1495 to 1562 modeled cycles.
+
+P24 established the underlying Full and Small ToBytes layout: both use P23's
 globally interned rotation/transpose DAG and accepted three-output schedules.
 The kernels keep the P18 FR0/wire-byte ABI and no-coefficient-scratch contract,
 but retire 194 fewer instructions and six fewer reads per call.  Against P18,

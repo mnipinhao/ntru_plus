@@ -1,6 +1,6 @@
 candidate:
   id: gt864_p46_ushr_mla_full_normalization
-  status: candidate
+  status: promote
   mode: existing_region_replacement
 
 contract:
@@ -19,7 +19,8 @@ slothy:
   status: pass
   baseline_expected_cycles: 1495
   candidate_expected_cycles: 1562
-  parity_justification:
+  parity_justification: user explicitly approved the worse Slothy proxy on 2026-09-16 because exact Pi5 Full and all three complete KEM callers improve
+  worse_cycle_approval: user on 2026-09-16; preserve measured 1495 to 1562 proxy regression and promote on reproducible target-silicon full-path evidence
   log_json: slothy-full-g3.json
 
 benchmark:
@@ -32,5 +33,5 @@ benchmark:
   candidate: 1386.7615
 
 decision:
-  reason: Pi5 exact boundary and all three full-KEM callers improve, but the canonical promotion scorer correctly withholds promote because the Cortex-A76 proxy worsens from 1495 to 1562 modeled cycles
-  next_iteration: require explicit approval to override the proxy mismatch before production replacement, or find a schedule whose Slothy score is no worse than P24
+  reason: user approved the documented Slothy proxy override after exact Pi5 Full and all three full-KEM callers improved with unchanged correctness and memory contracts
+  next_iteration: promote the exact Pi-tested candidate as Full only; keep Small unchanged
