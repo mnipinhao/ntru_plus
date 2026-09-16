@@ -1,0 +1,26 @@
+experiment_id: GT864-P46-FULL-NORMALIZATION-20260916
+inputs:
+  - {name: routed_x, range: signed int16}
+  - {name: q, value: 3457}
+  - {name: reciprocal, value: 9}
+outputs:
+  - {name: canonical_x, range: 0 through 3456}
+nodes:
+  - {name: quotient, operation: SQRDMULH t x reciprocal, dependencies: [routed_x, reciprocal]}
+  - {name: residual, operation: MLS x t q, dependencies: [routed_x, quotient, q]}
+  - {name: sign_bit, operation: USHR bit residual 15, dependencies: residual}
+  - {name: canonical, operation: MLA residual bit q, dependencies: [residual, sign_bit, q]}
+  - {name: frozen_pack_store, operation: unchanged P24 UZP SHL ORR USHR TBL D MOV W, dependencies: canonical}
+identity:
+  - nonnegative residual gives sign_bit zero and leaves residual unchanged
+  - negative residual gives sign_bit one and adds exactly q
+ordering_constraints:
+  - quotient precedes residual; residual precedes sign_bit and canonical
+  - route pack stores and public offsets remain byte-for-byte unchanged
+range_changes:
+  - Algorithm-10 residual is negative 3291 through 3291
+  - USHR produces zero or one
+  - MLA produces zero through 3456 without int16 overflow
+memory_accesses:
+  - exactly unchanged P24 loads and stores
+  - no scratch spill or new pass

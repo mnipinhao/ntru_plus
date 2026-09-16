@@ -1,0 +1,27 @@
+experiment_id: GT864-P45-TWO-RECORD-PACK-20260916
+inputs:
+  - {name: source_q_0_to_53, source: fixed FR0 coordinates}
+  - {name: q_and_reciprocal, source: q3457 and reciprocal9}
+  - {name: joint_indices, source: two fixed TBL2 index vectors}
+outputs:
+  - {name: wire_pair_0_to_26, destination: exact 24-byte adjacent records}
+nodes:
+  - {name: route_A_B, operations: [LDR Q, EXT, TRN1, TRN2], dependencies: exact interned P24 route DAG}
+  - {name: normalize_A_B, operations: [two copies of SQRDMULH MLS SSHR AND ADD], dependencies: [route_A_B, q_and_reciprocal]}
+  - {name: even_odd, operations: [UZP1, UZP2], dependencies: normalize_A_B}
+  - {name: pair_words, operations: [SHL, ORR, USHR], dependencies: even_odd}
+  - {name: byte_outputs, operations: [TBL2 index0, TBL2 index1], dependencies: [pair_words, joint_indices]}
+  - {name: final_stores, operations: [STR Q, STR D], dependencies: byte_outputs}
+ordering_constraints:
+  - both wire-adjacent roots remain live until their joint consumer
+  - stores emit A bytes 0 through 11 followed by B bytes 0 through 11
+  - table source groups must allocate consecutively
+  - all addresses and pair order are public
+range_changes:
+  - routing is bit-exact
+  - Full normalization maps signed int16 to 0 through 3456
+  - joint packing is an exact byte permutation
+memory_accesses:
+  - no coefficient scratch spill or new pass
+  - route loads must pass the at-most-61 gate
+  - exactly 27 Q and 27 D output stores per top

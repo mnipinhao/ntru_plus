@@ -1,0 +1,48 @@
+mode: existing_region_replacement
+baseline_status: extracted
+baseline:
+  id: gt864_p24_full_tobytes_top
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
+  extracted_region: baseline-region.S
+  function: p24_top_full
+  start_label: p24_top_full_slothy_start
+  end_label: p24_top_full_slothy_end
+  source_commit: ba6bc7010f357da68909cc2ccddd9570658bab03
+region:
+  instruction_count: 1041
+  live_in: [x0 output top base, x1 FR0 input top base, v26 pack index, v27 q3457, v28 reciprocal9]
+  live_out: [648 exact canonical wire bytes at x0]
+  clobbers: [x9, v0-v25, v29-v31]
+abi:
+  inputs: [x0, x1]
+  outputs: [memory x0 through x0 plus 647]
+  concrete_gprs_allowed: [x0, x1, x5, x6, x7, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+  reserved_registers: [x18-x30, sp]
+memory_contract:
+  loads: [61 coefficient Q loads]
+  stores: [54 D and 54 W stores]
+  aliasing: disjoint input and output
+  alignment: unchanged production alignment
+  public_offsets_only: true
+  pointer_updates: [none]
+constant_contract:
+  constants: [pack index, q3457, reciprocal9]
+  modulus: 3457
+  representation: signed int16 FR0 to canonical 12-bit wire bytes
+  reduction_method: Algorithm-10 b=1 then SSHR AND ADD
+range_contract:
+  input_ranges: [arbitrary signed int16]
+  intermediate_ranges: [Barrett residual negative 3291 through 3291]
+  output_ranges: [canonical 0 through 3456]
+  narrowing_points: [12-bit packing]
+constant_time_contract:
+  secret_inputs: [FR0 lanes]
+  public_inputs: [pointers and fixed map]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+baseline_cost:
+  static_instruction_count: 1041
+  slothy_expected_cycles: 1495
+  full_path_benchmark: 1393.617 cycles from P42 paired campaign
+  benchmark_command: experiments/gt864-p42-cmlt-mls-canonicalization/run_pi5.py

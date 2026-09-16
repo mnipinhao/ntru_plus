@@ -1,0 +1,36 @@
+candidate:
+  id: gt864_p46_ushr_mla_full_normalization
+  status: candidate
+  mode: existing_region_replacement
+
+contract:
+  preserved: false
+  approved_changes: true
+  changed_fields: [constant_contract.reduction_method]
+  approval_note: exact exhaustive USHR plus MLA replacement for SSHR AND ADD; public ABI, memory traffic, output bytes, bounds and constant-time behavior are unchanged
+
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+
+slothy:
+  status: pass
+  baseline_expected_cycles: 1495
+  candidate_expected_cycles: 1562
+  parity_justification:
+  log_json: slothy-full-g3.json
+
+benchmark:
+  status: pass
+  command: python3 run_pi5.py --execute
+  metric: exact Full ToBytes cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.0
+  baseline: 1395.125
+  candidate: 1386.7615
+
+decision:
+  reason: Pi5 exact boundary and all three full-KEM callers improve, but the canonical promotion scorer correctly withholds promote because the Cortex-A76 proxy worsens from 1495 to 1562 modeled cycles
+  next_iteration: require explicit approval to override the proxy mismatch before production replacement, or find a schedule whose Slothy score is no worse than P24

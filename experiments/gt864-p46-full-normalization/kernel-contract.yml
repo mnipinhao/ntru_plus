@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: candidate
+kernel:
+  id: gt864_p46_ushr_mla_full_normalization
+  name: P46 USHR plus MLA Full canonicalization
+  source: candidate-full.sym.S
+  scheme: NTRU+864 GT
+  operation: frozen P24 Full ToBytes with two-instruction residual canonicalization
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: constructive P23 allocation then bounded fixed-allocation timing
+  driver: optimize.py
+  expected_outputs: [candidate-full.g3.opt.S, slothy-full-g3.log]
+  allow_spills: false
+region:
+  start_label: p23_top_full_slothy_start
+  end_label: p23_top_full_slothy_end
+  expected_instruction_count: 987
+  live_in: [x0, x1, v26 pack index, v27 q3457, v28 reciprocal9]
+  live_out: [648 exact canonical wire bytes at x0]
+abi:
+  inputs: [x0, x1]
+  outputs: [memory x0 through x0 plus 647]
+  clobbers: [x2, x5, x6, x7, x8, x9, v0-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x5, x6, x7, x8, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+  reserved_registers: [v26, v27, v28, v29, v30, v31, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact P24 DAG with only SSHR AND ADD replaced by USHR MLA
+layout:
+  input_representation: unchanged P24 FR0 signed int16
+  output_representation: unchanged Official canonical wire bytes
+  vector_lanes: signed 8x16 before canonicalization
+  packing: unchanged P24 TBL2 and D plus W stores
+memory_contract:
+  loads: [exactly P24 coefficient and pack-index loads]
+  stores: [exactly P24 D and W stores]
+  aliasing: unchanged disjoint input and output
+  alignment: unchanged
+  public_offsets_only: true
+  pointer_updates: [unchanged]
+constant_contract:
+  constants: [unchanged q3457 reciprocal9 and pack index]
+  modulus: 3457
+  representation: unchanged FR0 to canonical unsigned 0 through 3456
+  reduction_method: Algorithm-10 followed by USHR sign-bit and MLA q
+range_contract:
+  input_ranges: [arbitrary signed int16]
+  intermediate_ranges: [Barrett residual negative 3291 through 3291]
+  output_ranges: [canonical 0 through 3456 and exact wire bytes]
+  narrowing_points: [unchanged 12-bit packing]
+constant_time_contract:
+  secret_inputs: [FR0 lanes]
+  public_inputs: [pointers and fixed map]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: exhaustive signed-int16 identity plus exact route byte differential and arm64 assembly
+  full_path_benchmark_command: paired Pi5 exact Full ToBytes then Keygen Encaps Decaps PMU
+  benchmark_metric: cycles retired instructions IPC
+  lower_is_better: true

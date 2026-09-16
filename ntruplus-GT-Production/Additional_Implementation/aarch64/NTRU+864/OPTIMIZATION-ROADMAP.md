@@ -80,8 +80,8 @@ Status meanings:
 | P42 | Done—Rejected on Pi 5 | Replace each ToBytes `SSHR+AND+ADD` sign correction with `CMLT+MLS` while freezing P24 routing, packing and memory ABI | Exact/no-spill/KAT/KEM pass and -108 instructions/call, but multiply-pipeline pressure lowers IPC; Full/Small regress 7.438/14.774 cycles |
 | P43 | Done—Profiler checkpoint | Re-run exact current GT production versus selected SUPERCOP 20260831 Official with clean KEM and component/event profiling | All correctness/instrumentation gates pass; GT wins Keygen/Encaps/Decaps by 1170.500/1411.075/852.100 cycles; remaining positive gaps are Full ToBytes and fused Inverse-to-ternary |
 | P44 | Done—Rejected statically | Retain P41's overlapping Q/S/D stores and borrow `v29` (then phase-local `v30-v31`) while routing; every consumer boundary returns to the exact P24 26-register route-cache contract | Best instruction/load Pareto points were 306/70 and 311/66 per top, missing the required 300/61 gate even in an optimistic no-relocation-cost model; no assembly or Slothy run was warranted |
-| P45 | Next—Two-record joint packing | Replace P41's independently packed A/B records with one exact two-record packing DAG and Q/D-granularity stores | Static Full instruction/read ledger must beat both P24 and the best P44 candidate, preserve 24 exact output bytes and need no scratch/spill before Slothy |
-| P46 | Deferred—Full normalization DAG | Search a new arbitrary-signed-int16 normalization DAG under the actual A76 multiply/load/permute pipeline constraints | Must preserve the Full contract for every signed int16, delete real critical-path work rather than only source instructions, and beat P24 at the exact Full boundary |
+| P45 | Done—Rejected statically | Replace P41's independently packed A/B records with one exact two-record packing DAG and Q/D-granularity stores | Exact nine-instruction joint packing saves 243 instructions/top, but simultaneous A/B routing needs 121 coefficient loads and 384 route instructions/top; it fails the 61-load/300-instruction gate before assembly |
+| P46 | Done—Promotion candidate | Replace each Full-only `SSHR+AND+ADD` correction with the exact `USHR+MLA` sign-bit identity; freeze Small | Exhaustive identity, exact bytes, no-spill allocation, KAT/malformed and Pi 5 pass; Full saves 8.364 cycles and every KEM caller wins with -108 instructions, but Slothy regresses 1495→1562, so automatic promotion is withheld pending explicit proxy override |
 | P47 | Deferred—Decaps Full-ToBytes-to-compare | Let the Decaps re-encryption serializer feed the ciphertext comparison consumer directly without materializing an avoidable generic boundary | Exact valid/tampered/malformed rejection behavior, constant-time comparison and wipe policy must pass; full Decaps cycles are the promotion metric |
 | P48 | Deferred—Encaps Full-ToBytes-to-SHAKE | Let the Encaps Full serializer feed the SHAKE consumer in its required byte order and granularity | Exact ciphertext/transcript/KAT bytes and cleanup must pass; full Encaps cycles are the promotion metric |
 | P49 | Deferred—Keygen Full normalization | Specialize only the Keygen Full producer/serializer boundary using its proven producer range | Re-close the exact Keygen producer range, preserve wire bytes/KAT/cleanup and improve full Keygen; no contract narrowing may leak into generic Full ToBytes |
@@ -93,9 +93,10 @@ complete KEM do not necessarily select the same boundary.
 
 For improving the reusable production ToBytes entry point, use this order:
 
-1. P44 route-cache borrowing plus overlapping stores.
-2. P45 two-record joint packing plus Q/D-granularity stores.
-3. P46 a new Full normalization DAG.
+1. P44 route-cache borrowing plus overlapping stores — rejected statically.
+2. P45 two-record joint packing plus Q/D-granularity stores — rejected statically.
+3. P46 a new Full normalization DAG — target-silicon winner, pending explicit
+   Slothy-proxy override before production promotion.
 
 For improving complete KEM operations as quickly as possible, use this order:
 
@@ -104,8 +105,10 @@ For improving complete KEM operations as quickly as possible, use this order:
 3. P44 generic serializer work.
 4. P49 Keygen Full normalization.
 
-P44 is now closed at its static gate, so P45 is the next generic serializer
-experiment. P47--P49 remain separately recorded and must not be mixed into a
+P44 and P45 are closed at their static gates. P46 is the best generic
+serializer candidate: it wins the exact Pi 5 Full boundary and all three KEM
+callers, but remains outside production because the mandatory Slothy proxy
+regresses. P47--P49 remain separately recorded and must not be mixed into a
 generic same-boundary result.
 
 ## Fixed facts and non-tasks
@@ -127,6 +130,24 @@ generic same-boundary result.
 ## Change log
 
 ### 2026-09-16
+
+- Completed P45 and rejected it before assembly. The joint A/B pack itself is
+  exact and costs only nine instructions per adjacent two-record group, but
+  requiring both records together destroys the P24 route-cache economics. The
+  best 27-register search point needs 384 route instructions and 121
+  coefficient Q loads/top, versus the declared 300/61 gate. Evidence:
+  `experiments/gt864-p45-two-record-pack/`.
+
+- Completed P46 as a promotion candidate without changing production. The
+  Full-only `USHR #15; MLA q` identity is exhaustive over signed int16 and
+  removes 108 instructions/call while leaving Small, routing, packing and
+  memory traffic unchanged. All 18 fixed-allocation Slothy windows are
+  optimal/no-spill, exact bytes, KAT and malformed gates pass. Pi 5 Full
+  improves 1395.125→1386.762 cycles and Keygen/Encaps/Decaps improve by
+  13.500/13.650/5.450 cycles. However the A76 Slothy proxy regresses
+  1495→1562, so the canonical scorer returns `candidate`; promotion requires
+  an explicit proxy override or a better schedule. Evidence:
+  `experiments/gt864-p46-full-normalization/`.
 
 - Completed and statically rejected P44 without changing production. The exact
   P24 Full top region and contracts were frozen before search. A phase-aware

@@ -1,0 +1,11 @@
+experiment_id: GT864-P46-FULL-NORMALIZATION-20260916
+action: optimize-arithmetic
+primary_bottleneck: Full-only three-instruction nonnegative correction after each Algorithm-10 residual
+observation: P24 uses SSHR AND ADD after every Full residual; P42's CMLT MLS deleted one instruction but moved correction onto the multiply pipeline and regressed
+hypothesis: USHR produces a zero-or-one sign bit, allowing MLA with q to replace SSHR AND ADD; the shift dependency and add polarity may schedule differently from P42's CMLT MLS
+exact_proposed_change: freeze P24 routing Barrett packing stores and ABI; replace only SSHR mask, AND q, ADD by USHR bit, MLA q for all 54 vectors/top
+expected_static_effect: remove 54 instructions/top and 108/complete Full call with no memory change
+expected_performance_effect: must beat P24 at the exact Full boundary; instruction deletion alone is insufficient because MLA shares the multiply pipe
+expected_register_pressure_effect: unchanged one temporary and all P24 route/pack registers; zero spill
+correctness_or_range_impact: none; for every signed 16-bit residual USHR by 15 is 1 iff negative and MLA adds exactly q
+falsifying_measurement: exhaustive identity fails, Slothy predicts a regression that silicon confirms, or exact Full Pi5 cycles do not improve

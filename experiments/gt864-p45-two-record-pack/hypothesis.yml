@@ -1,0 +1,11 @@
+experiment_id: GT864-P45-TWO-RECORD-PACK-20260916
+action: optimize-layout
+primary_bottleneck: independent six-instruction packing and three-instruction terminal path for each 12-byte record
+observation: P24 spends 18 pack/store instructions per adjacent record pair; P41 reduces stores but not packing, while P44 proves cache-only borrowing cannot remove the precedence reloads
+hypothesis: normalized adjacent A/B vectors can be jointly split into even/odd lanes, packed by two TBL2 outputs, and stored as one Q plus one D in nine instructions per pair
+exact_proposed_change: require both wire-adjacent route roots live, preserve Full normalization, use UZP1/UZP2 SHL ORR USHR two TBL2 and Q/D stores, and search the pair order under the exact route-register budget
+expected_static_effect: save nine pack/store instructions per pair or 243/top before pair-routing reloads
+expected_performance_effect: beat P24 and P44 only if the joint route does not exchange the arithmetic saving for excessive coefficient reads
+expected_register_pressure_effect: two route roots remain live until the joint consumer; two pack indices, q and reciprocal are resident and one temporary is required, leaving 27 route registers
+correctness_or_range_impact: none; Full normalization and exact 24 wire bytes per pair remain unchanged
+falsifying_measurement: route plus index loads exceed 300 instructions or 61 coefficient loads/top, total static ledger fails to beat P24 and P44, exact 24-byte identity fails, or allocation spills

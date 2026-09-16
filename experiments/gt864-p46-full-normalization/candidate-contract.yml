@@ -1,0 +1,50 @@
+mode: existing_region_replacement
+candidate_status: candidate
+candidate:
+  id: gt864_p46_ushr_mla_full_normalization
+  status: candidate
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: candidate-full.sym.S
+  slothy_driver: optimize.py
+  slothy_log: slothy-full-g3.log
+  generated_output: candidate-full.g3.opt.S
+contract_preservation:
+  preserved: [public ABI, FR0 input, exact canonical wire output, routing, loads, stores, packing, bounds, constant-time behavior]
+  approved_changes: [replace each SSHR AND ADD correction by the exact USHR MLA identity]
+region:
+  start_label: p23_top_full_slothy_start
+  end_label: p23_top_full_slothy_end
+  live_in: [x0 output top base, x1 FR0 input top base, v26 pack index, v27 q3457, v28 reciprocal9]
+  live_out: [648 exact canonical wire bytes at x0]
+abi:
+  inputs: [x0, x1]
+  outputs: [memory x0 through x0 plus 647]
+  concrete_gprs_allowed: [x0, x1, x5, x6, x7, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+memory_contract:
+  loads: [61 coefficient Q loads]
+  stores: [54 D and 54 W stores]
+  aliasing: disjoint input and output
+  alignment: unchanged production alignment
+  public_offsets_only: true
+  pointer_updates: [none]
+constant_contract:
+  constants: [pack index, q3457, reciprocal9]
+  modulus: 3457
+  representation: signed int16 FR0 to canonical 12-bit wire bytes
+  reduction_method: Algorithm-10 b=1 then USHR MLA
+range_contract:
+  input_ranges: [arbitrary signed int16]
+  intermediate_ranges: [Barrett residual negative 3291 through 3291]
+  output_ranges: [canonical 0 through 3456]
+  narrowing_points: [12-bit packing]
+constant_time_contract:
+  secret_inputs: [FR0 lanes]
+  public_inputs: [pointers and fixed map]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+promotion_gate:
+  static: exhaustive identity, exactly 54 fewer instructions/top, no spill or memory change
+  correctness: exact bytes and full package gates
+  performance: exact Full Pi5 boundary must improve before KEM promotion

@@ -1,0 +1,23 @@
+experiment_id: GT864-P45-TWO-RECORD-PACK-20260916
+date: 2026-09-16
+mode: existing_region_replacement
+state: static_checks
+repo_probe:
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  target: cortex_a76
+  production_revision: ba6bc7010f357da68909cc2ccddd9570658bab03
+baseline:
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
+  extracted_region: baseline-region.S
+  static_instructions_per_top: 1041
+  coefficient_loads_per_top: 61
+static_search:
+  pair_pack_identity: passed 11950849 coefficient pairs and 10003 exact 24-byte records
+  best_variant: 27 route registers and two resident pack indices
+  best_route_per_top: 384 instructions and 121 coefficient loads
+  best_complete_static_delta: minus 288 instructions versus P24
+  hard_gate: failed route at most 300 and coefficient loads at most 61
+candidate_status: reject
+promotion: false
+decision: stop before candidate assembly and Slothy because simultaneous A/B liveness more than doubles coefficient reloads
