@@ -1,0 +1,51 @@
+dag:
+  id: T7-N0-DAG
+  kernel_contract: kernel-contract.yml
+  description: Only the signed canonicalization subgraph changes; all route, normalization, pack, merge, and memory nodes retain baseline order constraints.
+
+inputs:
+  - id: r
+    meaning: signed 16-bit representative after optional full-path reciprocal reduction
+    range: full path baseline remainder range; small path -3457 < r < 3457
+
+constants:
+  - id: q
+    value: 3457 broadcast in eight 16-bit lanes
+
+nodes:
+  - id: negative_mask
+    op: signed compare less than zero
+    inputs: [r]
+    outputs: [mask]
+    instruction_shape: CMLT V<sign>.8h, V<row>.8h, #0
+    tied_operands: []
+    range_before: signed int16 r
+    range_after: each mask lane is 0 or -1
+    may_reorder_with: [independent row routing and independent coefficient stream]
+    must_precede: [canonical_add_q]
+  - id: canonical_add_q
+    op: destructive subtract mask times q
+    inputs: [r, mask, q]
+    outputs: [canonical]
+    instruction_shape: MLS V<row>.8h, V<sign>.8h, V<q>.8h
+    tied_operands: [canonical is the same architectural register as r]
+    range_before: mask is 0 or -1
+    range_after: identical to r plus q when r is negative; canonical 0 through 3456 under baseline range contract
+    may_reorder_with: [independent coefficient stream]
+    must_precede: [existing XTN, USHR, and SLI byte-packing consumers]
+
+memory:
+  loads: [unchanged from baseline]
+  stores: [unchanged from baseline]
+  ordering_constraints: [preserve all existing pointer updates and per-row output byte positions]
+
+outputs:
+  - canonical coefficients consumed immediately by the existing packing DAG
+live_out:
+  - exact existing byte stores only
+
+review:
+  all_outputs_traced: true
+  tied_operands_checked: true
+  memory_order_checked: true
+  ranges_checked: true

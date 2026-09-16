@@ -1,0 +1,50 @@
+candidate:
+  id: T7-N0
+  status: investigate
+  mode: existing_region_replacement
+
+contract:
+  preserved: true
+  approved_changes: false
+  changed_fields: []
+  approval_note:
+
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+  evidence: exhaustive int16 arithmetic plus complete physical full/small ToBytes with exact wire, canary, and input-preservation checks
+
+slothy:
+  status: pass
+  source_checkout: /Users/chenpinhao/slothy
+  target: cortex_a76
+  allocation_pass: true
+  allow_spills: false
+  scheduled_artifacts: true
+  baseline_expected_cycles:
+  candidate_expected_cycles:
+  parity_justification: Target-model region sums are not used for promotion; candidate removes exact instructions and awaits paired Pi 5 measurement.
+  log_json: build/slothy-summary.json
+
+cost:
+  baseline_static_instructions: 2208
+  candidate_static_instructions: 2136
+  static_delta_four_regions: -72
+  dynamic_delta_per_complete_tobytes: -108
+  memory_sequence_changed: false
+  scratch_changed: false
+
+benchmark:
+  status: unknown
+  command: paired Pi 5 complete ToBytes then production full-KEM SUPERCOP
+  metric: cycles
+  lower_is_better: true
+  neutral_threshold_percent: 1.0
+  baseline:
+  candidate:
+
+decision:
+  reason: Correctness and allocation evidence pass, but target Pi 5 complete-ToBytes and full-KEM measurements are required before production promotion.
+  next_iteration: T7-N0 Pi 5 paired timing, then T7-N1 resident-index fusion only if T7-N0 is retained.

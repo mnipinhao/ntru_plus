@@ -1,0 +1,44 @@
+iteration:
+  id: T7-N0
+  mode: existing_region_replacement
+  current_state: full_path_benchmark
+  hypothesis: Replacing each destructive sign correction from SSHR+AND+ADD with CMLT+MLS preserves exact canonical coefficients and removes one vector instruction per eight coefficients without changing routing, memory, scratch, or wire order.
+  changed_artifacts:
+    - canonicalization instruction DAG only
+  earliest_state_to_revisit: instruction_dag
+
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  instruction_dag: instruction-dag.yml
+  symbolic_source: build/candidate/candidate.sym.S
+  slothy_driver: run_slothy.py
+  slothy_log: build/slothy/*.log
+  candidate_contract: candidate-contract.yml
+  candidate_score: candidate-score.yml
+  promotion_report:
+
+gates:
+  repo_probe: pass
+  baseline_contract: pass
+  kernel_contract: pass
+  instruction_dag: pass
+  symbolic_asm: pass
+  static_checks: pass
+  Slothy_run_by_user: pass
+  parse_slothy_result: pass-with-artifact-aware-parser
+  oracle_correctness: pass
+  full_path_benchmark: pending
+  score_candidate: investigate
+  promotion_decision: pending
+  iteration_or_promote: pending
+
+notes:
+  - Repository probe found no vendored Slothy in this repository; the required primary source checkout is /Users/chenpinhao/slothy.
+  - The interpreter is /Users/chenpinhao/slothy_and_ra/.venv/bin/python with PYTHONPATH fixed to /Users/chenpinhao/slothy; the driver rejects any other imported architecture tree.
+  - Baselines are the four symbolic regions currently selected by the GT864 production ToBytes Makefile.
+  - Source tree was dirty before T7-N0; all generated assembly and logs are isolated below this experiment's ignored build directory.
+  - No production source is changed by this experiment.
+  - Complete physical full and small ToBytes passed on Apple arm64 for edge, alternating-bound, sequential, and 256 deterministic random cases per mode.
+  - Full local KEM linkage is currently blocked by unrelated production symbol binv_num_pair; the isolated complete ToBytes public boundary is passing.
+  - Target Pi 5 complete-ToBytes and full-KEM cycle measurements remain the promotion blocker.

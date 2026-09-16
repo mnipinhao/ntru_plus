@@ -1,0 +1,50 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: gt864_tobytes_public
+  name: gt864_tobytes_public
+  source: byte-public.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  allow_spills: false
+  workflow: public control calls independently allocated cores
+region:
+  start_label: gt864_tobytes_full_asm
+  end_label: byte_wrapper_end
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [x0]
+abi:
+  inputs: [out bytes, in FR0, mask table, route table, merge table]
+  outputs: [1296 canonical wire bytes]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x9, x10, x11, x19, x20, x21, x22, x23, x24, x25, x26, x27, x29, x30, sp]
+  fixed_vector_registers: [d8, d9, d10, d11, d12, d13, d14, d15]
+  reserved_registers: [x18]
+instruction_dag:
+  file: byte-wrapper-dag.yml
+layout:
+  input_representation: FR0 R0 864 halfwords
+  output_representation: official wire byte order
+memory_contract:
+  loads: [108 coefficient Q loads, public tables, byte scratch]
+  stores: [1296 wire bytes, 648 scratch bytes per top]
+  aliasing: input and output disjoint
+  alignment: 2-byte input, byte output, 16-byte stack
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457, route9 masks and permutations]
+  representation: R0
+  modulus: 3457
+range_contract:
+  input_ranges: [full entry signed16; small entry strictly -q < x < q]
+  output_ranges: [canonical packed bytes]
+constant_time_contract:
+  secret_inputs: [coefficient values]
+  public_inputs: [entry selection, loop counters, pointers]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 ../verify_bytes.py --small
+  test_command: python3 build_bytes.py
+  full_path_benchmark_command: pending; do not promote

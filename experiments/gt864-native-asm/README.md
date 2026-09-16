@@ -1,6 +1,15 @@
 # GT864 native arithmetic assembly — experimental integration
 
-**Latest:** local Slothy timing and Pi5 paired benchmark completed.
+**Latest:** [ToBytes timing gate](TOBYTES-TIMING-RESULTS.md) passes complete
+serialization and full-KEM paired measurements: Keygen -1.72%, Encaps -1.02%,
+Decaps -1.26% versus frozen native opt. Production unchanged.
+
+Previous: [ToBytes dual-entry correctness gate](TOBYTES-SMALL-RESULTS.md)
+passed native Mac/Pi5 and full-KEM differential tests. Four D1-produced inputs
+use the no-Barrett entry; three Forward-produced inputs retain full reduction.
+New ToBytes timing is pending; production unchanged.
+
+Previous milestone: local Slothy timing and Pi5 paired benchmark completed.
 See [TIMING-RESULTS.md](TIMING-RESULTS.md): Keygen -3.53%, Decaps -1.91%
 versus current GT production; Encaps neutral. Production unchanged.
 The execution-gate notes below describe the earlier allocation-only milestone.

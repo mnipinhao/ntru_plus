@@ -1,0 +1,87 @@
+{
+  "status": "model-and-range-pass",
+  "production_changed": false,
+  "conversion_ledger": {
+    "input_R": {
+      "b": -147,
+      "bhat": -1393,
+      "input": [
+        -32768,
+        32767
+      ],
+      "output": [
+        -3013,
+        3013
+      ],
+      "tested": 65536,
+      "different_integer_representatives": 16384
+    },
+    "inverse_Rinv": {
+      "b": -682,
+      "bhat": -6464,
+      "input": [
+        -2000,
+        2000
+      ],
+      "output": [
+        -1824,
+        1824
+      ],
+      "tested": 4001,
+      "different_integer_representatives": 56
+    }
+  },
+  "full_symbolic_gate": {
+    "status": "symbolic-model-pass",
+    "initial_REDC_bound": 2162,
+    "initial_REDC_exhaustive_max": 2162,
+    "lazy_REDC_bound": 1972,
+    "basemul_cases": 520,
+    "baseinv_full_inputs": 12,
+    "baseinv_successful_roundtrips": 12,
+    "inverse_main_and_tail_differentials": 272,
+    "instruction_counts": {
+      "center32": 46,
+      "tobytes_small": 299,
+      "baseinv_num": 114,
+      "baseinv_recover": 61,
+      "tobytes_merge": 54,
+      "baseinv_prefix": 34,
+      "baseinv_finish": 57,
+      "inverse16_lazy": 733,
+      "baseinv_inverse": 208,
+      "tobytes_block": 337,
+      "basemul": 61,
+      "inverse_tail_lazy": 669
+    },
+    "physical_assembly_execution": false,
+    "range_proof": "analytic envelopes plus exhaustive initial conversion",
+    "initial_REDC_bound_is_old_baseline_only": true
+  },
+  "range": {
+    "later_operand_abs": 4000,
+    "REDC_abs": 1972,
+    "sum_abs": 3944,
+    "int32_numerator_abs": 129278976,
+    "finish_output_abs": 1728
+  },
+  "arithmetic_saving_per_BaseInv": 576,
+  "exact_model_instruction_counts": {
+    "baseinv_num": {
+      "old": 124,
+      "new": 114,
+      "saved_per_call": 360
+    },
+    "baseinv_finish": {
+      "old": 59,
+      "new": 57,
+      "saved_per_call": 72
+    }
+  },
+  "note": "576 fewer arithmetic instructions is a pre-lowering projection; constants and scheduling not counted.",
+  "source_hashes": {
+    "generate.py": "6b4fcb01b944dd9080b48c255d6cd4da460d951f55825c7142fc9eb673cf4bdb",
+    "verify.py": "fd4938be0178bd92bbb6d2a12c62713c00e53118c0787b431b76f14025678b84",
+    "baseinv-fixed-scale/prove.py": "df76171aea9a499a36fadee243ada1ea880aaaf64e68a96ef937e1bfb955cee2"
+  }
+}

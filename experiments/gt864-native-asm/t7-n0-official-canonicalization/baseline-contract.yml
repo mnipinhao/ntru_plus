@@ -1,0 +1,57 @@
+mode: existing_region_replacement
+baseline_status: extracted
+
+baseline:
+  id: T7-N0-baseline
+  source: four production-selected symbolic sources listed in sources.yml
+  extracted_region: build/baseline/baseline-regions.S
+  function: byte_pair_block, byte_pair_small, pair_merge_full, pair_merge_small
+  start_label: per-function labels listed in sources.yml
+  end_label: per-function labels listed in sources.yml
+  source_commit: 555485b17cb521d549fbe21be8f582d8d03159a2 with dirty-source hashes pinned in sources.yml
+
+region:
+  instruction_count: 2208 total across four regions
+  live_in: [x0, x1, x2, x3, x4; plus x6, x7, x9 for pair_merge]
+  live_out: [exact output memory; public pointer values preserved as required by existing wrappers]
+  clobbers: [x5, x8, x10, x11 and v0-v31 after allocation]
+
+abi:
+  inputs: [FR0 R0 coefficient streams, public masks and indices, two packed scratch pairs for pair_merge]
+  outputs: [exact NTRU+864 wire-order bytes]
+  clobbers: [x5, x8, x10, x11 and v0-v31 after allocation]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+
+memory_contract:
+  loads: [same coefficient, mask, index, and pair-scratch loads as pinned baselines]
+  stores: [same 216-byte pair stores or 648-byte final stores as pinned baselines]
+  aliasing: output is disjoint from coefficient streams, constants, and pair scratch; public wrapper owns 432-byte scratch
+  alignment: halfword coefficient input; byte output and scratch; existing vector load alignment assumptions preserved
+  public_offsets_only: true
+  pointer_updates: [unchanged public fixed offsets and existing post-increments]
+
+constant_contract:
+  constants: [q = 3457, reciprocal = 9 for full path only, existing public route and merge tables]
+  modulus: 3457
+  representation: FR0 R0 coefficients; canonical integers before byte packing
+  reduction_method: full path uses reciprocal quotient reduction then conditional addition of q; small path uses conditional addition of q only
+
+range_contract:
+  input_ranges: [full path signed int16, small path -3457 < x < 3457]
+  intermediate_ranges: [full remainder is corrected from a signed representative; small input needs at most one addition of q]
+  output_ranges: [canonical coefficient 0 through 3456, then exact 12-bit packed bytes]
+  narrowing_points: [XTN and byte extraction only after canonicalization]
+
+constant_time_contract:
+  secret_inputs: [coefficient lanes and pair scratch bytes]
+  public_inputs: [pointers, fixed offsets, mask tables, route tables, merge tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 2208
+  slothy_expected_cycles:
+  full_path_benchmark: P5 isolated Pi baseline full 1766.734 cycles and small 1363.399 cycles
+  benchmark_command: Pi 5 isolated complete ToBytes benchmark plus full KEM benchmark; not run in side-chat local gate

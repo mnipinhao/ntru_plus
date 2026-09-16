@@ -1,0 +1,533 @@
+{
+  "full_kem": {
+    "old->gt:keygen": {
+      "baseline_cycles_instructions_branches": [
+        51435.25,
+        105003.0,
+        1899.5
+      ],
+      "gt_cycles_instructions_branches": [
+        51448.5,
+        105051.0,
+        1907.5
+      ],
+      "cycle_change_percent": 0.025760543596065055,
+      "process_cycle_deltas": [
+        19.25,
+        0.5,
+        1.0,
+        21.75,
+        24.25,
+        36.75
+      ]
+    },
+    "old->gt:encaps": {
+      "baseline_cycles_instructions_branches": [
+        45650.375,
+        125753.8,
+        1154.5
+      ],
+      "gt_cycles_instructions_branches": [
+        46120.875,
+        126768.8,
+        1399.5
+      ],
+      "cycle_change_percent": 1.0306596605175855,
+      "process_cycle_deltas": [
+        456.5,
+        453.1,
+        479.55,
+        455.8,
+        460.35,
+        560.15
+      ]
+    },
+    "old->gt:decaps": {
+      "baseline_cycles_instructions_branches": [
+        43102.3,
+        98577.8,
+        1316.5
+      ],
+      "gt_cycles_instructions_branches": [
+        44305.399999999994,
+        101415.8,
+        2006.5
+      ],
+      "cycle_change_percent": 2.791266359335798,
+      "process_cycle_deltas": [
+        1159.7,
+        1206.6,
+        1204.75,
+        1199.75,
+        1201.9,
+        1197.5
+      ]
+    },
+    "official->gt:keygen": {
+      "baseline_cycles_instructions_branches": [
+        44315.125,
+        89336.0,
+        1188.5
+      ],
+      "gt_cycles_instructions_branches": [
+        51431.0,
+        105051.0,
+        1907.5
+      ],
+      "cycle_change_percent": 16.057440885025144,
+      "process_cycle_deltas": [
+        7119.75,
+        7098.0,
+        7435.0,
+        7111.25,
+        7099.0,
+        7117.0
+      ]
+    },
+    "official->gt:encaps": {
+      "baseline_cycles_instructions_branches": [
+        46423.475,
+        120820.8,
+        1064.5
+      ],
+      "gt_cycles_instructions_branches": [
+        46135.65,
+        126776.8,
+        1401.5
+      ],
+      "cycle_change_percent": -0.61999882602497,
+      "process_cycle_deltas": [
+        -303.25,
+        -280.05,
+        -62.45,
+        -314.5,
+        -335.55,
+        -311.65
+      ]
+    },
+    "official->gt:decaps": {
+      "baseline_cycles_instructions_branches": [
+        40758.6,
+        86649.8,
+        1081.0
+      ],
+      "gt_cycles_instructions_branches": [
+        44319.925,
+        101413.8,
+        2006.0
+      ],
+      "cycle_change_percent": 8.737603843115327,
+      "process_cycle_deltas": [
+        3782.0,
+        3581.05,
+        3578.6,
+        3571.6,
+        3555.15,
+        3542.25
+      ]
+    }
+  },
+  "profile": {
+    "official": {
+      "keygen:Forward": {
+        "raw_cycles": 7705.25,
+        "corrected_cycles": 7555.25,
+        "calls": 2.0
+      },
+      "keygen:BaseInv": {
+        "raw_cycles": 8518.0,
+        "corrected_cycles": 8368.0,
+        "calls": 2.0
+      },
+      "keygen:BaseMul_R0": {
+        "raw_cycles": 5042.0,
+        "corrected_cycles": 4892.0,
+        "calls": 2.0
+      },
+      "keygen:ToBytes_full": {
+        "raw_cycles": 3561.0,
+        "corrected_cycles": 3336.0,
+        "calls": 3.0
+      },
+      "keygen:CBD": {
+        "raw_cycles": 970.0,
+        "corrected_cycles": 820.0,
+        "calls": 2.0
+      },
+      "keygen:Triple": {
+        "raw_cycles": 632.0,
+        "corrected_cycles": 482.0,
+        "calls": 2.0
+      },
+      "keygen:hash_f": {
+        "raw_cycles": 13367.25,
+        "corrected_cycles": 13292.25,
+        "calls": 1.0
+      },
+      "keygen:SHAKE_sampling": {
+        "raw_cycles": 5674.0,
+        "corrected_cycles": 5524.0,
+        "calls": 2.0
+      },
+      "keygen:RNG": {
+        "raw_cycles": 418.0,
+        "corrected_cycles": 268.0,
+        "calls": 2.0
+      },
+      "keygen:cleanup": {
+        "raw_cycles": 1005.5,
+        "corrected_cycles": 480.5,
+        "calls": 7.0
+      },
+      "encaps:Forward": {
+        "raw_cycles": 7697.0,
+        "corrected_cycles": 7547.0,
+        "calls": 2.0
+      },
+      "encaps:BaseMulAdd": {
+        "raw_cycles": 2978.5,
+        "corrected_cycles": 2903.5,
+        "calls": 1.0
+      },
+      "encaps:ToBytes_full": {
+        "raw_cycles": 2375.0,
+        "corrected_cycles": 2225.0,
+        "calls": 2.0
+      },
+      "encaps:FromBytes_checked": {
+        "raw_cycles": 829.0,
+        "corrected_cycles": 754.0,
+        "calls": 1.0
+      },
+      "encaps:CBD": {
+        "raw_cycles": 488.0,
+        "corrected_cycles": 413.0,
+        "calls": 1.0
+      },
+      "encaps:SOTP_encode": {
+        "raw_cycles": 497.0,
+        "corrected_cycles": 422.0,
+        "calls": 1.0
+      },
+      "encaps:hash_f": {
+        "raw_cycles": 13372.85,
+        "corrected_cycles": 13297.85,
+        "calls": 1.0
+      },
+      "encaps:hash_g": {
+        "raw_cycles": 14671.575,
+        "corrected_cycles": 14596.575,
+        "calls": 1.0
+      },
+      "encaps:hash_h": {
+        "raw_cycles": 4143.549999999999,
+        "corrected_cycles": 4068.55,
+        "calls": 1.0
+      },
+      "encaps:RNG": {
+        "raw_cycles": 455.2,
+        "corrected_cycles": 380.2,
+        "calls": 1.0
+      },
+      "encaps:cleanup": {
+        "raw_cycles": 672.025,
+        "corrected_cycles": 297.025,
+        "calls": 5.0
+      },
+      "decaps:Forward": {
+        "raw_cycles": 7696.0,
+        "corrected_cycles": 7546.0,
+        "calls": 2.0
+      },
+      "decaps:BaseMul_R0": {
+        "raw_cycles": 2520.0,
+        "corrected_cycles": 2445.0,
+        "calls": 1.0
+      },
+      "decaps:BaseMul_Rinv": {
+        "raw_cycles": 1843.0,
+        "corrected_cycles": 1768.0,
+        "calls": 1.0
+      },
+      "decaps:Inverse": {
+        "raw_cycles": 4213.0,
+        "corrected_cycles": 4138.0,
+        "calls": 1.0
+      },
+      "decaps:ToBytes_full": {
+        "raw_cycles": 2370.0,
+        "corrected_cycles": 2220.0,
+        "calls": 2.0
+      },
+      "decaps:FromBytes_checked": {
+        "raw_cycles": 2495.0,
+        "corrected_cycles": 2270.0,
+        "calls": 3.0
+      },
+      "decaps:CBD": {
+        "raw_cycles": 477.0,
+        "corrected_cycles": 402.0,
+        "calls": 1.0
+      },
+      "decaps:SOTP_decode": {
+        "raw_cycles": 484.0,
+        "corrected_cycles": 409.0,
+        "calls": 1.0
+      },
+      "decaps:Sub": {
+        "raw_cycles": 297.5,
+        "corrected_cycles": 222.5,
+        "calls": 1.0
+      },
+      "decaps:Crepmod3": {
+        "raw_cycles": 559.0,
+        "corrected_cycles": 484.0,
+        "calls": 1.0
+      },
+      "decaps:hash_g": {
+        "raw_cycles": 14661.55,
+        "corrected_cycles": 14586.55,
+        "calls": 1.0
+      },
+      "decaps:hash_h": {
+        "raw_cycles": 4139.75,
+        "corrected_cycles": 4064.75,
+        "calls": 1.0
+      },
+      "decaps:cleanup": {
+        "raw_cycles": 1144.0,
+        "corrected_cycles": 544.0,
+        "calls": 8.0
+      }
+    },
+    "gt": {
+      "keygen:Forward": {
+        "raw_cycles": 6944.0,
+        "corrected_cycles": 6793.0,
+        "calls": 2.0
+      },
+      "keygen:BaseInv": {
+        "raw_cycles": 15776.875,
+        "corrected_cycles": 15626.875,
+        "calls": 2.0
+      },
+      "keygen:BaseMul_R0": {
+        "raw_cycles": 4508.0,
+        "corrected_cycles": 4358.0,
+        "calls": 2.0
+      },
+      "keygen:ToBytes_full": {
+        "raw_cycles": 1888.25,
+        "corrected_cycles": 1813.25,
+        "calls": 1.0
+      },
+      "keygen:ToBytes_small": {
+        "raw_cycles": 3121.625,
+        "corrected_cycles": 2971.375,
+        "calls": 2.0
+      },
+      "keygen:CBD": {
+        "raw_cycles": 937.25,
+        "corrected_cycles": 787.25,
+        "calls": 2.0
+      },
+      "keygen:Triple": {
+        "raw_cycles": 631.375,
+        "corrected_cycles": 481.25,
+        "calls": 2.0
+      },
+      "keygen:hash_f": {
+        "raw_cycles": 13311.0,
+        "corrected_cycles": 13235.5,
+        "calls": 1.0
+      },
+      "keygen:SHAKE_sampling": {
+        "raw_cycles": 5690.0,
+        "corrected_cycles": 5540.0,
+        "calls": 2.0
+      },
+      "keygen:RNG": {
+        "raw_cycles": 379.0,
+        "corrected_cycles": 229.0,
+        "calls": 2.0
+      },
+      "encaps:Forward": {
+        "raw_cycles": 6954.625,
+        "corrected_cycles": 6804.625,
+        "calls": 2.0
+      },
+      "encaps:BaseMulAdd": {
+        "raw_cycles": 2249.0,
+        "corrected_cycles": 2174.0,
+        "calls": 1.0
+      },
+      "encaps:ToBytes_full": {
+        "raw_cycles": 1896.475,
+        "corrected_cycles": 1821.475,
+        "calls": 1.0
+      },
+      "encaps:ToBytes_small": {
+        "raw_cycles": 1564.6,
+        "corrected_cycles": 1489.6,
+        "calls": 1.0
+      },
+      "encaps:FromBytes_checked": {
+        "raw_cycles": 976.8499999999999,
+        "corrected_cycles": 901.8499999999999,
+        "calls": 1.0
+      },
+      "encaps:CBD": {
+        "raw_cycles": 477.25,
+        "corrected_cycles": 402.25,
+        "calls": 1.0
+      },
+      "encaps:SOTP_encode": {
+        "raw_cycles": 484.225,
+        "corrected_cycles": 409.225,
+        "calls": 1.0
+      },
+      "encaps:hash_f": {
+        "raw_cycles": 13317.75,
+        "corrected_cycles": 13242.75,
+        "calls": 1.0
+      },
+      "encaps:hash_g": {
+        "raw_cycles": 14559.2,
+        "corrected_cycles": 14484.2,
+        "calls": 1.0
+      },
+      "encaps:hash_h": {
+        "raw_cycles": 4117.675,
+        "corrected_cycles": 4042.675,
+        "calls": 1.0
+      },
+      "encaps:RNG": {
+        "raw_cycles": 435.6,
+        "corrected_cycles": 360.3,
+        "calls": 1.0
+      },
+      "encaps:cleanup": {
+        "raw_cycles": 745.55,
+        "corrected_cycles": 295.55,
+        "calls": 6.0
+      },
+      "decaps:Forward": {
+        "raw_cycles": 6960.299999999999,
+        "corrected_cycles": 6810.299999999999,
+        "calls": 2.0
+      },
+      "decaps:BaseMul_R0": {
+        "raw_cycles": 2256.0,
+        "corrected_cycles": 2181.0,
+        "calls": 1.0
+      },
+      "decaps:BaseMul_Rinv": {
+        "raw_cycles": 1840.575,
+        "corrected_cycles": 1765.575,
+        "calls": 1.0
+      },
+      "decaps:Inverse": {
+        "raw_cycles": 7338.9,
+        "corrected_cycles": 7263.4,
+        "calls": 1.0
+      },
+      "decaps:ToBytes_full": {
+        "raw_cycles": 1890.8249999999998,
+        "corrected_cycles": 1815.8249999999998,
+        "calls": 1.0
+      },
+      "decaps:ToBytes_small": {
+        "raw_cycles": 1568.325,
+        "corrected_cycles": 1493.325,
+        "calls": 1.0
+      },
+      "decaps:FromBytes_checked": {
+        "raw_cycles": 2935.05,
+        "corrected_cycles": 2709.5,
+        "calls": 3.0
+      },
+      "decaps:CBD": {
+        "raw_cycles": 466.85,
+        "corrected_cycles": 391.85,
+        "calls": 1.0
+      },
+      "decaps:SOTP_decode": {
+        "raw_cycles": 465.5,
+        "corrected_cycles": 390.5,
+        "calls": 1.0
+      },
+      "decaps:Sub": {
+        "raw_cycles": 285.6,
+        "corrected_cycles": 210.6,
+        "calls": 1.0
+      },
+      "decaps:Crepmod3": {
+        "raw_cycles": 543.0,
+        "corrected_cycles": 468.0,
+        "calls": 1.0
+      },
+      "decaps:hash_g": {
+        "raw_cycles": 14560.6,
+        "corrected_cycles": 14485.1,
+        "calls": 1.0
+      },
+      "decaps:hash_h": {
+        "raw_cycles": 4115.950000000001,
+        "corrected_cycles": 4040.45,
+        "calls": 1.0
+      },
+      "decaps:cleanup": {
+        "raw_cycles": 1477.7,
+        "corrected_cycles": 652.7,
+        "calls": 11.0
+      }
+    }
+  },
+  "environment": {
+    "official_path": "/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64",
+    "official_upstream_latest_verified": false,
+    "official_sources_sha256": {
+      "source:add.s": "407b721a1595226a477ecd684346bd19418d09ab6d3a0626b3b6f313689ffa25",
+      "source:crepmod3.s": "dc2ba83e8feda8297e14e6e1b27f6a8d6e4dd28f9b875c12d435016d22d963db",
+      "source:util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9",
+      "source:symmetric.c": "a9ab4afbb2a9053c75cd959040569e1e705d769021f250d87c3d3f08da1d7053",
+      "source:architectures": "5121ae59314a84da7b4d9587374398f1afa2000b243b3e54f491adefaac54f92",
+      "source:poly.c": "16982ff6efb46b516d5c5a75bb2372add4d2369cef61337b7f655dcbdb270e92",
+      "source:cbd.s": "39146b6c690e3df86893d3425528be9f57af660fde1d4e0d58e42ea90aa46c7a",
+      "source:ntt.s": "1ce17e36da0ac3ef474090f12624d57cf8c86bc1b49d1d4d1ee7195ff354b74b",
+      "source:goal-constindex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source:base.s": "896046d790ef7b22f5624f0f7eb5c68af0bb1fb98bc20a5ad9f8fc0cdd2f3bdf",
+      "source:fips202.c": "7a150641dd886261d299d0addb6c3474fdf69e2382e88357a1c088b2ce631181",
+      "source:api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+      "source:params.h": "39618b1552ab1f1f259ec2733211bca127b72948cec860563c1abe06ea132b50",
+      "source:fips202.h": "86d3adefd72a25231b26d14b345648359db534790abd25148ccdfdba2800c298",
+      "source:goal-constbranch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source:pack.s": "e2ed80bf2ff28e9449a427f99f80bcc885aeef7432aa05239141692bf738c132",
+      "source:kem.c": "acb888a4aa199cc4d1f9a62e4b61921be8d6032b38bd19c8e2afd35aa808937c",
+      "source:symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+      "source:poly.h": "d6303af329597ee19ab81c6e32649fd657e9ff727f084214a09bc03ae03af650"
+    },
+    "benchmark_domain": "valid inputs only; noncanonical behavior is a separate compatibility gate",
+    "noncanonical_checks": {
+      "old": "difference offset=9 official=1 gt=0 gt_matches_valid_ss=1\ndifference offset=99 official=1 gt=0 gt_matches_valid_ss=1\ndifference offset=105 official=1 gt=0 gt_matches_valid_ss=1\nnoncanonical_tested=79 differences=79\n",
+      "gt": "noncanonical_tested=79 differences=0\n"
+    },
+    "compiler": "gcc (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "uname": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "governor": "ondemand",
+    "throttle_before": "throttled=0x0",
+    "temperature_before": "temp=65.9'C",
+    "binaries": {
+      "old.so": "ff7c5aaa60906b844f46446b5c26a20bf002f7828c549359028d49359fd0ed4e",
+      "gt.so": "f6cafe749fa3a3618743779981e20c9edc6e5e8326cd9d965c472fb99629f04d",
+      "official.so": "8773a7c4ed9b7da34cc7e0e419c79b17edd876e9e7e3e52a0f999611dcd3e6ce"
+    },
+    "throttle_after": "throttled=0x0",
+    "temperature_after": "temp=65.3'C"
+  },
+  "profile_binaries": {
+    "gt-prof.so": "787520db76da900eb1b068aa9b1eb3dc8b64473d3f97fe475e5a71223c492cb2",
+    "official-prof.so": "e94aaefb85cb0e70018c0c7e3e869e44f03745d127c1084498048046d1ce891a"
+  },
+  "warning": "Component timings are instrumented estimates, not additive clean full-KEM cycles. RNG is deterministic benchmark RNG."
+}

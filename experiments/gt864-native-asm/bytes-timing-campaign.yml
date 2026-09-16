@@ -1,0 +1,18 @@
+id: gt864-tobytes-timing-20260908
+mode: new_symbolic_kernel
+action: optimize-scheduling
+status: investigate
+authority: user authorized local Slothy and Pi5 timing
+observation: new full/small ToBytes passed correctness but scratch cost is unmeasured
+hypothesis: bounded-window scheduling and Barrett deletion offset byte scratch routing cost
+change: schedule allocated full/small/merge cores without changing DAG or allocation
+static_effect: identical arithmetic and memory to allocation baselines
+register_effect: frozen allocation and no spills
+range_effect: none; small caller selection remains four proven D1 outputs
+falsifier: complete ToBytes or full KEM regresses versus frozen opt
+host: pi@100.99.191.9 Cortex-A76 CPU3
+measurement: six AB/BA processes with 41 samples each; cycles instructions branches
+threshold_percent: 1.0
+production_changed: false
+benchmark_result: pass
+report: TOBYTES-TIMING-RESULTS.md

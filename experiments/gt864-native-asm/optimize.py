@@ -13,6 +13,7 @@ from preflight import check
 IDS={name:value[0] for name,value in KERNELS.items()}
 IDS.update(inverse16_lazy='lazy_i16',inverse_tail_lazy='lazy_itail')
 IDS.update(tobytes_block='byte_pair_block',tobytes_merge='byte_merge_row')
+IDS.update(tobytes_small='byte_pair_small')
 IDS.update(inverse9='packed_i9')
 
 parser=argparse.ArgumentParser();parser.add_argument('kernel',choices=IDS)

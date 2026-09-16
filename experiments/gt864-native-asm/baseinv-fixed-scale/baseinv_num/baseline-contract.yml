@@ -1,0 +1,63 @@
+mode: existing_region_replacement
+baseline:
+  id: cleanup_20260909_baseinv_num
+  source: ../../../../ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_baseinv_num.S
+  extracted_region: baseline-region.S
+  function: binv_num_tile
+  start_label: binv_num_tile_slothy_start
+  end_label: binv_num_tile_slothy_end
+baseline_cost:
+  static_instruction_count: 124
+  benchmark_command: ../../pi-baseinv-stages.py
+candidate_status: investigate
+kernel:
+  id: binv_num_tile
+  name: binv_num_tile
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: ra-then-window-opt
+  allow_spills: false
+  driver: ../optimize.py
+region:
+  instruction_count: 124
+  start_label: binv_num_tile_slothy_start
+  end_label: binv_num_tile_slothy_end
+  live_in: [x0, x1, x2, x3]
+  live_out: [x0, x1, x2, x3]
+abi:
+  inputs: ["x0 numerator 48 bytes; x1 input 48 bytes; x2 zR 16 bytes; x3 denominator 16 bytes"]
+  outputs: ["three R1 numerators abs <=4000; R1 denominator abs <=4000"]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x8, x30]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: "FR0 any signed int16 R0"
+  output_representation: "three R1 numerators abs <=4000; R1 denominator abs <=4000"
+memory_contract:
+  loads: ["3 operand Q plus zR Q"]
+  stores: ["3 numerator Q and 1 denominator Q"]
+  alignment: 2 bytes; Q accesses need not be 16-byte aligned
+  aliasing: all input loads precede stores; exact input-output alias allowed; partial overlap forbidden
+  public_offsets_only: true
+constant_contract:
+  constants: [3457, -12929, 867, -147, 9, 1728]
+  modulus: 3457
+  representation: explicit R0 R1 and R^-1 edge ledger
+range_contract:
+  input_ranges: ["FR0 any signed int16 R0"]
+  intermediate_ranges: [initial full-int16 times867 REDC abs <=2162; later operands abs <=4000; later REDC abs <=1972; all widening corrections fit int32]
+  output_ranges: ["three R1 numerators abs <=4000; R1 denominator abs <=4000"]
+constant_time_contract:
+  secret_inputs: [coefficients]
+  public_inputs: [pointers, constants]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 ../verify.py
+  test_command: python3 ../../verify-integrated-components.py build-package
+  full_path_benchmark_command: python3 ../../pi-integrated.py --checked

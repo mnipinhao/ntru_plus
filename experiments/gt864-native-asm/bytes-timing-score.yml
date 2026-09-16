@@ -1,0 +1,26 @@
+candidate:
+  id: gt864-tobytes-timing-20260908
+  status: investigate
+  mode: new_symbolic_kernel
+contract:
+  preserved: true
+  approved_changes: false
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: unknown
+slothy:
+  status: pass
+  parity_justification: bounded-window scheduling completed; no aggregate whole-kernel estimate is claimed
+benchmark:
+  status: pass
+  command: python3 pi-bytes-timing.py
+  metric: full KEM Keygen cycles; all three operations in linked report
+  lower_is_better: true
+  neutral_threshold_percent: 1.0
+  baseline: 52226.625
+  candidate: 51330.750
+decision:
+  reason: performance gate passes for all callers; retain experimental until separate production review
+  next_iteration: production integration review and KAT, not further speculative scheduling

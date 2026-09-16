@@ -1,0 +1,51 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+kernel:
+  id: byte_pair_small
+  name: byte_pair_small
+  source: candidate.sym.S
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+slothy:
+  workflow: ra-then-window-opt
+  allow_spills: false
+  driver: ../optimize.py
+region:
+  start_label: byte_pair_small_slothy_start
+  end_label: byte_pair_small_slothy_end
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [x0]
+abi:
+  inputs: [two FR0 streams x1 and x2; each 9 vectors at 48-byte stride]
+  outputs: [216 contiguous scratch bytes at x0; nine 24-byte rows]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x30, sp]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30]
+instruction_dag:
+  file: instruction-dag.yml
+layout:
+  input_representation: two FR0 streams x1 and x2; each 9 vectors at 48-byte stride
+  output_representation: 216 contiguous scratch bytes at x0; nine 24-byte rows
+memory_contract:
+  loads: [18 coefficient vectors once plus routing masks x3 and indices x4]
+  stores: [nine full-vector ST3 .8b stores of 24 bytes]
+  aliasing: disjoint input and output
+  alignment: halfword input and byte output; no wider requirement
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457, existing public table values]
+  modulus: 3457
+  representation: R0
+range_contract:
+  input_ranges: [R0 signed int16 strictly between -3457 and 3457; D1 producers proven abs <=3023]
+  output_ranges: [bytes 0 through 255]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, tables, loop indices]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 ../verify_bytes.py --small
+  test_command: pending allocated-assembly differential harness
+  full_path_benchmark_command: pending allocated-assembly KEM paired harness

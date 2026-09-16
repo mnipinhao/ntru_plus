@@ -1,0 +1,16 @@
+mode: existing_region_replacement
+candidate_status: investigate
+state: score_candidate
+slothy_checkout: /Users/chenpinhao/slothy
+venv: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+target: cortex_a76
+local_execution: user previously authorized
+production_changed: false
+baseline: cleanup-aligned 2026-09-09 production cores
+static_checks: passed; cmgt warning manually reviewed
+allocation: emitted, zero spill, native tested
+timing_schedule: bounded windows emitted; no whole-region cycle estimate
+generic_log_parser: fail due search strings; inspect actual successful final status
+oracle_correctness: native Mac 808 BaseInv and 100 KAT passed
+benchmark: Pi5 passed; full BaseInv -4.74 percent, Keygen -1.42 percent
+promotion: not requested or performed

@@ -1,0 +1,6 @@
+operation: route two FR0 streams into canonical packed bytes
+inputs: two streams of 9 vectors; public routing constants
+nodes: [unchanged routing, sign mask, masked add q, pair packing, full ST3]
+range: strictly -q < input < q; D1 closure in ../tobytes-producer-audit
+deletion: 18 SQRDMULH and 18 MLS; reciprocal mov/dup dead
+outputs: same 216 bytes as full-range entry on shared domain

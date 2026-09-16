@@ -3,7 +3,7 @@
 byte_pair_block:
 // live-in: x0-x4 as specified in kernel-contract.yml.
 // live-out: exact output memory; no coefficient scratch.
-// range: normalized bytes; producer accepts signed int16.
+// range: normalized bytes; small producer requires -3457 < input < 3457; see contract.
 // reserved registers: x18-x30; outer wrapper preserves d8-d15.
 byte_pair_block_slothy_start:
     ldr Q<aj0>, [x1, #384]

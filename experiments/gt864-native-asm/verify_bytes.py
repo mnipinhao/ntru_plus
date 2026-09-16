@@ -1,5 +1,5 @@
 """Exact symbolic producer plus consumer byte execution; no timing claim."""
-import contextlib,importlib.util,io,json,re,random
+import contextlib,importlib.util,io,json,re,random,sys
 from pathlib import Path
 from generate_bytes import indices
 P=Path(__file__).resolve().parent
@@ -34,9 +34,12 @@ def merge(scratch,top,row):
     assert sorted(out)==list(range(72))
     return [out[i] for i in range(72)]
 def main():
+    small='--small' in sys.argv
+    if small:model.code=code(P/'tobytes_small/candidate.sym.S')
     rng=random.Random(648)
     cases=[list(range(864)),[-32768]*864,[32767]*864,[0]*864]+[
       [rng.randrange(-32768,32768) for _ in range(864)] for _ in range(128)]
+    if small:cases=[[max(-3456,min(3456,x)) for x in a] for a in cases]+[[v]*864 for v in [-3456,-3023,-1,0,1,3023,3456]]
     for inp in cases:
         scratch={}
         for top in range(2):
@@ -51,7 +54,7 @@ def main():
             a,b=inp[model.wire[i]]%3457,inp[model.wire[i+1]]%3457
             oracle.extend([a&255,(a>>8)|((b&15)<<4),b>>4])
         assert out==oracle
-    print(json.dumps(dict(status='byte_symbolic_model_pass',cases=len(cases),
+    print(json.dumps(dict(status='byte_symbolic_model_pass',small=small,cases=len(cases),
       coefficient_Q_loads=108,byte_scratch_peak=648,lane_ST3=0,
       producer_full_ST3_8b=54,final_STR_Q=72,final_STR_D=18,
       extra_byte_scratch_traffic=2592,physical_assembly_execution=False),indent=2))

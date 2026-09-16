@@ -1,17 +1,17 @@
 {
-  "instructions": 387,
-  "source_loads": 123,
-  "routing_arithmetic": 264,
+  "instructions": 393,
+  "source_loads": 122,
+  "routing_arithmetic": 271,
   "peak_route_registers": 26,
   "counts": {
-    "ext4": 23,
-    "ext6": 21,
-    "load": 123,
+    "ext4": 26,
+    "ext6": 20,
+    "load": 122,
     "trn1.2d": 26,
-    "trn1.4s": 43,
-    "trn1.8h": 37,
+    "trn1.4s": 47,
+    "trn1.8h": 39,
     "trn2.2d": 28,
-    "trn2.4s": 44,
+    "trn2.4s": 43,
     "trn2.8h": 42
   },
   "trace": [
@@ -19,110 +19,108 @@
       "kind": "compute",
       "instance": 0,
       "operation": "load",
-      "source": 37,
+      "source": 0,
       "inputs": [],
       "slot": 0
     },
     {
       "kind": "compute",
       "instance": 1,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        0
-      ],
+      "operation": "load",
+      "source": 1,
+      "inputs": [],
       "slot": 1
     },
     {
       "kind": "compute",
       "instance": 2,
-      "operation": "load",
-      "source": 38,
-      "inputs": [],
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        0,
+        1
+      ],
       "slot": 2
     },
     {
       "kind": "compute",
       "instance": 3,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        2
-      ],
+      "operation": "load",
+      "source": 2,
+      "inputs": [],
       "slot": 3
     },
     {
       "kind": "compute",
       "instance": 4,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        1,
-        3
-      ],
+      "operation": "load",
+      "source": 27,
+      "inputs": [],
       "slot": 4
     },
     {
       "kind": "compute",
       "instance": 5,
-      "operation": "load",
-      "source": 21,
-      "inputs": [],
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        3,
+        4
+      ],
       "slot": 5
     },
     {
       "kind": "compute",
       "instance": 6,
-      "operation": "load",
-      "source": 22,
-      "inputs": [],
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        2,
+        5
+      ],
       "slot": 6
     },
     {
       "kind": "compute",
       "instance": 7,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        5,
-        6
-      ],
+      "operation": "load",
+      "source": 28,
+      "inputs": [],
       "slot": 7
     },
     {
       "kind": "compute",
       "instance": 8,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        4,
-        7
-      ],
+      "operation": "load",
+      "source": 29,
+      "inputs": [],
       "slot": 8
     },
     {
       "kind": "compute",
       "instance": 9,
-      "operation": "load",
-      "source": 23,
-      "inputs": [],
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        7,
+        8
+      ],
       "slot": 9
     },
     {
       "kind": "compute",
       "instance": 10,
       "operation": "load",
-      "source": 48,
+      "source": 12,
       "inputs": [],
       "slot": 10
     },
     {
       "kind": "compute",
       "instance": 11,
-      "operation": "trn1.8h",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        9,
         10
       ],
       "slot": 11
@@ -131,25 +129,27 @@
       "kind": "compute",
       "instance": 12,
       "operation": "load",
-      "source": 49,
+      "source": 13,
       "inputs": [],
       "slot": 12
     },
     {
       "kind": "compute",
       "instance": 13,
-      "operation": "load",
-      "source": 50,
-      "inputs": [],
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        12
+      ],
       "slot": 13
     },
     {
       "kind": "compute",
       "instance": 14,
-      "operation": "trn1.8h",
+      "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        12,
+        11,
         13
       ],
       "slot": 14
@@ -157,10 +157,10 @@
     {
       "kind": "compute",
       "instance": 15,
-      "operation": "trn1.4s",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        11,
+        9,
         14
       ],
       "slot": 15
@@ -168,10 +168,10 @@
     {
       "kind": "compute",
       "instance": 16,
-      "operation": "trn2.2d",
+      "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        8,
+        6,
         15
       ],
       "slot": 16
@@ -180,7 +180,7 @@
       "kind": "compute",
       "instance": 17,
       "operation": "load",
-      "source": 3,
+      "source": 14,
       "inputs": [],
       "slot": 17
     },
@@ -188,7 +188,7 @@
       "kind": "compute",
       "instance": 18,
       "operation": "load",
-      "source": 4,
+      "source": 39,
       "inputs": [],
       "slot": 18
     },
@@ -207,7 +207,7 @@
       "kind": "compute",
       "instance": 20,
       "operation": "load",
-      "source": 5,
+      "source": 40,
       "inputs": [],
       "slot": 20
     },
@@ -215,7 +215,7 @@
       "kind": "compute",
       "instance": 21,
       "operation": "load",
-      "source": 30,
+      "source": 41,
       "inputs": [],
       "slot": 21
     },
@@ -245,113 +245,95 @@
       "kind": "compute",
       "instance": 24,
       "operation": "load",
-      "source": 31,
+      "source": 6,
       "inputs": [],
       "slot": 24
     },
     {
       "kind": "compute",
       "instance": 25,
-      "operation": "load",
-      "source": 32,
-      "inputs": [],
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        24
+      ],
       "slot": 25
     },
     {
       "kind": "compute",
       "instance": 26,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        24,
-        25
-      ],
-      "slot": 8
+      "operation": "load",
+      "source": 7,
+      "inputs": [],
+      "slot": 15
     },
     {
       "kind": "compute",
       "instance": 27,
-      "operation": "load",
-      "source": 18,
-      "inputs": [],
-      "slot": 25
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        26
+      ],
+      "slot": 6
     },
     {
       "kind": "compute",
       "instance": 28,
-      "operation": "ext4",
+      "operation": "trn2.8h",
       "source": -1,
       "inputs": [
+        25,
         27
       ],
-      "slot": 24
+      "slot": 21
     },
     {
       "kind": "compute",
       "instance": 29,
       "operation": "load",
-      "source": 19,
+      "source": 8,
       "inputs": [],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 30,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        29
-      ],
       "slot": 20
     },
     {
       "kind": "compute",
-      "instance": 31,
-      "operation": "trn2.8h",
+      "instance": 30,
+      "operation": "ext6",
       "source": -1,
       "inputs": [
-        28,
-        30
+        29
       ],
       "slot": 18
     },
     {
       "kind": "compute",
-      "instance": 32,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        26,
-        31
-      ],
+      "instance": 31,
+      "operation": "load",
+      "source": 33,
+      "inputs": [],
       "slot": 17
     },
     {
       "kind": "compute",
-      "instance": 33,
-      "operation": "trn2.2d",
+      "instance": 32,
+      "operation": "ext6",
       "source": -1,
       "inputs": [
-        23,
-        32
+        31
       ],
-      "slot": 17
+      "slot": 12
     },
     {
-      "kind": "consume_pair",
-      "pair_index": 7,
-      "outputs": [
-        14,
-        15
+      "kind": "compute",
+      "instance": 33,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        30,
+        32
       ],
-      "instances": [
-        16,
-        33
-      ],
-      "slots": [
-        16,
-        17
-      ]
+      "slot": 10
     },
     {
       "kind": "compute",
@@ -359,113 +341,133 @@
       "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        4,
-        7
+        28,
+        33
       ],
-      "slot": 16
+      "slot": 11
     },
     {
       "kind": "compute",
       "instance": 35,
-      "operation": "trn2.4s",
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        11,
-        14
+        23,
+        34
       ],
-      "slot": 17
+      "slot": 23
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 3,
+      "outputs": [
+        6,
+        7
+      ],
+      "instances": [
+        16,
+        35
+      ],
+      "slots": [
+        16,
+        23
+      ]
     },
     {
       "kind": "compute",
       "instance": 36,
-      "operation": "trn2.2d",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        34,
-        35
+        2,
+        5
       ],
-      "slot": 16
+      "slot": 11
     },
     {
       "kind": "compute",
       "instance": 37,
       "operation": "load",
-      "source": 6,
+      "source": 15,
       "inputs": [],
-      "slot": 4
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 38,
-      "operation": "load",
-      "source": 7,
-      "inputs": [],
-      "slot": 2
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        37
+      ],
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 39,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        37,
-        38
-      ],
-      "slot": 0
+      "operation": "load",
+      "source": 16,
+      "inputs": [],
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 40,
-      "operation": "load",
-      "source": 8,
-      "inputs": [],
-      "slot": 2
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        39
+      ],
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 41,
-      "operation": "load",
-      "source": 33,
-      "inputs": [],
-      "slot": 4
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        38,
+        40
+      ],
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 42,
-      "operation": "trn2.8h",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        40,
+        9,
         41
       ],
-      "slot": 4
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 43,
-      "operation": "trn1.4s",
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        39,
+        36,
         42
       ],
-      "slot": 4
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 44,
       "operation": "load",
-      "source": 34,
+      "source": 17,
       "inputs": [],
-      "slot": 0
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 45,
       "operation": "load",
-      "source": 35,
+      "source": 42,
       "inputs": [],
-      "slot": 2
+      "slot": 17
     },
     {
       "kind": "compute",
@@ -476,669 +478,138 @@
         44,
         45
       ],
-      "slot": 3
+      "slot": 17
     },
     {
       "kind": "compute",
       "instance": 47,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        46,
-        31
-      ],
-      "slot": 3
+      "operation": "load",
+      "source": 43,
+      "inputs": [],
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 48,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        43,
-        47
-      ],
-      "slot": 4
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 25,
-      "outputs": [
-        50,
-        51
-      ],
-      "instances": [
-        36,
-        48
-      ],
-      "slots": [
-        16,
-        4
-      ]
+      "operation": "load",
+      "source": 44,
+      "inputs": [],
+      "slot": 8
     },
     {
       "kind": "compute",
       "instance": 49,
-      "operation": "ext4",
+      "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        44
+        47,
+        48
       ],
-      "slot": 3
+      "slot": 8
     },
     {
       "kind": "compute",
       "instance": 50,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        45
-      ],
-      "slot": 4
-    },
-    {
-      "kind": "compute",
-      "instance": 51,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        49,
-        50
-      ],
-      "slot": 16
-    },
-    {
-      "kind": "compute",
-      "instance": 52,
       "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        51,
-        7
+        46,
+        49
       ],
       "slot": 23
     },
     {
       "kind": "compute",
-      "instance": 53,
+      "instance": 51,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        28,
+        33
+      ],
+      "slot": 8
+    },
+    {
+      "kind": "compute",
+      "instance": 52,
       "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        52,
-        15
+        50,
+        51
       ],
-      "slot": 15
+      "slot": 23
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 21,
+      "outputs": [
+        42,
+        43
+      ],
+      "instances": [
+        43,
+        52
+      ],
+      "slots": [
+        16,
+        23
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 53,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        9,
+        14
+      ],
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 54,
-      "operation": "trn2.4s",
+      "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        19,
-        22
+        36,
+        53
       ],
       "slot": 23
     },
     {
       "kind": "compute",
       "instance": 55,
-      "operation": "load",
-      "source": 15,
-      "inputs": [],
-      "slot": 1
-    },
-    {
-      "kind": "compute",
-      "instance": 56,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        55
-      ],
-      "slot": 1
-    },
-    {
-      "kind": "compute",
-      "instance": 57,
-      "operation": "load",
-      "source": 16,
-      "inputs": [],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 58,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        57
-      ],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 59,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        56,
-        58
-      ],
-      "slot": 1
-    },
-    {
-      "kind": "compute",
-      "instance": 60,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        26,
-        59
-      ],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 61,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        54,
-        60
-      ],
-      "slot": 23
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 19,
-      "outputs": [
-        38,
-        39
-      ],
-      "instances": [
-        53,
-        61
-      ],
-      "slots": [
-        15,
-        23
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 62,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        51,
-        7
-      ],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 63,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        62,
-        35
-      ],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 64,
       "operation": "trn1.4s",
       "source": -1,
       "inputs": [
         19,
         22
       ],
-      "slot": 23
-    },
-    {
-      "kind": "compute",
-      "instance": 65,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        26,
-        31
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 66,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        64,
-        65
-      ],
-      "slot": 7
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 13,
-      "outputs": [
-        26,
-        27
-      ],
-      "instances": [
-        63,
-        66
-      ],
-      "slots": [
-        15,
-        7
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 67,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        27,
-        29
-      ],
-      "slot": 7
-    },
-    {
-      "kind": "compute",
-      "instance": 68,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        51,
-        67
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 69,
-      "operation": "load",
-      "source": 20,
-      "inputs": [],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 70,
-      "operation": "load",
-      "source": 45,
-      "inputs": [],
-      "slot": 14
-    },
-    {
-      "kind": "compute",
-      "instance": 71,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        69,
-        70
-      ],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 72,
-      "operation": "load",
-      "source": 46,
-      "inputs": [],
-      "slot": 17
-    },
-    {
-      "kind": "compute",
-      "instance": 73,
-      "operation": "load",
-      "source": 47,
-      "inputs": [],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 74,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        72,
-        73
-      ],
       "slot": 22
     },
     {
       "kind": "compute",
-      "instance": 75,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        71,
-        74
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 76,
+      "instance": 56,
       "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        68,
-        75
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 77,
-      "operation": "load",
-      "source": 31,
-      "inputs": [],
-      "slot": 7
-    },
-    {
-      "kind": "compute",
-      "instance": 78,
-      "operation": "load",
-      "source": 32,
-      "inputs": [],
-      "slot": 16
-    },
-    {
-      "kind": "compute",
-      "instance": 79,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        77,
-        78
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 80,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        79,
-        59
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 81,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        64,
-        80
-      ],
-      "slot": 23
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 1,
-      "outputs": [
-        2,
-        3
-      ],
-      "instances": [
-        76,
-        81
-      ],
-      "slots": [
-        19,
-        23
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 82,
-      "operation": "load",
-      "source": 37,
-      "inputs": [],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 83,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        82
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 84,
-      "operation": "load",
-      "source": 38,
-      "inputs": [],
-      "slot": 23
-    },
-    {
-      "kind": "compute",
-      "instance": 85,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        84
-      ],
-      "slot": 1
-    },
-    {
-      "kind": "compute",
-      "instance": 86,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        83,
-        85
-      ],
-      "slot": 23
-    },
-    {
-      "kind": "compute",
-      "instance": 87,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        5,
-        6
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 88,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        86,
-        87
-      ],
-      "slot": 23
-    },
-    {
-      "kind": "compute",
-      "instance": 89,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        9,
-        10
-      ],
-      "slot": 1
-    },
-    {
-      "kind": "compute",
-      "instance": 90,
-      "operation": "load",
-      "source": 50,
-      "inputs": [],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 91,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        12,
-        90
-      ],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 92,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        89,
-        91
-      ],
-      "slot": 22
-    },
-    {
-      "kind": "compute",
-      "instance": 93,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        88,
-        92
-      ],
-      "slot": 23
-    },
-    {
-      "kind": "compute",
-      "instance": 94,
-      "operation": "load",
-      "source": 6,
-      "inputs": [],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 95,
-      "operation": "load",
-      "source": 7,
-      "inputs": [],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 96,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        94,
-        95
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 97,
-      "operation": "load",
-      "source": 8,
-      "inputs": [],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 98,
-      "operation": "load",
-      "source": 33,
-      "inputs": [],
-      "slot": 12
-    },
-    {
-      "kind": "compute",
-      "instance": 99,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        97,
-        98
-      ],
-      "slot": 12
-    },
-    {
-      "kind": "compute",
-      "instance": 100,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        96,
-        99
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 101,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        44,
-        45
-      ],
-      "slot": 12
-    },
-    {
-      "kind": "compute",
-      "instance": 102,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        28,
-        30
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 103,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        101,
-        102
-      ],
-      "slot": 12
-    },
-    {
-      "kind": "compute",
-      "instance": 104,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        100,
-        103
+        55,
+        51
       ],
       "slot": 19
     },
     {
       "kind": "consume_pair",
-      "pair_index": 16,
+      "pair_index": 9,
       "outputs": [
-        32,
-        33
+        18,
+        19
       ],
       "instances": [
-        93,
-        104
+        54,
+        56
       ],
       "slots": [
         23,
@@ -1147,145 +618,668 @@
     },
     {
       "kind": "compute",
-      "instance": 105,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        49,
-        50
-      ],
-      "slot": 12
-    },
-    {
-      "kind": "compute",
-      "instance": 106,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        27,
-        29
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 107,
+      "instance": 57,
       "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        105,
-        106
+        2,
+        5
       ],
-      "slot": 23
+      "slot": 8
     },
     {
       "kind": "compute",
-      "instance": 108,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        69,
-        70
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 109,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        72,
-        73
-      ],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 110,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        108,
-        109
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 111,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        107,
-        110
-      ],
-      "slot": 23
-    },
-    {
-      "kind": "compute",
-      "instance": 112,
+      "instance": 58,
       "operation": "load",
-      "source": 3,
+      "source": 15,
       "inputs": [],
-      "slot": 18
+      "slot": 10
     },
     {
       "kind": "compute",
-      "instance": 113,
-      "operation": "load",
-      "source": 4,
-      "inputs": [],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 114,
-      "operation": "trn1.8h",
+      "instance": 59,
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        112,
-        113
+        58
       ],
-      "slot": 17
+      "slot": 11
     },
     {
       "kind": "compute",
-      "instance": 115,
+      "instance": 60,
       "operation": "load",
-      "source": 5,
+      "source": 16,
       "inputs": [],
       "slot": 14
     },
     {
       "kind": "compute",
-      "instance": 116,
+      "instance": 61,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        60
+      ],
+      "slot": 16
+    },
+    {
+      "kind": "compute",
+      "instance": 62,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        59,
+        61
+      ],
+      "slot": 19
+    },
+    {
+      "kind": "compute",
+      "instance": 63,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        9,
+        62
+      ],
+      "slot": 21
+    },
+    {
+      "kind": "compute",
+      "instance": 64,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        57,
+        63
+      ],
+      "slot": 22
+    },
+    {
+      "kind": "compute",
+      "instance": 65,
       "operation": "load",
-      "source": 30,
+      "source": 43,
+      "inputs": [],
+      "slot": 23
+    },
+    {
+      "kind": "compute",
+      "instance": 66,
+      "operation": "load",
+      "source": 44,
+      "inputs": [],
+      "slot": 2
+    },
+    {
+      "kind": "compute",
+      "instance": 67,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        65,
+        66
+      ],
+      "slot": 9
+    },
+    {
+      "kind": "compute",
+      "instance": 68,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        46,
+        67
+      ],
+      "slot": 5
+    },
+    {
+      "kind": "compute",
+      "instance": 69,
+      "operation": "load",
+      "source": 9,
+      "inputs": [],
+      "slot": 8
+    },
+    {
+      "kind": "compute",
+      "instance": 70,
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        69
+      ],
+      "slot": 21
+    },
+    {
+      "kind": "compute",
+      "instance": 71,
+      "operation": "load",
+      "source": 10,
+      "inputs": [],
+      "slot": 9
+    },
+    {
+      "kind": "compute",
+      "instance": 72,
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        71
+      ],
+      "slot": 17
+    },
+    {
+      "kind": "compute",
+      "instance": 73,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        70,
+        72
+      ],
+      "slot": 19
+    },
+    {
+      "kind": "compute",
+      "instance": 74,
+      "operation": "load",
+      "source": 11,
       "inputs": [],
       "slot": 13
     },
     {
       "kind": "compute",
-      "instance": 117,
+      "instance": 75,
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        74
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 76,
+      "operation": "load",
+      "source": 36,
+      "inputs": [],
+      "slot": 9
+    },
+    {
+      "kind": "compute",
+      "instance": 77,
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        76
+      ],
+      "slot": 9
+    },
+    {
+      "kind": "compute",
+      "instance": 78,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        75,
+        77
+      ],
+      "slot": 8
+    },
+    {
+      "kind": "compute",
+      "instance": 79,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        73,
+        78
+      ],
+      "slot": 8
+    },
+    {
+      "kind": "compute",
+      "instance": 80,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        68,
+        79
+      ],
+      "slot": 19
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 15,
+      "outputs": [
+        30,
+        31
+      ],
+      "instances": [
+        64,
+        80
+      ],
+      "slots": [
+        22,
+        19
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 81,
       "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        115,
-        116
+        0,
+        1
       ],
-      "slot": 10
+      "slot": 19
+    },
+    {
+      "kind": "compute",
+      "instance": 82,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        3,
+        4
+      ],
+      "slot": 22
+    },
+    {
+      "kind": "compute",
+      "instance": 83,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        81,
+        82
+      ],
+      "slot": 5
+    },
+    {
+      "kind": "compute",
+      "instance": 84,
+      "operation": "load",
+      "source": 29,
+      "inputs": [],
+      "slot": 8
+    },
+    {
+      "kind": "compute",
+      "instance": 85,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        7,
+        84
+      ],
+      "slot": 8
+    },
+    {
+      "kind": "compute",
+      "instance": 86,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        59,
+        61
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 87,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        85,
+        86
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 88,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        83,
+        87
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 89,
+      "operation": "load",
+      "source": 17,
+      "inputs": [],
+      "slot": 20
+    },
+    {
+      "kind": "compute",
+      "instance": 90,
+      "operation": "load",
+      "source": 42,
+      "inputs": [],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 91,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        89,
+        90
+      ],
+      "slot": 24
+    },
+    {
+      "kind": "compute",
+      "instance": 92,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        65,
+        66
+      ],
+      "slot": 3
+    },
+    {
+      "kind": "compute",
+      "instance": 93,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        91,
+        92
+      ],
+      "slot": 1
+    },
+    {
+      "kind": "compute",
+      "instance": 94,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        25,
+        27
+      ],
+      "slot": 0
+    },
+    {
+      "kind": "compute",
+      "instance": 95,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        30,
+        32
+      ],
+      "slot": 18
+    },
+    {
+      "kind": "compute",
+      "instance": 96,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        94,
+        95
+      ],
+      "slot": 25
+    },
+    {
+      "kind": "compute",
+      "instance": 97,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        93,
+        96
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 12,
+      "outputs": [
+        24,
+        25
+      ],
+      "instances": [
+        88,
+        97
+      ],
+      "slots": [
+        4,
+        6
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 98,
+      "operation": "load",
+      "source": 3,
+      "inputs": [],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 99,
+      "operation": "load",
+      "source": 4,
+      "inputs": [],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 100,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        98,
+        99
+      ],
+      "slot": 1
+    },
+    {
+      "kind": "compute",
+      "instance": 101,
+      "operation": "load",
+      "source": 5,
+      "inputs": [],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 102,
+      "operation": "load",
+      "source": 30,
+      "inputs": [],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 103,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        101,
+        102
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 104,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        100,
+        103
+      ],
+      "slot": 1
+    },
+    {
+      "kind": "compute",
+      "instance": 105,
+      "operation": "load",
+      "source": 31,
+      "inputs": [],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 106,
+      "operation": "load",
+      "source": 32,
+      "inputs": [],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 107,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        105,
+        106
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 108,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        107,
+        86
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 109,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        104,
+        108
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 110,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        91,
+        92
+      ],
+      "slot": 1
+    },
+    {
+      "kind": "compute",
+      "instance": 111,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        70,
+        72
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 112,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        75,
+        77
+      ],
+      "slot": 2
+    },
+    {
+      "kind": "compute",
+      "instance": 113,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        111,
+        112
+      ],
+      "slot": 23
+    },
+    {
+      "kind": "compute",
+      "instance": 114,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        110,
+        113
+      ],
+      "slot": 1
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 24,
+      "outputs": [
+        48,
+        49
+      ],
+      "instances": [
+        109,
+        114
+      ],
+      "slots": [
+        6,
+        1
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 115,
+      "operation": "load",
+      "source": 12,
+      "inputs": [],
+      "slot": 1
+    },
+    {
+      "kind": "compute",
+      "instance": 116,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        115
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 117,
+      "operation": "load",
+      "source": 13,
+      "inputs": [],
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 118,
-      "operation": "trn2.4s",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        114,
         117
       ],
-      "slot": 2
+      "slot": 23
     },
     {
       "kind": "compute",
@@ -1293,46 +1287,48 @@
       "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        77,
-        78
+        116,
+        118
       ],
-      "slot": 0
+      "slot": 15
     },
     {
       "kind": "compute",
       "instance": 120,
-      "operation": "load",
-      "source": 15,
-      "inputs": [],
-      "slot": 16
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        85,
+        119
+      ],
+      "slot": 20
     },
     {
       "kind": "compute",
       "instance": 121,
-      "operation": "ext4",
+      "operation": "trn1.2d",
       "source": -1,
       "inputs": [
+        83,
         120
       ],
-      "slot": 16
+      "slot": 5
     },
     {
       "kind": "compute",
       "instance": 122,
       "operation": "load",
-      "source": 16,
+      "source": 14,
       "inputs": [],
-      "slot": 7
+      "slot": 20
     },
     {
       "kind": "compute",
       "instance": 123,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        122
-      ],
-      "slot": 7
+      "operation": "load",
+      "source": 39,
+      "inputs": [],
+      "slot": 14
     },
     {
       "kind": "compute",
@@ -1340,70 +1336,48 @@
       "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        121,
+        122,
         123
       ],
-      "slot": 16
+      "slot": 10
     },
     {
       "kind": "compute",
       "instance": 125,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        119,
-        124
-      ],
-      "slot": 7
+      "operation": "load",
+      "source": 40,
+      "inputs": [],
+      "slot": 13
     },
     {
       "kind": "compute",
       "instance": 126,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        118,
-        125
-      ],
-      "slot": 7
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 10,
-      "outputs": [
-        20,
-        21
-      ],
-      "instances": [
-        111,
-        126
-      ],
-      "slots": [
-        23,
-        7
-      ]
+      "operation": "load",
+      "source": 41,
+      "inputs": [],
+      "slot": 21
     },
     {
       "kind": "compute",
       "instance": 127,
-      "operation": "trn1.4s",
+      "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        105,
-        87
+        125,
+        126
       ],
-      "slot": 7
+      "slot": 9
     },
     {
       "kind": "compute",
       "instance": 128,
-      "operation": "trn1.2d",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        127,
-        92
+        124,
+        127
       ],
-      "slot": 23
+      "slot": 17
     },
     {
       "kind": "compute",
@@ -1411,48 +1385,48 @@
       "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        114,
-        117
+        94,
+        95
       ],
-      "slot": 22
+      "slot": 11
     },
     {
       "kind": "compute",
       "instance": 130,
-      "operation": "trn1.4s",
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        119,
-        102
+        128,
+        129
       ],
-      "slot": 7
+      "slot": 17
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 0,
+      "outputs": [
+        0,
+        1
+      ],
+      "instances": [
+        121,
+        130
+      ],
+      "slots": [
+        5,
+        17
+      ]
     },
     {
       "kind": "compute",
       "instance": 131,
-      "operation": "trn2.2d",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        129,
-        130
+        81,
+        82
       ],
-      "slot": 7
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 4,
-      "outputs": [
-        8,
-        9
-      ],
-      "instances": [
-        128,
-        131
-      ],
-      "slots": [
-        23,
-        7
-      ]
+      "slot": 5
     },
     {
       "kind": "compute",
@@ -1460,32 +1434,32 @@
       "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        105,
-        87
+        85,
+        119
       ],
-      "slot": 7
+      "slot": 11
     },
     {
       "kind": "compute",
       "instance": 133,
-      "operation": "trn2.4s",
+      "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        89,
-        91
+        131,
+        132
       ],
-      "slot": 23
+      "slot": 17
     },
     {
       "kind": "compute",
       "instance": 134,
-      "operation": "trn1.2d",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        132,
-        133
+        124,
+        127
       ],
-      "slot": 21
+      "slot": 12
     },
     {
       "kind": "compute",
@@ -1493,10 +1467,10 @@
       "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        119,
-        102
+        94,
+        95
       ],
-      "slot": 25
+      "slot": 6
     },
     {
       "kind": "compute",
@@ -1504,42 +1478,42 @@
       "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        118,
+        134,
         135
       ],
-      "slot": 4
+      "slot": 23
     },
     {
       "kind": "consume_pair",
-      "pair_index": 22,
+      "pair_index": 18,
       "outputs": [
-        44,
-        45
+        36,
+        37
       ],
       "instances": [
-        134,
+        133,
         136
       ],
       "slots": [
-        21,
-        4
+        17,
+        23
       ]
     },
     {
       "kind": "compute",
       "instance": 137,
       "operation": "load",
-      "source": 0,
+      "source": 20,
       "inputs": [],
-      "slot": 2
+      "slot": 0
     },
     {
       "kind": "compute",
       "instance": 138,
       "operation": "load",
-      "source": 1,
+      "source": 45,
       "inputs": [],
-      "slot": 3
+      "slot": 6
     },
     {
       "kind": "compute",
@@ -1550,23 +1524,23 @@
         137,
         138
       ],
-      "slot": 4
+      "slot": 9
     },
     {
       "kind": "compute",
       "instance": 140,
       "operation": "load",
-      "source": 2,
+      "source": 46,
       "inputs": [],
-      "slot": 7
+      "slot": 10
     },
     {
       "kind": "compute",
       "instance": 141,
       "operation": "load",
-      "source": 27,
+      "source": 47,
       "inputs": [],
-      "slot": 8
+      "slot": 11
     },
     {
       "kind": "compute",
@@ -1588,23 +1562,27 @@
         139,
         142
       ],
-      "slot": 20
+      "slot": 15
     },
     {
       "kind": "compute",
       "instance": 144,
-      "operation": "load",
-      "source": 28,
-      "inputs": [],
-      "slot": 21
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        115
+      ],
+      "slot": 17
     },
     {
       "kind": "compute",
       "instance": 145,
-      "operation": "load",
-      "source": 29,
-      "inputs": [],
-      "slot": 24
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        117
+      ],
+      "slot": 18
     },
     {
       "kind": "compute",
@@ -1615,156 +1593,161 @@
         144,
         145
       ],
-      "slot": 25
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 147,
-      "operation": "trn2.4s",
+      "operation": "ext6",
       "source": -1,
       "inputs": [
-        146,
-        124
+        122
       ],
-      "slot": 9
+      "slot": 11
     },
     {
       "kind": "compute",
       "instance": 148,
-      "operation": "trn2.2d",
+      "operation": "ext6",
       "source": -1,
       "inputs": [
-        143,
-        147
+        123
       ],
-      "slot": 9
+      "slot": 10
     },
     {
       "kind": "compute",
       "instance": 149,
-      "operation": "load",
-      "source": 17,
-      "inputs": [],
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        147,
+        148
+      ],
       "slot": 6
     },
     {
       "kind": "compute",
       "instance": 150,
-      "operation": "load",
-      "source": 42,
-      "inputs": [],
-      "slot": 5
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        146,
+        149
+      ],
+      "slot": 21
     },
     {
       "kind": "compute",
       "instance": 151,
-      "operation": "trn1.8h",
+      "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        149,
+        143,
         150
+      ],
+      "slot": 21
+    },
+    {
+      "kind": "compute",
+      "instance": 152,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        125
       ],
       "slot": 15
     },
     {
       "kind": "compute",
-      "instance": 152,
-      "operation": "load",
-      "source": 43,
-      "inputs": [],
-      "slot": 1
-    },
-    {
-      "kind": "compute",
       "instance": 153,
       "operation": "load",
-      "source": 44,
+      "source": 41,
       "inputs": [],
-      "slot": 11
+      "slot": 13
     },
     {
       "kind": "compute",
       "instance": 154,
-      "operation": "trn1.8h",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        152,
         153
       ],
-      "slot": 23
+      "slot": 13
     },
     {
       "kind": "compute",
       "instance": 155,
-      "operation": "trn2.4s",
+      "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        151,
+        152,
         154
       ],
-      "slot": 11
+      "slot": 14
     },
     {
       "kind": "compute",
       "instance": 156,
       "operation": "load",
-      "source": 9,
+      "source": 24,
       "inputs": [],
-      "slot": 1
+      "slot": 0
     },
     {
       "kind": "compute",
       "instance": 157,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        156
-      ],
-      "slot": 5
+      "operation": "load",
+      "source": 25,
+      "inputs": [],
+      "slot": 20
     },
     {
       "kind": "compute",
       "instance": 158,
-      "operation": "load",
-      "source": 10,
-      "inputs": [],
-      "slot": 13
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        156,
+        157
+      ],
+      "slot": 20
     },
     {
       "kind": "compute",
       "instance": 159,
-      "operation": "ext6",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
+        155,
         158
       ],
-      "slot": 6
+      "slot": 0
     },
     {
       "kind": "compute",
       "instance": 160,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        157,
-        159
-      ],
-      "slot": 13
+      "operation": "load",
+      "source": 26,
+      "inputs": [],
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 161,
       "operation": "load",
-      "source": 11,
+      "source": 51,
       "inputs": [],
       "slot": 1
     },
     {
       "kind": "compute",
       "instance": 162,
-      "operation": "ext6",
+      "operation": "trn1.8h",
       "source": -1,
       "inputs": [
+        160,
         161
       ],
       "slot": 1
@@ -1773,19 +1756,17 @@
       "kind": "compute",
       "instance": 163,
       "operation": "load",
-      "source": 36,
+      "source": 52,
       "inputs": [],
-      "slot": 14
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 164,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        163
-      ],
-      "slot": 14
+      "operation": "load",
+      "source": 53,
+      "inputs": [],
+      "slot": 10
     },
     {
       "kind": "compute",
@@ -1793,32 +1774,103 @@
       "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        162,
+        163,
         164
+      ],
+      "slot": 10
+    },
+    {
+      "kind": "compute",
+      "instance": 166,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        162,
+        165
+      ],
+      "slot": 25
+    },
+    {
+      "kind": "compute",
+      "instance": 167,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        159,
+        166
+      ],
+      "slot": 0
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 23,
+      "outputs": [
+        46,
+        47
+      ],
+      "instances": [
+        151,
+        167
+      ],
+      "slots": [
+        21,
+        0
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 168,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        85,
+        86
+      ],
+      "slot": 0
+    },
+    {
+      "kind": "compute",
+      "instance": 169,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        131,
+        168
+      ],
+      "slot": 21
+    },
+    {
+      "kind": "compute",
+      "instance": 170,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        91,
+        92
+      ],
+      "slot": 22
+    },
+    {
+      "kind": "compute",
+      "instance": 171,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        111,
+        112
       ],
       "slot": 19
     },
     {
       "kind": "compute",
-      "instance": 166,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        160,
-        165
-      ],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 167,
+      "instance": 172,
       "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        155,
-        166
+        170,
+        171
       ],
-      "slot": 11
+      "slot": 8
     },
     {
       "kind": "consume_pair",
@@ -1828,230 +1880,227 @@
         13
       ],
       "instances": [
-        148,
-        167
+        169,
+        172
       ],
       "slots": [
-        9,
-        11
+        21,
+        8
       ]
     },
     {
       "kind": "compute",
-      "instance": 168,
-      "operation": "load",
-      "source": 12,
-      "inputs": [],
-      "slot": 9
-    },
-    {
-      "kind": "compute",
-      "instance": 169,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        168
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 170,
-      "operation": "load",
-      "source": 13,
-      "inputs": [],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 171,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        170
-      ],
-      "slot": 24
-    },
-    {
-      "kind": "compute",
-      "instance": 172,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        169,
-        171
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
       "instance": 173,
-      "operation": "trn2.4s",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        146,
-        172
+        139,
+        142
       ],
-      "slot": 8
+      "slot": 0
     },
     {
       "kind": "compute",
       "instance": 174,
-      "operation": "trn1.2d",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        143,
-        173
+        146,
+        149
       ],
-      "slot": 20
+      "slot": 5
     },
     {
       "kind": "compute",
       "instance": 175,
-      "operation": "load",
-      "source": 14,
-      "inputs": [],
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        173,
+        174
+      ],
       "slot": 8
     },
     {
       "kind": "compute",
       "instance": 176,
-      "operation": "load",
-      "source": 39,
-      "inputs": [],
-      "slot": 18
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        155,
+        158
+      ],
+      "slot": 21
     },
     {
       "kind": "compute",
       "instance": 177,
-      "operation": "trn1.8h",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        175,
-        176
+        162,
+        165
       ],
-      "slot": 18
+      "slot": 6
     },
     {
       "kind": "compute",
       "instance": 178,
-      "operation": "load",
-      "source": 40,
-      "inputs": [],
-      "slot": 8
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        176,
+        177
+      ],
+      "slot": 23
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 17,
+      "outputs": [
+        34,
+        35
+      ],
+      "instances": [
+        175,
+        178
+      ],
+      "slots": [
+        8,
+        23
+      ]
     },
     {
       "kind": "compute",
       "instance": 179,
-      "operation": "load",
-      "source": 41,
-      "inputs": [],
-      "slot": 9
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        170,
+        171
+      ],
+      "slot": 5
     },
     {
       "kind": "compute",
       "instance": 180,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        178,
-        179
-      ],
-      "slot": 9
+      "operation": "load",
+      "source": 37,
+      "inputs": [],
+      "slot": 8
     },
     {
       "kind": "compute",
       "instance": 181,
-      "operation": "trn2.4s",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        177,
         180
       ],
-      "slot": 8
+      "slot": 14
     },
     {
       "kind": "compute",
       "instance": 182,
       "operation": "load",
-      "source": 6,
+      "source": 38,
       "inputs": [],
-      "slot": 7
+      "slot": 21
     },
     {
       "kind": "compute",
       "instance": 183,
-      "operation": "ext6",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
         182
       ],
-      "slot": 7
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 184,
-      "operation": "load",
-      "source": 7,
-      "inputs": [],
-      "slot": 3
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        181,
+        183
+      ],
+      "slot": 24
     },
     {
       "kind": "compute",
       "instance": 185,
-      "operation": "ext6",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        184
+        184,
+        158
       ],
       "slot": 3
     },
     {
       "kind": "compute",
       "instance": 186,
-      "operation": "trn1.8h",
+      "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        183,
-        185
+        185,
+        166
       ],
-      "slot": 2
+      "slot": 22
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 11,
+      "outputs": [
+        22,
+        23
+      ],
+      "instances": [
+        179,
+        186
+      ],
+      "slots": [
+        5,
+        22
+      ]
     },
     {
       "kind": "compute",
       "instance": 187,
       "operation": "load",
-      "source": 8,
+      "source": 34,
       "inputs": [],
-      "slot": 7
+      "slot": 3
     },
     {
       "kind": "compute",
       "instance": 188,
-      "operation": "ext6",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
         187
       ],
-      "slot": 7
+      "slot": 5
     },
     {
       "kind": "compute",
       "instance": 189,
       "operation": "load",
-      "source": 33,
+      "source": 35,
       "inputs": [],
-      "slot": 3
+      "slot": 19
     },
     {
       "kind": "compute",
       "instance": 190,
-      "operation": "ext6",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
         189
       ],
-      "slot": 3
+      "slot": 22
     },
     {
       "kind": "compute",
@@ -2062,860 +2111,270 @@
         188,
         190
       ],
-      "slot": 7
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 192,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        186,
-        191
-      ],
-      "slot": 3
+      "operation": "load",
+      "source": 18,
+      "inputs": [],
+      "slot": 7
     },
     {
       "kind": "compute",
       "instance": 193,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        181,
-        192
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 18,
-      "outputs": [
-        36,
-        37
-      ],
-      "instances": [
-        174,
-        193
-      ],
-      "slots": [
-        20,
-        8
-      ]
+      "operation": "load",
+      "source": 19,
+      "inputs": [],
+      "slot": 18
     },
     {
       "kind": "compute",
       "instance": 194,
-      "operation": "trn1.4s",
+      "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        119,
-        124
-      ],
-      "slot": 3
-    },
-    {
-      "kind": "compute",
-      "instance": 195,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        129,
-        194
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 196,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        151,
-        154
-      ],
-      "slot": 20
-    },
-    {
-      "kind": "compute",
-      "instance": 197,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        160,
-        165
-      ],
-      "slot": 0
-    },
-    {
-      "kind": "compute",
-      "instance": 198,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        196,
-        197
+        192,
+        193
       ],
       "slot": 17
     },
     {
-      "kind": "consume_pair",
-      "pair_index": 24,
-      "outputs": [
-        48,
-        49
+      "kind": "compute",
+      "instance": 195,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        191,
+        194
       ],
-      "instances": [
-        195,
-        198
-      ],
-      "slots": [
-        8,
-        17
-      ]
+      "slot": 17
     },
     {
       "kind": "compute",
-      "instance": 199,
-      "operation": "trn1.4s",
+      "instance": 196,
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
         139,
         142
       ],
-      "slot": 3
+      "slot": 11
     },
     {
       "kind": "compute",
-      "instance": 200,
-      "operation": "trn1.4s",
+      "instance": 197,
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        146,
-        172
+        195,
+        196
       ],
-      "slot": 8
+      "slot": 11
     },
     {
       "kind": "compute",
-      "instance": 201,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        199,
-        200
-      ],
-      "slot": 10
-    },
-    {
-      "kind": "compute",
-      "instance": 202,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        177,
-        180
-      ],
+      "instance": 198,
+      "operation": "load",
+      "source": 3,
+      "inputs": [],
       "slot": 17
     },
     {
       "kind": "compute",
-      "instance": 203,
-      "operation": "trn1.4s",
+      "instance": 199,
+      "operation": "load",
+      "source": 4,
+      "inputs": [],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 200,
+      "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        186,
-        191
+        198,
+        199
       ],
-      "slot": 22
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 201,
+      "operation": "load",
+      "source": 5,
+      "inputs": [],
+      "slot": 18
+    },
+    {
+      "kind": "compute",
+      "instance": 202,
+      "operation": "load",
+      "source": 30,
+      "inputs": [],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 203,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        201,
+        202
+      ],
+      "slot": 19
     },
     {
       "kind": "compute",
       "instance": 204,
-      "operation": "trn2.2d",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        202,
+        200,
         203
       ],
-      "slot": 18
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 0,
-      "outputs": [
-        0,
-        1
-      ],
-      "instances": [
-        201,
-        204
-      ],
-      "slots": [
-        10,
-        18
-      ]
+      "slot": 3
     },
     {
       "kind": "compute",
       "instance": 205,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        146,
-        124
-      ],
-      "slot": 8
+      "operation": "load",
+      "source": 31,
+      "inputs": [],
+      "slot": 7
     },
     {
       "kind": "compute",
       "instance": 206,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        199,
-        205
-      ],
-      "slot": 9
+      "operation": "load",
+      "source": 32,
+      "inputs": [],
+      "slot": 18
     },
     {
       "kind": "compute",
       "instance": 207,
-      "operation": "trn1.2d",
+      "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        196,
-        203
+        205,
+        206
       ],
-      "slot": 10
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 12,
-      "outputs": [
-        24,
-        25
-      ],
-      "instances": [
-        206,
-        207
-      ],
-      "slots": [
-        9,
-        10
-      ]
+      "slot": 18
     },
     {
       "kind": "compute",
       "instance": 208,
       "operation": "load",
-      "source": 20,
-      "inputs": [],
-      "slot": 2
-    },
-    {
-      "kind": "compute",
-      "instance": 209,
-      "operation": "load",
-      "source": 45,
-      "inputs": [],
-      "slot": 3
-    },
-    {
-      "kind": "compute",
-      "instance": 210,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        208,
-        209
-      ],
-      "slot": 4
-    },
-    {
-      "kind": "compute",
-      "instance": 211,
-      "operation": "load",
-      "source": 46,
+      "source": 15,
       "inputs": [],
       "slot": 7
     },
     {
       "kind": "compute",
+      "instance": 209,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        208
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 210,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        209,
+        61
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 211,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        207,
+        210
+      ],
+      "slot": 17
+    },
+    {
+      "kind": "compute",
       "instance": 212,
-      "operation": "load",
-      "source": 47,
-      "inputs": [],
-      "slot": 8
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        204,
+        211
+      ],
+      "slot": 17
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 1,
+      "outputs": [
+        2,
+        3
+      ],
+      "instances": [
+        197,
+        212
+      ],
+      "slots": [
+        11,
+        17
+      ]
     },
     {
       "kind": "compute",
       "instance": 213,
-      "operation": "trn1.8h",
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        211,
-        212
+        111,
+        112
+      ],
+      "slot": 11
+    },
+    {
+      "kind": "compute",
+      "instance": 214,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        173,
+        213
+      ],
+      "slot": 17
+    },
+    {
+      "kind": "compute",
+      "instance": 215,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        184,
+        158
       ],
       "slot": 9
     },
     {
       "kind": "compute",
-      "instance": 214,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        210,
-        213
-      ],
-      "slot": 10
-    },
-    {
-      "kind": "compute",
-      "instance": 215,
-      "operation": "load",
-      "source": 12,
-      "inputs": [],
-      "slot": 12
-    },
-    {
-      "kind": "compute",
       "instance": 216,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        215
-      ],
-      "slot": 16
-    },
-    {
-      "kind": "compute",
-      "instance": 217,
-      "operation": "load",
-      "source": 13,
-      "inputs": [],
-      "slot": 17
-    },
-    {
-      "kind": "compute",
-      "instance": 218,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        217
-      ],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 219,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        216,
-        218
-      ],
-      "slot": 20
-    },
-    {
-      "kind": "compute",
-      "instance": 220,
-      "operation": "load",
-      "source": 14,
-      "inputs": [],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 221,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        220
-      ],
-      "slot": 22
-    },
-    {
-      "kind": "compute",
-      "instance": 222,
-      "operation": "load",
-      "source": 39,
-      "inputs": [],
-      "slot": 25
-    },
-    {
-      "kind": "compute",
-      "instance": 223,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        222
-      ],
-      "slot": 24
-    },
-    {
-      "kind": "compute",
-      "instance": 224,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        221,
-        223
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 225,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        219,
-        224
-      ],
-      "slot": 0
-    },
-    {
-      "kind": "compute",
-      "instance": 226,
       "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        214,
-        225
+        215,
+        177
       ],
       "slot": 10
-    },
-    {
-      "kind": "compute",
-      "instance": 227,
-      "operation": "load",
-      "source": 40,
-      "inputs": [],
-      "slot": 0
-    },
-    {
-      "kind": "compute",
-      "instance": 228,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        227
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 229,
-      "operation": "load",
-      "source": 41,
-      "inputs": [],
-      "slot": 7
-    },
-    {
-      "kind": "compute",
-      "instance": 230,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        229
-      ],
-      "slot": 3
-    },
-    {
-      "kind": "compute",
-      "instance": 231,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        228,
-        230
-      ],
-      "slot": 7
-    },
-    {
-      "kind": "compute",
-      "instance": 232,
-      "operation": "load",
-      "source": 24,
-      "inputs": [],
-      "slot": 0
-    },
-    {
-      "kind": "compute",
-      "instance": 233,
-      "operation": "load",
-      "source": 25,
-      "inputs": [],
-      "slot": 25
-    },
-    {
-      "kind": "compute",
-      "instance": 234,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        232,
-        233
-      ],
-      "slot": 2
-    },
-    {
-      "kind": "compute",
-      "instance": 235,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        231,
-        234
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 236,
-      "operation": "load",
-      "source": 26,
-      "inputs": [],
-      "slot": 17
-    },
-    {
-      "kind": "compute",
-      "instance": 237,
-      "operation": "load",
-      "source": 51,
-      "inputs": [],
-      "slot": 12
-    },
-    {
-      "kind": "compute",
-      "instance": 238,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        236,
-        237
-      ],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 239,
-      "operation": "load",
-      "source": 52,
-      "inputs": [],
-      "slot": 24
-    },
-    {
-      "kind": "compute",
-      "instance": 240,
-      "operation": "load",
-      "source": 53,
-      "inputs": [],
-      "slot": 16
-    },
-    {
-      "kind": "compute",
-      "instance": 241,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        239,
-        240
-      ],
-      "slot": 22
-    },
-    {
-      "kind": "compute",
-      "instance": 242,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        238,
-        241
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 243,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        235,
-        242
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 23,
-      "outputs": [
-        46,
-        47
-      ],
-      "instances": [
-        226,
-        243
-      ],
-      "slots": [
-        10,
-        21
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 244,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        151,
-        154
-      ],
-      "slot": 10
-    },
-    {
-      "kind": "compute",
-      "instance": 245,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        160,
-        165
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 246,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        244,
-        245
-      ],
-      "slot": 23
-    },
-    {
-      "kind": "compute",
-      "instance": 247,
-      "operation": "load",
-      "source": 37,
-      "inputs": [],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 248,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        247
-      ],
-      "slot": 10
-    },
-    {
-      "kind": "compute",
-      "instance": 249,
-      "operation": "load",
-      "source": 38,
-      "inputs": [],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 250,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        249
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 251,
-      "operation": "trn1.8h",
-      "source": -1,
-      "inputs": [
-        248,
-        250
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 252,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        251,
-        234
-      ],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 253,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        238,
-        241
-      ],
-      "slot": 14
-    },
-    {
-      "kind": "compute",
-      "instance": 254,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        252,
-        253
-      ],
-      "slot": 14
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 11,
-      "outputs": [
-        22,
-        23
-      ],
-      "instances": [
-        246,
-        254
-      ],
-      "slots": [
-        23,
-        14
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 255,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        210,
-        213
-      ],
-      "slot": 14
-    },
-    {
-      "kind": "compute",
-      "instance": 256,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        219,
-        224
-      ],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 257,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        255,
-        256
-      ],
-      "slot": 23
-    },
-    {
-      "kind": "compute",
-      "instance": 258,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        231,
-        234
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 259,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        238,
-        241
-      ],
-      "slot": 20
-    },
-    {
-      "kind": "compute",
-      "instance": 260,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        258,
-        259
-      ],
-      "slot": 7
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 17,
-      "outputs": [
-        34,
-        35
-      ],
-      "instances": [
-        257,
-        260
-      ],
-      "slots": [
-        23,
-        7
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 261,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        160,
-        165
-      ],
-      "slot": 7
-    },
-    {
-      "kind": "compute",
-      "instance": 262,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        255,
-        261
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 263,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        251,
-        234
-      ],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 264,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        263,
-        259
-      ],
-      "slot": 23
     },
     {
       "kind": "consume_pair",
@@ -2925,29 +2384,579 @@
         11
       ],
       "instances": [
-        262,
-        264
+        214,
+        216
       ],
       "slots": [
-        11,
-        23
+        17,
+        10
       ]
     },
     {
       "kind": "compute",
-      "instance": 265,
+      "instance": 217,
       "operation": "load",
-      "source": 20,
+      "source": 21,
+      "inputs": [],
+      "slot": 0
+    },
+    {
+      "kind": "compute",
+      "instance": 218,
+      "operation": "load",
+      "source": 22,
+      "inputs": [],
+      "slot": 1
+    },
+    {
+      "kind": "compute",
+      "instance": 219,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        217,
+        218
+      ],
+      "slot": 2
+    },
+    {
+      "kind": "compute",
+      "instance": 220,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        191,
+        219
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 221,
+      "operation": "load",
+      "source": 23,
+      "inputs": [],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 222,
+      "operation": "load",
+      "source": 48,
+      "inputs": [],
+      "slot": 9
+    },
+    {
+      "kind": "compute",
+      "instance": 223,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        221,
+        222
+      ],
+      "slot": 10
+    },
+    {
+      "kind": "compute",
+      "instance": 224,
+      "operation": "load",
+      "source": 49,
+      "inputs": [],
+      "slot": 11
+    },
+    {
+      "kind": "compute",
+      "instance": 225,
+      "operation": "load",
+      "source": 50,
+      "inputs": [],
+      "slot": 12
+    },
+    {
+      "kind": "compute",
+      "instance": 226,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        224,
+        225
+      ],
+      "slot": 17
+    },
+    {
+      "kind": "compute",
+      "instance": 227,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        223,
+        226
+      ],
+      "slot": 20
+    },
+    {
+      "kind": "compute",
+      "instance": 228,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        220,
+        227
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 229,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        200,
+        203
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 230,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        209,
+        61
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 231,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        207,
+        230
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 232,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        229,
+        231
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 19,
+      "outputs": [
+        38,
+        39
+      ],
+      "instances": [
+        228,
+        232
+      ],
+      "slots": [
+        13,
+        7
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 233,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        184,
+        219
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 234,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        233,
+        227
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 235,
+      "operation": "load",
+      "source": 18,
+      "inputs": [],
+      "slot": 20
+    },
+    {
+      "kind": "compute",
+      "instance": 236,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        235
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 237,
+      "operation": "load",
+      "source": 19,
+      "inputs": [],
+      "slot": 16
+    },
+    {
+      "kind": "compute",
+      "instance": 238,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        237
+      ],
+      "slot": 21
+    },
+    {
+      "kind": "compute",
+      "instance": 239,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        236,
+        238
+      ],
+      "slot": 8
+    },
+    {
+      "kind": "compute",
+      "instance": 240,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        207,
+        239
+      ],
+      "slot": 23
+    },
+    {
+      "kind": "compute",
+      "instance": 241,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        229,
+        240
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 7,
+      "outputs": [
+        14,
+        15
+      ],
+      "instances": [
+        234,
+        241
+      ],
+      "slots": [
+        13,
+        4
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 242,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        191,
+        219
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 243,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        223,
+        226
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 244,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        242,
+        243
+      ],
+      "slot": 23
+    },
+    {
+      "kind": "compute",
+      "instance": 245,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        207,
+        239
+      ],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 246,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        204,
+        245
+      ],
+      "slot": 19
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 13,
+      "outputs": [
+        26,
+        27
+      ],
+      "instances": [
+        244,
+        246
+      ],
+      "slots": [
+        23,
+        19
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 247,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        184,
+        219
+      ],
+      "slot": 3
+    },
+    {
+      "kind": "compute",
+      "instance": 248,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        247,
+        243
+      ],
+      "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 249,
+      "operation": "load",
+      "source": 6,
+      "inputs": [],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 250,
+      "operation": "load",
+      "source": 7,
+      "inputs": [],
+      "slot": 18
+    },
+    {
+      "kind": "compute",
+      "instance": 251,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        249,
+        250
+      ],
+      "slot": 19
+    },
+    {
+      "kind": "compute",
+      "instance": 252,
+      "operation": "load",
+      "source": 8,
+      "inputs": [],
+      "slot": 23
+    },
+    {
+      "kind": "compute",
+      "instance": 253,
+      "operation": "load",
+      "source": 33,
+      "inputs": [],
+      "slot": 25
+    },
+    {
+      "kind": "compute",
+      "instance": 254,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        252,
+        253
+      ],
+      "slot": 17
+    },
+    {
+      "kind": "compute",
+      "instance": 255,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        251,
+        254
+      ],
+      "slot": 19
+    },
+    {
+      "kind": "compute",
+      "instance": 256,
+      "operation": "load",
+      "source": 34,
+      "inputs": [],
+      "slot": 17
+    },
+    {
+      "kind": "compute",
+      "instance": 257,
+      "operation": "load",
+      "source": 35,
+      "inputs": [],
+      "slot": 10
+    },
+    {
+      "kind": "compute",
+      "instance": 258,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        256,
+        257
+      ],
+      "slot": 2
+    },
+    {
+      "kind": "compute",
+      "instance": 259,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        258,
+        239
+      ],
+      "slot": 2
+    },
+    {
+      "kind": "compute",
+      "instance": 260,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        255,
+        259
+      ],
+      "slot": 8
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 25,
+      "outputs": [
+        50,
+        51
+      ],
+      "instances": [
+        248,
+        260
+      ],
+      "slots": [
+        4,
+        8
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 261,
+      "operation": "load",
+      "source": 38,
       "inputs": [],
       "slot": 2
     },
     {
       "kind": "compute",
-      "instance": 266,
-      "operation": "load",
-      "source": 45,
-      "inputs": [],
+      "instance": 262,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        261
+      ],
+      "slot": 3
+    },
+    {
+      "kind": "compute",
+      "instance": 263,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        181,
+        262
+      ],
       "slot": 4
+    },
+    {
+      "kind": "compute",
+      "instance": 264,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        217,
+        218
+      ],
+      "slot": 8
+    },
+    {
+      "kind": "compute",
+      "instance": 265,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        263,
+        264
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 266,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        221,
+        222
+      ],
+      "slot": 19
     },
     {
       "kind": "compute",
@@ -2955,131 +2964,157 @@
       "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        265,
-        266
+        224,
+        225
       ],
-      "slot": 7
+      "slot": 24
     },
     {
       "kind": "compute",
       "instance": 268,
-      "operation": "load",
-      "source": 46,
-      "inputs": [],
-      "slot": 8
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        266,
+        267
+      ],
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 269,
-      "operation": "load",
-      "source": 47,
-      "inputs": [],
-      "slot": 9
-    },
-    {
-      "kind": "compute",
-      "instance": 270,
-      "operation": "trn2.8h",
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        268,
-        269
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 271,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        267,
-        270
-      ],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 272,
-      "operation": "load",
-      "source": 12,
-      "inputs": [],
-      "slot": 14
-    },
-    {
-      "kind": "compute",
-      "instance": 273,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        272
-      ],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 274,
-      "operation": "load",
-      "source": 13,
-      "inputs": [],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 275,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        274
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 276,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        273,
-        275
-      ],
-      "slot": 20
-    },
-    {
-      "kind": "compute",
-      "instance": 277,
-      "operation": "load",
-      "source": 14,
-      "inputs": [],
-      "slot": 22
-    },
-    {
-      "kind": "compute",
-      "instance": 278,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        277
+        265,
+        268
       ],
       "slot": 23
     },
     {
       "kind": "compute",
+      "instance": 270,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        249,
+        250
+      ],
+      "slot": 18
+    },
+    {
+      "kind": "compute",
+      "instance": 271,
+      "operation": "load",
+      "source": 8,
+      "inputs": [],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 272,
+      "operation": "load",
+      "source": 33,
+      "inputs": [],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 273,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        271,
+        272
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 274,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        270,
+        273
+      ],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 275,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        256,
+        257
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 276,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        236,
+        238
+      ],
+      "slot": 18
+    },
+    {
+      "kind": "compute",
+      "instance": 277,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        275,
+        276
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 278,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        274,
+        277
+      ],
+      "slot": 15
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 16,
+      "outputs": [
+        32,
+        33
+      ],
+      "instances": [
+        269,
+        278
+      ],
+      "slots": [
+        23,
+        15
+      ]
+    },
+    {
+      "kind": "compute",
       "instance": 279,
       "operation": "load",
-      "source": 39,
+      "source": 17,
       "inputs": [],
-      "slot": 22
+      "slot": 13
     },
     {
       "kind": "compute",
       "instance": 280,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        279
-      ],
-      "slot": 22
+      "operation": "load",
+      "source": 42,
+      "inputs": [],
+      "slot": 15
     },
     {
       "kind": "compute",
@@ -3087,94 +3122,84 @@
       "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        278,
+        279,
         280
       ],
-      "slot": 18
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 282,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        276,
-        281
-      ],
-      "slot": 14
+      "operation": "load",
+      "source": 43,
+      "inputs": [],
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 283,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        271,
-        282
-      ],
-      "slot": 13
+      "operation": "load",
+      "source": 44,
+      "inputs": [],
+      "slot": 10
     },
     {
       "kind": "compute",
       "instance": 284,
-      "operation": "load",
-      "source": 40,
-      "inputs": [],
-      "slot": 14
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        282,
+        283
+      ],
+      "slot": 17
     },
     {
       "kind": "compute",
       "instance": 285,
-      "operation": "ext4",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
+        281,
         284
       ],
-      "slot": 14
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 286,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        285,
-        230
-      ],
-      "slot": 19
+      "operation": "load",
+      "source": 9,
+      "inputs": [],
+      "slot": 20
     },
     {
       "kind": "compute",
       "instance": 287,
-      "operation": "trn2.8h",
+      "operation": "ext6",
       "source": -1,
       "inputs": [
-        232,
-        233
+        286
       ],
       "slot": 22
     },
     {
       "kind": "compute",
       "instance": 288,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        286,
-        287
-      ],
-      "slot": 15
+      "operation": "load",
+      "source": 10,
+      "inputs": [],
+      "slot": 21
     },
     {
       "kind": "compute",
       "instance": 289,
-      "operation": "trn2.8h",
+      "operation": "ext6",
       "source": -1,
       "inputs": [
-        236,
-        237
+        288
       ],
-      "slot": 23
+      "slot": 5
     },
     {
       "kind": "compute",
@@ -3182,121 +3207,95 @@
       "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        239,
-        240
+        287,
+        289
       ],
-      "slot": 14
+      "slot": 7
     },
     {
       "kind": "compute",
       "instance": 291,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        289,
-        290
-      ],
-      "slot": 3
+      "operation": "load",
+      "source": 11,
+      "inputs": [],
+      "slot": 18
     },
     {
       "kind": "compute",
       "instance": 292,
-      "operation": "trn2.2d",
+      "operation": "ext6",
       "source": -1,
       "inputs": [
-        288,
         291
       ],
-      "slot": 15
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 8,
-      "outputs": [
-        16,
-        17
-      ],
-      "instances": [
-        283,
-        292
-      ],
-      "slots": [
-        13,
-        15
-      ]
+      "slot": 12
     },
     {
       "kind": "compute",
       "instance": 293,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        267,
-        270
-      ],
-      "slot": 13
+      "operation": "load",
+      "source": 36,
+      "inputs": [],
+      "slot": 11
     },
     {
       "kind": "compute",
       "instance": 294,
-      "operation": "trn2.8h",
+      "operation": "ext6",
       "source": -1,
       "inputs": [
-        157,
-        159
+        293
       ],
-      "slot": 15
+      "slot": 9
     },
     {
       "kind": "compute",
       "instance": 295,
-      "operation": "load",
-      "source": 36,
-      "inputs": [],
-      "slot": 3
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        292,
+        294
+      ],
+      "slot": 10
     },
     {
       "kind": "compute",
       "instance": 296,
-      "operation": "ext6",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
+        290,
         295
       ],
-      "slot": 3
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 297,
-      "operation": "trn2.8h",
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        162,
+        285,
         296
       ],
-      "slot": 3
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 298,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        294,
-        297
-      ],
-      "slot": 6
+      "operation": "load",
+      "source": 24,
+      "inputs": [],
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 299,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        293,
-        298
-      ],
-      "slot": 5
+      "operation": "load",
+      "source": 25,
+      "inputs": [],
+      "slot": 15
     },
     {
       "kind": "compute",
@@ -3304,391 +3303,97 @@
       "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        248,
-        250
+        298,
+        299
       ],
-      "slot": 1
-    },
-    {
-      "kind": "compute",
-      "instance": 301,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        300,
-        287
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 302,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        289,
-        290
-      ],
-      "slot": 10
-    },
-    {
-      "kind": "compute",
-      "instance": 303,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        301,
-        302
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 14,
-      "outputs": [
-        28,
-        29
-      ],
-      "instances": [
-        299,
-        303
-      ],
-      "slots": [
-        5,
-        21
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 304,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        276,
-        281
-      ],
-      "slot": 5
-    },
-    {
-      "kind": "compute",
-      "instance": 305,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        293,
-        304
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 306,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        286,
-        287
-      ],
-      "slot": 9
-    },
-    {
-      "kind": "compute",
-      "instance": 307,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        306,
-        302
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 26,
-      "outputs": [
-        52,
-        53
-      ],
-      "instances": [
-        305,
-        307
-      ],
-      "slots": [
-        21,
-        8
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 308,
-      "operation": "load",
-      "source": 17,
-      "inputs": [],
       "slot": 2
     },
     {
       "kind": "compute",
-      "instance": 309,
-      "operation": "load",
-      "source": 42,
-      "inputs": [],
-      "slot": 4
-    },
-    {
-      "kind": "compute",
-      "instance": 310,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        308,
-        309
-      ],
-      "slot": 5
-    },
-    {
-      "kind": "compute",
-      "instance": 311,
-      "operation": "load",
-      "source": 43,
-      "inputs": [],
-      "slot": 7
-    },
-    {
-      "kind": "compute",
-      "instance": 312,
-      "operation": "load",
-      "source": 44,
-      "inputs": [],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 313,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        311,
-        312
-      ],
-      "slot": 9
-    },
-    {
-      "kind": "compute",
-      "instance": 314,
+      "instance": 301,
       "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        310,
-        313
-      ],
-      "slot": 10
-    },
-    {
-      "kind": "compute",
-      "instance": 315,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        314,
-        298
+        263,
+        300
       ],
       "slot": 11
     },
     {
       "kind": "compute",
-      "instance": 316,
+      "instance": 302,
       "operation": "load",
-      "source": 21,
+      "source": 26,
       "inputs": [],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 317,
-      "operation": "load",
-      "source": 22,
-      "inputs": [],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 318,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        316,
-        317
-      ],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 319,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        300,
-        318
-      ],
-      "slot": 20
-    },
-    {
-      "kind": "compute",
-      "instance": 320,
-      "operation": "load",
-      "source": 23,
-      "inputs": [],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 321,
-      "operation": "load",
-      "source": 48,
-      "inputs": [],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 322,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        320,
-        321
-      ],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 323,
-      "operation": "load",
-      "source": 49,
-      "inputs": [],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 324,
-      "operation": "load",
-      "source": 50,
-      "inputs": [],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 325,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        323,
-        324
-      ],
-      "slot": 13
-    },
-    {
-      "kind": "compute",
-      "instance": 326,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        322,
-        325
-      ],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 327,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        319,
-        326
-      ],
-      "slot": 13
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 2,
-      "outputs": [
-        4,
-        5
-      ],
-      "instances": [
-        315,
-        327
-      ],
-      "slots": [
-        11,
-        13
-      ]
-    },
-    {
-      "kind": "compute",
-      "instance": 328,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        310,
-        313
-      ],
       "slot": 6
     },
     {
       "kind": "compute",
-      "instance": 329,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        294,
-        297
-      ],
-      "slot": 11
+      "instance": 303,
+      "operation": "load",
+      "source": 51,
+      "inputs": [],
+      "slot": 1
     },
     {
       "kind": "compute",
-      "instance": 330,
-      "operation": "trn2.2d",
+      "instance": 304,
+      "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        328,
-        329
+        302,
+        303
       ],
+      "slot": 0
+    },
+    {
+      "kind": "compute",
+      "instance": 305,
+      "operation": "load",
+      "source": 52,
+      "inputs": [],
       "slot": 13
     },
     {
       "kind": "compute",
-      "instance": 331,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        300,
-        287
-      ],
+      "instance": 306,
+      "operation": "load",
+      "source": 53,
+      "inputs": [],
       "slot": 18
     },
     {
       "kind": "compute",
-      "instance": 332,
-      "operation": "trn1.4s",
+      "instance": 307,
+      "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        289,
-        290
+        305,
+        306
       ],
-      "slot": 19
+      "slot": 21
     },
     {
       "kind": "compute",
-      "instance": 333,
+      "instance": 308,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        304,
+        307
+      ],
+      "slot": 20
+    },
+    {
+      "kind": "compute",
+      "instance": 309,
       "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        331,
-        332
+        301,
+        308
       ],
-      "slot": 20
+      "slot": 11
     },
     {
       "kind": "consume_pair",
@@ -3698,67 +3403,323 @@
         41
       ],
       "instances": [
-        330,
-        333
+        297,
+        309
       ],
       "slots": [
-        13,
-        20
+        16,
+        11
       ]
     },
     {
       "kind": "compute",
-      "instance": 334,
+      "instance": 310,
       "operation": "load",
-      "source": 0,
+      "source": 20,
       "inputs": [],
-      "slot": 0
+      "slot": 11
     },
     {
       "kind": "compute",
-      "instance": 335,
+      "instance": 311,
       "operation": "load",
-      "source": 1,
+      "source": 45,
       "inputs": [],
-      "slot": 1
+      "slot": 16
     },
     {
       "kind": "compute",
-      "instance": 336,
+      "instance": 312,
       "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        334,
-        335
+        310,
+        311
       ],
-      "slot": 12
+      "slot": 20
     },
     {
       "kind": "compute",
-      "instance": 337,
+      "instance": 313,
       "operation": "load",
-      "source": 2,
+      "source": 46,
+      "inputs": [],
+      "slot": 18
+    },
+    {
+      "kind": "compute",
+      "instance": 314,
+      "operation": "load",
+      "source": 47,
       "inputs": [],
       "slot": 13
     },
     {
       "kind": "compute",
-      "instance": 338,
+      "instance": 315,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        313,
+        314
+      ],
+      "slot": 1
+    },
+    {
+      "kind": "compute",
+      "instance": 316,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        312,
+        315
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 317,
       "operation": "load",
-      "source": 27,
+      "source": 12,
       "inputs": [],
-      "slot": 14
+      "slot": 18
+    },
+    {
+      "kind": "compute",
+      "instance": 318,
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        317
+      ],
+      "slot": 16
+    },
+    {
+      "kind": "compute",
+      "instance": 319,
+      "operation": "load",
+      "source": 13,
+      "inputs": [],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 320,
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        319
+      ],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 321,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        318,
+        320
+      ],
+      "slot": 25
+    },
+    {
+      "kind": "compute",
+      "instance": 322,
+      "operation": "load",
+      "source": 14,
+      "inputs": [],
+      "slot": 11
+    },
+    {
+      "kind": "compute",
+      "instance": 323,
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        322
+      ],
+      "slot": 11
+    },
+    {
+      "kind": "compute",
+      "instance": 324,
+      "operation": "load",
+      "source": 39,
+      "inputs": [],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 325,
+      "operation": "ext6",
+      "source": -1,
+      "inputs": [
+        324
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 326,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        323,
+        325
+      ],
+      "slot": 18
+    },
+    {
+      "kind": "compute",
+      "instance": 327,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        321,
+        326
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 328,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        316,
+        327
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 329,
+      "operation": "load",
+      "source": 40,
+      "inputs": [],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 330,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        329
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 331,
+      "operation": "load",
+      "source": 41,
+      "inputs": [],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 332,
+      "operation": "ext4",
+      "source": -1,
+      "inputs": [
+        331
+      ],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 333,
+      "operation": "trn2.8h",
+      "source": -1,
+      "inputs": [
+        330,
+        332
+      ],
+      "slot": 16
+    },
+    {
+      "kind": "compute",
+      "instance": 334,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        333,
+        300
+      ],
+      "slot": 11
+    },
+    {
+      "kind": "compute",
+      "instance": 335,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        304,
+        307
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 336,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        334,
+        335
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 8,
+      "outputs": [
+        16,
+        17
+      ],
+      "instances": [
+        328,
+        336
+      ],
+      "slots": [
+        6,
+        13
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 337,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        281,
+        284
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 338,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        290,
+        295
+      ],
+      "slot": 11
     },
     {
       "kind": "compute",
       "instance": 339,
-      "operation": "trn2.8h",
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
         337,
         338
       ],
-      "slot": 16
+      "slot": 13
     },
     {
       "kind": "compute",
@@ -3766,104 +3727,150 @@
       "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        336,
-        339
+        263,
+        264
       ],
       "slot": 17
     },
     {
       "kind": "compute",
       "instance": 341,
-      "operation": "load",
-      "source": 28,
-      "inputs": [],
-      "slot": 18
-    },
-    {
-      "kind": "compute",
-      "instance": 342,
-      "operation": "load",
-      "source": 29,
-      "inputs": [],
-      "slot": 19
-    },
-    {
-      "kind": "compute",
-      "instance": 343,
-      "operation": "trn2.8h",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        341,
-        342
+        266,
+        267
       ],
-      "slot": 20
-    },
-    {
-      "kind": "compute",
-      "instance": 344,
-      "operation": "load",
-      "source": 15,
-      "inputs": [],
-      "slot": 21
-    },
-    {
-      "kind": "compute",
-      "instance": 345,
-      "operation": "ext4",
-      "source": -1,
-      "inputs": [
-        344
-      ],
-      "slot": 22
-    },
-    {
-      "kind": "compute",
-      "instance": 346,
-      "operation": "load",
-      "source": 16,
-      "inputs": [],
       "slot": 23
     },
     {
       "kind": "compute",
-      "instance": 347,
-      "operation": "ext4",
+      "instance": 342,
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
-        346
+        340,
+        341
       ],
-      "slot": 24
+      "slot": 6
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 2,
+      "outputs": [
+        4,
+        5
+      ],
+      "instances": [
+        339,
+        342
+      ],
+      "slots": [
+        13,
+        6
+      ]
     },
     {
       "kind": "compute",
-      "instance": 348,
-      "operation": "trn2.8h",
+      "instance": 343,
+      "operation": "trn1.4s",
       "source": -1,
       "inputs": [
-        345,
-        347
+        312,
+        315
+      ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 344,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        321,
+        326
+      ],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 345,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        343,
+        344
+      ],
+      "slot": 17
+    },
+    {
+      "kind": "compute",
+      "instance": 346,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        333,
+        300
+      ],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 347,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        304,
+        307
       ],
       "slot": 25
     },
     {
       "kind": "compute",
+      "instance": 348,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        346,
+        347
+      ],
+      "slot": 16
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 26,
+      "outputs": [
+        52,
+        53
+      ],
+      "instances": [
+        345,
+        348
+      ],
+      "slots": [
+        17,
+        16
+      ]
+    },
+    {
+      "kind": "compute",
       "instance": 349,
-      "operation": "trn2.4s",
+      "operation": "trn1.2d",
       "source": -1,
       "inputs": [
         343,
-        348
+        338
       ],
-      "slot": 3
+      "slot": 13
     },
     {
       "kind": "compute",
       "instance": 350,
-      "operation": "trn2.2d",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        340,
-        349
+        263,
+        300
       ],
       "slot": 15
     },
@@ -3873,217 +3880,195 @@
       "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        328,
-        329
+        350,
+        347
       ],
-      "slot": 6
+      "slot": 16
     },
     {
       "kind": "consume_pair",
-      "pair_index": 15,
+      "pair_index": 14,
       "outputs": [
-        30,
-        31
+        28,
+        29
       ],
       "instances": [
-        350,
+        349,
         351
       ],
       "slots": [
-        15,
-        6
+        13,
+        16
       ]
     },
     {
       "kind": "compute",
       "instance": 352,
-      "operation": "trn1.4s",
-      "source": -1,
-      "inputs": [
-        336,
-        339
-      ],
-      "slot": 3
+      "operation": "load",
+      "source": 34,
+      "inputs": [],
+      "slot": 0
     },
     {
       "kind": "compute",
       "instance": 353,
-      "operation": "trn1.4s",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        343,
-        348
-      ],
-      "slot": 6
-    },
-    {
-      "kind": "compute",
-      "instance": 354,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        352,
-        353
-      ],
-      "slot": 11
-    },
-    {
-      "kind": "compute",
-      "instance": 355,
-      "operation": "load",
-      "source": 6,
-      "inputs": [],
-      "slot": 15
-    },
-    {
-      "kind": "compute",
-      "instance": 356,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        355
-      ],
-      "slot": 8
-    },
-    {
-      "kind": "compute",
-      "instance": 357,
-      "operation": "load",
-      "source": 7,
-      "inputs": [],
-      "slot": 7
-    },
-    {
-      "kind": "compute",
-      "instance": 358,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        357
-      ],
-      "slot": 4
-    },
-    {
-      "kind": "compute",
-      "instance": 359,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        356,
-        358
+        352
       ],
       "slot": 2
     },
     {
       "kind": "compute",
-      "instance": 360,
+      "instance": 354,
       "operation": "load",
-      "source": 8,
+      "source": 35,
       "inputs": [],
-      "slot": 23
+      "slot": 3
     },
     {
       "kind": "compute",
-      "instance": 361,
-      "operation": "ext6",
+      "instance": 355,
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        360
+        354
       ],
-      "slot": 21
+      "slot": 4
     },
     {
       "kind": "compute",
-      "instance": 362,
-      "operation": "load",
-      "source": 33,
-      "inputs": [],
-      "slot": 24
-    },
-    {
-      "kind": "compute",
-      "instance": 363,
-      "operation": "ext6",
-      "source": -1,
-      "inputs": [
-        362
-      ],
-      "slot": 22
-    },
-    {
-      "kind": "compute",
-      "instance": 364,
+      "instance": 356,
       "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        361,
-        363
+        353,
+        355
       ],
       "slot": 5
     },
     {
       "kind": "compute",
-      "instance": 365,
-      "operation": "trn1.4s",
+      "instance": 357,
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        359,
-        364
+        356,
+        264
       ],
+      "slot": 6
+    },
+    {
+      "kind": "compute",
+      "instance": 358,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        357,
+        341
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 359,
+      "operation": "load",
+      "source": 3,
+      "inputs": [],
       "slot": 9
     },
     {
       "kind": "compute",
-      "instance": 366,
-      "operation": "trn1.2d",
-      "source": -1,
-      "inputs": [
-        314,
-        365
-      ],
-      "slot": 25
+      "instance": 360,
+      "operation": "load",
+      "source": 4,
+      "inputs": [],
+      "slot": 10
     },
     {
-      "kind": "consume_pair",
-      "pair_index": 21,
-      "outputs": [
-        42,
-        43
+      "kind": "compute",
+      "instance": 361,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        359,
+        360
       ],
-      "instances": [
-        354,
-        366
+      "slot": 11
+    },
+    {
+      "kind": "compute",
+      "instance": 362,
+      "operation": "load",
+      "source": 5,
+      "inputs": [],
+      "slot": 12
+    },
+    {
+      "kind": "compute",
+      "instance": 363,
+      "operation": "load",
+      "source": 30,
+      "inputs": [],
+      "slot": 13
+    },
+    {
+      "kind": "compute",
+      "instance": 364,
+      "operation": "trn1.8h",
+      "source": -1,
+      "inputs": [
+        362,
+        363
       ],
-      "slots": [
-        11,
-        25
-      ]
+      "slot": 14
+    },
+    {
+      "kind": "compute",
+      "instance": 365,
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        361,
+        364
+      ],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 366,
+      "operation": "load",
+      "source": 31,
+      "inputs": [],
+      "slot": 16
     },
     {
       "kind": "compute",
       "instance": 367,
       "operation": "load",
-      "source": 12,
+      "source": 32,
       "inputs": [],
-      "slot": 6
+      "slot": 17
     },
     {
       "kind": "compute",
       "instance": 368,
-      "operation": "ext4",
+      "operation": "trn1.8h",
       "source": -1,
       "inputs": [
+        366,
         367
       ],
-      "slot": 10
+      "slot": 18
     },
     {
       "kind": "compute",
       "instance": 369,
       "operation": "load",
-      "source": 13,
+      "source": 18,
       "inputs": [],
-      "slot": 11
+      "slot": 21
     },
     {
       "kind": "compute",
@@ -4093,56 +4078,74 @@
       "inputs": [
         369
       ],
-      "slot": 25
+      "slot": 22
     },
     {
       "kind": "compute",
       "instance": 371,
-      "operation": "trn2.8h",
-      "source": -1,
-      "inputs": [
-        368,
-        370
-      ],
-      "slot": 24
+      "operation": "load",
+      "source": 19,
+      "inputs": [],
+      "slot": 25
     },
     {
       "kind": "compute",
       "instance": 372,
-      "operation": "trn2.4s",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        343,
         371
       ],
-      "slot": 19
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 373,
-      "operation": "trn1.2d",
+      "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        340,
+        370,
         372
       ],
-      "slot": 17
+      "slot": 6
     },
     {
       "kind": "compute",
       "instance": 374,
-      "operation": "load",
-      "source": 14,
-      "inputs": [],
-      "slot": 19
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        368,
+        373
+      ],
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 375,
-      "operation": "load",
-      "source": 39,
-      "inputs": [],
-      "slot": 18
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        365,
+        374
+      ],
+      "slot": 23
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 22,
+      "outputs": [
+        44,
+        45
+      ],
+      "instances": [
+        358,
+        375
+      ],
+      "slots": [
+        7,
+        23
+      ]
     },
     {
       "kind": "compute",
@@ -4150,145 +4153,209 @@
       "operation": "trn2.8h",
       "source": -1,
       "inputs": [
-        374,
-        375
+        369,
+        371
       ],
-      "slot": 18
+      "slot": 7
     },
     {
       "kind": "compute",
       "instance": 377,
-      "operation": "load",
-      "source": 40,
-      "inputs": [],
-      "slot": 14
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        356,
+        376
+      ],
+      "slot": 23
     },
     {
       "kind": "compute",
       "instance": 378,
-      "operation": "load",
-      "source": 41,
-      "inputs": [],
-      "slot": 19
+      "operation": "trn2.4s",
+      "source": -1,
+      "inputs": [
+        312,
+        315
+      ],
+      "slot": 1
     },
     {
       "kind": "compute",
       "instance": 379,
-      "operation": "trn2.8h",
+      "operation": "trn2.2d",
       "source": -1,
       "inputs": [
         377,
         378
       ],
-      "slot": 19
+      "slot": 20
     },
     {
       "kind": "compute",
       "instance": 380,
-      "operation": "trn2.4s",
-      "source": -1,
-      "inputs": [
-        376,
-        379
-      ],
-      "slot": 14
+      "operation": "load",
+      "source": 15,
+      "inputs": [],
+      "slot": 7
     },
     {
       "kind": "compute",
       "instance": 381,
-      "operation": "trn2.4s",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        359,
-        364
+        380
       ],
-      "slot": 11
+      "slot": 7
     },
     {
       "kind": "compute",
       "instance": 382,
-      "operation": "trn2.2d",
-      "source": -1,
-      "inputs": [
-        380,
-        381
-      ],
-      "slot": 14
-    },
-    {
-      "kind": "consume_pair",
-      "pair_index": 3,
-      "outputs": [
-        6,
-        7
-      ],
-      "instances": [
-        373,
-        382
-      ],
-      "slots": [
-        17,
-        14
-      ]
+      "operation": "load",
+      "source": 16,
+      "inputs": [],
+      "slot": 1
     },
     {
       "kind": "compute",
       "instance": 383,
-      "operation": "trn1.4s",
+      "operation": "ext4",
       "source": -1,
       "inputs": [
-        343,
-        371
+        382
       ],
-      "slot": 11
+      "slot": 1
     },
     {
       "kind": "compute",
       "instance": 384,
-      "operation": "trn1.2d",
+      "operation": "trn1.8h",
       "source": -1,
       "inputs": [
-        352,
+        381,
         383
       ],
-      "slot": 14
+      "slot": 7
     },
     {
       "kind": "compute",
       "instance": 385,
-      "operation": "trn1.4s",
+      "operation": "trn2.4s",
       "source": -1,
       "inputs": [
-        376,
-        379
+        368,
+        384
       ],
-      "slot": 17
+      "slot": 1
     },
     {
       "kind": "compute",
       "instance": 386,
-      "operation": "trn2.2d",
+      "operation": "trn1.2d",
       "source": -1,
       "inputs": [
-        385,
-        365
+        365,
+        385
       ],
-      "slot": 6
+      "slot": 7
     },
     {
       "kind": "consume_pair",
-      "pair_index": 9,
+      "pair_index": 10,
       "outputs": [
-        18,
-        19
+        20,
+        21
       ],
       "instances": [
-        384,
+        379,
         386
       ],
       "slots": [
-        14,
-        6
+        20,
+        7
+      ]
+    },
+    {
+      "kind": "compute",
+      "instance": 387,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        356,
+        264
+      ],
+      "slot": 1
+    },
+    {
+      "kind": "compute",
+      "instance": 388,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        266,
+        267
+      ],
+      "slot": 7
+    },
+    {
+      "kind": "compute",
+      "instance": 389,
+      "operation": "trn1.2d",
+      "source": -1,
+      "inputs": [
+        387,
+        388
+      ],
+      "slot": 15
+    },
+    {
+      "kind": "compute",
+      "instance": 390,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        361,
+        364
+      ],
+      "slot": 20
+    },
+    {
+      "kind": "compute",
+      "instance": 391,
+      "operation": "trn1.4s",
+      "source": -1,
+      "inputs": [
+        368,
+        373
+      ],
+      "slot": 23
+    },
+    {
+      "kind": "compute",
+      "instance": 392,
+      "operation": "trn2.2d",
+      "source": -1,
+      "inputs": [
+        390,
+        391
+      ],
+      "slot": 3
+    },
+    {
+      "kind": "consume_pair",
+      "pair_index": 4,
+      "outputs": [
+        8,
+        9
+      ],
+      "instances": [
+        389,
+        392
+      ],
+      "slots": [
+        15,
+        3
       ]
     }
   ]

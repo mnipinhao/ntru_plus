@@ -44,14 +44,16 @@ for chunk in range(5):
     consumer += [f'orr V<out{chunk}>.16b, V<part{3*chunk}>.16b, V<part{3*chunk+1}>.16b',
       f'orr V<out{chunk}>.16b, V<out{chunk}>.16b, V<part{3*chunk+2}>.16b',
       f'str {"D" if chunk==4 else "Q"}<out{chunk}>, [x0, #{16*chunk}]']
+small=[l for l in producer if not l.startswith(('sqrdmulh ','mls ','mov w8, #9','dup V<recip>'))]
+assert len(producer)-len(small)==38
 if __name__=='__main__':
     print('*** Begin Patch')
-    for directory,kid,body in [('tobytes_block','byte_pair_block',producer),('tobytes_merge','byte_merge_row',consumer)]:
+    for directory,kid,body in [('tobytes_block','byte_pair_block',producer),('tobytes_small','byte_pair_small',small),('tobytes_merge','byte_merge_row',consumer)]:
         assert (P/directory/'kernel-contract.yml').exists()
         lines=['.text',f'.global {kid}',f'{kid}:',
           '// live-in: x0-x4 as specified in kernel-contract.yml.',
           '// live-out: exact output memory; no coefficient scratch.',
-          '// range: normalized bytes; producer accepts signed int16.',
+          '// range: normalized bytes; small producer requires -3457 < input < 3457; see contract.',
           '// reserved registers: x18-x30; outer wrapper preserves d8-d15.',
           f'{kid}_slothy_start:']+['    '+l for l in body]+[f'{kid}_slothy_end:','    ret']
         print(f'*** Add File: experiments/gt864-native-asm/{directory}/candidate.sym.S')
