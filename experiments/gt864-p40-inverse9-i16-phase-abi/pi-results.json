@@ -1,0 +1,27 @@
+{
+  "status": "reject",
+  "correctness": {
+    "test_kem": "pass both",
+    "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+    "kat_cases": 100,
+    "malformed_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+    "malformed_bytes": 417216,
+    "inverse_exact_alias_aapcs_wipe": "PASS raw exhaustive 9155 values/canaries; 1024 complete inverse+conversion exact/alias/AAPCS/wipe cases"
+  },
+  "summary": {
+    "inverse_to_ternary": {"baseline_cycles": 4753.867, "candidate_cycles": 4975.375, "cycle_delta": 221.508, "cycle_delta_percent": 4.659533, "instruction_delta": -137.0},
+    "keygen": {"baseline_cycles": 43089.5, "candidate_cycles": 42981.0, "cycle_delta": -108.5, "instruction_delta": 0.0},
+    "encaps": {"baseline_cycles": 45005.65, "candidate_cycles": 45015.975, "cycle_delta": 10.325, "instruction_delta": 0.0},
+    "decaps": {"baseline_cycles": 39917.525, "candidate_cycles": 40137.05, "cycle_delta": 219.525, "cycle_delta_percent": 0.549946, "instruction_delta": -137.0}
+  },
+  "environment": {
+    "host": "pi@100.99.191.9",
+    "kernel": "Linux 6.18.33+rpt-rpi-2712 aarch64",
+    "gcc": "14.2.0",
+    "governor": "ondemand",
+    "throttled": "0x0",
+    "core": 3,
+    "processes": 6,
+    "supercop_reference_root": "/home/pi/supercop-20260831"
+  }
+}

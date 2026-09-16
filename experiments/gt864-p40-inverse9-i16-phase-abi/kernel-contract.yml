@@ -1,0 +1,67 @@
+mode: existing_region_replacement
+candidate_status: investigate
+kernel:
+  id: gt864_p40_inverse9_i16_phase_abi
+  name: raw inverse9 plus twisted inverse16
+  source: candidate-inverse9.sym.S and candidate-main.sym.S and candidate-tail.sym.S
+  scheme: NTRU+864 GT
+  operation: inverse NTT9 to NTT16 private phase-boundary replacement
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: functional RA then fixed-allocation bounded timing per helper
+  driver: optimize.py
+  expected_outputs: [candidate-inverse9.alloc.S, candidate-main.alloc.S, candidate-tail.alloc.S, candidate-inverse9.opt.S, candidate-main.opt.S, candidate-tail.opt.S]
+  allow_spills: false
+region:
+  start_label: p40_i9_slothy_start / p40_i16_slothy_start / p40_itail_slothy_start
+  end_label: p40_i9_slothy_end / p40_i16_slothy_end / p40_itail_slothy_end
+  live_in: [x0 output, x1 tail or packed scratch, x2 FR0 input, x3 phase-stage table, x4 composite table]
+  live_out: [private scratch or exact natural raw R0 memory]
+abi:
+  inputs: [R-inverse FR0 coefficients and public compile-time tables]
+  outputs: [unchanged P8 scratch addresses then natural raw R0 coefficients]
+  clobbers: [x2, x4, x5, x6, x7, x8, x9, x12, x14, x16, x17, v0-v31, flags]
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: one-product raw NTT9, four twisted radix-2 layers, P13 composite terminal and unchanged scalar stores
+layout:
+  input_representation: production FR0 R-inverse rows
+  private_boundary: raw one-product NTT9 rows in existing P8 scratch coordinates
+  output_representation: natural raw R0 accepted by P8
+  vector_lanes: main top0 rows0-3 plus top1 rows0-3 or rows4-7; tail top/component banks for row8
+  packing: unchanged
+memory_contract:
+  loads: [same coefficient loads, phase-stage LDP constants, same composite loads]
+  stores: [same P8 scratch and natural halfword stores]
+  aliasing: unchanged public exact-alias behavior
+  alignment: 16-byte Q coefficients and tables; halfword output
+  public_offsets_only: true
+  pointer_updates: public fixed loops only
+constant_contract:
+  constants: [q3457, rho722, eta366/1124, delta2863, twisted stage pairs, corrected P13 composite tables]
+  modulus: 3457
+  representation: R-inverse FR0 to raw NTT9 private state to natural raw R0
+  reduction_method: Algorithm-10 Barrett-Shoup fixed-constant multiplication
+range_contract:
+  input_ranges: [abs<=2497]
+  intermediate_ranges: [all signed int16; exact audit required before Slothy]
+  output_ranges: [P8 accepted radius abs<=5185 after selected terminal resets]
+  narrowing_points: [signed int16 throughout]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers offsets tables loop counters]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 audit.py
+  test_command: exact differential inverse, alias, AAPCS, wipe, KAT and malformed ciphertext
+  full_path_benchmark_command: paired Pi5 complete Inverse-to-ternary and Decaps PMU
+  benchmark_metric: cycles
+  lower_is_better: true

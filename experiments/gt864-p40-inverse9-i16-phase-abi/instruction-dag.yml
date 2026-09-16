@@ -1,0 +1,33 @@
+experiment_id: GT864-P40-INVERSE9-I16-PHASE-ABI-20260916
+inputs:
+  - nine FR0 row Q vectors per inverse9 call
+  - public twisted-I16 tables selected by main row-half or tail
+  - public corrected composite terminal tables
+constants:
+  - q=3457
+  - rho=722 and magic=6844
+  - eta_inverse=366 and magic=3469
+  - eta=1124 and magic=10654
+  - delta=2863 of order 144
+stages:
+  - load nine rows and execute six one-product B3 plus four eta products
+  - store nine raw logical rows in the unchanged main/tail scratch coordinates
+  - load sixteen bit-reversed column vectors
+  - for levels 0..3 multiply every right operand by standard_twiddle times delta^(row*2^(3-level))
+  - before level two in main, reset each left operand with b=1 to close row0 signed-int16 range
+  - execute add/sub butterflies
+  - multiply by corrected P13 low/high composite constants and combine top branches
+  - retain every terminal representative reset required by the exact P8 radius
+  - store unchanged natural coefficient addresses
+dependencies:
+  tied_operands: [MLS destination is MUL destination, butterfly left value copied before destructive ADD]
+  memory_order: [all input loads before overlapping scratch stores, fixed public store addresses]
+  commutable: [independent butterflies, constant loads, independent terminal columns]
+outputs:
+  - exact P8 private scratch after inverse9
+  - exact natural raw R0 residues accepted by raw-to-ternary
+range_changes:
+  - raw inverse9 rows are not reduced by terminal constants
+  - every twisted right operand is reduced below q before a butterfly
+  - main pre-level-two left resets prevent signed-int16 overflow
+  - terminal composite products restore R0 and the delayed inverse9 row/top scale

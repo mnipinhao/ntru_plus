@@ -1,0 +1,11 @@
+experiment_id: GT864-P40-INVERSE9-I16-PHASE-ABI-20260916
+action: optimize-arithmetic
+primary_bottleneck: repeated terminal phase multiplication at the inverse9-to-I16 boundary
+observation: production executes nine Algorithm-10 terminal products and eighteen terminal-table loads in each of twelve inverse9 blocks
+hypothesis: factor k(top,column,s) into a row/top scale and a geometric column phase, move the phase into radix-2 I16 twiddles, and compose the row/top scale into existing P13 terminal constants
+exact_proposed_change: inverse9 stores raw one-product NTT9 outputs; lane-dependent twisted I16 multiplies every right butterfly input; main inserts fixed b=1 resets before level two; terminal tables absorb inverse9 and top/row factors
+expected_static_effect: remove 540 dynamic inverse9 instructions, add less than 504 I16/wrapper instructions, for at least 36 net instructions per Inverse-to-ternary
+expected_performance_effect: reduce inverse9 table traffic and complete Decaps cycles despite more I16 arithmetic
+expected_register_pressure_effect: constants become full Q vectors loaded by LDP; no spills allowed with v0-v31
+correctness_or_range_impact: private inverse9-to-I16 representation changes from normalized R-inverse rows to raw NTT9 rows; natural P8 output, scratch addresses, external ABI and memory-pass count remain fixed
+falsifying_measurement: exact range or scale closure fails, static net saving is below 36, Slothy spills, or paired Pi5 Inverse/Decaps does not improve

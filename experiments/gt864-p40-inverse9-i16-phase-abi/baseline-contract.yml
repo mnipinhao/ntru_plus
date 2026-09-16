@@ -1,0 +1,32 @@
+mode: existing_region_replacement
+candidate_status: investigate
+baseline:
+  revision: 920ae75b
+  inverse9:
+    source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_native_inverse9.S
+    region: [packed_i9_slothy_start, packed_i9_slothy_end]
+    instructions_per_call: 184
+    calls: 12
+  main_i16:
+    source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p35_inverse16_ternary.S
+    region: [p35_i16_slothy_start, p35_i16_slothy_end]
+    instructions_per_call: 657
+    calls: 6
+  tail_i16:
+    source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p35_inverse_tail_ternary.S
+    region: [p35_itail_slothy_start, p35_itail_slothy_end]
+    instructions_per_call: 589
+    calls: 1
+abi:
+  public_symbol: gt864_inverse_ternary_asm
+  inputs: [R-inverse FR0 coefficients, inverse9 table, I16 stage table, P13 main table, P13 tail table]
+  output: natural raw R0 coefficients accepted by P8
+  scratch_bytes: 1792
+  aliasing: exact input-output alias supported by wrapper scratch
+memory_contract:
+  coefficient_passes: 2
+  scratch_layout: P8 packed main plus tail
+  public_offsets_only: true
+constant_time_contract:
+  secret_branches: forbidden
+  secret_addresses: forbidden

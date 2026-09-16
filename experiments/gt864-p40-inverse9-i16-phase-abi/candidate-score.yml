@@ -1,0 +1,24 @@
+candidate: gt864_p40_inverse9_i16_phase_abi
+decision: reject
+correctness:
+  exact_phase_basis: pass
+  signed_int16_range: pass
+  p8_output_radius: pass
+  kat_100: pass
+  malformed_transcript: pass
+  exact_alias_aapcs_wipe: pass
+physical:
+  inverse9_no_spill: optimal
+  main_no_spill: optimal
+  tail_no_spill: optimal
+  bounded_timing: pass
+  arm64_assembly: pass
+cost:
+  static_instruction_saving: 136
+  measured_instruction_delta: -137
+  inverse_cycle_delta: 221.508
+  inverse_cycle_delta_percent: 4.659533
+  decaps_cycle_delta: 219.525
+  decaps_cycle_delta_percent: 0.549946
+falsifier: paired Pi5 Inverse-to-ternary and Decaps both regress
+production_changed: false

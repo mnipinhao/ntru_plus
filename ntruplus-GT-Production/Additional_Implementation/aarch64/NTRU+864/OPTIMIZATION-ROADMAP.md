@@ -75,7 +75,8 @@ Status meanings:
 | P37 | Done—Profiler checkpoint | Refresh P35 production versus selected SUPERCOP 20260831 Official and update component/call-site attribution | All gates pass; GT wins Keygen/Encaps/Decaps by 1158.250/1432.075/849.325 cycles; Full ToBytes is +301--305 cycles/call while Small already wins |
 | P38 | Done—Rejected statically | Co-design direct-Forward terminal representatives with Full route/normalization/packing; freeze Small and P35 Inverse | Every coordinate has a valid small/keygen input outside `(-q,q)`; post-pass/store canonicalization only relocates all 216 instructions and quotient reuse fails, so best net deletion is zero |
 | P39 | Done—Rejected statically | Search the twelve inverse9 blocks for a new identity, composite constant or redundant reduction while freezing P35 I16 and memory ABI | All 64 B3 orientations and 36 terminal vectors checked; best exact in-contract rewrite saves only 1 instruction/block, below the required complete Algorithm-10 triple, so production remains unchanged |
-| P40 | Next—Inverse9→I16 phase ABI | Widen only the internal stage boundary and test whether the exact `-384*lambda^s` terminal factor can become safe resets plus row-dependent I16 rotation/composite tables | Must save at least 36 net instructions/Inverse after resets/routing/wrapper work, preserve P35 natural output with no new memory pass, then pass exact range/root/scale proof, no-spill Slothy and paired Pi 5 timing |
+| P40 | Done—Rejected on Pi 5 | Move the exact inverse9 geometric terminal phase into row-dependent twisted I16 tables and compose the remaining row/top scale into P13 terminal tables | Exact/no-spill/KAT/alias/wipe pass and -137 instructions, but Inverse/Decaps regress 221.508/219.525 cycles as multiply dependency and table pressure reduce IPC; P35 remains production |
+| P41 | Next—Full ToBytes routing DAG reopen | Return to P37's remaining positive component and search a smaller FR0-coordinate-to-wire network that jointly consumes route, normalization and packing | Before Slothy, statically remove at least about 829 instructions and 101 reads versus the rejected P6 route; preserve separate Full/Small contracts and final full-vector stores |
 
 ## Fixed facts and non-tasks
 
@@ -96,6 +97,27 @@ Status meanings:
 ## Change log
 
 ### 2026-09-16
+
+- Completed and rejected P40 without changing production. The exact terminal
+  factor is `k(top,c,s)=k(top,0,s)*2863^(cs) mod 3457`, with 2863 of order 144.
+  P40 deletes nine terminal Algorithm-10 products from each of twelve inverse9
+  calls, twists all I16 right-branch constants, and composes the residual
+  row/top factor into P13. The exact audit checked 288 factor contexts and 336
+  I16 basis vectors; signed-int16 and P8 radius closure require only tail
+  column-6-low's final `b=1` reset. No coefficient pass or scratch was added.
+- The first all-constants-live DAG exceeded the 32-vector frontier. Loading one
+  `(b,bhat)` pair immediately before all consumers made inverse9/main/tail
+  Slothy allocation `OPTIMAL` with no spills; fixed allocations then completed
+  bounded Cortex-A76 timing and all scheduled sources assembled for arm64.
+- Pi 5 passed identical 100-case KAT, 417216-byte malformed transcript, 9155
+  raw conversion values and 1024 exact/alias/AAPCS/wipe cases. Despite retiring
+  137 fewer instructions, Inverse-to-ternary regressed 4753.867 to 4975.375
+  cycles (+4.66%) and Decaps regressed 39917.525 to 40137.050 (+0.55%). Inverse
+  IPC fell from about 1.739 to 1.634: shifting work into every I16 butterfly
+  increased multiply dependency and table pressure. P35 remains production.
+- P41 returns to Full ToBytes, the remaining positive P37 component. It must
+  first meet the existing P6 reopen threshold (about 829 instructions and 101
+  reads removed in the static route model) before Slothy or Pi timing.
 
 - Completed and statically rejected P39 without changing production. The exact
   184-instruction inverse9 body contains 19 Algorithm-10 products: six B3,

@@ -1,0 +1,11 @@
+candidate: gt864_p40_inverse9_i16_phase_abi
+promotion: false
+final_status: reject
+baseline_revision: 920ae75b
+reason: fewer retired instructions do not offset twisted-I16 multiply dependency depth and table-load pressure on Cortex-A76
+production: P35 remains selected
+evidence:
+  exact_audit: results.json
+  pi5: pi-results.json
+  narrative: RESULTS.md
+next_gate: P41 Full ToBytes routing DAG reopen; meet the existing static threshold before Slothy

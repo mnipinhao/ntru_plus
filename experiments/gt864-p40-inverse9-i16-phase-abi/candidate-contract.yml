@@ -1,0 +1,42 @@
+mode: existing_region_replacement
+candidate:
+  id: gt864_p40_inverse9_i16_phase_abi
+  status: reject
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: candidate-inverse9.sym.S and candidate-main.sym.S and candidate-tail.sym.S
+  slothy_driver: optimize.py
+contract_preservation:
+  preserved: [public ABI, natural P8 output, coefficient loads and stores, scratch size, constant-time behavior]
+  approved_changes: [private inverse9-to-I16 scale and phase representation, compile-time stage and terminal tables]
+  approval_note: user requested P40 after P39 selected this widened internal phase ABI
+region:
+  start_label: p40_i9_slothy_start / p40_i16_slothy_start / p40_itail_slothy_start
+  end_label: p40_i9_slothy_end / p40_i16_slothy_end / p40_itail_slothy_end
+  live_in: [x0, x1, x2, x3, x4]
+  live_out: [same private scratch then exact natural raw R0 stores]
+abi:
+  concrete_gprs_allowed: [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17]
+  fixed_vector_registers: []
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp, xzr]
+memory_contract:
+  loads: [same coefficient loads, twisted public stage constants, corrected public composite constants]
+  stores: [same private scratch and natural halfword addresses]
+  aliasing: unchanged public exact-alias support through wrapper scratch
+  alignment: 16-byte vector input and tables; halfword output
+  public_offsets_only: true
+constant_contract:
+  constants: [q3457, rho722, eta366/1124, delta2863, twisted I16 roots, corrected terminal composites]
+  modulus: 3457
+  representation: raw one-product I9 private rows to natural R0
+  reduction_method: Algorithm-10 Barrett-Shoup fixed multiplication
+range_contract:
+  input_ranges: [abs <= 2497]
+  intermediate_ranges: [raw I9 abs <= 22473, I16 abs <= 28135]
+  output_ranges: [terminal pre-reset abs <= 5287; selected reset restores P8 abs <= 5185]
+  narrowing_points: [all arithmetic signed int16]
+constant_time_contract:
+  secret_inputs: [coefficient lanes]
+  public_inputs: [pointers, fixed offsets, compile-time tables]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
