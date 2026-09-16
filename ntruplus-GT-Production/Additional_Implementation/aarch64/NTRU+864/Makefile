@@ -5,7 +5,6 @@ HEADERS := $(wildcard *.h NO_CE/*.h)
 TOBYTES_OBJECTS := gt864_p47_decaps_compare.o gt864_p18_tobytes_full.o gt864_p18_tobytes_small.o gt864_tobytes.o gt864_tobytes_public.o gt864_tobytes_full_core.o gt864_tobytes_small_core.o gt864_tobytes_merge_core.o gt864_pair_merge_small.o gt864_pair_merge_full.o
 NATIVE_OBJECTS := gt864_native.o gt864_native_public.o gt864_native_baseinv_num.o gt864_native_baseinv_prefix.o gt864_native_baseinv_inverse.o gt864_native_baseinv_recover.o gt864_native_baseinv_finish.o
 NATIVE_OBJECTS += gt864_p35_inverse16_ternary.o gt864_p35_inverse_tail_ternary.o
-NATIVE_OBJECTS += gt864_p51_equal.o
 NATIVE_OBJECTS += gt864_crepmod3_raw.o gt864_native_basemul.o gt864_native_center864.o gt864_native_inverse9.o gt864_native_inverse16_lazy.o gt864_native_inverse_tail_lazy.o gt864_support_abi.o
 $(NATIVE_OBJECTS): $(HEADERS) Makefile
 gt864_native.o: gt864_native.c

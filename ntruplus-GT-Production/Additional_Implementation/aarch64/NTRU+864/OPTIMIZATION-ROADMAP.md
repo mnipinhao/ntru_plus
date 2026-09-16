@@ -86,8 +86,9 @@ Status meanings:
 | P48 | Done—Promoted | Let the Encaps Full serializer feed the exact `0x01 || bytes` SHAKE input directly, eliminating the immediate 1296-byte copy | Exact transcript/native/KAT/malformed/KEM and object gates pass; Encaps saves 121.225 cycles, 175 instructions and 24 branches; controls are unchanged |
 | P49 | Done—Rejected statically | Specialize only the Keygen Full producer/serializer boundary using its proven K1 range | All 288 leaves exceed the Small contract and no exact uniform shifted/biased/scaled three-instruction reduction exists; no assembly, Slothy or Pi timing warranted |
 | P50 | Done—Selected-Official profiler checkpoint | Re-run exact P48 production versus selected SUPERCOP 20260831 Official with explicit P47/P48 fused-boundary attribution | All correctness/instrumentation gates pass; GT wins Keygen/Encaps/Decaps by 1182.125/1586.900/995.875 cycles; largest isolated gaps are Decaps Full-compare +176.050 and fused Inverse +153.725 cycles |
-| P51 | Done—Promoted | Retain recovered FR0 `f`, regenerate into dead `c`, and compare congruence directly in identical FR0/R0 coordinates instead of routing 1296 canonical bytes | Exhaustive residue proof, native differential, KAT/malformed/object and Pi 5 gates pass; Decaps saves 988.525 cycles and 2014 instructions with no stores, spill, scratch, or secret-dependent control/addressing |
-| P52 | Next—Post-P51 selected-Official profiler | Refresh complete KEM and component attribution after the P51 boundary removal | Confirm the new dominant gap before selecting another arithmetic or routing DAG; keep P51 fixed |
+| P51 | Done—Experimental, not promoted | Retain recovered FR0 `f`, regenerate into dead `c`, and compare congruence directly in identical FR0/R0 coordinates instead of routing 1296 canonical bytes | All gates pass and the experiment saves 988.525 Decaps cycles, but user policy keeps it outside production; P47 serializer/compare remains linked |
+| P52 | Done—Profiler checkpoint | Profile exact P51 against selected SUPERCOP 20260831 and identify the next boundary | All gates pass; P51 GT wins Keygen/Encaps/Decaps by 1182.000/1525.950/1987.425 cycles; fixed-size NO_CE `hash_g` selected for P53 |
+| P53 | Active—NO_CE fixed `hash_g` | Parameterize the 768 production register-resident scalar sponge for SHAKE256(`0x01 || 1296 bytes`) → 216 bytes | Differential/alias, KAT/malformed, object/ABI/wipe, isolated hash and full-KEM paired Pi 5 gates must pass; no Arm SHA3 extension |
 
 ## ToBytes priority policy
 
@@ -112,7 +113,8 @@ P44 and P45 are closed at their static gates. P46 is the production generic
 Full serializer; Small remains P24. P47 is now the production Decaps-private
 compare consumer. P48 is now the production Encaps-private SHAKE consumer. P49
 is closed at its static gate; P50 has refreshed the selected-Official
-profile, and P51 transform-domain re-encryption equality is next. Caller-specific results
+profile. P51 transform-domain equality remains an archived experiment rather
+than production; P53 fixed-size NO_CE `hash_g` is active. Caller-specific results
 must not be mixed into a generic same-boundary result.
 
 ## Fixed facts and non-tasks
@@ -135,7 +137,9 @@ must not be mixed into a generic same-boundary result.
 
 ### 2026-09-16
 
-- Completed and promoted P51 at the Decaps re-encryption equality boundary.
+- Completed P51 at the Decaps re-encryption equality boundary, then withdrew
+  its production binding at the user's request. The kernel, proof and timing
+  remain archived as an experimental candidate; production again uses P47.
   Both operands are the same FR0 coordinate permutation, logical root set and
   R0 Montgomery scale, so the injective wire permutation and canonical 12-bit
   packing are unnecessary for equality.  Exact producer closure gives K1
@@ -155,8 +159,17 @@ must not be mixed into a generic same-boundary result.
   128 to 62 cycles.  It did not improve the complete Pi 5 boundary after its
   larger wipe footprint (`-989.550` cycles versus baseline, statistically tied
   with the compact candidate), so production deliberately retains the smaller
-  compact allocation.  P52 is a fresh selected-Official profiler checkpoint.
+  compact allocation in the experiment. P52 then refreshed the
+  selected-Official profiler checkpoint.
   Evidence: `experiments/gt864-p51-transform-equality/`.
+
+- Completed P52 against the selected SUPERCOP 20260831 SHAKE256 AArch64 tree.
+  All correctness and instrumentation-equivalence gates passed. P51 GT won
+  Keygen/Encaps/Decaps by 1182.000/1525.950/1987.425 cycles. `hash_g` remains
+  an approximately 14.46k-cycle GT boundary, so P53 adapts only the 768
+  production fixed-size, register-resident scalar sponge organization for
+  864; no 768 NTT/layout/range fact is reused. Evidence:
+  `experiments/gt864-p52-official-profile/`.
 
 - Completed P50 without changing production. Exact commit `53ba4e27` and the
   selected SUPERCOP 20260831 AArch64 tree passed fresh manifest/build/KEM/KAT,

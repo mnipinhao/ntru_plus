@@ -1,0 +1,10 @@
+experiment_id: GT864-P52-OFFICIAL-PROFILE-20260916
+action: benchmark
+status: measured_keep_p51_experimental_select_p53
+observation: P51 removed the Decaps canonical serializer-compare boundary and changes the bottleneck landscape.
+baseline: selected SUPERCOP 20260831 ntruplus864 aarch64 SHAKE256 tree
+candidate: exact committed GT864 P51 production f786a587
+host: pi@100.99.191.9 Cortex-A76 CPU3
+measurement: six balanced processes with 252 clean observations per operation plus component PMU
+correctness: fresh manifest build KEM KAT and exact plus tampered cross-implementation gates
+decision_gate: passed; P53 selected from exact hash_g and fused Full_to_hash_g attribution, while P51 is retained only as an experiment by user decision

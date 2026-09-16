@@ -1,0 +1,2158 @@
+{
+  "experiment": "GT864-P52-OFFICIAL-PROFILE-20260916",
+  "correctness": {
+    "fresh_gt_test_kem": "pass",
+    "fresh_gt_kat": "pass",
+    "cross_implementation_processes": 6,
+    "exact_transcripts_per_process": 100,
+    "tampered_ciphertexts_per_process": 100,
+    "instrumentation_equivalence_processes": 12
+  },
+  "environment": {
+    "gt_production_revision": "f786a587b3280e0f8112ec9f814dc9562310c763",
+    "gt_control_revision": "f786a587b3280e0f8112ec9f814dc9562310c763",
+    "official_source": "/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64",
+    "official_upstream_latest_verified": false,
+    "official_required_hashes": {
+      "kem.c": "acb888a4aa199cc4d1f9a62e4b61921be8d6032b38bd19c8e2afd35aa808937c",
+      "symmetric.c": "a9ab4afbb2a9053c75cd959040569e1e705d769021f250d87c3d3f08da1d7053",
+      "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865"
+    },
+    "official_tree_hash": "40a284439eb5fe8dfef77f1a995ebc8dd16182835048d64e959fbcb6e3df0b59",
+    "gt_tree_hash": "bc5f56e76516dced7d774e063fcfc902ab5ec305a7e7b5a1bcbb6e5d088aaf31",
+    "uname": "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc": "gcc (Debian 14.2.0-19) 14.2.0",
+    "governor": "ondemand",
+    "temperature_before": "temp=59.3'C",
+    "throttled_before": "throttled=0x0",
+    "cpu_core": 3,
+    "clean_repetitions": {
+      "processes": 6,
+      "samples_per_process": 42,
+      "keygen_inner": 4,
+      "encaps_inner": 20,
+      "decaps_inner": 20
+    },
+    "profile_repetitions": {
+      "processes": 6,
+      "samples_per_process": 21,
+      "keygen_inner": 4,
+      "encaps_inner": 20,
+      "decaps_inner": 20
+    },
+    "temperature_after": "temp=63.7'C",
+    "throttled_after": "throttled=0x0",
+    "gt_kat_file": "PQCkemKAT_2624.rsp",
+    "gt_kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+    "binary_hashes": {
+      "official.so": "f4c552e1324dd96658bf3513aedea06c1c7046d1855a3bba1b194b152ce68e4e",
+      "gt.so": "8790d5c1278cc13f0959abd27f753024925ed116322b34197cc848d02dced705",
+      "official-prof.so": "fd114731809eba9f4d161ad4f3208b7588e11c20f77d55faebe83110207f504e",
+      "gt-prof.so": "2155dd44b88072e1f3e5afafdf5a72636a085901b341b35528ace4a9d4c6e6f9"
+    },
+    "profile_link_objects": {
+      "official": [
+        "add.s.o",
+        "base.s.o",
+        "cbd.s.o",
+        "crepmod3.s.o",
+        "fips202.c.o",
+        "ntt.s.o",
+        "pack.s.o",
+        "poly.c.o",
+        "symmetric.c.o",
+        "optblocker.o",
+        "official-profile-kem.o"
+      ],
+      "gt": [
+        "add.o",
+        "base.o",
+        "byte_api.o",
+        "byte_boundary.o",
+        "cbd.o",
+        "cluster_transpose_frombytes.o",
+        "crepmod3.o",
+        "fips202.o",
+        "gt864_crepmod3_raw.o",
+        "gt864_forward_poly_ntt.o",
+        "gt864_forward_six_bank.o",
+        "gt864_fr0_basemul.o",
+        "gt864_fr0_basemul_d1.o",
+        "gt864_fr0_inverse9_block.o",
+        "gt864_fr0_inverse_asm_wrapper.o",
+        "gt864_inverse16_blocks.o",
+        "gt864_native.o",
+        "gt864_native_baseinv_finish.o",
+        "gt864_native_baseinv_inverse.o",
+        "gt864_native_baseinv_num.o",
+        "gt864_native_baseinv_prefix.o",
+        "gt864_native_baseinv_recover.o",
+        "gt864_native_basemul.o",
+        "gt864_native_center864.o",
+        "gt864_native_inverse16_lazy.o",
+        "gt864_native_inverse9.o",
+        "gt864_native_inverse_tail_lazy.o",
+        "gt864_native_public.o",
+        "gt864_p18_tobytes_full.o",
+        "gt864_p18_tobytes_small.o",
+        "gt864_p35_inverse16_ternary.o",
+        "gt864_p35_inverse_tail_ternary.o",
+        "gt864_p47_decaps_compare.o",
+        "gt864_p51_equal.o",
+        "gt864_pair_merge_full.o",
+        "gt864_pair_merge_small.o",
+        "gt864_poly_api.o",
+        "gt864_support_abi.o",
+        "gt864_tobytes.o",
+        "gt864_tobytes_full_core.o",
+        "gt864_tobytes_merge_core.o",
+        "gt864_tobytes_public.o",
+        "gt864_tobytes_small_core.o",
+        "gt864_top_split.o",
+        "input_once_frombytes.o",
+        "ntt.o",
+        "pack.o",
+        "poly.o",
+        "raw_pack.o",
+        "route9.o",
+        "stock_wrapper.o",
+        "symmetric.o",
+        "tail_variants.o",
+        "gt-profile-kem.o"
+      ]
+    },
+    "raw_clean_logs": [
+      "clean-0.csv",
+      "clean-1.csv",
+      "clean-2.csv",
+      "clean-3.csv",
+      "clean-4.csv",
+      "clean-5.csv"
+    ],
+    "raw_profile_logs": [
+      "profile-official-0.csv",
+      "profile-gt-0.csv",
+      "profile-gt-1.csv",
+      "profile-official-1.csv",
+      "profile-official-2.csv",
+      "profile-gt-2.csv",
+      "profile-gt-3.csv",
+      "profile-official-3.csv",
+      "profile-official-4.csv",
+      "profile-gt-4.csv",
+      "profile-gt-5.csv",
+      "profile-official-5.csv"
+    ]
+  },
+  "clean_full_kem": {
+    "keygen": {
+      "official": {
+        "cycles": {
+          "n": 252,
+          "median": 44310.0,
+          "p25": 44299.75,
+          "p75": 44319.75,
+          "min": 44249.0,
+          "max": 44387.25
+        },
+        "instructions": {
+          "n": 252,
+          "median": 89330.0,
+          "p25": 89316.0,
+          "p75": 89340.0,
+          "min": 89316.0,
+          "max": 89340.0
+        },
+        "branches": {
+          "n": 252,
+          "median": 1187.5,
+          "p25": 1184.0,
+          "p75": 1190.0,
+          "min": 1184.0,
+          "max": 1190.0
+        }
+      },
+      "gt": {
+        "cycles": {
+          "n": 252,
+          "median": 43128.0,
+          "p25": 43108.25,
+          "p75": 43141.0,
+          "min": 43068.5,
+          "max": 43476.5
+        },
+        "instructions": {
+          "n": 252,
+          "median": 94020.0,
+          "p25": 93998.0,
+          "p75": 94022.0,
+          "min": 93998.0,
+          "max": 94022.0
+        },
+        "branches": {
+          "n": 252,
+          "median": 1563.5,
+          "p25": 1558.0,
+          "p75": 1564.0,
+          "min": 1558.0,
+          "max": 1564.0
+        }
+      },
+      "gt_cycle_delta": -1182.0,
+      "gt_cycle_delta_percent": -2.6675693974272163
+    },
+    "encaps": {
+      "official": {
+        "cycles": {
+          "n": 252,
+          "median": 46439.975,
+          "p25": 46372.6,
+          "p75": 46453.95,
+          "min": 46316.85,
+          "max": 46548.45
+        },
+        "instructions": {
+          "n": 252,
+          "median": 120824.2,
+          "p25": 120822.2,
+          "p75": 120826.2,
+          "min": 120814.2,
+          "max": 120826.2
+        },
+        "branches": {
+          "n": 252,
+          "median": 1065.1,
+          "p25": 1064.6,
+          "p75": 1065.6,
+          "min": 1062.6,
+          "max": 1065.6
+        }
+      },
+      "gt": {
+        "cycles": {
+          "n": 252,
+          "median": 44914.025,
+          "p25": 44902.65,
+          "p75": 44929.65,
+          "min": 44862.3,
+          "max": 45076.25
+        },
+        "instructions": {
+          "n": 252,
+          "median": 123150.2,
+          "p25": 123150.2,
+          "p75": 123150.2,
+          "min": 123142.2,
+          "max": 123150.2
+        },
+        "branches": {
+          "n": 252,
+          "median": 979.6,
+          "p25": 979.6,
+          "p75": 979.6,
+          "min": 977.6,
+          "max": 979.6
+        }
+      },
+      "gt_cycle_delta": -1525.949999999997,
+      "gt_cycle_delta_percent": -3.285854482049133
+    },
+    "decaps": {
+      "official": {
+        "cycles": {
+          "n": 252,
+          "median": 40756.225000000006,
+          "p25": 40747.4,
+          "p75": 40767.0,
+          "min": 40727.75,
+          "max": 40819.45
+        },
+        "instructions": {
+          "n": 252,
+          "median": 86648.2,
+          "p25": 86634.2,
+          "p75": 86650.2,
+          "min": 86634.2,
+          "max": 86650.2
+        },
+        "branches": {
+          "n": 252,
+          "median": 1080.1,
+          "p25": 1076.6,
+          "p75": 1080.6,
+          "min": 1076.6,
+          "max": 1080.6
+        }
+      },
+      "gt": {
+        "cycles": {
+          "n": 252,
+          "median": 38768.8,
+          "p25": 38717.9,
+          "p75": 38785.65,
+          "min": 38698.35,
+          "max": 38826.1
+        },
+        "instructions": {
+          "n": 252,
+          "median": 91793.2,
+          "p25": 91769.2,
+          "p75": 91793.2,
+          "min": 91769.2,
+          "max": 91793.2
+        },
+        "branches": {
+          "n": 252,
+          "median": 1023.6,
+          "p25": 1017.6,
+          "p75": 1023.6,
+          "min": 1017.6,
+          "max": 1023.6
+        }
+      },
+      "gt_cycle_delta": -1987.425000000003,
+      "gt_cycle_delta_percent": -4.876371646294531
+    }
+  },
+  "call_site_profile": {
+    "keygen": {
+      "official": {
+        "BaseInv": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 8509.25,
+            "p25": 8504.75,
+            "p75": 8510.5,
+            "min": 8502.0,
+            "max": 8521.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 8349.25,
+            "p25": 8344.75,
+            "p75": 8350.5,
+            "min": 8342.0,
+            "max": 8361.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "BaseMul_R0": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 5024.0,
+            "p25": 5024.0,
+            "p75": 5024.0,
+            "min": 5024.0,
+            "max": 5069.25
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 4864.0,
+            "p25": 4864.0,
+            "p75": 4864.0,
+            "min": 4864.0,
+            "max": 4909.25
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "CBD": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 994.75,
+            "p25": 992.0,
+            "p75": 1006.0,
+            "min": 966.0,
+            "max": 1009.5
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 834.75,
+            "p25": 832.0,
+            "p75": 846.0,
+            "min": 806.0,
+            "max": 849.5
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "Forward": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 7678.0,
+            "p25": 7678.0,
+            "p75": 7678.0,
+            "min": 7678.0,
+            "max": 7686.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 7518.0,
+            "p25": 7518.0,
+            "p75": 7518.0,
+            "min": 7518.0,
+            "max": 7526.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "RNG": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 422.25,
+            "p25": 422.0,
+            "p75": 424.0,
+            "min": 418.0,
+            "max": 443.5
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 262.25,
+            "p25": 262.0,
+            "p75": 264.0,
+            "min": 258.0,
+            "max": 283.5
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "SHAKE_sampling": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 5709.625,
+            "p25": 5701.75,
+            "p75": 5721.25,
+            "min": 5662.25,
+            "max": 5739.75
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 5549.625,
+            "p25": 5541.75,
+            "p75": 5561.25,
+            "min": 5502.25,
+            "max": 5579.75
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "ToBytes_full": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 3557.5,
+            "p25": 3552.0,
+            "p75": 3558.0,
+            "min": 3552.0,
+            "max": 3667.75
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 3317.5,
+            "p25": 3312.0,
+            "p75": 3318.0,
+            "min": 3312.0,
+            "max": 3427.75
+          },
+          "calls": {
+            "n": 126,
+            "median": 3.0,
+            "p25": 3.0,
+            "p75": 3.0,
+            "min": 3.0,
+            "max": 3.0
+          }
+        },
+        "Triple": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 638.0,
+            "p25": 638.0,
+            "p75": 638.25,
+            "min": 638.0,
+            "max": 642.75
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 478.0,
+            "p25": 478.0,
+            "p75": 478.25,
+            "min": 478.0,
+            "max": 482.75
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "cleanup": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 1034.0,
+            "p25": 1034.0,
+            "p75": 1043.0,
+            "min": 1033.0,
+            "max": 1055.25
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 474.0,
+            "p25": 474.0,
+            "p75": 483.0,
+            "min": 473.0,
+            "max": 495.25
+          },
+          "calls": {
+            "n": 126,
+            "median": 7.0,
+            "p25": 7.0,
+            "p75": 7.0,
+            "min": 7.0,
+            "max": 7.0
+          }
+        },
+        "hash_f": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 13344.25,
+            "p25": 13337.0,
+            "p75": 13353.25,
+            "min": 13321.75,
+            "max": 13453.25
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 13264.25,
+            "p25": 13257.0,
+            "p75": 13273.25,
+            "min": 13241.75,
+            "max": 13373.25
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        }
+      },
+      "gt": {
+        "BaseInv": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 8497.0,
+            "p25": 8469.0,
+            "p75": 8497.0,
+            "min": 8462.75,
+            "max": 8508.5
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 8337.0,
+            "p25": 8309.0,
+            "p75": 8337.0,
+            "min": 8302.75,
+            "max": 8348.5
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "BaseMul_R0": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 4509.0,
+            "p25": 4509.0,
+            "p75": 4509.0,
+            "min": 4501.25,
+            "max": 4512.25
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 4349.0,
+            "p25": 4349.0,
+            "p75": 4349.0,
+            "min": 4341.25,
+            "max": 4352.25
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "CBD": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 920.375,
+            "p25": 918.0,
+            "p75": 922.0,
+            "min": 918.0,
+            "max": 928.25
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 760.375,
+            "p25": 758.0,
+            "p75": 762.0,
+            "min": 758.0,
+            "max": 768.25
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "Forward": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 6944.5,
+            "p25": 6939.0,
+            "p75": 6946.0,
+            "min": 6936.0,
+            "max": 6962.75
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 6784.5,
+            "p25": 6779.0,
+            "p75": 6786.0,
+            "min": 6776.0,
+            "max": 6802.75
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "RNG": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 383.0,
+            "p25": 383.0,
+            "p75": 383.0,
+            "min": 382.75,
+            "max": 388.75
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 223.0,
+            "p25": 223.0,
+            "p75": 223.0,
+            "min": 222.75,
+            "max": 228.75
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "SHAKE_sampling": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 5683.5,
+            "p25": 5672.25,
+            "p75": 5690.5,
+            "min": 5631.25,
+            "max": 5716.5
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 5523.5,
+            "p25": 5512.25,
+            "p75": 5530.5,
+            "min": 5471.25,
+            "max": 5556.5
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "ToBytes_full": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 1475.0,
+            "p25": 1475.0,
+            "p75": 1476.0,
+            "min": 1475.0,
+            "max": 1516.5
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 1395.0,
+            "p25": 1395.0,
+            "p75": 1396.0,
+            "min": 1395.0,
+            "max": 1436.5
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "ToBytes_small": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2149.0,
+            "p25": 2133.0,
+            "p75": 2149.0,
+            "min": 2133.0,
+            "max": 2166.25
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 1989.0,
+            "p25": 1973.0,
+            "p75": 1989.0,
+            "min": 1973.0,
+            "max": 2006.25
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "Triple": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 629.25,
+            "p25": 629.25,
+            "p75": 629.5,
+            "min": 629.0,
+            "max": 630.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 469.25,
+            "p25": 469.25,
+            "p75": 469.5,
+            "min": 469.0,
+            "max": 470.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "cleanup": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 950.25,
+            "p25": 945.25,
+            "p75": 950.25,
+            "min": 945.25,
+            "max": 966.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 390.25,
+            "p25": 385.25,
+            "p75": 390.25,
+            "min": 385.25,
+            "max": 406.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 7.0,
+            "p25": 7.0,
+            "p75": 7.0,
+            "min": 7.0,
+            "max": 7.0
+          }
+        },
+        "hash_f": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 13317.0,
+            "p25": 13301.75,
+            "p75": 13328.5,
+            "min": 13273.25,
+            "max": 13438.5
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 13237.0,
+            "p25": 13221.75,
+            "p75": 13248.5,
+            "min": 13193.25,
+            "max": 13358.5
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        }
+      }
+    },
+    "encaps": {
+      "official": {
+        "BaseMulAdd": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2976.0,
+            "p25": 2976.0,
+            "p75": 2976.3,
+            "min": 2976.0,
+            "max": 2997.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 2896.0,
+            "p25": 2896.0,
+            "p75": 2896.3,
+            "min": 2896.0,
+            "max": 2917.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "CBD": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 481.225,
+            "p25": 478.0,
+            "p75": 484.05,
+            "min": 478.0,
+            "max": 485.05
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 401.225,
+            "p25": 398.0,
+            "p75": 404.05,
+            "min": 398.0,
+            "max": 405.05
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Forward": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 7679.0,
+            "p25": 7679.0,
+            "p75": 7679.05,
+            "min": 7679.0,
+            "max": 7686.1
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 7519.0,
+            "p25": 7519.0,
+            "p75": 7519.05,
+            "min": 7519.0,
+            "max": 7526.1
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "FromBytes_checked": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 844.0,
+            "p25": 831.95,
+            "p75": 845.0,
+            "min": 831.05,
+            "max": 846.35
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 764.0,
+            "p25": 751.95,
+            "p75": 765.0,
+            "min": 751.05,
+            "max": 766.35
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "RNG": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 453.55,
+            "p25": 453.2,
+            "p75": 454.35,
+            "min": 453.0,
+            "max": 465.1
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 373.55,
+            "p25": 373.2,
+            "p75": 374.35,
+            "min": 373.0,
+            "max": 385.1
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "SOTP_encode": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 496.0,
+            "p25": 496.0,
+            "p75": 500.0,
+            "min": 491.95,
+            "max": 511.3
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 416.0,
+            "p25": 416.0,
+            "p75": 420.0,
+            "min": 411.95,
+            "max": 431.3
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "ToBytes_full": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2366.0,
+            "p25": 2366.0,
+            "p75": 2367.0,
+            "min": 2366.0,
+            "max": 2373.35
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 2206.0,
+            "p25": 2206.0,
+            "p75": 2207.0,
+            "min": 2206.0,
+            "max": 2213.35
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "cleanup": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 685.05,
+            "p25": 685.0,
+            "p75": 688.0,
+            "min": 683.0,
+            "max": 706.45
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 285.05,
+            "p25": 285.0,
+            "p75": 288.0,
+            "min": 283.0,
+            "max": 306.45
+          },
+          "calls": {
+            "n": 126,
+            "median": 5.0,
+            "p25": 5.0,
+            "p75": 5.0,
+            "min": 5.0,
+            "max": 5.0
+          }
+        },
+        "hash_f": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 13353.875,
+            "p25": 13338.55,
+            "p75": 13375.8,
+            "min": 13312.8,
+            "max": 13398.3
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 13273.875,
+            "p25": 13258.55,
+            "p75": 13295.8,
+            "min": 13232.8,
+            "max": 13318.3
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "hash_g": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 14648.9,
+            "p25": 14637.05,
+            "p75": 14657.0,
+            "min": 14595.25,
+            "max": 14681.85
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 14568.9,
+            "p25": 14557.05,
+            "p75": 14577.0,
+            "min": 14515.25,
+            "max": 14601.85
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "hash_h": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 4138.424999999999,
+            "p25": 4136.1,
+            "p75": 4143.05,
+            "min": 4127.65,
+            "max": 4154.3
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 4058.425,
+            "p25": 4056.1,
+            "p75": 4063.05,
+            "min": 4047.65,
+            "max": 4074.3
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        }
+      },
+      "gt": {
+        "BaseMulAdd": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2250.0,
+            "p25": 2250.0,
+            "p75": 2250.95,
+            "min": 2250.0,
+            "max": 2286.9
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 2170.0,
+            "p25": 2170.0,
+            "p75": 2170.95,
+            "min": 2170.0,
+            "max": 2206.9
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "CBD": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 464.675,
+            "p25": 463.0,
+            "p75": 465.0,
+            "min": 461.75,
+            "max": 468.15
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 384.675,
+            "p25": 383.0,
+            "p75": 385.0,
+            "min": 381.75,
+            "max": 388.15
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Forward": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 6956.0,
+            "p25": 6932.25,
+            "p75": 6965.25,
+            "min": 6932.0,
+            "max": 6979.2
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 6796.0,
+            "p25": 6772.25,
+            "p75": 6805.25,
+            "min": 6772.0,
+            "max": 6819.2
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "FromBytes_checked": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 805.05,
+            "p25": 805.05,
+            "p75": 805.1,
+            "min": 804.9,
+            "max": 849.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 725.05,
+            "p25": 725.05,
+            "p75": 725.1,
+            "min": 724.9,
+            "max": 769.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Full_to_hash_g": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 15835.775000000001,
+            "p25": 15817.4,
+            "p75": 15849.45,
+            "min": 15802.0,
+            "max": 15878.2
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 15755.775000000001,
+            "p25": 15737.4,
+            "p75": 15769.45,
+            "min": 15722.0,
+            "max": 15798.2
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "RNG": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 432.0,
+            "p25": 432.0,
+            "p75": 432.0,
+            "min": 432.0,
+            "max": 433.35
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 352.0,
+            "p25": 352.0,
+            "p75": 352.0,
+            "min": 352.0,
+            "max": 353.35
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "SOTP_encode": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 477.0,
+            "p25": 476.45,
+            "p75": 484.0,
+            "min": 476.0,
+            "max": 485.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 397.0,
+            "p25": 396.45,
+            "p75": 404.0,
+            "min": 396.0,
+            "max": 405.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "ToBytes_small": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 1061.0,
+            "p25": 1061.0,
+            "p75": 1061.5,
+            "min": 1054.0,
+            "max": 1087.5
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 981.0,
+            "p25": 981.0,
+            "p75": 981.5,
+            "min": 974.0,
+            "max": 1007.5
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "cleanup": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 637.0,
+            "p25": 637.0,
+            "p75": 637.0,
+            "min": 637.0,
+            "max": 642.6
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 237.0,
+            "p25": 237.0,
+            "p75": 237.0,
+            "min": 237.0,
+            "max": 242.6
+          },
+          "calls": {
+            "n": 126,
+            "median": 5.0,
+            "p25": 5.0,
+            "p75": 5.0,
+            "min": 5.0,
+            "max": 5.0
+          }
+        },
+        "hash_f": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 13313.45,
+            "p25": 13295.0,
+            "p75": 13326.55,
+            "min": 13280.8,
+            "max": 13358.85
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 13233.45,
+            "p25": 13215.0,
+            "p75": 13246.55,
+            "min": 13200.8,
+            "max": 13278.85
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "hash_h": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 4116.85,
+            "p25": 4112.55,
+            "p75": 4119.4,
+            "min": 4104.3,
+            "max": 4135.25
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 4036.85,
+            "p25": 4032.55,
+            "p75": 4039.4,
+            "min": 4024.3,
+            "max": 4055.25
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        }
+      }
+    },
+    "decaps": {
+      "official": {
+        "BaseMul_R0": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2512.0,
+            "p25": 2512.0,
+            "p75": 2512.0,
+            "min": 2512.0,
+            "max": 2525.15
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 2432.0,
+            "p25": 2432.0,
+            "p75": 2432.0,
+            "min": 2432.0,
+            "max": 2445.15
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "BaseMul_Rinv": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 1832.0,
+            "p25": 1832.0,
+            "p75": 1832.0,
+            "min": 1832.0,
+            "max": 1861.3
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 1752.0,
+            "p25": 1752.0,
+            "p75": 1752.0,
+            "min": 1752.0,
+            "max": 1781.3
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "CBD": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 473.0,
+            "p25": 471.0,
+            "p75": 477.0,
+            "min": 471.0,
+            "max": 477.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 393.0,
+            "p25": 391.0,
+            "p75": 397.0,
+            "min": 391.0,
+            "max": 397.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Crepmod3": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 561.0,
+            "p25": 561.0,
+            "p75": 561.0,
+            "min": 560.8,
+            "max": 564.8
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 481.0,
+            "p25": 481.0,
+            "p75": 481.0,
+            "min": 480.8,
+            "max": 484.8
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Forward": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 7679.0,
+            "p25": 7679.0,
+            "p75": 7679.5,
+            "min": 7679.0,
+            "max": 7692.15
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 7519.0,
+            "p25": 7519.0,
+            "p75": 7519.5,
+            "min": 7519.0,
+            "max": 7532.15
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "FromBytes_checked": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2496.825,
+            "p25": 2495.95,
+            "p75": 2501.5,
+            "min": 2495.4,
+            "max": 2577.05
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 2256.825,
+            "p25": 2255.95,
+            "p75": 2261.5,
+            "min": 2255.4,
+            "max": 2337.05
+          },
+          "calls": {
+            "n": 126,
+            "median": 3.0,
+            "p25": 3.0,
+            "p75": 3.0,
+            "min": 3.0,
+            "max": 3.0
+          }
+        },
+        "Full_compare": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 262.0,
+            "p25": 262.0,
+            "p75": 262.0,
+            "min": 262.0,
+            "max": 273.55
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 182.0,
+            "p25": 182.0,
+            "p75": 182.0,
+            "min": 182.0,
+            "max": 193.55
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Inverse": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 4201.55,
+            "p25": 4201.0,
+            "p75": 4211.0,
+            "min": 4200.0,
+            "max": 4243.75
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 4121.55,
+            "p25": 4121.0,
+            "p75": 4131.0,
+            "min": 4120.0,
+            "max": 4163.75
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "SOTP_decode": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 489.0,
+            "p25": 488.0,
+            "p75": 489.1,
+            "min": 487.0,
+            "max": 498.0
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 409.0,
+            "p25": 408.0,
+            "p75": 409.1,
+            "min": 407.0,
+            "max": 418.0
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Sub": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 281.0,
+            "p25": 281.0,
+            "p75": 281.0,
+            "min": 280.95,
+            "max": 293.4
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 201.0,
+            "p25": 201.0,
+            "p75": 201.0,
+            "min": 200.95,
+            "max": 213.4
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "ToBytes_full": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2367.575,
+            "p25": 2365.0,
+            "p75": 2369.0,
+            "min": 2364.95,
+            "max": 2384.85
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 2207.575,
+            "p25": 2205.0,
+            "p75": 2209.0,
+            "min": 2204.95,
+            "max": 2224.85
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "cleanup": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 1178.0,
+            "p25": 1178.0,
+            "p75": 1182.0,
+            "min": 1174.0,
+            "max": 1201.95
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 538.0,
+            "p25": 538.0,
+            "p75": 542.0,
+            "min": 534.0,
+            "max": 561.95
+          },
+          "calls": {
+            "n": 126,
+            "median": 8.0,
+            "p25": 8.0,
+            "p75": 8.0,
+            "min": 8.0,
+            "max": 8.0
+          }
+        },
+        "hash_g": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 14631.825,
+            "p25": 14621.6,
+            "p75": 14641.4,
+            "min": 14588.0,
+            "max": 14696.85
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 14551.825,
+            "p25": 14541.6,
+            "p75": 14561.4,
+            "min": 14508.0,
+            "max": 14616.85
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "hash_h": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 4136.75,
+            "p25": 4132.05,
+            "p75": 4144.9,
+            "min": 4121.3,
+            "max": 4151.1
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 4056.75,
+            "p25": 4052.05,
+            "p75": 4064.9,
+            "min": 4041.3,
+            "max": 4071.1
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        }
+      },
+      "gt": {
+        "BaseMul_R0": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2255.0,
+            "p25": 2255.0,
+            "p75": 2255.0,
+            "min": 2253.25,
+            "max": 2259.1
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 2175.0,
+            "p25": 2175.0,
+            "p75": 2175.0,
+            "min": 2173.25,
+            "max": 2179.1
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "BaseMul_Rinv": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 1835.0,
+            "p25": 1835.0,
+            "p75": 1835.0,
+            "min": 1835.0,
+            "max": 1845.3
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 1755.0,
+            "p25": 1755.0,
+            "p75": 1755.0,
+            "min": 1755.0,
+            "max": 1765.3
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "CBD": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 454.55,
+            "p25": 453.0,
+            "p75": 455.5,
+            "min": 453.0,
+            "max": 458.4
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 374.55,
+            "p25": 373.0,
+            "p75": 375.5,
+            "min": 373.0,
+            "max": 378.4
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Forward": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 6952.525,
+            "p25": 6944.75,
+            "p75": 6956.6,
+            "min": 6938.15,
+            "max": 6977.95
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 6792.525,
+            "p25": 6784.75,
+            "p75": 6796.6,
+            "min": 6778.15,
+            "max": 6817.95
+          },
+          "calls": {
+            "n": 126,
+            "median": 2.0,
+            "p25": 2.0,
+            "p75": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "FromBytes_checked": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 2407.75,
+            "p25": 2406.45,
+            "p75": 2411.45,
+            "min": 2405.95,
+            "max": 2417.8
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 2167.75,
+            "p25": 2166.45,
+            "p75": 2171.45,
+            "min": 2165.95,
+            "max": 2177.8
+          },
+          "calls": {
+            "n": 126,
+            "median": 3.0,
+            "p25": 3.0,
+            "p75": 3.0,
+            "min": 3.0,
+            "max": 3.0
+          }
+        },
+        "Full_compare": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 542.0,
+            "p25": 542.0,
+            "p75": 542.0,
+            "min": 542.0,
+            "max": 543.2
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 462.0,
+            "p25": 462.0,
+            "p75": 462.0,
+            "min": 462.0,
+            "max": 463.2
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Inverse_to_ternary": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 4840.0,
+            "p25": 4839.0,
+            "p75": 4842.75,
+            "min": 4836.95,
+            "max": 4858.55
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 4760.0,
+            "p25": 4759.0,
+            "p75": 4762.75,
+            "min": 4756.95,
+            "max": 4778.55
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "SOTP_decode": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 463.0,
+            "p25": 461.0,
+            "p75": 463.0,
+            "min": 461.0,
+            "max": 471.75
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 383.0,
+            "p25": 381.0,
+            "p75": 383.0,
+            "min": 381.0,
+            "max": 391.75
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "Sub": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 285.0,
+            "p25": 285.0,
+            "p75": 285.0,
+            "min": 285.0,
+            "max": 288.2
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 205.0,
+            "p25": 205.0,
+            "p75": 205.0,
+            "min": 205.0,
+            "max": 208.2
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "ToBytes_small": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 1060.0,
+            "p25": 1059.0,
+            "p75": 1061.95,
+            "min": 1059.0,
+            "max": 1073.3
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 980.0,
+            "p25": 979.0,
+            "p75": 981.95,
+            "min": 979.0,
+            "max": 993.3
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "cleanup": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 1101.0,
+            "p25": 1093.15,
+            "p75": 1101.15,
+            "min": 1093.0,
+            "max": 1103.75
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 461.0,
+            "p25": 453.15,
+            "p75": 461.15,
+            "min": 453.0,
+            "max": 463.75
+          },
+          "calls": {
+            "n": 126,
+            "median": 8.0,
+            "p25": 8.0,
+            "p75": 8.0,
+            "min": 8.0,
+            "max": 8.0
+          }
+        },
+        "hash_g": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 14539.8,
+            "p25": 14521.9,
+            "p75": 14558.55,
+            "min": 14468.15,
+            "max": 14617.15
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 14459.8,
+            "p25": 14441.9,
+            "p75": 14478.55,
+            "min": 14388.15,
+            "max": 14537.15
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        },
+        "hash_h": {
+          "raw_cycles": {
+            "n": 126,
+            "median": 4114.625,
+            "p25": 4110.85,
+            "p75": 4117.1,
+            "min": 4099.4,
+            "max": 4132.1
+          },
+          "net_cycles": {
+            "n": 126,
+            "median": 4034.625,
+            "p25": 4030.85,
+            "p75": 4037.1,
+            "min": 4019.4,
+            "max": 4052.1
+          },
+          "calls": {
+            "n": 126,
+            "median": 1.0,
+            "p25": 1.0,
+            "p75": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          }
+        }
+      }
+    }
+  },
+  "interpretation_note": "Clean full-KEM PMU values are authoritative. Call-site profile values subtract the measured perf read-pair cost per call and are diagnostic; instrumentation changes execution and component medians are not assumed to add exactly to clean totals."
+}
