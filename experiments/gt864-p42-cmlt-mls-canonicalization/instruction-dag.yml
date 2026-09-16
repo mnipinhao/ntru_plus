@@ -1,0 +1,25 @@
+kernel: P42 canonicalization lowering on the frozen P24 route DAG
+per_complete_call:
+  routed_vectors: 108
+baseline_sign_correction:
+  nodes_per_vector:
+    - "mask = SSHR(x,15)"
+    - "correction = AND(mask,q)"
+    - "canonical = ADD(x,correction)"
+  instructions: 324
+candidate_sign_correction:
+  nodes_per_vector:
+    - "mask = CMLT(x,0)"
+    - "canonical = MLS(x,mask,q) = x-mask*q"
+  instructions: 216
+dependencies:
+  full: route output then SQRDMULH then reduction MLS then CMLT then canonicalization MLS then pack
+  small: route output then CMLT then canonicalization MLS then pack
+identity:
+  nonnegative: mask is zero so result is x
+  negative: mask is negative one so result is x plus q
+hard_gates:
+  - preserve all route, load, pack and store nodes
+  - preserve exact output bytes for every valid producer input
+  - no spill and no extra memory access
+  - measure Full and Small independently because their multiply-pipeline neighborhoods differ

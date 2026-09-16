@@ -1,0 +1,165 @@
+{
+  "experiment": "GT864-P42-CMLT-MLS-CANONICALIZATION-20260916",
+  "baseline_revision": "43577408c56a0fa0f1ac4d4abf75ffe745d157d2",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p42-20260916",
+  "target_audit": {
+    "full": {
+      "baseline": {
+        "object_instructions": 1108,
+        "q_stack_accesses": 0
+      },
+      "candidate": {
+        "object_instructions": 1056,
+        "q_stack_accesses": 0
+      }
+    },
+    "small": {
+      "baseline": {
+        "object_instructions": 1000,
+        "q_stack_accesses": 0
+      },
+      "candidate": {
+        "object_instructions": 944,
+        "q_stack_accesses": 0
+      }
+    }
+  },
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "modes": {
+    "full": {
+      "measurements": {
+        "baseline": {
+          "cycles": 1393.617,
+          "instructions": 2168.156,
+          "branches": 8.031,
+          "mem_access_rd": 132.023,
+          "mem_access_wr": 223.023
+        },
+        "candidate": {
+          "cycles": 1401.055,
+          "instructions": 2060.156,
+          "branches": 8.031,
+          "mem_access_rd": 132.023,
+          "mem_access_wr": 223.023
+        }
+      },
+      "delta": {
+        "cycles": 7.438000000000102,
+        "instructions": -108.0,
+        "branches": 0.0,
+        "mem_access_rd": 0.0,
+        "mem_access_wr": 0.0
+      },
+      "wins_cycles": false
+    },
+    "small": {
+      "measurements": {
+        "baseline": {
+          "cycles": 985.117,
+          "instructions": 1948.156,
+          "branches": 8.031,
+          "mem_access_rd": 132.023,
+          "mem_access_wr": 223.023
+        },
+        "candidate": {
+          "cycles": 999.891,
+          "instructions": 1840.156,
+          "branches": 8.031,
+          "mem_access_rd": 132.023,
+          "mem_access_wr": 223.031
+        }
+      },
+      "delta": {
+        "cycles": 14.774000000000001,
+        "instructions": -108.0,
+        "branches": 0.0,
+        "mem_access_rd": 0.0,
+        "mem_access_wr": 0.008000000000009777
+      },
+      "wins_cycles": false
+    }
+  },
+  "promotion_gate_passed": false,
+  "environment_before": [
+    "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc (Debian 14.2.0-19) 14.2.0",
+    "ondemand",
+    "temp=57.6'C",
+    "throttled=0x0"
+  ],
+  "environment_after": [
+    "temp=59.3'C",
+    "throttled=0x0"
+  ],
+  "source_manifest_sha256": "323da5c4e45a53c82000dc45411bda599fe9b3d0a02fc4d0ca1feb08cba94745",
+  "slothy_results": [
+    "slothy-full-g3.json",
+    "slothy-small-g3.json"
+  ],
+  "full_kem_gate": {
+    "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+    "kem": {
+      "keygen": {
+        "baseline": {
+          "cycles": 43111.625,
+          "instructions": 94126.0,
+          "branches": 1563.0
+        },
+        "candidate": {
+          "cycles": 43134.75,
+          "instructions": 93802.0,
+          "branches": 1563.0
+        },
+        "paired_delta": {
+          "cycles": 26.625,
+          "instructions": -324.0,
+          "branches": 0.0
+        },
+        "observations": 252
+      },
+      "encaps": {
+        "baseline": {
+          "cycles": 44997.899999999994,
+          "instructions": 123433.2,
+          "branches": 1003.6
+        },
+        "candidate": {
+          "cycles": 45018.675,
+          "instructions": 123217.2,
+          "branches": 1003.6
+        },
+        "paired_delta": {
+          "cycles": 18.524999999997817,
+          "instructions": -216.0,
+          "branches": 0.0
+        },
+        "observations": 252
+      },
+      "decaps": {
+        "baseline": {
+          "cycles": 39916.125,
+          "instructions": 93928.2,
+          "branches": 1115.6
+        },
+        "candidate": {
+          "cycles": 39940.8,
+          "instructions": 93712.2,
+          "branches": 1115.6
+        },
+        "paired_delta": {
+          "cycles": 25.825000000000728,
+          "instructions": -216.0,
+          "branches": 0.0
+        },
+        "observations": 252
+      }
+    },
+    "wins_all_kem_cycles": false,
+    "environment_after": [
+      "temp=60.9'C",
+      "throttled=0x0"
+    ]
+  },
+  "candidate_scope": "Full and Small independently replace only sign correction"
+}

@@ -1,0 +1,62 @@
+mode: existing_region_replacement
+candidate_status: reject
+kernel:
+  id: gt864_p42_cmlt_mls_canonicalization
+  name: P42 two-instruction ToBytes canonicalization
+  source: candidate-full.sym.S and candidate-small.sym.S
+  scheme: NTRU+864 GT
+  operation: FR0 normalization, P24 global route, canonicalization, 12-bit packing and wire store
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: constructive P23 route allocation then bounded three-output fixed-allocation timing
+  allow_spills: false
+  driver: optimize.py
+instruction_dag:
+  file: instruction-dag.yml
+region:
+  start_label: p23_top_full_slothy_start and p23_top_small_slothy_start
+  end_label: p23_top_full_slothy_end and p23_top_small_slothy_end
+  live_in: [x0 output top base, x1 FR0 input top base, v26 pack-index, v27 q3457, Full v28 reciprocal9]
+  live_out: [648 exact canonical wire bytes at x0]
+abi:
+  inputs: [x0, x1]
+  outputs: [memory at x0 through x0 plus 647]
+  clobbers: [x2, x5, x6, x7, x8, x9, allocated v0-v25, v26-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x5, x6, x7, x8, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+  reserved_registers: [v26, v27, v28, v29, v30, v31, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+layout:
+  input_representation: unchanged production P24 FR0 tile-major signed int16
+  output_representation: unchanged Official canonical 12-bit wire order
+  vector_lanes: signed 8x16-bit before packing
+  packing: unchanged P24 two-vector TBL and D plus W stores
+memory_contract:
+  loads: [61 coefficient Q loads plus one public pack-index load per top]
+  stores: [54 fixed-offset D stores and 54 fixed-offset W stores per top]
+  aliasing: unchanged disjoint serializer input and output
+  alignment: unchanged aligned coefficient Q loads and public byte-offset stores
+  public_offsets_only: true
+constant_contract:
+  constants: [unchanged q3457, reciprocal9, exact P24 pack-index]
+  modulus: 3457
+  representation: unchanged FR0 to canonical unsigned 0 through 3456 before 12-bit packing
+  reduction_method: Full retains Algorithm-10 b=1 normalization; Small retains producer-bound one-add canonicalization
+range_contract:
+  input_ranges: [Full arbitrary signed int16, Small strict negative q to q producer range]
+  intermediate_ranges: [Full Barrett residual in closed interval negative 3291 through 3291, Small input strict negative q to q]
+  output_ranges: [canonical coefficient 0 through 3456 and exact unchanged wire bytes]
+constant_time_contract:
+  secret_inputs: [FR0 coefficient lanes]
+  public_inputs: [pointers, fixed coordinate map, pack-index]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: exact-byte differential plus alias AAPCS wipe KAT and malformed rejection
+  full_path_benchmark_command: paired Pi5 complete Full and Small ToBytes then Keygen Encaps Decaps PMU
+  benchmark_metric: cycles and retired instructions and IPC
+  lower_is_better: true

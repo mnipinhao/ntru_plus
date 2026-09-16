@@ -77,7 +77,8 @@ Status meanings:
 | P39 | Done—Rejected statically | Search the twelve inverse9 blocks for a new identity, composite constant or redundant reduction while freezing P35 I16 and memory ABI | All 64 B3 orientations and 36 terminal vectors checked; best exact in-contract rewrite saves only 1 instruction/block, below the required complete Algorithm-10 triple, so production remains unchanged |
 | P40 | Done—Rejected on Pi 5 | Move the exact inverse9 geometric terminal phase into row-dependent twisted I16 tables and compose the remaining row/top scale into P13 terminal tables | Exact/no-spill/KAT/alias/wipe pass and -137 instructions, but Inverse/Decaps regress 221.508/219.525 cycles as multiply dependency and table pressure reduce IPC; P35 remains production |
 | P41 | Done—Rejected at exact boundary | Pair adjacent 12-byte Full records as overlapping Q/S/D stores while preserving P24 normalization, packing and wire ABI | Exact/no-spill/KAT/KEM pass and -38 instructions, but A-before-B routing adds 30 reads and Full boundary regresses 2.253 cycles; production remains P24 |
-| P42 | Next—Precedence-aware route-cache borrowing | Retain P41's overlapping stores but remove the A-before-B schedule's coefficient reloads by borrowing a transient 27th route register between consumers | Before Slothy: at most 61 coefficient loads and 300 route instructions/top, no spill/scratch/new pass; then exact Full boundary must improve before KEM promotion |
+| P42 | Done—Rejected on Pi 5 | Replace each ToBytes `SSHR+AND+ADD` sign correction with `CMLT+MLS` while freezing P24 routing, packing and memory ABI | Exact/no-spill/KAT/KEM pass and -108 instructions/call, but multiply-pipeline pressure lowers IPC; Full/Small regress 7.438/14.774 cycles |
+| P43 | Next—Precedence-aware route-cache borrowing | Retain P41's overlapping stores but remove the A-before-B schedule's coefficient reloads by borrowing a transient 27th route register between consumers | Before Slothy: at most 61 coefficient loads and 300 route instructions/top, no spill/scratch/new pass; then exact Full boundary must improve before KEM promotion |
 
 ## Fixed facts and non-tasks
 
@@ -98,6 +99,21 @@ Status meanings:
 ## Change log
 
 ### 2026-09-16
+
+- Completed and rejected P42 without changing production. P15/P16 had used
+  `CMLT+AND+ADD`; they had never tested the exact two-instruction `CMLT+MLS`
+  lowering at the current P24 boundary. P42 froze all route, packing, memory
+  and ABI work and exhaustively proved the two forms equal for every signed
+  int16 input. It removes exactly 108 retired instructions per Full or Small
+  call with no load/store/branch change.
+- The user's multiply-pipeline concern is confirmed by both models and silicon.
+  Fixed-allocation Cortex-A76 Slothy changes Full 1495 to 1562 and Small 1010
+  to 1071 modeled cycles/top. Pi 5 changes Full 1393.617 to 1401.055 cycles
+  (+7.438) and Small 985.117 to 999.891 (+14.774); IPC falls
+  1.5558->1.4704 and 1.9776->1.8404. Keygen/Encaps/Decaps regress
+  26.625/18.525/25.825 cycles despite fewer instructions. P24 remains
+  production. The former P42 route-cache proposal is retained as P43.
+  Evidence: `experiments/gt864-p42-cmlt-mls-canonicalization/`.
 
 - Completed and rejected P41 without changing production.  The original
   two-live-record design explodes the 26-register route cache to 423 route

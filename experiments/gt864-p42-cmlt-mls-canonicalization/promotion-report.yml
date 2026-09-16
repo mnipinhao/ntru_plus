@@ -1,0 +1,33 @@
+experiment_id: GT864-P42-CMLT-MLS-CANONICALIZATION-20260916
+decision: reject
+production_changed: false
+correctness:
+  exhaustive_signed_int16_identity_cases: 65536
+  inherited_exact_route_and_byte_cases: 516
+  pi_component_cases: 513
+  kat_sha256: 0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c
+  malformed_sha256: 2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67
+  no_spill: true
+static_complete_call:
+  instructions_delta_full: -108
+  instructions_delta_small: -108
+  loads_delta: 0
+  stores_delta: 0
+slothy_model_per_top:
+  full_p24: 1495
+  full_p42: 1562
+  small_p24: 1010
+  small_p42: 1071
+pi5_boundary:
+  full_cycles: [1393.617, 1401.055]
+  full_delta_cycles: 7.438
+  full_ipc: [1.5558, 1.4704]
+  small_cycles: [985.117, 999.891]
+  small_delta_cycles: 14.774
+  small_ipc: [1.9776, 1.8404]
+full_kem_paired_delta_cycles:
+  keygen: 26.625
+  encaps: 18.525
+  decaps: 25.825
+reason: CMLT+MLS moves the correction onto the Cortex-A76 multiply-accumulate resource; lower IPC outweighs 108 fewer retired instructions in both modes.
+next_gate: P43 precedence-aware route-cache borrowing retained from the former P42 plan

@@ -1,0 +1,30 @@
+mode: existing_region_replacement
+candidate_status: investigate
+baseline:
+  revision: 43577408c56a0fa0f1ac4d4abf75ffe745d157d2
+  source_full: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
+  source_small: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_small.S
+  region_full: p24_top_full_slothy_start through p24_top_full_slothy_end
+  region_small: p24_top_small_slothy_start through p24_top_small_slothy_end
+  implementation: promoted P24 three-output scheduled global route DAG
+  complete_dynamic_instructions_full: 2154
+  complete_dynamic_instructions_small: 1934
+abi:
+  public_symbols: [gt864_p18_tobytes_full_asm, gt864_p18_tobytes_small_asm]
+  output_bytes: 1296
+  input_coefficients: 864 signed int16 FR0 values
+  inputs: [x0, x1]
+  outputs: [memory at x0 through x0 plus 647]
+  clobbers: [x2, x5-x9, allocated v0-v25, v26-v31]
+  concrete_gprs_allowed: [x0, x1, x2, x5, x6, x7, x8, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+memory_contract:
+  coefficient_scratch: 0
+  loads: [exactly the P24 coefficient and pack-index loads]
+  stores: [exactly the P24 D plus W stores]
+  aliasing: unchanged disjoint serializer input and output
+  alignment: unchanged
+  public_offsets_only: true
+constant_time_contract:
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

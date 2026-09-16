@@ -1,0 +1,11 @@
+experiment: GT864-P42-CMLT-MLS-CANONICALIZATION-20260916
+action: optimize-arithmetic
+observation: P24 canonicalizes every routed vector with SSHR+AND+ADD although CMLT creates an all-zero/all-one mask that MLS can consume directly.
+primary_bottleneck: instruction count versus Cortex-A76 multiply-pipeline pressure
+hypothesis: Replacing each three-instruction sign correction by CMLT+MLS removes 108 dynamic instructions per complete Full or Small call without lengthening the critical path after timing rescheduling.
+exact_change: Preserve P24 routing, reduction, packing, stores, ABI, ranges and wire bytes; change only the 108 sign-correction triples per complete call.
+expected_static_effect: 2154 to 2046 instructions for Full and 1934 to 1826 for Small.
+expected_performance_effect: Unknown by design; Full may contend with the immediately preceding SQRDMULH+MLS stream, while Small has no Barrett stream.
+expected_register_pressure: Unchanged six fixed vectors and at most 26 route vectors; no spill.
+correctness_or_range_impact: None when the pre-canonical value is in (-q,q); CMLT yields 0 or -1 and MLS computes x-mask*q.
+falsifying_measurement: Reject each mode independently if its same-boundary Pi5 cycles do not improve despite fewer retired instructions, or if any exact-byte, KAT, rejection, alias, wipe, ABI or range gate fails.
