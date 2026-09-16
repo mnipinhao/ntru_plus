@@ -864,3 +864,40 @@ ntruplus768_basemul_f0_j1_avx2:
  .short 10
  .endr
  .section .note.GNU-stack,"",@progbits
+
+.macro GT103_OUTPUT_QL2
+ vmovdqu 0(%rdi), %ymm5
+ vmovdqu 32(%rdi), %ymm6
+ vmovdqu 64(%rdi), %ymm7
+ vmovdqa %ymm15, %ymm8
+ vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm5, %ymm1
+ vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm6, %ymm2
+ vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm7, %ymm3
+ vpmullw .Ltile4_bm_rsq_qinv(%rip), %ymm8, %ymm4
+ vpmulhw .Ltile4_bm_rsq(%rip), %ymm5, %ymm5
+ vpmulhw .Ltile4_bm_rsq(%rip), %ymm6, %ymm6
+ vpmulhw .Ltile4_bm_rsq(%rip), %ymm7, %ymm7
+ vpmulhw .Ltile4_bm_rsq(%rip), %ymm8, %ymm8
+ vpmulhw %ymm0, %ymm1, %ymm1
+ vpmulhw %ymm0, %ymm2, %ymm2
+ vpmulhw %ymm0, %ymm3, %ymm3
+ vpmulhw %ymm0, %ymm4, %ymm4
+ vpsubw %ymm1, %ymm5, %ymm5
+ vpsubw %ymm2, %ymm6, %ymm6
+ vpsubw %ymm3, %ymm7, %ymm7
+ vpsubw %ymm4, %ymm8, %ymm8
+ vpunpcklwd %ymm6, %ymm5, %ymm1
+ vpunpckhwd %ymm6, %ymm5, %ymm2
+ vpunpcklwd %ymm8, %ymm7, %ymm3
+ vpunpckhwd %ymm8, %ymm7, %ymm4
+ vpunpckldq %ymm3, %ymm1, %ymm5
+ vpunpckhdq %ymm3, %ymm1, %ymm6
+ vpunpckldq %ymm4, %ymm2, %ymm7
+ vpunpckhdq %ymm4, %ymm2, %ymm8
+ vmovdqu %ymm5, 0(%rdi)
+ vmovdqu %ymm6, 32(%rdi)
+ vmovdqu %ymm7, 64(%rdi)
+ vmovdqu %ymm8, 96(%rdi)
+.endm
+.section .ql2_tail.2_b3,"ax",@progbits
+TILE4_BASEMUL_B3_FUNCTION ntruplus768_basemul_general_ql2_avx2,GT103_OUTPUT_QL2,TILE4_INPUT_A_SOA,TILE4_INPUT_B_SOA

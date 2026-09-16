@@ -20,13 +20,6 @@ static void forward_m(int16_t out[NTRUPLUS_N],
 	ntruplus768_ntt_m_avx2(out, frontend);
 }
 
-static void forward_ql2(int16_t out[NTRUPLUS_N],
-	int16_t frontend[NTRUPLUS_N], const int16_t in[NTRUPLUS_N])
-{
-	ntruplus768_ntt_frontend_avx2(frontend, in);
-	ntruplus768_ntt_ql2_avx2(out, frontend);
-}
-
 int ntruplus768_enc_derand_impl(
 	uint8_t ct[NTRUPLUS_CIPHERTEXTBYTES],
 	uint8_t ss[NTRUPLUS_SSBYTES],
@@ -56,16 +49,17 @@ int ntruplus768_enc_derand_impl(
 	hash_g(ct, ct);
 
 	poly_sotp_encode((poly *)(void *)scratch.m, msg, ct);
-	/* The frontend consumes m before the terminal transform writes QL2. */
-	forward_ql2(scratch.m, scratch.c, scratch.m);
-	ntruplus768_basemul_general_ql2_avx2(
-		scratch.c, scratch.h, scratch.r);
+	/* frontend consumes m before ntt_m overwrites it with message M. */
+	forward_m(scratch.m, scratch.c, scratch.m);
+	ntruplus768_basemul_general_m_avx2(scratch.c, scratch.h, scratch.r);
 	/*
-	 * QL2 is a physical presentation of the same e=0 values, not a new
-	 * algebraic domain. The product and message converge in QL2; their
-	 * sum remains semantic-only and is not materialized as a polynomial.
+	 * product + message is a semantic M/e=0 value, but is deliberately
+	 * not materialized as a polynomial.  Addition occurs before the
+	 * existing Q24 transpose and canonicalization under the validated
+	 * |product + message| <= 12699 contract.
 	 */
-	ntruplus768_pack_ql2_sum_avx2(ct, scratch.c, scratch.m);
+	ntruplus768_pack_m_sum_highrange12699_avx2(
+		ct, scratch.c, scratch.m);
 
 	for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
 		ss[i] = buf[i];

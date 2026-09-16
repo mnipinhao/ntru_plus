@@ -32,12 +32,12 @@ encapsulation and decapsulation use the persistent M path.  See
 [`SYMBOLS.md`](SYMBOLS.md) for symbol notation and [`LAYOUTS.md`](LAYOUTS.md)
 for the typed representation contracts.
 
-Encapsulation uses the qualified E0V virtual-sum boundary: the semantic
-`B3(h,r)+m` value is added in registers at Q24 entry and is not materialized as
-a polynomial.  Its executable-layout contract is part of this production
-implementation.  `encap-slot-pad.s` preserves the qualified 611-byte caller
-slot and `e0v-tail.ld` places the helper in a page-aligned RX tail without
-moving pre-existing hot code or read-only data.
+Encapsulation uses QL2 at the message/product convergence point. Message
+Forward and an Encap-private general BaseMul emit QL2 directly; the two-source
+serializer adds them and completes the last Q24 routing layer. The semantic
+sum is not materialized. `encap-slot-pad.s` preserves the qualified 611-byte
+caller slot and `e0v-tail.ld` retains the old E0V helper plus the deterministic
+page-aligned QL2 RX cluster without moving pre-existing hot code or rodata.
 
 The selected Encap scratch map has four polynomial slots. The `m` slot first
 holds the coefficient producer and is overwritten by `ntt_m` only after the

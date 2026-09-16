@@ -1,4 +1,8 @@
-# E0V production qualification
+# QL2 production qualification
+
+The current Encap path promotes the QL2 convergence architecture qualified in
+experiments 103 and 104. The prior E0V path remains the matched control and
+its helper remains in the image as a geometry anchor.
 
 The promoted Encap path uses the existing caller order and replaces only:
 
@@ -28,6 +32,11 @@ value is written; the frontend call is the lifetime boundary.
   byte-identical to the geometry reference.
 - The helper's exact byte size is not a permanent invariant; isolation,
   alignment, permissions, and non-movement of the existing image are.
+- `ntruplus768_ntt_ql2_avx2`, `ntruplus768_basemul_general_ql2_avx2`, and
+  `ntruplus768_pack_ql2_sum_avx2` occupy `.ql2_tail` in that fixed order.
+- `.ql2_tail` is separately page-aligned RX. The production audit compares the
+  frozen E0V and QL2 callers in identical 611-byte slots and verifies at least
+  80 unchanged pre-existing symbols plus identical rodata.
 
 Run the production-owned audit inside this source directory or an installed
 SUPERcop export:
@@ -37,9 +46,23 @@ python3 qualified/build-supercop.py \
   --supercop-root /home/nuc/supercop-20260627
 ```
 
-The command builds matched pre-E0V and E0V measure ELFs and writes
+The command builds matched E0V and QL2 measure ELFs and writes
 `qualified/build/layout-audit.json`. It fails on symbol, rodata, caller-slot,
 tail-alignment, or RX/RWX contract drift.
+
+## QL2 promotion result (2026-09-16)
+
+The production-owned audit checked 86 pre-existing symbols with zero address,
+size, or byte mismatches. Both caller reservations are 611 bytes; `.e0v_tail`
+is 4,914 bytes and `.ql2_tail` is 6,226 bytes. Both are page-aligned RX, rodata
+is byte-identical, and the ELF has no RWX segment. Functional testing,
+ASan/UBSan, and the canonical KAT pass. The 948,402-byte KAT response SHA-256
+remains `22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8`.
+
+The formal Official comparison is recorded in
+`experiments/gt32_ql2_production_139`. QL2 is now the production GT Encap path;
+promotion is an explicit policy choice even though Encap remains slower than
+Official in the current image.
 
 ## Promotion result (2026-08-27)
 

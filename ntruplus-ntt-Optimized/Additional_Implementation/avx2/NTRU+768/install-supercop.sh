@@ -37,7 +37,8 @@ mkdir "$target_dir/generated"
 cp "$source_dir/generated/tile4_inverse_tail_constants.inc" \
 	"$target_dir/generated/tile4_inverse_tail_constants.inc"
 mkdir "$target_dir/qualified"
-for name in audit-layout.py build-supercop.py encap-control.c
+for name in audit-layout.py build-supercop.py encap-control.c encap-e0v.c \
+	ql2-promotion-results.json
 do
 	cp "$source_dir/qualified/$name" "$target_dir/qualified/$name"
 done

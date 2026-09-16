@@ -1,0 +1,29 @@
+{
+  "experiment": "GT32-QL2-PRODUCTION-139",
+  "date": "2026-09-16",
+  "correctness": "PASS",
+  "kat_sha256": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8",
+  "layout": {
+    "preexisting_symbols_checked": 86,
+    "mismatches": 0,
+    "caller_slot_bytes": 611,
+    "e0v_tail_bytes": 4914,
+    "ql2_tail_bytes": 6226,
+    "page_aligned_rx": true,
+    "rwx_segment": false
+  },
+  "formal_supercop": {
+    "aslr_on_gt_minus_official": {
+      "keypair": -217.64583333333212,
+      "encap": 104.82552083333212,
+      "decap": -66.16145833333212
+    },
+    "aslr_off_gt_minus_official": {
+      "keypair": -179.5546875,
+      "encap": 156.76302083333576,
+      "decap": -37.99739583333212
+    }
+  },
+  "decision": "PROMOTED_BY_USER_DIRECTION",
+  "note": "QL2 narrows but does not close the Official Encap gap."
+}

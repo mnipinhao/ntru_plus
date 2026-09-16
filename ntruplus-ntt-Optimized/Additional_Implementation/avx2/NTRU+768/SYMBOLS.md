@@ -15,6 +15,7 @@ M, P, F0, and J1 are types, not runtime modes.
 | Token | Meaning |
 |---|---|
 | `m` | Persistent BaseMul-native coefficient-plane SoA used by Encap/Decap. |
+| `ql2` | Encap-only convergence presentation after two Q24 transpose layers; same values and `e=0` scale as M. |
 | `p` | Key-generation coefficient-plane placement used by Forward, BaseInv, F0-by-J1 BaseMul, and Q24 pack. |
 | `f0` | Forward-produced value with Montgomery exponent `e=0`. |
 | `j1` | BaseInv-produced inverse with Montgomery exponent `e=1`. It is only consumed by the typed F0-by-J1 product. |
@@ -35,12 +36,14 @@ M, P, F0, and J1 are types, not runtime modes.
 |---|---|---|
 | `ntruplus768_ntt_frontend_avx2` | `ntt.s` | Coefficient order to shared GT frontend scratch. All three KEM operations. |
 | `ntruplus768_ntt_m_avx2` | `ntt_m.s` | Frontend to M/F0. Encap and Decap. |
+| `ntruplus768_ntt_ql2_avx2` | `ntt_m.s` | Frontend to QL2/e0. Encap message producer only. |
 | `ntruplus768_ntt_p_avx2` | `ntt_p.s` | Frontend to P/F0. Keygen. |
 | `ntruplus768_baseinv_j1_avx2` | `baseinv.c` | P/F0 to P/J1; returns nonzero for a noninvertible input. Keygen only. |
 | `ntruplus768_baseinv_batch_tree_avx2` | `batch_inverse.s` | Internal denominator batch inversion used by `ntruplus768_baseinv_j1_avx2`. |
 | `ntruplus768_basemul_f0_j1_avx2` | `basemul.s` | P/F0 times P/J1 to P/e0. Keygen only. |
 | `ntruplus768_basemul_scale_m_avx2` | `basemul.s` | M/e0 times M/e0 to inverse-input M/e-1. First Decap product. |
 | `ntruplus768_basemul_general_m_avx2` | `basemul.s` | M/e0 times M/e0 to M/e0. Encap and recovered-r Decap product. |
+| `ntruplus768_basemul_general_ql2_avx2` | `basemul.s` | M/e0 times M/e0 to QL2/e0. Encap product only. |
 | `ntruplus768_invntt_m_avx2` | `invntt.s` | M/e-1 to inverse terminal state. Decap. |
 | `ntruplus768_invntt_tail_avx2` | `invntt.s` | Inverse terminal state to coefficient order. Decap. |
 | `ntruplus768_unpack_m_avx2` | `pack.s` | One canonical 1152-byte polynomial to M/e0; returns canonicality failure. Encap. |
@@ -50,6 +53,7 @@ M, P, F0, and J1 are types, not runtime modes.
 | `ntruplus768_pack_m_lazy10788_avx2` | `pack.s` | M/e0, `abs(x)<=10788`, to canonical bytes. Encap `r-hat`. |
 | `ntruplus768_pack_m_highrange12699_avx2` | `pack.s` | M/e0, `abs(x)<=12699`, to canonical bytes. Encap ciphertext. |
 | `ntruplus768_pack_m_sum_highrange12699_avx2` | `pack.s` | Two M/e0 inputs whose sum satisfies `abs(x)<=12699`; add before Q24 transpose/canonicalization. Encap ciphertext. |
+| `ntruplus768_pack_ql2_sum_avx2` | `pack.s` | Two QL2/e0 inputs; add, perform the remaining Q24 layer, canonicalize, and serialize. Production Encap ciphertext. |
 | `ntruplus768_pack_p_sp1_lazy10788_avx2` | `pack.s` | P/e0, `abs(x)<=10788`, to canonical bytes. Keygen public/secret polynomial fields. |
 | `ntruplus768_equal_m_modq12699_avx2` | `pack.s` | Constant-time equality of two M/e0 values modulo 3457 under the 12699 difference contract. Final Decap check. |
 

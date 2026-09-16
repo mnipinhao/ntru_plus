@@ -1033,3 +1033,12 @@ ntruplus768_ntt_m_avx2:
  .short -722
  .endr
  .section .note.GNU-stack,"",@progbits
+
+.macro GT103_STORE_QL2 v0,v1,v2,v3,outoff
+ vmovdqu \v0, \outoff+0(%rdi)
+ vmovdqu \v2, \outoff+32(%rdi)
+ vmovdqu \v1, \outoff+64(%rdi)
+ vmovdqu \v3, \outoff+96(%rdi)
+.endm
+.section .ql2_tail.1_ntt,"ax",@progbits
+FR_TRANSPOSE_CUT_FORWARD_FUNCTION ntruplus768_ntt_ql2_avx2,GT103_STORE_QL2

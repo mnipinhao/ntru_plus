@@ -47,4 +47,10 @@ qualified geometry reference remains the promoted E0V caller before this
 frame-only change, so the audit isolates the 6592-byte current frame from the
 8128-byte E0V control.
 
+The QL2 promotion appends one selected function to each of `ntt_m.s`,
+`basemul.s`, and `pack.s`. Their `.ql2_tail.1_ntt`, `.ql2_tail.2_b3`, and
+`.ql2_tail.3_pack` sections form a deterministic page-aligned RX cluster.
+`qualified/encap-e0v.c` is the frozen matched control used by the production
+layout audit; it is not part of the deployed call graph.
+
 `SHA256SUMS` contains relative checksums of the finished clean snapshot.

@@ -18,20 +18,24 @@ performed.
 
 ```text
 public-key bytes -> Q24 unpack M
-r,m coefficient producers -> shared frontend -> M Forward
-M general BaseMul -> two-source high-range Q24 pack
+r coefficient producer -> shared frontend -> M Forward -> r-hat bytes
+m coefficient producer -> shared frontend -> QL2 Forward
+M general BaseMul -> QL2 product
+QL2 product + message -> QL2 two-source Q24 pack
 ```
 
-The two-source Q24 entry adds the B3 product and message before the existing
-transpose/canonicalization. The semantic sum is never a memory-resident
+The two-source Q24 entry adds the B3 product and message after both producers
+have absorbed two Q24 routing layers. Dynamic convergence routing is reduced
+from 288 to 144 operations. The semantic sum is never a memory-resident
 polynomial. The coefficient-producer lifetime reuses the final message slot
 after the frontend returns, giving four polynomial slots and a 6592-byte
 Encap frame without changing the B3 output alias contract.
 
-The E0V helper lives in a page-aligned RX tail. The Encap caller retains its
-qualified 611-byte input-section reservation, while pre-existing hot text and
-rodata remain byte- and address-identical to the pre-E0V geometry reference.
-The qualified SUPERcop builder enforces this contract automatically.
+The old E0V helper remains in its page-aligned RX tail as a geometry anchor.
+The three QL2 kernels occupy a second deterministic page-aligned RX tail. The
+Encap caller retains its qualified 611-byte input-section reservation, while
+86 pre-existing symbols and rodata remain byte- and address-identical between
+the E0V and QL2 images. The qualified SUPERcop builder enforces this contract.
 
 ## Decapsulation
 

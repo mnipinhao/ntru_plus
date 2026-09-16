@@ -1,5 +1,25 @@
 # Benchmark record
 
+## Current QL2 production versus Official (139)
+
+The promoted source tree was built directly with SUPERcop's native
+`crypto_kem/measure.c`. Each mode used 16 ABBA/BAAB blocks, 32 fresh launches
+per implementation, CPU 1, fixed frequency, and 3,072 observations per
+operation. Negative delta means GT is faster.
+
+| ASLR | Operation | Official | GT QL2 | GT - Official | Relative | 95% paired-block CI |
+|---|---|---:|---:|---:|---:|---:|
+| on | Keypair | 21480.32 | 21262.67 | **-217.65** | -1.013% | [-235.21,-190.73] |
+| on | Encap | 28113.76 | 28218.59 | **+104.83** | +0.373% | [+54.02,+109.50] |
+| on | Decap | 19314.02 | 19247.86 | **-66.16** | -0.343% | [-88.58,-42.69] |
+| off | Keypair | 21443.23 | 21263.68 | **-179.55** | -0.837% | [-198.58,-163.23] |
+| off | Encap | 28051.12 | 28207.89 | **+156.76** | +0.559% | [+98.87,+170.52] |
+| off | Decap | 19262.85 | 19224.85 | **-38.00** | -0.197% | [-53.58,-24.33] |
+
+QL2 substantially narrows the old production Encap gap but does not yet beat
+Official. Keypair and Decap remain faster in both ASLR modes. Raw launch data,
+ELF hashes, and the parser are retained in experiment 139.
+
 ## E0V executable-layout qualification
 
 E0V removes the memory-resident Encap sum polynomial: the existing B3 product

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail unless the qualified E0V executable-layout contract is preserved."""
+"""Fail unless the qualified E0V-to-QL2 layout contract is preserved."""
 
 from __future__ import annotations
 
@@ -11,8 +11,7 @@ import subprocess
 from pathlib import Path
 
 
-EXCLUDED = {"ntruplus768_enc_derand_impl",
-            "ntruplus768_pack_m_sum_highrange12699_avx2"}
+EXCLUDED = {"ntruplus768_enc_derand_impl"}
 
 
 def out(command: list[str]) -> str:
@@ -58,22 +57,22 @@ def main() -> None:
     parser.add_argument("--build", type=Path, required=True)
     args = parser.parse_args()
     build = args.build.resolve()
-    binaries = {name: build / f"measure-{name}" for name in ("control", "e0v")}
+    binaries = {name: build / f"measure-{name}" for name in ("e0v", "ql2")}
     maps = {name: symbols(path) for name, path in binaries.items()}
     mismatches = []
     checked = 0
-    for name in sorted(set(maps["control"]) & set(maps["e0v"])):
+    for name in sorted(set(maps["e0v"]) & set(maps["ql2"])):
         if name in EXCLUDED or name.startswith(("supercop", "cpucycles")):
             continue
-        control = maps["control"][name]
-        candidate = maps["e0v"][name]
+        control = maps["e0v"][name]
+        candidate = maps["ql2"][name]
         if control != candidate:
             mismatches.append({"symbol": name, "reason": "address/size/type",
                                "control": control, "candidate": candidate})
             continue
         if control[2].lower() == "t" and control[1]:
-            if function_bytes(binaries["control"], *control[:2]) != \
-                    function_bytes(binaries["e0v"], *candidate[:2]):
+            if function_bytes(binaries["e0v"], *control[:2]) != \
+                    function_bytes(binaries["ql2"], *candidate[:2]):
                 mismatches.append({"symbol": name, "reason": "machine bytes"})
                 continue
         checked += 1
@@ -83,7 +82,7 @@ def main() -> None:
         raise SystemExit(f"only {checked} pre-existing symbols audited")
 
     rodata = {name: section(path, ".rodata")[:2] for name, path in binaries.items()}
-    if rodata["control"] != rodata["e0v"]:
+    if rodata["e0v"] != rodata["ql2"]:
         raise SystemExit(f"rodata geometry mismatch: {rodata}")
     rodata_hash = {}
     for name, path in binaries.items():
@@ -94,19 +93,22 @@ def main() -> None:
     if len(set(rodata_hash.values())) != 1:
         raise SystemExit(f"rodata bytes mismatch: {rodata_hash}")
 
-    tail = {name: section(path, ".e0v_tail") for name, path in binaries.items()}
-    for name, (address, _size, flags) in tail.items():
-        if address % 4096 or "A" not in flags or "X" not in flags or "W" in flags:
-            raise SystemExit(f"invalid {name} E0V tail geometry/flags: {tail[name]}")
-    if tail["control"][:2] != tail["e0v"][:2]:
-        raise SystemExit(f"tail mismatch: {tail}")
+    tails = {section_name: {name: section(path, section_name)
+                            for name, path in binaries.items()}
+             for section_name in (".e0v_tail", ".ql2_tail")}
+    for section_name, profiles in tails.items():
+        for name, (address, _size, flags) in profiles.items():
+            if address % 4096 or "A" not in flags or "X" not in flags or "W" in flags:
+                raise SystemExit(f"invalid {name} {section_name}: {profiles[name]}")
+        if profiles["e0v"][:2] != profiles["ql2"][:2]:
+            raise SystemExit(f"{section_name} mismatch: {profiles}")
     for name, path in binaries.items():
         if re.search(r"RWE", out(["readelf", "-lW", str(path)])):
             raise SystemExit(f"RWX segment in {name}")
 
-    control_slot = section(build / "objects/encap-control.o",
+    control_slot = section(build / "objects/encap-e0v.o",
                            ".text.ntruplus768_enc_derand_impl")[1]
-    candidate_slot = section(build / "objects/encap-e0v.o",
+    candidate_slot = section(build / "objects/encap-ql2.o",
                              ".text.ntruplus768_enc_derand_impl")[1]
     if (control_slot, candidate_slot) != (611, 611):
         raise SystemExit(f"caller slot contract failed: {control_slot}, {candidate_slot}")
@@ -115,14 +117,16 @@ def main() -> None:
         "status": "PASS",
         "preexisting_symbols_checked": checked,
         "preexisting_symbol_mismatches": 0,
-        "caller_slot_bytes": {"control": control_slot, "e0v": candidate_slot},
+        "caller_slot_bytes": {"e0v": control_slot, "ql2": candidate_slot},
         "encap_symbols": {name: maps[name]["ntruplus768_enc_derand_impl"][:2]
                           for name in binaries},
-        "tail": {name: {"address": value[0], "size": value[1], "flags": value[2]}
-                 for name, value in tail.items()},
+        "tails": {section_name: {
+            name: {"address": value[0], "size": value[1], "flags": value[2]}
+            for name, value in profiles.items()}
+            for section_name, profiles in tails.items()},
         "rodata": {"geometry": rodata, "sha256": rodata_hash},
         "elf_sha256": {name: sha(path) for name, path in binaries.items()},
-        "security": {"rwx_segment": False, "tail_page_aligned_rx": True},
+        "security": {"rwx_segment": False, "tails_page_aligned_rx": True},
     }
     (build / "layout-audit.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, indent=2))

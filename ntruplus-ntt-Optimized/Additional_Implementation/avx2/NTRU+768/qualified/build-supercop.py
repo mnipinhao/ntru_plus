@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build matched pre-E0V and promoted E0V SUPERcop measure ELFs."""
+"""Build matched E0V and promoted QL2 SUPERcop measure ELFs."""
 
 from __future__ import annotations
 
@@ -87,9 +87,9 @@ def main() -> None:
         compile_one(ROOT / name, target, includes)
         ordered.append(target)
 
-    enc_control = qualify_encap("control", ROOT / "qualified/encap-control.c",
-                                objects, includes)
-    enc_e0v = qualify_encap("e0v", ROOT / "encap.c", objects, includes)
+    enc_e0v = qualify_encap("e0v", ROOT / "qualified/encap-e0v.c",
+                            objects, includes)
+    enc_ql2 = qualify_encap("ql2", ROOT / "encap.c", objects, includes)
 
     harness: list[Path] = []
     for name in ("measure-anything.c", "measure.c"):
@@ -105,7 +105,7 @@ def main() -> None:
                  bench / "lib/amd64/libkernelrandombytes.a",
                  bench / "lib/nontimecop/amd64/libcpucycles.a",
                  bench / "lib/amd64/libsupercop.a"]
-    for profile, encap in (("control", enc_control), ("e0v", enc_e0v)):
+    for profile, encap in (("e0v", enc_e0v), ("ql2", enc_ql2)):
         profile_objects = ordered[:insert_at] + [encap] + ordered[insert_at:]
         run(["gcc", "-pie", "-Wl,--build-id=none", "-Wl,--gc-sections",
              "-Wl,--undefined=ntruplus768_pack_m_highrange12699_avx2",

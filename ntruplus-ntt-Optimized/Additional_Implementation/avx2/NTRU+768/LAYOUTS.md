@@ -18,6 +18,21 @@ product, and SP1 Q24 serializer.  P is not converted to M during Keygen.
 
 ## Montgomery exponent
 
+## QL2
+
+QL2 is an Encap-only physical presentation at the final convergence point.
+It carries the same logical transformed polynomial and Montgomery exponent
+`e=0` as M, but has already absorbed two of the three Q24 routing layers.
+The message Forward deposits QL2 directly; the Encap-private general BaseMul
+accepts its ordinary M operands and emits QL2. The final two-source serializer
+adds the two QL2 values and performs only the remaining Q24 routing layer.
+
+QL2 is not used by Keygen, Decap, the `r-hat` serialization, or any public
+wire format. Product and message still materialize separately; only their
+semantic sum remains virtual.
+
+## Montgomery exponent
+
 `e` records representation scale modulo `q=3457`:
 
 - Forward terminal values are `e=0` (`F0`).

@@ -2725,3 +2725,186 @@ ntruplus768_equal_m_modq12699_avx2:
  .byte 0,1,2,4,5,6,8,9,10,12,13,14,128,128,128,128
  .byte 0,1,2,4,5,6,8,9,10,12,13,14,128,128,128,128
  .section .note.GNU-stack,"",@progbits
+
+.macro GT103_Q24_Q_ONLY s0,s1,s2,s3,t0,t1,t2,t3
+ vpunpcklqdq %\s2, %\s0, %\t0
+ vpunpckhqdq %\s2, %\s0, %\t1
+ vpunpcklqdq %\s3, %\s1, %\t2
+ vpunpckhqdq %\s3, %\s1, %\t3
+.endm
+.macro GT103_Q24_ENCODE_HR src,srcx,perm,offset,safe
+ vpmulhrsw %ymm13, \src, %ymm14
+ vpmullw %ymm15, %ymm14, %ymm14
+ vpsubw %ymm14, \src, \src
+ Q24_ENCODE_CANONICAL_REG_PACKET \src,\srcx,\perm,\offset,\safe
+.endm
+.macro GT103_Q24_QL2_SUM_BODY
+ vmovdqu 0(%rsi), %ymm0
+ vmovdqu 32(%rsi), %ymm1
+ vmovdqu 64(%rsi), %ymm2
+ vmovdqu 96(%rsi), %ymm3
+ vpaddw 0(%rdx), %ymm0, %ymm0
+ vpaddw 32(%rdx), %ymm1, %ymm1
+ vpaddw 64(%rdx), %ymm2, %ymm2
+ vpaddw 96(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,177,0,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,75,24,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,75,48,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,75,72,0
+ vmovdqu 128(%rsi), %ymm0
+ vmovdqu 160(%rsi), %ymm1
+ vmovdqu 192(%rsi), %ymm2
+ vmovdqu 224(%rsi), %ymm3
+ vpaddw 128(%rdx), %ymm0, %ymm0
+ vpaddw 160(%rdx), %ymm1, %ymm1
+ vpaddw 192(%rdx), %ymm2, %ymm2
+ vpaddw 224(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,177,96,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,75,120,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,75,144,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,75,168,0
+ vmovdqu 1152(%rsi), %ymm0
+ vmovdqu 1184(%rsi), %ymm1
+ vmovdqu 1216(%rsi), %ymm2
+ vmovdqu 1248(%rsi), %ymm3
+ vpaddw 1152(%rdx), %ymm0, %ymm0
+ vpaddw 1184(%rdx), %ymm1, %ymm1
+ vpaddw 1216(%rdx), %ymm2, %ymm2
+ vpaddw 1248(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,228,192,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,228,216,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,228,240,0
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,228,264,0
+ vmovdqu 1024(%rsi), %ymm0
+ vmovdqu 1056(%rsi), %ymm1
+ vmovdqu 1088(%rsi), %ymm2
+ vmovdqu 1120(%rsi), %ymm3
+ vpaddw 1024(%rdx), %ymm0, %ymm0
+ vpaddw 1056(%rdx), %ymm1, %ymm1
+ vpaddw 1088(%rdx), %ymm2, %ymm2
+ vpaddw 1120(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,228,288,0
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,228,312,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,228,336,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,30,360,0
+ vmovdqu 512(%rsi), %ymm0
+ vmovdqu 544(%rsi), %ymm1
+ vmovdqu 576(%rsi), %ymm2
+ vmovdqu 608(%rsi), %ymm3
+ vpaddw 512(%rdx), %ymm0, %ymm0
+ vpaddw 544(%rdx), %ymm1, %ymm1
+ vpaddw 576(%rdx), %ymm2, %ymm2
+ vpaddw 608(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,30,384,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,177,408,0
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,30,432,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,177,456,0
+ vmovdqu 640(%rsi), %ymm0
+ vmovdqu 672(%rsi), %ymm1
+ vmovdqu 704(%rsi), %ymm2
+ vmovdqu 736(%rsi), %ymm3
+ vpaddw 640(%rdx), %ymm0, %ymm0
+ vpaddw 672(%rdx), %ymm1, %ymm1
+ vpaddw 704(%rdx), %ymm2, %ymm2
+ vpaddw 736(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,30,480,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,177,504,0
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,30,528,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,177,552,0
+ vmovdqu 1408(%rsi), %ymm0
+ vmovdqu 1440(%rsi), %ymm1
+ vmovdqu 1472(%rsi), %ymm2
+ vmovdqu 1504(%rsi), %ymm3
+ vpaddw 1408(%rdx), %ymm0, %ymm0
+ vpaddw 1440(%rdx), %ymm1, %ymm1
+ vpaddw 1472(%rdx), %ymm2, %ymm2
+ vpaddw 1504(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,30,576,0
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,30,600,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,30,624,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,177,648,0
+ vmovdqu 1280(%rsi), %ymm0
+ vmovdqu 1312(%rsi), %ymm1
+ vmovdqu 1344(%rsi), %ymm2
+ vmovdqu 1376(%rsi), %ymm3
+ vpaddw 1280(%rdx), %ymm0, %ymm0
+ vpaddw 1312(%rdx), %ymm1, %ymm1
+ vpaddw 1344(%rdx), %ymm2, %ymm2
+ vpaddw 1376(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,30,672,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,177,696,0
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,30,720,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,177,744,0
+ vmovdqu 768(%rsi), %ymm0
+ vmovdqu 800(%rsi), %ymm1
+ vmovdqu 832(%rsi), %ymm2
+ vmovdqu 864(%rsi), %ymm3
+ vpaddw 768(%rdx), %ymm0, %ymm0
+ vpaddw 800(%rdx), %ymm1, %ymm1
+ vpaddw 832(%rdx), %ymm2, %ymm2
+ vpaddw 864(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,177,768,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,75,792,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,75,816,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,75,840,0
+ vmovdqu 896(%rsi), %ymm0
+ vmovdqu 928(%rsi), %ymm1
+ vmovdqu 960(%rsi), %ymm2
+ vmovdqu 992(%rsi), %ymm3
+ vpaddw 896(%rdx), %ymm0, %ymm0
+ vpaddw 928(%rdx), %ymm1, %ymm1
+ vpaddw 960(%rdx), %ymm2, %ymm2
+ vpaddw 992(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,177,864,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,75,888,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,75,912,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,75,936,0
+ vmovdqu 384(%rsi), %ymm0
+ vmovdqu 416(%rsi), %ymm1
+ vmovdqu 448(%rsi), %ymm2
+ vmovdqu 480(%rsi), %ymm3
+ vpaddw 384(%rdx), %ymm0, %ymm0
+ vpaddw 416(%rdx), %ymm1, %ymm1
+ vpaddw 448(%rdx), %ymm2, %ymm2
+ vpaddw 480(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,228,960,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,228,984,0
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,228,1008,0
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,228,1032,0
+ vmovdqu 256(%rsi), %ymm0
+ vmovdqu 288(%rsi), %ymm1
+ vmovdqu 320(%rsi), %ymm2
+ vmovdqu 352(%rsi), %ymm3
+ vpaddw 256(%rdx), %ymm0, %ymm0
+ vpaddw 288(%rdx), %ymm1, %ymm1
+ vpaddw 320(%rdx), %ymm2, %ymm2
+ vpaddw 352(%rdx), %ymm3, %ymm3
+ GT103_Q24_Q_ONLY ymm0,ymm1,ymm2,ymm3,ymm4,ymm5,ymm6,ymm7
+ GT103_Q24_ENCODE_HR %ymm6,%xmm6,228,1056,0
+ GT103_Q24_ENCODE_HR %ymm7,%xmm7,228,1080,0
+ GT103_Q24_ENCODE_HR %ymm5,%xmm5,228,1104,0
+ GT103_Q24_ENCODE_HR %ymm4,%xmm4,30,1128,1
+
+.endm
+.section .ql2_tail.3_pack,"ax",@progbits
+.p2align 5
+.globl ntruplus768_pack_ql2_sum_avx2
+.type ntruplus768_pack_ql2_sum_avx2,@function
+ntruplus768_pack_ql2_sum_avx2:
+ vmovdqa .Lq24_q(%rip), %ymm15
+ vmovdqa .Lq24_v(%rip), %ymm13
+ GT103_Q24_QL2_SUM_BODY
+ vzeroupper
+ ret
+.size ntruplus768_pack_ql2_sum_avx2,.-ntruplus768_pack_ql2_sum_avx2

@@ -15,12 +15,16 @@ void ntruplus768_ntt_frontend_avx2(int16_t out[NTRUPLUS_N],
 /* Frontend state -> persistent M or key-generation P representation. */
 void ntruplus768_ntt_m_avx2(int16_t out[NTRUPLUS_N],
 	const int16_t frontend[NTRUPLUS_N]);
+void ntruplus768_ntt_ql2_avx2(int16_t out[NTRUPLUS_N],
+	const int16_t frontend[NTRUPLUS_N]);
 void ntruplus768_ntt_p_avx2(int16_t out[NTRUPLUS_N],
 	const int16_t frontend[NTRUPLUS_N]);
 
 void ntruplus768_basemul_scale_m_avx2(int16_t out[NTRUPLUS_N],
 	const int16_t a[NTRUPLUS_N], const int16_t b[NTRUPLUS_N]);
 void ntruplus768_basemul_general_m_avx2(int16_t out[NTRUPLUS_N],
+	const int16_t a[NTRUPLUS_N], const int16_t b[NTRUPLUS_N]);
+void ntruplus768_basemul_general_ql2_avx2(int16_t out[NTRUPLUS_N],
 	const int16_t a[NTRUPLUS_N], const int16_t b[NTRUPLUS_N]);
 void ntruplus768_basemul_f0_j1_avx2(int16_t out[NTRUPLUS_N],
 	const int16_t f0[NTRUPLUS_N], const int16_t j1[NTRUPLUS_N]);
@@ -46,6 +50,9 @@ void ntruplus768_pack_m_lazy10788_avx2(
 void ntruplus768_pack_m_highrange12699_avx2(
 	uint8_t out[NTRUPLUS_POLYBYTES], const int16_t in[NTRUPLUS_N]);
 void ntruplus768_pack_m_sum_highrange12699_avx2(
+	uint8_t out[NTRUPLUS_POLYBYTES], const int16_t product[NTRUPLUS_N],
+	const int16_t message[NTRUPLUS_N]);
+void ntruplus768_pack_ql2_sum_avx2(
 	uint8_t out[NTRUPLUS_POLYBYTES], const int16_t product[NTRUPLUS_N],
 	const int16_t message[NTRUPLUS_N]);
 void ntruplus768_pack_p_sp1_lazy10788_avx2(
