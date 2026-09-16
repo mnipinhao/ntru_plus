@@ -1,0 +1,11 @@
+experiment_id: GT864-P41-PAIRED-RECORD-STORE-20260916
+action: optimize-layout
+primary_bottleneck: Full ToBytes output packing and stores after P24 global routing
+observation: P24 emits each 12-byte record independently as STUR D plus MOV-to-GPR plus STUR W; its route DAG is already within seven instructions per top of the exact unique-node lower bound
+hypothesis: require each adjacent pair's A record before B, store A immediately as a Q with four temporary high bytes, then let B overwrite those four bytes and store its remaining eight bytes
+exact_proposed_change: A uses STUR Q; B uses STUR S followed by EXT #4 and STUR D; search the global route order under only the A-before-B precedence constraint
+expected_static_effect: replace six terminal instructions per record pair with four, saving 54 instructions per top before any extra route reloads
+expected_performance_effect: reduce vector-to-GPR transfers and store count at the current P24 complete ToBytes boundary
+expected_register_pressure_effect: no additional packed record remains live; route allocation remains capped at v0-v25 with v26-v31 reserved
+correctness_or_range_impact: none; normalization, canonical coefficients, 12-bit packing, wire order, public addresses and producer contracts remain unchanged
+falsifying_measurement: paired scheduling consumes at least the 54-instruction per-top terminal saving, requires spill or extra coefficient memory, or fails exact-byte equivalence

@@ -1,0 +1,23 @@
+mode: existing_region_replacement
+candidate_status: reject
+candidate:
+  id: gt864_p41_paired_record_store
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: candidate-full.sym.S and candidate-small.sym.S
+contract_preservation:
+  preserved: [public ABI, FR0 input, exact wire bytes, normalization, coefficient loads and memory-pass count, constant-time behavior]
+  approved_changes: [output consumption order under fixed A-before-B precedence, temporary overwrite of disjoint output bytes, terminal store granularity]
+region:
+  start_label: p41_top_full_slothy_start / p41_top_small_slothy_start
+  end_label: p41_top_full_slothy_end / p41_top_small_slothy_end
+memory_contract:
+  loads: [same public coefficient coordinates; route reload count bounded by static gate]
+  stores: [same exact bytes through 27 Q plus 27 S plus 27 D public stores per top]
+  scratch_bytes: 0
+  public_offsets_only: true
+promotion_gate:
+  static: net instruction reduction versus P24 after paired-route reload cost; no extra coefficient pass or spill
+  correctness: exact bytes for Full and Small plus guarded edges
+  integration: AAPCS wipe KAT malformed rejection and object audit
+  performance: paired Pi5 ToBytes and complete KEM; promote only on measured improvement

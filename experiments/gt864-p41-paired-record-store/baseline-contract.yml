@@ -1,0 +1,21 @@
+mode: existing_region_replacement
+candidate_status: investigate
+baseline:
+  revision: 32f27a2a
+  source_full: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
+  source_small: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_small.S
+  implementation: promoted P24 generated from P23 global route DAG
+  route_per_top: 61 coefficient loads plus 224 route operations
+  terminal_store_per_record: STUR D plus MOV vector lane to GPR plus STUR W
+  complete_dynamic_instructions_full: 2154
+  complete_dynamic_instructions_small: 1934
+abi:
+  public_symbols: [gt864_p18_tobytes_full_asm, gt864_p18_tobytes_small_asm]
+  output_bytes: 1296
+  input_coefficients: 864 signed int16 FR0 values
+memory_contract:
+  coefficient_scratch: 0
+  public_offsets_only: true
+constant_time_contract:
+  secret_branches: forbidden
+  secret_addresses: forbidden

@@ -1,0 +1,29 @@
+experiment_id: GT864-P41-PAIRED-RECORD-STORE-20260916
+decision: reject
+production_changed: false
+correctness:
+  exact_model_cases: 1028
+  pi_component_cases: 513
+  kat_sha256: 0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c
+  malformed_sha256: 2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67
+  no_spill: true
+static_complete_call:
+  instructions_delta: -38
+  coefficient_reads_delta: 30
+  stores_delta: -54
+  vector_to_gpr_moves_delta: -108
+slothy_model_per_top:
+  full_p24: 1495
+  full_p41: 1489
+  small_p24: 1010
+  small_p41: 1014
+pi5_full_boundary:
+  baseline_cycles: 1393.3555
+  candidate_cycles: 1395.609
+  paired_delta_cycles: 2.2535
+full_kem_paired_delta_cycles:
+  keygen: -45.125
+  encaps: -16.775
+  decaps: -31.45
+reason: exact Full ToBytes same-boundary cycle gate did not improve; production remains P24 despite favorable complete-KEM signal
+next_gate: eliminate the 30 precedence-induced coefficient reloads before rebuilding the same overlapping-store candidate

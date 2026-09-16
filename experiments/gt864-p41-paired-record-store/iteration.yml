@@ -1,0 +1,15 @@
+experiment_id: GT864-P41-PAIRED-RECORD-STORE-20260916
+date: 2026-09-16
+mode: existing_region_replacement
+state: measured
+repo_probe:
+  slothy_root: /Users/chenpinhao/slothy
+  interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+  target: cortex_a76
+  production_revision: 32f27a2a
+baseline_regions:
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
+  - ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_small.S
+candidate_status: reject
+promotion: false
+decision: exact Full boundary regressed 2.2535 cycles despite -38 instructions; production remains P24

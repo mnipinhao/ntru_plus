@@ -76,7 +76,8 @@ Status meanings:
 | P38 | Done—Rejected statically | Co-design direct-Forward terminal representatives with Full route/normalization/packing; freeze Small and P35 Inverse | Every coordinate has a valid small/keygen input outside `(-q,q)`; post-pass/store canonicalization only relocates all 216 instructions and quotient reuse fails, so best net deletion is zero |
 | P39 | Done—Rejected statically | Search the twelve inverse9 blocks for a new identity, composite constant or redundant reduction while freezing P35 I16 and memory ABI | All 64 B3 orientations and 36 terminal vectors checked; best exact in-contract rewrite saves only 1 instruction/block, below the required complete Algorithm-10 triple, so production remains unchanged |
 | P40 | Done—Rejected on Pi 5 | Move the exact inverse9 geometric terminal phase into row-dependent twisted I16 tables and compose the remaining row/top scale into P13 terminal tables | Exact/no-spill/KAT/alias/wipe pass and -137 instructions, but Inverse/Decaps regress 221.508/219.525 cycles as multiply dependency and table pressure reduce IPC; P35 remains production |
-| P41 | Next—Full ToBytes routing DAG reopen | Return to P37's remaining positive component and search a smaller FR0-coordinate-to-wire network that jointly consumes route, normalization and packing | Before Slothy, statically remove at least about 829 instructions and 101 reads versus the rejected P6 route; preserve separate Full/Small contracts and final full-vector stores |
+| P41 | Done—Rejected at exact boundary | Pair adjacent 12-byte Full records as overlapping Q/S/D stores while preserving P24 normalization, packing and wire ABI | Exact/no-spill/KAT/KEM pass and -38 instructions, but A-before-B routing adds 30 reads and Full boundary regresses 2.253 cycles; production remains P24 |
+| P42 | Next—Precedence-aware route-cache borrowing | Retain P41's overlapping stores but remove the A-before-B schedule's coefficient reloads by borrowing a transient 27th route register between consumers | Before Slothy: at most 61 coefficient loads and 300 route instructions/top, no spill/scratch/new pass; then exact Full boundary must improve before KEM promotion |
 
 ## Fixed facts and non-tasks
 
@@ -98,6 +99,26 @@ Status meanings:
 
 ### 2026-09-16
 
+- Completed and rejected P41 without changing production.  The original
+  two-live-record design explodes the 26-register route cache to 423 route
+  instructions and 136 coefficient loads/top.  The implemented alternative
+  stores even record A as a Q with four temporary high bytes, then lets odd
+  record B overwrite those bytes with `STUR S` and finish with `EXT #4` plus
+  `STUR D`.  It needs no cross-record register lifetime or scratch.
+- The A-before-B precedence schedule costs 320 route instructions and 76
+  coefficient loads/top versus P24's 285/61.  Overlapping stores still reduce
+  the complete call by 38 instructions, 54 writes and 108 vector-to-GPR moves,
+  at the cost of 30 reads.  A 1,028-case exact model, arm64 assembly, 513-case
+  Pi boundary oracle, no-spill object audit, KAT, malformed and full KEM gates
+  pass.  Local Slothy Full timing changes 1495 to 1489 modeled cycles/top.
+- Exact Pi 5 Full ToBytes changes 1393.356 to 1395.609 cycles (+2.253), so the
+  predeclared component gate rejects promotion.  Complete Keygen/Encaps/Decaps
+  nevertheless improve by 45.125/16.775/31.450 paired-median cycles with
+  exactly 38 fewer instructions; this caller-context signal is retained for
+  P42.  P42 must first remove the 30 precedence-induced coefficient reloads,
+  targeting at most 61 loads and 300 route instructions/top before Slothy.
+  Evidence: `experiments/gt864-p41-paired-record-store/`.
+
 - Completed and rejected P40 without changing production. The exact terminal
   factor is `k(top,c,s)=k(top,0,s)*2863^(cs) mod 3457`, with 2863 of order 144.
   P40 deletes nine terminal Algorithm-10 products from each of twelve inverse9
@@ -115,9 +136,9 @@ Status meanings:
   cycles (+4.66%) and Decaps regressed 39917.525 to 40137.050 (+0.55%). Inverse
   IPC fell from about 1.739 to 1.634: shifting work into every I16 butterfly
   increased multiply dependency and table pressure. P35 remains production.
-- P41 returns to Full ToBytes, the remaining positive P37 component. It must
-  first meet the existing P6 reopen threshold (about 829 instructions and 101
-  reads removed in the static route model) before Slothy or Pi timing.
+- The old P6 reopen threshold was retired: P23/P24 already surpassed P6 and is
+  the active production baseline.  Subsequent ToBytes gates compare directly
+  against P24's 285 route instructions and 61 coefficient loads per top.
 
 - Completed and statically rejected P39 without changing production. The exact
   184-instruction inverse9 body contains 19 Algorithm-10 products: six B3,
