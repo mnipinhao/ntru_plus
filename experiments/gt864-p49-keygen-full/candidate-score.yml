@@ -1,0 +1,26 @@
+candidate:
+  id: gt864_p49_keygen_full_normalization
+  status: reject
+  mode: static_arithmetic_feasibility_before_symbolic_assembly
+contract:
+  keygen_only: true
+  generic_full_unchanged: true
+  exact_secret_key_and_kat_bytes_required: true
+proof:
+  source: proof-report.json
+  k1_envelope: [-28765, 28258]
+  leaves: 288
+  leaves_inside_small_contract: 0
+  current_b9_residual: [-3107, 3107]
+  uniform_three_instruction_solutions: 0
+  per_leaf_shifted_solutions: 0
+  per_leaf_biased_solutions: 0
+slothy:
+  status: not_run
+  reason: static arithmetic gate failed
+pi5:
+  status: not_run
+  reason: no correct lower-instruction candidate exists under the declared hypothesis
+decision:
+  reason: P46 remains the minimum known exact reduction at this boundary; moving the same reduction into Forward has no static saving
+  reopen_condition: a producer DAG which emits canonical or centered leaves by absorbing reduction into arithmetic already required for Forward, without adding an equal-cost pass

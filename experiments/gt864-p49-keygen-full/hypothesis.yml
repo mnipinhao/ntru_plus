@@ -1,0 +1,13 @@
+experiment_id: GT864-P49-KEYGEN-FULL-NORMALIZATION-20260916
+action: optimize-arithmetic
+observation: Keygen serializes K1 Forward output f with generic P46 Full; unlike arbitrary int16, the proved f leaf envelope is bounded by -28765 and 28258
+primary_bottleneck: four-instruction per-vector Full canonical reduction before unchanged routing and packing
+hypothesis: the K1-only producer interval may admit an exact three-instruction fixed-constant quotient and remainder sequence that directly produces 0 through 3456
+exact_change: search every K1 leaf interval for shifted or biased one-SQRDMULH quotient families followed by one MLS; do not alter production unless one exact family covers all coefficients
+expected_static_effect: if successful, remove at least one instruction from each of 108 normalization groups per Keygen
+expected_performance_effect: improve complete Keygen; Encaps and Decaps remain controls
+expected_register_pressure_effect: at most one additional long-lived vector constant and no spill
+correctness_impact: candidate must preserve exact canonical secret-key bytes and KAT for every input allowed by the proved K1 f contract
+falsifier: reject before assembly if no three-instruction family closes all 288 leaf intervals, or if direct Small serialization differs on reachable Keygen samples
+mode: static_arithmetic_feasibility_before_symbolic_assembly
+candidate_status: reject_before_assembly

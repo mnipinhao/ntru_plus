@@ -1,0 +1,29 @@
+experiment_id: GT864-P49-KEYGEN-FULL-NORMALIZATION-20260916
+status: reject
+candidate: bounded three-instruction canonical reduction search
+scope: Keygen f producer to secret-key Full serializer only
+allowed_families:
+  shifted_input: SUB constant then SQRDMULH then MLS
+  biased_quotient: SQRDMULH then ADD constant then MLS
+  scaled_quotient: SQRDMULH then signed shift then MLS
+requirements:
+  exact_on_every_integer_in_each_proved_leaf_interval: true
+  output_range: [0, 3456]
+  exact_modulo_3457: true
+  no_spill: true
+  instruction_saving_per_vector: at_least_one
+fallbacks_not_candidates:
+  direct_small_serializer: violates every proved leaf contract
+  producer_reduction_then_small_correction: four instructions total and has no static advantage over P46
+  CMLT_MLS: already rejected by P42 target timing
+promotion_gate: no assembly or Pi timing unless static arithmetic feasibility passes
+measured_static_result:
+  k1_envelope: [-28765, 28258]
+  leaves_inside_small_contract: 0
+  current_b9_residual: [-3107, 3107]
+  uniform_shifted_solution: none
+  uniform_biased_solution: none
+  uniform_scaled_solution: none
+  per_leaf_shifted_solutions: 0
+  per_leaf_biased_solutions: 0
+decision: reject_before_assembly

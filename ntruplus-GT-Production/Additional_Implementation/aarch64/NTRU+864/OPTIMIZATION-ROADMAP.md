@@ -84,7 +84,8 @@ Status meanings:
 | P46 | Done—Promoted | Replace each Full-only `SSHR+AND+ADD` correction with the exact `USHR+MLA` sign-bit identity; freeze Small | Exhaustive identity, exact bytes, no-spill allocation, KAT/malformed and Pi 5 pass; Full saves 8.364 cycles and every KEM caller wins with -108 instructions. User explicitly approved promotion despite the preserved Slothy 1495→1562 proxy regression |
 | P47 | Done—Promoted | Let the Decaps re-encryption serializer feed the ciphertext comparison consumer directly without materializing an avoidable generic boundary | Exact/all-byte/KAT/malformed, constant-time, no-spill and Slothy gates pass; Decaps saves 143.650 cycles, 19 instructions, 97.5 branches and 1072 stack bytes; generic P46 remains unchanged |
 | P48 | Done—Promoted | Let the Encaps Full serializer feed the exact `0x01 || bytes` SHAKE input directly, eliminating the immediate 1296-byte copy | Exact transcript/native/KAT/malformed/KEM and object gates pass; Encaps saves 121.225 cycles, 175 instructions and 24 branches; controls are unchanged |
-| P49 | Next—Keygen Full normalization | Specialize only the Keygen Full producer/serializer boundary using its proven producer range | Re-close the exact Keygen producer range, preserve wire bytes/KAT/cleanup and improve full Keygen; no contract narrowing may leak into generic Full ToBytes |
+| P49 | Done—Rejected statically | Specialize only the Keygen Full producer/serializer boundary using its proven K1 range | All 288 leaves exceed the Small contract and no exact uniform shifted/biased/scaled three-instruction reduction exists; no assembly, Slothy or Pi timing warranted |
+| P50 | Next—Selected-Official profiler checkpoint | Re-run exact P48 production versus selected SUPERCOP 20260831 Official | Refresh full KEM and component attribution before selecting a new producer/consumer DAG |
 
 ## ToBytes priority policy
 
@@ -103,12 +104,12 @@ For improving complete KEM operations as quickly as possible, use this order:
 1. P47 Decaps Full-ToBytes-to-compare — promoted.
 2. P48 Encaps Full-ToBytes-to-SHAKE — promoted.
 3. P44 generic serializer work.
-4. P49 Keygen Full normalization.
+4. P49 Keygen Full normalization — rejected statically.
 
 P44 and P45 are closed at their static gates. P46 is the production generic
 Full serializer; Small remains P24. P47 is now the production Decaps-private
 compare consumer. P48 is now the production Encaps-private SHAKE consumer. P49
-is next. Caller-specific results
+is closed at its static gate; P50 is next. Caller-specific results
 must not be mixed into a generic same-boundary result.
 
 ## Fixed facts and non-tasks
@@ -130,6 +131,15 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-16
+
+- Completed P49 and rejected it before assembly. The exact K1 Keygen `f`
+  producer has 288 leaf intervals with envelope `[-28765,28258]`; none fits the
+  Small serializer contract. P46's reciprocal-9 residual narrows to
+  `[-3107,3107]` but still has both signs. Exhaustive fixed-constant searches
+  find no exact uniform shifted, biased or scaled three-instruction reduction;
+  shifted/biased families have no solution even per leaf. Direct Small has a
+  canonical-byte counterexample at 3457. Production remains P46 and Slothy/Pi
+  timing were correctly skipped. Evidence: `experiments/gt864-p49-keygen-full/`.
 
 - Completed and promoted P48 only at the Encaps `r -> hash_g` boundary. The
   exact P46 serializer now writes into `data+1`, with `data[0]=0x01`, before the
