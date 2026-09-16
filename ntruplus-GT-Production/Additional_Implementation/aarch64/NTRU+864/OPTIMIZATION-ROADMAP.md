@@ -78,7 +78,8 @@ Status meanings:
 | P40 | Done—Rejected on Pi 5 | Move the exact inverse9 geometric terminal phase into row-dependent twisted I16 tables and compose the remaining row/top scale into P13 terminal tables | Exact/no-spill/KAT/alias/wipe pass and -137 instructions, but Inverse/Decaps regress 221.508/219.525 cycles as multiply dependency and table pressure reduce IPC; P35 remains production |
 | P41 | Done—Rejected at exact boundary | Pair adjacent 12-byte Full records as overlapping Q/S/D stores while preserving P24 normalization, packing and wire ABI | Exact/no-spill/KAT/KEM pass and -38 instructions, but A-before-B routing adds 30 reads and Full boundary regresses 2.253 cycles; production remains P24 |
 | P42 | Done—Rejected on Pi 5 | Replace each ToBytes `SSHR+AND+ADD` sign correction with `CMLT+MLS` while freezing P24 routing, packing and memory ABI | Exact/no-spill/KAT/KEM pass and -108 instructions/call, but multiply-pipeline pressure lowers IPC; Full/Small regress 7.438/14.774 cycles |
-| P43 | Next—Precedence-aware route-cache borrowing | Retain P41's overlapping stores but remove the A-before-B schedule's coefficient reloads by borrowing a transient 27th route register between consumers | Before Slothy: at most 61 coefficient loads and 300 route instructions/top, no spill/scratch/new pass; then exact Full boundary must improve before KEM promotion |
+| P43 | Done—Profiler checkpoint | Re-run exact current GT production versus selected SUPERCOP 20260831 Official with clean KEM and component/event profiling | All correctness/instrumentation gates pass; GT wins Keygen/Encaps/Decaps by 1170.500/1411.075/852.100 cycles; remaining positive gaps are Full ToBytes and fused Inverse-to-ternary |
+| P44 | Next—Precedence-aware route-cache borrowing | Retain P41's overlapping stores but remove the A-before-B schedule's coefficient reloads by borrowing a transient 27th route register between consumers | Before Slothy: at most 61 coefficient loads and 300 route instructions/top, no spill/scratch/new pass; then exact Full boundary must improve before KEM promotion |
 
 ## Fixed facts and non-tasks
 
@@ -99,6 +100,20 @@ Status meanings:
 ## Change log
 
 ### 2026-09-16
+
+- Completed P43, a measurement-only exact-production profiler checkpoint.
+  Commit `34d2c758` was archived and compared with selected SUPERCOP 20260831
+  Official on Pi 5. Fresh manifest/build/KEM/KAT, 600 exact and 600 tampered
+  cross-implementation cases, and all instrumentation-equivalence gates pass.
+  Across 252 clean observations each, GT wins Keygen/Encaps/Decaps by
+  1170.500/1411.075/852.100 cycles (-2.641/-3.040/-2.090%). GT IPC is higher
+  in all three despite +4790/+2611/+7274 retired instructions.
+- Component profiling confirms GT Forward saves 717--732 cycles per two calls;
+  BaseMul R0/BaseMulAdd also win materially. Remaining positive matched gaps
+  are Full ToBytes at 302--305 cycles/call and Decaps fused Inverse-to-ternary
+  at +142 cycles. Small ToBytes is 123--125 cycles/call faster than Official.
+  The prior P43 route-cache experiment moves to P44. Evidence:
+  `experiments/gt864-p42-production-profile/`.
 
 - Completed and rejected P42 without changing production. P15/P16 had used
   `CMLT+AND+ADD`; they had never tested the exact two-instruction `CMLT+MLS`

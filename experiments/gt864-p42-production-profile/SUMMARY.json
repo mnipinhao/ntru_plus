@@ -1,0 +1,27 @@
+{
+  "experiment": "GT864-P42-PRODUCTION-PROFILE-20260916",
+  "gt_revision": "34d2c7584e52a78feb9f1ec89a53c8c769e35762",
+  "official_source": "/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64",
+  "official_upstream_latest_verified": false,
+  "correctness": {
+    "fresh_gt_test_kem": "pass",
+    "fresh_gt_kat": "pass",
+    "cross_implementation_processes": 6,
+    "exact_transcripts_per_process": 100,
+    "tampered_ciphertexts_per_process": 100,
+    "instrumentation_equivalence_processes": 12
+  },
+  "clean_full_kem": {
+    "keygen": {"official_cycles": 44319.25, "gt_cycles": 43148.75, "delta_cycles": -1170.5, "delta_percent": -2.641, "official_ipc": 2.0157, "gt_ipc": 2.1814},
+    "encaps": {"official_cycles": 46423.725, "gt_cycles": 45012.65, "delta_cycles": -1411.075, "delta_percent": -3.040, "official_ipc": 2.6026, "gt_ipc": 2.7422},
+    "decaps": {"official_cycles": 40771.325, "gt_cycles": 39919.225, "delta_cycles": -852.1, "delta_percent": -2.090, "official_ipc": 2.1254, "gt_ipc": 2.3530}
+  },
+  "remaining_positive_gt_cycle_gaps": {
+    "keygen_tobytes_aggregate": 52.25,
+    "keygen_shake_sampling": 27.5,
+    "encaps_tobytes_aggregate": 181.95,
+    "decaps_inverse_plus_crepmod3_to_gt_fused_ternary": 142.0,
+    "decaps_tobytes_aggregate": 179.3
+  },
+  "environment": {"cpu": "Raspberry Pi 5 Cortex-A76 core 3", "compiler": "GCC 14.2.0", "governor": "ondemand", "temperature_c": [58.2, 62.6], "throttled": false}
+}
