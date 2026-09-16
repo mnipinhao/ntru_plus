@@ -266,7 +266,7 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 {
 	uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
 	uint8_t buf1[NTRUPLUS_POLYBYTES];
-	uint8_t buf2[NTRUPLUS_POLYBYTES];
+	uint8_t buf2[NTRUPLUS_N / 4];
 	uint8_t buf3[NTRUPLUS_POLYBYTES + NTRUPLUS_SYMBYTES];
 
     int8_t fail=1;
@@ -303,9 +303,7 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
     poly_cbd1(&f, buf3 + NTRUPLUS_SSBYTES);
     poly_ntt(&f, &f);
-    gt864_fr0_tobytes_full(buf2, &f);
-
-    fail |= verify(buf1, buf2, NTRUPLUS_POLYBYTES);
+    fail |= gt864_fr0_tobytes_full_compare(buf1, &f);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf3[i] & ~(-fail);

@@ -1,0 +1,67 @@
+mode: new_symbolic_kernel
+candidate_status: promote
+kernel:
+  id: gt864_p47_decaps_full_compare
+  name: Decaps-private P46 Full serializer-to-compare
+  source: candidate-compare.sym.S
+  scheme: NTRU+864 GT
+  operation: return one iff arbitrary signed-int16 FR0 canonical wire bytes differ from the expected 1296 bytes
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: inherit exact P46 allocation, replace terminal stores by fixed D/W compare accumulation, then bounded fixed-allocation timing
+  driver: optimize.py
+  expected_outputs: [candidate-compare.g3.opt.S, slothy-compare-g3.log]
+  allow_spills: false
+region:
+  start_label: p47_top_compare_slothy_start
+  end_label: p47_top_compare_slothy_end
+  expected_instruction_count: to be generated from exact P46 schedule
+  live_in: [x0 expected top bytes, x1 FR0 top, v26 pack index, v27 q3457, v28 reciprocal9]
+  live_out: [x0 accumulated mismatch word]
+abi:
+  inputs: [x0 expected 1296 bytes, x1 arbitrary signed-int16 FR0 polynomial]
+  outputs: [w0 zero on byte equality and one on mismatch]
+  clobbers: [x0, x1, x2, x5, x6, x7, x8, x9, v0-v31, condition flags]
+  concrete_gprs_allowed: [x0, x1, x2, x5, x6, x7, x8, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: exact P46 route normalization and pack; terminal D/W loads XOR and scalar OR replace byte stores
+layout:
+  input_representation: expected Official wire bytes plus arbitrary signed-int16 FR0
+  output_representation: one constant-time mismatch bit
+  vector_lanes: exact P46 route and pack layout
+  packing: each routed eight-coefficient record forms exactly 12 Official bytes before immediate compare
+memory_contract:
+  loads: [exact P46 coefficient loads, exact 8-byte and 4-byte expected record loads]
+  stores: [none]
+  aliasing: expected bytes and FR0 input are readable and may not be modified
+  alignment: byte expected, 16-byte FR0
+  public_offsets_only: true
+  pointer_updates: [none inside top regions]
+constant_contract:
+  constants: [q3457, reciprocal9, P46 pack index]
+  modulus: 3457
+  representation: arbitrary signed-int16 FR0 to exact canonical wire comparison
+  reduction_method: P46 Algorithm-10 plus USHR MLA
+range_contract:
+  input_ranges: [arbitrary signed int16]
+  intermediate_ranges: [P46 residual negative 3291 through 3291]
+  output_ranges: [mismatch 0 or 1]
+  narrowing_points: [canonical 12-bit packing]
+constant_time_contract:
+  secret_inputs: [FR0 lanes and expected bytes]
+  public_inputs: [pointers and fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: exact record mapping, equal and every-byte mismatch, KAT, malformed transcript, AAPCS and object audit
+  full_path_benchmark_command: paired Pi5 complete Decaps PMU
+  benchmark_metric: Decaps cycles
+  lower_is_better: true

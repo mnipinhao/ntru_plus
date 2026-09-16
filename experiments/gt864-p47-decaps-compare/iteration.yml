@@ -1,0 +1,22 @@
+experiment_id: GT864-P47-DECAPS-FULL-TOBYTES-COMPARE-20260916
+date: 2026-09-16
+mode: new_kernel_baseline_then_iterate
+state: iteration_or_promote
+repo_probe:
+  production_revision: ca3c0c82
+  production_source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p18_tobytes_full.S
+  caller: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/kem.c crypto_kem_dec
+  build_rule: Makefile kem-normal.o and libgt864.so
+  host: pi@100.99.191.9
+  benchmark_root: /home/pi/supercop-20260831
+  microarchitecture: Cortex-A76 Pi5
+  slothy_root: /Users/chenpinhao/slothy
+  slothy_interpreter: /Users/chenpinhao/slothy_and_ra/.venv/bin/python
+baseline:
+  full_serializer: P46 production
+  materialized_candidate_bytes: 1296
+  prior_hash_g_bytes_needed: 216
+  verify: compiler vectorized constant-time 1296-byte scan
+candidate_status: promote
+promotion: true
+decision: exact Pi-tested scheduled kernel promoted into the Decaps-private boundary; generic P46 remains unchanged

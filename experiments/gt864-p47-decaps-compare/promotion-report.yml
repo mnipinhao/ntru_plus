@@ -1,0 +1,31 @@
+candidate:
+  id: gt864_p47_decaps_full_compare
+  status: promote
+  production_source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/gt864_p47_decaps_compare.S
+  promoted_source_sha256: c573288b01e86078e2fd9a91f58bf2017ec77fde8c32f545dcfb67dba6ccc0b4
+contract:
+  public_kem_and_wire_abi: preserved
+  approved_internal_change: Decaps materialized Full bytes replaced by immediate exact compare; buf2 shrinks to hash_g's 216-byte output lifetime
+correctness:
+  native_all_byte_differential: pass
+  kem_kat: pass
+  malformed_ciphertext: pass
+  constant_time_review: pass
+  no_spill: pass
+slothy:
+  status: pass
+  windows: 18
+  candidate_expected_cycles: 1661
+  load_model_surrogate: reversible unique-offset LDR X timing model for unsupported LDUR X/W; exact widths and addresses restored before assembly and tests
+pi5:
+  root: /home/pi/supercop-20260831
+  observations: 252
+  decaps_cycles: [39907.3, 39763.225]
+  decaps_paired_delta_cycles: -143.65
+  retired_instruction_delta: -19
+  branch_delta: -97.5
+  stack_bytes: [11088, 10016]
+production:
+  decaps: P47 private compare
+  generic_full: unchanged P46
+  generic_small: unchanged P24

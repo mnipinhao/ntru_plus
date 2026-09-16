@@ -1,5 +1,21 @@
 # K1 production integration evidence
 
+## P47 Decaps Full-ToBytes-to-compare promotion — 2026-09-16
+
+The final Decaps re-encryption path now consumes P46's canonical 12-byte
+records directly in a constant-time comparison with `buf1`; it does not write
+or reread a 1296-byte candidate buffer.  Generic P46 remains unchanged for
+Keygen and Encaps.  The earlier `hash_g` output keeps a 216-byte `buf2`, reducing
+the compiled Decaps frame from 11088 to 10016 bytes.
+
+Python and native tests cover arbitrary signed-int16 inputs, exact equality and
+every one of the 1296 expected-byte positions independently corrupted.  KAT,
+malformed transcript, 64 KEM round trips/tampered rejection, no-spill object
+audit and 18/18 optimal Slothy windows pass.  Across 252 paired Pi 5
+observations, Decaps changes 39907.300 to 39763.225 cycles, with -19 retired
+instructions and -97.5 branches.  Complete evidence is in
+`experiments/gt864-p47-decaps-compare/`.
+
 ## P46 Full normalization promotion — 2026-09-16
 
 Only Full ToBytes changes.  Each post-Algorithm-10 residual correction changes

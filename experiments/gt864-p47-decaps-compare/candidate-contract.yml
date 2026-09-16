@@ -1,0 +1,49 @@
+candidate:
+  id: gt864_p47_decaps_full_compare
+  status: promote
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: candidate-compare.sym.S
+  slothy_driver: optimize.py
+  slothy_log: slothy-compare-g3.log
+  generated_output: candidate-compare.g3.opt.S
+contract_preservation:
+  baseline_compared: true
+  preserved: false
+  approved_changes: true
+  approved_by: user requested P47 caller-specific Full-ToBytes-to-compare experiment on 2026-09-16
+  changed_fields: [internal Decaps boundary changes from materialized bytes to mismatch bit, buf2 lifetime shrinks from 1296 to 216 bytes]
+region:
+  start_label: p47_top_compare_slothy_start
+  end_label: p47_top_compare_slothy_end
+  live_in: [x0 expected top, x1 FR0 top, v26 pack index, v27 q3457, v28 reciprocal9]
+  live_out: [x0 mismatch word]
+abi:
+  inputs: [x0 expected 1296 bytes, x1 arbitrary signed-int16 FR0]
+  outputs: [w0 mismatch bit]
+  clobbers: [x0, x1, x2, x5, x6, x7, x8, x9, v0-v31, condition flags]
+  concrete_gprs_allowed: [x0, x1, x2, x5, x6, x7, x8, x9]
+  fixed_vector_registers: [v26, v27, v28, v29, v30, v31]
+  reserved_registers: [x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, sp]
+memory_contract:
+  loads: [P46 coefficient Q loads, 108 expected D loads and 108 expected W loads]
+  stores: [none]
+  aliasing: read-only expected and FR0 inputs
+  alignment: byte expected, 16-byte FR0
+  public_offsets_only: true
+  pointer_updates: [none]
+constant_contract:
+  constants: [pack index, q3457, reciprocal9]
+  modulus: 3457
+  representation: arbitrary signed-int16 FR0 to exact canonical wire mismatch
+  reduction_method: Algorithm-10 b=1 then USHR MLA
+range_contract:
+  input_ranges: [arbitrary signed int16]
+  intermediate_ranges: [Barrett residual negative 3291 through 3291]
+  output_ranges: [mismatch 0 or 1]
+  narrowing_points: [12-bit packing]
+constant_time_contract:
+  secret_inputs: [FR0 lanes and expected bytes]
+  public_inputs: [pointers and fixed offsets]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

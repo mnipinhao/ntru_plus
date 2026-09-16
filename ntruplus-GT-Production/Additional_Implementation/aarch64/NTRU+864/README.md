@@ -4,7 +4,14 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion is P46: Full ToBytes uses P24's globally interned
+Latest production promotion is P47: Decaps no longer materializes its final
+Full serialization into a 1296-byte temporary before comparison.  A private
+constant-time assembly consumer compares each canonical 12-byte record as soon
+as P46 forms it; generic P46 remains selected by Keygen and Encaps.  Pi 5
+Decaps improves by 143.650 paired-median cycles, with 19 fewer instructions,
+97.5 fewer branches and a 1072-byte smaller frame.
+
+P46 remains the generic Full ToBytes implementation: it uses P24's globally interned
 rotation/transpose DAG with the exact two-instruction `USHR+MLA` residual
 canonicalization; Small remains P24. The Full candidate removes 108 retired
 instructions/call and improves the exact Pi 5 boundary by 8.364 cycles.

@@ -1,0 +1,11 @@
+experiment_id: GT864-P47-DECAPS-FULL-TOBYTES-COMPARE-20260916
+action: optimize-memory
+observation: Decaps serializes 1296 Full bytes into buf2, immediately rereads them in constant-time verify against buf1, then clears buf2; buf2's earlier hash_g output needs only 216 bytes
+primary_bottleneck: materialized serializer-to-compare memory boundary
+hypothesis: compare each exact 12-byte wire record as soon as P46 produces it, accumulate a public return status without branches, and shrink buf2 to its 216-byte hash_g lifetime
+exact_change: add a Decaps-private arbitrary-signed-int16 FR0-to-wire-compare assembly entry; replace the final Full ToBytes plus verify; preserve generic P46 and every other caller
+expected_static_effect: remove 1296 output-byte stores, the separate 1296-byte verify scan, and 1080 bytes of otherwise dead buf2 cleanup; add fixed public D/W expected loads and scalar XOR/OR accumulation at each record
+expected_performance_effect: improve complete Decaps even if the fused kernel retires more arithmetic instructions than P46 alone
+expected_register_pressure_effect: no new vector register; use free x2 for expected loads and x8 as the mismatch accumulator after constant setup
+correctness_impact: exact canonical wire comparison for arbitrary signed-int16 FR0; return 0 iff all 1296 bytes equal; no overread, secret branch, secret address, scratch or output store
+falsifier: reject if exact/tampered/malformed behavior differs, any D/W load crosses the 1296-byte expected input, allocation spills, or paired complete Decaps does not improve

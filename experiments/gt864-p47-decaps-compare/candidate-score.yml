@@ -1,0 +1,30 @@
+candidate:
+  id: gt864_p47_decaps_full_compare
+  status: promote
+  mode: new_kernel_baseline_then_iterate
+contract:
+  preserved: false
+  approved_changes: true
+  changed_fields: [Decaps internal materialized-byte boundary becomes mismatch bit, buf2 shrinks from 1296 to 216 bytes]
+  approval_note: user explicitly requested entry into P47 on 2026-09-16; public KEM and wire contracts remain unchanged
+correctness:
+  oracle: pass
+  tests: pass
+  abi: pass
+  constant_time_review: pass
+slothy:
+  status: pass
+  candidate_expected_cycles: 1661
+  parity_justification: the candidate kernel replaces P46 serialization plus compiler verify plus cleanup; there is no standalone baseline Slothy number for the composed caller boundary, and exact paired Decaps is the declared performance metric
+  log_json: slothy-compare-g3.json
+benchmark:
+  status: pass
+  command: python3 experiments/gt864-p47-decaps-compare/run_pi5.py
+  metric: complete Decaps cycles
+  lower_is_better: true
+  neutral_threshold_percent: 0.0
+  baseline: 39907.3
+  candidate: 39763.225
+decision:
+  reason: complete Decaps improves by 143.65 paired-median cycles with exact KAT and rejection semantics, no spill, 1072 fewer stack bytes, 19 fewer retired instructions and 97.5 fewer branches
+  next_iteration: promote the Decaps-private compare kernel; retain generic P46 for Keygen and Encaps

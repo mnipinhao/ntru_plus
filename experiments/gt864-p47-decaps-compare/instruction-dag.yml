@@ -1,0 +1,28 @@
+dag:
+  inputs: [expected_bytes, fr0_coefficients, pack_index, q3457, reciprocal9]
+  outputs: [mismatch_bit]
+  stages:
+    - id: route_normalize_pack
+      operation: exact P46 route, Algorithm-10 normalization, USHR MLA canonicalization and 12-bit pack
+      dependencies: [fr0_coefficients, pack_index, q3457, reciprocal9]
+      range_after: exact twelve canonical wire bytes per record
+    - id: compare_low8
+      operation: move packed low D to dead x0, load expected D at the same public offset, XOR and OR into x8; x9 remains available when the scheduled high-D move precedes this node
+      dependencies: [route_normalize_pack, expected_bytes]
+      tied_operands: [x8 accumulator]
+    - id: compare_high4
+      operation: move packed upper D to x9, load expected W at offset plus eight, XOR low W and OR zero-extended result into x8
+      dependencies: [route_normalize_pack, expected_bytes, compare_low8]
+      tied_operands: [x8 accumulator]
+    - id: combine_tops
+      operation: OR the two 648-byte top mismatch words
+      dependencies: [all compare_low8 and compare_high4 nodes]
+    - id: status
+      operation: constant-time CMP and CSET to zero or one
+      dependencies: [combine_tops]
+  memory_order:
+    - all FR0 and expected loads use fixed public offsets
+    - no stores and no reads outside the exact 1296-byte expected input
+  commuting_rules:
+    - independent route nodes and record comparisons may move subject to x8 true dependency
+    - normalization and packing within a record retain P46 dependencies

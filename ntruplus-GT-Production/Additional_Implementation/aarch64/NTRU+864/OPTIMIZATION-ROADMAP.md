@@ -82,7 +82,7 @@ Status meanings:
 | P44 | Done—Rejected statically | Retain P41's overlapping Q/S/D stores and borrow `v29` (then phase-local `v30-v31`) while routing; every consumer boundary returns to the exact P24 26-register route-cache contract | Best instruction/load Pareto points were 306/70 and 311/66 per top, missing the required 300/61 gate even in an optimistic no-relocation-cost model; no assembly or Slothy run was warranted |
 | P45 | Done—Rejected statically | Replace P41's independently packed A/B records with one exact two-record packing DAG and Q/D-granularity stores | Exact nine-instruction joint packing saves 243 instructions/top, but simultaneous A/B routing needs 121 coefficient loads and 384 route instructions/top; it fails the 61-load/300-instruction gate before assembly |
 | P46 | Done—Promoted | Replace each Full-only `SSHR+AND+ADD` correction with the exact `USHR+MLA` sign-bit identity; freeze Small | Exhaustive identity, exact bytes, no-spill allocation, KAT/malformed and Pi 5 pass; Full saves 8.364 cycles and every KEM caller wins with -108 instructions. User explicitly approved promotion despite the preserved Slothy 1495→1562 proxy regression |
-| P47 | Deferred—Decaps Full-ToBytes-to-compare | Let the Decaps re-encryption serializer feed the ciphertext comparison consumer directly without materializing an avoidable generic boundary | Exact valid/tampered/malformed rejection behavior, constant-time comparison and wipe policy must pass; full Decaps cycles are the promotion metric |
+| P47 | Done—Promoted | Let the Decaps re-encryption serializer feed the ciphertext comparison consumer directly without materializing an avoidable generic boundary | Exact/all-byte/KAT/malformed, constant-time, no-spill and Slothy gates pass; Decaps saves 143.650 cycles, 19 instructions, 97.5 branches and 1072 stack bytes; generic P46 remains unchanged |
 | P48 | Deferred—Encaps Full-ToBytes-to-SHAKE | Let the Encaps Full serializer feed the SHAKE consumer in its required byte order and granularity | Exact ciphertext/transcript/KAT bytes and cleanup must pass; full Encaps cycles are the promotion metric |
 | P49 | Deferred—Keygen Full normalization | Specialize only the Keygen Full producer/serializer boundary using its proven producer range | Re-close the exact Keygen producer range, preserve wire bytes/KAT/cleanup and improve full Keygen; no contract narrowing may leak into generic Full ToBytes |
 
@@ -100,15 +100,15 @@ For improving the reusable production ToBytes entry point, use this order:
 
 For improving complete KEM operations as quickly as possible, use this order:
 
-1. P47 Decaps Full-ToBytes-to-compare.
-2. P48 Encaps Full-ToBytes-to-SHAKE.
+1. P47 Decaps Full-ToBytes-to-compare — promoted.
+2. P48 Encaps Full-ToBytes-to-SHAKE — next.
 3. P44 generic serializer work.
 4. P49 Keygen Full normalization.
 
-P44 and P45 are closed at their static gates. P46 is now the production generic
-Full serializer; Small remains P24. P47 is the next active gate and P48--P49
-remain separately recorded. Caller-specific results must not be mixed into a
-generic same-boundary result.
+P44 and P45 are closed at their static gates. P46 is the production generic
+Full serializer; Small remains P24. P47 is now the production Decaps-private
+compare consumer. P48 is next and P49 remains recorded. Caller-specific results
+must not be mixed into a generic same-boundary result.
 
 ## Fixed facts and non-tasks
 
@@ -129,6 +129,18 @@ generic same-boundary result.
 ## Change log
 
 ### 2026-09-16
+
+- Completed and promoted P47 only at the Decaps re-encryption boundary. The
+  P46 route/normalize/pack DAG now compares each exact 12-byte record directly
+  with `buf1`, returning one constant-time mismatch bit without candidate-byte
+  stores or overreads. `buf2` retains only its earlier 216-byte `hash_g`
+  lifetime, shrinking the compiled Decaps frame 11088→10016 bytes. Exact
+  equality plus every byte position corrupted across 256 native inputs, KAT,
+  malformed rejection, 64 KEM cases, no-spill object audit and 18/18 optimal
+  Slothy windows pass. Across 252 Pi 5 observations, Decaps improves
+  39907.300→39763.225 cycles (paired -143.650), -19 instructions and -97.5
+  branches. Generic P46 remains selected for Keygen and Encaps. Evidence:
+  `experiments/gt864-p47-decaps-compare/`.
 
 - Completed P45 and rejected it before assembly. The joint A/B pack itself is
   exact and costs only nine instructions per adjacent two-record group, but

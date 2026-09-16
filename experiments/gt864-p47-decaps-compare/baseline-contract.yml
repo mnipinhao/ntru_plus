@@ -1,0 +1,79 @@
+mode: new_kernel_baseline_then_iterate
+baseline_status: extracted
+candidate_status: investigate
+baseline:
+  id: gt864_p47_materialized_full_compare
+  source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/kem.c
+  extracted_region: baseline-region.c
+  function: crypto_kem_dec
+  start_label: gt864_fr0_tobytes_full call after final poly_ntt
+  end_label: buf2 secure_clear in cleanup
+  source_commit: ca3c0c82
+kernel:
+  id: gt864_p47_decaps_full_compare_baseline
+  name: P46 Full ToBytes plus constant-time verify and cleanup
+  source: baseline-region.c
+  scheme: NTRU+864 GT
+  operation: serialize arbitrary signed-int16 FR0 to 1296 canonical bytes, compare with expected bytes, and clear materialized candidate bytes
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a76
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a76
+slothy:
+  workflow: baseline composition measured in complete Decaps; candidate fixed-allocation windows
+  driver: optimize.py
+  expected_outputs: [candidate-compare.g3.opt.S, slothy-compare-g3.log]
+  allow_spills: false
+region:
+  instruction_count: 1056-instruction P46 object plus compiler vectorized verify and secure_clear calls
+  live_in: [buf1 exact expected ciphertext bytes, f arbitrary signed-int16 FR0, fail status]
+  live_out: [fail OR exact byte mismatch, zeroed 1296-byte buf2]
+abi:
+  inputs: [expected 1296 bytes, FR0 polynomial]
+  outputs: [integer zero iff exact canonical serialization equals expected]
+  clobbers: [generic P46 output buffer and verify temporaries]
+  concrete_gprs_allowed: [compiler allocated]
+  fixed_vector_registers: []
+  reserved_registers: [platform ABI]
+instruction_dag:
+  file: instruction-dag.yml
+  summary: P46 normalization route pack stores; vectorized 1296-byte compare; 1296-byte secure clear
+layout:
+  input_representation: expected Official wire bytes plus P46 arbitrary signed-int16 FR0
+  output_representation: one constant-time mismatch bit
+  vector_lanes: inherited P46 route and canonical pack
+  packing: exact Official 12-bit byte order
+memory_contract:
+  loads: [P46 coefficient loads, separate expected and materialized-candidate verify loads]
+  stores: [1296 candidate bytes, 1296-byte cleanup]
+  aliasing: expected, FR0 and materialized buf2 are disjoint
+  alignment: byte expected, 16-byte FR0
+  public_offsets_only: true
+  pointer_updates: [fixed 1296-byte traversals]
+constant_contract:
+  constants: [q3457, reciprocal9, P46 pack index]
+  modulus: 3457
+  representation: arbitrary signed-int16 FR0 to canonical wire bytes
+  reduction_method: P46 Algorithm-10 plus USHR MLA
+range_contract:
+  input_ranges: [arbitrary signed int16]
+  intermediate_ranges: [P46 residual negative 3291 through 3291]
+  output_ranges: [mismatch 0 or 1]
+  narrowing_points: [canonical 12-bit packing]
+constant_time_contract:
+  secret_inputs: [FR0 lanes and expected ciphertext bytes]
+  public_inputs: [pointers and fixed size]
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+validation:
+  oracle_command: python3 oracle.py
+  test_command: exact bytes, equal and every-byte mismatch, KAT, malformed transcript, AAPCS and object audit
+  full_path_benchmark_command: paired Pi5 complete Decaps PMU
+  benchmark_metric: Decaps cycles
+  lower_is_better: true
+baseline_cost:
+  static_instruction_count: 1056 serializer object plus caller verify and cleanup
+  slothy_expected_cycles: 1562 for the two P46 top regions; caller verify and cleanup excluded
+  full_path_benchmark: P46 Decaps 39915.900 cycles in the P46 paired package campaign
+  benchmark_command: experiments/gt864-p46-full-normalization/run_pi5.py
