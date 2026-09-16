@@ -1,0 +1,39 @@
+experiment_id: GT864-P50-OFFICIAL-PROFILE-20260916
+action: benchmark
+state: complete
+scope:
+  gt_revision: 53ba4e27
+  official: /home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64
+  official_upstream_latest_verified: false
+  host: pi@100.99.191.9
+  core: 3
+  hash_policy: SHAKE256
+  mutation: none
+required_gates:
+  - exact committed GT source
+  - selected Official source hashes
+  - no competing SUPERCOP job
+  - GT manifest, KEM, and KAT
+  - cross-implementation exact and tampered transcripts
+  - instrumentation equivalence
+  - clean full-KEM PMU
+  - call-site cycles, instructions, and branches
+  - explicit attribution of P47 Full-compare and P48 Full-to-hash_g boundaries
+  - Official verify attribution for the P47 matched boundary
+result:
+  correctness: pass
+  gt_cycle_delta:
+    keygen: -1182.125
+    encaps: -1586.900
+    decaps: -995.875
+  positive_matched_boundaries:
+    decaps_full_compare: 176.050
+    decaps_inverse_to_ternary: 153.725
+    encaps_full_to_hash_g: 80.775
+    keygen_all_tobytes: 47.000
+decision:
+  next_gate: P51
+  focus: constant-time transform-domain re-encryption equality without wire serialization
+  frozen:
+    - P48 production
+    - recovered-f Small serialization and hash_g path

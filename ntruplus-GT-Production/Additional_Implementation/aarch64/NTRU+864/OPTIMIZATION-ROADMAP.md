@@ -85,7 +85,8 @@ Status meanings:
 | P47 | Done—Promoted | Let the Decaps re-encryption serializer feed the ciphertext comparison consumer directly without materializing an avoidable generic boundary | Exact/all-byte/KAT/malformed, constant-time, no-spill and Slothy gates pass; Decaps saves 143.650 cycles, 19 instructions, 97.5 branches and 1072 stack bytes; generic P46 remains unchanged |
 | P48 | Done—Promoted | Let the Encaps Full serializer feed the exact `0x01 || bytes` SHAKE input directly, eliminating the immediate 1296-byte copy | Exact transcript/native/KAT/malformed/KEM and object gates pass; Encaps saves 121.225 cycles, 175 instructions and 24 branches; controls are unchanged |
 | P49 | Done—Rejected statically | Specialize only the Keygen Full producer/serializer boundary using its proven K1 range | All 288 leaves exceed the Small contract and no exact uniform shifted/biased/scaled three-instruction reduction exists; no assembly, Slothy or Pi timing warranted |
-| P50 | Next—Selected-Official profiler checkpoint | Re-run exact P48 production versus selected SUPERCOP 20260831 Official | Refresh full KEM and component attribution before selecting a new producer/consumer DAG |
+| P50 | Done—Selected-Official profiler checkpoint | Re-run exact P48 production versus selected SUPERCOP 20260831 Official with explicit P47/P48 fused-boundary attribution | All correctness/instrumentation gates pass; GT wins Keygen/Encaps/Decaps by 1182.125/1586.900/995.875 cycles; largest isolated gaps are Decaps Full-compare +176.050 and fused Inverse +153.725 cycles |
+| P51 | Next—Transform-domain re-encryption equality | Retain recovered FR0 `f`, regenerate the candidate into a dead poly slot, and compare congruence in the transform domain instead of routing 1296 canonical bytes | Must prove coordinate/root/scale identity, transform injectivity, exact zero-test range and rejection equivalence before assembly; no new scratch/pass/spill or secret-dependent control/addressing |
 
 ## ToBytes priority policy
 
@@ -109,7 +110,8 @@ For improving complete KEM operations as quickly as possible, use this order:
 P44 and P45 are closed at their static gates. P46 is the production generic
 Full serializer; Small remains P24. P47 is now the production Decaps-private
 compare consumer. P48 is now the production Encaps-private SHAKE consumer. P49
-is closed at its static gate; P50 is next. Caller-specific results
+is closed at its static gate; P50 has refreshed the selected-Official
+profile, and P51 transform-domain re-encryption equality is next. Caller-specific results
 must not be mixed into a generic same-boundary result.
 
 ## Fixed facts and non-tasks
@@ -131,6 +133,26 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-16
+
+- Completed P50 without changing production. Exact commit `53ba4e27` and the
+  selected SUPERCOP 20260831 AArch64 tree passed fresh manifest/build/KEM/KAT,
+  six 100-case exact plus tampered cross-implementation processes, and all
+  cycle/event instrumentation-equivalence gates. The Pi 5 remained
+  unthrottled. Across 252 clean observations each, GT beats Official by
+  1182.125 Keygen, 1586.900 Encaps and 995.875 Decaps cycles, with higher IPC
+  in all three operations.
+- P50 explicitly instruments P48 `Full_to_hash_g`, P47 `Full_compare`, and the
+  selected Official's inline `verify`. Matched attribution leaves two leading
+  positive Decaps boundaries: regenerated-f serializer+verify at +176.050
+  cycles and fused Inverse-to-ternary at +153.725. Encaps's fused
+  Full-to-hash sub-boundary is +80.775, but its second Small serializer wins by
+  126.900, so its two serialization paths win in aggregate. P51 is selected:
+  retain the recovered FR0 `f`, regenerate into an already-dead poly slot, and
+  perform constant-time mod-q transform-domain equality without producing the
+  second wire image. The algebra gate must prove coordinate/root/scale
+  identity, transform injectivity, exact zero-test range, and rejection
+  equivalence before assembly or timing. Evidence:
+  `experiments/gt864-p50-official-profile/`.
 
 - Completed P49 and rejected it before assembly. The exact K1 Keygen `f`
   producer has 288 leaf intervals with envelope `[-28765,28258]`; none fits the
