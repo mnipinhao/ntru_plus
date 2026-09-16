@@ -1,0 +1,39 @@
+experiment_id: GT864-P48-ENCAPS-FULL-TOBYTES-SHAKE-20260916
+status: promote
+candidate: hash_g_fr0
+approved_change: Encaps-private internal materialization boundary only
+boundary:
+  producer: unchanged P46 gt864_p18_tobytes_full_asm
+  intermediate: local data[1..1296]
+  consumer: unchanged shake256
+  transcript: 0x01 || canonical_full_bytes(r)
+  output: 216 SHAKE256 bytes written to ct[0..215]
+representation:
+  input: arbitrary signed-int16 FR0 coefficients, 16-byte aligned by poly
+  output: exact hash_g bytes
+memory:
+  removed: full 1296-byte memcpy from temporary ct to SHAKE input
+  retained: 1296 serializer stores and SHAKE absorb reads
+  no_overread: true
+  input_immutable: true
+constant_time:
+  secret_branch: false
+  secret_address: false
+  public_fixed_lengths: [1296, 1297, 216]
+slothy:
+  required: false
+  reason: candidate reuses the exact promoted P46 scheduled assembly byte-for-byte; only the C caller memory boundary changes
+promotion_gates:
+  - arbitrary-signed-int16 hash differential
+  - input and output canaries
+  - KAT and malformed transcript
+  - 64 KEM cases
+  - object call audit
+  - paired Pi5 complete Encaps improvement
+
+measured_result:
+  observations: 252
+  encaps_cycles: [44996.375, 44877.825]
+  paired_delta_cycles: -121.225
+  retired_instruction_delta: -175
+  branch_delta: -24

@@ -1,0 +1,30 @@
+candidate:
+  id: gt864_p48_encaps_full_to_shake
+  status: promote
+  production_sources: [symmetric.c, symmetric.h, kem.c]
+contract:
+  public_kem_and_wire_abi: preserved
+  transcript: 0x01 || P46 canonical Full serialization
+  hash_backend: NO_CE SHAKE256 unchanged
+correctness:
+  python_transcripts: 1000
+  native_arbitrary_fr0_cases: 1024
+  input_and_output_canaries: pass
+  kem_kat: pass
+  malformed_ciphertext: pass
+  kem_round_trips: 64 per package
+object_audit:
+  baseline_encaps: gt864_fr0_tobytes_full then hash_g
+  candidate_encaps: hash_g_fr0
+  candidate_hash_g_fr0_calls: gt864_p18_tobytes_full_asm then shake256
+pi5:
+  observations: 252
+  encaps_cycles: [44996.375, 44877.825]
+  paired_delta_cycles: -121.225
+  retired_instruction_delta: -175
+  branch_delta: -24
+  throttled: false
+production:
+  encaps: P48 private Full-to-SHAKE boundary
+  generic_full: P46 unchanged
+  generic_hash_g: unchanged

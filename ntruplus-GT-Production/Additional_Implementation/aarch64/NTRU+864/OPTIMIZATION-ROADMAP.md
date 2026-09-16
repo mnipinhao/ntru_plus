@@ -83,8 +83,8 @@ Status meanings:
 | P45 | Done—Rejected statically | Replace P41's independently packed A/B records with one exact two-record packing DAG and Q/D-granularity stores | Exact nine-instruction joint packing saves 243 instructions/top, but simultaneous A/B routing needs 121 coefficient loads and 384 route instructions/top; it fails the 61-load/300-instruction gate before assembly |
 | P46 | Done—Promoted | Replace each Full-only `SSHR+AND+ADD` correction with the exact `USHR+MLA` sign-bit identity; freeze Small | Exhaustive identity, exact bytes, no-spill allocation, KAT/malformed and Pi 5 pass; Full saves 8.364 cycles and every KEM caller wins with -108 instructions. User explicitly approved promotion despite the preserved Slothy 1495→1562 proxy regression |
 | P47 | Done—Promoted | Let the Decaps re-encryption serializer feed the ciphertext comparison consumer directly without materializing an avoidable generic boundary | Exact/all-byte/KAT/malformed, constant-time, no-spill and Slothy gates pass; Decaps saves 143.650 cycles, 19 instructions, 97.5 branches and 1072 stack bytes; generic P46 remains unchanged |
-| P48 | Deferred—Encaps Full-ToBytes-to-SHAKE | Let the Encaps Full serializer feed the SHAKE consumer in its required byte order and granularity | Exact ciphertext/transcript/KAT bytes and cleanup must pass; full Encaps cycles are the promotion metric |
-| P49 | Deferred—Keygen Full normalization | Specialize only the Keygen Full producer/serializer boundary using its proven producer range | Re-close the exact Keygen producer range, preserve wire bytes/KAT/cleanup and improve full Keygen; no contract narrowing may leak into generic Full ToBytes |
+| P48 | Done—Promoted | Let the Encaps Full serializer feed the exact `0x01 || bytes` SHAKE input directly, eliminating the immediate 1296-byte copy | Exact transcript/native/KAT/malformed/KEM and object gates pass; Encaps saves 121.225 cycles, 175 instructions and 24 branches; controls are unchanged |
+| P49 | Next—Keygen Full normalization | Specialize only the Keygen Full producer/serializer boundary using its proven producer range | Re-close the exact Keygen producer range, preserve wire bytes/KAT/cleanup and improve full Keygen; no contract narrowing may leak into generic Full ToBytes |
 
 ## ToBytes priority policy
 
@@ -101,13 +101,14 @@ For improving the reusable production ToBytes entry point, use this order:
 For improving complete KEM operations as quickly as possible, use this order:
 
 1. P47 Decaps Full-ToBytes-to-compare — promoted.
-2. P48 Encaps Full-ToBytes-to-SHAKE — next.
+2. P48 Encaps Full-ToBytes-to-SHAKE — promoted.
 3. P44 generic serializer work.
 4. P49 Keygen Full normalization.
 
 P44 and P45 are closed at their static gates. P46 is the production generic
 Full serializer; Small remains P24. P47 is now the production Decaps-private
-compare consumer. P48 is next and P49 remains recorded. Caller-specific results
+compare consumer. P48 is now the production Encaps-private SHAKE consumer. P49
+is next. Caller-specific results
 must not be mixed into a generic same-boundary result.
 
 ## Fixed facts and non-tasks
@@ -129,6 +130,16 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-16
+
+- Completed and promoted P48 only at the Encaps `r -> hash_g` boundary. The
+  exact P46 serializer now writes into `data+1`, with `data[0]=0x01`, before the
+  unchanged SHAKE256 call. This removes the full 1296-byte `ct -> data` copy
+  without changing the transcript or generic interfaces. Python/native
+  differential, KAT, malformed rejection, 64 KEM cases and object binding pass.
+  Across 252 Pi 5 observations, Encaps improves 44996.375->44877.825 cycles
+  (paired -121.225), -175 instructions and -24 branches; Keygen/Decaps controls
+  have zero instruction/branch deltas. Evidence:
+  `experiments/gt864-p48-encaps-shake/`.
 
 - Completed and promoted P47 only at the Decaps re-encryption boundary. The
   P46 route/normalize/pack DAG now compares each exact 12-byte record directly

@@ -4,7 +4,12 @@ Current work order and gate status are maintained in
 [OPTIMIZATION-ROADMAP.md](OPTIMIZATION-ROADMAP.md).  Update that ledger after
 every optimization gate so deferred and rejected work does not disappear.
 
-Latest production promotion is P47: Decaps no longer materializes its final
+Latest production promotion is P48: Encaps writes P46's canonical Full bytes
+directly into the `0x01 || bytes` SHAKE256 input through `hash_g_fr0`, removing
+the otherwise immediate 1296-byte `hash_g` copy. Generic P46 and generic
+`hash_g` remain available unchanged.
+
+P47 remains selected for Decaps: Decaps no longer materializes its final
 Full serialization into a 1296-byte temporary before comparison.  A private
 constant-time assembly consumer compares each canonical 12-byte record as soon
 as P46 forms it; generic P46 remains selected by Keygen and Encaps.  Pi 5

@@ -1,0 +1,27 @@
+candidate:
+  id: gt864_p48_encaps_full_to_shake
+  status: promote
+  mode: caller_boundary_fusion_reusing_production_kernel
+contract:
+  public_kem_and_wire_abi: preserved
+  approved_internal_change: Encaps temporary Full bytes move from ct into the exact SHAKE input buffer
+correctness:
+  oracle: pass
+  native_differential: pass
+  kem_kat: pass
+  malformed_ciphertext: pass
+  constant_time_review: pass
+slothy:
+  status: not_required
+  reason: exact promoted P46 scheduled assembly is reused unchanged
+benchmark:
+  host: pi@100.99.191.9
+  root: /home/pi/supercop-20260831
+  observations: 252
+  metric: complete Encaps cycles
+  baseline: 44996.375
+  candidate: 44877.825
+  paired_delta: -121.225
+decision:
+  reason: removes the complete 1296-byte hash_g copy and improves complete Encaps with exact transcript and unchanged controls
+  next_iteration: promote P48; retain generic P46 and generic hash_g for other callers

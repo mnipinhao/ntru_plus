@@ -201,9 +201,8 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     poly_cbd1(&r, buf1 + NTRUPLUS_SYMBYTES);
     poly_ntt(&r, &r);
 
-    /* ct is dead until the final complete ciphertext serialization. */
-    gt864_fr0_tobytes_full(ct, &r);
-    hash_g(ct, ct);
+    /* P48 writes canonical Full bytes directly into hash_g's prefixed input. */
+    hash_g_fr0(ct, r.coeffs);
     poly_sotp_encode(&m, msg, ct);
     poly_ntt(&m, &m);
 

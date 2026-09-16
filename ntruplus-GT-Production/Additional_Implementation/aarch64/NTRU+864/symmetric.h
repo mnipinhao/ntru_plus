@@ -7,6 +7,8 @@
 
 void hash_f(uint8_t *buf, const uint8_t *msg);
 void hash_g(uint8_t *buf, const uint8_t *msg);
+/* Encaps-private P48 boundary: hash 0x01 || canonical Full FR0 bytes. */
+void hash_g_fr0(uint8_t *buf, const int16_t coeffs[NTRUPLUS_N]);
 void hash_h(uint8_t *buf, const uint8_t *msg);
 
 #endif /* SYMMETRIC_H */

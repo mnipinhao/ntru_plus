@@ -1,5 +1,21 @@
 # K1 production integration evidence
 
+## P48 Encaps Full-ToBytes-to-SHAKE promotion — 2026-09-16
+
+Encaps now calls `hash_g_fr0`, which places the exact P46 canonical Full
+serialization directly after SHAKE256's `0x01` domain byte. This removes the
+complete 1296-byte `ct -> data+1` copy while preserving the exact 1297-byte
+transcript and 216-byte output.
+
+The Python oracle passed 1,000 arbitrary signed-int16 inputs; the Pi 5 native
+differential passed 1,024 arbitrary inputs plus input/output canaries. KAT,
+malformed ciphertext and 64 KEM cases pass for both packages. Across 252 paired
+Pi 5 observations, Encaps improves 44996.375 -> 44877.825 cycles (paired
+-121.225), with -175 retired instructions and -24 branches. Keygen and Decaps
+have zero instruction/branch deltas and remain controls. P46 assembly is reused
+unchanged, so no new Slothy allocation or schedule is involved. Evidence is in
+`experiments/gt864-p48-encaps-shake/`.
+
 ## P47 Decaps Full-ToBytes-to-compare promotion — 2026-09-16
 
 The final Decaps re-encryption path now consumes P46's canonical 12-byte

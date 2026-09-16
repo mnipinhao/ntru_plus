@@ -1,0 +1,13 @@
+experiment_id: GT864-P48-ENCAPS-FULL-TOBYTES-SHAKE-20260916
+action: optimize-memory
+observation: Encaps writes 1296 canonical Full bytes to ct, then hash_g rereads and copies all 1296 bytes into its 0x01-prefixed SHAKE input before replacing ct with 216 hash bytes
+primary_bottleneck: materialized serializer-to-SHAKE memory boundary
+hypothesis: write P46 Full serialization directly at data+1 in hash_g's SHAKE input and preserve byte zero as 0x01, removing one complete 1296-byte copy without changing P46 or Keccak
+exact_change: add an Encaps-private hash_g_fr0 entry and replace only the r serialization plus hash_g pair; retain generic P46 and generic hash_g
+expected_static_effect: remove 1296 byte loads and 1296 byte stores from hash_g's memcpy while leaving serialization arithmetic, SHAKE input length, SHAKE permutations and output unchanged
+expected_performance_effect: improve complete Encaps; Keygen and Decaps are controls
+expected_register_pressure_effect: none in the P46 assembly; the existing fixed allocation and schedule are reused unchanged
+correctness_impact: SHAKE transcript remains exactly 0x01 followed by the 1296 canonical bytes for arbitrary signed-int16 FR0 input
+falsifier: reject if hash bytes, KAT, malformed behavior or full KEM differ, object binding is stale, or paired complete Encaps does not improve
+mode: caller_boundary_fusion_reusing_production_kernel
+candidate_status: active

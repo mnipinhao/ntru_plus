@@ -1,0 +1,94 @@
+{
+  "experiment": "GT864-P48-ENCAPS-FULL-TOBYTES-SHAKE-20260916",
+  "baseline_revision": "ec338454fed44fecb757be875cbc05b541d5773b",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p48-20260916",
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "target_audit": {
+    "baseline": {
+      "kem_calls_generic_full": 2,
+      "kem_calls_hash_g": 2,
+      "kem_calls_hash_g_fr0": 0,
+      "symmetric_calls_p46_asm": 0
+    },
+    "candidate": {
+      "kem_calls_generic_full": 1,
+      "kem_calls_hash_g": 1,
+      "kem_calls_hash_g_fr0": 1,
+      "symmetric_calls_p46_asm": 1
+    }
+  },
+  "full_kem_gate": {
+    "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+    "kem": {
+      "keygen": {
+        "baseline": {
+          "cycles": 43121.75,
+          "instructions": 94018.0,
+          "branches": 1563.0
+        },
+        "candidate": {
+          "cycles": 43112.125,
+          "instructions": 94018.0,
+          "branches": 1563.0
+        },
+        "paired_delta": {
+          "cycles": -7.0,
+          "instructions": 0.0,
+          "branches": 0.0
+        },
+        "observations": 252
+      },
+      "encaps": {
+        "baseline": {
+          "cycles": 44996.375,
+          "instructions": 123325.2,
+          "branches": 1003.6
+        },
+        "candidate": {
+          "cycles": 44877.825,
+          "instructions": 123150.2,
+          "branches": 979.6
+        },
+        "paired_delta": {
+          "cycles": -121.22499999999854,
+          "instructions": -175.0,
+          "branches": -24.0
+        },
+        "observations": 252
+      },
+      "decaps": {
+        "baseline": {
+          "cycles": 39778.175,
+          "instructions": 93803.2,
+          "branches": 1018.6
+        },
+        "candidate": {
+          "cycles": 39767.125,
+          "instructions": 93803.2,
+          "branches": 1018.6
+        },
+        "paired_delta": {
+          "cycles": -7.825000000000728,
+          "instructions": 0.0,
+          "branches": 0.0
+        },
+        "observations": 252
+      }
+    },
+    "wins_all_kem_cycles": true,
+    "environment_after": [
+      "temp=62.0'C",
+      "throttled=0x0"
+    ]
+  },
+  "encaps_wins": true,
+  "environment_before": [
+    "Linux pinhao 6.18.33+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.18.33-1+rpt1 (2026-06-01) aarch64 GNU/Linux",
+    "gcc (Debian 14.2.0-19) 14.2.0",
+    "ondemand",
+    "temp=58.7'C",
+    "throttled=0x0"
+  ],
+  "source_manifest_sha256": "384c846016b4a05f4f2640afc584b9979905ee3dbbe0554839acb95bdc8891a5"
+}
