@@ -1,0 +1,75 @@
+scheme_id: ntruplus
+variant_family: ntru-like
+repository_revision: 2ec451bf40c80a97ed1d34a5ec7ecd726d400c91
+parameter_set: NTRU+1152
+ring:
+  coefficient_ring: Z_q
+  q: 3457
+  q_bits: 12
+  polynomial_modulus: x^1152-x^576+1
+  degree: 1152
+  transform: 2x9x16 Good-Thomas with terminal degree-4 leaves
+  transform_levels:
+    level_0: alpha/beta CRT split of y^2-y+1 with y = x^576
+    radix_3: two levels, reference step 192 then 64
+    radix_2: four levels, reference step 32/16/8/4
+  leaves: 288
+  leaf_modulus: x^4 - zeta_i
+  leaf_roots: zetas[144..287] paired with their negations
+shared_with_864:
+  claim: the 9x16 Good-Thomas transform and every leaf root are identical
+  basis: z^144 - alpha is the same polynomial for 864 (z = x^3) and 1152 (z = x^4)
+  verified_identical:
+    - Reference_Implementation NTRU+{864,1152}/ntt.c zetas[288]
+    - Additional_Implementation aarch64/NTRU+{864,1152}/asm/base.s zetas_mul
+    - poly_basemul leaf indexing window zetas[144+i] and its +/- pair
+  n_independent_constants:
+    alpha: 723
+    beta: 2735
+    ord_alpha: 6
+    ord_z: 864          # = 144 * ord(alpha); NOT the parameter n
+    R: -147
+    RINV: -682
+    RSQ: 867
+    QINV: 12929
+    OMEGA: -886
+    ZMINUSZ5INV: -1665
+    NINV: -1693
+    TWO_NINV: 71
+  trap: >
+    ord(z) is 864 for both parameter sets. Do not rescale twiddles from 864 to
+    1152; there is nothing to rescale.
+representations:
+  input: natural-order signed int16 coefficients
+  internal: Montgomery domain, centered representatives
+  output: canonical 12-bit little-endian wire encoding, two coefficients per 3 bytes
+  canonical_or_bounded: canonical at the wire boundary
+ranges:
+  status: not established for degree-4 arithmetic
+  note: >
+    Every NTRU+864 bound (Barrett reciprocal 621199 with [-2911,2911], I9 2617,
+    I16 21397, raw 4577, ToBytes small [-3023,3023]) is proved for degree-3
+    accumulators and does not transfer. G2 owns the degree-4 bound chain.
+security:
+  secret_operands: [f, g, r, m, sk]
+  public_operands: [pk, ct]
+  constant_time_required: true
+source_paths:
+  reference_c: ntruplus-ntt-Optimized/Reference_Implementation/NTRU+1152
+  stock_neon: ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+1152
+  port_source: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864
+  kats: ntruplus-ntt-Optimized/KAT/NTRU+1152/PQCkemKAT_3488.rsp
+  kat_sha256: 2ddfc810c44f63f8d24086da7c33faf17d66c393f519a5b9cb76b0b7509464c3
+validation:
+  declared_oracle: experiments/gt1152-p01-ring-profile/ntruplus1152.py
+  known_answer_tests: 100/100 cases reproduced byte-for-byte (kat-report.json)
+  structural_proof: 10/10 checks (proof-report.json)
+  independent_model: schoolbook multiply in Z_q[x]/(x^1152-x^576+1)
+  benchmark: SUPERCOP official 1152 on Pi 5 Cortex-A76, deferred to G9
+unresolved_facts:
+  - degree-4 basemul and basemul_rinv output bounds
+  - whether basemul_rinv needs a Barrett normalization to reach abs <= 2497
+  - GT-domain to wire-order leaf permutation for 1152
+do_not_assume:
+  - that an NTRU+864 range proof covers NTRU+1152
+  - that ord(z) scales with n

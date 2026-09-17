@@ -1,0 +1,167 @@
+{
+  "experiment": "GT1152-P01-RING-PROFILE",
+  "q": 3457,
+  "alpha": 723,
+  "beta": 2735,
+  "ord_z": [
+    {
+      "n": 864,
+      "leaf_degree": 3,
+      "ord_X": 2592,
+      "ord_z": 864
+    },
+    {
+      "n": 1152,
+      "leaf_degree": 4,
+      "ord_X": 3456,
+      "ord_z": 864
+    }
+  ],
+  "leaf_roots": {
+    "alpha_half": 144,
+    "beta_half": 144
+  },
+  "ntt9_tables": {
+    ".Lntt9_top0": {
+      "values_total": 256,
+      "values_zero_padding": 0,
+      "distinct_twiddles": 154,
+      "every_value_z_derived": true,
+      "unexplained": [],
+      "twiddle_orders": [
+        18,
+        27,
+        32,
+        48,
+        72,
+        108,
+        144,
+        216,
+        288,
+        432,
+        864
+      ],
+      "primitive_864_twiddles": 52
+    },
+    ".Lntt9_top1": {
+      "values_total": 256,
+      "values_zero_padding": 0,
+      "distinct_twiddles": 147,
+      "every_value_z_derived": true,
+      "unexplained": [],
+      "twiddle_orders": [
+        8,
+        27,
+        54,
+        72,
+        96,
+        108,
+        144,
+        216,
+        288,
+        432,
+        864
+      ],
+      "primitive_864_twiddles": 53
+    },
+    ".Lntt16_top0": {
+      "values_total": 168,
+      "values_zero_padding": 10,
+      "distinct_twiddles": 27,
+      "every_value_z_derived": true,
+      "unexplained": [],
+      "twiddle_orders": [
+        1,
+        4,
+        8,
+        12,
+        16,
+        24,
+        32,
+        48,
+        54,
+        96,
+        288,
+        432,
+        864
+      ],
+      "primitive_864_twiddles": 3
+    },
+    ".Lntt16_top1": {
+      "values_total": 168,
+      "values_zero_padding": 10,
+      "distinct_twiddles": 30,
+      "every_value_z_derived": true,
+      "unexplained": [],
+      "twiddle_orders": [
+        1,
+        4,
+        8,
+        12,
+        16,
+        24,
+        27,
+        32,
+        48,
+        96,
+        288,
+        432,
+        864
+      ],
+      "primitive_864_twiddles": 2
+    }
+  },
+  "checks": [
+    {
+      "check": "field/alpha_beta_roots",
+      "pass": true,
+      "detail": "y^2-y+1 mod 3457 has roots [723, 2735], sum=1 (matches ntt_top.S comment 'beta = 1-alpha')"
+    },
+    {
+      "check": "field/alpha_order",
+      "pass": true,
+      "detail": "ord(alpha)=ord(beta)=6; q-1=3456=2^7*27"
+    },
+    {
+      "check": "transform/ord_z_is_864_for_both",
+      "pass": true,
+      "detail": "[{'n': 864, 'leaf_degree': 3, 'ord_X': 2592, 'ord_z': 864}, {'n': 1152, 'leaf_degree': 4, 'ord_X': 3456, 'ord_z': 864}]; the 864 here is 144*ord(alpha)=144*6, NOT the parameter n -- twiddles must not be 'rescaled' from 864 to 1152"
+    },
+    {
+      "check": "transform/leaf_root_count",
+      "pass": true,
+      "detail": "z^144-alpha splits into 144 linear factors, z^144-beta into 144; total 288 leaves"
+    },
+    {
+      "check": "transform/gt_factors_coprime",
+      "pass": true,
+      "detail": "144 = 9 x 16 with gcd(9,16)=1, so Good-Thomas applies"
+    },
+    {
+      "check": "tables/reference_zetas_identical",
+      "pass": true,
+      "detail": "Reference_Implementation NTRU+864/ntt.c and NTRU+1152/ntt.c zetas[288] agree on all 288 values"
+    },
+    {
+      "check": "tables/stock_zetas_mul_identical",
+      "pass": true,
+      "detail": "stock base.s zetas_mul agree on all 609 integers"
+    },
+    {
+      "check": "leaves/same_zeta_window_and_count",
+      "pass": true,
+      "detail": "864: blocks of 6 (2 x degree-3), 1152: blocks of 8 (2 x degree-4); both index zetas[144+i] with a +/- pair, both yield 288 leaves"
+    },
+    {
+      "check": "tables/ntt9_twiddles_are_z_derived",
+      "pass": true,
+      "detail": "every non-zero value in .Lntt9_top{0,1} / .Lntt16_top{0,1} is either a twiddle whose multiplicative order divides 864, or the exact round(t*2^15/q) Barrett-Shoup constant of such a twiddle -- so the tables are functions of (q, z^144-alpha) alone; see module docstring for what this does and does not establish"
+    },
+    {
+      "check": "oracle/zetas_match_reference",
+      "pass": true,
+      "detail": "the Python oracle parses its zetas from NTRU+1152/ntt.c rather than embedding a copy"
+    }
+  ],
+  "pass": true
+}
