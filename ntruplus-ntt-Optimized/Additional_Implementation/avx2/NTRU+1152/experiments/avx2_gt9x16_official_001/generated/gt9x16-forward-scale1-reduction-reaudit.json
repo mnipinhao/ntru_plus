@@ -1,0 +1,33 @@
+{
+  "schema": "scale1-forward-reduction-reaudit/v1",
+  "contract": {
+    "producer": "persistent-AoS + T0-beta + caller-wide scale-1",
+    "input_domain": "branch-specific KEM-small scale-1 proof",
+    "paper_R2_DAG": "unchanged",
+    "NTT16_DAG": "unchanged",
+    "output_scale": 1
+  },
+  "search": {
+    "masks": 512,
+    "valid_masks": 16,
+    "mask_bit_one_means": "retain existing Barrett vector"
+  },
+  "minimum": {
+    "retained_per_branch_qblock": 5,
+    "retained_per_forward": 40,
+    "valid_minimum_masks": 1,
+    "selected_mask": 79,
+    "selected_registers": [
+      7,
+      8,
+      15,
+      10,
+      13
+    ],
+    "peak_absolute_bound": 21469
+  },
+  "decision": {
+    "can_delete_more_under_current_interval_DAG": false,
+    "next_freedom_needed": "radix-3 role/orientation change, correlated proof, or reduction fusion"
+  }
+}

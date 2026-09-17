@@ -1,0 +1,309 @@
+{
+  "schema": "ntt9-wavefront-w1-schedule/v1",
+  "contract": {
+    "arithmetic_DAG": "same paper-R2 radix-3 equations",
+    "Montgomery_chains": "unchanged",
+    "Barrett_mask": 79,
+    "wire_ABI": "unchanged",
+    "selected_rows_per_branch": 1
+  },
+  "low_temp_radix3": {
+    "instructions": [
+      {
+        "op": "vpaddw",
+        "dst": "S",
+        "src": [
+          "B",
+          "C"
+        ],
+        "meaning": "B+C"
+      },
+      {
+        "op": "vpsubw",
+        "dst": "B",
+        "src": [
+          "B",
+          "C"
+        ],
+        "meaning": "B-C"
+      },
+      {
+        "op": "vpmullw",
+        "dst": "C",
+        "src": [
+          "B",
+          "kappa_qinv"
+        ]
+      },
+      {
+        "op": "vpmulhw",
+        "dst": "B",
+        "src": [
+          "B",
+          "kappa"
+        ]
+      },
+      {
+        "op": "vpmulhw",
+        "dst": "C",
+        "src": [
+          "C",
+          "q"
+        ]
+      },
+      {
+        "op": "vpsubw",
+        "dst": "B",
+        "src": [
+          "B",
+          "C"
+        ],
+        "meaning": "K*(B-C)"
+      },
+      {
+        "op": "vpaddw",
+        "dst": "C",
+        "src": [
+          "A",
+          "A"
+        ],
+        "meaning": "2A"
+      },
+      {
+        "op": "vpsubw",
+        "dst": "A",
+        "src": [
+          "C",
+          "S"
+        ],
+        "meaning": "2A-(B+C)"
+      },
+      {
+        "op": "vpaddw",
+        "dst": "C",
+        "src": [
+          "C",
+          "S"
+        ]
+      },
+      {
+        "op": "vpaddw",
+        "dst": "C",
+        "src": [
+          "C",
+          "S"
+        ],
+        "meaning": "2A+2(B+C)"
+      },
+      {
+        "op": "vpsubw",
+        "dst": "S",
+        "src": [
+          "A",
+          "B"
+        ],
+        "meaning": "base-product (output 2)"
+      },
+      {
+        "op": "vpaddw",
+        "dst": "B",
+        "src": [
+          "A",
+          "B"
+        ],
+        "meaning": "base+product (output 1)"
+      }
+    ],
+    "instruction_count": 12,
+    "current_instruction_count": 12,
+    "cached_constants": [
+      "q",
+      "kappa",
+      "kappa_qinv"
+    ],
+    "extra_temporary_vectors": 1,
+    "physical_outputs": {
+      "C": "radix3 output 0",
+      "B": "radix3 output 1",
+      "S": "radix3 output 2; selected row may stay live"
+    },
+    "runtime_instruction_delta": 0,
+    "constant_operand_delta": 0,
+    "equivalence_proof": {
+      "verified": true,
+      "method": "exact affine-expression replay; P=kappa*(B-C) is symbolic",
+      "basis": [
+        "A",
+        "B",
+        "C",
+        "P"
+      ],
+      "current_outputs": {
+        "output0": [
+          2,
+          2,
+          2,
+          0
+        ],
+        "output1": [
+          2,
+          -1,
+          -1,
+          1
+        ],
+        "output2": [
+          2,
+          -1,
+          -1,
+          -1
+        ]
+      },
+      "candidate_outputs": {
+        "output0": [
+          2,
+          2,
+          2,
+          0
+        ],
+        "output1": [
+          2,
+          -1,
+          -1,
+          1
+        ],
+        "output2": [
+          2,
+          -1,
+          -1,
+          -1
+        ]
+      },
+      "physical_destination": {
+        "output0": "C",
+        "output1": "B",
+        "output2": "S"
+      }
+    }
+  },
+  "qblock_wavefront": [
+    {
+      "qblock": 0,
+      "prior_retained_vectors": 0,
+      "live_objects_at_r3_peak": [
+        "ntt9_data_0",
+        "ntt9_data_1",
+        "ntt9_data_2",
+        "ntt9_data_3",
+        "ntt9_data_4",
+        "ntt9_data_5",
+        "ntt9_data_6",
+        "ntt9_data_7",
+        "ntt9_data_8",
+        "q",
+        "kappa",
+        "kappa_qinv",
+        "r3_temp_q0"
+      ],
+      "peak_ymm": 13,
+      "terminal_action": "execute the selected second-layer radix-3 group last and retain its S-oriented output in ymm0"
+    },
+    {
+      "qblock": 1,
+      "prior_retained_vectors": 1,
+      "live_objects_at_r3_peak": [
+        "retained_q0",
+        "ntt9_data_0",
+        "ntt9_data_1",
+        "ntt9_data_2",
+        "ntt9_data_3",
+        "ntt9_data_4",
+        "ntt9_data_5",
+        "ntt9_data_6",
+        "ntt9_data_7",
+        "ntt9_data_8",
+        "q",
+        "kappa",
+        "kappa_qinv",
+        "r3_temp_q1"
+      ],
+      "peak_ymm": 14,
+      "terminal_action": "execute the selected second-layer radix-3 group last and retain its S-oriented output in ymm1"
+    },
+    {
+      "qblock": 2,
+      "prior_retained_vectors": 2,
+      "live_objects_at_r3_peak": [
+        "retained_q0",
+        "retained_q1",
+        "ntt9_data_0",
+        "ntt9_data_1",
+        "ntt9_data_2",
+        "ntt9_data_3",
+        "ntt9_data_4",
+        "ntt9_data_5",
+        "ntt9_data_6",
+        "ntt9_data_7",
+        "ntt9_data_8",
+        "q",
+        "kappa",
+        "kappa_qinv",
+        "r3_temp_q2"
+      ],
+      "peak_ymm": 15,
+      "terminal_action": "execute the selected second-layer radix-3 group last and retain its S-oriented output in ymm2"
+    },
+    {
+      "qblock": 3,
+      "prior_retained_vectors": 3,
+      "live_objects_at_r3_peak": [
+        "retained_q0",
+        "retained_q1",
+        "retained_q2",
+        "ntt9_data_0",
+        "ntt9_data_1",
+        "ntt9_data_2",
+        "ntt9_data_3",
+        "ntt9_data_4",
+        "ntt9_data_5",
+        "ntt9_data_6",
+        "ntt9_data_7",
+        "ntt9_data_8",
+        "q",
+        "kappa",
+        "kappa_qinv",
+        "r3_temp_q3"
+      ],
+      "peak_ymm": 16,
+      "terminal_action": "execute the selected second-layer radix-3 group last and retain its S-oriented output in ymm3"
+    }
+  ],
+  "register_assignment_at_fourth_qblock": {
+    "ymm0_ymm3": "selected NTT9 output row, qblocks 0..3",
+    "ymm4": "kappa_qinv",
+    "ymm5": "kappa",
+    "ymm6": "q",
+    "ymm7_ymm15": "current nine NTT9 data vectors",
+    "peak_ymm": 16
+  },
+  "boundary_delta_per_forward": {
+    "branches": 2,
+    "intermediate_stores": -8,
+    "intermediate_reloads": -8,
+    "data_bytes_written": -256,
+    "data_bytes_read": -256,
+    "extra_register_moves": 0,
+    "extra_constant_operands": 0,
+    "recomputed_arithmetic": 0
+  },
+  "two_row_extension": {
+    "authorized": false,
+    "reason": "six prior retained vectors plus nine NTT9 data, q, two kappa constants and one temp require 19 YMM",
+    "minimum_new_freedom": "memory-form constants or a lower-live NTT9/NTT16 schedule; price load-port debt first"
+  },
+  "decision": {
+    "w1_asm_authorized_after_correctness_schedule": true,
+    "first_asm_scope": "one selected p-row per branch only",
+    "native_promotion": false,
+    "benchmark": "Native SUPERCOP after linked correctness and structural gates"
+  }
+}

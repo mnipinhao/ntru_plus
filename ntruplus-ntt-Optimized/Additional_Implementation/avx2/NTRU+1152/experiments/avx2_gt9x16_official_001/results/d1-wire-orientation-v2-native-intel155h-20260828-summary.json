@@ -1,0 +1,59 @@
+{
+  "schema": "d1-wire-orientation-v2-native-summary/v1",
+  "method": {
+    "benchmark": "Native SUPERCOP crypto_kem/measure.c",
+    "supercop_version": "20260627",
+    "cpu": 1,
+    "fresh_processes_per_implementation": 9,
+    "observations_per_operation_per_implementation": 864,
+    "estimator": "SUPERCOP stabilized quartile StQ2"
+  },
+  "control": "avx2-gt9x16-wire-native-normal-exp006",
+  "candidate": "avx2-gt9x16-wire-d1v2-exp007",
+  "campaigns": [
+    {
+      "id": "20260828-001",
+      "control_compiler": "GCC 15.2 -O2",
+      "candidate_compiler": "GCC 15.2 -O3",
+      "control": {
+        "keypair_cycles": 34886.31481481482,
+        "enc_cycles": 44094.94907407407,
+        "dec_cycles": 30524.10185185185
+      },
+      "candidate": {
+        "keypair_cycles": 34740.56018518518,
+        "enc_cycles": 43885.9212962963,
+        "dec_cycles": 30278.86574074074
+      },
+      "candidate_minus_control": {
+        "keypair_cycles": -145.75462962964,
+        "enc_cycles": -209.02777777777,
+        "dec_cycles": -245.23611111111
+      }
+    },
+    {
+      "id": "20260828-002",
+      "control_compiler": "GCC 15.2 -O3",
+      "candidate_compiler": "GCC 15.2 -O2",
+      "control": {
+        "keypair_cycles": 34494.34722222222,
+        "enc_cycles": 43890.21759259259,
+        "dec_cycles": 30283.61574074074
+      },
+      "candidate": {
+        "keypair_cycles": 35218.90277777778,
+        "enc_cycles": 44002.67592592593,
+        "dec_cycles": 30466.069444444445
+      },
+      "candidate_minus_control": {
+        "keypair_cycles": 724.55555555556,
+        "enc_cycles": 112.45833333334,
+        "dec_cycles": 182.453703703705
+      }
+    }
+  ],
+  "decision": {
+    "promote": false,
+    "reason": "Native compiler selection reversed between independent campaigns and the apparent performance direction reversed with it; the eight-shuffle effect is not identifiable at KEM scope."
+  }
+}
