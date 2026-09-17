@@ -1,0 +1,2167 @@
+{
+  "checkpoint": "D3-VPMADDWD-REDUCTION-GATE",
+  "complete_tile_ledger": {
+    "baseline": {
+      "basemul_body_instructions": 65,
+      "fixed_zeta_products": 2,
+      "full_packed_to_plane_routes": 18,
+      "mr32_instructions": 0,
+      "ordinary_variable_montgomery_products": 9,
+      "output_routing": 0,
+      "pair_operand_formation": 0,
+      "peak_ymm": 16,
+      "repack_instructions": 0,
+      "spill_or_intermediate_materialization": 0,
+      "total_instructions": 83,
+      "vpmaddwd_data_products": 0
+    },
+    "candidate": {
+      "arithmetic_instructions": 62,
+      "fixed_zeta_products": 2,
+      "full_packed_to_plane_routes": 0,
+      "memory_instructions_optimistic": 12,
+      "mr32_instructions": 24,
+      "ordinary_variable_montgomery_products": 3,
+      "output_routing": 18,
+      "pair_operand_formation": 40,
+      "peak_ymm": 15,
+      "peak_ymm_proof": "six packed inputs + four shared carriers + two completed pair sums + one low-half dword sum + two routed operands; MR32 constants are memory operands and its temporary reuses one routed-operand register",
+      "repack_instructions": 6,
+      "spill_or_intermediate_materialization": 0,
+      "total_instructions_optimistic": 132,
+      "vpmaddwd_data_products": 6
+    },
+    "delta_candidate_minus_baseline": 49,
+    "inverse_handoff": "final c0/c1/c2 coefficient planes exactly match the existing inverse-entry physical ABI; no post-output adapter is needed, but extracting the three packed diagonal products costs the exact 18-route P network",
+    "static_risk_signal": {
+      "arithmetic_delta_before_routing": 9,
+      "delta_before_required_output_routing": 31,
+      "note": "candidate has more static instructions before its exact 18-route diagonal/output formation is charged; this is not a cycle proof because the instruction mix, port pressure, dependency depth, and overlap differ",
+      "pair_routing_minus_removed_P": 22
+    },
+    "unit": "one Q16 x I3 tile; loop-control instructions excluded"
+  },
+  "constants": {
+    "R": 65536,
+    "q": 3457,
+    "qinv": 12929
+  },
+  "decision": {
+    "asm_authorized": true,
+    "asm_scope": "namespaced single-tile microkernel only",
+    "benchmark_authorized": "same_elf_paired_tile_after_correctness_and_linked_audit",
+    "complete_tile_gate": "inconclusive_requires_machine_pricing",
+    "full_integration_authorized": false,
+    "mr32_gate": "pass",
+    "pair_routing_gate": "pass_exact_40_routes",
+    "reason": "the optimistic candidate is +49 static instructions/tile, but static instruction count cannot decide cycles across different multiply, shuffle, dword-reduction, and dependency structures"
+  },
+  "joint_pair_routing": {
+    "constructive_schedule": {
+      "a": {
+        "carrier_instructions": 2,
+        "new_shared_half_carriers": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "target_instructions": 18,
+        "targets": [
+          {
+            "band": "q00_07",
+            "carriers": [
+              {
+                "halves": [
+                  0,
+                  1
+                ],
+                "high_vpshufb_mask": [
+                  10,
+                  11,
+                  12,
+                  13,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  2,
+                  3,
+                  4,
+                  5,
+                  8,
+                  9,
+                  10,
+                  11,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  1,
+                  2
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  2,
+                  3,
+                  6,
+                  7,
+                  8,
+                  9,
+                  12,
+                  13,
+                  14,
+                  15
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              1,
+              2
+            ],
+            "desired_owners": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                6,
+                1
+              ],
+              [
+                6,
+                2
+              ],
+              [
+                7,
+                1
+              ],
+              [
+                7,
+                2
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s0"
+          },
+          {
+            "band": "q08_15",
+            "carriers": [
+              {
+                "halves": [
+                  3,
+                  4
+                ],
+                "high_vpshufb_mask": [
+                  10,
+                  11,
+                  12,
+                  13,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  2,
+                  3,
+                  4,
+                  5,
+                  8,
+                  9,
+                  10,
+                  11,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  4,
+                  5
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  2,
+                  3,
+                  6,
+                  7,
+                  8,
+                  9,
+                  12,
+                  13,
+                  14,
+                  15
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  4,
+                  5,
+                  6,
+                  7
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              1,
+              2
+            ],
+            "desired_owners": [
+              [
+                8,
+                1
+              ],
+              [
+                8,
+                2
+              ],
+              [
+                9,
+                1
+              ],
+              [
+                9,
+                2
+              ],
+              [
+                10,
+                1
+              ],
+              [
+                10,
+                2
+              ],
+              [
+                11,
+                1
+              ],
+              [
+                11,
+                2
+              ],
+              [
+                12,
+                1
+              ],
+              [
+                12,
+                2
+              ],
+              [
+                13,
+                1
+              ],
+              [
+                13,
+                2
+              ],
+              [
+                14,
+                1
+              ],
+              [
+                14,
+                2
+              ],
+              [
+                15,
+                1
+              ],
+              [
+                15,
+                2
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s0"
+          },
+          {
+            "band": "q00_07",
+            "carriers": [
+              {
+                "halves": [
+                  0,
+                  1
+                ],
+                "high_vpshufb_mask": [
+                  8,
+                  9,
+                  10,
+                  11,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  6,
+                  7,
+                  8,
+                  9,
+                  12,
+                  13,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  1,
+                  2
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  4,
+                  5,
+                  6,
+                  7,
+                  10,
+                  11,
+                  12,
+                  13
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              0,
+              1
+            ],
+            "desired_owners": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                0
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                6,
+                0
+              ],
+              [
+                6,
+                1
+              ],
+              [
+                7,
+                0
+              ],
+              [
+                7,
+                1
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s1"
+          },
+          {
+            "band": "q08_15",
+            "carriers": [
+              {
+                "halves": [
+                  3,
+                  4
+                ],
+                "high_vpshufb_mask": [
+                  8,
+                  9,
+                  10,
+                  11,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  6,
+                  7,
+                  8,
+                  9,
+                  12,
+                  13,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  4,
+                  5
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  4,
+                  5,
+                  6,
+                  7,
+                  10,
+                  11,
+                  12,
+                  13
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              0,
+              1
+            ],
+            "desired_owners": [
+              [
+                8,
+                0
+              ],
+              [
+                8,
+                1
+              ],
+              [
+                9,
+                0
+              ],
+              [
+                9,
+                1
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                1
+              ],
+              [
+                11,
+                0
+              ],
+              [
+                11,
+                1
+              ],
+              [
+                12,
+                0
+              ],
+              [
+                12,
+                1
+              ],
+              [
+                13,
+                0
+              ],
+              [
+                13,
+                1
+              ],
+              [
+                14,
+                0
+              ],
+              [
+                14,
+                1
+              ],
+              [
+                15,
+                0
+              ],
+              [
+                15,
+                1
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s1"
+          },
+          {
+            "band": "q00_07",
+            "carriers": [
+              {
+                "halves": [
+                  0,
+                  1
+                ],
+                "high_vpshufb_mask": [
+                  8,
+                  9,
+                  12,
+                  13,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  0,
+                  1,
+                  4,
+                  5,
+                  6,
+                  7,
+                  10,
+                  11,
+                  12,
+                  13,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  1,
+                  2
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  2,
+                  3,
+                  4,
+                  5,
+                  8,
+                  9,
+                  10,
+                  11,
+                  14,
+                  15
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  2,
+                  3,
+                  6,
+                  7
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              0,
+              2
+            ],
+            "desired_owners": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                4,
+                0
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                5,
+                0
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                6,
+                0
+              ],
+              [
+                6,
+                2
+              ],
+              [
+                7,
+                0
+              ],
+              [
+                7,
+                2
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s2"
+          },
+          {
+            "band": "q08_15",
+            "carriers": [
+              {
+                "halves": [
+                  3,
+                  4
+                ],
+                "high_vpshufb_mask": [
+                  8,
+                  9,
+                  12,
+                  13,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  0,
+                  1,
+                  4,
+                  5,
+                  6,
+                  7,
+                  10,
+                  11,
+                  12,
+                  13,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  4,
+                  5
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  2,
+                  3,
+                  4,
+                  5,
+                  8,
+                  9,
+                  10,
+                  11,
+                  14,
+                  15
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  2,
+                  3,
+                  6,
+                  7
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              0,
+              2
+            ],
+            "desired_owners": [
+              [
+                8,
+                0
+              ],
+              [
+                8,
+                2
+              ],
+              [
+                9,
+                0
+              ],
+              [
+                9,
+                2
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                10,
+                2
+              ],
+              [
+                11,
+                0
+              ],
+              [
+                11,
+                2
+              ],
+              [
+                12,
+                0
+              ],
+              [
+                12,
+                2
+              ],
+              [
+                13,
+                0
+              ],
+              [
+                13,
+                2
+              ],
+              [
+                14,
+                0
+              ],
+              [
+                14,
+                2
+              ],
+              [
+                15,
+                0
+              ],
+              [
+                15,
+                2
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s2"
+          }
+        ],
+        "total_routes": 20
+      },
+      "b": {
+        "carrier_instructions": 2,
+        "new_shared_half_carriers": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "target_instructions": 18,
+        "targets": [
+          {
+            "band": "q00_07",
+            "carriers": [
+              {
+                "halves": [
+                  0,
+                  1
+                ],
+                "high_vpshufb_mask": [
+                  12,
+                  13,
+                  10,
+                  11,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  4,
+                  5,
+                  2,
+                  3,
+                  10,
+                  11,
+                  8,
+                  9,
+                  128,
+                  128,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  1,
+                  2
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  2,
+                  3,
+                  0,
+                  1,
+                  8,
+                  9,
+                  6,
+                  7,
+                  14,
+                  15,
+                  12,
+                  13
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  128,
+                  128,
+                  6,
+                  7,
+                  4,
+                  5
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              2,
+              1
+            ],
+            "desired_owners": [
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                6,
+                2
+              ],
+              [
+                6,
+                1
+              ],
+              [
+                7,
+                2
+              ],
+              [
+                7,
+                1
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s0"
+          },
+          {
+            "band": "q08_15",
+            "carriers": [
+              {
+                "halves": [
+                  3,
+                  4
+                ],
+                "high_vpshufb_mask": [
+                  12,
+                  13,
+                  10,
+                  11,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  4,
+                  5,
+                  2,
+                  3,
+                  10,
+                  11,
+                  8,
+                  9,
+                  128,
+                  128,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  4,
+                  5
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  2,
+                  3,
+                  0,
+                  1,
+                  8,
+                  9,
+                  6,
+                  7,
+                  14,
+                  15,
+                  12,
+                  13
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  128,
+                  128,
+                  6,
+                  7,
+                  4,
+                  5
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              2,
+              1
+            ],
+            "desired_owners": [
+              [
+                8,
+                2
+              ],
+              [
+                8,
+                1
+              ],
+              [
+                9,
+                2
+              ],
+              [
+                9,
+                1
+              ],
+              [
+                10,
+                2
+              ],
+              [
+                10,
+                1
+              ],
+              [
+                11,
+                2
+              ],
+              [
+                11,
+                1
+              ],
+              [
+                12,
+                2
+              ],
+              [
+                12,
+                1
+              ],
+              [
+                13,
+                2
+              ],
+              [
+                13,
+                1
+              ],
+              [
+                14,
+                2
+              ],
+              [
+                14,
+                1
+              ],
+              [
+                15,
+                2
+              ],
+              [
+                15,
+                1
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s0"
+          },
+          {
+            "band": "q00_07",
+            "carriers": [
+              {
+                "halves": [
+                  0,
+                  1
+                ],
+                "high_vpshufb_mask": [
+                  10,
+                  11,
+                  8,
+                  9,
+                  128,
+                  128,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  2,
+                  3,
+                  0,
+                  1,
+                  8,
+                  9,
+                  6,
+                  7,
+                  14,
+                  15,
+                  12,
+                  13,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  1,
+                  2
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  128,
+                  128,
+                  6,
+                  7,
+                  4,
+                  5,
+                  12,
+                  13,
+                  10,
+                  11
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  4,
+                  5,
+                  2,
+                  3
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              1,
+              0
+            ],
+            "desired_owners": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                1
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                0
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                5,
+                0
+              ],
+              [
+                6,
+                1
+              ],
+              [
+                6,
+                0
+              ],
+              [
+                7,
+                1
+              ],
+              [
+                7,
+                0
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s1"
+          },
+          {
+            "band": "q08_15",
+            "carriers": [
+              {
+                "halves": [
+                  3,
+                  4
+                ],
+                "high_vpshufb_mask": [
+                  10,
+                  11,
+                  8,
+                  9,
+                  128,
+                  128,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  2,
+                  3,
+                  0,
+                  1,
+                  8,
+                  9,
+                  6,
+                  7,
+                  14,
+                  15,
+                  12,
+                  13,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  4,
+                  5
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  128,
+                  128,
+                  6,
+                  7,
+                  4,
+                  5,
+                  12,
+                  13,
+                  10,
+                  11
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  4,
+                  5,
+                  2,
+                  3
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              1,
+              0
+            ],
+            "desired_owners": [
+              [
+                8,
+                1
+              ],
+              [
+                8,
+                0
+              ],
+              [
+                9,
+                1
+              ],
+              [
+                9,
+                0
+              ],
+              [
+                10,
+                1
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                11,
+                1
+              ],
+              [
+                11,
+                0
+              ],
+              [
+                12,
+                1
+              ],
+              [
+                12,
+                0
+              ],
+              [
+                13,
+                1
+              ],
+              [
+                13,
+                0
+              ],
+              [
+                14,
+                1
+              ],
+              [
+                14,
+                0
+              ],
+              [
+                15,
+                1
+              ],
+              [
+                15,
+                0
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s1"
+          },
+          {
+            "band": "q00_07",
+            "carriers": [
+              {
+                "halves": [
+                  0,
+                  1
+                ],
+                "high_vpshufb_mask": [
+                  12,
+                  13,
+                  8,
+                  9,
+                  128,
+                  128,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  4,
+                  5,
+                  0,
+                  1,
+                  10,
+                  11,
+                  6,
+                  7,
+                  128,
+                  128,
+                  12,
+                  13,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  1,
+                  2
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  2,
+                  3,
+                  128,
+                  128,
+                  8,
+                  9,
+                  4,
+                  5,
+                  14,
+                  15,
+                  10,
+                  11
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  128,
+                  128,
+                  6,
+                  7,
+                  2,
+                  3
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              2,
+              0
+            ],
+            "desired_owners": [
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                2
+              ],
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                0
+              ],
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                0
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                0
+              ],
+              [
+                6,
+                2
+              ],
+              [
+                6,
+                0
+              ],
+              [
+                7,
+                2
+              ],
+              [
+                7,
+                0
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s2"
+          },
+          {
+            "band": "q08_15",
+            "carriers": [
+              {
+                "halves": [
+                  3,
+                  4
+                ],
+                "high_vpshufb_mask": [
+                  12,
+                  13,
+                  8,
+                  9,
+                  128,
+                  128,
+                  14,
+                  15,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128
+                ],
+                "low_vpshufb_mask": [
+                  4,
+                  5,
+                  0,
+                  1,
+                  10,
+                  11,
+                  6,
+                  7,
+                  128,
+                  128,
+                  12,
+                  13,
+                  128,
+                  128,
+                  128,
+                  128
+                ]
+              },
+              {
+                "halves": [
+                  4,
+                  5
+                ],
+                "high_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  2,
+                  3,
+                  128,
+                  128,
+                  8,
+                  9,
+                  4,
+                  5,
+                  14,
+                  15,
+                  10,
+                  11
+                ],
+                "low_vpshufb_mask": [
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  128,
+                  0,
+                  1,
+                  128,
+                  128,
+                  6,
+                  7,
+                  2,
+                  3
+                ]
+              }
+            ],
+            "coefficient_pair": [
+              2,
+              0
+            ],
+            "desired_owners": [
+              [
+                8,
+                2
+              ],
+              [
+                8,
+                0
+              ],
+              [
+                9,
+                2
+              ],
+              [
+                9,
+                0
+              ],
+              [
+                10,
+                2
+              ],
+              [
+                10,
+                0
+              ],
+              [
+                11,
+                2
+              ],
+              [
+                11,
+                0
+              ],
+              [
+                12,
+                2
+              ],
+              [
+                12,
+                0
+              ],
+              [
+                13,
+                2
+              ],
+              [
+                13,
+                0
+              ],
+              [
+                14,
+                2
+              ],
+              [
+                14,
+                0
+              ],
+              [
+                15,
+                2
+              ],
+              [
+                15,
+                0
+              ]
+            ],
+            "instructions": {
+              "vpor": 1,
+              "vpshufb": 2
+            },
+            "sum": "s2"
+          }
+        ],
+        "total_routes": 20
+      }
+    },
+    "joint_reuse": "C12 and C34 are reused across s0, s1, and s2",
+    "lower_bound": {
+      "both_operands": 40,
+      "per_operand": 20,
+      "reason": "each of six target vectors per operand draws each 128-bit output lane from two distinct source halves, requiring at least two lane-local selections and one merge; the two non-native half pairings require at least two shared carriers"
+    },
+    "model": "vperm2i128 half carriers + lane-local vpshufb + disjoint vpor",
+    "total_routes": 40
+  },
+  "mr32": {
+    "bounds": {
+      "caller_contract": {
+        "covered": [
+          "encapsulation poly_basemul",
+          "decapsulation poly_basemul_scale",
+          "decapsulation verification poly_basemul"
+        ],
+        "not_covered": [
+          "key-generation poly_basemul: both operands are transform/baseinv results"
+        ],
+        "one_operand": [
+          0,
+          3456
+        ],
+        "other_operand": [
+          -32768,
+          32767
+        ]
+      },
+      "divisibility_identity": "S - int16(low16(S) * qinv) * q is divisible by 2^16",
+      "montgomery_exponent": "one R^-1, identical to the existing 16-bit Montgomery product",
+      "packssdw_non_saturating": true,
+      "postshift_conservative": [
+        -5185,
+        5184
+      ],
+      "q_times_qinv_mod_2_16": 1,
+      "signed_i32_safe": true,
+      "signed_t": [
+        -32768,
+        32767
+      ],
+      "subtraction_numerator": [
+        -339767935,
+        339764480
+      ],
+      "subtraction_signed_i32_safe": true,
+      "t_times_q": [
+        -113278976,
+        113275519
+      ],
+      "vpmaddwd_pair_sum": [
+        -226492416,
+        226485504
+      ]
+    },
+    "instructions_per_pair_sum": 12,
+    "scalar_oracle": {
+      "deterministic_cases": 200100,
+      "observed_postshift": [
+        -4481,
+        4517
+      ],
+      "seed": "0xD3864"
+    },
+    "sequence": [
+      "2 x vpmaddwd(data)",
+      "2 x vpmullw(qinv)",
+      "2 x vpmaddwd([q,0])",
+      "2 x vpsubd",
+      "2 x vpsrad(16)",
+      "vpackssdw",
+      "vpermq(0xd8)"
+    ]
+  },
+  "official_tile": {
+    "arithmetic_instructions": 53,
+    "fixed_zeta_montgomery_products": 2,
+    "memory_instructions": 12,
+    "opcode_counts": {
+      "vmovdqa": 12,
+      "vpaddw": 6,
+      "vpmulhw": 22,
+      "vpmullw": 14,
+      "vpsubw": 11
+    },
+    "ordinary_variable_montgomery_products": 9,
+    "qinv_premultiplies": 3,
+    "selected_positive_zeta_tile_instructions": 65
+  },
+  "parameter": 864,
+  "schema": "ntruplus-d3-vpmaddwd-reduction-gate-v1",
+  "scope": {
+    "barrett_searched": false,
+    "keygen_covered": false,
+    "reduction_candidates": [
+      "exact R=2^16 Montgomery"
+    ]
+  },
+  "source_sha256": {
+    "basemul.s": "42b9639d4d619ba2214fba73b86f9029a078b1711c5e77bf7b4a26c770d0e761",
+    "p3_map": "4f7a384134dc01b5e94ce8c6afa45b2bdf048ecfa26fc1735664e42e82e7c505"
+  }
+}

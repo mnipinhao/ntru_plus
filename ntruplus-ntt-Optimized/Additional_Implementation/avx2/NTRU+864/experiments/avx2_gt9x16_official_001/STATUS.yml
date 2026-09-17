@@ -1,11 +1,11 @@
 experiment: avx2_gt9x16_official_001
 parameter: 864
-state: scaffolded
+state: d3_vpmaddwd_asm0_priced_not_selected
 upstream: pinned-supercop
 candidate: avx2-gt9x16-exp001
 promotion: not-qualified
 gates:
-  generator: pending
+  generator: pass
   differential: pending
   kat: pending
   range: pending
@@ -14,4 +14,76 @@ gates:
   supercop_native: pending
   supercop_derived_poly: pending
   fixed_elf_paired: pending
-rejected_candidates: []
+research_checkpoints:
+  d3_vpmaddwd_reduction_gate:
+    result: static_ledger_unfavorable_but_cycle_result_inconclusive
+    map: generated/d3-vpmaddwd-reduction-gate.json
+    mr32: pass_exact_r65536_montgomery
+    mr32_avx2_lanes_checked: 200000
+    caller_contract: one_operand_canonical_other_signed_i16
+    keygen_covered: false
+    pair_routes_joint_both_operands: 40
+    baseline_instructions_per_tile: 83
+    candidate_instructions_per_tile_optimistic: 132
+    delta_candidate_minus_baseline: 49
+    peak_ymm_candidate: 15
+    spill_or_materialization: 0
+    inverse_handoff: exact_coefficient_planes
+    asm_authorized: namespaced_single_tile_only
+    benchmark_authorized: same_elf_paired_tile_after_correctness
+    full_integration_authorized: false
+    checkpoint: CHECKPOINT-D3-VPMADDWD-REDUCTION-GATE.md
+  d3_vpmaddwd_asm0:
+    result: machine_priced_candidate_slower
+    fair_cutpoint: two_packed_T3_operands_plus_zeta_to_three_coefficient_planes
+    correctness_cases: 10003
+    linked_baseline_instructions: 115
+    linked_candidate_instructions: 131
+    linked_baseline_text_bytes: 624
+    linked_candidate_text_bytes: 837
+    stack_frame_or_vector_spill: 0
+    symbol_alignment_bytes: 32
+    benchmark_class: repository_local_paired_not_for_promotion
+    aslr: enabled
+    normal_placement_delta_cycles: 4
+    normal_candidate_slower_launches: 9
+    reversed_placement_delta_cycles: 4
+    reversed_candidate_slower_launches: 9
+    full_integration_authorized: false
+    checkpoint: CHECKPOINT-D3-VPMADDWD-ASM0.md
+  p3_native_component_consumer:
+    result: stop_before_asm_exact_16bit_families_do_not_beat_actual_one_sided_boundary
+    common_tile: T3_Q16_x_I3_three_ymm
+    map: generated/p3-native-component-consumer.json
+    packed_to_plane_routes_per_tile: 18
+    plane_to_packed_constructive_routes_per_tile: 18
+    actual_runtime_p_inverse_routes: 0
+    vpmaddwd_candidate: separate_arithmetic_research_requires_signed32_reduction_and_repack
+    asm_authorized: false
+    benchmark_authorized: false
+    p2_authorized: false
+    checkpoint: CHECKPOINT-P3-NATIVE-COMPONENT-CONSUMER.md
+  p1_shrunk:
+    result: stop_before_asm_no_structural_credit
+    d3_packet_map: generated/p1-d3-packet-map.json
+    checked_cells: 864
+    checked_row_linear_terms: 7776
+    packed_control_unused_lanes: 0
+    plane_major_delta:
+      top_split_loads: 0
+      packet_permutations: 0
+      ntt9_arithmetic: 0
+      final_plane_stores: 0
+      removed_materialization: 0
+    plane_major_asm_authorized: false
+    paired_benchmark_authorized: false
+    ntruplus1152_ntt16_first_asm_authorized: false
+    p2_authorized: false
+    checkpoint: CHECKPOINT-P1-SHRUNK.md
+rejected_candidates:
+  - id: D3-VPMADDWD-PAIR-SUM-MR32
+    stage: same_elf_paired_tile_pricing
+    reason: candidate_is_4_cycles_per_tile_slower_in_9_of_9_launches_under_both_normal_and_reversed_placement
+  - id: P1-864-D3-PLANE-MAJOR-V1
+    stage: exact_map
+    reason: relocates_identical_packed_to_plane_bijection_without_structural_credit

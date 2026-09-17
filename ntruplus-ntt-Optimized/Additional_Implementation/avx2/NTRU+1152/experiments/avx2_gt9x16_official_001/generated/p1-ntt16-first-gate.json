@@ -1,0 +1,44 @@
+{
+  "challenger": {
+    "blocking_obligation": "retain nine row results for one j while forming later rows, or materialize/recompute the other coefficient planes",
+    "exact_two_axis_schedule": null,
+    "known_early_plane_control": {
+      "delta_vs_selected": 216,
+      "meaning": "exact existing early-plane network cost; evidence, not an asserted lower bound for every NTT16-first schedule",
+      "routing": 792
+    },
+    "name": "NTT16-first, coefficient-plane blocked",
+    "new_constant_operands": null,
+    "only_plausible_credit": "delete some or all of the 72-store plus 72-reload axis boundary",
+    "proved_peak_ymm": null,
+    "proved_removed_reloads": null,
+    "proved_removed_stores": null,
+    "required_entry": "transpose each top-split 4q-by-4j AoS tile to four q-lane planes"
+  },
+  "checkpoint": "P1-1152-NTT16-FIRST-GATE",
+  "control": {
+    "data_loads_after_top_split": 144,
+    "data_stores_after_top_split": 144,
+    "late_live_boundary": "D1 sum/difference registers feed the first vpunpckwd layer directly",
+    "name": "current NTT9-first persistent-AoS C1",
+    "ntt9_to_ntt16_materialization": {
+      "reloads": 72,
+      "stores": 72
+    },
+    "peak_ymm": 16,
+    "routing": 576
+  },
+  "decision": {
+    "linked_asm_authorized": false,
+    "not_rejected_mathematically": true,
+    "p2_opened": false,
+    "paired_benchmark_authorized": false,
+    "reason": "the challenger has not exhibited a <=16-YMM full-branch schedule that removes a complete boundary; the only exact early-plane evidence is 216 additional routes",
+    "reopen_condition": "provide exact def/use liveness and full-branch movement showing net boundary deletion after entry transpose"
+  },
+  "schema": "ntruplus1152-p1-ntt16-first-gate/v1",
+  "scope": "one and only NTT16-first/blocked challenger against current persistent-AoS NTT9-first",
+  "source_sha256": {
+    "current_schedule": "b03e7f1a1910ef372938a976e56e6ecd8f1a9697898b92c381dbfe356511cd70"
+  }
+}

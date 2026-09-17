@@ -1,0 +1,58 @@
+{
+  "decision": "linked shape passes; paired tile pricing may run",
+  "delta": {
+    "candidate_minus_baseline_instructions": 16,
+    "candidate_minus_baseline_text_bytes": 213
+  },
+  "schema": "ntruplus864-d3-asm0-linked-audit-v1",
+  "symbols": {
+    "baseline": {
+      "address": 0,
+      "aligned": true,
+      "alignment": 32,
+      "forbidden_stack_call_lines": [],
+      "instructions": 115,
+      "name": "ntruplus864_exp001_d3_tile_baseline",
+      "opcodes": {
+        "lea": 1,
+        "ret": 1,
+        "vmovdqa": 23,
+        "vpaddw": 6,
+        "vperm2i128": 6,
+        "vpmulhw": 22,
+        "vpmullw": 14,
+        "vpor": 12,
+        "vpshufb": 18,
+        "vpsubw": 11,
+        "vzeroupper": 1
+      },
+      "text_bytes": 624
+    },
+    "candidate": {
+      "address": 640,
+      "aligned": true,
+      "alignment": 32,
+      "forbidden_stack_call_lines": [],
+      "instructions": 131,
+      "name": "ntruplus864_exp001_d3_tile_vpmaddwd",
+      "opcodes": {
+        "ret": 1,
+        "vmovdqa": 9,
+        "vpackssdw": 3,
+        "vpaddw": 3,
+        "vperm2i128": 7,
+        "vpermq": 3,
+        "vpmaddwd": 12,
+        "vpmulhw": 10,
+        "vpmullw": 14,
+        "vpor": 18,
+        "vpshufb": 33,
+        "vpsrad": 6,
+        "vpsubd": 6,
+        "vpsubw": 5,
+        "vzeroupper": 1
+      },
+      "text_bytes": 837
+    }
+  }
+}
