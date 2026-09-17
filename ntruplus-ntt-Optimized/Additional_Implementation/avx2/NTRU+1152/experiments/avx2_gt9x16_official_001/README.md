@@ -801,3 +801,49 @@ across normal/reversed and ASLR on/off agree in direction.  M3B becomes the
 research egress baseline, but this SUPERCOP-derived result does not authorize
 native KEM or production promotion.  See
 `CHECKPOINT-ENCAP-MA2-CT-EGRESS-H4-M3B-PRICE.md`.
+
+Checkpoint WIRE-MONOTONE-SHARED-ABI closes Gates 1-5 for a common physical
+lane order spanning both forwards, direct `r` serialization, streamed H3/MA2,
+and exact ciphertext egress. Direct D1-terminal resynthesis reduces the
+forward cost from the preliminary 72-shuffle adapter bound to 56 new
+`vpshufb` per forward. The caller-weighted linked ledger is -92 static
+instructions, and the SUPERCOP-derived complete fanout island wins all four
+normal/reversed, ASLR-off/on controls (headline -38.86 cycles, 95% bootstrap
+CI [-53.26, -26.36], 9/9 launches). This is a research-baseline result, not a
+native KEM or production promotion. See
+`CHECKPOINT-WIRE-MONOTONE-SHARED-ABI-GATES.md`.
+
+Checkpoint WIRE-MONOTONE-NATIVE-REBASE2 integrates the research winner into a
+complete namespaced encapsulation caller: persistent-AoS wire-monotone
+forwards for `r` and `m`, direct wire serialization for `r`, streamed PK
+decode/H3/MA2, and H4 exact ciphertext egress.  It passes 100/100 frozen KAT
+cases and the complete API/sanitizer gates.  Formal pinned-SUPERCOP native
+measurement nevertheless regresses `enc_cycles` by 672.27 cycles (1.56%).
+The common-O3GC fixed-ELF replay confirms a 1114--1216 cycle encapsulation
+regression across normal/reversed placement and ASLR off/on; every 95% CI is
+strictly above zero.  The integrated source remains a research baseline, but
+is rejected for clean-production promotion.  See
+`CHECKPOINT-WIRE-MONOTONE-NATIVE-REBASE2.md`.
+
+Checkpoint WIRE-MONOTONE-NATIVE-ATTRIBUTION-V3 remeasures the complete exp006
+changed caller with SUPERCOP's selected compiler and balanced same-ELF
+cutpoints.  Its `+696.52` cycle complete-caller delta closely closes the native
+`+672.27` deficit.  The latest forward itself is slightly faster than Official
+(`-8.88` cycles); the main debts are PK ingress/MA2/ciphertext egress
+(`+430.34`) and the r dual-output serialization boundary.  The adjacent
+register-flow audit documents every forward stage and records the linked leaf
+as 2,875 instructions, 296 Montgomery chains, 40 Barrett vectors, 488 routes,
+and 144 loads/stores each.  See
+`CHECKPOINT-WIRE-MONOTONE-NATIVE-ATTRIBUTION-V3-FORWARD-FLOW.md`.
+
+Checkpoint GT9X16-FORWARD-OPT-V3-D1V2-W1 executes one small and one large
+Forward step.  The complete D1 sign-orientation candidate removes eight
+`vpshufb` instructions and passes differential, sanitizer, linked and installed
+SUPERCOP KAT gates, but two independent Native SUPERCOP campaigns reverse both
+the O2/O3 compiler selection and the apparent performance direction.  It is
+therefore retained without promotion.  The large W1 schedule proves an exact
+12-instruction low-temporary radix-3 renaming and fits one retained NTT9 row per
+branch at a 16/16 YMM peak, predicting eight fewer intermediate stores and
+reloads with no arithmetic or constant debt.  One-row W1 ASM is authorized;
+two-row fusion is not.  See
+`CHECKPOINT-GT9X16-FORWARD-OPT-V3-D1V2-W1.md`.

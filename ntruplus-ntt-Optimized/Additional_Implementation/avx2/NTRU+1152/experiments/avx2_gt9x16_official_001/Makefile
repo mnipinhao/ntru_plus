@@ -208,6 +208,246 @@ h4-m3b-sanitize:
 	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -DTEST_H4_M3B -Isrc -Igenerated -I$(UPSTREAM) -I. $(ENCAP_H4_M3B_TEST_SOURCES) -o $(BUILD)/h4m3b/test-h4-m3b-sanitize
 	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(BUILD)/h4m3b/test-h4-m3b-sanitize
 
+WIRE_SHARED_DIR := $(BUILD)/wire-shared
+WIRE_GATES_ARGS := --machine-wire generated/h1-natural-machine-wire-layout.json --report generated/wire-monotone-ma2-gates.json --wire-layout generated/wire-monotone-machine-wire-layout.json --constants generated/wire-monotone-terminal-constants.inc --c-layout generated/wire-monotone-source-to-wire.inc
+WIRE_ABSORPTION_ARGS := --gates generated/wire-monotone-ma2-gates.json --output generated/d1-wire-monotone-absorption.json --asm-constants generated/d1-wire-monotone-absorption.inc
+WIRE_H3_SCHEDULE_ARGS := --gates generated/wire-monotone-ma2-gates.json --natural-schedule generated/gt9x16-prod3-ma2-qorder-natural-schedule.json --natural-constants generated/gt9x16-prod3-ma2-qorder-natural-constants.inc --schedule generated/gt9x16-prod3-ma2-wire-monotone-schedule.json --constants generated/gt9x16-prod3-ma2-wire-monotone-constants.inc
+WIRE_H3_ASM_ARGS := --schedule generated/encap-h-ingress-ma2-h3-schedule.json --natural-schedule generated/gt9x16-prod3-ma2-wire-monotone-schedule.json --ma2-source asm/gt9x16_prod3_cumulative_ma2.S --asm asm/encap_h_ingress_ma2_h3_wire.S --header generated/encap-h-ingress-ma2-h3-wire.h --contract generated/encap-h-ingress-ma2-h3-wire-asm.json --symbol ntruplus1152_exp001_encap_h_ingress_ma2_h3_wire --representation wire-monotone --constant-include generated/gt9x16-prod3-ma2-wire-monotone-constants.inc --constant-label-prefix .Lqwire_lambda_
+WIRE_H4_ASM_ARGS := --h3-source asm/encap_h_ingress_ma2_h3_wire.S --machine-wire generated/wire-monotone-machine-wire-layout.json --asm asm/encap_h4_m3b_exact_egress_wire.S --header generated/encap-h4-m3b-exact-egress-wire.h --contract generated/encap-h4-m3b-exact-egress-wire-asm.json --symbol ntruplus1152_exp001_encap_h4_m3b_exact_egress_wire --h3-symbol ntruplus1152_exp001_encap_h_ingress_ma2_h3_wire --producer ntruplus1152_exp001_gt9x16_prod3_aos_full_wire_monotone_scale1_lazy_reduce --representation wire-monotone
+WIRE_NAT_SERIALIZER_ARGS := --generator tools/generate_encap_h4_m3b_exact_egress_asm.py --machine-wire generated/h1-natural-machine-wire-layout.json --symbol ntruplus1152_exp001_direct_serializer_natural --asm asm/direct_serializer_natural.S --contract generated/direct-serializer-natural.json
+WIRE_SERIALIZER_ARGS := --generator tools/generate_encap_h4_m3b_exact_egress_asm.py --machine-wire generated/wire-monotone-machine-wire-layout.json --symbol ntruplus1152_exp001_direct_serializer_wire --asm asm/direct_serializer_wire.S --contract generated/direct-serializer-wire.json
+SCALE1_R_SERIALIZER_V2_DIR := $(BUILD)/scale1-r-serializer-v2
+SCALE1_R_SERIALIZER_V2_ARGS := --packet-map generated/scale1-r-serializer-v2-packet-map.json --pack-source $(UPSTREAM)/pack.s --asm asm/scale1_r_serializer_v2.S --header generated/scale1-r-serializer-v2-asm.h --contract generated/scale1-r-serializer-v2-asm.json --symbol ntruplus1152_exp001_scale1_r_serializer_v2
+SCALE1_R_SERIALIZER_V2_TEST_SOURCES := src/top_split_adapter.c asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire.S asm/direct_serializer_wire.S asm/scale1_r_serializer_v2.S $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s $(UPSTREAM)/pack.s tests/test_scale1_r_serializer_v2_asm.c
+SCALE1_R_SERIALIZER_V2_AUDIT_ARGS := --control-object $(SCALE1_R_SERIALIZER_V2_DIR)/control.o --candidate-object $(SCALE1_R_SERIALIZER_V2_DIR)/candidate.o --contract generated/scale1-r-serializer-v2-asm.json --output generated/scale1-r-serializer-v2-linked-audit.json
+SCALE1_R_SERIALIZER_V2_STAGE_SOURCES := src/top_split_adapter.c src/scale1_r_serializer_v2_hash_g.c asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire.S asm/scale1_r_serializer_v2.S $(UPSTREAM)/consts.c $(UPSTREAM)/fips202.c $(UPSTREAM)/symmetric.c $(UPSTREAM)/KeccakP-1600-AVX2.s tests/test_scale1_r_serializer_v2_hash_g.c
+D1_PAIR_V2_DIR := $(BUILD)/d1-pair-v2
+D1_PAIR_V2_GENERATOR_ARGS := --schedule generated/d1-pair-resident-serializer-wavefront.json --pack-source $(UPSTREAM)/pack.s --base-source asm/gt9x16_prod3_aos_branch0.S --terminal-controls generated/d1-wire-monotone-absorption.inc --macro-include generated/d1-pair-resident-v2-macros.inc --asm asm/gt9x16_prod3_aos_d1_pair_resident_v2.S --header generated/d1-pair-resident-v2.h --contract generated/d1-pair-resident-v2-asm.json
+D1_PAIR_V2_TEST_SOURCES := src/top_split_adapter.c asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire.S asm/scale1_r_serializer_v2.S asm/gt9x16_prod3_aos_d1_pair_resident_v2.S $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s $(UPSTREAM)/pack.s $(UPSTREAM)/fips202.c $(UPSTREAM)/symmetric.c $(UPSTREAM)/KeccakP-1600-AVX2.s tests/test_d1_pair_resident_v2_asm.c
+D1_PAIR_V2_AUDIT_ARGS := --control-forward $(D1_PAIR_V2_DIR)/control-forward.o --control-serializer $(D1_PAIR_V2_DIR)/control-serializer.o --candidate $(D1_PAIR_V2_DIR)/candidate.o --contract generated/d1-pair-resident-v2-asm.json --output generated/d1-pair-resident-v2-linked-audit.json
+WIRE_LEDGER_ARGS := --gates generated/wire-monotone-ma2-gates.json --absorption generated/d1-wire-monotone-absorption.json --control-forward $(WIRE_SHARED_DIR)/forward-natural.o --wire-forward $(WIRE_SHARED_DIR)/forward-wire.o --natural-h3 $(WIRE_SHARED_DIR)/h3-natural.o --wire-h3 $(WIRE_SHARED_DIR)/h3-wire.o --natural-serializer $(WIRE_SHARED_DIR)/serializer-natural.o --wire-serializer $(WIRE_SHARED_DIR)/serializer-wire.o --natural-h4 $(WIRE_SHARED_DIR)/h4-natural.o --wire-h4 $(WIRE_SHARED_DIR)/h4-wire.o --output generated/wire-monotone-shared-ledger.json
+WIRE_COMMON_FORWARD := src/top_split_adapter.c asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce.S asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire.S
+WIRE_OFFICIAL := $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s $(UPSTREAM)/basemul.s $(UPSTREAM)/add.s $(UPSTREAM)/pack.s
+
+D1V2_DIR := $(BUILD)/d1v2
+D1V2_CONTROL := asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire.S
+D1V2_CANDIDATE := asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire_d1v2.S
+D1V2_SEARCH_ARGS := --gates generated/wire-monotone-ma2-gates.json --v1 generated/d1-wire-monotone-absorption.json --output generated/d1-wire-orientation-v2.json
+D1V2_ASM_ARGS := --v1 generated/d1-wire-monotone-absorption.json --v2 generated/d1-wire-orientation-v2.json --t0-constants generated/gt9x16-prod3-natural-q-t0-beta-constants.inc --controls generated/d1-wire-orientation-v2-controls.inc --twiddles generated/d1-wire-orientation-v2-twiddles.inc
+D1V2_AUDIT_ARGS := --control $(D1V2_DIR)/control.o --candidate $(D1V2_DIR)/candidate.o --output generated/d1-wire-orientation-v2-linked-audit.json
+NTT9_W1_ARGS := --output generated/ntt9-wavefront-w1-schedule.json
+NTT9_W2_ARGS := --output generated/ntt9-wavefront-w2-schedule.json
+NTT9_W1_DIR := $(BUILD)/ntt9-w1
+NTT9_W1_CONTROL := asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire.S
+NTT9_W1_CANDIDATE := asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire_w1.S
+NTT9_W1_AUDIT_ARGS := --control $(NTT9_W1_DIR)/control.o --candidate $(NTT9_W1_DIR)/candidate.o --output generated/ntt9-wavefront-w1-linked-audit.json
+
+.PHONY: wire-monotone-shared-generate wire-monotone-shared-check wire-monotone-shared-sanitize prepare-wire-monotone-shared-serious supercop-wire-monotone-shared-serious prepare-wire-monotone-native-rebase2 wire-monotone-native-kat supercop-wire-native-attribution-v3 d1-wire-orientation-v2-generate d1-wire-orientation-v2-check d1-wire-orientation-v2-sanitize ntt9-wavefront-w1-generate ntt9-wavefront-w1-check ntt9-wavefront-w1-asm-check ntt9-wavefront-w1-sanitize prepare-ntt9-wavefront-w1-native ntt9-wavefront-w1-native-kat supercop-ntt9-wavefront-w1-native ntt9-wavefront-w2-generate ntt9-wavefront-w2-check
+
+d1-wire-orientation-v2-generate:
+	$(PYTHON) tools/generate_d1_wire_orientation_v2.py $(D1V2_SEARCH_ARGS)
+	$(PYTHON) tools/generate_d1_wire_orientation_v2_asm.py $(D1V2_ASM_ARGS)
+
+d1-wire-orientation-v2-check:
+	mkdir -p $(D1V2_DIR)
+	$(PYTHON) tools/generate_d1_wire_orientation_v2.py $(D1V2_SEARCH_ARGS) --check
+	$(PYTHON) tools/generate_d1_wire_orientation_v2_asm.py $(D1V2_ASM_ARGS) --check
+	$(CC) -mavx2 -I. -c $(D1V2_CONTROL) -o $(D1V2_DIR)/control.o
+	$(CC) -mavx2 -I. -c $(D1V2_CANDIDATE) -o $(D1V2_DIR)/candidate.o
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Igenerated src/top_split_adapter.c $(D1V2_CONTROL) $(D1V2_CANDIDATE) tests/test_d1_wire_orientation_v2.c -o $(D1V2_DIR)/test
+	$(D1V2_DIR)/test
+	$(PYTHON) tools/audit_d1_wire_orientation_v2.py $(D1V2_AUDIT_ARGS) --check
+
+d1-wire-orientation-v2-sanitize:
+	mkdir -p $(D1V2_DIR)
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. -Igenerated src/top_split_adapter.c $(D1V2_CONTROL) $(D1V2_CANDIDATE) tests/test_d1_wire_orientation_v2.c -o $(D1V2_DIR)/test-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(D1V2_DIR)/test-sanitize
+
+ntt9-wavefront-w1-generate:
+	$(PYTHON) tools/generate_ntt9_wavefront_w1_schedule.py $(NTT9_W1_ARGS)
+
+ntt9-wavefront-w1-check:
+	$(PYTHON) tools/generate_ntt9_wavefront_w1_schedule.py $(NTT9_W1_ARGS) --check
+
+ntt9-wavefront-w1-asm-check: ntt9-wavefront-w1-check
+	mkdir -p $(NTT9_W1_DIR)
+	$(CC) -mavx2 -I. -c $(NTT9_W1_CONTROL) -o $(NTT9_W1_DIR)/control.o
+	$(CC) -mavx2 -I. -c $(NTT9_W1_CANDIDATE) -o $(NTT9_W1_DIR)/candidate.o
+	$(CC) $(CFLAGS_STRICT) -O3 -I. -Igenerated src/top_split_adapter.c $(NTT9_W1_CONTROL) $(NTT9_W1_CANDIDATE) tests/test_ntt9_wavefront_w1.c -o $(NTT9_W1_DIR)/test
+	$(NTT9_W1_DIR)/test
+	$(PYTHON) tools/audit_ntt9_wavefront_w1.py $(NTT9_W1_AUDIT_ARGS)
+	$(PYTHON) tools/audit_ntt9_wavefront_w1.py $(NTT9_W1_AUDIT_ARGS) --check
+
+ntt9-wavefront-w1-sanitize: ntt9-wavefront-w1-check
+	mkdir -p $(NTT9_W1_DIR)
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -I. -Igenerated src/top_split_adapter.c $(NTT9_W1_CONTROL) $(NTT9_W1_CANDIDATE) tests/test_ntt9_wavefront_w1.c -o $(NTT9_W1_DIR)/test-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(NTT9_W1_DIR)/test-sanitize
+
+prepare-ntt9-wavefront-w1-native:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_ntt9_wavefront_w1_native.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --source-implementation $${NTT9_W1_SOURCE_IMPLEMENTATION:-avx2-gt9x16-wire-native-normal-exp006-sc20260831} --implementation $${NTT9_W1_IMPLEMENTATION:-avx2-gt9x16-wire-native-w1-exp007-sc20260831}
+
+ntt9-wavefront-w1-native-kat:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_h1_kat.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --implementation $${NTT9_W1_IMPLEMENTATION:-avx2-gt9x16-wire-native-w1-exp007-sc20260831} --profile wire --output $(RESULTS)/ntt9-wavefront-w1-native-kat.json
+
+supercop-ntt9-wavefront-w1-native:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $${NTT9_W1_IMPLEMENTATION:-avx2-gt9x16-wire-native-w1-exp007-sc20260831} --cpu $(BENCH_CPU) --mode native-kem --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/ntt9-wavefront-w1-native
+
+ntt9-wavefront-w2-generate:
+	$(PYTHON) tools/generate_ntt9_wavefront_w2_schedule.py $(NTT9_W2_ARGS)
+
+ntt9-wavefront-w2-check:
+	$(PYTHON) tools/generate_ntt9_wavefront_w2_schedule.py $(NTT9_W2_ARGS) --check
+
+wire-monotone-shared-generate:
+	$(PYTHON) tools/generate_wire_monotone_ma2_gates.py $(WIRE_GATES_ARGS)
+	$(PYTHON) tools/generate_d1_wire_monotone_absorption.py $(WIRE_ABSORPTION_ARGS)
+	$(PYTHON) tools/generate_wire_monotone_h3_schedule.py $(WIRE_H3_SCHEDULE_ARGS)
+	$(PYTHON) tools/generate_encap_h_ingress_ma2_h3_asm.py $(WIRE_H3_ASM_ARGS)
+	$(PYTHON) tools/generate_wire_monotone_serializer_asm.py $(WIRE_NAT_SERIALIZER_ARGS)
+	$(PYTHON) tools/generate_wire_monotone_serializer_asm.py $(WIRE_SERIALIZER_ARGS)
+	$(PYTHON) tools/generate_encap_h4_m3b_exact_egress_asm.py $(WIRE_H4_ASM_ARGS)
+
+wire-monotone-shared-check:
+	mkdir -p $(WIRE_SHARED_DIR)
+	$(PYTHON) tools/generate_wire_monotone_ma2_gates.py $(WIRE_GATES_ARGS) --check
+	$(PYTHON) tools/generate_d1_wire_monotone_absorption.py $(WIRE_ABSORPTION_ARGS) --check
+	$(PYTHON) tools/generate_wire_monotone_h3_schedule.py $(WIRE_H3_SCHEDULE_ARGS) --check
+	$(PYTHON) tools/generate_encap_h_ingress_ma2_h3_asm.py $(WIRE_H3_ASM_ARGS) --check
+	$(PYTHON) tools/generate_wire_monotone_serializer_asm.py $(WIRE_NAT_SERIALIZER_ARGS) --check
+	$(PYTHON) tools/generate_wire_monotone_serializer_asm.py $(WIRE_SERIALIZER_ARGS) --check
+	$(PYTHON) tools/generate_encap_h4_m3b_exact_egress_asm.py $(WIRE_H4_ASM_ARGS) --check
+	$(CC) -mavx2 -I. -c asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce.S -o $(WIRE_SHARED_DIR)/forward-natural.o
+	$(CC) -mavx2 -I. -c asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire.S -o $(WIRE_SHARED_DIR)/forward-wire.o
+	$(CC) -mavx2 -I. -c asm/encap_h_ingress_ma2_h3.S -o $(WIRE_SHARED_DIR)/h3-natural.o
+	$(CC) -mavx2 -I. -c asm/encap_h_ingress_ma2_h3_wire.S -o $(WIRE_SHARED_DIR)/h3-wire.o
+	$(CC) -mavx2 -I. -c asm/direct_serializer_natural.S -o $(WIRE_SHARED_DIR)/serializer-natural.o
+	$(CC) -mavx2 -I. -c asm/direct_serializer_wire.S -o $(WIRE_SHARED_DIR)/serializer-wire.o
+	$(CC) -mavx2 -I. -c asm/encap_h4_m3b_exact_egress.S -o $(WIRE_SHARED_DIR)/h4-natural.o
+	$(CC) -mavx2 -I. -c asm/encap_h4_m3b_exact_egress_wire.S -o $(WIRE_SHARED_DIR)/h4-wire.o
+	$(PYTHON) tools/generate_wire_monotone_shared_ledger.py $(WIRE_LEDGER_ARGS) --check
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(WIRE_COMMON_FORWARD) tests/test_wire_monotone_forward.c -o $(WIRE_SHARED_DIR)/test-forward
+	$(WIRE_SHARED_DIR)/test-forward
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(WIRE_COMMON_FORWARD) asm/direct_serializer_natural.S asm/direct_serializer_wire.S $(UPSTREAM)/consts.c $(UPSTREAM)/ntt.s $(UPSTREAM)/pack.s tests/test_wire_monotone_serializer.c -o $(WIRE_SHARED_DIR)/test-serializer
+	$(WIRE_SHARED_DIR)/test-serializer
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(WIRE_COMMON_FORWARD) asm/encap_h_ingress_ma2_h3.S asm/encap_h_ingress_ma2_h3_wire.S tests/test_wire_monotone_h3.c -o $(WIRE_SHARED_DIR)/test-h3
+	$(WIRE_SHARED_DIR)/test-h3
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(WIRE_COMMON_FORWARD) asm/encap_h4_m3b_exact_egress.S asm/encap_h4_m3b_exact_egress_wire.S $(WIRE_OFFICIAL) tests/test_wire_monotone_complete.c -o $(WIRE_SHARED_DIR)/test-complete
+	$(WIRE_SHARED_DIR)/test-complete
+
+wire-monotone-shared-sanitize:
+	mkdir -p $(WIRE_SHARED_DIR)
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(WIRE_COMMON_FORWARD) asm/encap_h4_m3b_exact_egress.S asm/encap_h4_m3b_exact_egress_wire.S $(WIRE_OFFICIAL) tests/test_wire_monotone_complete.c -o $(WIRE_SHARED_DIR)/test-complete-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(WIRE_SHARED_DIR)/test-complete-sanitize
+
+.PHONY: scale1-r-serializer-v2-generate scale1-r-serializer-v2-check scale1-r-serializer-v2-sanitize
+
+scale1-r-serializer-v2-generate:
+	mkdir -p $(SCALE1_R_SERIALIZER_V2_DIR)
+	$(PYTHON) tools/generate_scale1_r_serializer_v2_packet_map.py --machine-wire generated/wire-monotone-machine-wire-layout.json --current-contract generated/direct-serializer-wire.json --output generated/scale1-r-serializer-v2-packet-map.json
+	$(PYTHON) tools/generate_scale1_r_serializer_v2_asm.py $(SCALE1_R_SERIALIZER_V2_ARGS)
+	$(CC) -mavx2 -I. -c asm/direct_serializer_wire.S -o $(SCALE1_R_SERIALIZER_V2_DIR)/control.o
+	$(CC) -mavx2 -I. -c asm/scale1_r_serializer_v2.S -o $(SCALE1_R_SERIALIZER_V2_DIR)/candidate.o
+	$(PYTHON) tools/audit_scale1_r_serializer_v2_asm.py $(SCALE1_R_SERIALIZER_V2_AUDIT_ARGS)
+
+scale1-r-serializer-v2-check: scale1-r-serializer-v2-generate
+	$(PYTHON) tests/test_scale1_r_serializer_v2_packet_map.py
+	$(PYTHON) tools/generate_scale1_r_serializer_v2_packet_map.py --machine-wire generated/wire-monotone-machine-wire-layout.json --current-contract generated/direct-serializer-wire.json --output generated/scale1-r-serializer-v2-packet-map.json --check
+	$(PYTHON) tools/generate_scale1_r_serializer_v2_asm.py $(SCALE1_R_SERIALIZER_V2_ARGS) --check
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(SCALE1_R_SERIALIZER_V2_TEST_SOURCES) -o $(SCALE1_R_SERIALIZER_V2_DIR)/test
+	$(SCALE1_R_SERIALIZER_V2_DIR)/test
+	$(PYTHON) tools/audit_scale1_r_serializer_v2_asm.py $(SCALE1_R_SERIALIZER_V2_AUDIT_ARGS) --check
+
+scale1-r-serializer-v2-sanitize:
+	mkdir -p $(SCALE1_R_SERIALIZER_V2_DIR)
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(SCALE1_R_SERIALIZER_V2_TEST_SOURCES) -o $(SCALE1_R_SERIALIZER_V2_DIR)/test-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(SCALE1_R_SERIALIZER_V2_DIR)/test-sanitize
+
+.PHONY: prepare-scale1-r-serializer-v2-price supercop-scale1-r-serializer-v2-serious
+
+.PHONY: d1-pair-resident-v2-generate d1-pair-resident-v2-check d1-pair-resident-v2-sanitize prepare-d1-pair-resident-v2-fanout-short supercop-d1-pair-resident-v2-fanout-short
+
+d1-pair-resident-v2-generate:
+	mkdir -p $(D1_PAIR_V2_DIR)
+	$(PYTHON) tools/generate_d1_pair_resident_v2_asm.py $(D1_PAIR_V2_GENERATOR_ARGS)
+	$(CC) -mavx2 -I. -c asm/gt9x16_prod3_aos_h4_scale1_lazy_reduce_wire.S -o $(D1_PAIR_V2_DIR)/control-forward.o
+	$(CC) -mavx2 -I. -c asm/scale1_r_serializer_v2.S -o $(D1_PAIR_V2_DIR)/control-serializer.o
+	$(CC) -mavx2 -I. -c asm/gt9x16_prod3_aos_d1_pair_resident_v2.S -o $(D1_PAIR_V2_DIR)/candidate.o
+	$(PYTHON) tools/audit_d1_pair_resident_v2_asm.py $(D1_PAIR_V2_AUDIT_ARGS)
+
+d1-pair-resident-v2-check: d1-pair-resident-v2-generate
+	$(PYTHON) tools/generate_d1_pair_resident_v2_asm.py $(D1_PAIR_V2_GENERATOR_ARGS) --check
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(D1_PAIR_V2_TEST_SOURCES) -o $(D1_PAIR_V2_DIR)/test
+	$(D1_PAIR_V2_DIR)/test
+	$(PYTHON) tools/audit_d1_pair_resident_v2_asm.py $(D1_PAIR_V2_AUDIT_ARGS) --check
+
+d1-pair-resident-v2-sanitize:
+	mkdir -p $(D1_PAIR_V2_DIR)
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(D1_PAIR_V2_TEST_SOURCES) -o $(D1_PAIR_V2_DIR)/test-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(D1_PAIR_V2_DIR)/test-sanitize
+
+prepare-d1-pair-resident-v2-fanout-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_d1_pair_resident_v2_fanout.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --source-implementation $${D1_PAIR_V2_FANOUT_SOURCE:-avx2-gt9x16-wire-serializer-v2-exp013-sc20260831} --implementation $${D1_PAIR_V2_FANOUT_IMPLEMENTATION:-avx2-gt9x16-wire-d1-pair-v2-exp016-sc20260831}
+
+supercop-d1-pair-resident-v2-fanout-short:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $${D1_PAIR_V2_FANOUT_IMPLEMENTATION:-avx2-gt9x16-wire-d1-pair-v2-exp016-sc20260831} --cpu $(BENCH_CPU) --mode derived-scale1-r-dual-output-fanout --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --fresh-launches $${D1_PAIR_V2_FANOUT_LAUNCHES:-3} --require-frequency-control --result-dir $(RESULTS)/$@
+
+prepare-scale1-r-serializer-v2-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_scale1_r_serializer_v2.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --source-implementation $${SCALE1_R_SERIALIZER_V2_SOURCE:-avx2-gt9x16-wire-dual-r-exp012-sc20260831} --implementation $${SCALE1_R_SERIALIZER_V2_IMPLEMENTATION:-avx2-gt9x16-wire-serializer-v2-exp013-sc20260831}
+
+supercop-scale1-r-serializer-v2-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $${SCALE1_R_SERIALIZER_V2_IMPLEMENTATION:-avx2-gt9x16-wire-serializer-v2-exp013-sc20260831} --cpu $(BENCH_CPU) --mode derived-scale1-r-serializer-v2 --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@
+
+.PHONY: scale1-r-serializer-v2-stage-check scale1-r-serializer-v2-stage-sanitize prepare-scale1-r-serializer-v2-stage-price supercop-scale1-r-serializer-v2-stage-serious
+
+scale1-r-serializer-v2-stage-check:
+	mkdir -p $(SCALE1_R_SERIALIZER_V2_DIR)
+	$(CC) $(CFLAGS_STRICT) -O3 -Isrc -Igenerated -I$(UPSTREAM) -I. $(SCALE1_R_SERIALIZER_V2_STAGE_SOURCES) -o $(SCALE1_R_SERIALIZER_V2_DIR)/test-stage
+	$(SCALE1_R_SERIALIZER_V2_DIR)/test-stage
+
+scale1-r-serializer-v2-stage-sanitize:
+	mkdir -p $(SCALE1_R_SERIALIZER_V2_DIR)
+	$(CC) $(CFLAGS_STRICT) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -Isrc -Igenerated -I$(UPSTREAM) -I. $(SCALE1_R_SERIALIZER_V2_STAGE_SOURCES) -o $(SCALE1_R_SERIALIZER_V2_DIR)/test-stage-sanitize
+	ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1 $(SCALE1_R_SERIALIZER_V2_DIR)/test-stage-sanitize
+
+prepare-scale1-r-serializer-v2-stage-price:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_scale1_r_serializer_v2_stage.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --source-implementation $${SCALE1_R_SERIALIZER_V2_STAGE_SOURCE:-avx2-gt9x16-wire-serializer-v2-exp013-sc20260831} --implementation $${SCALE1_R_SERIALIZER_V2_STAGE_IMPLEMENTATION:-avx2-gt9x16-wire-serializer-v2-stage-exp014-sc20260831}
+
+supercop-scale1-r-serializer-v2-stage-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $${SCALE1_R_SERIALIZER_V2_STAGE_IMPLEMENTATION:-avx2-gt9x16-wire-serializer-v2-stage-exp014-sc20260831} --cpu $(BENCH_CPU) --mode derived-scale1-r-serializer-v2-stage --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/$@
+
+prepare-wire-monotone-shared-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_wire_monotone_shared_abi_placements.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-source $${WIRE_SHARED_NORMAL_SOURCE:-avx2-gt9x16-prod3-h3-price-normal-exp005} --reversed-source $${WIRE_SHARED_REVERSED_SOURCE:-avx2-gt9x16-prod3-h3-price-reversed-exp005} --normal-implementation $${WIRE_SHARED_NORMAL_IMPLEMENTATION:-avx2-gt9x16-wire-shared-normal} --reversed-implementation $${WIRE_SHARED_REVERSED_IMPLEMENTATION:-avx2-gt9x16-wire-shared-reversed}
+
+supercop-wire-monotone-shared-serious:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	test -n "$(SUPERCOP_COMPILER_WRAPPER)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_wire_monotone_shared_abi_serious.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-implementation $${WIRE_SHARED_NORMAL_IMPLEMENTATION:-avx2-gt9x16-wire-shared-normal} --reversed-implementation $${WIRE_SHARED_REVERSED_IMPLEMENTATION:-avx2-gt9x16-wire-shared-reversed} --cpu $(BENCH_CPU) --compiler-wrapper $(SUPERCOP_COMPILER_WRAPPER) --launches $${WIRE_SHARED_LAUNCHES:-9} --output $(RESULTS)/$@
+
+prepare-wire-monotone-native-rebase2:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/prepare_wire_monotone_native_rebase2.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --normal-source $${WIRE_NATIVE_NORMAL_SOURCE:-avx2-gt9x16-wire-shared-normal-exp004} --reversed-source $${WIRE_NATIVE_REVERSED_SOURCE:-avx2-gt9x16-wire-shared-reversed-exp004} --normal-implementation $${WIRE_NATIVE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-wire-native-normal} --reversed-implementation $${WIRE_NATIVE_REVERSED_IMPLEMENTATION:-avx2-gt9x16-wire-native-reversed}
+
+wire-monotone-native-kat:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_gt9x16_prod3_h1_kat.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --implementation $${WIRE_NATIVE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-wire-native-normal} --profile wire --output $(RESULTS)/wire-native-kat.json
+
+supercop-wire-native-attribution-v3:
+	test -n "$(SUPERCOP_CAMPAIGN_ROOT)"
+	$(PYTHON) $(REPO_ROOT)/scripts/run_supercop_benchmark.py --campaign-root $(SUPERCOP_CAMPAIGN_ROOT) --parameter $(PARAMETER) --implementation $${WIRE_NATIVE_NORMAL_IMPLEMENTATION:-avx2-gt9x16-wire-native-normal} --cpu $(BENCH_CPU) --mode derived-wire-monotone-native-attribution-v3 --fresh-launches $(SUPERCOP_FRESH_LAUNCHES_SERIOUS) --require-frequency-control --result-dir $(RESULTS)/wire-native-attribution-v3
+
 .PHONY: generate check sanitize audit bench-local bench-local-record bench-ntt16 bench-ntt16-record bench-c2 bench-c2-record bench-c3 bench-c3-record bench-c4 bench-c4-record bench-official-stages bench-official-stages-record bench-transform-paired bench-f-r3b bench-f-r3b-record bench-f-r3c bench-f-r3c-record bench-f-r3d bench-f-r3d-record bench-g1b bench-g1b-record bench-g1c-m2 bench-g1c-m2-record bench-g1c-m3b-range bench-g1c-m3b-range-record bench-g1c-m3c2-repair bench-g1c-m3c2-repair-record bench-g1c-m3c3-reduction bench-g1c-m3c3-reduction-record bench-g1c-m3-full bench-g1c-m3-full-record bench-inverse-tail bench-inverse-tail-record bench-inverse-ntt9-b0 bench-inverse-ntt9-b0-record \
  bench-transform-paired-record supercop-check supercop-install-candidate \
  supercop-kem-short supercop-kem-serious supercop-poly-short \

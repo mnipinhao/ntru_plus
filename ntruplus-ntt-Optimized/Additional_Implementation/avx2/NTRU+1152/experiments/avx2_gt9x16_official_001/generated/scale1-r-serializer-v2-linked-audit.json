@@ -1,0 +1,80 @@
+{
+  "candidate": {
+    "calls": 0,
+    "instructions": 1254,
+    "mnemonics": {
+      "add": 8,
+      "ret": 1,
+      "vmovdqa": 74,
+      "vmovdqu": 54,
+      "vpaddw": 72,
+      "vpand": 72,
+      "vpblendd": 54,
+      "vpblendw": 54,
+      "vperm2i128": 126,
+      "vpermq": 72,
+      "vpmulhrsw": 72,
+      "vpmullw": 72,
+      "vpshufb": 72,
+      "vpslld": 27,
+      "vpsllq": 27,
+      "vpsllw": 54,
+      "vpsraw": 72,
+      "vpsrlq": 54,
+      "vpsrlw": 36,
+      "vpsubw": 72,
+      "vpunpckhqdq": 27,
+      "vpunpcklqdq": 27,
+      "vpxor": 54,
+      "vzeroupper": 1
+    },
+    "rodata_bytes": 32,
+    "rsp_relative": 0,
+    "text_bytes": 7074
+  },
+  "control": {
+    "calls": 0,
+    "instructions": 1387,
+    "mnemonics": {
+      "ret": 1,
+      "vextracti128": 72,
+      "vinserti128": 54,
+      "vmovdqa": 126,
+      "vmovdqu": 54,
+      "vpaddw": 72,
+      "vpand": 72,
+      "vperm2i128": 72,
+      "vpmaddwd": 72,
+      "vpmulhrsw": 72,
+      "vpmullw": 72,
+      "vpor": 108,
+      "vpshufb": 72,
+      "vpslldq": 108,
+      "vpsraw": 72,
+      "vpsrldq": 72,
+      "vpsubw": 72,
+      "vpunpckhdq": 36,
+      "vpunpckhwd": 36,
+      "vpunpckldq": 36,
+      "vpunpcklwd": 36
+    },
+    "rodata_bytes": 2368,
+    "rsp_relative": 0,
+    "text_bytes": 8525
+  },
+  "delta": {
+    "instructions": -133,
+    "rodata_bytes": -2336,
+    "text_bytes": -1451
+  },
+  "gates": {
+    "candidate_instruction_count_exact": true,
+    "formation_routes_216": true,
+    "loads_72": true,
+    "no_stack_or_calls": true,
+    "normalization_vectors_72": true,
+    "stores_54": true
+  },
+  "note": "candidate has two hoisted constant loads, eight unrolled pointer updates, one vzeroupper, and ret outside the 9x138 packet bodies",
+  "schema": "scale1-r-serializer-v2-linked-audit/v1"
+}

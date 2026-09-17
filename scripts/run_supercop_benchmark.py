@@ -246,7 +246,14 @@ def main() -> int:
                                            "derived-gt9x16-prod3-encap-tail-attribution-v1",
                                            "derived-encap-h-ingress-ma2-h3-price",
                                            "derived-encap-h4-m3b-price",
-                                           "derived-encap-lazy-h4-factorial-price"),
+                                           "derived-encap-lazy-h4-factorial-price",
+                                           "derived-wire-monotone-shared-abi",
+                                           "derived-wire-monotone-tail-attribution-v2",
+                                           "derived-scale1-r-dual-output-fanout",
+                                           "derived-scale1-r-serializer-hash-boundary",
+                                           "derived-scale1-r-serializer-v2",
+                                           "derived-scale1-r-serializer-v2-stage",
+                                           "derived-wire-monotone-native-attribution-v3"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -271,7 +278,14 @@ def main() -> int:
                      "derived-gt9x16-prod3-encap-tail-attribution-v1",
                      "derived-encap-h-ingress-ma2-h3-price",
                      "derived-encap-h4-m3b-price",
-                     "derived-encap-lazy-h4-factorial-price") and args.parameter != "1152":
+                     "derived-encap-lazy-h4-factorial-price",
+                     "derived-wire-monotone-shared-abi",
+                     "derived-wire-monotone-tail-attribution-v2",
+                     "derived-scale1-r-dual-output-fanout",
+                     "derived-scale1-r-serializer-hash-boundary",
+                     "derived-scale1-r-serializer-v2",
+                     "derived-scale1-r-serializer-v2-stage",
+                     "derived-wire-monotone-native-attribution-v3") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
 
     root = args.campaign_root.resolve()
@@ -307,6 +321,46 @@ def main() -> int:
                          "; ".join(frequency["formal_policy_failures"]))
     args.result_dir.mkdir(parents=True)
 
+    # A campaign copied from a pristine SUPERCOP archive has no host-specific
+    # bench/<machine> initialization yet.  Focused do-part runs assume that
+    # `do-part init` has already created the compiler, cpuid, and timing tools.
+    if not list((root / "bench").glob("*/bin/okc-amd64")):
+        with (args.result_dir / "init.out").open("wb") as output:
+            initialized = subprocess.run(
+                ["taskset", "-c", str(args.cpu), "./do-part", "init"],
+                cwd=root,
+                stdout=output,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
+        initialized_ok = (
+            len(list((root / "bench").glob("*/bin/okc-amd64"))) == 1
+            and len(list((root / "bench").glob("*/data"))) == 1
+        )
+        # Some SUPERCOP releases finish a usable init and then return nonzero
+        # because their final diagnostic cats a missing work/errors file.
+        # Trust the required generated artifacts, while preserving init.out.
+        if not initialized_ok:
+            raise SystemExit("SUPERCOP initialization failed; see init.out")
+
+    if not list((root / "bench").glob("*/lib/amd64/knownrandombytes.o")):
+        with (args.result_dir / "randombytes-init.out").open("wb") as output:
+            randombytes_initialized = subprocess.run(
+                ["taskset", "-c", str(args.cpu), "./do-part", "crypto_rng"],
+                cwd=root,
+                stdout=output,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
+        randombytes_ok = (
+            len(list((root / "bench").glob("*/lib/amd64/knownrandombytes.o"))) == 1
+        )
+        if not randombytes_ok:
+            raise SystemExit(
+                "SUPERCOP knownrandombytes initialization failed; "
+                "see randombytes-init.out"
+            )
+
     implementations = sorted(path for path in primitive_dir.iterdir() if path.is_dir())
     original_modes = {path: stat.S_IMODE(path.stat().st_mode) for path in implementations}
     measure_path = root / "crypto_kem" / "measure.c"
@@ -335,7 +389,14 @@ def main() -> int:
                          "derived-gt9x16-prod3-encap-tail-attribution-v1",
                          "derived-encap-h-ingress-ma2-h3-price",
                          "derived-encap-h4-m3b-price",
-                         "derived-encap-lazy-h4-factorial-price"):
+                         "derived-encap-lazy-h4-factorial-price",
+                         "derived-wire-monotone-shared-abi",
+                         "derived-wire-monotone-tail-attribution-v2",
+                         "derived-scale1-r-dual-output-fanout",
+                         "derived-scale1-r-serializer-hash-boundary",
+                         "derived-scale1-r-serializer-v2",
+                         "derived-scale1-r-serializer-v2-stage",
+                         "derived-wire-monotone-native-attribution-v3"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -370,6 +431,20 @@ def main() -> int:
                     "encap_h4_m3b_price_measure.c",
                 "derived-encap-lazy-h4-factorial-price":
                     "encap_lazy_h4_factorial_price_measure.c",
+                "derived-wire-monotone-shared-abi":
+                    "wire_monotone_shared_abi_measure.c",
+                "derived-wire-monotone-tail-attribution-v2":
+                    "wire_monotone_tail_attribution_v2_measure.c",
+                "derived-scale1-r-dual-output-fanout":
+                    "scale1_r_dual_output_fanout_measure.c",
+                "derived-scale1-r-serializer-hash-boundary":
+                    "scale1_r_serializer_hash_boundary_measure.c",
+                "derived-scale1-r-serializer-v2":
+                    "scale1_r_serializer_v2_measure.c",
+                "derived-scale1-r-serializer-v2-stage":
+                    "scale1_r_serializer_v2_stage_measure.c",
+                "derived-wire-monotone-native-attribution-v3":
+                    "wire_monotone_native_attribution_v3_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -555,6 +630,56 @@ def main() -> int:
             f"encap_lazy_h4_factorial_price_{variant}_pos{position}_cycles"
             for variant in ("c00", "c10", "c01", "c11")
             for position in range(4))
+    elif args.mode == "derived-wire-monotone-shared-abi":
+        required = tuple(
+            f"wire_monotone_shared_abi_{variant}_pos{position}_cycles"
+            for variant in ("control", "candidate") for position in range(4))
+    elif args.mode == "derived-wire-monotone-tail-attribution-v2":
+        required = tuple(
+            f"wire_monotone_tail_attr_v2_{boundary}_{variant}_{position}_cycles"
+            for boundary in ("t0", "t1", "t2")
+            for variant, position in (("official", "first"),
+                                      ("wire", "second"),
+                                      ("wire", "first"),
+                                      ("official", "second")))
+    elif args.mode == "derived-scale1-r-dual-output-fanout":
+        required = tuple(
+            f"scale1_r_dual_output_fanout_{variant}_{position}_cycles"
+            for variant, position in (("control", "first"),
+                                      ("candidate", "second"),
+                                      ("candidate", "first"),
+                                      ("control", "second")))
+    elif args.mode == "derived-scale1-r-serializer-hash-boundary":
+        required = tuple(
+            f"scale1_r_serializer_hash_boundary_{boundary}_{variant}_{position}_cycles"
+            for boundary in ("s0", "s1", "s2", "s3")
+            for variant, position in (("official", "first"),
+                                      ("wire", "second"),
+                                      ("wire", "first"),
+                                      ("official", "second")))
+    elif args.mode == "derived-scale1-r-serializer-v2":
+        required = tuple(
+            f"scale1_r_serializer_v2_{variant}_{position}_cycles"
+            for variant, position in (("control", "first"),
+                                      ("candidate", "second"),
+                                      ("candidate", "first"),
+                                      ("control", "second")))
+    elif args.mode == "derived-scale1-r-serializer-v2-stage":
+        required = tuple(
+            f"scale1_r_serializer_v2_stage_{boundary}_{variant}_{position}_cycles"
+            for boundary in ("p0", "p1")
+            for variant, position in (("control", "first"),
+                                      ("candidate", "second"),
+                                      ("candidate", "first"),
+                                      ("control", "second")))
+    elif args.mode == "derived-wire-monotone-native-attribution-v3":
+        required = tuple(
+            f"wire_monotone_native_attr_v3_{boundary}_{variant}_{position}_cycles"
+            for boundary in ("forward", "dual_r", "r_chain", "tail", "changed_caller")
+            for variant, position in (("official", "first"),
+                                      ("wire", "second"),
+                                      ("wire", "first"),
+                                      ("official", "second")))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -602,7 +727,7 @@ def main() -> int:
         raise SystemExit(
             f"SUPERCOP measured {identities[0]['implementation']}, expected {expected_identity}")
     summary = {
-        "estimator": "SUPERCOP-20260627-stabilized-quartiles",
+        "estimator": f"SUPERCOP-{read_lock()['version']}-stabilized-quartiles",
         "fresh_process_launches": args.fresh_launches,
         "observations_per_operation_per_launch": 96,
         "measure_loops": 3,
@@ -1780,6 +1905,156 @@ def main() -> int:
             "new_asm": False,
             "native_kem_result": False,
         }
+    if args.mode == "derived-wire-monotone-tail-attribution-v2":
+        prefix = "wire_monotone_tail_attr_v2"
+        boundaries = ("t0", "t1", "t2")
+        combined = {
+            f"{prefix}_{boundary}_{variant}_cycles": (
+                pooled[f"{prefix}_{boundary}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{boundary}_{variant}_second_cycles"])
+            for boundary in boundaries for variant in ("official", "wire")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        summary["wire_tail_attribution_v2_contract"] = {
+            "t0": "PK decode/validate to a materialized ingress diagnostic",
+            "t1": "PK bytes plus resident transformed r/m to raw MA2 output",
+            "t2": "PK bytes plus resident transformed r/m to exact ciphertext",
+            "warning": "T0 materializes Natural-Q h as a routing-equivalent ingress proxy; current wire H3 interleaves ingress and MA2 without this object",
+            "starting_residency": "every entry independently resets PK and prepares identical Official/wire transformed r/m outside timing",
+            "preflight": "T0 semantic map exact; T1 exact bytes through wire serializer; T2 byte-exact",
+            "new_asm": False,
+            "native_kem_result": False,
+        }
+    if args.mode == "derived-scale1-r-dual-output-fanout":
+        prefix = "scale1_r_dual_output_fanout"
+        combined = {
+            f"{prefix}_{variant}_cycles": (
+                pooled[f"{prefix}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{variant}_second_cycles"])
+            for variant in ("control", "candidate")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        summary["scale1_r_dual_output_fanout_contract"] = {
+            "start": "coefficient-domain CBD1-compatible r",
+            "end": "retained wire scale-1 r state plus hash_g output plus SOTP m",
+            "only_change": "standalone serializer reloads replaced by live Forward terminal registers",
+            "preflight": "raw r state, hash_g output, and SOTP m byte-exact",
+            "native_kem_result": False,
+        }
+    if args.mode == "derived-scale1-r-serializer-v2":
+        prefix = "scale1_r_serializer_v2"
+        combined = {
+            f"{prefix}_{variant}_cycles": (
+                pooled[f"{prefix}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{variant}_second_cycles"])
+            for variant in ("control", "candidate")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        summary["scale1_r_serializer_v2_contract"] = {
+            "start": "same resident materialized wire-monotone scale-1 r state",
+            "end": "same exact 1728-byte wire encoding",
+            "only_change": "18 four-YMM tile serializer replaced by nine Official-granularity eight-input packets",
+            "preflight": "control and V2 bytes exact for every bank",
+            "native_kem_result": False,
+        }
+    if args.mode == "derived-scale1-r-serializer-v2-stage":
+        prefix = "scale1_r_serializer_v2_stage"
+        combined = {
+            f"{prefix}_{boundary}_{variant}_cycles": (
+                pooled[f"{prefix}_{boundary}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{boundary}_{variant}_second_cycles"])
+            for boundary in ("p0", "p1") for variant in ("control", "candidate")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        summary["scale1_r_serializer_v2_stage_contract"] = {
+            "start": "same resident materialized wire-monotone scale-1 r state",
+            "end": "same 288-byte hash_g output",
+            "control": "Serializer V2 to 1728-byte temporary then hash_g copies into its 1729-byte stage",
+            "candidate": "Serializer V2 writes directly at stage+1 then the unchanged SHAKE consumes it",
+            "removed_pass": "1728-byte temporary reload plus 1728-byte stage copy",
+            "p0": "serializer plus exact 1729-byte hash input staging, without SHAKE",
+            "p1": "serializer plus hash_g output",
+            "native_kem_result": False,
+        }
+    if args.mode == "derived-scale1-r-serializer-hash-boundary":
+        prefix = "scale1_r_serializer_hash_boundary"
+        boundaries = ("s0", "s1", "s2", "s3")
+        combined = {
+            f"{prefix}_{boundary}_{variant}_cycles": (
+                pooled[f"{prefix}_{boundary}_{variant}_first_cycles"] +
+                pooled[f"{prefix}_{boundary}_{variant}_second_cycles"])
+            for boundary in boundaries for variant in ("official", "wire")
+        }
+        summary["balanced_combined_operations"] = {
+            name: {"observations": len(values),
+                   "stq1": stabilized_quartiles(values)[0],
+                   "stq2": stabilized_quartiles(values)[1],
+                   "stq3": stabilized_quartiles(values)[2]}
+            for name, values in combined.items()
+        }
+        launches = []
+        for number, observed in enumerate(launch_observations, 1):
+            entry: dict[str, object] = {"launch": number}
+            debts = {}
+            for boundary in boundaries:
+                official = stabilized_quartiles(
+                    observed[f"{prefix}_{boundary}_official_first_cycles"] +
+                    observed[f"{prefix}_{boundary}_official_second_cycles"])[1]
+                wire = stabilized_quartiles(
+                    observed[f"{prefix}_{boundary}_wire_first_cycles"] +
+                    observed[f"{prefix}_{boundary}_wire_second_cycles"])[1]
+                debts[boundary] = wire - official
+                entry.update({f"{boundary}_official_stq2": official,
+                              f"{boundary}_wire_stq2": wire,
+                              f"{boundary}_wire_minus_official_cycles": wire - official})
+            entry.update({
+                "staging_interaction_debt_cycles": debts["s1"] - debts["s0"],
+                "shake_interaction_debt_cycles": debts["s2"] - debts["s1"],
+                "sotp_interaction_debt_cycles": debts["s3"] - debts["s2"],
+            })
+            launches.append(entry)
+        summary["balanced_paired_launches"] = {"launches": launches}
+        summary["scale1_r_serializer_hash_boundary_contract"] = {
+            "start": "resident materialized transformed r state",
+            "s0": "exact 1728-byte serialization",
+            "s1": "serialization plus explicit domain-byte and 1728-byte hash input staging",
+            "s2": "S1 plus SHAKE256 absorption/finalize/squeeze and secure clear",
+            "s3": "S2 plus SOTP polynomial generation",
+            "preflight": "wire bytes, staged hash input, hash_g output, and SOTP polynomial exact",
+            "residency": "both transformed states touched symmetrically outside timing",
+            "staging_note": "explicit aligned diagnostic buffer; S2 output is checked against production hash_g",
+            "new_asm": False,
+            "native_kem_result": False,
+        }
+        summary["decision"] = {
+            "headline": "boundary-preserving serializer/hash/SOTP attribution",
+            "next": "optimize the largest measured boundary without moving work into Forward terminal",
+            "native_kem_result": False,
+        }
     if args.mode == "derived-encap-h-ingress-ma2-h3-price":
         prefix = "encap_h_ingress_ma2_h3_price"
         combined = {
@@ -1881,6 +2156,13 @@ def main() -> int:
                             else "supercop-derived-encap-h-ingress-ma2-h3-price" if args.mode == "derived-encap-h-ingress-ma2-h3-price"
                             else "supercop-derived-encap-h4-m3b-price" if args.mode == "derived-encap-h4-m3b-price"
                             else "supercop-derived-encap-lazy-h4-factorial-price" if args.mode == "derived-encap-lazy-h4-factorial-price"
+                            else "supercop-derived-wire-monotone-shared-abi" if args.mode == "derived-wire-monotone-shared-abi"
+                            else "supercop-derived-wire-monotone-tail-attribution-v2" if args.mode == "derived-wire-monotone-tail-attribution-v2"
+                            else "supercop-derived-scale1-r-dual-output-fanout" if args.mode == "derived-scale1-r-dual-output-fanout"
+                            else "supercop-derived-scale1-r-serializer-hash-boundary" if args.mode == "derived-scale1-r-serializer-hash-boundary"
+                            else "supercop-derived-scale1-r-serializer-v2" if args.mode == "derived-scale1-r-serializer-v2"
+                            else "supercop-derived-scale1-r-serializer-v2-stage" if args.mode == "derived-scale1-r-serializer-v2-stage"
+                            else "supercop-derived-wire-monotone-native-attribution-v3" if args.mode == "derived-wire-monotone-native-attribution-v3"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -1941,7 +2223,21 @@ def main() -> int:
               "derived-encap-h4-m3b-price":
                   "encap_h4_m3b_price_measure.c",
               "derived-encap-lazy-h4-factorial-price":
-                  "encap_lazy_h4_factorial_price_measure.c"}[args.mode])
+                  "encap_lazy_h4_factorial_price_measure.c",
+              "derived-wire-monotone-shared-abi":
+                  "wire_monotone_shared_abi_measure.c",
+              "derived-wire-monotone-tail-attribution-v2":
+                  "wire_monotone_tail_attribution_v2_measure.c",
+              "derived-scale1-r-dual-output-fanout":
+                  "scale1_r_dual_output_fanout_measure.c",
+              "derived-scale1-r-serializer-hash-boundary":
+                  "scale1_r_serializer_hash_boundary_measure.c",
+              "derived-scale1-r-serializer-v2":
+                  "scale1_r_serializer_v2_measure.c",
+              "derived-scale1-r-serializer-v2-stage":
+                  "scale1_r_serializer_v2_stage_measure.c",
+              "derived-wire-monotone-native-attribution-v3":
+                  "wire_monotone_native_attribution_v3_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

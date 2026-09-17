@@ -1,0 +1,100 @@
+{
+  "balanced_combined_operations": {
+    "scale1_r_serializer_v2_stage_p0_candidate_cycles": {
+      "observations": 1728,
+      "stq1": 682.3888888888889,
+      "stq2": 692.1643518518518,
+      "stq3": 705.238425925926
+    },
+    "scale1_r_serializer_v2_stage_p0_control_cycles": {
+      "observations": 1728,
+      "stq1": 737.4745370370371,
+      "stq2": 749.7569444444445,
+      "stq3": 766.2546296296297
+    },
+    "scale1_r_serializer_v2_stage_p1_candidate_cycles": {
+      "observations": 1728,
+      "stq1": 18370.84490740741,
+      "stq2": 18505.83564814815,
+      "stq3": 18575.703703703704
+    },
+    "scale1_r_serializer_v2_stage_p1_control_cycles": {
+      "observations": 1728,
+      "stq1": 18454.569444444445,
+      "stq2": 18572.64351851852,
+      "stq3": 18642.439814814814
+    }
+  },
+  "estimator": "SUPERCOP-20260831-stabilized-quartiles",
+  "fresh_process_launches": 9,
+  "measure_identity": {
+    "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-ffunction-sections_-fdata-sections_-Wl,--gc-sections_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2-gt9x16-wire-serializer-v2-stage-exp014-sc20260831 -"
+  },
+  "measure_loops": 3,
+  "observations_per_operation_per_launch": 96,
+  "operations": {
+    "scale1_r_serializer_v2_stage_p0_candidate_first_cycles": {
+      "observations": 864,
+      "stq1": 683.1435185185185,
+      "stq2": 692.4583333333334,
+      "stq3": 705.1851851851852
+    },
+    "scale1_r_serializer_v2_stage_p0_candidate_second_cycles": {
+      "observations": 864,
+      "stq1": 681.5462962962963,
+      "stq2": 691.8287037037037,
+      "stq3": 705.300925925926
+    },
+    "scale1_r_serializer_v2_stage_p0_control_first_cycles": {
+      "observations": 864,
+      "stq1": 736.574074074074,
+      "stq2": 748.9907407407408,
+      "stq3": 765.7546296296297
+    },
+    "scale1_r_serializer_v2_stage_p0_control_second_cycles": {
+      "observations": 864,
+      "stq1": 738.5046296296297,
+      "stq2": 750.4074074074074,
+      "stq3": 766.7407407407408
+    },
+    "scale1_r_serializer_v2_stage_p1_candidate_first_cycles": {
+      "observations": 864,
+      "stq1": 18363.662037037036,
+      "stq2": 18503.60648148148,
+      "stq3": 18565.587962962964
+    },
+    "scale1_r_serializer_v2_stage_p1_candidate_second_cycles": {
+      "observations": 864,
+      "stq1": 18377.912037037036,
+      "stq2": 18508.185185185186,
+      "stq3": 18586.699074074073
+    },
+    "scale1_r_serializer_v2_stage_p1_control_first_cycles": {
+      "observations": 864,
+      "stq1": 18469.597222222223,
+      "stq2": 18579.77314814815,
+      "stq3": 18646.47685185185
+    },
+    "scale1_r_serializer_v2_stage_p1_control_second_cycles": {
+      "observations": 864,
+      "stq1": 18440.185185185186,
+      "stq2": 18564.930555555555,
+      "stq3": 18638.712962962964
+    }
+  },
+  "scale1_r_serializer_v2_stage_contract": {
+    "candidate": "Serializer V2 writes directly at stage+1 then the unchanged SHAKE consumes it",
+    "control": "Serializer V2 to 1728-byte temporary then hash_g copies into its 1729-byte stage",
+    "end": "same 288-byte hash_g output",
+    "native_kem_result": false,
+    "p0": "serializer plus exact 1729-byte hash input staging, without SHAKE",
+    "p1": "serializer plus hash_g output",
+    "removed_pass": "1728-byte temporary reload plus 1728-byte stage copy",
+    "start": "same resident materialized wire-monotone scale-1 r state"
+  },
+  "timings_per_loop": 32
+}

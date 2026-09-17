@@ -1,0 +1,62 @@
+{
+  "balanced_combined_operations": {
+    "scale1_r_serializer_v2_stage_candidate_cycles": {
+      "observations": 1728,
+      "stq1": 18274.69212962963,
+      "stq2": 18477.502314814814,
+      "stq3": 18538.68287037037
+    },
+    "scale1_r_serializer_v2_stage_control_cycles": {
+      "observations": 1728,
+      "stq1": 18294.555555555555,
+      "stq2": 18502.520833333332,
+      "stq3": 18605.935185185186
+    }
+  },
+  "estimator": "SUPERCOP-20260831-stabilized-quartiles",
+  "fresh_process_launches": 9,
+  "measure_identity": {
+    "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-ffunction-sections_-fdata-sections_-Wl,--gc-sections_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2-gt9x16-wire-serializer-v2-stage-exp014-sc20260831 -"
+  },
+  "measure_loops": 3,
+  "observations_per_operation_per_launch": 96,
+  "operations": {
+    "scale1_r_serializer_v2_stage_candidate_first_cycles": {
+      "observations": 864,
+      "stq1": 18279.287037037036,
+      "stq2": 18479.13888888889,
+      "stq3": 18541.421296296296
+    },
+    "scale1_r_serializer_v2_stage_candidate_second_cycles": {
+      "observations": 864,
+      "stq1": 18269.935185185186,
+      "stq2": 18475.74537037037,
+      "stq3": 18536.15740740741
+    },
+    "scale1_r_serializer_v2_stage_control_first_cycles": {
+      "observations": 864,
+      "stq1": 18289.00925925926,
+      "stq2": 18479.51388888889,
+      "stq3": 18602.34259259259
+    },
+    "scale1_r_serializer_v2_stage_control_second_cycles": {
+      "observations": 864,
+      "stq1": 18302.39351851852,
+      "stq2": 18523.449074074073,
+      "stq3": 18609.61111111111
+    }
+  },
+  "scale1_r_serializer_v2_stage_contract": {
+    "candidate": "Serializer V2 writes directly at stage+1 then the unchanged SHAKE consumes it",
+    "control": "Serializer V2 to 1728-byte temporary then hash_g copies into its 1729-byte stage",
+    "end": "same 288-byte hash_g output",
+    "native_kem_result": false,
+    "removed_pass": "1728-byte temporary reload plus 1728-byte stage copy",
+    "start": "same resident materialized wire-monotone scale-1 r state"
+  },
+  "timings_per_loop": 32
+}
