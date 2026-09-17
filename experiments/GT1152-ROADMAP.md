@@ -39,6 +39,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | G8b | Done | Release gates on Linux/AArch64 | On Pi 5 Cortex-A76 / GCC 14.2.0: KAT byte-identical, 64 KEM round trips, **288/288 per-leaf non-invertibility**, 13,824 canonical cases, zeroization, **8/8 ABI sentinels**. Evidence in `gt1152-p10-kem/pi-results.json`. Manifest and SUPERCOP export move to G9 |
 | G9 | Done | SUPERCOP packaging and first honest measurement | SUPERCOP validated the KEM byte contract against its built-in `ntruplus1152` checksum; **GT 142,741 vs official 111,341 cycles, +28.2%**. Evidence in `gt1152-p10-kem/supercop-results.json` |
 | P11 | Done | Component profile: where the 28% goes | PMU attribution on Pi 5. **Polynomial multiplication is at parity (+787); serialization is +30,750.** Evidence in `gt1152-p11-profile/` |
+| P14 | Done — Option A rejected | Should the transform output natural order? | Measured: net -1,612 cycles (0.85%) for a major `ntt9.S` restructure. Codec fusion recovers ~5,066 with no contract change. Evidence in `gt1152-p14-layout-study/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -529,6 +530,41 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   (`kem.c`, direct `shake256`, `verify`, `memcpy`). The residual is nearly
   identical for both (15,469 against 15,683), which is what makes the
   attribution trustworthy for comparison.
+
+- **P14 done, Option A rejected.** `experiments/gt1152-p14-layout-study/`.
+
+  The proposal was to have the inverse NTT output natural order so the codec's
+  permutation disappears. It was aimed at the wrong end: `poly_invntt_ternary`
+  **already** stores natural order, and its result never reaches the codec.
+  Every codec call is fed by the forward or by basemul, so the real question is
+  whether the *forward* should store natural order.
+
+  Measured, per 1152-coefficient pass: contiguous copy 156 (the floor), permute
+  GT to natural 941, permute natural to GT 1418, 12-bit pack 461, SoA with
+  LD1x4/ST1x4 160, SoA with LD4/ST4 472. So the net permutation is 780 writing
+  and 1265 reading, and LD4/ST4 costs 312 more than LD1/ST1.
+
+  Option A accounting: save 9,741 on the codec, pay 2,183 moving basemul and
+  baseinv to LD4/ST4, 4,682 turning the forward's 144 `str q` into 288
+  lane-indexed ST4 across six calls, and 1,265 on `packed_i9`. **Net -1,612
+  cycles, 0.85% of 190,214** - and that is before the structural problem:
+  `ntt9.S` processes one bank at a time and a bank is one component, but the
+  natural-order interleave needs all four components of a group live together,
+  so the 846-line kernel would need restructuring at four times the live output
+  registers.
+
+  Option B, fusing the existing codec's three passes, reaches a floor of 15,958
+  against today's 21,024 - **about 5,066 recoverable** with no contract change
+  and the existing byte oracle still applying. Roughly three times the payoff at
+  a small fraction of the risk.
+
+  Honest limit either way: at its floor GT's serialize is 15,958 against the
+  official's 10,086, and that residual +5,872 is the permutation. It is
+  structural, because the official does none at all.
+
+  **Reopen condition:** Option A is worth revisiting only if `ntt9.S` is being
+  restructured for another reason, so the four-component grouping is paid for
+  anyway. Not on its own.
 
 ## Standing rules
 
