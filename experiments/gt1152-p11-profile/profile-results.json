@@ -1,0 +1,237 @@
+{
+  "host": "pi@100.99.191.9 Cortex-A76 core 3",
+  "counter": "perf_event PMU cycles",
+  "samples_per_point": 41,
+  "correctness": "wire outputs identical, instrumentation equivalent",
+  "full_cycles": {
+    "keygen": {
+      "official": 64092,
+      "gt": 77276,
+      "delta": 13184,
+      "percent": 20.6
+    },
+    "encaps": {
+      "official": 59537,
+      "gt": 71021,
+      "delta": 11484,
+      "percent": 19.3
+    },
+    "decaps": {
+      "official": 52487,
+      "gt": 71925,
+      "delta": 19438,
+      "percent": 37.0
+    },
+    "total": {
+      "official": 176116,
+      "gt": 220222,
+      "delta": 44106,
+      "percent": 25.0
+    }
+  },
+  "by_category": {
+    "hash": {
+      "official": 84781,
+      "gt": 90636,
+      "delta": 5855
+    },
+    "forward_ntt": {
+      "official": 28878,
+      "gt": 26286,
+      "delta": -2592
+    },
+    "inverse_ntt": {
+      "official": 6294,
+      "gt": 7439,
+      "delta": 1145
+    },
+    "basemul": {
+      "official": 16154,
+      "gt": 15974,
+      "delta": -180
+    },
+    "baseinv": {
+      "official": 10595,
+      "gt": 13009,
+      "delta": 2414
+    },
+    "serialize": {
+      "official": 10054,
+      "gt": 40804,
+      "delta": 30750
+    },
+    "sample_misc": {
+      "official": 3891,
+      "gt": 10391,
+      "delta": 6500
+    }
+  },
+  "per_component": {
+    "off": {
+      "poly_tobytes": {
+        "keygen": 3431,
+        "encaps": 2304,
+        "decaps": 2298
+      },
+      "poly_cbd1": {
+        "keygen": 984,
+        "encaps": 491,
+        "decaps": 491
+      },
+      "poly_ntt": {
+        "keygen": 9626,
+        "encaps": 9626,
+        "decaps": 9626
+      },
+      "poly_baseinv": {
+        "keygen": 10595
+      },
+      "poly_basemul": {
+        "keygen": 6822,
+        "decaps": 3411
+      },
+      "poly_triple": {
+        "keygen": 634
+      },
+      "hash_f": {
+        "keygen": 17252,
+        "encaps": 17245
+      },
+      "poly_frombytes": {
+        "encaps": 514,
+        "decaps": 1507
+      },
+      "poly_sotp_encode": {
+        "encaps": 507
+      },
+      "poly_basemul_add": {
+        "encaps": 3356
+      },
+      "hash_g": {
+        "encaps": 19818,
+        "decaps": 19811
+      },
+      "hash_h": {
+        "encaps": 5323,
+        "decaps": 5332
+      },
+      "poly_sotp_decode": {
+        "decaps": 508
+      },
+      "poly_invntt": {
+        "decaps": 5653
+      },
+      "poly_sub": {
+        "decaps": 276
+      },
+      "poly_crepmod3": {
+        "decaps": 641
+      },
+      "poly_basemul_scale": {
+        "decaps": 2565
+      }
+    },
+    "gt": {
+      "poly_tobytes": {
+        "keygen": 6189
+      },
+      "poly_tobytes_small": {
+        "keygen": 7303,
+        "encaps": 3665,
+        "decaps": 3652
+      },
+      "poly_cbd1": {
+        "keygen": 2494,
+        "encaps": 1245,
+        "decaps": 1247
+      },
+      "poly_ntt": {
+        "keygen": 8760,
+        "encaps": 8760,
+        "decaps": 8766
+      },
+      "poly_baseinv": {
+        "keygen": 13009
+      },
+      "poly_basemul": {
+        "keygen": 6300,
+        "decaps": 3154
+      },
+      "poly_triple": {
+        "keygen": 565
+      },
+      "hash_f": {
+        "keygen": 17191,
+        "encaps": 17245
+      },
+      "poly_frombytes": {
+        "encaps": 4214,
+        "decaps": 12606
+      },
+      "poly_sotp_encode": {
+        "encaps": 1278
+      },
+      "poly_basemul_add": {
+        "encaps": 3134
+      },
+      "hash_g_fr0": {
+        "encaps": 25808
+      },
+      "hash_h": {
+        "encaps": 5340,
+        "decaps": 5339
+      },
+      "poly_tobytes_compare": {
+        "decaps": 3175
+      },
+      "poly_sotp_decode": {
+        "decaps": 3277
+      },
+      "poly_invntt_ternary": {
+        "decaps": 7439
+      },
+      "poly_basemul_rinv": {
+        "decaps": 3386
+      },
+      "poly_sub": {
+        "decaps": 285
+      },
+      "hash_g": {
+        "decaps": 19713
+      }
+    }
+  },
+  "summary": {
+    "non_hash": {
+      "official": 75866,
+      "gt": 113903,
+      "delta": 38037
+    },
+    "hash": {
+      "official": 84781,
+      "gt": 90636,
+      "delta": 5855
+    },
+    "finding": "The Good-Thomas transform is already ahead: forward NTT is 2592 cycles faster than the official. The deficit is concentrated in serialization (+30750, a 4x blowup) and sampling (+6500), both of which are the plain C left in place by decisions D5 and Milestone 1's scope."
+  },
+  "polymul_vs_rest": {
+    "polymul_components": [
+      "forward_ntt",
+      "inverse_ntt",
+      "basemul",
+      "baseinv"
+    ],
+    "polymul": {
+      "official": 61921,
+      "gt": 62708,
+      "delta": 787
+    },
+    "share_of_total_gap": {
+      "serialize": 69.7,
+      "sample_misc": 14.7,
+      "hash": 13.3,
+      "polymul": 1.8
+    },
+    "conclusion": "Polynomial multiplication is already at parity: +787 cycles across forward NTT, inverse NTT, basemul and baseinv combined, and the forward transform alone is 2592 cycles FASTER than the official. Further polymul work buys almost nothing. The gap is serialization."
+  }
+}

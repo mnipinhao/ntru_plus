@@ -38,6 +38,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | G8a | Done | KEM assembly and KAT, local | **KAT reproduced byte for byte** (sha256 `2ddfc810c4...64c3`) plus 64 KEM round trips with tampered rejection, on macOS/arm64. Evidence in `gt1152-p10-kem/` |
 | G8b | Done | Release gates on Linux/AArch64 | On Pi 5 Cortex-A76 / GCC 14.2.0: KAT byte-identical, 64 KEM round trips, **288/288 per-leaf non-invertibility**, 13,824 canonical cases, zeroization, **8/8 ABI sentinels**. Evidence in `gt1152-p10-kem/pi-results.json`. Manifest and SUPERCOP export move to G9 |
 | G9 | Done | SUPERCOP packaging and first honest measurement | SUPERCOP validated the KEM byte contract against its built-in `ntruplus1152` checksum; **GT 142,741 vs official 111,341 cycles, +28.2%**. Evidence in `gt1152-p10-kem/supercop-results.json` |
+| P11 | Done | Component profile: where the 28% goes | PMU attribution on Pi 5. **Polynomial multiplication is at parity (+787); serialization is +30,750.** Evidence in `gt1152-p11-profile/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -493,6 +494,41 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
 
   Owed: per-operation attribution of the 28%, which needs a fresh-date run
   because SUPERCOP caches by version/host/date.
+
+- **P11 done.** `experiments/gt1152-p11-profile/`. Component profiler adapted
+  from `bench/aarch64/gt864-production-profile`, PMU cycles on Pi 5 core 3, 41
+  samples per point, `cross_implementation_wire_differences=0` and
+  `instrumentation_equivalence=pass`.
+
+  Built to answer: with the hash left unoptimized, how much is polynomial
+  multiplication actually worth? **The answer inverted the assumed priority.**
+
+  | category | official | GT | delta | share of the 44,106 gap |
+  |---|---:|---:|---:|---:|
+  | serialize | 10,054 | 40,804 | **+30,750** | **69.7%** |
+  | sample/misc | 3,891 | 10,391 | +6,500 | 14.7% |
+  | hash | 84,781 | 90,636 | +5,855 | 13.3% |
+  | **polynomial multiplication** | **61,921** | **62,708** | **+787** | **1.8%** |
+
+  - **`poly_ntt` is 2,592 cycles FASTER than the official's.** The Good-Thomas
+    port does what it was built to do. basemul is a wash at -180; the inverse
+    (+1,145) and baseinv (+2,414) give a little back, both with known causes -
+    the C tail at 4096 MACs and the missing 12x3 ILP split.
+  - The deficit is `poly_frombytes` (2,021 -> 16,820, eight times slower) and
+    `poly_tobytes_small` (+14,620), plus `poly_cbd1` and `poly_sotp_decode`.
+    All of it is the plain C that D5 and Milestone 1's scope deliberately left
+    in place, against the official's `pack.s` and `cbd.s`.
+  - Hash rows need care: GT's `hash_g_fr0` serializes inside the hash boundary,
+    so part of its 25,808 is really serialization. Whole hash paths compare as
+    39,629 official against 45,521 GT.
+
+  **Consequence for the plan: further polymul work buys almost nothing.** The
+  measured order is codec first, sampling second, hash fusion third.
+
+  Limit: about 15,500 cycles per implementation sit in uninstrumented glue
+  (`kem.c`, direct `shake256`, `verify`, `memcpy`). The residual is nearly
+  identical for both (15,469 against 15,683), which is what makes the
+  attribution trustworthy for comparison.
 
 ## Standing rules
 
