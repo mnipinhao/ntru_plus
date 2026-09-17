@@ -1,0 +1,549 @@
+{
+  "archive_sha256": "420102cdc38ebfc2098dbe0dfb1366eb2871bdde9a8e5280722d28fdd0fbbcfa",
+  "benchmark_class": "supercop-derived-wire-monotone-shared-abi",
+  "boundary": "two coefficient-domain forwards + r exact-wire fanout + PK decode/MA2 + ciphertext exact-wire egress",
+  "builds": {
+    "normal": {
+      "elf_sha256": "bf60c9f689881a1e7ef319b8eaebbaca930578c379aa1fa883890520561a4d88",
+      "implementation": "avx2-gt9x16-wire-shared-normal-exp004"
+    },
+    "reversed": {
+      "elf_sha256": "361891d2b94ffbe4b1d3fb65a393d5c0592678b2330119bc3f772f0b338bf208",
+      "implementation": "avx2-gt9x16-wire-shared-reversed-exp004"
+    }
+  },
+  "compiler_policy": "fixed-common-O3GC",
+  "cpu": 1,
+  "created_at": "2026-08-28T06:37:18.634307+00:00",
+  "decision": "select as the next research caller-island ABI; native KEM and production promotion remain separate gates",
+  "excluded": "hash_g/SOTP/random generation; not native KEM",
+  "gate5_pass": true,
+  "headline": {
+    "bootstrap_95pct_ci_median": [
+      -53.26041666666697,
+      -26.36458333333303
+    ],
+    "launches": [
+      {
+        "addresses": [
+          100145381554496,
+          100145381554304
+        ],
+        "candidate": 5161.385416666667,
+        "control": 5208.072916666667,
+        "delta": -46.6875,
+        "launch": 1
+      },
+      {
+        "addresses": [
+          100552143210816,
+          100552143210624
+        ],
+        "candidate": 5162.34375,
+        "control": 5190.364583333333,
+        "delta": -28.02083333333303,
+        "launch": 2
+      },
+      {
+        "addresses": [
+          106324119210304,
+          106324119210112
+        ],
+        "candidate": 5170.125,
+        "control": 5208.989583333333,
+        "delta": -38.86458333333303,
+        "launch": 3
+      },
+      {
+        "addresses": [
+          94451474925888,
+          94451474925696
+        ],
+        "candidate": 5164.333333333333,
+        "control": 5197.604166666667,
+        "delta": -33.27083333333394,
+        "launch": 4
+      },
+      {
+        "addresses": [
+          96914519886144,
+          96914519885952
+        ],
+        "candidate": 5171.666666666667,
+        "control": 5198.03125,
+        "delta": -26.36458333333303,
+        "launch": 5
+      },
+      {
+        "addresses": [
+          107138681698624,
+          107138681698432
+        ],
+        "candidate": 5156.197916666667,
+        "control": 5222.3125,
+        "delta": -66.11458333333303,
+        "launch": 6
+      },
+      {
+        "addresses": [
+          95713538722112,
+          95713538721920
+        ],
+        "candidate": 5172.177083333333,
+        "control": 5225.4375,
+        "delta": -53.26041666666697,
+        "launch": 7
+      },
+      {
+        "addresses": [
+          94127402121536,
+          94127402121344
+        ],
+        "candidate": 5184.229166666667,
+        "control": 5190.75,
+        "delta": -6.52083333333303,
+        "launch": 8
+      },
+      {
+        "addresses": [
+          95506574924096,
+          95506574923904
+        ],
+        "candidate": 5168.260416666667,
+        "control": 5207.885416666667,
+        "delta": -39.625,
+        "launch": 9
+      }
+    ],
+    "median_candidate_cycles": 5168.260416666667,
+    "median_control_cycles": 5207.885416666667,
+    "median_delta_cycles": -38.86458333333303,
+    "negative_launches": 9,
+    "positive_launches": 0,
+    "unique_runtime_address_tuples": 9
+  },
+  "headline_setting": "normal-aslr-on",
+  "launches_per_setting": 9,
+  "ntruplus1152_avx2_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "ntruplus864_avx2_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+  "settings": {
+    "normal-aslr-off": {
+      "bootstrap_95pct_ci_median": [
+        -54.47916666666606,
+        -26.46875
+      ],
+      "launches": [
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5154.114583333333,
+          "control": 5211.34375,
+          "delta": -57.22916666666697,
+          "launch": 1
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5164.541666666667,
+          "control": 5212.65625,
+          "delta": -48.11458333333303,
+          "launch": 2
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5182.229166666667,
+          "control": 5216.25,
+          "delta": -34.02083333333303,
+          "launch": 3
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5165.302083333333,
+          "control": 5199.052083333333,
+          "delta": -33.75,
+          "launch": 4
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5188.447916666667,
+          "control": 5201.375,
+          "delta": -12.92708333333303,
+          "launch": 5
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5183.458333333333,
+          "control": 5209.927083333333,
+          "delta": -26.46875,
+          "launch": 6
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5157.958333333333,
+          "control": 5210.229166666667,
+          "delta": -52.27083333333394,
+          "launch": 7
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5161.291666666667,
+          "control": 5209.270833333333,
+          "delta": -47.97916666666606,
+          "launch": 8
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5158.854166666667,
+          "control": 5213.333333333333,
+          "delta": -54.47916666666606,
+          "launch": 9
+        }
+      ],
+      "median_candidate_cycles": 5164.541666666667,
+      "median_control_cycles": 5210.229166666667,
+      "median_delta_cycles": -47.97916666666606,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "unique_runtime_address_tuples": 1
+    },
+    "normal-aslr-on": {
+      "bootstrap_95pct_ci_median": [
+        -53.26041666666697,
+        -26.36458333333303
+      ],
+      "launches": [
+        {
+          "addresses": [
+            100145381554496,
+            100145381554304
+          ],
+          "candidate": 5161.385416666667,
+          "control": 5208.072916666667,
+          "delta": -46.6875,
+          "launch": 1
+        },
+        {
+          "addresses": [
+            100552143210816,
+            100552143210624
+          ],
+          "candidate": 5162.34375,
+          "control": 5190.364583333333,
+          "delta": -28.02083333333303,
+          "launch": 2
+        },
+        {
+          "addresses": [
+            106324119210304,
+            106324119210112
+          ],
+          "candidate": 5170.125,
+          "control": 5208.989583333333,
+          "delta": -38.86458333333303,
+          "launch": 3
+        },
+        {
+          "addresses": [
+            94451474925888,
+            94451474925696
+          ],
+          "candidate": 5164.333333333333,
+          "control": 5197.604166666667,
+          "delta": -33.27083333333394,
+          "launch": 4
+        },
+        {
+          "addresses": [
+            96914519886144,
+            96914519885952
+          ],
+          "candidate": 5171.666666666667,
+          "control": 5198.03125,
+          "delta": -26.36458333333303,
+          "launch": 5
+        },
+        {
+          "addresses": [
+            107138681698624,
+            107138681698432
+          ],
+          "candidate": 5156.197916666667,
+          "control": 5222.3125,
+          "delta": -66.11458333333303,
+          "launch": 6
+        },
+        {
+          "addresses": [
+            95713538722112,
+            95713538721920
+          ],
+          "candidate": 5172.177083333333,
+          "control": 5225.4375,
+          "delta": -53.26041666666697,
+          "launch": 7
+        },
+        {
+          "addresses": [
+            94127402121536,
+            94127402121344
+          ],
+          "candidate": 5184.229166666667,
+          "control": 5190.75,
+          "delta": -6.52083333333303,
+          "launch": 8
+        },
+        {
+          "addresses": [
+            95506574924096,
+            95506574923904
+          ],
+          "candidate": 5168.260416666667,
+          "control": 5207.885416666667,
+          "delta": -39.625,
+          "launch": 9
+        }
+      ],
+      "median_candidate_cycles": 5168.260416666667,
+      "median_control_cycles": 5207.885416666667,
+      "median_delta_cycles": -38.86458333333303,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "unique_runtime_address_tuples": 9
+    },
+    "reversed-aslr-off": {
+      "bootstrap_95pct_ci_median": [
+        -71.9375,
+        -53.38541666666697
+      ],
+      "launches": [
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5159.21875,
+          "control": 5231.15625,
+          "delta": -71.9375,
+          "launch": 1
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5172.625,
+          "control": 5226.010416666667,
+          "delta": -53.38541666666697,
+          "launch": 2
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5197.197916666667,
+          "control": 5219.6875,
+          "delta": -22.48958333333303,
+          "launch": 3
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5156.645833333333,
+          "control": 5211.34375,
+          "delta": -54.69791666666697,
+          "launch": 4
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5156.979166666667,
+          "control": 5227.958333333333,
+          "delta": -70.97916666666606,
+          "launch": 5
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5161.927083333333,
+          "control": 5231.135416666667,
+          "delta": -69.20833333333394,
+          "launch": 6
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5157.583333333333,
+          "control": 5212.3125,
+          "delta": -54.72916666666697,
+          "launch": 7
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5156.3125,
+          "control": 5230.34375,
+          "delta": -74.03125,
+          "launch": 8
+        },
+        {
+          "addresses": [
+            93824992241984,
+            93824992241792
+          ],
+          "candidate": 5159.0625,
+          "control": 5223.53125,
+          "delta": -64.46875,
+          "launch": 9
+        }
+      ],
+      "median_candidate_cycles": 5159.0625,
+      "median_control_cycles": 5226.010416666667,
+      "median_delta_cycles": -64.46875,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "unique_runtime_address_tuples": 1
+    },
+    "reversed-aslr-on": {
+      "bootstrap_95pct_ci_median": [
+        -68.5,
+        -55.51041666666697
+      ],
+      "launches": [
+        {
+          "addresses": [
+            102002715605312,
+            102002715605120
+          ],
+          "candidate": 5164.6875,
+          "control": 5228.552083333333,
+          "delta": -63.86458333333303,
+          "launch": 1
+        },
+        {
+          "addresses": [
+            111048218749248,
+            111048218749056
+          ],
+          "candidate": 5161.010416666667,
+          "control": 5223.96875,
+          "delta": -62.95833333333303,
+          "launch": 2
+        },
+        {
+          "addresses": [
+            94364479002944,
+            94364479002752
+          ],
+          "candidate": 5158.864583333333,
+          "control": 5220.84375,
+          "delta": -61.97916666666697,
+          "launch": 3
+        },
+        {
+          "addresses": [
+            102421717801280,
+            102421717801088
+          ],
+          "candidate": 5165.354166666667,
+          "control": 5211.802083333333,
+          "delta": -46.44791666666606,
+          "launch": 4
+        },
+        {
+          "addresses": [
+            110433478117696,
+            110433478117504
+          ],
+          "candidate": 5166.802083333333,
+          "control": 5235.302083333333,
+          "delta": -68.5,
+          "launch": 5
+        },
+        {
+          "addresses": [
+            100219385657664,
+            100219385657472
+          ],
+          "candidate": 5155.833333333333,
+          "control": 5229.333333333333,
+          "delta": -73.5,
+          "launch": 6
+        },
+        {
+          "addresses": [
+            110843779524928,
+            110843779524736
+          ],
+          "candidate": 5158.645833333333,
+          "control": 5214.15625,
+          "delta": -55.51041666666697,
+          "launch": 7
+        },
+        {
+          "addresses": [
+            110270649203008,
+            110270649202816
+          ],
+          "candidate": 5155.052083333333,
+          "control": 5223.0625,
+          "delta": -68.01041666666697,
+          "launch": 8
+        },
+        {
+          "addresses": [
+            97723705510208,
+            97723705510016
+          ],
+          "candidate": 5172.114583333333,
+          "control": 5231.135416666667,
+          "delta": -59.02083333333394,
+          "launch": 9
+        }
+      ],
+      "median_candidate_cycles": 5161.010416666667,
+      "median_control_cycles": 5223.96875,
+      "median_delta_cycles": -62.95833333333303,
+      "negative_launches": 9,
+      "positive_launches": 0,
+      "unique_runtime_address_tuples": 9
+    }
+  },
+  "url": "https://bench.cr.yp.to/supercop/supercop-20260627.tar.xz",
+  "version": "20260627"
+}

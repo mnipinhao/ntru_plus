@@ -94,9 +94,17 @@ def main() -> int:
     parser.add_argument("--asm", type=Path, required=True)
     parser.add_argument("--header", type=Path, required=True)
     parser.add_argument("--contract", type=Path, required=True)
+    parser.add_argument("--symbol", default=SYMBOL)
+    parser.add_argument("--representation", default="Natural-Q")
+    parser.add_argument("--constant-include",
+                        default="generated/gt9x16-prod3-ma2-qorder-natural-constants.inc")
+    parser.add_argument("--constant-label-prefix", default=".Lqnat_lambda_")
+    parser.add_argument("--formation-mode", choices=("mask", "pair-unpack"),
+                        default="mask")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
+    symbol = args.symbol
     schedule = json.loads(args.schedule.read_text())
     natural = json.loads(args.natural_schedule.read_text())
     if not all(schedule["gates"].values()):
@@ -127,7 +135,7 @@ def main() -> int:
         "  vpsubw ymm\\dst, ymm\\dst, ymm\\tmp", ".endm", "",
         "/* Zero-instruction attachment point for a future terminal consumer. */",
         ".macro H3_TERMINAL_C tile,coefficient,reg", ".endm", "",
-        f".globl {SYMBOL}", f".type {SYMBOL},@function", ".p2align 5", f"{SYMBOL}:",
+        f".globl {symbol}", f".type {symbol},@function", ".p2align 5", f"{symbol}:",
         "  xor eax, eax",
     ]
 
@@ -159,6 +167,30 @@ def main() -> int:
                 raise SystemExit("tile-B source pair changed")
             ga0, ga1 = plan_a["groups"]
             gb0, gb1 = plan_b["groups"]
+            if args.formation_mode == "pair-unpack":
+                # The exact ownership maps show that the two p tiles are the
+                # low- and high-128-bit halves of the same decoded source
+                # pair.  Form both outputs together: unpack the full vectors
+                # once, then select the corresponding half-pair.  This keeps
+                # the established MA2 ABI while replacing ten routing
+                # instructions with four for each coefficient pair.
+                a_immediates = {ga0["vperm2i128_immediate"],
+                                ga1["vperm2i128_immediate"]}
+                b_immediates = {gb0["vperm2i128_immediate"],
+                                gb1["vperm2i128_immediate"]}
+                if (len(a_immediates) != 1 or len(b_immediates) != 1 or
+                        a_immediates == b_immediates or
+                        a_immediates | b_immediates != {"0x20", "0x31"}):
+                    raise SystemExit("paired p tiles are not complementary halves")
+                immediate_a = next(iter(a_immediates))
+                immediate_b = next(iter(b_immediates))
+                return [
+                    f"  /* Paired formation: both p tiles from decoded d{coefficient}/d{coefficient + 4}. */",
+                    f"  vpunpcklwd ymm15, ymm{source_a}, ymm{source_b}",
+                    f"  vpunpckhwd ymm{final_a}, ymm{source_a}, ymm{source_b}",
+                    f"  vperm2i128 ymm{final_b}, ymm15, ymm{final_a}, {immediate_b}",
+                    f"  vperm2i128 ymm{final_a}, ymm15, ymm{final_a}, {immediate_a}",
+                ]
             return [
                 f"  /* Delayed dual formation: tile A h{coefficient} -> ymm{final_a}. */",
                 f"  vperm2i128 ymm{final_a}, ymm{source_a}, ymm{source_a}, {ga0['vperm2i128_immediate']}",
@@ -203,19 +235,21 @@ def main() -> int:
         tile_a = (block_entry["tile_a"]["branch"], block_entry["tile_a"]["p"])
         tile_b = (block_entry["tile_b"]["branch"], block_entry["tile_b"]["p"])
         lines += [f"  /* Tile A b{tile_a[0]}p{tile_a[1]}: exact 16/16 YMM cut. */"]
-        lines += arithmetic_tail(bodies[tile_a], H_A_REGS, tile_a)
+        lines += [line.replace(".Lqnat_lambda_", args.constant_label_prefix)
+                  for line in arithmetic_tail(bodies[tile_a], H_A_REGS, tile_a)]
         lines += [f"  /* Tile B b{tile_b[0]}p{tile_b[1]}: tile-A h/r are dead. */"]
-        lines += arithmetic_tail(bodies[tile_b], H_B_REGS, tile_b)
+        lines += [line.replace(".Lqnat_lambda_", args.constant_label_prefix)
+                  for line in arithmetic_tail(bodies[tile_b], H_B_REGS, tile_b)]
 
     lines += ["  test eax, eax", "  setne al", "  movzx eax, al", "  ret",
-              f".size {SYMBOL}, .-{SYMBOL}", "",
+              f".size {symbol}, .-{symbol}", "",
               ".section .rodata,\"a\",@progbits", ".p2align 5",
               ".Lhdec_low_mask:", "  .short " + ",".join(["4095"] * 16),
               ".Lh3_qm1:", "  .short " + ",".join(["3456"] * 16)]
     for key, label in masks.items():
         lines += [".p2align 5", f"{label}:", "  .byte " + ",".join(map(str, key))]
     lines += ['#include "generated/f0-ma2-constants.inc"',
-              '#include "generated/gt9x16-prod3-ma2-qorder-natural-constants.inc"',
+              f'#include "{args.constant_include}"',
               "", ".section .note.GNU-stack,\"\",@progbits", ""]
     asm = "\n".join(lines)
 
@@ -223,27 +257,29 @@ def main() -> int:
         "#ifndef NTRUPLUS1152_EXP001_ENCAP_H_INGRESS_MA2_H3_H\n"
         "#define NTRUPLUS1152_EXP001_ENCAP_H_INGRESS_MA2_H3_H\n"
         "#include <stdint.h>\n"
-        f"int {SYMBOL}(int16_t out[1152], const uint8_t pk[1728], "
+        f"int {symbol}(int16_t out[1152], const uint8_t pk[1728], "
         "const int16_t r_natural_scale4[1152], const int16_t m_natural_scale4[1152]);\n"
         "#endif\n")
     contract = {
         "schema": "encap-h-ingress-ma2-h3-asm/v1",
         "checkpoint": "ENCAP-H-INGRESS-MA2-H3-ASM",
-        "symbol": SYMBOL,
+        "symbol": symbol,
         "arguments": ["out_scale4", "pk_bytes", "r_natural_scale4", "m_natural_scale4"],
         "return": "1 iff Official poly_frombytes rejects pk, otherwise 0",
-        "valid_output": "raw bit-exact with H1 preprojected-h MA2",
+        "valid_output": f"raw bit-exact in the {args.representation} MA2 ABI",
         "alignment": {"entry": 32, "constants": 32, "pk": 1,
                       "out_r_m": 32},
         "expected": {
             "blocks": 9, "pk_loads": 54, "h_stores": 0, "h_reloads": 0,
-            "output_stores": 72, "consumer_required_routes": 360,
+            "output_stores": 72,
+            "consumer_required_routes": 144 if args.formation_mode == "pair-unpack" else 360,
             "pure_h_abi_routes": 0, "h_r2_montgomery": 72,
             "h_times_r_montgomery": 288, "lambda_montgomery": 54,
             "peak_ymm": 16, "stack_bytes": 0,
             "validation_instruction_delta_vs_h1": 54,
             "total_instruction_delta_vs_h1": -91,
         },
+        "formation_mode": args.formation_mode,
         "terminal_hook": "H3_TERMINAL_C before every coefficient-plane store",
         "benchmark_authorized": False,
     }

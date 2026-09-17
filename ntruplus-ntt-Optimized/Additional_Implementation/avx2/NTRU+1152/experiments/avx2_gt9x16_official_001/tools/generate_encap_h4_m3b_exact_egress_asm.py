@@ -184,13 +184,14 @@ def machine_tiles(machine: dict) -> list[dict]:
     return tiles
 
 
-def generate(h3: str, machine: dict) -> tuple[str, dict]:
+def generate(h3: str, machine: dict, h3_symbol: str, symbol: str) -> tuple[str, dict]:
 
     h3 = h3.replace(
         "/* Generated H3-full: PK bytes flow directly into Natural-Q MA2. */",
         "/* Generated H4-M3B: H3 canonical scratch -> machine-probed exact wire egress. */")
-    h3 = h3.replace(
-        "ntruplus1152_exp001_encap_h_ingress_ma2_h3", SYMBOL)
+    if h3.count(h3_symbol) < 3:
+        raise SystemExit(f"H3 source does not define expected symbol {h3_symbol}")
+    h3 = h3.replace(h3_symbol, symbol)
     h3 = h3.replace("vpmovmskb r8d, ymm15", "vpmovmskb r9d, ymm15")
     h3 = h3.replace("or eax, r8d", "or eax, r9d")
 
@@ -238,14 +239,15 @@ def generate(h3: str, machine: dict) -> tuple[str, dict]:
         egress += tile_lines
         for key, value in counts.items():
             totals[key] += value
-    expected = {
+    expected_fixed = {
         "scratch_loads": 72, "pair_unpack": 72, "pair_madd": 72,
-        "vpermd_index_loads": 30, "vpermd": 72,
         "parity_routes": 144, "pack_routes": 486,
         "pack_saves": 54,
         "ciphertext_stores": 54,
     }
-    if totals != expected:
+    if ({key: totals[key] for key in expected_fixed} != expected_fixed or
+            totals["vpermd"] not in (0, 72) or
+            (totals["vpermd"] == 0) != (totals["vpermd_index_loads"] == 0)):
         raise SystemExit(f"M3B egress ledger changed: {totals}")
 
     needle = "  test eax, eax\n  setne al"
@@ -278,16 +280,20 @@ def main() -> int:
     parser.add_argument("--asm", type=Path, required=True)
     parser.add_argument("--header", type=Path, required=True)
     parser.add_argument("--contract", type=Path, required=True)
+    parser.add_argument("--symbol", default=SYMBOL)
+    parser.add_argument("--h3-symbol", default="ntruplus1152_exp001_encap_h_ingress_ma2_h3")
+    parser.add_argument("--producer", default=PRODUCER)
+    parser.add_argument("--representation", default="Natural-Q")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     machine = json.loads(args.machine_wire.read_text())
-    asm, counts = generate(args.h3_source.read_text(), machine)
+    asm, counts = generate(args.h3_source.read_text(), machine, args.h3_symbol, args.symbol)
     header = f"""\
 #ifndef NTRUPLUS1152_EXP001_ENCAP_H4_M3B_EXACT_EGRESS_H
 #define NTRUPLUS1152_EXP001_ENCAP_H4_M3B_EXACT_EGRESS_H
 #include <stdint.h>
-void {PRODUCER}(int16_t state[1152]);
-int {SYMBOL}(uint8_t ct[1728], const uint8_t pk[1728],
+void {args.producer}(int16_t state[1152]);
+int {args.symbol}(uint8_t ct[1728], const uint8_t pk[1728],
              const int16_t r_scale1[1152], const int16_t m_scale1[1152],
              int16_t scratch[1152]);
 #endif
@@ -295,8 +301,8 @@ int {SYMBOL}(uint8_t ct[1728], const uint8_t pk[1728],
     contract = {
         "schema": "encap-h4-m3b-exact-egress-asm/v1",
         "checkpoint": "ENCAP-MA2-CT-EGRESS-H4-M3B-EXACT-EGRESS-ASM",
-        "symbols": {"producer_scale1": PRODUCER, "h4_m3b": SYMBOL},
-        "source_schedule": "Natural-Q H1 machine basis probe",
+        "symbols": {"producer_scale1": args.producer, "h4_m3b": args.symbol},
+        "source_schedule": f"{args.representation} machine wire basis",
         "rejected": {
             "m2c_symbolic_lowering": True,
             "m2d_m2e_same_vector_lowering": True,
@@ -311,7 +317,7 @@ int {SYMBOL}(uint8_t ct[1728], const uint8_t pk[1728],
         "expected": {
             "terminal_normalization": 432,
             "terminal_scratch_stores": 72,
-            "egress_instructions": 1056,
+            "egress_instructions": sum(counts.values()),
             "egress_peak_ymm": 14,
             "whole_function_peak_ymm": 16,
             "frame_bytes": 0,

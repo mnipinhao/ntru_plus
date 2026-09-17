@@ -1,0 +1,128 @@
+{
+  "gate1": {
+    "index_loads": {
+      "delta": -30,
+      "natural_q": 30,
+      "wire_monotone": 0
+    },
+    "instruction_delta": -102,
+    "parity_and_pack_routes_delta": 0,
+    "vpermd": {
+      "delta": -72,
+      "natural_q": 72,
+      "wire_monotone": 0
+    }
+  },
+  "gate2": {
+    "conclusion": "irreducible within the enumerated three-level unpack/rename/vpermq family",
+    "explicit_mask_loads_per_forward": 0,
+    "memory_form_mask_operands_per_forward": 56,
+    "new_shuffles_per_forward": 56,
+    "peak_ymm_delta": 0,
+    "zero_delta_tiles": 4
+  },
+  "gate3": {
+    "instruction_delta": 0,
+    "loads_delta": 0,
+    "note": "same two source halves and five-route formation per output vector; masks change only",
+    "peak_ymm": 16,
+    "routes": {
+      "delta": 0,
+      "natural_q": 360,
+      "wire_monotone": 360
+    },
+    "stores_delta": 0
+  },
+  "gate4": {
+    "components": {
+      "direct_h1": -102,
+      "h3": 0,
+      "m3b": -102,
+      "ma2_and_reindexed_constants": 0,
+      "two_forwards": 112
+    },
+    "instruction_delta_per_encap": -92,
+    "serious_gate_authorized": true,
+    "unit": "static linked instructions; never cycles"
+  },
+  "linked_abi_audit": {
+    "direct_serializer_wire": {
+      "branches": 0,
+      "calls": 0,
+      "instructions": 1531,
+      "rsp_references": 0,
+      "symbols": [
+        {
+          "address_mod32": 0,
+          "symbol": "ntruplus1152_exp001_direct_serializer_wire",
+          "text_bytes": 8525
+        }
+      ],
+      "vzeroupper": 0
+    },
+    "forward_wire": {
+      "branches": 0,
+      "calls": 0,
+      "instructions": 2875,
+      "rsp_references": 0,
+      "symbols": [
+        {
+          "address_mod32": 0,
+          "symbol": "ntruplus1152_exp001_gt9x16_prod3_aos_full_wire_monotone_scale1_lazy_reduce",
+          "text_bytes": 15449
+        }
+      ],
+      "vzeroupper": 0
+    },
+    "h3_wire": {
+      "branches": 0,
+      "calls": 0,
+      "instructions": 3731,
+      "rsp_references": 0,
+      "symbols": [
+        {
+          "address_mod32": 0,
+          "symbol": "ntruplus1152_exp001_encap_h_ingress_ma2_h3_wire",
+          "text_bytes": 22072
+        }
+      ],
+      "vzeroupper": 0
+    },
+    "h4_wire": {
+      "branches": 0,
+      "calls": 0,
+      "instructions": 5397,
+      "rsp_references": 0,
+      "symbols": [
+        {
+          "address_mod32": 0,
+          "symbol": "ntruplus1152_exp001_encap_h4_m3b_exact_egress_wire",
+          "text_bytes": 30740
+        }
+      ],
+      "vzeroupper": 0
+    }
+  },
+  "linked_objects": {
+    "direct_serializer": {
+      "natural_text": 9133,
+      "wire_text": 8525
+    },
+    "forward": {
+      "control_rodata": 11968,
+      "control_text": 14945,
+      "wire_rodata": 12192,
+      "wire_text": 15449
+    },
+    "h3": {
+      "natural_text": 22072,
+      "wire_text": 22072
+    },
+    "h4": {
+      "natural_text": 31348,
+      "wire_text": 30740
+    }
+  },
+  "schema": "wire-monotone-shared-ledger/v1",
+  "scope": "namespaced experiment prototypes only; no production promotion"
+}
