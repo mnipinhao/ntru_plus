@@ -52,35 +52,35 @@ original pending-gate notes below are retained as integration history.
 
 | Caller | Active path |
 | --- | --- |
-| Keygen f/g invertibility | gt864_native_poly_baseinv, direct FR0 R0 -> raw FR0 R0 bounded by 2550 |
+| Keygen f/g invertibility | poly_baseinv, direct FR0 R0 -> raw FR0 R0 bounded by 2550 |
 | Keygen h/hinv products | Unchanged D1 R0 |
 | Encaps BaseMulAdd | Unchanged D1 R0 |
-| Decaps first c*f product | gt864_native_basemul_for_inverse, FR0 R^-1 output |
-| Immediately following Inverse | gt864_native_inverse, natural centered R0 output |
+| Decaps first c*f product | poly_basemul_rinv, FR0 R^-1 output |
+| Immediately following Inverse | poly_invntt_ternary, natural centered R0 output |
 | Decaps second product r2 | Unchanged D1 R0 |
 | All ToBytes sites | Unchanged caller-selected full/small entries |
 
 The Makefile aliases Keygen's poly_baseinv calls to the native adapter. kem.c
-explicitly selects the paired Decaps functions. The old gt_d1_poly_baseinv and
-gt_d1_poly_invntt remain legacy internal helpers, not the active KEM paths.
+explicitly selects the paired Decaps functions. The old poly_baseinv and
+poly_invntt_ternary remain legacy internal helpers, not the active KEM paths.
 Only api.h is the supported public KEM API; this does not broaden the package
 to arbitrary polynomial multiplication.
 
 ## Files and representation
 
-- gt864_native.h / gt864_native.c: typed adapter API and table selection.
-- gt864_native_public.S: measured AAPCS wrappers, SIMD-aggregated BaseInv
+- inverse.h / inverse_api.c: typed adapter API and table selection.
+- inverse.S: measured AAPCS wrappers, SIMD-aggregated BaseInv
   failure handling and scratch clearing. BaseInv scratch 1200 bytes, Inverse
   scratch 1792 bytes, plus a 160-byte public ABI frame per operation.
-- gt864_native_baseinv_{num,prefix,inverse,recover,finish}.S: five scheduled
+- baseinv_{num,prefix,inverse,recover,finish}.S: five scheduled
   BaseInv cores, directly consuming FR0 without Official layout conversion.
-- gt864_native_basemul.S: first-Decaps R^-1 product only. Both inputs come from
+- basemul_rinv.S: first-Decaps R^-1 product only. Both inputs come from
   FromBytes in [0,4095], including malformed bytes. Output bound is 2497.
   Both early REDCs and all three final REDCs remain; none were deleted here.
-- gt864_native_inverse9.S, gt864_native_inverse16_lazy.S,
-  gt864_native_inverse_tail_lazy.S, gt864_native_center864.S: consume R^-1,
+- inverse9.S, inverse16.S,
+  inverse16_tail.S, crepmod3_raw.S: consume R^-1,
   compensate it in terminal scale constants, then center the natural output.
-- gt864_native_scaled_tables.h: exact experimental scaled table values, with
+- inverse_tables.h: exact experimental scaled table values, with
   a distinct include guard to avoid collision with the legacy R0 table header.
 
 No arithmetic DAG, schedule, root, range or coefficient-memory boundary was
@@ -149,7 +149,7 @@ Security parameters, hash policy and sampling are unchanged.
 ## Reproduction and pending Linux gate
 
 Use experiments/gt864-native-asm/verify-production-mac.py with a source path and
-a fresh build directory. It uses make -Bn libgt864.so for source/flag selection
+a fresh build directory. It uses make -Bn libntruplus.so for source/flag selection
 and links objects directly into Mac test/KAT executables, not a Linux .so.
 verify-integrated-components.py <build> --both tests those actual objects.
 compare-integrated-kem.py <baseline-build> <baseinv-build> <final-build> compares

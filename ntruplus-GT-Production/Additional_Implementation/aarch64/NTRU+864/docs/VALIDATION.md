@@ -203,7 +203,7 @@ for complete Keygen.  See `experiments/gt864-p10-baseinv/RESULTS.md`.
 
 ## P8 promotion — 2026-09-12
 
-Decaps now uses `gt864_native_inverse_ternary`; original centered API remains.
+Decaps now uses `poly_invntt_ternary`; original centered API remains.
 Raw abs4577 proof, 9155-value native exhaustive consumer test,1024 exact full
 inverse+conversion/alias/AAPCS/wipe cases, Mac/Pi KAT and Pi malformed transcript
 all pass. Six paired Pi5 runs: Decaps42085.125→41333.675 cycles, -664 instructions;
@@ -212,7 +212,7 @@ No fresh Official comparison. Details: experiments/gt864-p8-raw-ternary/RESULTS.
 
 ## P7-C1 promotion — 2026-09-12
 
-Only `gt864_native_inverse9.S` changes. Six one-product B3 nodes, no-spill
+Only `inverse9.S` changes. Six one-product B3 nodes, no-spill
 local Slothy allocation/timing, and unchanged terminal tables/store ABI.
 Physical 288-map/range checks, 100-case Mac/Linux KAT (digest below), 64 KEM
 round trips/tamper rejection, 256 native inverse inputs plus 256 BaseMul chains,
@@ -353,12 +353,12 @@ artifacts into production and repeated all production-package gates.  Evidence:
 - KAT generator linked separately against original K1: entire .rsp matched.
   SHA256 PQCkemKAT_2624.rsp:
   `0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c`.
-- Full object byte comparisons passed for gt864_forward_six_bank.o,
-  gt864_forward_poly_ntt.o, gt864_poly_api.o, gt864_fr0_basemul_d1.o,
-  gt864_fr0_inverse9_block.o, cluster_transpose_frombytes.o.
+- Full object byte comparisons passed for ntt9.o,
+  ntt.o, ntt_api.o, base.o,
+  inverse9.o, unpack.o.
   This compares complete objects, including function sections, not empty .text.
-- kem-normal.o relocations select gt_d1_poly_ntt at all KEM Forward calls,
-  gt_d1 BaseMul/Inverse/BaseInv and p3b12_candidate byte adapters.
+- kem-normal.o relocations select poly_ntt at all KEM Forward calls,
+  production BaseMul/Inverse/BaseInv and production byte adapters.
 - Library SHA256:
   `b295d006eee1f6e496dcdaea7a31bf659e3ca13ce9cf559c814eeae036b3f302`.
 

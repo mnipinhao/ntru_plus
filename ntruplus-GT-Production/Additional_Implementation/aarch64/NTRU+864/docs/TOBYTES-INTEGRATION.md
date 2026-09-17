@@ -60,13 +60,13 @@ This document's scope is ToBytes.  The package also contains separately
 validated Forward K1, D1 BaseMul/BaseMulAdd, native BaseInv and paired R^-1
 BaseMul/Inverse; their contracts are documented elsewhere.
 
-`kem.c` directly selects `gt864_fr0_tobytes_small` for h, hinv, c and r2.
-It selects `gt864_fr0_tobytes_full` for f, r and r1. `poly_tobytes` and the old
+`kem.c` directly selects `poly_tobytes_small` for h, hinv, c and r2.
+It selects `poly_tobytes` for f, r and r1. `poly_tobytes` and the old
 P3B12 adapters remain as legacy internal helpers, not the active KEM path.
 The small entry is not a generic signed-int16 serializer.
 
-Active sources are `gt864_tobytes.c/.h`, `gt864_p18_tobytes.h`, and
-`gt864_p18_tobytes_{full,small}.S`.  They are self-contained, with no
+Active sources are `pack.c` and `pack.h`, `pack_asm.h`, and
+`pack_{full,small}.S`.  They are self-contained, with no
 experiment-tree build dependency.  P24 deliberately retains the existing P18
 public symbol names and ABI while replacing both implementations with the
 hash-checked P23 three-output schedules.
@@ -100,7 +100,7 @@ hash-checked P23 three-output schedules.
 ## Validation
 
 `verify-production-mac.py` derives the exact source/object selection and flags
-from `make -Bn libgt864.so`, compiles it natively with Clang, then links the
+from `make -Bn libntruplus.so`, compiles it natively with Clang, then links the
 objects directly into the existing test and KAT executables. This avoids Linux
 shared-library linker flags on Mac; it does not validate the Linux .so link.
 

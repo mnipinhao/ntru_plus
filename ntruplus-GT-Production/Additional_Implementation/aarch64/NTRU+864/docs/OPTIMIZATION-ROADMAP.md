@@ -92,6 +92,7 @@ Status meanings:
 | P54 | Done—Release hardened | Adopt 768's layered release gates and export contract without copying its transform implementation | Direct-link closure contains only selected P53/P47/P46/P35/P10/K1 sources; legacy candidates/evidence removed; KEM, ABI, canonical rejection, zeroization, exact-KAT and deterministic-export gates pass on Pi 5 |
 | P55 | Done—Promoted NO_CE | Specialize fixed-size SHAKE256(`0x00 || 1296 bytes`) → 32-byte `hash_f` for Keygen and Encaps | Differential/alias, KEM/KAT/malformed, ABI/wipe/no-CE and hash_g-byte-identity gates pass; hash_f -4102.938, Keygen -4117.000 and Encaps -4095.400 paired cycles; Decaps retires zero changed instructions |
 | P56 | Done—Selected-Official profiler checkpoint | Re-run exact P55 production against selected SUPERCOP 20260831 Official with full correctness, clean PMU and component attribution | GT wins Keygen/Encaps/Decaps by 5207.375/9734.450/5385.875 cycles (11.75%/20.99%/13.21%); remaining diagnostic deficits are Inverse-to-ternary about +155.75 cycles and serialization/compare about +58.4 |
+| P57 | Done—Packaging | Align the NTRU+864 release with the `Additional_Implementation`/`SUPERCOP` structure and replace campaign-oriented source names with role-oriented names | Full Pi 5 release gate and independent SUPERCOP-leaf build pass; paired PMU has zero instruction/branch delta and no cycle regression |
 
 ## ToBytes priority policy
 
@@ -140,6 +141,18 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-17
+
+- Started P57 packaging cleanup. Production filenames and internal symbols now
+  use transform roles (`ntt`, `base`, `inverse`, `pack`, `unpack`, `hash`)
+  instead of parameter/campaign prefixes. Research provenance comments were
+  removed from executable sources while range, Montgomery-scale, ABI, alias,
+  constant-time and zeroization contracts were retained. A deterministic
+  `SUPERCOP/crypto_kem/ntruplus864/aarch64` leaf is now materialized alongside
+  the additional implementation. Arithmetic and data-flow selection remain
+  identical to P55. Pi 5 release and independent SUPERCOP-leaf builds pass.
+  Paired PMU retires exactly the same instructions and branches; Keygen,
+  Encaps and Decaps cycle deltas are -20.125, -7.975 and -0.225 cycles, all
+  non-regressions. Evidence: `experiments/gt864-p57-production-layout/`.
 
 - Completed P56 against the pinned selected SUPERCOP 20260831 SHAKE256
   AArch64 source. The three Official anchor hashes are unchanged; upstream-

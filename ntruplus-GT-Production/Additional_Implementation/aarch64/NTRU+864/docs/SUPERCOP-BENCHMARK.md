@@ -1,4 +1,4 @@
-# GT864 K1 production vs frozen SUPERCOP
+# NTRU+864 production vs selected SUPERCOP
 
 GT source commit: 6207939e. Hardware: Pi 5 Cortex-A76, core 3.
 Linux 6.18.33+rpt-rpi-2712; GCC Debian 14.2.0-19.
@@ -14,7 +14,7 @@ full do-part harness or compiler-selection campaign.
 Measured binary paths:
 - `/home/pi/ntruplus-experiments/gt864-p3b41-k1/sc.so`
   SHA256 `7ae3d62de30570939e22cba92a98eb968f4f496c24c52fd59f863b50b6c5735e`
-- `/home/pi/ntruplus-experiments/gt864-production-k1-validation/NTRU+864/libgt864.so`
+- `/home/pi/ntruplus-experiments/gt864-production-k1-validation/NTRU+864/libntruplus.so`
   SHA256 `b295d006eee1f6e496dcdaea7a31bf659e3ca13ce9cf559c814eeae036b3f302`
 
 Both built with -O3 -std=c11 -march=armv8-a+simd -fPIC,
@@ -31,7 +31,7 @@ ciphertext cases before PMU. pk/sk/ct differences=0; return/shared-secret
 checks passed. The inherited instrumentation label is not a profiler claim.
 
 Command in the validation directory (sc.so points to baseline above):
-`BASE=sc CAND=libgt864 taskset -c 3 ./paired 0` and `./paired 1`, repeated
+`BASE=sc CAND=libntruplus taskset -c 3 ./paired 0` and `./paired 1`, repeated
 three times each. Raw logs: evidence/supercop-paired0.log through paired5.log.
 Reported values: median of six per-process medians. IPC below is the ratio
 of aggregated instruction/cycle medians, not a separate counter.

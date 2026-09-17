@@ -1,29 +1,20 @@
-# NTRU+ GT Production
+# NTRU+ AArch64 production implementations
 
-NTRU+864 now has a separate KEM-only K1 integration at
-[`Additional_Implementation/aarch64/NTRU+864`](Additional_Implementation/aarch64/NTRU+864/README.md).
-Read its `VALIDATION.md` for Pi 5 correctness, KAT and integration PMU evidence.
-Its Linux build and internal compatibility sources are distinct from the
-NTRU+768 release profile described below; NTRU+768 is unchanged.
-
-This package contains the publishable NTRU+768 AArch64 Neon implementation:
+The release is split into two views:
 
 ```text
-Additional_Implementation/aarch64/NTRU+768/
+Additional_Implementation/aarch64/
+  NTRU+768/
+  NTRU+864/
+SUPERCOP/
+  crypto_kem/ntruplus864/aarch64/
 ```
 
-The parameter-set directory follows the same implementation-package shape as
-KPQC final: it owns its Makefile, KEM source, polynomial interface, assembly,
-SHAKE backend, tests, and KAT path. Unlike KPQC final, validation dependencies
-are copied into the package rather than linked to another implementation tree.
+`Additional_Implementation` contains self-contained source, tests, KATs, and
+implementation contracts. On this branch, `SUPERCOP` contains the materialized
+NTRU+864 algorithm leaf; the 768 production branch uses the same separation.
+Development campaigns, scheduling inputs, rejected
+candidates, and benchmark logs remain outside this release tree.
 
-Build and validate on AArch64:
-
-```sh
-cd Additional_Implementation/aarch64/NTRU+768
-make check
-```
-
-The package intentionally contains one selected production profile. Slothy
-inputs, benchmark harnesses, rejected alternatives, and development selectors
-remain outside this release tree.
+Build and validate a parameter set on AArch64 with `make check` from its
+`Additional_Implementation` directory.

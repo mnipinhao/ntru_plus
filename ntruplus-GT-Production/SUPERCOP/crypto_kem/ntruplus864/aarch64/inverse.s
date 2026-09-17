@@ -1,0 +1,297 @@
+.text
+.macro SAVE_PUBLIC
+    stp x29, x30, [sp, #-160]!
+    mov x29, sp
+    stp x19, x20, [sp, #16]
+    stp x21, x22, [sp, #32]
+    stp x23, x24, [sp, #48]
+    stp x25, x26, [sp, #64]
+    stp x27, x28, [sp, #80]
+    stp d8, d9, [sp, #96]
+    stp d10, d11, [sp, #112]
+    stp d12, d13, [sp, #128]
+    stp d14, d15, [sp, #144]
+.endm
+.macro RESTORE_PUBLIC
+    movi v0.16b, #0
+    movi v1.16b, #0
+    movi v2.16b, #0
+    movi v3.16b, #0
+    movi v4.16b, #0
+    movi v5.16b, #0
+    movi v6.16b, #0
+    movi v7.16b, #0
+    movi v8.16b, #0
+    movi v9.16b, #0
+    movi v10.16b, #0
+    movi v11.16b, #0
+    movi v12.16b, #0
+    movi v13.16b, #0
+    movi v14.16b, #0
+    movi v15.16b, #0
+    movi v16.16b, #0
+    movi v17.16b, #0
+    movi v18.16b, #0
+    movi v19.16b, #0
+    movi v20.16b, #0
+    movi v21.16b, #0
+    movi v22.16b, #0
+    movi v23.16b, #0
+    movi v24.16b, #0
+    movi v25.16b, #0
+    movi v26.16b, #0
+    movi v27.16b, #0
+    movi v28.16b, #0
+    movi v29.16b, #0
+    movi v30.16b, #0
+    movi v31.16b, #0
+    ldp d8, d9, [sp, #96]
+    ldp d10, d11, [sp, #112]
+    ldp d12, d13, [sp, #128]
+    ldp d14, d15, [sp, #144]
+    ldp x19, x20, [sp, #16]
+    ldp x21, x22, [sp, #32]
+    ldp x23, x24, [sp, #48]
+    ldp x25, x26, [sp, #64]
+    ldp x27, x28, [sp, #80]
+    ldp x29, x30, [sp], #160
+    ret
+.endm
+.macro COPY_TRIPLE dst, src
+    ldp x8, x9, [\src, #0]
+    stp x8, x9, [\dst, #0]
+    ldp x8, x9, [\src, #16]
+    stp x8, x9, [\dst, #16]
+    ldp x8, x9, [\src, #32]
+    stp x8, x9, [\dst, #32]
+.endm
+.p2align 4
+.global baseinv_asm
+baseinv_asm:
+    SAVE_PUBLIC
+    sub sp, sp, #1200
+    mov x19, x0
+    mov x20, x1
+    mov x21, x2
+    mov x22, sp
+    add x23, sp, #576
+    add x24, sp, #1152
+    mov x25, #0
+    mov x27, x19
+    mov x28, x20
+    mov w8, #3457
+    dup v30.8h, w8
+    mov w8, #-12929
+    dup v31.8h, w8
+.Lbinv_chain:
+    mov x26, #0
+.Lbinv_num:
+    mov x0, x27
+    mov x1, x28
+    mov x2, x21
+    mov x8, #48
+    madd x3, x26, x8, x22
+    add x3, x3, x25, lsl #4
+    bl binv_num_pair
+    add x27, x27, #96
+    add x28, x28, #96
+    add x21, x21, #32
+    add x26, x26, #2
+    cmp x26, #12
+    b.ne .Lbinv_num
+    add x25, x25, #1
+    cmp x25, #3
+    b.ne .Lbinv_chain
+    COPY_TRIPLE x23, x22
+    mov x25, #1
+.Lbinv_prefix:
+    mov x8, #48
+    madd x0, x25, x8, x23
+    sub x1, x0, #48
+    madd x2, x25, x8, x22
+    bl binv_prefix3
+    add x25, x25, #1
+    cmp x25, #12
+    b.ne .Lbinv_prefix
+    add x9, x23, #528
+    ldp q0, q1, [x9]
+    ldr q2, [x9, #32]
+    cmeq v0.8h, v0.8h, #0
+    cmeq v1.8h, v1.8h, #0
+    cmeq v2.8h, v2.8h, #0
+    orr v0.16b, v0.16b, v1.16b
+    orr v0.16b, v0.16b, v2.16b
+    umaxv h0, v0.8h
+    umov w11, v0.h[0]
+    cbnz w11, .Lbinv_fail
+    mov x0, x24
+    add x1, x23, #528
+    bl binv_inverse3
+    mov x25, #11
+.Lbinv_recover:
+    mov x8, #48
+    madd x0, x25, x8, x22
+    madd x1, x25, x8, x23
+    sub x1, x1, #48
+    mov x2, x24
+    mov x3, x0
+    bl binv_recover3
+    subs x25, x25, #1
+    b.ne .Lbinv_recover
+    COPY_TRIPLE x22, x24
+    mov x25, #0
+    mov x27, x19
+    mov w8, #3457
+    dup v30.8h, w8
+    mov w8, #-12929
+    dup v31.8h, w8
+.Lbinv_finish_chain:
+    mov x26, #0
+.Lbinv_finish:
+    mov x0, x27
+    mov x8, #48
+    madd x1, x26, x8, x22
+    add x1, x1, x25, lsl #4
+    bl binv_finish_tile
+    add x27, x27, #48
+    add x26, x26, #1
+    cmp x26, #12
+    b.ne .Lbinv_finish
+    add x25, x25, #1
+    cmp x25, #3
+    b.ne .Lbinv_finish_chain
+    mov w0, #0
+    b .Lbinv_wipe
+.Lbinv_fail:
+    mov x9, x19
+    mov x10, #108
+.Lbinv_zero_output:
+    stp xzr, xzr, [x9], #16
+    subs x10, x10, #1
+    b.ne .Lbinv_zero_output
+    mov w0, #1
+.Lbinv_wipe:
+    mov x9, sp
+    mov x10, #75
+.Lbinv_zero_scratch:
+    stp xzr, xzr, [x9], #16
+    subs x10, x10, #1
+    b.ne .Lbinv_zero_scratch
+    add sp, sp, #1200
+    RESTORE_PUBLIC
+.p2align 4
+.global basemul_rinv_asm
+basemul_rinv_asm:
+    SAVE_PUBLIC
+    mov x19, x0
+    mov x20, x1
+    mov x21, x2
+    mov x22, x3
+    mov x23, #36
+.Lbm_tile:
+    mov x0, x19
+    mov x1, x20
+    mov x2, x21
+    mov x3, x22
+    bl bm_rinv_tile
+    add x19, x19, #48
+    add x20, x20, #48
+    add x21, x21, #48
+    add x22, x22, #16
+    subs x23, x23, #1
+    b.ne .Lbm_tile
+    RESTORE_PUBLIC
+.p2align 4
+.global invntt_ternary_asm
+invntt_ternary_asm:
+    SAVE_PUBLIC
+    sub sp, sp, #1792
+    mov x19, x0
+    mov x20, x1
+    mov x21, x2
+    mov x22, x3
+    mov x23, x4
+    mov x24, x5
+    mov x25, sp
+    movi v0.16b, #0
+    add x9, sp, #1536
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    mov x26, #0
+.Lp8inv_top:
+    mov x27, #0
+.Lp8inv_component:
+    mov x28, #0
+.Lp8inv_i9:
+    add x0, x25, x27, lsl #9
+    add x0, x0, x28, lsl #7
+    add x0, x0, x26, lsl #3
+    add x1, x25, #1536
+    add x1, x1, x28, lsl #7
+    mov x8, #6
+    madd x1, x26, x8, x1
+    add x1, x1, x27, lsl #1
+    mov x8, #864
+    madd x2, x26, x8, x20
+    mov x8, #48
+    madd x2, x28, x8, x2
+    add x2, x2, x27, lsl #4
+    mov x8, #576
+    madd x3, x26, x8, x21
+    mov x8, #288
+    madd x3, x28, x8, x3
+    bl packed_i9
+    add x28, x28, #1
+    cmp x28, #2
+    b.ne .Lp8inv_i9
+    add x27, x27, #1
+    cmp x27, #3
+    b.ne .Lp8inv_component
+    add x26, x26, #1
+    cmp x26, #2
+    b.ne .Lp8inv_top
+    mov x26, #0
+.Lp8inv_main_component:
+    mov x27, #0
+.Lp8inv_main:
+    add x0, x19, x26, lsl #1
+    mov x8, #24
+    madd x0, x27, x8, x0
+    add x1, x25, x26, lsl #9
+    add x1, x1, x27, lsl #8
+    mov x2, #0
+    mov x3, x22
+    mov x4, x23
+    bl invntt16_asm
+    add x27, x27, #1
+    cmp x27, #2
+    b.ne .Lp8inv_main
+    add x26, x26, #1
+    cmp x26, #3
+    b.ne .Lp8inv_main_component
+    add x0, x19, #48
+    add x1, x25, #1536
+    mov x2, #0
+    mov x3, x22
+    mov x4, x24
+    bl invntt16_tail_asm
+    mov x0, x19
+    bl crepmod3_ternary_asm
+    movi v0.16b, #0
+    mov x9, sp
+    mov x10, #14
+.Lp13inv_wipe:
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    subs x10, x10, #1
+    b.ne .Lp13inv_wipe
+    add sp, sp, #1792
+    RESTORE_PUBLIC

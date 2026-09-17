@@ -40,7 +40,7 @@
  * Upstream source SHA-256:
  *   62134e210376a567c53d460ebeb7feee648eac1d77d8ea2d587f5d89c7ccfeef
  * Integration adapts symbols/sections and shares the round instruction source
- * between the standalone permutation and the experimental fixed hash_g sponge.
+ * between the standalone permutation and the fixed-size hash_g sponge.
  * No separate formal-verification claim is made for the fused integration.
  */
 
@@ -390,7 +390,7 @@ Lmlk_keccak_f1600_x1_scalar_initial:
 
 /* Fixed hash_g: x0=out[216], x1=msg[1296], x2=rc[24].
  * All input precedes all output; aliases are supported. Frame contract is in
- * experiments/.../D_GATE.md. Baseline AArch64 only, x18 untouched.
+ * Baseline AArch64 only; x18 remains untouched.
  */
 #ifdef __APPLE__
 .text
@@ -624,7 +624,7 @@ Lhash_g_squeeze_last:
  * The virtual domain byte is zero, so the first message byte starts at bit 8
  * of lane zero.  All 1296 input bytes are consumed before the four output
  * lanes are stored, which also makes exact input/output aliasing safe.
- * This path deliberately has its own control flow so P53 hash_g pays no mode
+ * This path deliberately has its own control flow so fixed-size hash_g pays no mode
  * branch and retains its established instruction stream.
  */
 #ifdef __APPLE__
