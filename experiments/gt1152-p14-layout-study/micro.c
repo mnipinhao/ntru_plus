@@ -136,3 +136,5 @@ int main(void)
     printf("  %-34s %8.1f\n", "SoA pass with LD4/ST4",     bench(soa_ld4, R));
     return 0;
 }
+
+/* ---- appended: fused GT -> wire, no natural-order scratch ---- */
