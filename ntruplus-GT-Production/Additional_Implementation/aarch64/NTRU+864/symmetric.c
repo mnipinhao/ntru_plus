@@ -18,16 +18,12 @@
 #define HASH_H_OUTBYTES (NTRUPLUS_SSBYTES + NTRUPLUS_N / 4)
 
 void gt864_p18_tobytes_full_asm(uint8_t *, const int16_t *);
+void ntruplus_hash_f_fixed(uint8_t output[32], const uint8_t input[1296]);
 void ntruplus_hash_g_fixed(uint8_t output[216], const uint8_t input[1296]);
 
 void hash_f(uint8_t *buf, const uint8_t *msg)
 {
-    uint8_t data[1 + HASH_F_INBYTES];
-
-    data[0] = 0x00;
-    memcpy(data + 1, msg, HASH_F_INBYTES);
-    shake256(buf, HASH_F_OUTBYTES, data, HASH_F_INBYTES + 1);
-    secure_clear(data, sizeof data);
+    ntruplus_hash_f_fixed(buf, msg);
 }
 
 void hash_g(uint8_t *buf, const uint8_t *msg)

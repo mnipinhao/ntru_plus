@@ -11,8 +11,8 @@ twiddles, physical layout, Montgomery scale, range bounds, or schedules.
   the range ledger referenced by `OPTIMIZATION-ROADMAP.md`.
 - Accepted arithmetic: only objects named by `KEM_OBJECTS` in `Makefile`.
 - Hash backend: generic `NO_CE/fips202.*` plus the Pi-5-compatible scalar
-  fixed-size `hash_g_fixed.c`/`keccakf1600.S`. The latter does not require the
-  Armv8.4 SHA3 extension.
+  fixed-size `hash_f`/`hash_g` entries in `hash_g_fixed.c`/`keccakf1600.S`.
+  Neither fixed entry requires the Armv8.4 SHA3 extension.
 - Correctness: `test/`, `kat/`, and external experiment records.
 - Benchmark artifacts: repository `experiments/` or external `bench/`, never
   the exported SUPERCOP leaf.
@@ -34,6 +34,11 @@ AAPCS64 sentinel over public and selected internal endpoints, all-position
 noncanonical rejection, runtime/source zeroization checks, exact checked-in
 KAT comparison, and deterministic export regeneration. The flattened export
 also builds and passes the direct KEM test on Pi 5.
+
+P55 extends that closed hash backend with an independent fixed-size `hash_f`
+entry for SHAKE256(`0x00 || input[1296]`) to 32 bytes. It preserves the P53
+`hash_g` section byte-for-byte and removes the generic 1297-byte transcript
+only from Keygen and Encaps; Decaps is an exact retired-instruction control.
 
 ## Promotion gate order
 

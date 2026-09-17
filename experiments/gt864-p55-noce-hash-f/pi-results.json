@@ -1,0 +1,44 @@
+{
+  "experiment": "GT864-P55-NOCE-HASH-F-20260916",
+  "baseline_revision": "003a204fac577b3b516e0d8a6d7e75ba2571d30a",
+  "reference_revision": "631274d51bd4ce488bebbaef9f5d7f92a1e2b8d9",
+  "host": "pi@100.99.191.9",
+  "remote": "/home/pi/supercop-20260831/bench/pinhao/gt864-p55-noce-hash-f-20260916",
+  "kat_sha256": "0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c",
+  "malformed_transcript_sha256": "2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67",
+  "object_audit": {
+    "no_sha3_extension_instructions": true,
+    "hash_g_section_byte_identical": true,
+    "hash_f_static_instructions": 393,
+    "stack_wipe_pairs": 9,
+    "state_zero_moves": 18
+  },
+  "measurements": {
+    "hash_f": {
+      "baseline": { "cycles": 13277.969, "instructions": 43825.844, "branches": 276.312 },
+      "candidate": { "cycles": 9176.250, "instructions": 27769.844, "branches": 257.312 },
+      "paired_delta": { "cycles": -4102.938, "instructions": -16056.0, "branches": -19.0 },
+      "paired_observations": 122
+    },
+    "keygen": {
+      "baseline": { "cycles": 43193.500, "instructions": 94144.250, "branches": 1592.500 },
+      "candidate": { "cycles": 39082.875, "instructions": 78086.250, "branches": 1573.000 },
+      "paired_delta": { "cycles": -4117.000, "instructions": -16058.0, "branches": -19.5 },
+      "paired_observations": 62
+    },
+    "encaps": {
+      "baseline": { "cycles": 40707.850, "instructions": 106246.100, "branches": 1091.600 },
+      "candidate": { "cycles": 36612.875, "instructions": 90190.100, "branches": 1072.600 },
+      "paired_delta": { "cycles": -4095.400, "instructions": -16056.0, "branches": -19.0 },
+      "paired_observations": 62
+    },
+    "decaps": {
+      "baseline": { "cycles": 35416.800, "instructions": 76481.100, "branches": 1049.600 },
+      "candidate": { "cycles": 35417.675, "instructions": 76481.100, "branches": 1049.600 },
+      "paired_delta": { "cycles": 2.575, "instructions": 0.0, "branches": 0.0 },
+      "paired_observations": 62
+    }
+  },
+  "promotion_candidate": true,
+  "environment_after": ["throttled=0x0"]
+}

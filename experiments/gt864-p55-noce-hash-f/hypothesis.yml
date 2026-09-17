@@ -1,0 +1,27 @@
+experiment_id: GT864-P55-NOCE-HASH-F-20260916
+action: optimize-arithmetic
+status: passed_promoted_noce
+observation: >-
+  Keygen and Encaps each invoke SHAKE256(0x00 || input[1296]) to produce 32
+  bytes through the generic C sponge, while P53 already proves the matching
+  register-resident scalar organization for hash_g.
+primary_bottleneck_category: arithmetic and fixed-size sponge organization
+hypothesis: >-
+  A dedicated scalar AArch64 entry can absorb the virtual zero prefix, keep
+  the Keccak state resident for ten permutations, and store only four lanes,
+  eliminating the temporary transcript and generic sponge state traffic.
+exact_change: >-
+  Add SHAKE256(0x00 || input[1296]) -> output[32] as an independent assembly
+  entry and bind only hash_f to it; preserve the P53 hash_g section exactly.
+expected_static_effect: one 1297-byte stack image/copy removed per hash_f and state retained across ten permutations
+expected_performance_effect: hash_f and complete Keygen/Encaps cycles decrease; Decaps is unchanged
+expected_register_pressure_effect: fixed 144-byte public frame and GPR-resident state; no SIMD pressure
+correctness_impact: SHAKE transcript and output are byte-identical and exact input/output alias remains supported
+range_impact: none; this changes only the hash backend
+falsifying_measurement: >-
+  Reject if differential/alias, KAT, malformed rejection, ABI, wipe, no-CE or
+  hash_g-byte-identity checks fail, or if hash_f/Keygen/Encaps do not improve.
+reference:
+  revision: 631274d51bd4ce488bebbaef9f5d7f92a1e2b8d9
+  path: ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+768
+  policy: reuse fixed-size scalar sponge organization only; do not transfer transform facts

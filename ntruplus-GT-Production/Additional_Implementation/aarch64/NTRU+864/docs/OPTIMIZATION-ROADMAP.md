@@ -90,6 +90,7 @@ Status meanings:
 | P52 | Done—Profiler checkpoint | Profile exact P51 against selected SUPERCOP 20260831 and identify the next boundary | All gates pass; P51 GT wins Keygen/Encaps/Decaps by 1182.000/1525.950/1987.425 cycles; fixed-size NO_CE `hash_g` selected for P53 |
 | P53 | Done—Promoted NO_CE | Parameterize the 768 production register-resident scalar sponge for SHAKE256(`0x01 || 1296 bytes`) → 216 bytes | All gates pass; hash_g -4358.235, Encaps -4252.225 and Decaps -4312.950 cycles with no SHA3-extension instruction; Keygen retires zero changed instructions |
 | P54 | Done—Release hardened | Adopt 768's layered release gates and export contract without copying its transform implementation | Direct-link closure contains only selected P53/P47/P46/P35/P10/K1 sources; legacy candidates/evidence removed; KEM, ABI, canonical rejection, zeroization, exact-KAT and deterministic-export gates pass on Pi 5 |
+| P55 | Done—Promoted NO_CE | Specialize fixed-size SHAKE256(`0x00 || 1296 bytes`) → 32-byte `hash_f` for Keygen and Encaps | Differential/alias, KEM/KAT/malformed, ABI/wipe/no-CE and hash_g-byte-identity gates pass; hash_f -4102.938, Keygen -4117.000 and Encaps -4095.400 paired cycles; Decaps retires zero changed instructions |
 
 ## ToBytes priority policy
 
@@ -115,7 +116,8 @@ Full serializer; Small remains P24. P47 is now the production Decaps-private
 compare consumer. P48 is now the production Encaps-private SHAKE consumer. P49
 is closed at its static gate; P50 has refreshed the selected-Official
 profile. P51 transform-domain equality remains an archived experiment rather
-than production; P53 fixed-size NO_CE `hash_g` is active. Caller-specific results
+than production; P53 fixed-size NO_CE `hash_g` and P55 fixed-size NO_CE
+`hash_f` are active. Caller-specific results
 must not be mixed into a generic same-boundary result.
 
 ## Fixed facts and non-tasks
@@ -137,6 +139,20 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-16
+
+- Completed and promoted P55 for the NO_CE build. The exact transcript is
+  SHAKE256(`0x00 || input[1296]`) to 32 bytes: nine full absorb blocks, a
+  73-byte tail and four output lanes after the tenth permutation. The state
+  stays in GPRs; the virtual prefix removes the 1297-byte temporary image.
+  Differential and exact-alias checks passed 4,096 cases, and package KEM,
+  ABI, canonical rejection, zeroization, KAT and malformed transcripts remain
+  exact. The P53 `hash_g` object section is byte-identical and the new object
+  contains no Armv8.4 SHA3 instruction.
+- Across both execution orders, P55 improves `hash_f` by 4102.938 paired-
+  median cycles and 16,056 instructions. Keygen improves by 4117.000 cycles
+  and Encaps by 4095.400 cycles. Decaps retires exactly zero changed
+  instructions or branches; its +2.575-cycle movement is noise. Evidence:
+  `experiments/gt864-p55-noce-hash-f/`.
 
 - Completed P54 release hardening without changing transform arithmetic. The
   direct source closure removes legacy stock transforms, T0/T2 tail variants,
