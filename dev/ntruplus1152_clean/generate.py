@@ -121,6 +121,7 @@ class DAG:
 //           physical because a symbolic register defined outside the optimized
 //           region could not be allocated.  v4 is the zero vector, needed\n//           because the model has no vector `neg`.  That leaves v5-v7, v16-v31.
 .text
+.p2align 4
 .global {symbol}
 {symbol}:
 {body}

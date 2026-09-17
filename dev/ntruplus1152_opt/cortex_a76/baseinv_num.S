@@ -1,3 +1,7 @@
+// SLOTHY, cortex_a76.
+#ifdef __APPLE__
+#define baseinv_num_kernel _baseinv_num_kernel
+#endif
 // SLOTHY, cortex_a76, from ntruplus1152_clean/src/baseinv_num.sym.S.
 // Do not edit; regenerate with `make cortex_a76`.
 .text
