@@ -59,8 +59,9 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P29 | Done | SUPERCOP after the assembly and scheduling work | **GT 109,446 vs official 111,401, -1.75%** — GT is now faster under SUPERCOP's own measurement, from +28.2% at G9 and +0.68% at P20. Per operation keygen **-3.13%**, enc **-1.87%**, dec **-1.75%**; the q1 sum is -2.26% against the profiler's -2.29%. Evidence in `gt1152-p29-supercop-final/` |
 | P30 | Done | Survey `poly_frombytes`, the last losing component | **P19's "structural, ~100% of floor" was wrong on both counts.** It was at 90%, and one of four per-lane operations was avoidable: reading each block as eight 16-bit windows instead of four 24-bit ones lets one `ushl` with a per-lane count replace `ushr` + `uzp1`. **723 -> 645; +895 -> +599; KEM -2.29% -> -2.51%.** Evidence in `gt1152-p30-frombytes-survey/` |
 | P31 | Done | Was D7's normalization ever needed? | **No.** Its 2752 bound assumed inputs on [0,4095], but the only caller aborts unless both `poly_frombytes` decode, so inputs are canonical and the bound is 2458 < 2497. Removing it: `poly_basemul_rinv` **+227 -> -142**, decaps -2.21% -> **-2.75%**, KEM **-2.69%**. Evidence in `gt1152-p31-basemul-rinv-bound/` |
+| P32 | Done | M2-1: fused fixed-size SHAKE256 for hash_f and hash_g | **hash +998 -> -21,082.** `hash_f` 17,754 -> 11,947 and `hash_g` 20,339 -> 13,765 per call. **keygen -11.36%, encaps -20.57%, decaps -13.96%, KEM -15.25%** — within a percentage point of NTRU+864 on every operation. Evidence in `gt1152-p32-hash-fused/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
-| M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
+| M2-1 | **Done** (P32) | Hash fusion: fixed-size SHAKE256 1728 -> 288/32 | 4,000-input differential against the generic sponge, zero mismatches; KEM -2.69% -> **-15.25%** |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
 
 ## Decisions ledger
@@ -1453,6 +1454,66 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   **Worth recording separately: a declared contract looser than the caller's
   actual guarantee cost 227 cycles, and three gates reasoned from the
   declaration without checking it against the call site.**
+
+- **P32 done. M2-1, and the campaign lands where NTRU+864 did.**
+  `experiments/gt1152-p32-hash-fused/`.
+
+  The last large item, pointed at by every gate since P11. Hash was 49.9% of
+  GT's cycles.
+
+  864's P53 and P55 built their fused kernels by adapting NTRU+768's with
+  anchored replacements; this does the same for 1152, so the lineage is
+  768 -> 864 -> 1152 and the Keccak core is untouched at each step. Both
+  `fips202.c` files are byte-identical between 864 and 1152, so none of 864's
+  hash advantage came from a faster permutation -- it is all in the fusion.
+
+  The kernels hash one domain byte plus exactly `NTRUPLUS_POLYBYTES` with the
+  whole 25-word state **live in registers**: no state array, no length
+  arithmetic, and **no copy to prepend the domain byte** -- it is folded into the
+  first absorbed word with `lsl #8` (plus `orr #1` for hash_g), so every later
+  load is a `ldur` at offset `7 mod 8` and the 1728-byte message is never
+  duplicated.
+
+  | | 768 | 864 | **1152** |
+  |---|---:|---:|---:|
+  | input + prefix | 1153 | 1297 | **1729** |
+  | full absorb blocks | 8 | 9 | **12** |
+  | tail bytes | 65 | 73 | **97** |
+  | hash_g output | 192 | 216 | **288** |
+  | squeeze blocks | 1 + 56 | 1 + 80 | **2 + 16** |
+
+  `generate_keccak.py` makes five anchored edits, each asserted to match exactly
+  once or twice. **1152 is the first of the three to need two full squeeze
+  blocks**, so hash_g's squeeze dispatch becomes a range test and
+  `Lhash_g_squeeze_first` increments the stage counter instead of assigning it.
+
+  **Correctness**: 4,000 inputs including all-zero and all-ones, differential
+  against the generic sponge, **zero mismatches** on both kernels. Every package
+  gate green. `clear_calls` falls 26 -> 23 and `clear_bytes` 37,526 -> 32,338
+  because hash_f and hash_g no longer allocate and wipe a 1729-byte copy of the
+  message -- less secret material duplicated, not more. `hash_h` keeps the
+  generic sponge deliberately: 176 bytes is one block, with nothing to amortize.
+
+  | | generic | fused | |
+  |---|---:|---:|---:|
+  | `hash_f`, 32 out | 17,754 | **11,947** | 1.49x |
+  | `hash_g`, 288 out | 20,339 | **13,765** | 1.48x |
+
+  Both larger than 864's -4,103 and -4,358, as a 33% longer input predicts.
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | keygen | 64,056 | 56,781 | **-11.36%** | -3.12% |
+  | **encaps** | 59,522 | **47,278** | **-20.57%** | -2.18% |
+  | decaps | 52,511 | 45,181 | **-13.96%** | -2.75% |
+  | **total** | **176,089** | **149,240** | **-15.25%** | -2.69% |
+
+  Against NTRU+864 after its own hash campaign (P58's formal SUPERCOP run):
+  keygen -11.41% vs **-11.36%**, encaps -21.05% vs **-20.57%**, decaps -13.06%
+  vs **-13.96%**. Within a percentage point on every operation.
+
+  Hash is now 42.7% of GT's cycles. A fresh SUPERCOP run is owed; P29's -1.75%
+  predates this and P31.
 
 ## Standing rules
 
