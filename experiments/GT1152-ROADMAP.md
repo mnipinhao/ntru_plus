@@ -52,6 +52,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P22 | Done | Port `invntt16_tail` from C to assembly | **311 cycles against the C version's 1,469, 4.7x.** `inverse` +1,134 -> **-14**; decaps +3.11% -> +0.90%; **whole KEM +0.65% -> +0.00%**. 512,000 outputs agree mod q with the C contract. Evidence in `gt1152-p22-tail-asm/` |
 | P23 | Done | `poly_sotp_decode` without horizontal reductions | **484 cycles against P13's 1,332, and below the official's 508.** +835 -> **-17**; **decaps +0.90% -> -0.53%**; **KEM +0.00% -> -0.44%**. 20,000 differential trials against the reference. Evidence in `gt1152-p23-sotp-decode/` |
 | P24 | Done | `poly_basemul_rinv`: why it trailed | **Not the arithmetic — the official issues identical multiplies.** D7's Barrett cost 16 VEC0 cycles a group; a conditional subtract honours D7 exactly with no multiply. 3,378 -> **3,054**, +827 -> **+634**. What remains is a real scheduling gap (M2-2). Evidence in `gt1152-p24-basemul-rinv/` |
+| P25 | Done — analysis | Is `baseinv` next, and does `inverse` still have headroom? | **`baseinv` yes, two separate problems**: 1,928 cycles of strictly serial batch inversion (needs 864's 12x3 ILP split) plus both parallel phases at ~78% of their multiply floor. **`inverse` is level with the official** (6,293 vs 6,292) with ~1,200 cycles of absolute headroom and no competitive gap. Evidence in `gt1152-p25-baseinv-inverse-floors/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred — **now justified by measurement** | First Slothy gate: degree-4 `basemul_rinv` | P24 measured 3,054 against a 2,376 issue floor, 78%, with the official proving 2,551 reachable on the same instruction multiset. Worth about 500 cycles |
@@ -1077,6 +1078,47 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   **`baseinv` at +2,397 is now larger than every other loss combined and is what
   keeps keygen positive.** It is keygen-only; cause on record from G5/P11, no ILP
   split where 864 uses 12x3.
+
+- **P25 done, the next target confirmed and `inverse` measured.**
+  `experiments/gt1152-p25-baseinv-inverse-floors/`.
+
+  **`baseinv` has two separate problems.** Phase timing with PMU reads inside the
+  function: numerator loop 3,783 (53.8%), **prefix + inversion + recover 1,928
+  (27.4%)**, finish loop 1,087 (15.4%).
+
+  The serial phase is a *latency* problem: a 35-step `fqmul` prefix chain, then
+  `fqinv`'s addition chain for exponent 3455, then 35 recover steps each carrying
+  `inv = fqmul(inv, di)` -- every one strictly serial, one vector in flight, the
+  multiply pipe idle. That is what "no ILP split" means, and 864's 12x3
+  decomposition runs three independent chains so the latency divides by about
+  three.
+
+  The other two phases are throughput-bound and under-scheduled at the same ~78%
+  seen elsewhere: numerator 21 wide pairs + 10 reductions = 82 V0 cycles a group,
+  2,952 for 36 against 3,783 measured; finish 4 `fqmul` = 24 a group, 864 against
+  1,087. So roughly **1,100 cycles from the ILP split and ~800 from scheduling**,
+  which would put baseinv near 4,500 against the official's 5,300 per call and
+  flip keygen negative.
+
+  **`inverse` is level and has no competitive gap.** `poly_invntt_ternary`
+  measures 6,293 against the official's `poly_invntt` + `poly_crepmod3` at 6,292.
+  Its multiply-pipe floor, from the shipped kernels and the driver's confirmed
+  call counts -- `packed_i9` 16 calls x 57, `invntt16_asm` 8 x 151, the tail 149,
+  `crepmod3` 36 x 8 = **2,557 multiply-class ops, 5,114 cycles** -- puts it at
+  **81%**. About 1,200 cycles of absolute headroom, but taking it changes no
+  standing.
+
+  **One apparent cheap win is not available.** `inverse16.S` still spends 128
+  `umov` + 128 `strh` per call, the extraction P22 replaced with 32 `str d` in
+  the tail. It does not transfer: the tail's four branches are four *contiguous*
+  int16, while `invntt16_asm`'s 128 outputs are **8 bytes apart** -- one component
+  across leaves, gaps of 8 (96 times) and 48 (31 times), no aligned run of four.
+  Making them contiguous means one call producing all four components, the
+  four-components-live restructure P14 rejected for `ntt9.S`.
+
+  **Next: `baseinv`, and the ILP split before the scheduling** -- the larger of
+  its two levers, known in shape from 864, and a restructure rather than a
+  re-derivation, so it carries no bound risk.
 
 ## Standing rules
 
