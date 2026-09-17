@@ -5,7 +5,7 @@ Good-Thomas Optimized (GT-Optimized) AVX2 implementation.
 
 ```text
 avx2/
-  NTRU+768/   implementation, qualification contract, and source closure
+  NTRU+768/   implementation, tests, canonical KAT, and source closure
 ```
 
 Start with:
@@ -28,20 +28,18 @@ cd NTRU+768
 make check-hashes
 ```
 
-Full validation additionally builds the functional test and the KAT
-generator:
+Full validation additionally builds the functional test, regenerates the
+known-answer files, and compares them against the Official NTRU+768 vectors
+in `NTRU+768/kat/expected/`:
 
 ```sh
 cd NTRU+768
 make check
 ```
 
-`make check` compiles the test and KAT harness from the upstream Official
-AVX2 tree rather than from a copy inside this package. It resolves that tree
-through `OFFICIAL_ROOT`, which defaults to
-`../../../../third_party/NTRUplus-official-main/Additional_Implementation/avx2/NTRU+768`.
-Set `OFFICIAL_ROOT` explicitly when that tree is not present at the default
-location.
+The test harness, the KAT generator, and `randombytes` are vendored into the
+package, so validation does not link to another implementation tree. `LICENSE`
+is the upstream NTRU+ MIT license covering that vendored material.
 
 This directory is limited to the production source closure and its
 qualification material. Research experiments, rejected candidates, generators,

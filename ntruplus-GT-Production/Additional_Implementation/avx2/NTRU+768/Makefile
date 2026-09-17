@@ -1,5 +1,4 @@
 CC ?= gcc
-OFFICIAL_ROOT ?= ../../../../third_party/NTRUplus-official-main/Additional_Implementation/avx2/NTRU+768
 BUILD_DIR ?= build
 
 COMMON_FLAGS = -Wall -Wextra -Wpedantic -Wmissing-prototypes \
@@ -25,28 +24,32 @@ HEADERS = e0v-tail.ld \
 	KeccakP-1600-SnP.h api.h baseinv.h basemul.h consts.h fips202.h \
 	internal.h ntt.h ntt_bounds.h params.h poly.h symmetric.h util.h
 
-TEST_SOURCE = $(OFFICIAL_ROOT)/test/test.c
-RANDOMBYTES_SOURCE = $(OFFICIAL_ROOT)/randombytes.c
-RANDOMBYTES_HEADER = $(OFFICIAL_ROOT)/randombytes.h
-KAT_SOURCES = \
-	$(OFFICIAL_ROOT)/kat/PQCgenKAT_kem.c \
-	$(OFFICIAL_ROOT)/kat/aes.c \
-	$(OFFICIAL_ROOT)/kat/rng.c
-KAT_HEADERS = $(OFFICIAL_ROOT)/kat/aes.h $(OFFICIAL_ROOT)/kat/rng.h
+# The test and KAT harness are vendored from the Official NTRU+ AVX2 tree so
+# that this release package validates without linking to another source tree.
+TEST_SOURCE = test/test.c
+TEST_HEADER = test/counter.h
+RANDOMBYTES_SOURCE = randombytes.c
+RANDOMBYTES_HEADER = randombytes.h
+KAT_SOURCES = kat/PQCgenKAT_kem.c kat/aes.c kat/rng.c
+KAT_HEADERS = kat/aes.h kat/rng.h
+KAT_EXPECTED_REQ = kat/expected/PQCkemKAT_2336.req
+KAT_EXPECTED_RSP = kat/expected/PQCkemKAT_2336.rsp
+GENERATED_KAT_REQ = $(BUILD_DIR)/PQCkemKAT_2336.req
+GENERATED_KAT_RSP = $(BUILD_DIR)/PQCkemKAT_2336.rsp
 
-.PHONY: all check test test-run PQCgenKAT_kem kat-run check-hashes \
+.PHONY: all check test test-run PQCgenKAT_kem kat-run kat-check check-hashes \
 	qualified-supercop clean
 
 all: test PQCgenKAT_kem
 
-check: check-hashes test-run kat-run
+check: check-hashes test-run kat-check
 
 test: $(BUILD_DIR)/test
 
 $(BUILD_DIR)/test: $(HEADERS) $(SOURCES) $(RANDOMBYTES_HEADER) \
-		$(RANDOMBYTES_SOURCE) $(TEST_SOURCE)
+		$(RANDOMBYTES_SOURCE) $(TEST_SOURCE) $(TEST_HEADER)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(LDFLAGS) -I. -I$(OFFICIAL_ROOT) -o $@ \
+	$(CC) $(CFLAGS) $(LDFLAGS) -I. -Itest -o $@ \
 		$(RANDOMBYTES_SOURCE) $(TEST_SOURCE) $(SOURCES)
 
 test-run: $(BUILD_DIR)/test
@@ -56,11 +59,15 @@ PQCgenKAT_kem: $(BUILD_DIR)/PQCgenKAT_kem
 
 $(BUILD_DIR)/PQCgenKAT_kem: $(HEADERS) $(SOURCES) $(KAT_HEADERS) $(KAT_SOURCES)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(NISTFLAGS) $(LDFLAGS) -I. -I$(OFFICIAL_ROOT) -o $@ \
+	$(CC) $(NISTFLAGS) $(LDFLAGS) -I. -Ikat -o $@ \
 		$(KAT_SOURCES) $(SOURCES)
 
 kat-run: $(BUILD_DIR)/PQCgenKAT_kem
 	cd $(BUILD_DIR) && ./PQCgenKAT_kem
+
+kat-check: kat-run $(KAT_EXPECTED_REQ) $(KAT_EXPECTED_RSP)
+	cmp $(GENERATED_KAT_REQ) $(KAT_EXPECTED_REQ)
+	cmp $(GENERATED_KAT_RSP) $(KAT_EXPECTED_RSP)
 
 check-hashes:
 	sha256sum -c SHA256SUMS

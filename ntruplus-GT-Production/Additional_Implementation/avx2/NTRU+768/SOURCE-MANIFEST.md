@@ -21,9 +21,12 @@ production cleanup performed the following:
 - the three NTT assembly translation units were kept separate;
 - documentation and a non-overwriting SUPERcop installer were added.
 
-Official sources and local test/KAT harnesses are resolved from the frozen
-`third_party/NTRUplus-official-main` tree; no second Official implementation is
-kept in this directory.
+The functional test, the KAT generator, and `randombytes` are vendored from
+the Official NTRU+ AVX2 tree into `test/`, `kat/`, and this directory, so the
+package validates without linking to another source tree. `kat/expected/`
+holds the Official NTRU+768 known-answer files that `make kat-check` compares
+against. `LICENSE` is the upstream NTRU+ MIT license covering that vendored
+material. No second Official implementation is kept in this directory.
 
 Selected source families were:
 

@@ -11,10 +11,9 @@ Each parameter-set directory follows the same implementation-package shape as
 KPQC final: it owns its Makefile, KEM source, polynomial interface, assembly,
 SHAKE backend, and validation path.
 
-The AArch64 package copies its validation dependencies into the package rather
-than linking to another implementation tree. The AVX2 package instead resolves
-the test and KAT harness through `OFFICIAL_ROOT`; see
-[`Additional_Implementation/avx2/README.md`](Additional_Implementation/avx2/README.md).
+Both packages copy their validation dependencies into the package rather than
+linking to another implementation tree, so each one builds, tests, and checks
+its known-answer vectors on its own.
 
 Build and validate on AArch64:
 
