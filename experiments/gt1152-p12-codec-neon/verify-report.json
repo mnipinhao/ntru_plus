@@ -1,0 +1,40 @@
+{
+  "checks": [
+    {
+      "check": "full_exact_bytes",
+      "pass": true,
+      "detail": "17 cases including every int16 extreme and the measured Forward bound; model is the canonical representative of x mod q"
+    },
+    {
+      "check": "full_model_agrees_with_oracle",
+      "pass": true,
+      "detail": "on (-q, q), where the oracle's reference serializer is defined, the mod-q model reproduces it exactly"
+    },
+    {
+      "check": "small_matches_full_on_its_domain",
+      "pass": true,
+      "detail": "8 cases over (-q, q); Small skips the Barrett and must still agree"
+    },
+    {
+      "check": "round_trip",
+      "pass": true,
+      "detail": "6 canonical polynomials survive tobytes then frombytes exactly, and decode reports 0"
+    },
+    {
+      "check": "canonical_rejection",
+      "pass": true,
+      "detail": "3456 cases: every one of the 1152 coefficient positions carrying each of [3457, 3458, 4095] is rejected with 1"
+    },
+    {
+      "check": "canonical_accepted",
+      "pass": true,
+      "detail": "the unmodified canonical buffer decodes with 0"
+    },
+    {
+      "check": "tobytes_compare",
+      "pass": true,
+      "detail": "equal input returns 0; 256 sampled single-bit corruptions all return 1"
+    }
+  ],
+  "pass": true
+}
