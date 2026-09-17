@@ -1,0 +1,96 @@
+{
+  "host": "pi@100.99.191.9 Cortex-A76 core 3",
+  "supercop": "20260831",
+  "date": "20260917",
+  "compiler": "gcc 14.2.0 -march=native -mtune=native",
+  "goal": "constbranchindex",
+  "checksum_validated": "2275d10293515833d4651b83e003df32321d6c6cfa2f52fffc6f5df5e4d13ad8",
+  "note_supersedes": "supersedes the G9 record in gt1152-p10-kem/supercop-results.json, which predates P12, P13, P18 and P19",
+  "selection_cycles": {
+    "aarch64": {
+      "cycles": 111351,
+      "opt": "-O3"
+    },
+    "aarch64-gt1152": {
+      "cycles": 112107,
+      "opt": "-O3"
+    },
+    "opt": {
+      "cycles": 193424,
+      "opt": "-O3"
+    },
+    "ref": {
+      "cycles": 297517,
+      "opt": "-O3"
+    }
+  },
+  "gt_vs_official": {
+    "official": 111351,
+    "gt": 112107,
+    "delta": 756,
+    "percent": 0.68
+  },
+  "g9_for_comparison": {
+    "official": 111341,
+    "gt": 142741,
+    "percent": 28.2
+  },
+  "gt_selection_isolated_run": 112074,
+  "per_operation": {
+    "keypair": {
+      "official": {
+        "q1": 57198.875,
+        "median": 64809.208333333336,
+        "q3": 73664.75,
+        "n": 96
+      },
+      "gt": {
+        "q1": 57865.583333333336,
+        "median": 60511.583333333336,
+        "q3": 73203.83333333333,
+        "n": 96
+      },
+      "delta_q1": 666.7083333333358,
+      "percent_q1": 1.17,
+      "delta_median": -4297.625,
+      "percent_median": -6.63
+    },
+    "enc": {
+      "official": {
+        "q1": 58975.333333333336,
+        "median": 59003.625,
+        "q3": 60376.958333333336,
+        "n": 96
+      },
+      "gt": {
+        "q1": 57929.041666666664,
+        "median": 57958.833333333336,
+        "q3": 59304.0,
+        "n": 96
+      },
+      "delta_q1": -1046.2916666666715,
+      "percent_q1": -1.77,
+      "delta_median": -1044.7916666666642,
+      "percent_median": -1.77
+    },
+    "dec": {
+      "official": {
+        "q1": 52549.041666666664,
+        "median": 52572.666666666664,
+        "q3": 52594.25,
+        "n": 96
+      },
+      "gt": {
+        "q1": 54275.958333333336,
+        "median": 54299.958333333336,
+        "q3": 54320.458333333336,
+        "n": 96
+      },
+      "delta_q1": 1726.9166666666715,
+      "percent_q1": 3.29,
+      "delta_median": 1727.2916666666715,
+      "percent_median": 3.29
+    }
+  },
+  "keypair_note": "keygen retries when the sampled polynomial is not invertible, so the sample is bimodal: 46 of 96 official and 52 of 96 GT land at the no-retry cost. The median therefore moves with the retry count of a particular 96-sample run and is not comparable across runs; q1 is."
+}

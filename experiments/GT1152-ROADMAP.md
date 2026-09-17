@@ -37,7 +37,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | G7 | Done | Pack / unpack for the degree-4 layout | 7 checks: exact wire bytes over every int16 extreme, round trip, 3456-case canonical rejection sweep, constant-time compare. Evidence in `gt1152-p09-pack/` |
 | G8a | Done | KEM assembly and KAT, local | **KAT reproduced byte for byte** (sha256 `2ddfc810c4...64c3`) plus 64 KEM round trips with tampered rejection, on macOS/arm64. Evidence in `gt1152-p10-kem/` |
 | G8b | Done | Release gates on Linux/AArch64 | On Pi 5 Cortex-A76 / GCC 14.2.0: KAT byte-identical, 64 KEM round trips, **288/288 per-leaf non-invertibility**, 13,824 canonical cases, zeroization, **8/8 ABI sentinels**. Evidence in `gt1152-p10-kem/pi-results.json`. Manifest and SUPERCOP export move to G9 |
-| G9 | Done | SUPERCOP packaging and first honest measurement | SUPERCOP validated the KEM byte contract against its built-in `ntruplus1152` checksum; **GT 142,741 vs official 111,341 cycles, +28.2%**. Evidence in `gt1152-p10-kem/supercop-results.json` |
+| G9 | Done | SUPERCOP packaging and first honest measurement | SUPERCOP validated the KEM byte contract against its built-in `ntruplus1152` checksum; GT 142,741 vs official 111,341 cycles, +28.2%. Evidence in `gt1152-p10-kem/supercop-results.json`. **Superseded by P20** |
 | P11 | Done | Component profile: where the 28% goes | PMU attribution on Pi 5. **Polynomial multiplication is at parity (+787); serialization is +30,750.** Evidence in `gt1152-p11-profile/` |
 | P12 | Done — *recorded late* | NEON codec: replace the scalar gather | Lane-indexed LD4/ST4 per leaf. Serialize went from +30,750 to +10,909. Evidence in `gt1152-p12-codec-neon/` |
 | P13 | Done — *recorded late* | NEON sampling leaves | Broadcast-the-byte against `vtst`, avoiding an 8-way bit-plane interleave. sample/misc went from +6,500 to +565. Evidence in `gt1152-p13-sample-neon/` |
@@ -46,6 +46,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P15 | Done — rejected | Fuse the codec's passes with byte-granular lane stores | Measured 12,129 cycles worse: `vst3_lane_u8` doubles 8 halfword lane stores into 16 byte lane stores. Evidence in `gt1152-p15-codec-fused/` |
 | P17 | Done | Why did 864 beat the official pre-hash and 1152 does not? | **No structural penalty.** At 864's pre-hash per-category ratios 1152 would stand at -3.68% against its measured +8.76%; 64.9% of the shortfall is the serializer. Evidence in `gt1152-p17-vs-864-parity/` |
 | P18 | Done | Rewrite the serializer with the permutation in registers, 864's way | **Serialize +10,909 -> +911; whole KEM +7.9% -> +1.8%; encaps now -1.0%, faster than the official.** Byte-identical to P12 on all four entry points; all 7 oracle checks and every package gate pass. Evidence in `gt1152-p18-codec-registers/` |
+| P20 | Done | Fresh SUPERCOP measurement, superseding G9 | **GT 112,107 vs official 111,351, +0.68%** under SUPERCOP's own measurement, down from G9's +28.2%; encaps **-1.77%**. Agrees with the profiler to within 0.2pp on every operation. Evidence in `gt1152-p20-supercop-fresh/` |
 | P19 | Done — asm rejected | Should the serializer be hand-written in assembly? | **No.** Measured issue floor puts the codec at 90-100%; scheduling is worth under 10%. Cutting instructions instead took **serialize +911 -> -1,034 and the KEM +1.8% -> +0.65%**, encaps -1.97%. Evidence in `gt1152-p19-serializer-floor/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
@@ -819,6 +820,55 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   All seven oracle checks and every package gate pass. Of the remaining +1,268,
   **baseinv at +2,406 is larger than the whole deficit** and is the only item
   with a known unexploited fix (no ILP split where 864 uses 12x3).
+
+- **P20 done, the SUPERCOP record refreshed.** `experiments/gt1152-p20-supercop-fresh/`.
+
+  G9's +28.2% predated P12, P13, P18 and P19. Only `pack.c`, `support.c` and the
+  new `codec_pairs.h` changed in the package since commit `fdb1a87e`, confirmed
+  with `git diff --name-only`, so the SUPERCOP leaf's `.s` files needed no
+  reconversion; the three files were copied in and test-compiled first. SUPERCOP
+  caches by version/host/date and G9 ran on this same date, so the bench data was
+  archived and the cached `crypto_kem_ntruplus1152*` objects removed before each
+  run. Two runs: all four implementations present for the selection-level A/B,
+  then GT isolated, because SUPERCOP produces detailed records only for the
+  implementation it selects and the official still wins selection.
+
+  | implementation | flags | cycles | G9 |
+  |---|---|---:|---:|
+  | `aarch64` (official) | -O3 | **111,351** | 111,341 |
+  | **`aarch64-gt1152`** | -O3 | **112,107** | 142,741 |
+  | `opt` | -O3 | 193,424 | 193,389 |
+  | `ref` | -O3 | 297,517 | 297,607 |
+
+  **GT +756 cycles, +0.68%**, against G9's +31,400 and +28.2%. The official moved
+  by 10 cycles in 111,341 between the two runs, 0.009%, so the measurement is
+  stable and the whole change is GT's. GT's isolated-run figure was 112,074,
+  0.03% from 112,107. All sixteen `try` records carry one checksum
+  `2275d102...3ad8`, so SUPERCOP validated the byte contract for every
+  implementation including GT.
+
+  **Per operation**, SUPERCOP's own stabilized quartiles, 96 samples a side:
+
+  | operation | stat | official | GT | % |
+  |---|---|---:|---:|---:|
+  | keypair | q1 | 57,199 | 57,866 | **+1.17%** |
+  | **enc** | q1/median/q3 | 58,975 | **57,929** | **-1.77%** |
+  | dec | q1/median/q3 | 52,549 | 54,276 | **+3.29%** |
+
+  enc and dec are flat across all three quartiles. **Keypair must be read at q1:**
+  NTRU+ keygen retries when the sampled polynomial is not invertible, so the
+  sample is bimodal -- 46 of 96 official and 52 of 96 GT samples land at the
+  no-retry cost, and the median therefore moves with a particular run's retry
+  count (it reads -6.63%, which is an artefact). q1 compares the no-retry mode.
+
+  **Independent agreement with the P19 component profiler**, different harness,
+  different statistic, to within 0.2 percentage points on every operation:
+  keygen +1.08% vs +1.17%, encaps -1.97% vs -1.77%, decaps +3.11% vs +3.29%,
+  total +0.65% vs +0.68%.
+
+  The 28.2% closed to 0.68% with **no change to any assembly** -- P12, P13, P18
+  and P19 are all C. NTRU+864 for scale stood at -3.95% before its hash campaign
+  and reached -11%/-21%/-13% after it; 1152's hash is still the generic sponge.
 
 ## Standing rules
 
