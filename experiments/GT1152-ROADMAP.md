@@ -49,6 +49,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P20 | Done | Fresh SUPERCOP measurement, superseding G9 | **GT 112,107 vs official 111,351, +0.68%** under SUPERCOP's own measurement, down from G9's +28.2%; encaps **-1.77%**. Agrees with the profiler to within 0.2pp on every operation. Evidence in `gt1152-p20-supercop-fresh/` |
 | P19 | Done — asm rejected | Should the serializer be hand-written in assembly? | **No.** Measured issue floor puts the codec at 90-100%; scheduling is worth under 10%. Cutting instructions instead took **serialize +911 -> -1,034 and the KEM +1.8% -> +0.65%**, encaps -1.97%. Evidence in `gt1152-p19-serializer-floor/` |
 | P21 | Done — analysis | Where is the remaining deficit, per operation? | **Only decaps loses.** keygen +454 (all of it `baseinv`, which is keygen-only), encaps -1,271, decaps +2,085. The C `invntt16_tail` measures **1,469 cycles** alone, against 864's 592-instruction assembly; `poly_sotp_decode` is 2.6x the official because it does 144 horizontal reductions where the official uses a bit-transpose. Evidence in `gt1152-p21-decaps-targets/` |
+| P22 | Done | Port `invntt16_tail` from C to assembly | **311 cycles against the C version's 1,469, 4.7x.** `inverse` +1,134 -> **-14**; decaps +3.11% -> +0.90%; **whole KEM +0.65% -> +0.00%**. 512,000 outputs agree mod q with the C contract. Evidence in `gt1152-p22-tail-asm/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -907,6 +908,61 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   three reach parity decaps goes from +2,085 to roughly -900 and every operation
   beats the official before the hash campaign. `baseinv` follows, to turn
   keygen's +454 into a clear win.
+
+- **P22 done, the tail is assembly and the KEM is at parity.**
+  `experiments/gt1152-p22-tail-asm/`.
+
+  P21 ranked this first: the C tail measured 1,469 cycles alone, more than the
+  whole inverse deficit. D8 always named assembly as the target.
+
+  **The port is two changes, not a rewrite.** Of 864's 589 instructions only two
+  kinds are not element-wise. The fold over `top`: 864 packs the tail scratch as
+  `lane = 3*top + branch` and folds with `ext #6` (rotate three halfwords) plus
+  `add`; 1152 packs `lane = 4*top + branch`, so the rotation becomes **`#8`**.
+  Exactly 32 such `ext` exist, all self-rotates, each paired with its `add`, and
+  the generator asserts it. The output extraction: 864 writes three halfwords per
+  output, six bytes, never a clean store width, so it spends 96 `umov` and 96
+  `strh`; 1152's four branches are **eight contiguous bytes, one `str d`** --
+  192 instructions become 32, the same degree-4 dividend P18 collected in the
+  codec. 589 instructions become 430.
+
+  **One table needed repacking, and the kernel says which.** `x3`
+  (`invntt16_constants`) is loaded 6 times and all 35 uses are lane-indexed, so
+  it is a constant pool and carries unchanged. `x4`
+  (`invntt16_tail_constants`) is loaded 64 times and all 64 uses are
+  full-vector, so its lanes line up with the data: every row is repacked
+  `[A,A,A,B,B,B,0,0]` -> `[A,A,A,A,B,B,B,B]`, asserted row by row, no value
+  changed. `invntt16_main_constants` is left alone and verified byte-identical --
+  `invntt16_asm` packs its lanes by the 16-axis, not by (top, branch).
+
+  **Two defects the unit differential caught, not the KAT.** The table packing
+  (4,352 mod-q mismatches of 8,192, outputs equal to raw table values), and then
+  store placement: the generator had put each `str d` where the first `strh`
+  was, but Slothy reuses these vector registers and several are overwritten
+  between an output's `umov` and its `strh`. Moving the store to the `umov`
+  position, where the value is provably live, fixed the last 511.
+
+  **Correctness.** 4,000 trials x 128 outputs = 512,000, inputs uniform on
+  [-2617, 2617] plus 200 trials at the extremes: **mod-q mismatches 0**, max
+  output 3920 against the 5028 the ternary consumer declares. Exact mismatches
+  are expected -- the C applies a final Barrett to pick one representative, the
+  assembly emits its own, and `crepmod3` reduces mod q. Every package gate green,
+  ABI sentinels included.
+
+  | | cycles |
+  |---|---:|
+  | tail, C | 1,469 |
+  | **tail, assembly** | **311** |
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | keygen | 64,061 | 64,737 | +1.06% | +1.08% |
+  | **encaps** | 59,482 | **58,340** | **-1.92%** | -1.97% |
+  | decaps | 52,584 | 53,055 | **+0.90%** | +3.11% |
+  | **total** | **176,127** | **176,132** | **+0.00%** | +0.65% |
+
+  `inverse` is now **-14** where it was +1,134. **The KEM is at parity with the
+  official**, five cycles apart on 176,000, with the hash still generic.
 
 ## Standing rules
 
