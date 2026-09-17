@@ -51,9 +51,10 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P21 | Done — analysis | Where is the remaining deficit, per operation? | **Only decaps loses.** keygen +454 (all of it `baseinv`, which is keygen-only), encaps -1,271, decaps +2,085. The C `invntt16_tail` measures **1,469 cycles** alone, against 864's 592-instruction assembly; `poly_sotp_decode` is 2.6x the official because it does 144 horizontal reductions where the official uses a bit-transpose. Evidence in `gt1152-p21-decaps-targets/` |
 | P22 | Done | Port `invntt16_tail` from C to assembly | **311 cycles against the C version's 1,469, 4.7x.** `inverse` +1,134 -> **-14**; decaps +3.11% -> +0.90%; **whole KEM +0.65% -> +0.00%**. 512,000 outputs agree mod q with the C contract. Evidence in `gt1152-p22-tail-asm/` |
 | P23 | Done | `poly_sotp_decode` without horizontal reductions | **484 cycles against P13's 1,332, and below the official's 508.** +835 -> **-17**; **decaps +0.90% -> -0.53%**; **KEM +0.00% -> -0.44%**. 20,000 differential trials against the reference. Evidence in `gt1152-p23-sotp-decode/` |
+| P24 | Done | `poly_basemul_rinv`: why it trailed | **Not the arithmetic — the official issues identical multiplies.** D7's Barrett cost 16 VEC0 cycles a group; a conditional subtract honours D7 exactly with no multiply. 3,378 -> **3,054**, +827 -> **+634**. What remains is a real scheduling gap (M2-2). Evidence in `gt1152-p24-basemul-rinv/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
-| M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
+| M2-2 | Deferred — **now justified by measurement** | First Slothy gate: degree-4 `basemul_rinv` | P24 measured 3,054 against a 2,376 issue floor, 78%, with the official proving 2,551 reachable on the same instruction multiset. Worth about 500 cycles |
 
 ## Decisions ledger
 
@@ -1014,6 +1015,68 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   **Two of three operations now beat the official and so does the total**, with
   the hash still generic. `baseinv` (+2,406, keygen-only) is what keeps keygen
   positive.
+
+- **P24 done, and the third P21 target closes the set.**
+  `experiments/gt1152-p24-basemul-rinv/`.
+
+  **The gap was not the degree-4 arithmetic.** Compiled per group, the official's
+  `poly_basemul_scale` issues exactly our multiplies -- 19 `smlal`, 19 `smlal2`,
+  7 `smull`, 7 `smull2`, 7 `mul`, 7 `uzp1`, 7 `uzp2` -- and differs only in
+  having **no** `sqdmulh`/`srshr`/`mls`. Those four centered Barretts cost 16
+  VEC0 cycles a group on the measured A76 costs, putting our floor at 82 cycles
+  a group, 2,952 for 36 -- **already above the official's 2,551 measurement**, so
+  no schedule could have closed it.
+
+  **D7 does not need a Barrett.** Its purpose is only to bring the output, which
+  G2 bounds at 2752, inside 864's documented inverse input contract of 2497. A
+  single conditional subtract does that with no multiply at all: with
+  |x| <= 2752 < 1728 + q, one of `x-q`, `x+q` or `x` lands in **[-1728, 1728]**,
+  one tighter than the Barrett's [-1729, 1729]. **No bound is re-derived** -- the
+  change rests on G2's already-proved 2752. Probed over 20,000 trials on the
+  declared [0,4095] input domain including the all-4095 case: max
+  pre-normalization 2536 (bound 2752, valid to 5185), max post-normalization 1728
+  exactly as derived.
+
+  Plus a dependency rewrite at no instruction cost: pre-multiplying zeta into b
+  once per group replaces the serial `cross -> reduce -> xzeta -> accumulate ->
+  reduce` with three shared `bz` values and four independent accumulations.
+  Algebraically identical, and it is the form the official's histogram matches.
+
+  | | cycles |
+  |---|---:|
+  | P21 baseline (Barrett) | 3,378 |
+  | conditional subtract | 3,118 |
+  | **+ zeta pre-multiply** | **3,054** |
+  | official | 2,551 |
+  | issue floor | 2,376 |
+
+  **What is left here is a genuine scheduling gap, the campaign's first**: 78% of
+  floor, with the official proving 2,551 reachable on the same instructions.
+  That is M2-2, worth about 500 cycles. GCC's `unroll` pragma has no effect at
+  1, 2, 3 or 4.
+
+  **All three P21 targets are now done.**
+
+  | operation | official | GT | delta |
+  |---|---:|---:|---:|
+  | keygen | 64,053 | 64,748 | +1.09% |
+  | **encaps** | 59,531 | **58,319** | **-2.03%** |
+  | **decaps** | 52,508 | **52,087** | **-0.80%** |
+  | **total** | **176,092** | **175,155** | **-0.53%** |
+
+  | category | official | GT | delta | at P21 |
+  |---|---:|---:|---:|---:|
+  | **baseinv** | 10,599 | 12,996 | **+2,397** | +2,405 |
+  | hash | 84,801 | 85,703 | +902 | +985 |
+  | inverse | 6,292 | 6,309 | +18 | +1,134 |
+  | basemul | 16,131 | 15,781 | **-350** | -160 |
+  | serialize | 10,075 | 9,039 | **-1,036** | -1,034 |
+  | sample | 3,893 | 3,622 | **-270** | +556 |
+  | forward | 28,884 | 26,294 | **-2,590** | -2,618 |
+
+  **`baseinv` at +2,397 is now larger than every other loss combined and is what
+  keeps keygen positive.** It is keygen-only; cause on record from G5/P11, no ILP
+  split where 864 uses 12x3.
 
 ## Standing rules
 

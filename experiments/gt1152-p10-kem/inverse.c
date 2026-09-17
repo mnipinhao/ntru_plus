@@ -5,7 +5,6 @@
 
 #define Q 3457
 #define NEG_QINV (-12929)
-#define BARRETT_V 19412        /* ((1<<26) + Q/2) / Q */
 #define RINV (-682)            /* R^-1 mod q */
 
 /*
@@ -79,17 +78,34 @@ static inline int16x8_t fqmul(int16x8_t a, int16x8_t b)
 }
 
 /*
- * Centered Barrett reduction into {-(q+1)/2 .. (q+1)/2}, the NEON form of the
- * reference barrett_reduce.  Used to honour decision D7: the degree-4
- * basemul_rinv output reaches 2752, above NTRU+864's documented inverse input
- * contract of 2497, and this brings it to [-1729, 1728] so that the NTRU+864
- * bound chain holds a fortiori instead of needing re-derivation.
+ * D7's normalization, without touching the multiply pipe.
+ *
+ * The purpose is only to bring basemul_rinv's output, which G2 bounds at 2752,
+ * inside NTRU+864's documented inverse input contract of 2497, so that the 864
+ * bound chain holds a fortiori instead of needing re-derivation.  A centered
+ * Barrett does that but costs two multiply-class instructions per vector, and
+ * the multiply pipe is what bounds this kernel: the official's basemul_scale
+ * issues exactly the same 52 widening multiplies and 7 muls and simply has no
+ * reduction at the end.
+ *
+ * A single conditional subtract is enough and uses no multiply at all.  With
+ * |x| <= 2752 < 1728 + q, exactly one of the three cases applies:
+ *
+ *     x >  1728  ->  x - q  in (-1729, -705]
+ *     x < -1728  ->  x + q  in [705, 1729)
+ *     otherwise  ->  |x| <= 1728
+ *
+ * so the output lands in [-1728, 1728], one tighter than the Barrett's
+ * [-1729, 1729], and D7's contract is honoured exactly.
  */
-static inline int16x8_t barrett_reduce(int16x8_t a)
+static inline int16x8_t normalize_d7(int16x8_t a)
 {
-    int16x8_t t = vqdmulhq_n_s16(a, BARRETT_V);
-    t = vrshrq_n_s16(t, 11);
-    return vmlsq_n_s16(a, t, (int16_t)Q);
+    const int16x8_t q = vdupq_n_s16(Q);
+    const int16x8_t hi = vdupq_n_s16(1728);
+    const int16x8_t lo = vdupq_n_s16(-1728);
+
+    a = vsubq_s16(a, vandq_s16(vreinterpretq_s16_u16(vcgtq_s16(a, hi)), q));
+    return vaddq_s16(a, vandq_s16(vreinterpretq_s16_u16(vcltq_s16(a, lo)), q));
 }
 
 /* Inverse in Z_q via the reference addition chain for exponent 3455. */
@@ -150,36 +166,41 @@ void basemul_rinv_asm(int16_t out[BASE_COEFFICIENTS],
         LOAD4(av, a, offset);
         LOAD4(bv, b, offset);
 
-        cross0 = multiply(av[1], bv[3]);
-        cross0 = multiply_add(cross0, av[2], bv[2]);
-        cross0 = multiply_add(cross0, av[3], bv[1]);
-        cross1 = multiply(av[2], bv[3]);
-        cross1 = multiply_add(cross1, av[3], bv[2]);
-        cross2 = multiply(av[3], bv[3]);
+        /* Pre-multiply the zeta into b once, so the four output chains are
+         * independent accumulations instead of cross -> reduce -> zeta ->
+         * accumulate -> reduce in series.  The instruction multiset is
+         * unchanged; only the dependency structure is.  Algebraically identical:
+         * zeta*cross*R^-2 expands to a1*(zeta*b3*R^-1)*R^-1 + ... */
+        int16x8_t bz1 = montgomery_reduce(multiply(zeta, bv[1]));
+        int16x8_t bz2 = montgomery_reduce(multiply(zeta, bv[2]));
+        int16x8_t bz3 = montgomery_reduce(multiply(zeta, bv[3]));
 
-        acc = multiply(montgomery_reduce(cross0), zeta);
-        acc = multiply_add(acc, av[0], bv[0]);
+        acc = multiply(av[0], bv[0]);
+        acc = multiply_add(acc, av[1], bz3);
+        acc = multiply_add(acc, av[2], bz2);
+        acc = multiply_add(acc, av[3], bz1);
         r[0] = montgomery_reduce(acc);
 
-        acc = multiply(montgomery_reduce(cross1), zeta);
-        acc = multiply_add(acc, av[0], bv[1]);
+        acc = multiply(av[0], bv[1]);
         acc = multiply_add(acc, av[1], bv[0]);
+        acc = multiply_add(acc, av[2], bz3);
+        acc = multiply_add(acc, av[3], bz2);
         r[1] = montgomery_reduce(acc);
 
-        acc = multiply(montgomery_reduce(cross2), zeta);
-        acc = multiply_add(acc, av[0], bv[2]);
+        acc = multiply(av[0], bv[2]);
         acc = multiply_add(acc, av[1], bv[1]);
         acc = multiply_add(acc, av[2], bv[0]);
+        acc = multiply_add(acc, av[3], bz3);
         r[2] = montgomery_reduce(acc);
 
-        acc = multiply(av[3], bv[0]);
-        acc = multiply_add(acc, av[2], bv[1]);
+        acc = multiply(av[0], bv[3]);
         acc = multiply_add(acc, av[1], bv[2]);
-        acc = multiply_add(acc, av[0], bv[3]);
+        acc = multiply_add(acc, av[2], bv[1]);
+        acc = multiply_add(acc, av[3], bv[0]);
         r[3] = montgomery_reduce(acc);
 
         for (int i = 0; i < 4; i++)
-            r[i] = barrett_reduce(r[i]);
+            r[i] = normalize_d7(r[i]);
         STORE4(out, offset, r);
     }
 }
