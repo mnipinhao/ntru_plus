@@ -1,4 +1,4 @@
-# GT32 experiment decision ledger: 072--128
+# GT32 experiment decision ledger: 072--131
 
 This file is the durable record for the late architecture campaigns.  It
 keeps the conclusions, measured scale, invalid results, and reopening rules
@@ -171,6 +171,51 @@ was absent.  This closes the enumerated packetwise CT/GS family, not every
 possible mixed-radix transform; a reopen requires cross-packet cancellation,
 a different factorization, or a downstream consumer contract that accepts the
 wider bound.
+
+## 129: NTRU Prime AVX2 whole-pipeline transfer audit
+
+The source-backed audit followed `radix_3x2.S`, `twist_transpose_pre/post`,
+the cyclic/negacyclic FFT16 BaseMul calls, and `_mulcore`'s final fold/scale as
+one dataflow contract.  The direct mechanisms are already represented in
+GT Clean by the fused wide frontend/DFT3 deposit, TILE4-to-M/P typed terminal,
+native consumers, Late-SoA, E0V and QL2 work.  The reference's strongest
+remaining property—a shared two-Forward/BaseMul/inverse workspace ending at
+one coefficient-domain scale/fold—has no matching standard NTRU+768 KEM caller.
+
+No new ASM or benchmark was opened.  Reopen only for a real caller seam that
+deletes work beyond the existing typed contracts, a different leaf
+factorization, or an actual coefficient-to-coefficient polymul API.  See
+`gt32_ntruprime_pipeline_transfer_129/` for the reproducible source audit and
+machine-readable transfer matrix.
+
+## 130: consumer-aware Forward reduction gate
+
+Gate 128's best exact checkpoint-free NTT32 ended at `|x|<=17388`, but was
+rejected against the stale `10788` B3 ceiling.  Gate 130 propagates that same
+per-Q candidate through the selected general-B3 lambda tables, R-squared
+finalizer, message addition, and the full-signed-int16 Q24 contract established
+by 032R.  Both the r-only and r+m profiles are safe without adding a terminal
+center or any consumer reduction; their maximum final serialized-input bounds
+are 20294 and 19258 respectively.
+
+The consumer gate passes, and zero-spill ASM confirms a robust local
+`-33.0/-33.3` core-cycle win (16/16 in both matched placements). However, 128
+also assumed an NTT32 input bound of 1728. Starting from the selected
+frontend's conservative 5275 bound, the candidate's S3 GS pre-add reaches
+42200, so signed-word safety is not proven. The result is retained as
+`FAST_BUT_RANGE_UNQUALIFIED`; production is unchanged. Reopen only with a
+tighter producer-aware reachable-range proof or an input contract that really
+guarantees 1728, not by silently adding back a reduction.
+
+## 131: exact S3-GS ternary reachable range
+
+The producer-aware proof requested by 130 is exact and negative. Enumerating
+all `3^6` inputs for every frontend leaf, then composing the eight disjoint Q
+supports, finds a reachable S3 pre-add of 34781. A generated ternary witness
+wraps to -30755 under `vpaddw` and makes the real candidate disagree with the
+control modulo q. The specific 130 factorization is closed for the Encap
+ternary-input contract; its `-33 TSC` credit remains a target for a different
+checkpoint-deleting factorization.
 
 ## Current actionable state
 

@@ -1,0 +1,43 @@
+experiment: GT32-NTRUPRIME-PIPELINE-TRANSFER-129
+title: NTRU Prime AVX2 whole-pipeline transfer audit for NTRU+768
+mode: source-backed-generator-audit
+production_modified: false
+assembly_emitted: false
+benchmark_run: false
+
+reference:
+  repository: https://github.com/vector-polymul-ntru-ntrup/NTRU_Prime_truncation
+  branch_inspected: main
+  access_date: 2026-09-15
+  files:
+    - avx2/avx2/radix_3x2.S
+    - avx2/avx2/__avx2.c
+    - avx2/avx2/basemul.S
+
+status:
+  gt_offset_permutation: ALREADY_ABSORBED
+  twist_gt_fusion: ALREADY_ABSORBED
+  persistent_leaf_lane_island: ALREADY_ABSORBED_AND_SEARCHED
+  shared_two_forward_basemul_inverse_workspace: NO_KEM_CALLER_MATCH
+  single_final_scale_fold: NO_COMMON_TYPED_ENDPOINT
+  enc_r_dual_terminal: EXECUTED_ALREADY_082_083
+  direct_port: NO_NEW_EXECUTABLE_GATE
+
+decision:
+  summary: >-
+    The reference design is relevant, but its direct mechanisms are already
+    present in GT Clean, already measured in retained experiments, or depend on
+    a coefficient-to-coefficient polymul graph absent from the standard KEM.
+  do_not_repeat:
+    - standalone GT permutation
+    - standalone M/P transpose
+    - generic persistent coefficient-plane ABI
+    - immediate ENC-R dual terminal
+    - untyped final-scale deferral
+  reopen_only_if:
+    - a real KEM seam deletes a complete materialization or reduction beyond M/P/E0V/QL2
+    - a different factorization changes leaf arithmetic rather than moving presentation work
+    - coefficient-to-coefficient polymul becomes an actual measured API target
+
+artifacts:
+  - generated/transfer_matrix.json

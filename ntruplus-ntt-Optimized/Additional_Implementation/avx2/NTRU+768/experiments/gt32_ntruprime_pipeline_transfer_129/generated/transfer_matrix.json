@@ -1,0 +1,112 @@
+{
+  "assembly_emitted": false,
+  "decision": {
+    "direct_port": "NO_NEW_EXECUTABLE_GATE",
+    "do_not_repeat": [
+      "standalone GT permutation pass",
+      "standalone M/P transpose",
+      "generic persistent coefficient-plane ABI",
+      "ENC-R immediate dual terminal",
+      "untyped final-scale deferral"
+    ],
+    "reason": "Every direct mechanism is already absorbed, already measured, or lacks a matching NTRU+768 KEM caller graph.",
+    "reopen_only_if": [
+      "a real KEM caller seam deletes a complete materialization or reduction beyond the existing M/P/E0V/QL2 contracts",
+      "a new factorization changes the leaf arithmetic rather than only relocating permutation/twist work",
+      "a private coefficient-to-coefficient polymul API becomes an actual measured target"
+    ]
+  },
+  "experiment": "GT32-NTRUPRIME-PIPELINE-TRANSFER-129",
+  "local_source_sha256": {
+    "IMPLEMENTATION.md": "6a184b2323e73e3a154b6d2d318faabd78abe88e4b10b8db065e4a1cc9df2210",
+    "LAYOUTS.md": "486c72417735502709e9b0109cbcbad774cd9df1f9165be91320eb72812e346e",
+    "basemul.s": "5dcf8b359c061ad9c469ed650f05ff5570d737fb13dc474e1fd333cfd388e654",
+    "decap.c": "7146f52b955edac48a0ab8214a7ca7449717b9eb081df17aee8b38fc29c7c3b9",
+    "encap.c": "d90741cd88252de9c0657d17128f5e5bc068e9184def5dbcaffe903a9d6d5efb",
+    "experiments/GT32_EXPERIMENT_INDEX_072_128.md": "bd4b89aaa01a3ca5b3598109f5311f8fe06bf63e42a531ef80ed6d00873e7780",
+    "experiments/gt32_late_soa_065/README.md": "2d4b77a7569abd0d2f9c6d46d91c687e0a2eb84dca5ffeb232a857e9696e7d51",
+    "invntt.s": "7e3330d70044e5a70cf00448463ad45db9f5c01d3e38541f26397ade4f94fefa",
+    "keygen.c": "0d5ddb28e708d146c08150423e48c064566a23c3020c35dbc2da7464f2419d99",
+    "ntt.s": "4e437e58cff7ed1b10915bef013605255b2c6aa87603e070150fb44c22172722",
+    "ntt_m.s": "45cb5c6468db055360eb21e43f375881be32e4b276228fc7b85eef251b5423b0"
+  },
+  "mode": "source-backed-generator-audit",
+  "production_modified": false,
+  "reference": {
+    "access_date": "2026-09-15",
+    "branch_inspected": "main",
+    "files": [
+      "avx2/avx2/radix_3x2.S",
+      "avx2/avx2/__avx2.c",
+      "avx2/avx2/basemul.S"
+    ],
+    "observed_pipeline": [
+      "Rader17/truncated front transform",
+      "radix 3x2 with pre-twist",
+      "twist plus 16x16 transpose into plus/minus leaf batches",
+      "cyclic/negacyclic FFT16 BaseMul",
+      "inverse transpose plus post-twist",
+      "inverse radix 3x2 and Rader17",
+      "single final coefficient fold and FINAL_SCALE_Rmod"
+    ],
+    "repository": "https://github.com/vector-polymul-ntru-ntrup/NTRU_Prime_truncation"
+  },
+  "schema": "ntruplus768-ntruprime-pipeline-transfer-v1",
+  "transfer_matrix": [
+    {
+      "coverage": "ALREADY_ABSORBED",
+      "new_asm": false,
+      "ntru_prime_mechanism": "radix_3x2 permutation encoded in load/store offsets",
+      "ntruplus768_equivalent": "wide frontend plus DFT3_WIDE_STORE deposits the six GT branches directly"
+    },
+    {
+      "coverage": "ALREADY_ABSORBED_FORWARD_SIDE",
+      "new_asm": false,
+      "ntru_prime_mechanism": "radix_3x2 pre/post fused with diagonal twist",
+      "ntruplus768_equivalent": "FRONTEND_WIDE_ITER_BODY combines top split, twist/Montgomery work, DFT3 and branch deposit"
+    },
+    {
+      "coverage": "ALREADY_ABSORBED_AND_EXTENSIVELY_SEARCHED",
+      "evidence": [
+        "030",
+        "061-067",
+        "100-105"
+      ],
+      "new_asm": false,
+      "ntru_prime_mechanism": "twist_transpose_pre/post around a persistent leaf-lane multiplication island",
+      "ntruplus768_equivalent": "TILE4 inside NTT32, then typed M/P coefficient planes consumed natively by B3/BaseInv/inverse/Q24"
+    },
+    {
+      "coverage": "CALL_GRAPH_MISMATCH",
+      "details": {
+        "decap": "scale BaseMul to inverse exists, but operands arrive decoded in M rather than through two Forward transforms",
+        "encap": "two Forward paths but no inverse; r crosses a hash boundary",
+        "keygen": "Forward values feed BaseInv and two serialized products; no inverse transform"
+      },
+      "new_asm": false,
+      "ntru_prime_mechanism": "two Forward operands, BaseMul and inverse share one coefficient-to-coefficient polymul workspace",
+      "ntruplus768_equivalent": "no standard KEM caller has this exact graph"
+    },
+    {
+      "coverage": "NOT_DIRECTLY_TRANSFERABLE",
+      "evidence": [
+        "072-078 normalized-D4",
+        "026-029 scale propagation"
+      ],
+      "new_asm": false,
+      "ntru_prime_mechanism": "post transpose followed by one final scale/fold at coefficient endpoint",
+      "ntruplus768_equivalent": "typed e=0/e=-1/J1/SP1 scales terminate at different KEM consumers"
+    },
+    {
+      "coverage": "EXECUTED_ALREADY",
+      "evidence": [
+        "082 audit",
+        "083 executable D1 dual terminal"
+      ],
+      "new_asm": false,
+      "ntru_prime_mechanism": "dual terminal from live transform registers",
+      "ntruplus768_equivalent": "ENC-R retain M for B3 while forming WIRE12 for hash_g",
+      "result": "composite-map credit existed, but immediate coupling was below continuation value"
+    }
+  ]
+}

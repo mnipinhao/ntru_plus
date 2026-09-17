@@ -1,0 +1,18 @@
+experiment: GT32-S3GS-REACHABLE-RANGE-131
+production_modified: false
+input_contract: "768 independent coefficients in {-1,0,1}"
+method: exact_3_pow_6_per_leaf_then_disjoint_support_composition
+worst:
+  branch: 1
+  k3: 2
+  packet_lane: 1
+  kind: sum
+  reachable_range: [-34781, 34781]
+witness:
+  mathematical_preadd: 34781
+  vpaddw_result: -30755
+  wrap_error: -65536
+  error_mod_q: 147
+  real_asm_mod_q_mismatch: true
+decision: CLOSED_FOR_TERNARY_FORWARD_INPUT
+reopen_condition: different factorization or producer contract that removes/reduces the S3 GS pre-add

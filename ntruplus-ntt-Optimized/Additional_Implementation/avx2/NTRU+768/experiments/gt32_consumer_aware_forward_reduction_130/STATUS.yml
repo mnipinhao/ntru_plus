@@ -1,0 +1,20 @@
+experiment: GT32-CONSUMER-AWARE-FORWARD-REDUCTION-130
+production_modified: false
+consumer_gate: PASS
+selected_frontend_range_gate: FAIL_CONSERVATIVE_PROOF
+asm_correctness_corpus: PASS
+asm_performance: PASS
+decision: CLOSED_BY_131_FOR_TERNARY_FORWARD_INPUT
+candidate:
+  source: GT32-MIXED-CTGS-RANGE-128 nearest exact network
+  mode_bits: "00000000100000000000"
+  terminal_bound: 17388
+  removed_montgomery_chains_per_forward: 12
+closure:
+  experiment: GT32-S3GS-REACHABLE-RANGE-131
+  exact_reachable_preadd: 34781
+  executable_wrap_witness: true
+reopen:
+  - a different factorization that removes or reduces the S3 GS pre-add
+  - or a producer contract that genuinely guarantees the smaller NTT32 input
+production_eligible: false
