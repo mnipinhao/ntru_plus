@@ -55,6 +55,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P25 | Done — analysis | Is `baseinv` next, and does `inverse` still have headroom? | **`baseinv` yes, two separate problems**: 1,928 cycles of strictly serial batch inversion (needs 864's 12x3 ILP split) plus both parallel phases at ~78% of their multiply floor. **`inverse` is level with the official** (6,293 vs 6,292) with ~1,200 cycles of absolute headroom and no competitive gap. Evidence in `gt1152-p25-baseinv-inverse-floors/` |
 | P26 | Done | `baseinv`: split the batch inversion into three chains | Serial phase **1,928 -> 1,191**; `poly_baseinv` **+2,397 -> +850**; **keygen +1.09% -> -1.65%**, **KEM -0.53% -> -1.55%**. **All three operations now beat the official.** Evidence in `gt1152-p26-baseinv-ilp/` |
 | P27 | Done — **first SLOTHY run of this campaign** | M2-2: schedule `basemul_rinv` | **3,054 -> 2,744 cycles**; `poly_basemul_rinv` +634 -> **+232**; decaps -0.86% -> **-1.68%**; KEM -1.55% -> **-1.79%**. Byte-identical to the C oracle over 4,000 trials. Evidence in `gt1152-p27-slothy-basemul-rinv/` and `dev/` |
+| P28 | Done — second target not justified | Does a per-microarchitecture schedule pay? | **A76: scheduling worth ~10%, target choice irrelevant** (2,744 vs 2,739). **M2 Pro: all three identical** at ~278 ns. SLOTHY's M1 model predicts 81 cycles/group where Apple silicon measures 25. Evidence in `gt1152-p28-cross-target/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -1243,6 +1244,60 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   Installed behind `NTRUPLUS1152_ASM_BASEMUL_RINV`: without the define the C is
   used and every gate still passes, so the assembly is an optimization rather
   than a dependency. Still 193 above the official and 368 above the floor.
+
+- **P28 done. The per-target schedule does not pay, and that is now measured.**
+  `experiments/gt1152-p28-cross-target/`.
+
+  The `dev/clean/opt` tree exists to produce a schedule per microarchitecture.
+  This gate asks whether that is worth anything: one kernel, two schedules, two
+  machines.
+
+  `basemul_rinv` from one symbolic source, scheduled for `Arm_Cortex_A76`
+  (373s, 355 instructions) and `Apple_M1_firestorm_experimental` (733s, 241 --
+  different software-pipelining depths of the same 115-instruction body). The
+  M1 run is only possible because of the seven-class model patch.
+
+  **On the Pi 5**, both schedules byte-identical to the C oracle over 4,000
+  trials:
+
+  | | cycles |
+  |---|---:|
+  | intrinsics C | 3,054 |
+  | SLOTHY, `cortex_a76` | **2,744** |
+  | SLOTHY, `apple_m1_firestorm` | **2,739** |
+  | official | 2,551 |
+  | floor | 2,376 |
+
+  Scheduling is worth ~310 cycles, 10%. **Which target it was solved for makes
+  no measurable difference.** The expectation was that the M1 schedule would be
+  worse here; it is not.
+
+  **On the Apple M2 Pro**, three consecutive runs with the candidates measured
+  alternately and minimised: intrinsics C 278.8 / 277.0 / 277.9 ns, `cortex_a76`
+  277.4 / 277.2 / 278.5, `apple_m1_firestorm` 277.6 / 278.8 / 280.8. **All three
+  identical**, spread 1.4%. Neither schedule buys anything.
+
+  **Why they disagree.** The A76 is four-wide with a ~128-entry reorder buffer
+  and the loop body is 115 instructions, so barely one iteration fits the window
+  and a static schedule has real work to do. Apple's P-core is far wider with a
+  reorder buffer several hundred deep: it finds the parallelism at run time. That
+  also explains why the target choice does not matter on the A76 -- both
+  schedules were solved against the same dependency graph and are mostly doing
+  the same thing, spreading the seven Montgomery reductions' serial chains far
+  enough apart to fill the multiply pipe.
+
+  **The M1 model is a three-fold pessimistic predictor.** It solved to 81 cycles
+  per group; the M2 Pro measures about 25. M2 Pro is Avalanche and not
+  Firestorm, so the model is not being accused of being wrong about M1, but it
+  cannot be used to predict Apple performance for this kernel.
+
+  **Conclusions.** Scheduling is worth ~10% on the A76 and nothing on Apple
+  silicon for this kernel, so the SLOTHY work stays pointed at the Pi 5.
+  **Shipping a second, Apple-targeted implementation is not justified**: the
+  schedule is no better than the A76 one on the only Apple machine available,
+  from a model that mispredicts by three. The tree keeps the capability; nothing
+  ships. The multi-target structure still earned its place -- it is what made
+  this measurable rather than a guess.
 
 ## Standing rules
 

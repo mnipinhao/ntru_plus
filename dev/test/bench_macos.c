@@ -21,8 +21,14 @@
 
 #define N 1152
 #define Q 3457
+#ifndef HAVE_M1
+#define HAVE_M1 0
+#endif
 
 void basemul_rinv_kernel(int16_t *, const int16_t *, const int16_t *, const int16_t *);
+#if HAVE_M1
+void basemul_rinv_kernel_b(int16_t *, const int16_t *, const int16_t *, const int16_t *);
+#endif
 void basemul_rinv_asm(int16_t *, const int16_t *, const int16_t *);
 
 static uint64_t now_ns(void) { return clock_gettime_nsec_np(CLOCK_UPTIME_RAW); }
@@ -77,26 +83,29 @@ typedef void (*kfn)(int16_t *, const int16_t *, const int16_t *);
  * Run one after the other instead and the second meets a different frequency
  * state: that produced a two-fold swing between consecutive invocations.
  */
-static void bench_pair(kfn f0, kfn f1, double g, double *r0, double *r1)
+static void bench_all(kfn *f, int n, double g, double *out)
 {
     const int R = 20000;
-    double b0 = 1e18, b1 = 1e18;
-    for (int i = 0; i < 2000; i++) { f0(o1, a, b); f1(o2, a, b); }
-    for (int t = 0; t < 25; t++) {
-        uint64_t t0 = now_ns();
-        for (int i = 0; i < R; i++) f0(o1, a, b);
-        double n0 = (double)(now_ns() - t0) / R;
-        t0 = now_ns();
-        for (int i = 0; i < R; i++) f1(o2, a, b);
-        double n1 = (double)(now_ns() - t0) / R;
-        if (n0 < b0) b0 = n0;
-        if (n1 < b1) b1 = n1;
-    }
-    *r0 = b0 * g; *r1 = b1 * g;
+    for (int i = 0; i < n; i++) out[i] = 1e18;
+    for (int i = 0; i < 2000; i++) for (int j = 0; j < n; j++) f[j](o2, a, b);
+    for (int t = 0; t < 25; t++)
+        for (int j = 0; j < n; j++) {
+            uint64_t t0 = now_ns();
+            for (int i = 0; i < R; i++) f[j](o2, a, b);
+            double ns = (double)(now_ns() - t0) / R;
+            if (ns < out[j]) out[j] = ns;
+        }
+    for (int i = 0; i < n; i++) out[i] *= g;
 }
 
 static void kernel(int16_t *o, const int16_t *x, const int16_t *y)
 { basemul_rinv_kernel(o, x, y, &basemul_zetas[0][0]); }
+#if HAVE_M1
+static void kernel_b(int16_t *o, const int16_t *x, const int16_t *y)
+{ basemul_rinv_kernel_b(o, x, y, &basemul_zetas[0][0]); }
+#else
+static void kernel_b(int16_t *o, const int16_t *x, const int16_t *y) { (void)o;(void)x;(void)y; }
+#endif
 
 int main(void)
 {
@@ -105,21 +114,27 @@ int main(void)
 
     for (int i = 0; i < N; i++) { a[i] = (int16_t)(rnd() % 4096); b[i] = (int16_t)(rnd() % 4096); }
 
+    kfn cand[3] = {basemul_rinv_asm, kernel, kernel_b};
+    const char *name[3] = {"intrinsics C", "SLOTHY, cortex_a76", "SLOTHY, apple_m1_firestorm"};
+    int ncand = HAVE_M1 ? 3 : 2;
+
     basemul_rinv_asm(o1, a, b);
-    kernel(o2, a, b);
     int bad = 0, worst = 0;
-    for (int i = 0; i < N; i++) {
-        if (o1[i] != o2[i] && ((o1[i] - o2[i]) % Q + Q) % Q) bad++;
-        int v = o2[i] < 0 ? -o2[i] : o2[i];
-        if (v > worst) worst = v;
+    for (int c = 1; c < ncand; c++) {
+        cand[c](o2, a, b);
+        for (int i = 0; i < N; i++) {
+            if (o1[i] != o2[i] && ((o1[i] - o2[i]) % Q + Q) % Q) bad++;
+            int v = o2[i] < 0 ? -o2[i] : o2[i];
+            if (v > worst) worst = v;
+        }
     }
     printf("agreement with the C oracle: %s   max |out| %d\n", bad ? "FAIL" : "pass", worst);
 
     double g = measure_ghz();
     printf("derived clock: %.2f GHz\n\n", g);
-    double c, k;
-    bench_pair(basemul_rinv_asm, kernel, g, &c, &k);
-    printf("  %-28s %8.1f cycles   %7.1f ns\n", "intrinsics C", c, c / g);
-    printf("  %-28s %8.1f cycles   %7.1f ns\n", "SLOTHY kernel", k, k / g);
+    double r[3];
+    bench_all(cand, ncand, g, r);
+    for (int i = 0; i < ncand; i++)
+        printf("  %-28s %8.1f cycles   %7.1f ns\n", name[i], r[i], r[i] / g);
     return bad != 0;
 }
