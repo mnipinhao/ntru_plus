@@ -32,3 +32,10 @@ make check
 The package intentionally contains one selected production profile. Slothy
 inputs, benchmark harnesses, rejected alternatives, and development selectors
 remain outside this release tree.
+
+## SUPERCOP leaves
+
+`SUPERCOP/crypto_kem/ntruplus768/` holds a materialized SUPERCOP implementation
+directory for each package, regenerated and drift-checked by the scripts under
+`scripts/`. See [`SUPERCOP/README.md`](SUPERCOP/README.md) for how to verify a
+leaf and for what a SUPERCOP measurement of it does and does not establish.
