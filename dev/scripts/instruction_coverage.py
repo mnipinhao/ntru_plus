@@ -18,6 +18,15 @@ MODELS = ["cortex_a76", "neoverse_n1_experimental",
           "apple_m1_firestorm_experimental", "apple_m1_icestorm_experimental"]
 loaded = {m: __import__(f"slothy.targets.aarch64.{m}", fromlist=["x"]) for m in MODELS}
 
+# Report both states for the M1 models: as SLOTHY ships them, and with this
+# repository's seven-class patch applied.
+if "--patched" in sys.argv:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "slothy_models"))
+    import apple_m1_ntruplus
+    for m in MODELS:
+        if m.startswith("apple_m1"):
+            apple_m1_ntruplus.patch(loaded[m])
+
 
 def resolves(inst, model):
     """Ask the model itself, rather than inspecting its tables.

@@ -20,6 +20,7 @@ TARGETS = {
     "cortex_a76":         "cortex_a76",
     "neoverse_n1":        "neoverse_n1_experimental",
     "apple_m1_firestorm": "apple_m1_firestorm_experimental",
+    "apple_m1_icestorm":  "apple_m1_icestorm_experimental",
 }
 
 HERE = Path(__file__).resolve().parent
@@ -36,6 +37,13 @@ a = p.parse_args()
 
 Target = __import__(f"slothy.targets.aarch64.{TARGETS[a.target]}",
                     fromlist=["x"])
+if a.target.startswith("apple_m1"):
+    # SLOTHY's M1 models lack the six signed widening multiply-accumulate
+    # classes and subs_imm.  See dev/slothy_models/apple_m1_ntruplus.py for the
+    # numbers and where they come from.
+    sys.path.insert(0, str(HERE.parent / "slothy_models"))
+    import apple_m1_ntruplus
+    apple_m1_ntruplus.patch(Target)
 
 out = HERE / a.target
 out.mkdir(exist_ok=True)

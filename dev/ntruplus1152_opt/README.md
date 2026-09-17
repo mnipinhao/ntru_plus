@@ -68,9 +68,27 @@ UnknownInstruction: Couldn't find <class '...aarch64_neon.vsmull'>
                     for smull v16.4S, v26.4H, v25.4H
 ```
 
-Adding them is a small, well-bounded patch -- an execution unit, an inverse
-throughput and a latency for each -- but the numbers have to be **measured**,
-and this repository's development host is an **Apple M2 Pro**, a different
-microarchitecture from either M1 core.  Measurements taken here would not
-validate an M1 model.  That is the only thing between this tree and a second
-schedulable target.
+`dev/slothy_models/apple_m1_ntruplus.py` supplies them, and the numbers are
+neither guessed nor measured here.  Two independent things fix them:
+
+- the models already carry `vumull` and `vumlal`, the **unsigned** widening
+  forms, at `ExecutionUnit.V()`, inverse throughput 1, latency 3.  The signed
+  forms are absent, not different.
+- Dougall Johnson's reverse-engineered Firestorm tables give, for the 4S
+  variants, `SMULL`/`SMULL2`/`SMLAL`/`SMLAL2`/`SMLSL`/`SMLSL2` at **LAT 3,
+  TP 0.25, units u11-14** -- identical to `MUL (vector, 8H)`, and `u11-14` is
+  the four vector pipes the model numbers `VEC0`-`VEC3`, so TP 0.25 is one pipe
+  for one cycle.  That is exactly the `vumull` entry, confirmed from outside the
+  model.  The integer tables give `SUBS (immediate, 64-bit)` at **LAT 1,
+  TP 0.333, units u1-3**, three of the six integer pipes rather than all six,
+  so `subs_imm` gets `SCALAR_I0..I2`.
+
+The upstream checkout is not modified; the loaded module's tables are extended,
+which is what its own `get_units`, `get_latency` and `get_inverse_throughput`
+read.  With the patch all four models cover every instruction these kernels use.
+
+**An M1 schedule still cannot be validated here.**  This repository's host is an
+Apple M2 Pro, whose P-core is Avalanche and not Firestorm, so any M1 result is a
+prediction from published data until it is run on M1 silicon.  What *can* be
+checked here is that the M1-scheduled code is correct, by running it on the Pi:
+it should produce identical output and be slower than the A76 schedule.
