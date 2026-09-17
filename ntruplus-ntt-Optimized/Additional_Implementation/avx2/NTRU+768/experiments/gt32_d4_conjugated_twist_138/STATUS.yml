@@ -1,0 +1,25 @@
+experiment: GT32-D4-CONJUGATED-TWIST-TRANSPOSE-138
+status: COMPLETE
+production_modified: false
+generator: PASS
+mathematical_conjugation: PASS
+basis_checks: 768
+range:
+  status: FAIL_AT_S5_CONSERVATIVE_BOUND
+  maximum_abs_bound: 55296
+execution_accounting:
+  added_full_width_chains_per_forward: 24
+  generic_two_forward_plus_b3_net_chains: 12
+  actual_encap_net_chains: 24
+terminal_inverse_diagonal:
+  existing_b3_finalizer_absorption: PASS
+  added_chains: 0
+assembly: NOT_AUTHORIZED
+benchmark: NOT_RUN
+decision: CLOSED_FOR_CURRENT_EXECUTION_CLASS
+closed_scope: current_TILE4_plus_one_multiply_radix2_CT_GS_plus_normalized_D4_B3_plus_current_Q24
+family_closed: false
+reopen_conditions:
+  - absorb_Ds_without_new_S1_chains
+  - normalized_h_decoder_replaces_existing_operation_class
+  - asymmetric_raw_h_normalized_r_tensor_retains_B3_credit

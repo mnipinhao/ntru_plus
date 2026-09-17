@@ -1,0 +1,2140 @@
+{
+  "schema": "ntruplus768-gt32-d4-conjugated-twist-v1",
+  "experiment": "GT32-D4-CONJUGATED-TWIST-TRANSPOSE-138",
+  "status": "COMPLETE_STATIC_REJECT_NO_OPERATION_CLASS_DELETION",
+  "production_modified": false,
+  "assembly_emitted": false,
+  "benchmark_run": false,
+  "source_hashes": {
+    "generate_tile4.py": "f64aaf091fdfaf03d14c6f4f280b88047e2a1c5face6ab60d6ad1238a8a0cbcb",
+    "d4_fixed_modulus_norm.json": "a85da5a8a04996e6d8295026802e7a7b484fd659058e99d5f04037cd48c358f6",
+    "basemul_ql2.s": "61288b8de0c4803c839e9e61edd55a7a17fee34b2b88cecb15c8cda96b6b380d"
+  },
+  "exact_algebra": {
+    "q": 3457,
+    "normalized_modulus": 2,
+    "tiles": 6,
+    "leaves": 192,
+    "identity": "lambda[tile,Q] = 2*s[tile,Q]^4",
+    "output_diagonal": "D(s)=diag(1,s,s^2,s^3)",
+    "butterfly_identity": "diag(c,d)*CT(w) = GS(d/c)*diag(c,c*w)",
+    "basis_vector_checks": 768,
+    "all_checks_pass": true
+  },
+  "current_ntt32": {
+    "S1": "raw CT, no Montgomery chain",
+    "S2_to_S5": "CT with one high-arm Montgomery chain per butterfly",
+    "full_width_vector_chains_per_tile": 24,
+    "full_width_vector_chains_per_forward": 144
+  },
+  "conjugated_ntt32": {
+    "mathematically_exact": true,
+    "input_diagonal_can_replace_existing_frontend_twist_constants": true,
+    "reason": "the wide frontend already Montgomery-multiplies every deposited lane by a lane-dependent table",
+    "TILE4_constraint": "all four quartic degrees in one YMM butterfly use one CT/GS topology",
+    "root_choice_independent_topology": "S5 is forced by distinct lambda values; after S5 the c=0 gauges alone force GS through S4..S1",
+    "forced_change": "S1 must become GS so its difference arm receives a lane-dependent Montgomery factor",
+    "full_width_vector_chains_per_tile": 28,
+    "full_width_vector_chains_per_forward": 168,
+    "added_full_width_chains_per_forward": 24,
+    "aggregate_scalar_topologies": {
+      "1": {
+        "CT": 0,
+        "GS": 384
+      },
+      "2": {
+        "CT": 0,
+        "GS": 384
+      },
+      "3": {
+        "CT": 0,
+        "GS": 384
+      },
+      "4": {
+        "CT": 0,
+        "GS": 384
+      },
+      "5": {
+        "CT": 0,
+        "GS": 384
+      }
+    },
+    "range_proof": {
+      "all_tiles_signed_int16_safe": false,
+      "maximum_terminal_abs_bound": 55296,
+      "note": "conservative interval propagation; exact field equality does not rely on the bound"
+    }
+  },
+  "terminal_absorption": {
+    "normalized_B3_output_to_current_Q24": "replace the existing B3 R2 finalizer constants by R2*s^-c",
+    "added_Montgomery_chains": 0,
+    "Q24_arithmetic_changed": false,
+    "Q24_routes_changed": false,
+    "dynamic_constant_load_instruction_delta": 0,
+    "rodata_growth_upper_bytes": 2304,
+    "message_operand": "keep message Forward in current unnormalized M/QL2 form"
+  },
+  "complete_path_accounting": {
+    "unit": "full-width vector Montgomery chains per polynomial path",
+    "normalized_B3_credit": -36,
+    "generic_two_forward_operands": {
+      "Forward_conjugation_cost": 48,
+      "B3_credit": -36,
+      "terminal_inverse_diagonal": 0,
+      "net_delta": 12
+    },
+    "actual_Encap_provenance": {
+      "r_Forward_conjugation_cost": 24,
+      "h_Decode_normalization_bridge": 36,
+      "B3_credit": -36,
+      "terminal_inverse_diagonal": 0,
+      "net_delta": 24,
+      "why_h_is_not_free": "the wire decoder has no existing arbitrary-constant Montgomery node to relabel"
+    }
+  },
+  "route_and_register_accounting": {
+    "standalone_D_transpose": 0,
+    "new_physical_layout": false,
+    "new_shuffle_family": 0,
+    "peak_YMM": "not increased by the symbolic topology; GS uses the same low/high pair plus Montgomery temporaries",
+    "important_cost": "24 new full-width S1 Montgomery chains per Forward, not routing"
+  },
+  "decision": {
+    "generator_gate": "PASS",
+    "mathematical_conjugation": "PASS",
+    "range": "FAIL",
+    "assembly": "NOT_AUTHORIZED",
+    "reason": "the complete path does not delete an operation class: generic 2F+B3 is +12 chains and actual Encap is +24 chains before any range-repair overhead",
+    "scope_closed": "current TILE4 packing + one-multiply radix-2 CT/GS NTT32 + normalized D4 B3 + current Q24",
+    "family_closed": false,
+    "reopen_conditions": [
+      "a frontend/NTT factorization that absorbs D(s) without adding the 24 S1 chains per Forward",
+      "an h decoder that emits the normalized operand by replacing, not adding, a multiplication/reduction class",
+      "an asymmetric raw-h/normalized-r tensor that retains the normalized B3 chain saving"
+    ]
+  },
+  "tiles": [
+    {
+      "tile": 0,
+      "k3": 0,
+      "branch": 0,
+      "roots_centered": [
+        1560,
+        1242,
+        40,
+        500,
+        155,
+        209,
+        1175,
+        94,
+        82,
+        270,
+        159,
+        151,
+        184,
+        153,
+        182,
+        262,
+        294,
+        218,
+        779,
+        892,
+        858,
+        354,
+        22,
+        275,
+        387,
+        348,
+        256,
+        257,
+        565,
+        1428,
+        380,
+        661
+      ],
+      "degrees": [
+        {
+          "degree": 0,
+          "terminal_unique_scales": 1,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 1,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560,
+            1560
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 2,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128,
+            -128
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 3,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826,
+            826
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        }
+      ],
+      "range": {
+        "input_abs_bound": 1728,
+        "stages": [
+          {
+            "stage": 1,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 3456,
+            "max_product_abs_bound": 1813,
+            "max_output_abs_bound": 3456,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 2,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 6912,
+            "max_product_abs_bound": 1891,
+            "max_output_abs_bound": 6912,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 3,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 13824,
+            "max_product_abs_bound": 2058,
+            "max_output_abs_bound": 13824,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 4,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 27648,
+            "max_product_abs_bound": 2286,
+            "max_output_abs_bound": 27648,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 5,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 55296,
+            "max_product_abs_bound": 2663,
+            "max_output_abs_bound": 55296,
+            "signed_int16_safe": false
+          }
+        ],
+        "terminal_max_abs_bound": 55296,
+        "all_signed_int16_safe": false
+      }
+    },
+    {
+      "tile": 1,
+      "k3": 0,
+      "branch": 1,
+      "roots_centered": [
+        108,
+        1350,
+        631,
+        755,
+        920,
+        765,
+        910,
+        1004,
+        775,
+        62,
+        729,
+        470,
+        137,
+        16,
+        624,
+        886,
+        1008,
+        1228,
+        506,
+        589,
+        632,
+        226,
+        427,
+        152,
+        833,
+        1687,
+        110,
+        1374,
+        438,
+        1003,
+        809,
+        203
+      ],
+      "degrees": [
+        {
+          "degree": 0,
+          "terminal_unique_scales": 1,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 1,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108,
+            108
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 2,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293,
+            1293
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 3,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364,
+            1364
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        }
+      ],
+      "range": {
+        "input_abs_bound": 1728,
+        "stages": [
+          {
+            "stage": 1,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 3456,
+            "max_product_abs_bound": 1813,
+            "max_output_abs_bound": 3456,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 2,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 6912,
+            "max_product_abs_bound": 1891,
+            "max_output_abs_bound": 6912,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 3,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 13824,
+            "max_product_abs_bound": 2058,
+            "max_output_abs_bound": 13824,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 4,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 27648,
+            "max_product_abs_bound": 2286,
+            "max_output_abs_bound": 27648,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 5,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 55296,
+            "max_product_abs_bound": 2663,
+            "max_output_abs_bound": 55296,
+            "signed_int16_safe": false
+          }
+        ],
+        "terminal_max_abs_bound": 55296,
+        "all_signed_int16_safe": false
+      }
+    },
+    {
+      "tile": 2,
+      "k3": 1,
+      "branch": 0,
+      "roots_centered": [
+        304,
+        343,
+        451,
+        452,
+        413,
+        23,
+        897,
+        887,
+        406,
+        1277,
+        876,
+        579,
+        691,
+        5,
+        195,
+        707,
+        315,
+        1248,
+        274,
+        32,
+        1531,
+        124,
+        1379,
+        940,
+        216,
+        121,
+        1262,
+        867,
+        569,
+        1199,
+        901,
+        837
+      ],
+      "degrees": [
+        {
+          "degree": 0,
+          "terminal_unique_scales": 1,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 1,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304,
+            304
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 2,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923,
+            -923
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 3,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575,
+            -575
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        }
+      ],
+      "range": {
+        "input_abs_bound": 1728,
+        "stages": [
+          {
+            "stage": 1,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 3456,
+            "max_product_abs_bound": 1813,
+            "max_output_abs_bound": 3456,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 2,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 6912,
+            "max_product_abs_bound": 1891,
+            "max_output_abs_bound": 6912,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 3,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 13824,
+            "max_product_abs_bound": 2058,
+            "max_output_abs_bound": 13824,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 4,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 27648,
+            "max_product_abs_bound": 2286,
+            "max_output_abs_bound": 27648,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 5,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 55296,
+            "max_product_abs_bound": 2663,
+            "max_output_abs_bound": 55296,
+            "signed_int16_safe": false
+          }
+        ],
+        "terminal_max_abs_bound": 55296,
+        "all_signed_int16_safe": false
+      }
+    },
+    {
+      "tile": 3,
+      "k3": 1,
+      "branch": 1,
+      "roots_centered": [
+        872,
+        529,
+        111,
+        341,
+        2,
+        25,
+        975,
+        78,
+        291,
+        115,
+        1028,
+        978,
+        594,
+        511,
+        813,
+        1033,
+        643,
+        328,
+        604,
+        636,
+        612,
+        736,
+        1048,
+        331,
+        741,
+        79,
+        19,
+        1243,
+        1370,
+        160,
+        126,
+        1511
+      ],
+      "degrees": [
+        {
+          "degree": 0,
+          "terminal_unique_scales": 1,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 1,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872,
+            872
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 2,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156,
+            -156
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 3,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209,
+            -1209
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        }
+      ],
+      "range": {
+        "input_abs_bound": 1728,
+        "stages": [
+          {
+            "stage": 1,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 3456,
+            "max_product_abs_bound": 1813,
+            "max_output_abs_bound": 3456,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 2,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 6912,
+            "max_product_abs_bound": 1891,
+            "max_output_abs_bound": 6912,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 3,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 13824,
+            "max_product_abs_bound": 2058,
+            "max_output_abs_bound": 13824,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 4,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 27648,
+            "max_product_abs_bound": 2286,
+            "max_output_abs_bound": 27648,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 5,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 55296,
+            "max_product_abs_bound": 2663,
+            "max_output_abs_bound": 55296,
+            "signed_int16_safe": false
+          }
+        ],
+        "terminal_max_abs_bound": 55296,
+        "all_signed_int16_safe": false
+      }
+    },
+    {
+      "tile": 4,
+      "k3": 2,
+      "branch": 0,
+      "roots_centered": [
+        662,
+        915,
+        1115,
+        1472,
+        1286,
+        656,
+        1208,
+        1272,
+        307,
+        252,
+        543,
+        320,
+        1482,
+        158,
+        38,
+        475,
+        417,
+        27,
+        1053,
+        1022,
+        582,
+        230,
+        251,
+        1409,
+        603,
+        1058,
+        222,
+        682,
+        4,
+        50,
+        1257,
+        156
+      ],
+      "degrees": [
+        {
+          "degree": 0,
+          "terminal_unique_scales": 1,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 1,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662,
+            662
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 2,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795,
+            -795
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 3,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826,
+            -826
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        }
+      ],
+      "range": {
+        "input_abs_bound": 1728,
+        "stages": [
+          {
+            "stage": 1,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 3456,
+            "max_product_abs_bound": 1813,
+            "max_output_abs_bound": 3456,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 2,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 6912,
+            "max_product_abs_bound": 1891,
+            "max_output_abs_bound": 6912,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 3,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 13824,
+            "max_product_abs_bound": 2058,
+            "max_output_abs_bound": 13824,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 4,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 27648,
+            "max_product_abs_bound": 2286,
+            "max_output_abs_bound": 27648,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 5,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 55296,
+            "max_product_abs_bound": 2663,
+            "max_output_abs_bound": 55296,
+            "signed_int16_safe": false
+          }
+        ],
+        "terminal_max_abs_bound": 55296,
+        "all_signed_int16_safe": false
+      }
+    },
+    {
+      "tile": 5,
+      "k3": 2,
+      "branch": 1,
+      "roots_centered": [
+        1282,
+        174,
+        128,
+        1096,
+        496,
+        714,
+        190,
+        1082,
+        429,
+        177,
+        11,
+        554,
+        794,
+        446,
+        109,
+        147,
+        442,
+        1389,
+        1110,
+        47,
+        20,
+        250,
+        621,
+        780,
+        92,
+        1150,
+        91,
+        131,
+        974,
+        1599,
+        135,
+        41
+      ],
+      "degrees": [
+        {
+          "degree": 0,
+          "terminal_unique_scales": 1,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 1,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282,
+            1282
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 2,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449,
+            1449
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        },
+        {
+          "degree": 3,
+          "terminal_unique_scales": 32,
+          "input_unique_scales": 1,
+          "input_gauges_centered": [
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209,
+            1209
+          ],
+          "stage_scalar_topologies": {
+            "1": {
+              "CT": 0,
+              "GS": 16
+            },
+            "2": {
+              "CT": 0,
+              "GS": 16
+            },
+            "3": {
+              "CT": 0,
+              "GS": 16
+            },
+            "4": {
+              "CT": 0,
+              "GS": 16
+            },
+            "5": {
+              "CT": 0,
+              "GS": 16
+            }
+          }
+        }
+      ],
+      "range": {
+        "input_abs_bound": 1728,
+        "stages": [
+          {
+            "stage": 1,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 3456,
+            "max_product_abs_bound": 1813,
+            "max_output_abs_bound": 3456,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 2,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 6912,
+            "max_product_abs_bound": 1891,
+            "max_output_abs_bound": 6912,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 3,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 13824,
+            "max_product_abs_bound": 2058,
+            "max_output_abs_bound": 13824,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 4,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 27648,
+            "max_product_abs_bound": 2286,
+            "max_output_abs_bound": 27648,
+            "signed_int16_safe": true
+          },
+          {
+            "stage": 5,
+            "GS_scalar_butterflies_per_degree_upper": 16,
+            "CT_scalar_butterflies_per_degree_lower": 0,
+            "max_pre_multiply_add_abs_bound": 55296,
+            "max_product_abs_bound": 2663,
+            "max_output_abs_bound": 55296,
+            "signed_int16_safe": false
+          }
+        ],
+        "terminal_max_abs_bound": 55296,
+        "all_signed_int16_safe": false
+      }
+    }
+  ]
+}

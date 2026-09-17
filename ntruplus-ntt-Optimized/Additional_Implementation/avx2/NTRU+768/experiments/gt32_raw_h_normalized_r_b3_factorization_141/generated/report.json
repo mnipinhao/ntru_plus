@@ -1,0 +1,78 @@
+{
+  "experiment": 141,
+  "title": "RAW-H / NORMALIZED-R ASYMMETRIC B3 FACTORIZATION",
+  "facts": {
+    "decoded_h_range": [
+      0,
+      3456
+    ],
+    "decoded_h_is_centered": false,
+    "decoder_modular_reductions": 0,
+    "canonicality_before_transpose": true,
+    "current_b3_already_accepts_raw_h": true,
+    "groups": 12,
+    "source_audit": {
+      "q24_transpose_routes_per_group": 12,
+      "decode_groups": 12,
+      "decode_reg_has_modular_multiply": false,
+      "current_b3_soa_input_has_transpose": false,
+      "aos_b3_input_requires_transpose": true
+    }
+  },
+  "oracle": {
+    "cut_completion_cases": 8000,
+    "canonicality_cases": 8000,
+    "raw_vs_centered_b3_cases": 10000,
+    "status": "PASS"
+  },
+  "cuts": [
+    {
+      "presentation": "RAW_PACKET",
+      "decoder_route_instructions": 0,
+      "b3_route_instructions": 144,
+      "total_route_instructions": 144,
+      "modular_reductions_deleted": 0,
+      "peak_ymm_upper_bound": 16,
+      "zero_spill_feasible": true
+    },
+    {
+      "presentation": "P1_WORD",
+      "decoder_route_instructions": 48,
+      "b3_route_instructions": 96,
+      "total_route_instructions": 144,
+      "modular_reductions_deleted": 0,
+      "peak_ymm_upper_bound": 16,
+      "zero_spill_feasible": true
+    },
+    {
+      "presentation": "P2_DWORD",
+      "decoder_route_instructions": 96,
+      "b3_route_instructions": 48,
+      "total_route_instructions": 144,
+      "modular_reductions_deleted": 0,
+      "peak_ymm_upper_bound": 16,
+      "zero_spill_feasible": true
+    },
+    {
+      "presentation": "M_SOA",
+      "decoder_route_instructions": 144,
+      "b3_route_instructions": 0,
+      "total_route_instructions": 144,
+      "modular_reductions_deleted": 0,
+      "peak_ymm_upper_bound": 16,
+      "zero_spill_feasible": true
+    }
+  ],
+  "constant_absorption": {
+    "possible_for_mod_q_representative_change": true,
+    "useful_operation_deleted": false,
+    "possible_for_remaining_lane_permutation": false,
+    "reason": "A diagonal lane-wise constant cannot implement a non-identity lane permutation."
+  },
+  "decision": {
+    "executable_candidate": false,
+    "status": "STATIC_NO_OPERATION_CLASS_DELETION",
+    "reason": "All legal cuts move the same 144 dynamic routing instructions between decode and B3; current decode has no reduction/centering to absorb.",
+    "reopen": "A new asymmetric tensor must consume a pre-transpose packet presentation without recreating the missing 144-route layer, or delete a separate B3 Montgomery/reduction class."
+  }
+}
