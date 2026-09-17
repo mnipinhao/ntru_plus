@@ -36,7 +36,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | G6b | Done | Port the inverse NTT | Full decapsulation chain `forward -> basemul_rinv -> invntt_ternary` equals `crepmod3(schoolbook)` over 16 cases x 1152 coefficients. Evidence in `gt1152-p08-inverse-port/` |
 | G7 | Done | Pack / unpack for the degree-4 layout | 7 checks: exact wire bytes over every int16 extreme, round trip, 3456-case canonical rejection sweep, constant-time compare. Evidence in `gt1152-p09-pack/` |
 | G8a | Done | KEM assembly and KAT, local | **KAT reproduced byte for byte** (sha256 `2ddfc810c4...64c3`) plus 64 KEM round trips with tampered rejection, on macOS/arm64. Evidence in `gt1152-p10-kem/` |
-| G8b | Active | Release gates on Linux/AArch64 | manifest, ABI sentinels, package canonical sweep, zeroization, deterministic SUPERCOP export, and the per-leaf non-invertibility suite owed since G5 |
+| G8b | Done | Release gates on Linux/AArch64 | On Pi 5 Cortex-A76 / GCC 14.2.0: KAT byte-identical, 64 KEM round trips, **288/288 per-leaf non-invertibility**, 13,824 canonical cases, zeroization, **8/8 ABI sentinels**. Evidence in `gt1152-p10-kem/pi-results.json`. Manifest and SUPERCOP export move to G9 |
 | G9 | Next | SUPERCOP packaging and first honest measurement | SUPERCOP accepts the scheme (not `unknown`); stabilized quartiles against official 1152 on one host, compiler and SUPERCOP revision |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -434,6 +434,34 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
     outstanding since G5. A `-D__STDC_WANT_LIB_EXT1__=1` flag was needed for
     `secure_clear` here; the Linux path should be confirmed, not assumed.
   - Not promoted: this lives in `experiments/`, not in the GT-Production tree.
+
+- **G8b done.** On `pi@100.99.191.9`, Cortex-A76, Linux 6.18.33, GCC 14.2.0,
+  `throttled=0x0`, host idle. Record in `gt1152-p10-kem/pi-results.json`.
+
+  | gate | result |
+  |---|---|
+  | KAT | byte-identical, sha256 `2ddfc810c4...64c3` |
+  | `test_kem` | 64 round trips and tampered rejection |
+  | `test_baseinv_fail` | 288/288 leaves reject with 1 and clear, aliased and not |
+  | `test_canonical` | 13,824 cases, 0 failures |
+  | `test_zeroization` | 26 clear calls, 37,526 bytes, 0 nonzero after |
+  | `test_abi` | 8/8 sentinels `mask=0x00000` |
+
+  - **The Linux build caught a real defect**: `-D_DEFAULT_SOURCE` was missing,
+    so `explicit_bzero` and `syscall` were implicitly declared. macOS took a
+    different branch of `secure_clear.h` and never noticed. 864's Makefile has
+    the flag; this one had dropped it.
+  - **The per-leaf non-invertibility debt from G5 is paid.** Every one of the
+    288 leaves is zeroed inside an otherwise invertible polynomial and must
+    reject with a cleared output, then again through an exact alias. Previous
+    coverage was incidental.
+  - **The ABI sentinels validate the riskiest structural choice**: all eight
+    public entry points preserve every callee-saved register, which is what
+    makes `SAVE_PUBLIC` correct around leaves that clobber v8-v15 and calling
+    the C tail from assembly safe.
+
+  Still owed: source manifest and deterministic SUPERCOP export, both folded
+  into G9. No performance measurement of any kind was taken.
 
 ## Standing rules
 

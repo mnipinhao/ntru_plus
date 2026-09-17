@@ -44,23 +44,48 @@ Headers were split the way 864 splits them: `pack_asm.h` / `inverse_asm.h`
 carry the raw-array kernels, `pack.h` / `inverse.h` the `poly *` API that
 `kem.c` compiles against.
 
-## Scope: what this gate does and does not prove
+## On the Pi 5 — the real target
 
-**Does:** the arithmetic is right, end to end, against the authoritative KAT
-vectors — forward, basemul, basemul_add, baseinv, the R⁻¹ boundary, the fused
-inverse-to-ternary, the codec, and the KEM flow around them.
+Everything above also passes on `pi@100.99.191.9`, Cortex-A76, Linux
+6.18.33, GCC 14.2.0, `throttled=0x0`, host idle. Evidence: `pi-results.json`.
 
-**Does not:** this ran on macOS/arm64. It is *not* the NTRU+864 release gate.
-Still owed, on Linux/AArch64:
+| gate | result |
+| --- | --- |
+| KAT | **byte-identical**, sha256 `2ddfc810c4…64c3` |
+| `test_kem` | 64 round trips and tampered-ciphertext rejection |
+| `test_baseinv_fail` | **288/288 leaves** reject with 1 and clear, aliased and not |
+| `test_canonical` | **13,824 cases**, 0 failures |
+| `test_zeroization` | 26 clear calls, 37,526 bytes, 0 nonzero after |
+| `test_abi` | **8/8 sentinels `mask=0x00000`** |
 
-- `make check`'s other arms: source manifest, ABI sentinels, canonical decode
-  sweep at package level, zeroization, deterministic SUPERCOP export
-- **the per-leaf non-invertibility suite owed since G5** — 864 gates this with
-  808 failure/alias/wipe cases; this package has not earned that claim
-- a `-D__STDC_WANT_LIB_EXT1__=1` flag was needed for `secure_clear` on this
-  host; the Linux build path should be confirmed rather than assumed
+Three of these are worth calling out.
 
-No Pi 5 measurement and no performance claim of any kind.
+**The Linux build caught a real defect.** `-D_DEFAULT_SOURCE` was missing, so
+`explicit_bzero` and `syscall` were implicitly declared. macOS took a different
+branch of `secure_clear.h` and never noticed. NTRU+864's Makefile has the flag;
+this one had dropped it.
+
+**The per-leaf non-invertibility debt from G5 is paid.** `test_baseinv_fail`
+walks every one of the 288 leaves, zeroes it inside an otherwise invertible
+polynomial, and requires rejection with a fully cleared output — then repeats
+through an exact `out == in` alias. Until now the coverage was incidental: a
+few naturally non-invertible inputs and an all-zero transform.
+
+**The ABI sentinels validate the riskiest structural choice.** All eight public
+entry points preserve every callee-saved register. That is what makes the asm
+driver's `SAVE_PUBLIC` correct around leaves that clobber v8–v15, and what makes
+calling the C tail from assembly safe.
+
+## Still owed
+
+- Source manifest and deterministic SUPERCOP export — the latter belongs to G9.
+- No performance measurement of any kind. Nothing here was timed.
+
+## Not yet promoted
+
+This lives in `experiments/`, not in
+`ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+1152/`.
+Promotion is a separate, deliberate step.
 
 ## Not yet promoted
 
