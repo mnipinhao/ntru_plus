@@ -60,6 +60,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P30 | Done | Survey `poly_frombytes`, the last losing component | **P19's "structural, ~100% of floor" was wrong on both counts.** It was at 90%, and one of four per-lane operations was avoidable: reading each block as eight 16-bit windows instead of four 24-bit ones lets one `ushl` with a per-lane count replace `ushr` + `uzp1`. **723 -> 645; +895 -> +599; KEM -2.29% -> -2.51%.** Evidence in `gt1152-p30-frombytes-survey/` |
 | P31 | Done | Was D7's normalization ever needed? | **No.** Its 2752 bound assumed inputs on [0,4095], but the only caller aborts unless both `poly_frombytes` decode, so inputs are canonical and the bound is 2458 < 2497. Removing it: `poly_basemul_rinv` **+227 -> -142**, decaps -2.21% -> **-2.75%**, KEM **-2.69%**. Evidence in `gt1152-p31-basemul-rinv-bound/` |
 | P32 | Done | M2-1: fused fixed-size SHAKE256 for hash_f and hash_g | **hash +998 -> -21,082.** `hash_f` 17,754 -> 11,947 and `hash_g` 20,339 -> 13,765 per call. **keygen -11.36%, encaps -20.57%, decaps -13.96%, KEM -15.25%** — within a percentage point of NTRU+864 on every operation. Evidence in `gt1152-p32-hash-fused/` |
+| P33 | Done | SUPERCOP after the hash campaign | **GT 92,079 vs official 111,403, -17.35%.** Per operation keygen -12.12%, enc **-20.39%**, dec -13.77%; q1 sum -15.53% against the profiler's -15.25%. Within a percentage point of NTRU+864 on every operation. Evidence in `gt1152-p33-supercop-hash/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | **Done** (P32) | Hash fusion: fixed-size SHAKE256 1728 -> 288/32 | 4,000-input differential against the generic sponge, zero mismatches; KEM -2.69% -> **-15.25%** |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -1514,6 +1515,50 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
 
   Hash is now 42.7% of GT's cycles. A fresh SUPERCOP run is owed; P29's -1.75%
   predates this and P31.
+
+- **P33 done. SUPERCOP confirms the hash campaign: -17.35%.**
+  `experiments/gt1152-p33-supercop-hash/`.
+
+  P29 measured -1.75%, before P30, P31 and P32.
+
+  | implementation | cycles | P29 | P20 | G9 |
+  |---|---:|---:|---:|---:|
+  | **`aarch64-gt1152`** | **92,079** | 109,446 | 112,107 | 142,741 |
+  | `aarch64` (official) | 111,403 | 111,401 | 111,351 | 111,341 |
+  | `opt` | 193,359 | 193,469 | 193,424 | 193,389 |
+  | `ref` | 297,704 | 297,624 | 297,517 | 297,607 |
+
+  **-19,324 cycles, -17.35%.** The official has moved by 62 cycles in 111,341
+  across all four runs, 0.06%. The campaign reads **+28.2% -> +0.68% -> -1.75%
+  -> -17.35%**.
+
+  | operation | stat | official | GT | % |
+  |---|---|---:|---:|---:|
+  | keypair | **q1** | 57,240 | **50,301** | **-12.12%** |
+  | **enc** | q1/med/q3 | 58,992 | **46,964** | **-20.39%** |
+  | **dec** | q1/med/q3 | 52,469 | **45,243** | **-13.77%** |
+
+  For the first time **every keypair quartile is negative too** -- it is still
+  read at q1 for P20's reason, but the hash saving now dominates the retry
+  spread.
+
+  **Agreement with the profiler**: keygen -11.36% vs -12.12%, encaps -20.57% vs
+  -20.39%, decaps -13.96% vs -13.77%, **total -15.25% vs -15.53%** -- within 0.28
+  percentage points on the total. That total is the q1 sum, 168,701 against
+  142,507, not the selection metric.
+
+  **Against NTRU+864** after its own hash campaign (P58): keygen -11.41% vs
+  **-12.12%**, encaps -21.05% vs **-20.39%**, decaps -13.06% vs **-13.77%** --
+  within a percentage point everywhere, and ahead of 864 on keygen and
+  decapsulation.
+
+  One procedural note: `keccakf1600.S` is the only source with live preprocessor
+  branches, and the leaf uses lowercase `.s`, which gcc assembles without the
+  preprocessor. It is expanded with `gcc -E -P -x assembler-with-cpp` **on the
+  target** and the result asserted to contain no directive, rather than
+  pattern-matched. The leaf was test-compiled first: 22 objects, no errors, the
+  three selectors active in `inverse.o`, `symmetric.o` referencing both fused
+  hashes that `keccakf1600.o` defines.
 
 ## Standing rules
 
