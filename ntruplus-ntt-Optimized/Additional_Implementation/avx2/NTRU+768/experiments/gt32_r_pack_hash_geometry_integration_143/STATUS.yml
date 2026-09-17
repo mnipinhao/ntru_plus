@@ -1,0 +1,44 @@
+experiment: GT32-R-PACK-HASH-GEOMETRY-INTEGRATION-143
+status: R_PACK_HASH_GEOMETRY_PRESERVING_PRODUCTION_PASS
+production_modified: false
+baseline: production_ql2_401dda8
+mechanism:
+  control: "pack r to ct; hash_g copies ct into private domain-separated input"
+  candidate: "pack r directly into private domain-separated hash input"
+geometry:
+  shared_symbols_exact: 86
+  production_anchor_symbols_exact: 77
+  caller_slot_bytes: 611
+  helper_tail_address: 0x1e000
+  helper_bytes: 120
+  helper_tail_page_aligned_rx: true
+  rwx_segment: false
+correctness:
+  deterministic_cases: 1000
+  noncanonical_cases: 768
+  asan_ubsan: pass
+  kat_bytes: 948402
+  kat_sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+benchmark:
+  protocol: "SUPERcop-style fixed ELF; paired; 16 fresh launches"
+  aslr_on:
+    keypair_mean_core_cycles: 11.0625
+    keypair_ci95: [-13.875, 39.953125]
+    encap_mean_core_cycles: -92.109375
+    encap_ci95: [-190.0, -23.28125]
+    encap_favorable_blocks: 14
+    decap_mean_core_cycles: -5.375
+    decap_ci95: [-38.890625, 28.359375]
+  aslr_off:
+    keypair_mean_core_cycles: 9.640625
+    keypair_ci95: [-6.453125, 26.28125]
+    encap_mean_core_cycles: -57.0625
+    encap_ci95: [-64.28125, -50.171875]
+    encap_favorable_blocks: 16
+    decap_mean_core_cycles: 6.15625
+    decap_ci95: [-11.546875, 25.609375]
+decision:
+  encap: qualified
+  keypair_collateral: neutral
+  decap_collateral: neutral
+  next: separate_production_promotion
