@@ -54,9 +54,10 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P24 | Done | `poly_basemul_rinv`: why it trailed | **Not the arithmetic — the official issues identical multiplies.** D7's Barrett cost 16 VEC0 cycles a group; a conditional subtract honours D7 exactly with no multiply. 3,378 -> **3,054**, +827 -> **+634**. What remains is a real scheduling gap (M2-2). Evidence in `gt1152-p24-basemul-rinv/` |
 | P25 | Done — analysis | Is `baseinv` next, and does `inverse` still have headroom? | **`baseinv` yes, two separate problems**: 1,928 cycles of strictly serial batch inversion (needs 864's 12x3 ILP split) plus both parallel phases at ~78% of their multiply floor. **`inverse` is level with the official** (6,293 vs 6,292) with ~1,200 cycles of absolute headroom and no competitive gap. Evidence in `gt1152-p25-baseinv-inverse-floors/` |
 | P26 | Done | `baseinv`: split the batch inversion into three chains | Serial phase **1,928 -> 1,191**; `poly_baseinv` **+2,397 -> +850**; **keygen +1.09% -> -1.65%**, **KEM -0.53% -> -1.55%**. **All three operations now beat the official.** Evidence in `gt1152-p26-baseinv-ilp/` |
+| P27 | Done — **first SLOTHY run of this campaign** | M2-2: schedule `basemul_rinv` | **3,054 -> 2,744 cycles**; `poly_basemul_rinv` +634 -> **+232**; decaps -0.86% -> **-1.68%**; KEM -1.55% -> **-1.79%**. Byte-identical to the C oracle over 4,000 trials. Evidence in `gt1152-p27-slothy-basemul-rinv/` and `dev/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
-| M2-2 | Deferred — **now justified by measurement** | First Slothy gate: degree-4 `basemul_rinv` | P24 measured 3,054 against a 2,376 issue floor, 78%, with the official proving 2,551 reachable on the same instruction multiset. Worth about 500 cycles |
+| M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
 
 ## Decisions ledger
 
@@ -1176,6 +1177,72 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   sponge.** For scale, NTRU+864 stood at -3.95% before its hash campaign and
   reached -11%/-21%/-13% after it. Remaining: hash +902 (M2-1), ~990 + ~503 of
   scheduling (M2-2), `frombytes` +659 structural, `inverse` level.
+
+- **P27 done. The campaign's first SLOTHY run, and a `dev/clean/opt` tree to
+  hold it.** `experiments/gt1152-p27-slothy-basemul-rinv/`, `dev/`.
+
+  Everything shipped until now either carried 864's schedule with remapped
+  immediates, was hand-written and never scheduled, or was intrinsics C.
+
+  **The structure**, after mlkem-native's `dev/aarch64_{clean,opt}`, with two
+  deliberate differences. Its clean tier is handwritten assembly with `.req`
+  aliases, so registers are allocated and SLOTHY only reorders; ours is
+  `V<name>` symbolic registers from a generator that authors data-flow, and
+  SLOTHY does allocation *and* scheduling in two passes -- which means the
+  symbolic tier cannot be assembled, and the `ra` output stands in for it. And
+  mlkem-native targets one microarchitecture; here each gets its own directory,
+  because SUPERCOP selects among sibling implementations per host.
+
+  **That second difference is so far structure without content.** SLOTHY's
+  `neoverse_n1` and both Apple M1 models have **no widening-multiply classes** --
+  the M1 firestorm model is 480 lines against `cortex_a76`'s 869 and has no
+  `Vmull`, `Vmlal`, `Vmul`, `Vmla` or `Vqdmulh` at all -- and every kernel
+  admitted here is built on `smull`/`smlal`. Extending them would have to be
+  measured rather than guessed, and this repository's host is an **Apple M2
+  Pro**, a different microarchitecture from either M1 core. The Pi 5's
+  Cortex-A76 is the only target that can be both scheduled and measured here.
+
+  **Why this kernel.** P24 showed the official's `poly_basemul_scale` issues an
+  identical multiply multiset and reaches 2,551 where our C reached 3,054 against
+  a 2,376 floor. 78% of floor with the instruction count already minimal is a
+  scheduling problem by elimination, and the official's number proves the
+  schedule exists. The campaign had rejected scheduling four times on
+  measurement -- `ntt9` at 93% (P16), the codec at 90% and ~100% (P19) -- and
+  this is the first time it was the answer.
+
+  **Three SLOTHY constraints, now encoded in the generator** so the next kernel
+  does not rediscover them: symbolic registers cannot be defined outside the
+  optimized region (so the four constants are physical `v0-v3`, reserved);
+  `stp d8, d9, [sp, #-64]!` does not parse, there being no pre-index writeback
+  form, so the kernel stashes nothing and reserves `v8-v15`; and **`t0`...`tN`
+  are SLOTHY hint registers**, so naming temporaries `tN` makes every
+  instruction parse and then fail its type check, through an error path that
+  itself raises.
+
+  | | cycles |
+  |---|---:|
+  | `ra` only, allocated but unscheduled | 3,155 |
+  | intrinsics C | 3,054 |
+  | **SLOTHY, `Arm_Cortex_A76`** | **2,744** |
+  | official | 2,551 |
+  | floor | 2,376 |
+
+  `ra` took 2.1 seconds, `timing` 372.7. Correctness: 4,000 trials x 1,152 on
+  the declared [0,4095] plus all-4095 and random extremes, **byte-identical** to
+  the C oracle -- not merely congruent -- and max |out| 1728. Every package gate
+  green, `basemul-inverse` ABI sentinel included, which is what confirms SLOTHY
+  respected the `v8-v15` reservation.
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | keygen | 64,082 | 63,009 | -1.67% | -1.65% |
+  | encaps | 59,541 | 58,348 | -2.00% | -2.05% |
+  | **decaps** | 52,512 | **51,629** | **-1.68%** | -0.86% |
+  | **total** | **176,135** | **172,986** | **-1.79%** | -1.55% |
+
+  Installed behind `NTRUPLUS1152_ASM_BASEMUL_RINV`: without the define the C is
+  used and every gate still passes, so the assembly is an optimization rather
+  than a dependency. Still 193 above the official and 368 above the floor.
 
 ## Standing rules
 

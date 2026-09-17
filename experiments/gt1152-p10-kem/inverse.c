@@ -153,6 +153,24 @@ static inline int16x8_t fqinv(int16x8_t a)
  * stage before R0, then normalized.  Same leaf algebra as basemul; only the
  * final rescale differs.
  */
+/*
+ * The scheduled kernel, when one is installed by dev/scripts/autogen.py.  Its
+ * ABI takes the zeta table as a fourth argument and advances all four pointers,
+ * so the shim restores this file's signature.  Without the define, the C below
+ * is used and every gate still passes -- the assembly is an optimization, not a
+ * dependency.
+ */
+#ifdef NTRUPLUS1152_ASM_BASEMUL_RINV
+void basemul_rinv_kernel(int16_t *out, const int16_t *a, const int16_t *b,
+                         const int16_t *zetas);
+
+void basemul_rinv_asm(int16_t out[BASE_COEFFICIENTS],
+                      const int16_t a[BASE_COEFFICIENTS],
+                      const int16_t b[BASE_COEFFICIENTS])
+{
+    basemul_rinv_kernel(out, a, b, &basemul_zetas[0][0]);
+}
+#else
 void basemul_rinv_asm(int16_t out[BASE_COEFFICIENTS],
                       const int16_t a[BASE_COEFFICIENTS],
                       const int16_t b[BASE_COEFFICIENTS])
@@ -204,6 +222,7 @@ void basemul_rinv_asm(int16_t out[BASE_COEFFICIENTS],
         STORE4(out, offset, r);
     }
 }
+#endif
 
 int baseinv_asm(int16_t out[BASE_COEFFICIENTS],
                 const int16_t in[BASE_COEFFICIENTS])

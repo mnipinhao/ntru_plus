@@ -33,3 +33,33 @@ The kernels stash nothing, so `v8-v15` are reserved along with `x18-x30` and
 symbolic register defined outside the optimized region cannot be allocated, and
 recomputing the constants inside the loop would cost eight instructions per
 group.  That leaves `v4-v7` and `v16-v31` for SLOTHY.
+
+## Target coverage: only `cortex_a76` works today
+
+The three target directories exist because the structure is worth having, but
+**only `cortex_a76` can currently schedule these kernels.**  SLOTHY's
+microarchitecture models differ sharply in completeness:
+
+| model | lines | has `Vmull` / `Vmlal` |
+|---|---:|---|
+| `cortex_a76` | 869 | **yes** |
+| `neoverse_n1_experimental` | - | no |
+| `apple_m1_firestorm_experimental` | 480 | no — and no `Vmul`, `Vmla` or `Vqdmulh` either |
+| `apple_m1_icestorm_experimental` | - | no |
+
+Running `make apple_m1_firestorm` fails with
+
+```
+UnknownInstruction: Couldn't find <class '...aarch64_neon.vsmull'>
+                    for smull v16.4S, v26.4H, v25.4H
+```
+
+and `neoverse_n1` fails the same way.  Every NTRU+1152 kernel admitted here is
+built on widening multiplies, so none of them can be scheduled for those
+targets without first extending the models.
+
+Extending them is possible but would have to be *measured*, not guessed, and
+this repository's development host is an **Apple M2 Pro** — a different
+microarchitecture from either M1 core, so numbers taken here could not validate
+an M1 model.  The Pi 5's Cortex-A76 remains the only target this repository can
+both schedule and measure.

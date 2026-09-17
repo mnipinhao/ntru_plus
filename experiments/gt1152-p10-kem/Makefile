@@ -1,9 +1,9 @@
 CC ?= cc
 PYTHON ?= python3
-CFLAGS ?= -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -D__STDC_WANT_LIB_EXT1__=1 -I.
+CFLAGS ?= -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -D__STDC_WANT_LIB_EXT1__=1 -I. -DNTRUPLUS1152_ASM_BASEMUL_RINV
 C_SRC := kem.c symmetric.c fips202.c base.c inverse.c \
          pack.c support.c api_glue.c
-ASM_SRC := ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
+ASM_SRC := basemul_rinv.S ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
            inverse_ntt.S inverse9.S inverse16.S crepmod3_raw.S
 
 TESTS := test_kem test_canonical test_abi test_baseinv_fail

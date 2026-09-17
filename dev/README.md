@@ -21,8 +21,15 @@ gives the solver more freedom and keeps the generator readable as data-flow.
 **Difference from mlkem-native, second:** it targets a single microarchitecture
 (`Arm_Neoverse_N1_experimental`) and `autogen` installs that one result.  Here
 each target gets its own `opt` directory, because SUPERCOP selects among sibling
-implementations per host: shipping `aarch64-gt1152-a76` and
-`aarch64-gt1152-m1` lets the benchmark pick, and both carry the same checksum.
+implementations per host: shipping `aarch64-gt1152-a76` and `aarch64-gt1152-m1`
+would let the benchmark pick, with the same checksum on both.
+
+That second difference is so far **structure without content**: SLOTHY's
+`neoverse_n1` and Apple M1 models have no widening-multiply classes, and every
+kernel admitted here is built on `smull`/`smlal`.  See
+[`ntruplus1152_opt/README.md`](ntruplus1152_opt/README.md); `cortex_a76` is the
+only target that can currently be scheduled, and the only one this repository
+can measure.
 
 ## Layout
 
@@ -64,9 +71,9 @@ instruction multiset identical to ours.
 | piece | state |
 |---|---|
 | `clean` generator and `basemul_rinv.sym.S` | written, **verified** |
-| SLOTHY `ra` pass (register allocation) | runs clean, self-check OK |
-| SLOTHY `timing` pass (scheduling) | first solve in progress |
-| `autogen.py` | written, not yet exercised on a package |
+| SLOTHY for `cortex_a76` | **done — 3,054 -> 2,744 cycles, installed, all gates green** |
+| SLOTHY for `neoverse_n1` and Apple M1 | **blocked on SLOTHY's models**, see below |
+| `autogen.py` | written |
 | `baseinv` numerator and finish | not yet written |
 
 The generator is verified through the `ra` stage, whose output *is* assemblable
@@ -76,9 +83,9 @@ inputs on the declared [0,4095] plus the all-4095 and random-extreme cases,
 and `max |out| = 1728` exactly as `normalize_d7` is designed to give.
 
 Register-allocated but unscheduled it runs at **3,155 cycles** against the
-intrinsics C's 3,054.  That is the honest baseline the `timing` pass has to
-beat, and it is what a symbolic clean tier costs: the DAG order is the
-generator's, not a compiler's.
+intrinsics C's 3,054 — the honest baseline a symbolic clean tier starts from,
+since the DAG order is the generator's and not a compiler's.  After the `timing`
+pass it runs at **2,744**, against the official's 2,551 and a 2,376 floor.
 
 Note one consequence of the symbolic choice: unlike mlkem-native's clean tier,
 `*.sym.S` cannot be assembled directly.  The `ra` output stands in for it.
