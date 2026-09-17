@@ -1,0 +1,353 @@
+{
+  "schema": "ntruplus768-gt32-r-forward-dual-output-audit-146-v1",
+  "experiment": "GT32-R-FORWARD-DUAL-OUTPUT-AUDIT-146",
+  "mode": "generator-static-proof",
+  "production_modified": false,
+  "baseline": "promoted QL2 + direct-r-hash production",
+  "semantic_contract": {
+    "source_cut": "qualified QL2 transient immediately after Forward S5",
+    "m_output": "unchanged private M, e=0, bound <=10788, materialized for later B3",
+    "wire_output": "canonical WIRE12 bytes written into hash_g input",
+    "extra_reduction_or_center": 0,
+    "mapping_bijective": true,
+    "impulses": 64,
+    "random_trials": 1000
+  },
+  "selected_macro_counts": {
+    "QL2_to_M_routes": 12,
+    "M_to_packet_routes": 12,
+    "QL2_to_packet_routes": 4
+  },
+  "executed_work_ledger": {
+    "groups": 12,
+    "current_routes_per_group": 24,
+    "candidate_routes_per_group": 16,
+    "route_delta_per_group": -8,
+    "route_delta_per_encap": -96,
+    "current_serializer_M_loads": 48,
+    "candidate_serializer_M_loads": 0,
+    "M_store_delta": 0,
+    "wire_store_delta": 0,
+    "operation_class_deletion": [
+      "96 dynamically executed routing instructions",
+      "48 YMM reloads of the materialized M polynomial"
+    ]
+  },
+  "packet_order": {
+    "current_group_tile_order": [
+      0,
+      4,
+      2,
+      5,
+      3,
+      1
+    ],
+    "current_group_tile_half_order": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        4,
+        1
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        5,
+        1
+      ],
+      [
+        5,
+        0
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        0
+      ]
+    ],
+    "candidate_tile_traversal": [
+      0,
+      4,
+      2,
+      5,
+      3,
+      1
+    ],
+    "reason": "process independent 256-byte Forward tiles and their independent S4/S5 halves in wire order; scatter M to its original tile/half offset, preserving increasing packet stores and the existing single safe final packet",
+    "table_entries": 6,
+    "standalone_repair": 0
+  },
+  "register_proof": {
+    "phases": {
+      "packet_branch_peak": {
+        "other_half_state": 4,
+        "current_ql2": 4,
+        "q_only_outputs": 4,
+        "q_and_v_constants": 2,
+        "encode_temporary": 1,
+        "peak_ymm": 15
+      },
+      "m_branch_peak": {
+        "other_half_state": 4,
+        "current_ql2": 4,
+        "transpose_temporaries": 4,
+        "q_and_pshufb_constants": 2,
+        "peak_ymm": 14
+      }
+    },
+    "peak_ymm": 15,
+    "zero_spill_plausible": true,
+    "schedule": "finish one S4/S5 half; form and consume four Q-only packet registers; reload the pshufb constant; form/store M; then process the other half"
+  },
+  "code_shape_constraint": {
+    "strategy": "one bounded six-tile loop with a six-entry tile-offset table",
+    "forbidden": [
+      "six fully inlined tile bodies",
+      "standalone QL2 materialization for the wire branch",
+      "post-Forward reload of M for serialization"
+    ]
+  },
+  "decision": {
+    "status": "PASS_TO_ZERO_SPILL_ASM_GATE",
+    "reason": "deletes complete route and reload classes; not merely a relocated serializer",
+    "next": "same-ELF local Forward+pack control versus dual-output candidate, including tile-table overhead and exact hash-input stores"
+  },
+  "source_hashes": {
+    "ntt_m.s": "b8960d00b7b6d82f3e8de4ed5b7ccc8f464683dbcda0e1de43fc1cdc007d104c",
+    "pack.s": "e0aaec8f069fcd231d6146f14cbc37fe05d5208633dd36f2c26fc46e880e4aa6",
+    "encap.c": "0cb993b1f4990c778c88fbce48351832ab4a5e0bcc0fbc4a20649f529b5be732"
+  },
+  "q24_groups": [
+    {
+      "group": 0,
+      "m_load_offsets": [
+        0,
+        32,
+        64,
+        96
+      ],
+      "tile": 0,
+      "half": 0,
+      "wire_offsets": [
+        0,
+        24,
+        48,
+        72
+      ]
+    },
+    {
+      "group": 1,
+      "m_load_offsets": [
+        128,
+        160,
+        192,
+        224
+      ],
+      "tile": 0,
+      "half": 1,
+      "wire_offsets": [
+        96,
+        120,
+        144,
+        168
+      ]
+    },
+    {
+      "group": 2,
+      "m_load_offsets": [
+        1152,
+        1184,
+        1216,
+        1248
+      ],
+      "tile": 4,
+      "half": 1,
+      "wire_offsets": [
+        192,
+        216,
+        240,
+        264
+      ]
+    },
+    {
+      "group": 3,
+      "m_load_offsets": [
+        1024,
+        1056,
+        1088,
+        1120
+      ],
+      "tile": 4,
+      "half": 0,
+      "wire_offsets": [
+        288,
+        312,
+        336,
+        360
+      ]
+    },
+    {
+      "group": 4,
+      "m_load_offsets": [
+        512,
+        544,
+        576,
+        608
+      ],
+      "tile": 2,
+      "half": 0,
+      "wire_offsets": [
+        384,
+        408,
+        432,
+        456
+      ]
+    },
+    {
+      "group": 5,
+      "m_load_offsets": [
+        640,
+        672,
+        704,
+        736
+      ],
+      "tile": 2,
+      "half": 1,
+      "wire_offsets": [
+        480,
+        504,
+        528,
+        552
+      ]
+    },
+    {
+      "group": 6,
+      "m_load_offsets": [
+        1408,
+        1440,
+        1472,
+        1504
+      ],
+      "tile": 5,
+      "half": 1,
+      "wire_offsets": [
+        576,
+        600,
+        624,
+        648
+      ]
+    },
+    {
+      "group": 7,
+      "m_load_offsets": [
+        1280,
+        1312,
+        1344,
+        1376
+      ],
+      "tile": 5,
+      "half": 0,
+      "wire_offsets": [
+        672,
+        696,
+        720,
+        744
+      ]
+    },
+    {
+      "group": 8,
+      "m_load_offsets": [
+        768,
+        800,
+        832,
+        864
+      ],
+      "tile": 3,
+      "half": 0,
+      "wire_offsets": [
+        768,
+        792,
+        816,
+        840
+      ]
+    },
+    {
+      "group": 9,
+      "m_load_offsets": [
+        896,
+        928,
+        960,
+        992
+      ],
+      "tile": 3,
+      "half": 1,
+      "wire_offsets": [
+        864,
+        888,
+        912,
+        936
+      ]
+    },
+    {
+      "group": 10,
+      "m_load_offsets": [
+        384,
+        416,
+        448,
+        480
+      ],
+      "tile": 1,
+      "half": 1,
+      "wire_offsets": [
+        960,
+        984,
+        1008,
+        1032
+      ]
+    },
+    {
+      "group": 11,
+      "m_load_offsets": [
+        256,
+        288,
+        320,
+        352
+      ],
+      "tile": 1,
+      "half": 0,
+      "wire_offsets": [
+        1056,
+        1080,
+        1104,
+        1128
+      ]
+    }
+  ]
+}

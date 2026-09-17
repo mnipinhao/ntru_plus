@@ -22,6 +22,25 @@ campaign workspaces and large raw PMU/LBR captures are kept outside the Git
 worktree, while production results and the experiments that remain useful for
 reproduction stay here.
 
+## Current production frontier: 141--144
+
+- [141](gt32_raw_h_normalized_r_b3_factorization_141/) proves that the tested
+  raw-h/normalized-r B3 cuts merely move the same 144-route presentation work;
+  they delete no reduction or routing class.
+- [142](gt32_r_pack_hash_direct_142/) qualifies direct `r_M` serialization
+  into the domain-separated `hash_g` input, deleting the redundant 1152-byte
+  copy.
+- [143](gt32_r_pack_hash_geometry_integration_143/) preserves the production
+  image and shows an Encap-only 57--92-cycle win with neutral Keypair/Decap;
+  this mechanism is promoted.
+- [144](gt32_rhash_vs_official_144/) records the promoted GT-versus-Official
+  result: Keypair wins, Decap wins or ties, Encap ties with ASLR enabled but
+  remains about 127 paired cycles behind with ASLR disabled.
+- [145](gt32_rhash_aslroff_profile_145/) makes ASLR-off the sole benchmark
+  policy, reproduces the approximately 130-cycle Encap debt, and profiles the
+  exact images. It measures the deleted hash-input copy at about 22 cycles;
+  Decode, CBD, and the remaining serializer are the largest positive leaves.
+
 ## Encap consumer-native retirement
 
 [Experiment 068](gt32_encap_consumer_abi_068/) derives the exact checked
@@ -189,3 +208,15 @@ committed generated evidence; `clean` may remove build products but not source
 or status files.  Cycle results must include their stored JSON and matched
 normal/reversed methodology.  Static gates must state the exact searched
 family so that a local stop is not mistaken for a universal impossibility.
+
+## Current production follow-up
+
+| Gate | Result | Meaning |
+|---|---|---|
+| [146](gt32_r_forward_dual_output_audit_146/) | static architecture pass | branch at the existing Forward QL2 transient to retain M for B3 while emitting WIRE12; deletes 96 executed routes and 48 M reloads, with a constructive 15-YMM schedule |
+| [147](gt32_r_forward_dual_output_asm_147/) | executable hard stop | word/byte-exact zero-spill dual output loses +356 TSC (0/16 favorable); a four-chain scheduling mutation is slightly worse, so no full Encap run |
+
+Gate 146 changes neither the B3 ABI nor the persistent representation. Gate
+147 implemented that exact cut and showed that its simultaneous M/WIRE12
+live set and packet scheduling cost dominate the static route/load deletion.
+The current dual-output boundary is closed; production remains unchanged.

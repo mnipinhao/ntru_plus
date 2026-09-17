@@ -1,0 +1,31 @@
+experiment: GT32-R-FORWARD-DUAL-OUTPUT-ASM-147
+status: CLOSED_FOR_SCOPE
+production_modified: false
+correctness:
+  impulses: 768
+  random_cbd_range: 1000
+  m_word_exact: true
+  wire12_byte_exact: true
+assembly:
+  zero_spill: true
+  calls: 0
+  stack_references: 0
+  bytes: 6474
+  static_instructions: 1441
+benchmark:
+  aslr: disabled
+  launches: 16
+  rdtscp:
+    control: 4999.492
+    candidate: 5353.852
+    delta: 356.125
+    ci95: [353.625, 358.242]
+    favorable: 0
+  default_perfevent:
+    control: 666.930
+    candidate: 713.848
+    delta: 46.977
+    ci95: [46.570, 47.273]
+    favorable: 0
+full_encap: NOT_RUN_LOCAL_GATE_LOST
+reopen_requires: NEW_LIVE_SET_OR_OPERATION_CLASS_DELETION
