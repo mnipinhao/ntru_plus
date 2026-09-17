@@ -1,20 +1,32 @@
 # NTRU+ GT Production
 
-This package contains the publishable NTRU+768 AArch64 Neon implementation:
+This package contains the publishable NTRU+768 implementations:
 
 ```text
-Additional_Implementation/aarch64/NTRU+768/
+Additional_Implementation/aarch64/NTRU+768/   AArch64 Neon
+Additional_Implementation/avx2/NTRU+768/      x86-64 AVX2
 ```
 
-The parameter-set directory follows the same implementation-package shape as
+Each parameter-set directory follows the same implementation-package shape as
 KPQC final: it owns its Makefile, KEM source, polynomial interface, assembly,
-SHAKE backend, tests, and KAT path. Unlike KPQC final, validation dependencies
-are copied into the package rather than linked to another implementation tree.
+SHAKE backend, and validation path.
+
+The AArch64 package copies its validation dependencies into the package rather
+than linking to another implementation tree. The AVX2 package instead resolves
+the test and KAT harness through `OFFICIAL_ROOT`; see
+[`Additional_Implementation/avx2/README.md`](Additional_Implementation/avx2/README.md).
 
 Build and validate on AArch64:
 
 ```sh
 cd Additional_Implementation/aarch64/NTRU+768
+make check
+```
+
+Build and validate on x86-64:
+
+```sh
+cd Additional_Implementation/avx2/NTRU+768
 make check
 ```
 
