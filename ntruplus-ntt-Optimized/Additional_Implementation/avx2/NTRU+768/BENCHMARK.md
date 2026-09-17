@@ -1,5 +1,53 @@
 # Benchmark record
 
+## Current benchmark policy and ASLR-off confirmation (145)
+
+New performance gates use ASLR-disabled processes only. The promoted
+QL2+direct-r-hash image was rebuilt and remeasured against Official with 16
+paired blocks on CPU 1:
+
+| Operation | Official Q2 | GT Q2 | Paired mean | 95% paired CI |
+|---|---:|---:|---:|---:|
+| Keypair | 21441.35 | 21240.38 | **-204.27** | **[-217.33,-190.49]** |
+| Encap | 28060.95 | 28200.42 | **+130.34** | **[+114.82,+144.46]** |
+| Decap | 19272.55 | 19262.54 | **-12.51** | **[-25.98,-1.82]** |
+
+The accompanying LBR profile attributes a measured 22-cycle Official
+hash-input copy that direct-r-hash deletes. GT still has approximately 34.5
+cycles of intrinsic `r` serializer debt, while its r and m producer regions
+win by about 47 and 124 cycles.
+
+The Decap profile shows a different shape: decode3 is GT's clearest visible
+debt (`+95` core cycles), both BaseMul sites are effectively at parity
+(`+5.0` and `-1.75`), and the GT transform/inverse/verification path recovers
+the decode debt. The leaf medians are non-additive; hash wrappers, inline
+verification, overlap and delivery account for a large unmapped caller
+residual, so only the formal `-12.51`-cycle full-Decap result is a whole-call
+claim. Full details are retained in
+`experiments/gt32_rhash_aslroff_profile_145`.
+
+## Current QL2 + direct-r-hash production versus Official (144)
+
+The current production tree was measured with an explicit NTRU+768 SUPERcop
+harness, 16 paired blocks, alternating Official/GT order, and CPU 1. Paired
+deltas below are GT minus Official.
+
+| ASLR | Operation | Official Q2 | GT Q2 | Paired mean | 95% paired CI |
+|---|---|---:|---:|---:|---:|
+| on | Keypair | 21486.74 | 21245.81 | **-242.93** | **[-270.92,-214.82]** |
+| on | Encap | 28201.50 | 28197.30 | +5.02 | [-62.94,+73.44] |
+| on | Decap | 19300.21 | 19270.57 | **-28.98** | **[-49.54,-6.89]** |
+| off | Keypair | 21451.51 | 21234.95 | **-219.02** | **[-231.25,-206.18]** |
+| off | Encap | 28063.81 | 28203.37 | **+127.45** | **[+100.11,+154.14]** |
+| off | Decap | 19269.30 | 19264.59 | -8.14 | [-19.88,+3.65] |
+
+Direct-r-hash is retained because its matched production A/B improves only
+Encap and leaves Keypair/Decap neutral. Against Official, it brings ASLR-on
+Encap to statistical parity, but ASLR-off still shows a significant
+approximately 127-cycle debt. Thus the optimization is production-qualified
+without claiming that GT now robustly beats Official Encap. Full evidence is
+under `experiments/gt32_rhash_vs_official_144`.
+
 ## Current QL2 production versus Official (139)
 
 The promoted source tree was built directly with SUPERcop's native
@@ -151,6 +199,7 @@ units and relocatably links with only the expected SUPERcop/libc imports:
 - One pinned physical core.
 - Turbo/frequency/runtime state recorded.
 - ASLR disabled for the controlled measurement process with `setarch -R`.
+- ASLR-on results are not used for continuation or promotion decisions.
 - Palindromic Official/GT block order to limit drift.
 - Keypair, Encap, and Decap measured from the same binary image.
 - Report core cycles as the microarchitecture primary metric and TSC as

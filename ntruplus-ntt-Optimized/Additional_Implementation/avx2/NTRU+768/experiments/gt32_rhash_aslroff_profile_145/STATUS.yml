@@ -1,0 +1,45 @@
+experiment: GT32-RHASH-ASLROFF-PROFILE-145
+status: ASLR_OFF_BASELINE_CONFIRMED_R_SERIALIZER_COPY_CLOSED
+benchmark_policy:
+  aslr: disabled
+  cpu: 1
+  paired_blocks: 16
+benchmark:
+  keypair_paired_mean: -204.26822916666697
+  keypair_ci95: [-217.32942708333394, -190.49088541666697]
+  encap_paired_mean: 130.34244791666742
+  encap_ci95: [114.82161458333303, 144.46354166666742]
+  decap_paired_mean: -12.50651041666606
+  decap_ci95: [-25.980468749999773, -1.817708333332348]
+profile:
+  processes: 128
+  aslr: disabled
+  event: cpu_core/cycles/u
+  direct_leaf_deltas:
+    decode: 33.5
+    cbd_r: 24.0
+    r_producer: -47.25
+    r_serializer: 34.5
+    hash_input_copy: -22.0
+    sotp_m: 5.25
+    m_producer: -124.25
+    basemul: 12.0
+    sum_and_ct_serializer: -11.0
+  decap_direct_leaf_deltas:
+    decode3: 95.0
+    first_product: 5.0
+    inverse_to_mod3: -24.5
+    recovered_forward: -104.0
+    sub: 0.0
+    second_product: -1.75
+    recovered_r_serializer: -17.0
+    sotp_decode: -16.0
+    derived_r_generation: -68.25
+    final_check_visible_leaf: -102.0
+  decap_caveat: >-
+    direct-leaf medians are non-additive; hash wrappers and Official's inline
+    final byte comparison are not assigned synthetic component costs
+decision:
+  direct_r_hash: retained
+  hash_input_copy: closed
+  whole_encap_gap_owner: distributed_nonadditive

@@ -1,0 +1,33 @@
+experiment: GT32-RHASH-VS-OFFICIAL-144
+status: DIRECT_R_HASH_PRODUCTION_PROMOTED_OFFICIAL_ENCAP_NOT_CLOSED
+production:
+  ql2: retained
+  direct_r_hash: promoted
+correctness:
+  kat: pass
+  kat_sha256: 22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8
+layout:
+  e0v_to_ql2_symbols_exact: 86
+  ql2_to_rhash_symbols_exact: 86
+  caller_slots: [611, 611, 611]
+  tails_page_aligned_rx: true
+  rwx_segment: false
+official_comparison:
+  protocol: "SUPERcop-style; 16 paired blocks; CPU 1"
+  aslr_on:
+    keypair_paired_mean: -242.9309895833328
+    keypair_ci95: [-270.91796874999955, -214.81510416666697]
+    encap_paired_mean: 5.016927083334394
+    encap_ci95: [-62.93749999999909, 73.43619791666833]
+    decap_paired_mean: -28.984375000000227
+    decap_ci95: [-49.537760416666515, -6.888020833333712]
+  aslr_off:
+    keypair_paired_mean: -219.01953125000045
+    keypair_ci95: [-231.25390625000045, -206.18489583333348]
+    encap_paired_mean: 127.44921874999977
+    encap_ci95: [100.11328125, 154.1354166666656]
+    decap_paired_mean: -8.139322916666742
+    decap_ci95: [-19.878906250000682, 3.645833333334849]
+next:
+  reopen_r_serializer: false
+  requirement: new_operation_class_deletion_or_concrete_dependency_premise
