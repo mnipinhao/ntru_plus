@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) The mlkem-native project authors
+ * Copyright (c) 2021-2022 Arm Limited
+ * Copyright (c) 2022 Matthias Kannwischer
+ * SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+ */
+
+// Author: Hanno Becker <hanno.becker@arm.com>
+// Author: Matthias Kannwischer <matthias@kannwischer.eu>
+
 .macro KECCAK_LIVE_PERMUTE
         eor x30, x24, x25
         eor x27, x9, x10

@@ -94,6 +94,7 @@ Status meanings:
 | P56 | Done—Selected-Official profiler checkpoint | Re-run exact P55 production against selected SUPERCOP 20260831 Official with full correctness, clean PMU and component attribution | GT wins Keygen/Encaps/Decaps by 5207.375/9734.450/5385.875 cycles (11.75%/20.99%/13.21%); remaining diagnostic deficits are Inverse-to-ternary about +155.75 cycles and serialization/compare about +58.4 |
 | P57 | Done—Packaging | Align the NTRU+864 release with the `Additional_Implementation`/`SUPERCOP` structure and replace campaign-oriented source names with role-oriented names | Full Pi 5 release gate and independent SUPERCOP-leaf build pass; paired PMU has zero instruction/branch delta and no cycle regression |
 | P58 | Done—Formal SUPERCOP | Repair the deterministic SUPERCOP export contract and run the repackaged NTRU+864 leaf through `do-part crypto_kem ntruplus864` on Pi 5 | The formal selected implementation beats the restored 20260831 Official leaf by 5020/9697/5322 cycles for Keygen/Encaps/Decaps (11.41%/21.05%/13.06%); GT text is 90,626 bytes versus 49,290 bytes |
+| P59 | Done—Provenance hardening | Preserve the upstream Keccak assembly copyright, author and SPDX notice across `.S` preprocessing into the deterministic SUPERCOP `.s` leaf | Export now fails if any required notice field or its source boundary disappears; deterministic regeneration, checked-in leaf equality and standalone AArch64 assembly pass |
 
 ## ToBytes priority policy
 
@@ -142,6 +143,15 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-17
+
+- Completed P59 after auditing the P57 rename and export. The authoritative
+  `keccakf1600.S`, package MIT license and `fips202.c` public-domain provenance
+  were unchanged, but `cc -E -P` removed the Keccak legal header from the
+  generated SUPERCOP `.s` file. The exporter now extracts that exact leading
+  notice before preprocessing, prepends it to `keccakf1600.s`, and requires all
+  three copyright lines, the dual/multi-license SPDX expression and both author
+  lines. Deterministic regeneration, checked-in leaf equality and standalone
+  AArch64 assembly pass. No executable instruction changed.
 
 - Completed P58 in `/home/pi/supercop-20260831` on Pi 5 core 3 using the
   formal `do-part crypto_kem ntruplus864` flow. The deterministic exporter now

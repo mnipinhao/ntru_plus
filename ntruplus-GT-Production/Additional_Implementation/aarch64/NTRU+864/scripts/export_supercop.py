@@ -23,12 +23,45 @@ ASM_SOURCES = (
     "pack_compare.S", "keccakf1600.S",
 )
 
+ASM_NOTICE_MARKERS = {
+    "keccakf1600.S": b"\n/*yaml\n",
+}
+ASM_NOTICE_REQUIRED = {
+    "keccakf1600.S": (
+        b"Copyright (c) The mlkem-native project authors",
+        b"Copyright (c) 2021-2022 Arm Limited",
+        b"Copyright (c) 2022 Matthias Kannwischer",
+        b"SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT",
+        b"Author: Hanno Becker <hanno.becker@arm.com>",
+        b"Author: Matthias Kannwischer <matthias@kannwischer.eu>",
+    ),
+}
+
 
 def preprocess(source: Path) -> bytes:
     return subprocess.check_output([
         "cc", "-E", "-P", "-x", "assembler-with-cpp",
         "-U__APPLE__", "-D__ELF__=1", f"-I{ROOT}", str(source),
     ])
+
+
+def preserved_asm_notice(source: Path) -> bytes:
+    marker = ASM_NOTICE_MARKERS.get(source.name)
+    if marker is None:
+        return b""
+
+    contents = source.read_bytes()
+    end = contents.find(marker)
+    if end < 0:
+        raise SystemExit(f"export-check: notice boundary missing in {source.name}")
+    notice = contents[:end].rstrip() + b"\n\n"
+    for required in ASM_NOTICE_REQUIRED[source.name]:
+        if required not in notice:
+            raise SystemExit(
+                f"export-check: required notice missing in {source.name}: "
+                f"{required.decode()}"
+            )
+    return notice
 
 
 def write_tree(destination: Path) -> None:
@@ -42,7 +75,15 @@ def write_tree(destination: Path) -> None:
         (destination / name).write_bytes(source)
     for source in ASM_SOURCES:
         output = Path(source).with_suffix(".s").name
-        (destination / output).write_bytes(preprocess(ROOT / source))
+        source_path = ROOT / source
+        rendered = preserved_asm_notice(source_path) + preprocess(source_path)
+        for required in ASM_NOTICE_REQUIRED.get(source, ()):
+            if required not in rendered:
+                raise SystemExit(
+                    f"export-check: required notice missing in {output}: "
+                    f"{required.decode()}"
+                )
+        (destination / output).write_bytes(rendered)
     for header in sorted(ROOT.glob("*.h")):
         if header.name == "randombytes.h":
             # SUPERCOP supplies an instrumented randombytes.h that also
