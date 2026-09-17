@@ -18,7 +18,8 @@ performed.
 
 ```text
 public-key bytes -> Q24 unpack M
-r coefficient producer -> shared frontend -> M Forward -> r-hat bytes
+r coefficient producer -> shared frontend -> M Forward
+    -> direct WIRE12 formation inside hash_g input
 m coefficient producer -> shared frontend -> QL2 Forward
 M general BaseMul -> QL2 product
 QL2 product + message -> QL2 two-source Q24 pack
@@ -36,6 +37,13 @@ The three QL2 kernels occupy a second deterministic page-aligned RX tail. The
 Encap caller retains its qualified 611-byte input-section reservation, while
 86 pre-existing symbols and rodata remain byte- and address-identical between
 the E0V and QL2 images. The qualified SUPERcop builder enforces this contract.
+
+The `r` WIRE12 value used by `hash_g` is not first materialized in the
+ciphertext buffer. A private third-tail helper writes it directly after the
+domain byte, invokes the unchanged SHAKE implementation, and clears the
+temporary. This deletes the subsequent 1152-byte copy while leaving the later
+ciphertext output path unchanged. The layout audit independently freezes the
+QL2-to-direct-r-hash transition.
 
 ## Decapsulation
 

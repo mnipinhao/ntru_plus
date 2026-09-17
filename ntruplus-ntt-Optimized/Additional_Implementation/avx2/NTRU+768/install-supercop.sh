@@ -28,7 +28,7 @@ for name in \
 	baseinv_tables.inc basemul.h basemul.s batch_inverse.s cbd.s consts.c \
 	consts.h crepmod3.s decap.c encap.c fips202.c fips202.h goal-constbranch \
 	goal-constindex internal.h invntt.s kem.c keygen.c ntt.h ntt.s \
-	ntt_bounds.h ntt_m.s ntt_p.s pack.s params.h poly.c poly.h symmetric.c \
+	ntt_bounds.h ntt_m.s ntt_p.s pack.s rhash.s params.h poly.c poly.h symmetric.c \
 	symmetric.h util.h encap-slot-pad.s e0v-tail.ld QUALIFICATION.md
 do
 	cp "$source_dir/$name" "$target_dir/$name"
@@ -37,7 +37,7 @@ mkdir "$target_dir/generated"
 cp "$source_dir/generated/tile4_inverse_tail_constants.inc" \
 	"$target_dir/generated/tile4_inverse_tail_constants.inc"
 mkdir "$target_dir/qualified"
-for name in audit-layout.py build-supercop.py encap-control.c encap-e0v.c \
+for name in audit-layout.py build-supercop.py encap-control.c encap-e0v.c encap-ql2.c \
 	ql2-promotion-results.json
 do
 	cp "$source_dir/qualified/$name" "$target_dir/qualified/$name"

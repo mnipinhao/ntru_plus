@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail unless the qualified E0V-to-QL2 layout contract is preserved."""
+"""Audit the E0V -> QL2 -> direct-r-hash production layout contracts."""
 
 from __future__ import annotations
 
@@ -11,7 +11,8 @@ import subprocess
 from pathlib import Path
 
 
-EXCLUDED = {"ntruplus768_enc_derand_impl"}
+EXCLUDED = {"ntruplus768_enc_derand_impl",
+            "ntruplus768_hash_g_from_m_avx2"}
 
 
 def out(command: list[str]) -> str:
@@ -57,32 +58,54 @@ def main() -> None:
     parser.add_argument("--build", type=Path, required=True)
     args = parser.parse_args()
     build = args.build.resolve()
-    binaries = {name: build / f"measure-{name}" for name in ("e0v", "ql2")}
+    binaries = {name: build / f"measure-{name}"
+                for name in ("e0v", "ql2", "rhash")}
     maps = {name: symbols(path) for name, path in binaries.items()}
-    mismatches = []
-    checked = 0
-    for name in sorted(set(maps["e0v"]) & set(maps["ql2"])):
-        if name in EXCLUDED or name.startswith(("supercop", "cpucycles")):
-            continue
-        control = maps["e0v"][name]
-        candidate = maps["ql2"][name]
-        if control != candidate:
-            mismatches.append({"symbol": name, "reason": "address/size/type",
-                               "control": control, "candidate": candidate})
-            continue
-        if control[2].lower() == "t" and control[1]:
-            if function_bytes(binaries["e0v"], *control[:2]) != \
-                    function_bytes(binaries["ql2"], *candidate[:2]):
-                mismatches.append({"symbol": name, "reason": "machine bytes"})
+    comparison_results = {}
+    for control_name, candidate_name in (("e0v", "ql2"),
+                                         ("ql2", "rhash")):
+        mismatches = []
+        checked = 0
+        common = set(maps[control_name]) & set(maps[candidate_name])
+        for name in sorted(common):
+            if name in EXCLUDED or name.startswith(("supercop", "cpucycles")):
                 continue
-        checked += 1
-    if mismatches:
-        raise SystemExit(json.dumps(mismatches[:20], indent=2))
-    if checked < 80:
-        raise SystemExit(f"only {checked} pre-existing symbols audited")
+            control = maps[control_name][name]
+            candidate = maps[candidate_name][name]
+            if control != candidate:
+                mismatches.append({"symbol": name,
+                                   "reason": "address/size/type",
+                                   "control": control,
+                                   "candidate": candidate})
+                continue
+            if control[2].lower() == "t" and control[1]:
+                if function_bytes(binaries[control_name], *control[:2]) != \
+                        function_bytes(binaries[candidate_name], *candidate[:2]):
+                    mismatches.append({"symbol": name,
+                                       "reason": "machine bytes"})
+                    continue
+            checked += 1
+        if mismatches:
+            raise SystemExit(json.dumps(mismatches[:20], indent=2))
+        if checked < 80:
+            raise SystemExit(f"only {checked} symbols audited for "
+                             f"{control_name}->{candidate_name}")
+        comparison_results[f"{control_name}_to_{candidate_name}"] = {
+            "symbols_checked": checked, "mismatches": 0}
+
+    helper_name = "ntruplus768_hash_g_from_m_avx2"
+    helper = {name: maps[name][helper_name] for name in binaries}
+    if len({value[:2] for value in helper.values()}) != 1:
+        raise SystemExit(f"helper geometry mismatch: {helper}")
+    helper_bytes = {
+        name: function_bytes(binaries[name], *value[:2])
+        for name, value in helper.items()
+    }
+    if len(set(helper_bytes.values())) != 1:
+        raise SystemExit("helper machine bytes mismatch")
 
     rodata = {name: section(path, ".rodata")[:2] for name, path in binaries.items()}
-    if rodata["e0v"] != rodata["ql2"]:
+    if len(set(rodata.values())) != 1:
         raise SystemExit(f"rodata geometry mismatch: {rodata}")
     rodata_hash = {}
     for name, path in binaries.items():
@@ -95,12 +118,12 @@ def main() -> None:
 
     tails = {section_name: {name: section(path, section_name)
                             for name, path in binaries.items()}
-             for section_name in (".e0v_tail", ".ql2_tail")}
+             for section_name in (".e0v_tail", ".ql2_tail", ".rhash_tail")}
     for section_name, profiles in tails.items():
         for name, (address, _size, flags) in profiles.items():
             if address % 4096 or "A" not in flags or "X" not in flags or "W" in flags:
                 raise SystemExit(f"invalid {name} {section_name}: {profiles[name]}")
-        if profiles["e0v"][:2] != profiles["ql2"][:2]:
+        if len({value[:2] for value in profiles.values()}) != 1:
             raise SystemExit(f"{section_name} mismatch: {profiles}")
     for name, path in binaries.items():
         if re.search(r"RWE", out(["readelf", "-lW", str(path)])):
@@ -108,18 +131,25 @@ def main() -> None:
 
     control_slot = section(build / "objects/encap-e0v.o",
                            ".text.ntruplus768_enc_derand_impl")[1]
-    candidate_slot = section(build / "objects/encap-ql2.o",
-                             ".text.ntruplus768_enc_derand_impl")[1]
-    if (control_slot, candidate_slot) != (611, 611):
-        raise SystemExit(f"caller slot contract failed: {control_slot}, {candidate_slot}")
+    ql2_slot = section(build / "objects/encap-ql2.o",
+                       ".text.ntruplus768_enc_derand_impl")[1]
+    rhash_slot = section(build / "objects/encap-rhash.o",
+                         ".text.ntruplus768_enc_derand_impl")[1]
+    if (control_slot, ql2_slot, rhash_slot) != (611, 611, 611):
+        raise SystemExit("caller slot contract failed: "
+                         f"{control_slot}, {ql2_slot}, {rhash_slot}")
 
     result = {
         "status": "PASS",
-        "preexisting_symbols_checked": checked,
-        "preexisting_symbol_mismatches": 0,
-        "caller_slot_bytes": {"e0v": control_slot, "ql2": candidate_slot},
+        "comparisons": comparison_results,
+        "caller_slot_bytes": {"e0v": control_slot, "ql2": ql2_slot,
+                              "rhash": rhash_slot},
         "encap_symbols": {name: maps[name]["ntruplus768_enc_derand_impl"][:2]
                           for name in binaries},
+        "rhash_helper": {
+            "symbols": {name: value[:2] for name, value in helper.items()},
+            "machine_bytes_identical": True,
+        },
         "tails": {section_name: {
             name: {"address": value[0], "size": value[1], "flags": value[2]}
             for name, value in profiles.items()}

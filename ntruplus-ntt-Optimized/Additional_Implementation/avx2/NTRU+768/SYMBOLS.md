@@ -54,6 +54,7 @@ M, P, F0, and J1 are types, not runtime modes.
 | `ntruplus768_pack_m_highrange12699_avx2` | `pack.s` | M/e0, `abs(x)<=12699`, to canonical bytes. Encap ciphertext. |
 | `ntruplus768_pack_m_sum_highrange12699_avx2` | `pack.s` | Two M/e0 inputs whose sum satisfies `abs(x)<=12699`; add before Q24 transpose/canonicalization. Encap ciphertext. |
 | `ntruplus768_pack_ql2_sum_avx2` | `pack.s` | Two QL2/e0 inputs; add, perform the remaining Q24 layer, canonicalize, and serialize. Production Encap ciphertext. |
+| `ntruplus768_hash_g_from_m_avx2` | `rhash.s` | Serialize M/e0 `r` directly behind the `hash_g` domain byte, SHAKE, and clear the private input. Production Encap only. |
 | `ntruplus768_pack_p_sp1_lazy10788_avx2` | `pack.s` | P/e0, `abs(x)<=10788`, to canonical bytes. Keygen public/secret polynomial fields. |
 | `ntruplus768_equal_m_modq12699_avx2` | `pack.s` | Constant-time equality of two M/e0 values modulo 3457 under the 12699 difference contract. Final Decap check. |
 

@@ -52,24 +52,13 @@ int ntruplus768_enc_derand_impl(
 	poly_cbd1((poly *)(void *)scratch.m,
 		buf + NTRUPLUS_SYMBYTES);
 	forward_m(scratch.r, scratch.c, scratch.m);
-	/*
-	 * The canonical WIRE12 value of r is needed here only as hash input.
-	 * Write it directly behind hash_g's domain byte instead of first
-	 * materializing it in ct and copying all 1152 bytes into hash_g.
-	 * Ciphertext serialization below remains unchanged.
-	 */
-	ntruplus768_hash_g_from_m_avx2(ct, scratch.r);
+	ntruplus768_pack_m_lazy10788_avx2(ct, scratch.r);
+	hash_g(ct, ct);
 
 	poly_sotp_encode((poly *)(void *)scratch.m, msg, ct);
-	/* The frontend consumes m before the terminal transform writes QL2. */
 	forward_ql2(scratch.m, scratch.c, scratch.m);
 	ntruplus768_basemul_general_ql2_avx2(
 		scratch.c, scratch.h, scratch.r);
-	/*
-	 * QL2 is a physical presentation of the same e=0 values, not a new
-	 * algebraic domain. The product and message converge in QL2; their
-	 * sum remains semantic-only and is not materialized as a polynomial.
-	 */
 	ntruplus768_pack_ql2_sum_avx2(ct, scratch.c, scratch.m);
 
 	for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)

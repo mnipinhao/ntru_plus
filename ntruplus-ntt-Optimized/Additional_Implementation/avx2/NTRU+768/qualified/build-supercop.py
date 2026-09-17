@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build matched E0V and promoted QL2 SUPERcop measure ELFs."""
+"""Build matched E0V, QL2, and promoted r-hash SUPERcop measure ELFs."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ COMMON_C = ["baseinv.c", "consts.c", "decap.c", "fips202.c", "kem.c",
             "keygen.c", "poly.c", "symmetric.c"]
 COMMON_ASM = ["add.s", "basemul.s", "batch_inverse.s", "cbd.s",
               "crepmod3.s", "invntt.s", "ntt.s", "ntt_m.s", "ntt_p.s",
-              "pack.s", "KeccakP-1600-AVX2.s"]
+              "pack.s", "rhash.s", "KeccakP-1600-AVX2.s"]
 FLAGS = ["-DSUPERCOP", '-DCOMPILER="gcc-gtclean-e0v-qualified"',
          "-DLOOPS=3", "-march=native", "-mtune=native", "-O3",
          "-fwrapv", "-fPIC", "-fPIE", "-fomit-frame-pointer",
@@ -89,7 +89,9 @@ def main() -> None:
 
     enc_e0v = qualify_encap("e0v", ROOT / "qualified/encap-e0v.c",
                             objects, includes)
-    enc_ql2 = qualify_encap("ql2", ROOT / "encap.c", objects, includes)
+    enc_ql2 = qualify_encap("ql2", ROOT / "qualified/encap-ql2.c",
+                            objects, includes)
+    enc_rhash = qualify_encap("rhash", ROOT / "encap.c", objects, includes)
 
     harness: list[Path] = []
     for name in ("measure-anything.c", "measure.c"):
@@ -105,7 +107,8 @@ def main() -> None:
                  bench / "lib/amd64/libkernelrandombytes.a",
                  bench / "lib/nontimecop/amd64/libcpucycles.a",
                  bench / "lib/amd64/libsupercop.a"]
-    for profile, encap in (("e0v", enc_e0v), ("ql2", enc_ql2)):
+    for profile, encap in (("e0v", enc_e0v), ("ql2", enc_ql2),
+                           ("rhash", enc_rhash)):
         profile_objects = ordered[:insert_at] + [encap] + ordered[insert_at:]
         run(["gcc", "-pie", "-Wl,--build-id=none", "-Wl,--gc-sections",
              "-Wl,--undefined=ntruplus768_pack_m_highrange12699_avx2",

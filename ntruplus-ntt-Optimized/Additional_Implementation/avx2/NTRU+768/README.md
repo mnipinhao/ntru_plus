@@ -39,6 +39,12 @@ sum is not materialized. `encap-slot-pad.s` preserves the qualified 611-byte
 caller slot and `e0v-tail.ld` retains the old E0V helper plus the deterministic
 page-aligned QL2 RX cluster without moving pre-existing hot code or rodata.
 
+The Encap `r` value is serialized directly into `hash_g`'s domain-separated
+input by `ntruplus768_hash_g_from_m_avx2`; it is not first written to the
+ciphertext buffer and copied into a second 1153-byte object. The helper lives
+in a third deterministic page-aligned RX tail. Ciphertext serialization later
+in the caller is unchanged.
+
 The selected Encap scratch map has four polynomial slots. The `m` slot first
 holds the coefficient producer and is overwritten by `ntt_m` only after the
 frontend has consumed it. This reduces the frame from 8128 to 6592 bytes; it

@@ -53,4 +53,8 @@ The QL2 promotion appends one selected function to each of `ntt_m.s`,
 `qualified/encap-e0v.c` is the frozen matched control used by the production
 layout audit; it is not part of the deployed call graph.
 
+The direct-r-hash promotion adds `rhash.s` and `.rhash_tail` after the QL2
+cluster. `qualified/encap-ql2.c` freezes the preceding production caller, so
+the owned audit now checks E0V-to-QL2 and QL2-to-r-hash independently.
+
 `SHA256SUMS` contains relative checksums of the finished clean snapshot.

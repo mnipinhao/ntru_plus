@@ -16,7 +16,7 @@ C_SOURCES_BEFORE_ENCAP = baseinv.c consts.c decap.c
 C_SOURCES_AFTER_ENCAP = fips202.c kem.c keygen.c poly.c symmetric.c
 ASM_SOURCES = \
 	add.s basemul.s batch_inverse.s cbd.s crepmod3.s invntt.s ntt.s \
-	ntt_m.s ntt_p.s pack.s KeccakP-1600-AVX2.s
+	ntt_m.s ntt_p.s pack.s rhash.s KeccakP-1600-AVX2.s
 # encap-slot-pad.s is deliberately adjacent to encap.c: both fragments use
 # the same input section, preserving the qualified 611-byte caller slot.
 SOURCES = $(C_SOURCES_BEFORE_ENCAP) encap.c encap-slot-pad.s \

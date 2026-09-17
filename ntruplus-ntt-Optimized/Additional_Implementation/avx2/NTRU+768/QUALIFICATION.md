@@ -1,4 +1,4 @@
-# QL2 production qualification
+# QL2 and direct-r-hash production qualification
 
 The current Encap path promotes the QL2 convergence architecture qualified in
 experiments 103 and 104. The prior E0V path remains the matched control and
@@ -35,8 +35,12 @@ value is written; the frontend call is the lifetime boundary.
 - `ntruplus768_ntt_ql2_avx2`, `ntruplus768_basemul_general_ql2_avx2`, and
   `ntruplus768_pack_ql2_sum_avx2` occupy `.ql2_tail` in that fixed order.
 - `.ql2_tail` is separately page-aligned RX. The production audit compares the
-  frozen E0V and QL2 callers in identical 611-byte slots and verifies at least
-  80 unchanged pre-existing symbols plus identical rodata.
+  frozen E0V and QL2 callers in identical 611-byte slots.
+- `ntruplus768_hash_g_from_m_avx2` occupies `.rhash_tail`, a third
+  page-aligned RX section. The QL2 control and promoted direct-r-hash caller
+  also use identical 611-byte slots.
+- Both transitions verify at least 80 unchanged pre-existing symbols plus
+  identical rodata.
 
 Run the production-owned audit inside this source directory or an installed
 SUPERcop export:
@@ -46,7 +50,7 @@ python3 qualified/build-supercop.py \
   --supercop-root /home/nuc/supercop-20260627
 ```
 
-The command builds matched E0V and QL2 measure ELFs and writes
+The command builds matched E0V, QL2, and QL2+r-hash measure ELFs and writes
 `qualified/build/layout-audit.json`. It fails on symbol, rodata, caller-slot,
 tail-alignment, or RX/RWX contract drift.
 
@@ -58,6 +62,21 @@ is 4,914 bytes and `.ql2_tail` is 6,226 bytes. Both are page-aligned RX, rodata
 is byte-identical, and the ELF has no RWX segment. Functional testing,
 ASan/UBSan, and the canonical KAT pass. The 948,402-byte KAT response SHA-256
 remains `22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8`.
+
+## Direct-r-hash promotion result (2026-09-16)
+
+Experiment 143 removed the redundant 1152-byte copy at the `r` hash boundary.
+The production audit checks 86 common symbols for both E0V-to-QL2 and
+QL2-to-r-hash transitions with zero mismatches. All three caller reservations
+are 611 bytes; the new helper is 120 bytes in a page-aligned RX-only tail.
+KAT, deterministic/noncanonical testing, and sanitizer testing pass.
+
+The matched production A/B improves Encap by about 57--92 core cycles while
+Keypair and Decap remain neutral. The Official comparison in experiment 144
+places Encap at statistical parity with ASLR enabled and about 127 cycles
+behind with ASLR disabled. Promotion is therefore justified by the causal A/B
+result, not by a claim that all three operations beat Official in every
+placement regime.
 
 The formal Official comparison is recorded in
 `experiments/gt32_ql2_production_139`. QL2 is now the production GT Encap path;
