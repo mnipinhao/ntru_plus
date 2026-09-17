@@ -93,6 +93,7 @@ Status meanings:
 | P55 | Done—Promoted NO_CE | Specialize fixed-size SHAKE256(`0x00 || 1296 bytes`) → 32-byte `hash_f` for Keygen and Encaps | Differential/alias, KEM/KAT/malformed, ABI/wipe/no-CE and hash_g-byte-identity gates pass; hash_f -4102.938, Keygen -4117.000 and Encaps -4095.400 paired cycles; Decaps retires zero changed instructions |
 | P56 | Done—Selected-Official profiler checkpoint | Re-run exact P55 production against selected SUPERCOP 20260831 Official with full correctness, clean PMU and component attribution | GT wins Keygen/Encaps/Decaps by 5207.375/9734.450/5385.875 cycles (11.75%/20.99%/13.21%); remaining diagnostic deficits are Inverse-to-ternary about +155.75 cycles and serialization/compare about +58.4 |
 | P57 | Done—Packaging | Align the NTRU+864 release with the `Additional_Implementation`/`SUPERCOP` structure and replace campaign-oriented source names with role-oriented names | Full Pi 5 release gate and independent SUPERCOP-leaf build pass; paired PMU has zero instruction/branch delta and no cycle regression |
+| P58 | Done—Formal SUPERCOP | Repair the deterministic SUPERCOP export contract and run the repackaged NTRU+864 leaf through `do-part crypto_kem ntruplus864` on Pi 5 | The formal selected implementation beats the restored 20260831 Official leaf by 5020/9697/5322 cycles for Keygen/Encaps/Decaps (11.41%/21.05%/13.06%); GT text is 90,626 bytes versus 49,290 bytes |
 
 ## ToBytes priority policy
 
@@ -141,6 +142,20 @@ must not be mixed into a generic same-boundary result.
 ## Change log
 
 ### 2026-09-17
+
+- Completed P58 in `/home/pi/supercop-20260831` on Pi 5 core 3 using the
+  formal `do-part crypto_kem ntruplus864` flow. The deterministic exporter now
+  includes SUPERCOP's generated `crypto_kem.h` in `kem.c` and leaves
+  `randombytes.h` to SUPERCOP so its measurement counters remain visible.
+  Production release checks, 64 KEM/tamper rounds, ABI, 10,368 canonical
+  decode cases, zeroization, KAT and deterministic export all pass. Selected
+  GCC 14.2.0 medians are Official/GT 43,988/38,968 for Keygen,
+  46,067/36,370 for Encaps and 40,761/35,439 for Decaps. The Official leaf was
+  restored after the isolated GT run and the Pi remained unthrottled. GT's
+  lower cycles trade for a larger text image: 90,626 versus 49,290 bytes.
+  Evidence: `experiments/gt864-supercop-formal-20260917/`. The selected
+  20260831 Official snapshot has not been independently verified as upstream
+  latest.
 
 - Started P57 packaging cleanup. Production filenames and internal symbols now
   use transform roles (`ntt`, `base`, `inverse`, `pack`, `unpack`, `hash`)

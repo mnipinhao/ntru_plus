@@ -1,3 +1,4 @@
+#include "crypto_kem.h"
 #include <stddef.h>
 #include <stdint.h>
 #include "api.h"

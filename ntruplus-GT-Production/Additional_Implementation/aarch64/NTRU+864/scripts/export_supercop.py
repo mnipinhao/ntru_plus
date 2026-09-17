@@ -34,11 +34,20 @@ def preprocess(source: Path) -> bytes:
 def write_tree(destination: Path) -> None:
     destination.mkdir(parents=True)
     for name in C_SOURCES:
-        shutil.copyfile(ROOT / name, destination / name)
+        source = (ROOT / name).read_bytes()
+        if name == "kem.c":
+            # SUPERCOP generates crypto_kem.h for each implementation and uses
+            # it to namespace the three public KEM entry points.
+            source = b'#include "crypto_kem.h"\n' + source
+        (destination / name).write_bytes(source)
     for source in ASM_SOURCES:
         output = Path(source).with_suffix(".s").name
         (destination / output).write_bytes(preprocess(ROOT / source))
     for header in sorted(ROOT.glob("*.h")):
+        if header.name == "randombytes.h":
+            # SUPERCOP supplies an instrumented randombytes.h that also
+            # exposes randombytes_bytes and randombytes_calls to measure.c.
+            continue
         shutil.copyfile(header, destination / header.name)
     shutil.copyfile(ROOT / "LICENSE", destination / "LICENSE")
     (destination / "architectures").write_text("aarch64\narmv8-a\n")
