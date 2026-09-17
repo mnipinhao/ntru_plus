@@ -91,6 +91,7 @@ Status meanings:
 | P53 | Done—Promoted NO_CE | Parameterize the 768 production register-resident scalar sponge for SHAKE256(`0x01 || 1296 bytes`) → 216 bytes | All gates pass; hash_g -4358.235, Encaps -4252.225 and Decaps -4312.950 cycles with no SHA3-extension instruction; Keygen retires zero changed instructions |
 | P54 | Done—Release hardened | Adopt 768's layered release gates and export contract without copying its transform implementation | Direct-link closure contains only selected P53/P47/P46/P35/P10/K1 sources; legacy candidates/evidence removed; KEM, ABI, canonical rejection, zeroization, exact-KAT and deterministic-export gates pass on Pi 5 |
 | P55 | Done—Promoted NO_CE | Specialize fixed-size SHAKE256(`0x00 || 1296 bytes`) → 32-byte `hash_f` for Keygen and Encaps | Differential/alias, KEM/KAT/malformed, ABI/wipe/no-CE and hash_g-byte-identity gates pass; hash_f -4102.938, Keygen -4117.000 and Encaps -4095.400 paired cycles; Decaps retires zero changed instructions |
+| P56 | Done—Selected-Official profiler checkpoint | Re-run exact P55 production against selected SUPERCOP 20260831 Official with full correctness, clean PMU and component attribution | GT wins Keygen/Encaps/Decaps by 5207.375/9734.450/5385.875 cycles (11.75%/20.99%/13.21%); remaining diagnostic deficits are Inverse-to-ternary about +155.75 cycles and serialization/compare about +58.4 |
 
 ## ToBytes priority policy
 
@@ -137,6 +138,21 @@ must not be mixed into a generic same-boundary result.
   is explicitly approved and production uses P10-A.
 
 ## Change log
+
+### 2026-09-17
+
+- Completed P56 against the pinned selected SUPERCOP 20260831 SHAKE256
+  AArch64 source. The three Official anchor hashes are unchanged; upstream-
+  latest status remains unverified. Fresh GT KEM/KAT, six 100-case exact plus
+  tampered cross-implementation processes, twelve instrumentation-equivalence
+  processes and unthrottled Pi 5 PMU all pass.
+- Across 252 clean observations per implementation and operation, P55 GT beats
+  Official Keygen by 5207.375 cycles (11.75%), Encaps by 9734.450 (20.99%) and
+  Decaps by 5385.875 (13.21%). P55 `hash_f` contributes about 4.1k cycles to
+  both Keygen and Encaps, while P53 `hash_g` contributes about 4.46k to Decaps.
+  Diagnostic matched boundaries leave only about +155.75 cycles in fused
+  Inverse-to-ternary and +58.4 in Decaps serialization/compare. Evidence:
+  `experiments/gt864-p56-official-profile/`.
 
 ### 2026-09-16
 
