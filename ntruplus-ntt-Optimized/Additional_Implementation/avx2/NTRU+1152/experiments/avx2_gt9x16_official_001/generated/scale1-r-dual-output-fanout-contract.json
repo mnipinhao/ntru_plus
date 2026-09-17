@@ -1,0 +1,63 @@
+{
+  "alias_contract": {
+    "ma2_may_read_r_after_hash_fanout": true,
+    "r_state_distinct_from_hash_bytes": true,
+    "serializer_must_not_mutate_r_state": true
+  },
+  "benchmark_boundary": {
+    "end": "wire r state retained for MA2 plus completed hash_g/SOTP m",
+    "must_include": [
+      "top split",
+      "Forward",
+      "serializer",
+      "hash_g",
+      "SOTP"
+    ],
+    "must_not_claim": "isolated serializer timing as caller credit",
+    "start": "coefficient-domain CBD1 r"
+  },
+  "consumers": {
+    "hash_fanout": {
+      "output": "1728 exact Official poly_tobytes bytes",
+      "requires_input_unchanged": true,
+      "symbol": "ntruplus1152_exp001_direct_serializer_wire",
+      "then": [
+        "hash_g",
+        "poly_sotp_encode"
+      ]
+    },
+    "ma2": {
+      "requires_input_unchanged": true,
+      "semantic_role": "r operand of h*r+m",
+      "symbol": "ntruplus1152_exp001_encap_h4_m3b_exact_egress_wire"
+    }
+  },
+  "correctness_gates": [
+    "canonical Forward differential",
+    "exact 1728-byte serializer differential",
+    "r state immutability across serializer/hash fanout",
+    "complete ciphertext and KAT byte equality"
+  ],
+  "decision": {
+    "contract_frozen": true,
+    "new_dual_output_asm_authorized": false,
+    "next": "current wire tail T0/T1/T2 attribution"
+  },
+  "linked_forward": {
+    "data_loads": 144,
+    "data_stores": 144,
+    "instructions": 2779
+  },
+  "producer": "ntruplus1152_exp001_gt9x16_prod3_aos_full_wire_monotone_scale1_lazy_reduce",
+  "representation": {
+    "cells": 1152,
+    "mapping_bijection": true,
+    "montgomery_exponent": 0,
+    "owner": "(branch,p,q,terminal-coefficient)",
+    "physical_order": "wire-monotone",
+    "raw_representative": "lazy signed-i16; residue is normative",
+    "scale": 1
+  },
+  "schema": "scale1-r-dual-output-fanout-contract/v1",
+  "semantic_value": "Forward(r) modulo q"
+}

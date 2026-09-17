@@ -1,0 +1,169 @@
+{
+  "boundaries": {
+    "s0": {
+      "official": {
+        "observations": 1728,
+        "stq1": 525.1226851851852,
+        "stq2": 529.4444444444445,
+        "stq3": 535.0254629629629
+      },
+      "wire": {
+        "observations": 1728,
+        "stq1": 723.1018518518518,
+        "stq2": 729.2245370370371,
+        "stq3": 736.3171296296297
+      },
+      "wire_minus_official_stq2": 199.7800925925926
+    },
+    "s1": {
+      "official": {
+        "observations": 1728,
+        "stq1": 581.5254629629629,
+        "stq2": 586.8773148148148,
+        "stq3": 592.5439814814815
+      },
+      "wire": {
+        "observations": 1728,
+        "stq1": 766.4513888888889,
+        "stq2": 776.9861111111111,
+        "stq3": 800.6504629629629
+      },
+      "wire_minus_official_stq2": 190.1087962962963
+    },
+    "s2": {
+      "official": {
+        "observations": 1728,
+        "stq1": 18232.997685185186,
+        "stq2": 18382.1875,
+        "stq3": 18517.824074074073
+      },
+      "wire": {
+        "observations": 1728,
+        "stq1": 18446.074074074073,
+        "stq2": 18600.618055555555,
+        "stq3": 18710.175925925927
+      },
+      "wire_minus_official_stq2": 218.43055555555475
+    },
+    "s3": {
+      "official": {
+        "observations": 1728,
+        "stq1": 18432.99074074074,
+        "stq2": 18604.45601851852,
+        "stq3": 18725.659722222223
+      },
+      "wire": {
+        "observations": 1728,
+        "stq1": 18686.266203703704,
+        "stq2": 18846.666666666668,
+        "stq3": 18947.72685185185
+      },
+      "wire_minus_official_stq2": 242.21064814814963
+    }
+  },
+  "checkpoint": "SCALE1-R-SERIALIZER-HASH-BOUNDARY-MAP",
+  "decision": {
+    "do_not_reopen": "full serializer in Forward terminal",
+    "dominant_wire_specific_debt": "serializer",
+    "next": "boundary-preserving serializer-v2 map using two wire tiles per Official-like 8-vector packet"
+  },
+  "hash_g_source_contract": {
+    "domain_byte": "0x01",
+    "input_bytes": 1728,
+    "output_bytes": 288,
+    "pipeline": [
+      "stage domain and input",
+      "SHAKE256",
+      "secure_clear"
+    ],
+    "staged_bytes": 1729
+  },
+  "incremental_debt_stq2": {
+    "hash_input_staging": -9.671296296296305,
+    "shake_and_clear": 28.321759259258442,
+    "sotp": 23.780092592594883
+  },
+  "launch_direction": {
+    "s0": {
+      "launches": 9,
+      "wire_slower": 9
+    },
+    "s1": {
+      "launches": 9,
+      "wire_slower": 9
+    },
+    "s2": {
+      "launches": 9,
+      "wire_slower": 9
+    },
+    "s3": {
+      "launches": 9,
+      "wire_slower": 9
+    }
+  },
+  "linked_serializer": {
+    "dynamic_instruction_delta_wire_minus_official": 312,
+    "official": {
+      "dynamic_instructions": 1075,
+      "dynamic_mnemonics": {
+        "add": 18,
+        "cmp": 9,
+        "jb": 9,
+        "lea": 1,
+        "nop": 1,
+        "ret": 9,
+        "vmovdqa": 74,
+        "vmovdqu": 54,
+        "vpaddw": 72,
+        "vpand": 72,
+        "vpblendd": 54,
+        "vpblendw": 54,
+        "vperm2i128": 54,
+        "vpmulhrsw": 72,
+        "vpmullw": 72,
+        "vpslld": 27,
+        "vpsllq": 27,
+        "vpsllw": 54,
+        "vpsraw": 72,
+        "vpsrlq": 54,
+        "vpsrlw": 36,
+        "vpsubw": 72,
+        "vpunpckhqdq": 27,
+        "vpunpcklqdq": 27,
+        "vpxor": 54
+      },
+      "loop_iterations": 9,
+      "static_loop_instructions": 119,
+      "static_prologue_instructions": 4
+    },
+    "wire": {
+      "mnemonics": {
+        "ret": 1,
+        "vextracti128": 72,
+        "vinserti128": 54,
+        "vmovdqa": 126,
+        "vmovdqu": 54,
+        "vpaddw": 72,
+        "vpand": 72,
+        "vperm2i128": 72,
+        "vpmaddwd": 72,
+        "vpmulhrsw": 72,
+        "vpmullw": 72,
+        "vpor": 108,
+        "vpshufb": 72,
+        "vpslldq": 108,
+        "vpsraw": 72,
+        "vpsrldq": 72,
+        "vpsubw": 72,
+        "vpunpckhdq": 36,
+        "vpunpckhwd": 36,
+        "vpunpckldq": 36,
+        "vpunpcklwd": 36
+      },
+      "straight_line_instructions": 1387,
+      "text_bytes": 8525
+    }
+  },
+  "passed": true,
+  "schema": 1
+}

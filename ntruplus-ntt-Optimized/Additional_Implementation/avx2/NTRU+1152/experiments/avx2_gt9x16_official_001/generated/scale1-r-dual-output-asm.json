@@ -1,0 +1,34 @@
+{
+  "abi": {
+    "rdi": "in-place 2304-byte top-split state; retained wire scale-1 output",
+    "rsi": "1728-byte exact serialized r output"
+  },
+  "checkpoint": "SCALE1-R-DUAL-OUTPUT-ASM1",
+  "decision": {
+    "caller_benchmark_authorized": false,
+    "correctness_authorized": true,
+    "native_kem_authorized": false
+  },
+  "expected": {
+    "extra_scratch_bytes": 0,
+    "peak_ymm": 15,
+    "register_moves": 0,
+    "removed_reloads": 72,
+    "serializer_reloads": 0,
+    "state_stores": 72,
+    "terminal_tiles": 18
+  },
+  "schema": "scale1-r-dual-output-asm/v1",
+  "serializer_ledger_before_load_elimination": {
+    "ciphertext_stores": 54,
+    "pack_routes": 486,
+    "pack_saves": 54,
+    "pair_madd": 72,
+    "pair_unpack": 72,
+    "parity_routes": 144,
+    "scratch_loads": 72,
+    "vpermd": 0,
+    "vpermd_index_loads": 0
+  },
+  "symbol": "ntruplus1152_exp001_gt9x16_prod3_aos_full_wire_scale1_dual_r"
+}

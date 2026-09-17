@@ -1,0 +1,61 @@
+{
+  "balanced_combined_operations": {
+    "scale1_r_dual_output_fanout_candidate_cycles": {
+      "observations": 1728,
+      "stq1": 20276.881944444445,
+      "stq2": 20488.64814814815,
+      "stq3": 20568.150462962964
+    },
+    "scale1_r_dual_output_fanout_control_cycles": {
+      "observations": 1728,
+      "stq1": 19871.131944444445,
+      "stq2": 20067.078703703704,
+      "stq3": 20130.175925925927
+    }
+  },
+  "estimator": "SUPERCOP-20260627-stabilized-quartiles",
+  "fresh_process_launches": 9,
+  "measure_identity": {
+    "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-ffunction-sections_-fdata-sections_-Wl,--gc-sections_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2-gt9x16-wire-dual-r-exp012-sc20260831 -"
+  },
+  "measure_loops": 3,
+  "observations_per_operation_per_launch": 96,
+  "operations": {
+    "scale1_r_dual_output_fanout_candidate_first_cycles": {
+      "observations": 864,
+      "stq1": 20277.537037037036,
+      "stq2": 20485.75,
+      "stq3": 20567.546296296296
+    },
+    "scale1_r_dual_output_fanout_candidate_second_cycles": {
+      "observations": 864,
+      "stq1": 20275.76388888889,
+      "stq2": 20491.597222222223,
+      "stq3": 20568.74074074074
+    },
+    "scale1_r_dual_output_fanout_control_first_cycles": {
+      "observations": 864,
+      "stq1": 19892.083333333332,
+      "stq2": 20072.59259259259,
+      "stq3": 20137.0
+    },
+    "scale1_r_dual_output_fanout_control_second_cycles": {
+      "observations": 864,
+      "stq1": 19850.208333333332,
+      "stq2": 20061.472222222223,
+      "stq3": 20124.25925925926
+    }
+  },
+  "scale1_r_dual_output_fanout_contract": {
+    "end": "retained wire scale-1 r state plus hash_g output plus SOTP m",
+    "native_kem_result": false,
+    "only_change": "standalone serializer reloads replaced by live Forward terminal registers",
+    "preflight": "raw r state, hash_g output, and SOTP m byte-exact",
+    "start": "coefficient-domain CBD1-compatible r"
+  },
+  "timings_per_loop": 32
+}
