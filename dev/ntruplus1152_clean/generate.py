@@ -12,7 +12,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 Q, NEG_QINV, HALF = 3457, -12929, 1728
-QREG, QI, HI, LO = "v0", "v1", "v2", "v3"   # reserved from SLOTHY
+QREG, QI, HI, LO, ZERO = "v0", "v1", "v2", "v3", "v4"   # reserved from SLOTHY
 
 
 class DAG:
@@ -66,6 +66,21 @@ class DAG:
         self.emit(f"{op}2 {self.r(hi, '4s')}, {self.r(a, '8h')}, {self.r(b, '8h')}")
         return lo, hi
 
+    def wide_sub(self, a, b, acc):
+        """smlsl/smlsl2 pair: subtract the 8-lane widening product."""
+        lo, hi = acc
+        self.emit(f"smlsl {self.r(lo, '4s')}, {self.r(a, '4h')}, {self.r(b, '4h')}")
+        self.emit(f"smlsl2 {self.r(hi, '4s')}, {self.r(a, '8h')}, {self.r(b, '8h')}")
+        return acc
+
+    def neg(self, a):
+        """SLOTHY's AArch64 model has no vector `neg`, so subtract from a zero
+        register instead.  That is why v4 is reserved as well."""
+        return self.binary("sub", ZERO, a)
+
+    def fqmul(self, a, b):
+        return self.redc(self.wide(a, b))
+
     def redc(self, acc):
         """Montgomery reduction of a widened accumulator, exactly the C's."""
         lo, hi = acc
@@ -104,7 +119,7 @@ class DAG:
 // reserved: x18-x30, sp, v0-v3 and v8-v15.  Nothing is stashed, so the
 //           callee-saved vector registers are off limits; the four constants are
 //           physical because a symbolic register defined outside the optimized
-//           region could not be allocated.  That leaves v4-v7 and v16-v31.
+//           region could not be allocated.  v4 is the zero vector, needed\n//           because the model has no vector `neg`.  That leaves v5-v7, v16-v31.
 .text
 .global {symbol}
 {symbol}:
@@ -157,7 +172,103 @@ def basemul_rinv():
                   "// iteration over the 36 Good-Thomas groups.")
 
 
-KERNELS = {"basemul_rinv": basemul_rinv}
+def baseinv_num():
+    """The quartic adjugate and the scalar norm, one Good-Thomas group.
+
+    X^4 - zeta is a quadratic tower: with u = X^2 and u^2 = zeta, the element
+    a = (a0 + a2 u) + X(a1 + a3 u) lives in R[X]/(X^2 - u) over
+    R = Z_q[u]/(u^2 - zeta), so the inverse is two nested quadratic
+    conjugations.  t0 and t1 carry the inner conjugate, t2 its zeta twist, and
+    the norm t0^2 - t1 t2 is the scalar that the batch inversion later inverts.
+    """
+    d = DAG()
+    d.constant(QREG, Q)
+    d.constant(QI, NEG_QINV)
+    d.emit("mov x4, #36")
+    d.label("baseinv_num_loop")
+
+    a = [d.load(f"a{i}", "x2", 16 * i) for i in range(4)]
+    z = d.load("z", "x3")
+
+    # t0 = a2^2 - 2 a1 a3 ;  t1 = a3^2
+    acc = d.wide(a[2], a[2])
+    d.wide_sub(a[1], a[3], acc)
+    d.wide_sub(a[1], a[3], acc)
+    t0 = d.redc(acc)
+    t1 = d.fqmul(a[3], a[3])
+
+    # t0 = a0^2 + zeta t0 ;  t1 = a1^2 + zeta t1 - 2 a0 a2
+    acc = d.wide(a[0], a[0])
+    d.wide(t0, z, acc)
+    t0 = d.redc(acc)
+
+    acc = d.wide(a[1], a[1])
+    d.wide(t1, z, acc)
+    d.wide_sub(a[0], a[2], acc)
+    d.wide_sub(a[0], a[2], acc)
+    t1 = d.redc(acc)
+
+    t2 = d.fqmul(t1, z)
+
+    # norm = t0^2 - t1 t2, the 8 lanes the batch inversion consumes
+    acc = d.wide(t0, t0)
+    d.wide_sub(t1, t2, acc)
+    d.store(d.redc(acc), "x1")
+
+    for i, (p, q_, r_, s_) in enumerate([(a[0], t0, a[2], t2),
+                                         (a[3], t2, a[1], t0),
+                                         (a[2], t0, a[0], t1),
+                                         (a[1], t1, a[3], t0)]):
+        acc = d.wide(p, q_)
+        d.wide(r_, s_, acc)
+        d.store(d.redc(acc), "x0", 16 * i)
+
+    d.emit("add x0, x0, #64")
+    d.emit("add x1, x1, #16")
+    d.emit("add x2, x2, #64")
+    d.emit("add x3, x3, #16")
+    d.emit("subs x4, x4, #1")
+    d.emit("b.ne baseinv_num_loop")
+    d.emit("ret")
+    return d.text("baseinv_num_kernel",
+                  "// NTRU+1152 BaseInv numerator: the quartic adjugate into x0 and the\n"
+                  "// scalar norm into x1, one group per iteration.\n"
+                  "//\n"
+                  "// x1 is the 36 x 8 norm array the batch inversion consumes.")
+
+
+def baseinv_finish():
+    """Apply the inverted norms with the +,-,+,- conjugation signs.
+
+    The alternating sign is the deferred odd-degree negation of the conjugate,
+    folded into the final scaling rather than applied earlier.
+    """
+    d = DAG()
+    d.constant(QREG, Q)
+    d.constant(QI, NEG_QINV)
+    d.emit(f"movi {ZERO}.16b, #0")
+    d.emit("mov x4, #36")
+    d.label("baseinv_finish_loop")
+
+    pden = d.load("pden", "x1")
+    mden = d.neg(pden)
+    for i in range(4):
+        r = d.load(f"r{i}", "x0", 16 * i)
+        d.store(d.fqmul(r, pden if i % 2 == 0 else mden), "x0", 16 * i)
+
+    d.emit("add x0, x0, #64")
+    d.emit("add x1, x1, #16")
+    d.emit("subs x4, x4, #1")
+    d.emit("b.ne baseinv_finish_loop")
+    d.emit("ret")
+    return d.text("baseinv_finish_kernel",
+                  "// NTRU+1152 BaseInv finish: scale the adjugate at x0 by the inverted\n"
+                  "// norms at x1, with the +,-,+,- conjugation signs.")
+
+
+KERNELS = {"basemul_rinv": basemul_rinv,
+           "baseinv_num": baseinv_num,
+           "baseinv_finish": baseinv_finish}
 
 if __name__ == "__main__":
     (HERE / "src").mkdir(exist_ok=True)

@@ -30,6 +30,14 @@
  * The +,-,+,- sign pattern is that conjugation, deferred to the final scaling.
  */
 
+#ifdef NTRUPLUS1152_ASM_BASEINV_NUM
+void baseinv_num_kernel(int16_t *out, int16_t *den, const int16_t *in,
+                        const int16_t *zetas);
+#endif
+#ifdef NTRUPLUS1152_ASM_BASEINV_FINISH
+void baseinv_finish_kernel(int16_t *out, const int16_t *den);
+#endif
+
 typedef struct {
     int32x4_t low;
     int32x4_t high;
@@ -231,6 +239,9 @@ int baseinv_asm(int16_t out[BASE_COEFFICIENTS],
     int16x8_t prefix[36];
 
     /* ---- numerator: quartic adjugate into out, norm into den ---- */
+#ifdef NTRUPLUS1152_ASM_BASEINV_NUM
+    baseinv_num_kernel(out, (int16_t *)den, in, &basemul_zetas[0][0]);
+#else
     for (int group = 0; group < 36; group++) {
         int offset = 32 * group;
         int16x8_t a[4], r[4];
@@ -271,6 +282,7 @@ int baseinv_asm(int16_t out[BASE_COEFFICIENTS],
         r[3] = montgomery_reduce(multiply_add(multiply(a[1], t1), a[3], t0));
         STORE4(out, offset, r);
     }
+#endif
 
     /* ---- 3 independent prefix chains, one inversion, 3 recover chains ---- */
     {
@@ -322,6 +334,9 @@ int baseinv_asm(int16_t out[BASE_COEFFICIENTS],
     }
 
     /* ---- finish: apply with the +,-,+,- conjugation signs ---- */
+#ifdef NTRUPLUS1152_ASM_BASEINV_FINISH
+    baseinv_finish_kernel(out, (const int16_t *)den);
+#else
     for (int group = 0; group < 36; group++) {
         int offset = 32 * group;
         int16x8_t pden = den[group];
@@ -335,6 +350,7 @@ int baseinv_asm(int16_t out[BASE_COEFFICIENTS],
         r[3] = fqmul(r[3], mden);
         STORE4(out, offset, r);
     }
+#endif
 
     return 0;
 }

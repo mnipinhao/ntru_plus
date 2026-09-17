@@ -1,0 +1,33 @@
+instruction  SLOTHY class               cortex_a76    neoverse_n1 apple_m1_fires apple_m1_icest
+----------------------------------------------------------------------------------------------
+smlal        vsmlal                            yes            yes             NO             NO
+smlal2       vsmlal2                           yes            yes             NO             NO
+smull        vsmull                            yes            yes             NO             NO
+smull2       vsmull2                           yes            yes             NO             NO
+uzp1         vuzp1                             yes            yes            yes            yes
+mul          vmul                              yes            yes            yes            yes
+uzp2         vuzp2                             yes            yes            yes            yes
+ldr          q_ldr_with_inc                    yes            yes            yes            yes
+add          add_imm                           yes            yes            yes            yes
+str          q_str_with_inc                    yes            yes            yes            yes
+cmgt         cmgt                              yes            yes            yes            yes
+and          vand                              yes            yes            yes            yes
+sub          vsub                              yes            yes            yes            yes
+smlsl        vsmlsl                            yes            yes             NO             NO
+smlsl2       vsmlsl2                           yes            yes             NO             NO
+subs         subs_imm                          yes            yes             NO             NO
+
+per kernel, instruction counts inside the loop
+  baseinv_finish    41 instructions   ldr x5, smull x4, smull2 x4, uzp1 x4, mul x4, smlal x4, smlal2 x4, uzp2 x4, str x4, add x2, sub x1, subs x1
+  baseinv_num      107 instructions   smlal x16, smlal2 x16, smull x10, smull2 x10, uzp1 x10, mul x10, uzp2 x10, ldr x5, smlsl x5, smlsl2 x5, str x5, add x4, subs x1
+  basemul_rinv     115 instructions   smlal x19, smlal2 x19, ldr x9, cmgt x8, and x8, add x8, smull x7, smull2 x7, uzp1 x7, mul x7, uzp2 x7, sub x4, str x4, subs x1
+
+what each model would need added
+  cortex_a76: nothing -- covers every instruction these kernels use
+  neoverse_n1_experimental: nothing -- covers every instruction these kernels use
+  apple_m1_firestorm_experimental:
+      classes    subs_imm, vsmlal, vsmlal2, vsmlsl, vsmlsl2, vsmull, vsmull2
+      mnemonics  smlal, smlal2, smlsl, smlsl2, smull, smull2, subs
+  apple_m1_icestorm_experimental:
+      classes    subs_imm, vsmlal, vsmlal2, vsmlsl, vsmlsl2, vsmull, vsmull2
+      mnemonics  smlal, smlal2, smlsl, smlsl2, smull, smull2, subs

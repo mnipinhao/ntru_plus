@@ -30,6 +30,8 @@ p.add_argument("kernel")
 p.add_argument("target", choices=sorted(TARGETS))
 p.add_argument("--timeout", type=int, default=300)
 p.add_argument("--split-factor", type=int, default=8)
+p.add_argument("--ra-only", action="store_true",
+               help="stop after register allocation; its output is the testable clean tier")
 a = p.parse_args()
 
 Target = __import__(f"slothy.targets.aarch64.{TARGETS[a.target]}",
@@ -50,14 +52,14 @@ report = {"kernel": a.kernel, "target": a.target,
           "stages": []}
 
 cur = src
-for stage in ("ra", "timing"):
+for stage in (("ra",) if a.ra_only else ("ra", "timing")):
     logging.basicConfig(level=logging.INFO, force=True,
                         handlers=[logging.FileHandler(build / f"{stage}.log", mode="w"), logging.StreamHandler()])
     s = Slothy(Arch, Target, logger=logging.getLogger(f"{a.kernel}/{a.target}/{stage}"))
     s.config.selftest = False
     s.config.inputs_are_outputs = True
     s.config.reserved_regs = [f"x{i}" for i in range(18, 31)] + ["sp", "xzr"] \
-                             + ["v0", "v1", "v2", "v3"] \
+                             + ["v0", "v1", "v2", "v3", "v4"] \
                              + [f"v{i}" for i in range(8, 16)]
     s.config.constraints.allow_spills = False
     s.config.constraints.functional_only = (stage == "ra")

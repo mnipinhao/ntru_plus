@@ -8,7 +8,8 @@
 // reserved: x18-x30, sp, v0-v3 and v8-v15.  Nothing is stashed, so the
 //           callee-saved vector registers are off limits; the four constants are
 //           physical because a symbolic register defined outside the optimized
-//           region could not be allocated.  That leaves v4-v7 and v16-v31.
+//           region could not be allocated.  v4 is the zero vector, needed
+//           because the model has no vector `neg`.  That leaves v5-v7, v16-v31.
 .text
 .global basemul_rinv_kernel
 basemul_rinv_kernel:
