@@ -45,6 +45,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P16 | Done — closed | Is there headroom left in `ntt9.S`? | **No.** It is multiply-throughput bound at 93% of the A76 floor (484 vs 450 cycles/bank). Slothy is worth at most 0.85% of the KEM. Evidence in `gt1152-p16-ntt9-study/` |
 | P15 | Done — rejected | Fuse the codec's passes with byte-granular lane stores | Measured 12,129 cycles worse: `vst3_lane_u8` doubles 8 halfword lane stores into 16 byte lane stores. Evidence in `gt1152-p15-codec-fused/` |
 | P17 | Done | Why did 864 beat the official pre-hash and 1152 does not? | **No structural penalty.** At 864's pre-hash per-category ratios 1152 would stand at -3.68% against its measured +8.76%; 64.9% of the shortfall is the serializer. Evidence in `gt1152-p17-vs-864-parity/` |
+| P18 | Done | Rewrite the serializer with the permutation in registers, 864's way | **Serialize +10,909 -> +911; whole KEM +7.9% -> +1.8%; encaps now -1.0%, faster than the official.** Byte-identical to P12 on all four entry points; all 7 oracle checks and every package gate pass. Evidence in `gt1152-p18-codec-registers/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -676,6 +677,70 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   **The hash is not what separates the campaigns.** 1152's hash ratio is 1.022
   against 864's pre-hash 1.013; the whole category is 766 of the 19,981. M2-1 is
   a large win *on top of* parity, as it was for 864 (-3.95% to -11/-21/-13%).
+
+- **P18 done, the serializer rewritten.** `experiments/gt1152-p18-codec-registers/`.
+
+  P17 named the mechanism: 864 never materialises natural order, it permutes
+  inside the register file; 1152's P12 codec materialised `uint16_t nat[1152]`
+  and ran two passes. This gate does it 864's way.
+
+  **The tiling** (verified exhaustively in `generate_pairs.py`, which fails the
+  build if it stops holding): the 36 Good-Thomas groups pair as **(g, g+9)**, 18
+  pairs covering all 36 exactly once, and for every pair and every lane the two
+  leaves are consecutive with the first even. A leaf is four coefficients, so a
+  pair's lane is eight consecutive natural coefficients = **exactly twelve
+  contiguous wire bytes** at `6m`, 12-byte aligned. The 144 blocks tile the 1728
+  byte output with no overlap and no gap, so every store is independent.
+
+  That is the degree-4 dividend the campaign plan predicted and P12 only partly
+  collected. 864's three-coefficient leaves are 4.5 wire bytes and never align,
+  which is why its `pack_full_top` needs 54 `tbl` and 24 `ext` to route them.
+
+  **The kernel.** Per pair: 8 loads, one 8x8 int16 transpose (24 `trn`, three
+  levels, verified symbolically against NEON `trn1`/`trn2` before any code was
+  written; a transpose is an involution so one network serves both directions),
+  8 twelve-byte stores, no scratch. Rows are loaded as `(c0,c2)` of g, `(c0,c2)`
+  of g+9, then `(c1,c3)` of each, so a transposed lane reads out as four even
+  coefficients then four odd -- the operand order the encoding wants, free.
+  Encoding is then four instructions, with `vshll_high_n_u16(x, 12)` doing the
+  widen and the 12-bit shift at once so the 24-bit little-endian pair that *is*
+  the wire format falls out with no masking.
+
+  | entry point | P12 | **P18** | saving | official |
+  |---|---:|---:|---:|---:|
+  | `tobytes_full` | 2,376 | **1,471** | -905 | 1,147 |
+  | `tobytes_small` | 1,822 | **990** | -832 | 1,147 |
+  | `tobytes_compare` | 2,608 | **1,431** | -1,177 | - |
+  | `frombytes` | 2,219 | **956** | -1,263 | 509 |
+
+  `tobytes_small` is now faster than the official's `poly_tobytes` while still
+  paying for a permutation the official never performs.
+
+  **Whole KEM**, profiler re-run after integration:
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | keygen | 64,082 | 65,195 | +1.7% | +5.6% |
+  | **encaps** | 59,438 | **58,855** | **-1.0%** | +3.5% |
+  | decaps | 52,533 | 55,245 | +5.2% | +15.7% |
+  | **total** | **176,054** | **179,294** | **+1.8%** | +7.9% |
+
+  serialize +10,909 -> **+911**; every other category unchanged within noise.
+
+  **Correctness.** All seven P09 oracle checks pass first run, including the
+  3,456-case canonical rejection sweep and 256 single-bit compare corruptions.
+  Byte-identical to P12 on all four entry points. Package gates on the Pi: KAT
+  sha256 `2ddfc810c4...64c3`, 64 round trips, 13,824 canonical cases, 11/11 ABI
+  sentinels, 288/288 baseinv, zeroization clean, 44-file manifest verifies.
+
+  **What is left.** Serialize's ratio is 1.091 against 864's 0.796, so ~2,960
+  cycles remain there -- 864 reached its figure with 7,751 lines of
+  Slothy-scheduled assembly and this is intrinsics C. Of the remaining +3,391,
+  **baseinv is now the largest single item at +2,405**, cause on record from
+  G5/P11: no ILP split where 864 uses 12x3. Then hash +1,143, inverse +1,136,
+  serialize +911, sample +568, basemul -168, forward -2,604.
+
+  Owed: a fresh-date SUPERCOP run. G9's +28.2% predates P12, P13 and this gate.
 
 ## Standing rules
 
