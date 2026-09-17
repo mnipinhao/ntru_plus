@@ -1,0 +1,24 @@
+experiment: GT32-ENCAP-PERSISTENT-QL2-134
+status: PASS_TO_EXECUTABLE_135
+production_modified: false
+baseline:
+  production: b2a4bea
+  encap_research: 104-QL2
+correctness:
+  mapping_impulses: 64
+  random_quartic_products: 1000
+  modulo_q_exact: true
+finding:
+  ql2_shape: qword-local quartic AoS
+  boundary_routes_current_per_encap: 576
+  boundary_routes_candidate_per_encap: 144
+  boundary_route_delta: -432
+mandatory_scale_repayment:
+  old_native_kernel_output_scale: e=-1
+  encap_required_output_scale: e=0
+  mont_rsq_chains: 48
+  dynamic_instructions: 192
+next:
+  id: PQL2_NATIVE_E0
+  scope: QL2xQL2-to-QL2 general BaseMul including e0 finish
+  measurement: same-ELF paired Normal/Reversed

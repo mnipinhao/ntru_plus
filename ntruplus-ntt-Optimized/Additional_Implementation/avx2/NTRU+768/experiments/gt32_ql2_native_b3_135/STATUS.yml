@@ -1,0 +1,29 @@
+experiment: GT32-QL2-NATIVE-B3-135
+status: CLOSED_FOR_SCOPE
+production_modified: false
+correctness:
+  random_trials: 1000
+  alias_a: pass
+  alias_b: pass
+  scale_e0: pass
+static:
+  stack_references: 0
+  zero_spill: true
+benchmark:
+  protocol: SUPERcop-libcpucycles CPU1 ASLR-on 16-fresh-launch paired
+  normal_delta: 215.62
+  normal_ci95: [214.11, 215.99]
+  reversed_delta: 218.12
+  reversed_ci95: [217.81, 218.59]
+pmu_delta_per_call:
+  core_cycles: 218.53
+  retired_instructions: 318.83
+  port_5_11_uops: 220.41
+closed_scope:
+  - persistent-QL2 qword-local D0-D3 vpmaddwd
+  - unsigned-REDC16
+  - explicit-Mont-R2-e0-finish
+reopen:
+  - remove qword-local routing operation class
+  - absorb e0 correction into required Q24 work
+  - new measured load-dependency repayment above 218 cycles

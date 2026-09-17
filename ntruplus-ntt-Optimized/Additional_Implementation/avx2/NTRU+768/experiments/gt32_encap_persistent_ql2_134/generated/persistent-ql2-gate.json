@@ -1,0 +1,184 @@
+{
+  "schema": "ntruplus768-gt32-encap-persistent-ql2-134-v1",
+  "experiment": "GT32-ENCAP-PERSISTENT-QL2-134",
+  "mode": "generator-and-existing-executable-evidence",
+  "production_modified": false,
+  "baseline": {
+    "production": "b2a4bea",
+    "encap_research": "104 QL2"
+  },
+  "mapping": {
+    "QL2_definition": "Q24 state after W+D and before Q",
+    "physical_shape": "four YMM; each qword is one complete [c0,c1,c2,c3] quartic leaf",
+    "quartics": [
+      {
+        "register": 0,
+        "qword": 0,
+        "leaf": 0
+      },
+      {
+        "register": 0,
+        "qword": 1,
+        "leaf": 1
+      },
+      {
+        "register": 0,
+        "qword": 2,
+        "leaf": 8
+      },
+      {
+        "register": 0,
+        "qword": 3,
+        "leaf": 9
+      },
+      {
+        "register": 1,
+        "qword": 0,
+        "leaf": 2
+      },
+      {
+        "register": 1,
+        "qword": 1,
+        "leaf": 3
+      },
+      {
+        "register": 1,
+        "qword": 2,
+        "leaf": 10
+      },
+      {
+        "register": 1,
+        "qword": 3,
+        "leaf": 11
+      },
+      {
+        "register": 2,
+        "qword": 0,
+        "leaf": 4
+      },
+      {
+        "register": 2,
+        "qword": 1,
+        "leaf": 5
+      },
+      {
+        "register": 2,
+        "qword": 2,
+        "leaf": 12
+      },
+      {
+        "register": 2,
+        "qword": 3,
+        "leaf": 13
+      },
+      {
+        "register": 3,
+        "qword": 0,
+        "leaf": 6
+      },
+      {
+        "register": 3,
+        "qword": 1,
+        "leaf": 7
+      },
+      {
+        "register": 3,
+        "qword": 2,
+        "leaf": 14
+      },
+      {
+        "register": 3,
+        "qword": 3,
+        "leaf": 15
+      }
+    ],
+    "bijection": true,
+    "warning": "QL2 is a presentation, not a new algebraic or Montgomery domain"
+  },
+  "correctness": {
+    "mapping_impulses": 64,
+    "random_quartic_products": 1000,
+    "modulus": 3457,
+    "mapping_bijective": true,
+    "native_ql2_product_mod_q_exact": true
+  },
+  "boundary_route_ledger_per_group": {
+    "current_104": {
+      "decode_h_P_to_M": 12,
+      "forward_r_T_to_M": 12,
+      "serialize_r_M_to_P": 12,
+      "B3_output_M_to_QL2": 8,
+      "final_QL2_to_P": 4
+    },
+    "persistent_QL2_native_B3": {
+      "decode_h_P_to_QL2": 4,
+      "forward_r_T_to_QL2": 0,
+      "serialize_r_QL2_to_P": 4,
+      "B3_output_native_QL2": 0,
+      "final_QL2_to_P": 4
+    },
+    "current_total": 48,
+    "candidate_total": 12,
+    "delta_per_group": -36,
+    "groups": 12,
+    "delta_per_encap": -432,
+    "operation_class_deletion": "36 of 48 boundary routes/group; 432 executed routes/Encap"
+  },
+  "native_B3_evidence": {
+    "existing_kernel": "gt32_tile4_basemul_aos_dot_r1u_asm",
+    "compatible_physical_idea": "qword-local quartic AoS with vpmaddwd dot products",
+    "existing_scale": "e=0 x e=0 -> e=-1",
+    "required_encap_scale": "e=0 x e=0 -> e=0",
+    "existing_peak_ymm": 15,
+    "existing_spill_required": false,
+    "existing_loop_instructions_per_vector": 30,
+    "existing_measured_scope": "scale-B3/inverse consumer only; not general-B3/Q24",
+    "existing_paired_advantage_vs_B3_tsc": "about 49--52 in its qualified scale-B3 scope"
+  },
+  "scale_repayment": {
+    "cannot_be_omitted": true,
+    "reason": "Q24 consumes e=0 product and message; old R1-U emits e=-1",
+    "constructive_e0_finish": "apply the same Mont(R^2) correction used by general B3 after each packed AoS vector",
+    "dynamic_vectors": 48,
+    "instructions_per_vector": 4,
+    "dynamic_instructions": 192,
+    "additional_vector_multiply_chains": 48,
+    "expected_peak_ymm": 15,
+    "expected_spill": false,
+    "cycle_claim": null
+  },
+  "rejected_shortcuts": [
+    {
+      "name": "persistent QL2 plus immediate QL2-to-M conversion",
+      "reason": "same search class as 101; it does not absorb the BaseMul conversion and has already failed full Encap"
+    },
+    {
+      "name": "reuse old R1-U cycle result as general-B3 credit",
+      "reason": "wrong output scale and different inverse consumer; the mandatory e=0 finish was not measured"
+    },
+    {
+      "name": "count 432 deleted routes as cycles",
+      "reason": "native qword-local B3 introduces its own blend/shuffle/reduction DAG"
+    }
+  ],
+  "selected_next_executable": {
+    "id": "PQL2_NATIVE_E0",
+    "region": "QL2 x QL2 -> QL2 general B3, including mandatory e=0 finish",
+    "control": "current M x M -> QL2 general B3",
+    "candidate": "qword-local vpmaddwd AoS B3 -> REDC16 -> Mont(R^2) -> QL2",
+    "input_conversion_charged": false,
+    "reason": "both sides start in their native persistent representation; producer/serializer boundary credit is accounted separately",
+    "benchmark": "same-ELF paired normal/reversed, TSC + core cycles + instructions + multiplier pressure + port 5/11",
+    "decision_rule": "do not reject on instruction count; measure whether native B3 cost is small enough to repay the 432-route boundary credit"
+  },
+  "decision": "PASS_TO_EXECUTABLE_135",
+  "source_sha256": {
+    "ntt_m.s": "45cb5c6468db055360eb21e43f375881be32e4b276228fc7b85eef251b5423b0",
+    "basemul.s": "5dcf8b359c061ad9c469ed650f05ff5570d737fb13dc474e1fd333cfd388e654",
+    "pack.s": "5e34f735fb21dfb1045a90adf9e058d62aad4e835987b835c5ab52f9218b661e",
+    "experiments/avx2_gt32_tile4_official_001/src/tile4_aos_dot_redc16_asm.S": "85aa5ede886b855d42ecc1f752dfb5116f2f50dfff6b7d05a491b5eb304e0983",
+    "experiments/avx2_gt32_tile4_official_001/generated/tile4_aos_dot_redc16_gate.json": "64bd22f723ff83d2062cdeaa67b9ede0d8e8b4375f03cd9eea59dad940a849c1",
+    "experiments/gt32_encap_persistent_t_101/RESULTS.md": "a7d8947017ecaf642f2b7771e9afb8c3114e8a48565fc24af21c182170ab431d",
+    "experiments/gt32_ql2_shared_convergence_103/RESULTS.md": "c11082305c62d17942e6a520dd3ac6828e7420509ea9ad6f9e377ca22b15318b"
+  }
+}

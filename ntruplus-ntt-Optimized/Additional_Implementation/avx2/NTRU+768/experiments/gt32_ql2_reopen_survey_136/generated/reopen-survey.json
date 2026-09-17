@@ -1,0 +1,70 @@
+{
+  "schema": "ntruplus768-gt32-ql2-reopen-survey-v1",
+  "experiment": "GT32-QL2-REOPEN-SURVEY-136",
+  "production_modified": false,
+  "gate135_loss_cycles": 218.12,
+  "routing_operation_class": {
+    "measured_port_5_11_delta_per_call": 220.408015,
+    "arithmetic_floor": "four vpmaddwd diagonal products per QL2 vector; each quartic output depends on all four input coefficients",
+    "coefficient_order_exhaustion": {
+      "asymmetric_A_B_orders_checked": 576,
+      "maximum_outputs_using_native_B_order": 1,
+      "minimum_non_native_output_packets": 3,
+      "qualification": "this exhausts coefficient reorderings only, not new bilinear/evaluation bases"
+    },
+    "audited_families": {
+      "D0_D3_qword_local": "measured Gate 135 loss; routing remains dynamic",
+      "producer_preexpanded_diagonals": "moves routing into a larger producer ABI and adds representation stores/loads; no operation class is deleted",
+      "rank7_tensor": "Experiment 059E executable late exit loses +237/+398 TSC because the consumer map becomes dense",
+      "current_SoA": "avoids qword-local routing and remains the consumer control"
+    },
+    "result": "NO_NEW_EXECUTABLE_CANDIDATE",
+    "family_closed": false,
+    "reopen_requires": "producer-native evaluation coordinates whose BaseMul and Q24 exits are both sparse; not another D0-D3 schedule"
+  },
+  "scale_absorption": {
+    "natural_native_b3_output_exponent": -1,
+    "required_ciphertext_exponent": 0,
+    "R_mod_q": 3310,
+    "R_centered": -147,
+    "minimal_shift_add_view": [
+      1,
+      -4,
+      -16,
+      -128
+    ],
+    "observation": "multiplication by centered R=-147 needs a widened value (for |x| near the established bounds); it cannot be folded into the existing three-instruction i16 Q24 quotient estimator",
+    "exact_existing_gate": "GT32-SCALE-CONSUMER-FUSION-001 proves algebraic fusion but retains 48 Montgomery chains; concrete whole-edge static delta only -24 instructions",
+    "new_executable_bound": "benchmark natural e=-1 B3 against the identical e=0 B3 to measure the maximum credit of making scale repayment free",
+    "result_before_benchmark": "BOUNDED_EXECUTABLE_CEILING_REQUIRED",
+    "measured_free_absorption_ceiling_cycles": {
+      "normal": 107.67285150000001,
+      "reversed": 106.9174805
+    },
+    "fraction_of_218_repayment": {
+      "normal": 0.49364043416468,
+      "reversed": 0.4901773358701632
+    },
+    "result": "INSUFFICIENT_AS_STANDALONE_REOPEN",
+    "reason": "even granting a zero-cost downstream absorption, deleting the complete e=-1 to e=0 finalizer recovers only this measured credit; a real mixed-scale Q24 path must cost more than zero"
+  },
+  "load_dependency_repayment": {
+    "estimated_pending_cycles_per_encap": {
+      "official": 3.5807291666666665,
+      "ql2": 16.764322916666668,
+      "delta": 13.183593750000002
+    },
+    "positive_direct_leaf_debts_cycles": {
+      "decode": 30.0,
+      "cbd": 25.0,
+      "serialize_r": 45.0,
+      "sotp": 13.0,
+      "ql2_basemul": 12.75
+    },
+    "optimistic_all_positive_leaf_debts": 125.75,
+    "fraction_of_218_repayment": 0.5765175132954337,
+    "result": "REJECTED_BY_MEASURED_UPPER_BOUND",
+    "reason": "even misclassifying every positive direct leaf delta as removable load debt yields less than 218 cycles; sampled pending-cycle delta is only directional and about 13 cycles",
+    "reopen_requires": "PEBS/LBR evidence for a new specific dependency chain with more than 218 cycles of removable caller credit"
+  }
+}
