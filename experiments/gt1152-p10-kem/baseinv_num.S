@@ -1,5 +1,3 @@
-// SLOTHY, cortex_a76, from ntruplus1152_clean/src/baseinv_num.sym.S.
-// Do not edit; regenerate with `make cortex_a76`.
 .text
 .global baseinv_num_kernel
 baseinv_num_kernel:
