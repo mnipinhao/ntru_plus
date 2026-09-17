@@ -87,9 +87,16 @@ static inline int16x8_t barrett_reduce(int16x8_t a)
     return vmlsq_n_s16(a, t, (int16_t)Q);
 }
 
+/*
+ * Canonical in two instructions rather than three.  Every input is in (-q, q),
+ * so a + q is in (0, 2q) and never wraps 16 bits; read unsigned, a negative a
+ * is huge and a + q is the small correct one, a non-negative a is the small one
+ * itself, so an unsigned minimum picks the right representative either way.
+ */
 static inline int16x8_t canonical(int16x8_t a)
 {
-    return vaddq_s16(a, vandq_s16(vshrq_n_s16(a, 15), vdupq_n_s16(Q)));
+    uint16x8_t u = vreinterpretq_u16_s16(a);
+    return vreinterpretq_s16_u16(vminq_u16(u, vaddq_u16(u, vdupq_n_u16(Q))));
 }
 
 /*
@@ -119,9 +126,9 @@ static inline void load_pair(int16x8_t v[8], const int16_t *gt, int p, int full)
 static inline uint8x16_t encode_lane(int16x8_t u, uint8x16_t idx)
 {
     uint16x8_t x = vreinterpretq_u16_s16(u);
-    uint32x4_t e = vmovl_u16(vget_low_u16(x));   /* even coefficients      */
-    uint32x4_t o = vshll_high_n_u16(x, 12);      /* odd coefficients << 12 */
-    return vqtbl1q_u8(vreinterpretq_u8_u32(vorrq_u32(e, o)), idx);
+    uint32x4_t y = vmovl_u16(vget_low_u16(x));       /* even coefficients   */
+    y = vmlal_high_n_u16(y, x, 4096);                /* += odd << 12        */
+    return vqtbl1q_u8(vreinterpretq_u8_u32(y), idx);
 }
 
 static inline void store12(uint8_t *out, uint8x16_t b)
@@ -144,6 +151,7 @@ static inline void tobytes(uint8_t *out, const int16_t *in, int full)
 {
     const uint8x16_t idx = vld1q_u8(pack_idx);
 
+#pragma GCC unroll 18
     for (int p = 0; p < CODEC_PAIRS; p++) {
         const unsigned short *w = pair_wire[p];
         int16x8_t v[8];
@@ -189,35 +197,61 @@ int tobytes_compare_asm(const uint8_t expected[NTRUPLUS1152_POLYBYTES],
     return vmaxvq_u8(acc) != 0;
 }
 
+/*
+ * One pair's eight twelve-byte blocks, decoded into transposed lanes.
+ *
+ * `safe` is a compile-time constant at both call sites.  With it clear the
+ * block is fetched with a plain 16-byte load, four bytes wider than the block:
+ * the table lookup only ever reads bytes 0..11, so the extra bytes are ignored,
+ * and halving the loads is worth it.  Only the very last block, at offset 1716,
+ * would read past the 1728-byte input; it lives at lane 7 of pair 17, so the
+ * final pair takes the two-load path instead.
+ */
+static inline void unpack_pair(int16x8_t v[8], const uint8_t *in,
+                               const unsigned short *w, uint8x16_t idx,
+                               uint16x8_t *hi, int safe)
+{
+    const uint16x8_t m12 = vdupq_n_u16(0x0FFF);
+
+    for (int k = 0; k < 8; k++) {
+        uint8x16_t raw = safe ? load12(in + w[k]) : vld1q_u8(in + w[k]);
+        uint32x4_t y = vreinterpretq_u32_u8(vqtbl1q_u8(raw, idx));
+        /*
+         * y holds four 24-bit values, each an even coefficient in its low
+         * twelve bits and an odd one above.  y >> 12 is therefore the odd
+         * coefficient exactly, needing no mask, and one uzp1 collects the four
+         * low halfwords of each -- so a single mask afterwards yields all eight
+         * coefficients in the order the transpose wants.
+         */
+        uint16x8_t t = vreinterpretq_u16_u32(vshrq_n_u32(y, 12));
+        uint16x8_t u = vandq_u16(vuzp1q_u16(vreinterpretq_u16_u32(y), t), m12);
+
+        /* One running maximum rather than a compare and an or per lane: some
+         * coefficient is out of range exactly when the maximum is. */
+        *hi = vmaxq_u16(*hi, u);
+        v[k] = vreinterpretq_s16_u16(u);
+    }
+    transpose8(v);
+}
+
 int frombytes_asm(int16_t out[NTRUPLUS1152_N],
                   const uint8_t in[NTRUPLUS1152_POLYBYTES])
 {
     const uint8x16_t idx = vld1q_u8(unpack_idx);
-    const uint32x4_t mask = vdupq_n_u32(0x0FFF);
-    uint16x8_t bad = vdupq_n_u16(0);
+    uint16x8_t hi = vdupq_n_u16(0);
 
     for (int p = 0; p < CODEC_PAIRS; p++) {
-        const unsigned short *w = pair_wire[p];
         int16_t *a = out + 32 * pair_group[p];
         int16_t *b = a + 32 * 9;
         int16x8_t v[8];
 
-        for (int k = 0; k < 8; k++) {
-            uint32x4_t y = vreinterpretq_u32_u8(vqtbl1q_u8(load12(in + w[k]), idx));
-            uint32x4_t e = vandq_u32(y, mask);
-            uint32x4_t o = vandq_u32(vshrq_n_u32(y, 12), mask);
-            uint16x8_t u = vuzp1q_u16(vreinterpretq_u16_u32(e),
-                                      vreinterpretq_u16_u32(o));
+        if (p == CODEC_PAIRS - 1) unpack_pair(v, in, pair_wire[p], idx, &hi, 1);
+        else                      unpack_pair(v, in, pair_wire[p], idx, &hi, 0);
 
-            bad = vorrq_u16(bad, vcgeq_u16(u, vdupq_n_u16(Q)));
-            v[k] = vreinterpretq_s16_u16(u);
-        }
-
-        transpose8(v);
         vst1q_s16(a,      v[0]); vst1q_s16(a +  8, v[4]);
         vst1q_s16(a + 16, v[1]); vst1q_s16(a + 24, v[5]);
         vst1q_s16(b,      v[2]); vst1q_s16(b +  8, v[6]);
         vst1q_s16(b + 16, v[3]); vst1q_s16(b + 24, v[7]);
     }
-    return vmaxvq_u16(bad) != 0;
+    return vmaxvq_u16(hi) >= Q;
 }

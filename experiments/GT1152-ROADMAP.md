@@ -46,6 +46,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P15 | Done — rejected | Fuse the codec's passes with byte-granular lane stores | Measured 12,129 cycles worse: `vst3_lane_u8` doubles 8 halfword lane stores into 16 byte lane stores. Evidence in `gt1152-p15-codec-fused/` |
 | P17 | Done | Why did 864 beat the official pre-hash and 1152 does not? | **No structural penalty.** At 864's pre-hash per-category ratios 1152 would stand at -3.68% against its measured +8.76%; 64.9% of the shortfall is the serializer. Evidence in `gt1152-p17-vs-864-parity/` |
 | P18 | Done | Rewrite the serializer with the permutation in registers, 864's way | **Serialize +10,909 -> +911; whole KEM +7.9% -> +1.8%; encaps now -1.0%, faster than the official.** Byte-identical to P12 on all four entry points; all 7 oracle checks and every package gate pass. Evidence in `gt1152-p18-codec-registers/` |
+| P19 | Done — asm rejected | Should the serializer be hand-written in assembly? | **No.** Measured issue floor puts the codec at 90-100%; scheduling is worth under 10%. Cutting instructions instead took **serialize +911 -> -1,034 and the KEM +1.8% -> +0.65%**, encaps -1.97%. Evidence in `gt1152-p19-serializer-floor/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -741,6 +742,83 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   serialize +911, sample +568, basemul -168, forward -2,604.
 
   Owed: a fresh-date SUPERCOP run. G9's +28.2% predates P12, P13 and this gate.
+
+- **P19 done, serializer assembly rejected and the gap closed anyway.**
+  `experiments/gt1152-p19-serializer-floor/`.
+
+  The question was whether to hand-write the P18 codec in assembly as 864 did
+  with 7,751 Slothy-scheduled lines. Measurement said no, and redirected the
+  target.
+
+  **Measured A76 costs** (independent chains, so latency never binds): `tbl` with
+  1 or 2 sources **0.500**, 3 sources 1.000, 4 sources 1.500;
+  `trn1`/`zip1`/`uzp1`/`umin`/`add`/`and`/`cmhi` 0.500; `ushr` (and `ushll`)
+  1.000; `umlal2` 1.000. **Two corrections to the Slothy A76 model:** it gives
+  `(vtbl, vtbl_2): 1` where the hardware issues at 0.5, so it is pessimistic
+  about `tbl` by 2x; and mixing a pipe-pinned op with a general one costs more
+  than either alone -- `umlal2` x12 with `trn1` x12 measures 0.708 per op, and
+  `ushr` x12 with `and` x12 the same, where free dual issue would predict 0.5.
+
+  **The floor, measured rather than derived.** `pipe3.c` issues the exact
+  per-pair instruction mix of `tobytes_small` -- same mnemonics, same counts,
+  all chains independent, loads and stores included:
+
+  | | cycles |
+  |---|---:|
+  | one pair, issue-limited floor | 44.00 |
+  | x18 pairs | 792 |
+  | measured `tobytes_small` | 878 |
+  | **utilisation** | **90.2%** |
+
+  A model-based estimate had predicted 32 cycles/pair. The hardware says 44, so
+  scheduling the existing mix is worth at most 86 cycles per call, under 10%.
+  The transpose-free restructure (one four-source `tbl` per lane replacing the
+  8x8 transpose, 40 vector ops instead of 64) measures a 41-cycle floor against
+  44 -- **rejected at 3 cycles a pair**, because `tbl4` at 1.5 nearly cancels the
+  24 `trn` at 0.5 it removes.
+
+  **The profile said the target was wrong.** Per entry point: GT's three
+  `tobytes` entry points cost 7,022 over 6 calls against the official's 8,037
+  over 7 -- **already 1,015 ahead**. The entire +911 was `frombytes`, 986 per
+  call against 505. Writing `tobytes` in assembly would have optimised the half
+  that was winning.
+
+  **Five instruction-count cuts instead.** Canonical as `umin(a, a+q)` read
+  unsigned, two ops not three, valid because every input is in (-q, q) so `a+q`
+  never wraps. Widen-shift-combine as one `vmlal_high_n(y, x, 4096)`, since a
+  widening multiply-accumulate by 4096 *is* widen-and-shift-and-add and produces
+  the wire format directly. In `frombytes`: a plain 16-byte `ldr q` for the
+  block, four bytes wider than the twelve the table lookup reads, with only the
+  last block (lane 7 of pair 17, the final iteration) keeping the two-load path;
+  `ushr` + `uzp1` + one `and` replacing `and` + `ushr` + `and` + `uzp1`, because
+  `y >> 12` is the odd coefficient exactly and needs no mask; and a running
+  `vmaxq_u16` with one `vmaxvq_u16(hi) >= Q` at the end replacing a compare and
+  an or in every lane. Plus `#pragma GCC unroll 18` on the `tobytes` loop only --
+  applied to all three it had cost `tobytes_compare` 410 cycles to register
+  pressure.
+
+  | entry point | P18 | **now** | saving |
+  |---|---:|---:|---:|
+  | `tobytes_full` | 1,471 | **1,333** | -138 |
+  | `tobytes_small` | 990 | **836** | -154 |
+  | `tobytes_compare` | 1,431 | **1,332** | -99 |
+  | `frombytes` | 956 | **723** | -233 |
+
+  **Whole KEM**, byte-identical to P18 on all four entry points:
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | keygen | 64,073 | 64,764 | +1.08% | +1.7% |
+  | **encaps** | 59,498 | **58,325** | **-1.97%** | -1.0% |
+  | decaps | 52,538 | 54,171 | +3.11% | +5.2% |
+  | **total** | **176,109** | **177,260** | **+0.65%** | +1.8% |
+
+  **serialize +911 -> -1,034**: it is now a win, which is the property P17
+  identified as the reason 864 beat its official before any hash work.
+
+  All seven oracle checks and every package gate pass. Of the remaining +1,268,
+  **baseinv at +2,406 is larger than the whole deficit** and is the only item
+  with a known unexploited fix (no ILP split where 864 uses 12x3).
 
 ## Standing rules
 
