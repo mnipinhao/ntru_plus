@@ -1,0 +1,7 @@
+#ifndef NTRUPLUS768_AVX2_CLEAN_NTT_H
+#define NTRUPLUS768_AVX2_CLEAN_NTT_H
+
+#define GT_NTT_N 768
+#define GT_NTT_Q 3457
+
+#endif
