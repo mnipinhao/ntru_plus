@@ -1,0 +1,164 @@
+{
+  "schema": "ntt9-wavefront-w2-schedule/v1",
+  "scope": "two selected rows; frozen paper-R2 DAG, reduction mask, scale, wire ABI and low-temporary R3",
+  "register_model": {
+    "ymm_limit": 16,
+    "ntt9_data": 9,
+    "r3_temporary": 1,
+    "desired_retained_at_qblock3": 6,
+    "naive_cached_constant_peak": 19
+  },
+  "constant_use_model_per_qblock": {
+    "q": {
+      "uses": 24,
+      "owners": "9 alpha + 6 R3 + 5 Barrett + 4 adjustment"
+    },
+    "kappa": {
+      "uses": 6
+    },
+    "kappa_qinv": {
+      "uses": 6
+    }
+  },
+  "w1_control": {
+    "rows": 1,
+    "intermediate_stores_removed_per_forward": 8,
+    "intermediate_reloads_removed_per_forward": 8,
+    "extra_constant_memory_accesses_per_forward": 0
+  },
+  "pareto_frontier": [
+    {
+      "cached_constants_qblock2": {
+        "cached": [
+          "q",
+          "kappa",
+          "kappa_qinv"
+        ],
+        "memory_form": [],
+        "removed_explicit_loads": 0,
+        "extra_constant_memory_accesses": 0
+      },
+      "cached_constants_qblock3": {
+        "cached": [
+          "q",
+          "kappa",
+          "kappa_qinv"
+        ],
+        "memory_form": [],
+        "removed_explicit_loads": 0,
+        "extra_constant_memory_accesses": 0
+      },
+      "selected_vectors_materialized_per_branch": 3,
+      "intermediate_stores_removed_per_forward": 10,
+      "intermediate_reloads_removed_per_forward": 10,
+      "extra_constant_memory_accesses_per_forward": 0,
+      "explicit_constant_load_instructions_removed_per_forward": 0,
+      "peak_ymm": 16,
+      "id": "W2-P0",
+      "incremental_stores_removed_vs_W1": 2,
+      "incremental_reloads_removed_vs_W1": 2
+    },
+    {
+      "cached_constants_qblock2": {
+        "cached": [
+          "q",
+          "kappa",
+          "kappa_qinv"
+        ],
+        "memory_form": [],
+        "removed_explicit_loads": 0,
+        "extra_constant_memory_accesses": 0
+      },
+      "cached_constants_qblock3": {
+        "cached": [
+          "q",
+          "kappa"
+        ],
+        "memory_form": [
+          "kappa_qinv"
+        ],
+        "removed_explicit_loads": 1,
+        "extra_constant_memory_accesses": 5
+      },
+      "selected_vectors_materialized_per_branch": 2,
+      "intermediate_stores_removed_per_forward": 12,
+      "intermediate_reloads_removed_per_forward": 12,
+      "extra_constant_memory_accesses_per_forward": 10,
+      "explicit_constant_load_instructions_removed_per_forward": 2,
+      "peak_ymm": 16,
+      "id": "W2-P1",
+      "incremental_stores_removed_vs_W1": 4,
+      "incremental_reloads_removed_vs_W1": 4
+    },
+    {
+      "cached_constants_qblock2": {
+        "cached": [
+          "q",
+          "kappa",
+          "kappa_qinv"
+        ],
+        "memory_form": [],
+        "removed_explicit_loads": 0,
+        "extra_constant_memory_accesses": 0
+      },
+      "cached_constants_qblock3": {
+        "cached": [
+          "q"
+        ],
+        "memory_form": [
+          "kappa",
+          "kappa_qinv"
+        ],
+        "removed_explicit_loads": 2,
+        "extra_constant_memory_accesses": 10
+      },
+      "selected_vectors_materialized_per_branch": 1,
+      "intermediate_stores_removed_per_forward": 14,
+      "intermediate_reloads_removed_per_forward": 14,
+      "extra_constant_memory_accesses_per_forward": 20,
+      "explicit_constant_load_instructions_removed_per_forward": 4,
+      "peak_ymm": 16,
+      "id": "W2-P2",
+      "incremental_stores_removed_vs_W1": 6,
+      "incremental_reloads_removed_vs_W1": 6
+    },
+    {
+      "cached_constants_qblock2": {
+        "cached": [
+          "q",
+          "kappa"
+        ],
+        "memory_form": [
+          "kappa_qinv"
+        ],
+        "removed_explicit_loads": 1,
+        "extra_constant_memory_accesses": 5
+      },
+      "cached_constants_qblock3": {
+        "cached": [],
+        "memory_form": [
+          "q",
+          "kappa",
+          "kappa_qinv"
+        ],
+        "removed_explicit_loads": 3,
+        "extra_constant_memory_accesses": 33
+      },
+      "selected_vectors_materialized_per_branch": 0,
+      "intermediate_stores_removed_per_forward": 16,
+      "intermediate_reloads_removed_per_forward": 16,
+      "extra_constant_memory_accesses_per_forward": 76,
+      "explicit_constant_load_instructions_removed_per_forward": 8,
+      "peak_ymm": 16,
+      "id": "W2-P3",
+      "incremental_stores_removed_vs_W1": 8,
+      "incremental_reloads_removed_vs_W1": 8
+    }
+  ],
+  "conclusion": {
+    "free_two_row_extension_exists": false,
+    "full_two_row_retention": "fits only by moving all q-block-3 constants and one q-block-2 kappa constant to memory; +76 net constant memory accesses for -16 stores and -16 reloads",
+    "next_machine_control": "realize and price W1 before choosing a W2 load-port trade",
+    "w2_asm_authorized": false
+  }
+}

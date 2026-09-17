@@ -1,0 +1,97 @@
+{
+  "candidate": {
+    "entry_address_mod32": 0,
+    "forbidden": [],
+    "instructions": 2763,
+    "mnemonics": {
+      "ret": 1,
+      "vmovdqa": 26,
+      "vmovdqu": 272,
+      "vpaddw": 384,
+      "vperm2i128": 72,
+      "vpermq": 72,
+      "vpmulhrsw": 40,
+      "vpmulhw": 592,
+      "vpmullw": 336,
+      "vpshufb": 56,
+      "vpsubw": 624,
+      "vpunpckhdq": 36,
+      "vpunpckhqdq": 72,
+      "vpunpckhwd": 36,
+      "vpunpckldq": 36,
+      "vpunpcklqdq": 72,
+      "vpunpcklwd": 36
+    },
+    "rdi_data_loads": 136,
+    "rdi_data_stores": 136,
+    "rip_constant_operands": 618,
+    "sections": {
+      "rodata": {
+        "alignment": 32,
+        "bytes": 12192
+      },
+      "text": {
+        "alignment": 32,
+        "bytes": 15577
+      }
+    },
+    "sha256": "44fc6b789d20deff24c17eae835cb64e057342879224f8d009ed7cf749a4935d"
+  },
+  "control": {
+    "entry_address_mod32": 0,
+    "forbidden": [],
+    "instructions": 2779,
+    "mnemonics": {
+      "ret": 1,
+      "vmovdqa": 26,
+      "vmovdqu": 288,
+      "vpaddw": 384,
+      "vperm2i128": 72,
+      "vpermq": 72,
+      "vpmulhrsw": 40,
+      "vpmulhw": 592,
+      "vpmullw": 336,
+      "vpshufb": 56,
+      "vpsubw": 624,
+      "vpunpckhdq": 36,
+      "vpunpckhqdq": 72,
+      "vpunpckhwd": 36,
+      "vpunpckldq": 36,
+      "vpunpcklqdq": 72,
+      "vpunpcklwd": 36
+    },
+    "rdi_data_loads": 144,
+    "rdi_data_stores": 144,
+    "rip_constant_operands": 618,
+    "sections": {
+      "rodata": {
+        "alignment": 32,
+        "bytes": 12192
+      },
+      "text": {
+        "alignment": 32,
+        "bytes": 15449
+      }
+    },
+    "sha256": "9ce0c1ef980575d2b366d5e1d905ce29f4e7a2e5d8206f1e2607c3f4ec918bbf"
+  },
+  "delta": {
+    "instructions": -16,
+    "rdi_data_loads": -8,
+    "rdi_data_stores": -8,
+    "rip_constant_operands": 0,
+    "rodata_bytes": 0,
+    "text_bytes": 128
+  },
+  "gates": {
+    "arithmetic_and_routing_unchanged": true,
+    "constant_operands_unchanged": true,
+    "entry_and_sections_aligned32": true,
+    "exactly_eight_data_loads_removed": true,
+    "exactly_eight_data_stores_removed": true,
+    "no_forbidden_machine_state": true,
+    "sixteen_linked_instructions_removed": true
+  },
+  "linked_correction": "low-register R3 encodings increase .text by 128 bytes despite removing 16 vmovdqu instructions",
+  "schema": "ntt9-wavefront-w1-linked-audit/v1"
+}

@@ -17,10 +17,33 @@
   vpsubw ymm\c, ymm3, ymm1
 .endm
 
+/* Same radix-3 DAG with one rotating temporary.  Physical results are
+ * C=out0, B=out1, S=out2; the old A register becomes the next temporary. */
+.macro PROD3_R3_LOW a,b,c,s
+  vpaddw ymm\s, ymm\b, ymm\c
+  vpsubw ymm\b, ymm\b, ymm\c
+  vpmullw ymm\c, ymm\b, ymm4
+  vpmulhw ymm\b, ymm\b, ymm5
+  vpmulhw ymm\c, ymm\c, ymm6
+  vpsubw ymm\b, ymm\b, ymm\c
+  vpaddw ymm\c, ymm\a, ymm\a
+  vpsubw ymm\a, ymm\c, ymm\s
+  vpaddw ymm\c, ymm\c, ymm\s
+  vpaddw ymm\c, ymm\c, ymm\s
+  vpsubw ymm\s, ymm\a, ymm\b
+  vpaddw ymm\b, ymm\a, ymm\b
+.endm
+
 .macro PROD3_REDUCE x
   vpmulhrsw ymm0, ymm\x, YMMWORD PTR [rip + .Lgt_v]
   vpmullw ymm0, ymm0, ymm6
   vpsubw ymm\x, ymm\x, ymm0
+.endm
+
+.macro PROD3_REDUCE_TMP x,tmp
+  vpmulhrsw ymm\tmp, ymm\x, YMMWORD PTR [rip + .Lgt_v]
+  vpmullw ymm\tmp, ymm\tmp, ymm6
+  vpsubw ymm\x, ymm\x, ymm\tmp
 .endm
 
 .macro PROD3_MONT6 x,tmp,zeta,qinv
@@ -46,6 +69,11 @@
 #else
   PROD3_MONT6 \reg,0,.Lprod3_b\branch\()_r\row\()_q\qblock\()_twist,.Lprod3_b\branch\()_r\row\()_q\qblock\()_twist_qinv
 #endif
+.endm
+
+.macro PROD3_LOAD_TWIST_TMP branch,base,row,qblock,reg,tmp
+  vmovdqu ymm\reg, YMMWORD PTR [rdi + (\base) + ((5*(\row)%9)*128) + (\qblock)*32]
+  PROD3_MONT6 \reg,\tmp,.Lprod3_h4s1_b\branch\()_r\row\()_alpha,.Lprod3_h4s1_b\branch\()_r\row\()_alpha_qinv
 .endm
 
 .macro PROD3_PASS_A branch,base,qblock
@@ -105,6 +133,61 @@
   vmovdqu YMMWORD PTR [rdi + (\base) + 8*128 + (\qblock)*32], ymm12
 .endm
 
+#ifdef PROD3_WAVEFRONT_W1
+/* Retain final p=5 in ymm0..ymm3 across q-blocks.  The selected second-layer
+ * group is scheduled between the p=6..8 and p=0..2 groups so its out2 lands
+ * back in the q-block-specific retained register. */
+.macro PROD3_PASS_A_W1 branch,base,qblock,tmp
+  vmovdqa ymm6, YMMWORD PTR [rip + .Lgt_q]
+  PROD3_LOAD_TWIST_TMP \branch,\base,0,\qblock,7,\tmp
+  PROD3_LOAD_TWIST_TMP \branch,\base,1,\qblock,8,\tmp
+  PROD3_LOAD_TWIST_TMP \branch,\base,2,\qblock,9,\tmp
+  PROD3_LOAD_TWIST_TMP \branch,\base,3,\qblock,10,\tmp
+  PROD3_LOAD_TWIST_TMP \branch,\base,4,\qblock,11,\tmp
+  PROD3_LOAD_TWIST_TMP \branch,\base,5,\qblock,12,\tmp
+  PROD3_LOAD_TWIST_TMP \branch,\base,6,\qblock,13,\tmp
+  PROD3_LOAD_TWIST_TMP \branch,\base,7,\qblock,14,\tmp
+  PROD3_LOAD_TWIST_TMP \branch,\base,8,\qblock,15,\tmp
+
+  vmovdqa ymm4, YMMWORD PTR [rip + .Lgt_paper_kappa_qinv]
+  vmovdqa ymm5, YMMWORD PTR [rip + .Lgt_paper_kappa]
+  PROD3_R3_LOW 7,10,13,\tmp
+  PROD3_R3_LOW 8,11,14,7
+  PROD3_R3_LOW 15,9,12,8
+
+  /* Position map after layer 1:
+   * x0..x8 = 13,14,12,10,11,9,tmp,7,8; scratch=15. */
+  PROD3_REDUCE_TMP 13,15
+  PROD3_REDUCE_TMP 14,15
+  PROD3_REDUCE_TMP 12,15
+  PROD3_REDUCE_TMP 10,15
+  PROD3_REDUCE_TMP \tmp,15
+
+  /* First finish p=6..8, freeing the retained q-block register. */
+  PROD3_MONT6 7,15,.Lgt_paper_rhoinv,.Lgt_paper_rhoinv_qinv
+  PROD3_MONT6 8,15,.Lgt_ntt9_zeta4,.Lgt_ntt9_qinv4
+  PROD3_R3_LOW \tmp,7,8,15
+
+  /* Then p=3..5; out2 (p=5) lands in the retained register. */
+  PROD3_MONT6 11,\tmp,.Lgt_ntt9_zeta4,.Lgt_ntt9_qinv4
+  PROD3_MONT6 9,\tmp,.Lgt_paper_rhoinv,.Lgt_paper_rhoinv_qinv
+  PROD3_R3_LOW 10,11,9,\tmp
+
+  /* Finish p=0..2 using the now-dead old x3 register as scratch. */
+  PROD3_R3_LOW 13,14,12,10
+
+  vmovdqu YMMWORD PTR [rdi + (\base) + 0*128 + (\qblock)*32], ymm12
+  vmovdqu YMMWORD PTR [rdi + (\base) + 1*128 + (\qblock)*32], ymm14
+  vmovdqu YMMWORD PTR [rdi + (\base) + 2*128 + (\qblock)*32], ymm10
+  vmovdqu YMMWORD PTR [rdi + (\base) + 3*128 + (\qblock)*32], ymm9
+  vmovdqu YMMWORD PTR [rdi + (\base) + 4*128 + (\qblock)*32], ymm11
+  /* p=5 remains live in ymm\tmp. */
+  vmovdqu YMMWORD PTR [rdi + (\base) + 6*128 + (\qblock)*32], ymm8
+  vmovdqu YMMWORD PTR [rdi + (\base) + 7*128 + (\qblock)*32], ymm7
+  vmovdqu YMMWORD PTR [rdi + (\base) + 8*128 + (\qblock)*32], ymm15
+.endm
+#endif
+
 .macro PROD3_MONT15 x,lo,hi,zeta,qinv
   vpmullw ymm\lo, ymm\x, YMMWORD PTR [rip + \qinv]
   vpmulhw ymm\hi, ymm\x, YMMWORD PTR [rip + \zeta]
@@ -118,12 +201,64 @@
   vpaddw ymm\x, ymm\x, ymm\hi
 .endm
 
-.macro PROD3_PASS_B branch,base,row
+#ifdef PROD3_WIRE_MONOTONE
+.macro PROD3_WIRE_GROUP out0,out1,a,b,code,lo,hi
+  .if ((\code) & 1)
+    .if ((\code) & 2)
+      \hi ymm\out0, ymm\b, ymm\a
+      \lo ymm\out1, ymm\b, ymm\a
+    .else
+      \lo ymm\out0, ymm\b, ymm\a
+      \hi ymm\out1, ymm\b, ymm\a
+    .endif
+  .else
+    .if ((\code) & 2)
+      \hi ymm\out0, ymm\a, ymm\b
+      \lo ymm\out1, ymm\a, ymm\b
+    .else
+      \lo ymm\out0, ymm\a, ymm\b
+      \hi ymm\out1, ymm\a, ymm\b
+    .endif
+  .endif
+.endm
+
+.macro PROD3_WIRE_OUTPUT branch,row,coefficient,base,source,qimm,shuffle
+  .if \source == 0
+    vpermq ymm4, ymm4, \qimm
+    .if \shuffle
+      vpshufb ymm4, ymm4, YMMWORD PTR [rip + .Lwire_abs_b\branch\()p\row\()_o\coefficient\()_mask]
+    .endif
+    vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + (\coefficient)*32], ymm4
+  .elseif \source == 1
+    vpermq ymm5, ymm5, \qimm
+    .if \shuffle
+      vpshufb ymm5, ymm5, YMMWORD PTR [rip + .Lwire_abs_b\branch\()p\row\()_o\coefficient\()_mask]
+    .endif
+    vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + (\coefficient)*32], ymm5
+  .elseif \source == 2
+    vpermq ymm6, ymm6, \qimm
+    .if \shuffle
+      vpshufb ymm6, ymm6, YMMWORD PTR [rip + .Lwire_abs_b\branch\()p\row\()_o\coefficient\()_mask]
+    .endif
+    vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + (\coefficient)*32], ymm6
+  .else
+    vpermq ymm7, ymm7, \qimm
+    .if \shuffle
+      vpshufb ymm7, ymm7, YMMWORD PTR [rip + .Lwire_abs_b\branch\()p\row\()_o\coefficient\()_mask]
+    .endif
+    vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + (\coefficient)*32], ymm7
+  .endif
+.endm
+#endif
+
+.macro PROD3_PASS_B branch,base,row,live=0
   /* All four source vectors are loaded before this row is overwritten. */
+  .if \live == 0
   vmovdqu ymm0, YMMWORD PTR [rdi + (\base) + (\row)*128 + 0]
   vmovdqu ymm1, YMMWORD PTR [rdi + (\base) + (\row)*128 + 32]
   vmovdqu ymm2, YMMWORD PTR [rdi + (\base) + (\row)*128 + 64]
   vmovdqu ymm3, YMMWORD PTR [rdi + (\base) + (\row)*128 + 96]
+  .endif
 
   /* D8 then D4 preserve contiguous AoS q blocks: zero routing. */
 #ifdef PROD3_T0_BETA
@@ -169,10 +304,17 @@
   vpunpcklqdq ymm2, ymm6, ymm7
   vpunpckhqdq ymm3, ymm6, ymm7
 #ifdef PROD3_T0_BETA
+#ifdef PROD3_D1_SIGN_ORIENTATION
+  vpmullw ymm4, ymm1, YMMWORD PTR [rip + .Lprod3_d1v2_b\branch\()_p\row\()_distance1_lo_qinv]
+  vpmullw ymm6, ymm3, YMMWORD PTR [rip + .Lprod3_d1v2_b\branch\()_p\row\()_distance1_hi_qinv]
+  vpmulhw ymm5, ymm1, YMMWORD PTR [rip + .Lprod3_d1v2_b\branch\()_p\row\()_distance1_lo_zeta]
+  vpmulhw ymm7, ymm3, YMMWORD PTR [rip + .Lprod3_d1v2_b\branch\()_p\row\()_distance1_hi_zeta]
+#else
   vpmullw ymm4, ymm1, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance1_lo_qinv]
   vpmullw ymm6, ymm3, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance1_hi_qinv]
   vpmulhw ymm5, ymm1, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance1_lo_zeta]
   vpmulhw ymm7, ymm3, YMMWORD PTR [rip + .Lprod3_t0b_b\branch\()_p\row\()_distance1_hi_zeta]
+#endif
 #else
   vpmullw ymm4, ymm1, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance1_lo_qinv]
   vpmullw ymm6, ymm3, YMMWORD PTR [rip + .Lprod3_b0_p\row\()_distance1_hi_qinv]
@@ -189,6 +331,23 @@
   vpaddw ymm2, ymm2, ymm6
 
   /* Live D1 results flow directly into the 16/32/64/128-bit transpose. */
+#ifdef PROD3_WIRE_MONOTONE
+  PROD3_WIRE_GROUP 4,5,0,1,.Lwire_abs_b\branch\()p\row\()_g0,vpunpcklwd,vpunpckhwd
+  PROD3_WIRE_GROUP 6,7,2,3,.Lwire_abs_b\branch\()p\row\()_g1,vpunpcklwd,vpunpckhwd
+  PROD3_WIRE_GROUP 0,1,4,5,.Lwire_abs_b\branch\()p\row\()_g2,vpunpckldq,vpunpckhdq
+  PROD3_WIRE_GROUP 2,3,6,7,.Lwire_abs_b\branch\()p\row\()_g3,vpunpckldq,vpunpckhdq
+  PROD3_WIRE_GROUP 4,5,0,2,.Lwire_abs_b\branch\()p\row\()_g4,vpunpcklqdq,vpunpckhqdq
+  PROD3_WIRE_GROUP 6,7,1,3,.Lwire_abs_b\branch\()p\row\()_g5,vpunpcklqdq,vpunpckhqdq
+  PROD3_WIRE_OUTPUT \branch,\row,0,\base,.Lwire_abs_b\branch\()p\row\()_o0_src,.Lwire_abs_b\branch\()p\row\()_o0_qimm,.Lwire_abs_b\branch\()p\row\()_o0_shuffle
+  PROD3_WIRE_OUTPUT \branch,\row,1,\base,.Lwire_abs_b\branch\()p\row\()_o1_src,.Lwire_abs_b\branch\()p\row\()_o1_qimm,.Lwire_abs_b\branch\()p\row\()_o1_shuffle
+  PROD3_WIRE_OUTPUT \branch,\row,2,\base,.Lwire_abs_b\branch\()p\row\()_o2_src,.Lwire_abs_b\branch\()p\row\()_o2_qimm,.Lwire_abs_b\branch\()p\row\()_o2_shuffle
+  PROD3_WIRE_OUTPUT \branch,\row,3,\base,.Lwire_abs_b\branch\()p\row\()_o3_src,.Lwire_abs_b\branch\()p\row\()_o3_qimm,.Lwire_abs_b\branch\()p\row\()_o3_shuffle
+#ifdef PROD3_R_DUAL_OUTPUT
+  /* The four exact wire vectors have been retained for MA2.  A specialized
+   * r producer may now consume their live registers into exact hash bytes. */
+  PROD3_R_DUAL_OUTPUT_TILE \branch,\row
+#endif
+#else
   vpunpcklwd ymm4, ymm0, ymm1
   vpunpckhwd ymm5, ymm0, ymm1
   vpunpcklwd ymm6, ymm2, ymm3
@@ -222,6 +381,7 @@
   vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 32], ymm5
   vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 64], ymm6
   vmovdqu YMMWORD PTR [rdi + (\base) + (\row)*128 + 96], ymm7
+#endif
 .endm
 
 /*
@@ -259,6 +419,37 @@ ntruplus1152_exp001_gt9x16_prod3_aos_branch0:
 .globl ntruplus1152_exp001_gt9x16_prod3_aos_full
 .type ntruplus1152_exp001_gt9x16_prod3_aos_full,@function
 ntruplus1152_exp001_gt9x16_prod3_aos_full:
+#ifdef PROD3_WAVEFRONT_W1
+  PROD3_PASS_A_W1 0,0,0,0
+  PROD3_PASS_A_W1 0,0,1,1
+  PROD3_PASS_A_W1 0,0,2,2
+  PROD3_PASS_A_W1 0,0,3,3
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PROD3_PASS_B 0,0,5,1
+  PROD3_PASS_B 0,0,0
+  PROD3_PASS_B 0,0,1
+  PROD3_PASS_B 0,0,2
+  PROD3_PASS_B 0,0,3
+  PROD3_PASS_B 0,0,4
+  PROD3_PASS_B 0,0,6
+  PROD3_PASS_B 0,0,7
+  PROD3_PASS_B 0,0,8
+
+  PROD3_PASS_A_W1 1,1152,0,0
+  PROD3_PASS_A_W1 1,1152,1,1
+  PROD3_PASS_A_W1 1,1152,2,2
+  PROD3_PASS_A_W1 1,1152,3,3
+  vmovdqa ymm15, YMMWORD PTR [rip + .Lgt_q]
+  PROD3_PASS_B 1,1152,5,1
+  PROD3_PASS_B 1,1152,0
+  PROD3_PASS_B 1,1152,1
+  PROD3_PASS_B 1,1152,2
+  PROD3_PASS_B 1,1152,3
+  PROD3_PASS_B 1,1152,4
+  PROD3_PASS_B 1,1152,6
+  PROD3_PASS_B 1,1152,7
+  PROD3_PASS_B 1,1152,8
+#else
   PROD3_PASS_A 0,0,0
   PROD3_PASS_A 0,0,1
   PROD3_PASS_A 0,0,2
@@ -288,6 +479,7 @@ ntruplus1152_exp001_gt9x16_prod3_aos_full:
   PROD3_PASS_B 1,1152,6
   PROD3_PASS_B 1,1152,7
   PROD3_PASS_B 1,1152,8
+#endif
   ret
 .size ntruplus1152_exp001_gt9x16_prod3_aos_full, .-ntruplus1152_exp001_gt9x16_prod3_aos_full
 
