@@ -120,8 +120,15 @@ def safe_extract(archive: Path, destination: Path) -> Path:
 
 def make_read_only(root: Path) -> None:
     for path in [root, *root.rglob("*")]:
+        # chmod(..., follow_symlinks=False) is not implemented by every
+        # Python/platform combination.  The target of an archive symlink is
+        # visited separately when it is inside the pristine tree, so leave
+        # the symlink itself alone and make only real files/directories
+        # read-only.
+        if path.is_symlink():
+            continue
         mode = stat.S_IMODE(path.lstat().st_mode)
-        path.chmod(mode & ~0o222, follow_symlinks=False)
+        path.chmod(mode & ~0o222)
 
 
 def copy_tree_nonoverwriting(source: Path, destination: Path) -> None:
