@@ -39,8 +39,12 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | G8b | Done | Release gates on Linux/AArch64 | On Pi 5 Cortex-A76 / GCC 14.2.0: KAT byte-identical, 64 KEM round trips, **288/288 per-leaf non-invertibility**, 13,824 canonical cases, zeroization, **8/8 ABI sentinels**. Evidence in `gt1152-p10-kem/pi-results.json`. Manifest and SUPERCOP export move to G9 |
 | G9 | Done | SUPERCOP packaging and first honest measurement | SUPERCOP validated the KEM byte contract against its built-in `ntruplus1152` checksum; **GT 142,741 vs official 111,341 cycles, +28.2%**. Evidence in `gt1152-p10-kem/supercop-results.json` |
 | P11 | Done | Component profile: where the 28% goes | PMU attribution on Pi 5. **Polynomial multiplication is at parity (+787); serialization is +30,750.** Evidence in `gt1152-p11-profile/` |
+| P12 | Done — *recorded late* | NEON codec: replace the scalar gather | Lane-indexed LD4/ST4 per leaf. Serialize went from +30,750 to +10,909. Evidence in `gt1152-p12-codec-neon/` |
+| P13 | Done — *recorded late* | NEON sampling leaves | Broadcast-the-byte against `vtst`, avoiding an 8-way bit-plane interleave. sample/misc went from +6,500 to +565. Evidence in `gt1152-p13-sample-neon/` |
 | P14 | Done — Option A rejected | Should the transform output natural order? | Measured: net -1,612 cycles (0.85%) for a major `ntt9.S` restructure. Codec fusion recovers ~5,066 with no contract change. Evidence in `gt1152-p14-layout-study/` |
 | P16 | Done — closed | Is there headroom left in `ntt9.S`? | **No.** It is multiply-throughput bound at 93% of the A76 floor (484 vs 450 cycles/bank). Slothy is worth at most 0.85% of the KEM. Evidence in `gt1152-p16-ntt9-study/` |
+| P15 | Done — rejected | Fuse the codec's passes with byte-granular lane stores | Measured 12,129 cycles worse: `vst3_lane_u8` doubles 8 halfword lane stores into 16 byte lane stores. Evidence in `gt1152-p15-codec-fused/` |
+| P17 | Done | Why did 864 beat the official pre-hash and 1152 does not? | **No structural penalty.** At 864's pre-hash per-category ratios 1152 would stand at -3.68% against its measured +8.76%; 64.9% of the shortfall is the serializer. Evidence in `gt1152-p17-vs-864-parity/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -614,6 +618,64 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
 
   **The forward NTT is finished.** Remaining effort belongs to M2-1 (hash, ~45%
   of total) and the items P11 ranked.
+
+- **P17 done, the 864 comparison settled.** `experiments/gt1152-p17-vs-864-parity/`.
+
+  The question: 864's GT lane was already ahead of the selected official *before*
+  its hash campaign (P53/P55). 1152's is not. Is that the parameter set or
+  unfinished work?
+
+  **Unfinished work. There is no structural penalty.** 1152 was re-profiled for
+  this gate because P12 and P13 landed after P11 and were never entered here; the
+  current standing is keygen +5.6%, encaps +3.5%, decaps +15.7%, **total
+  +7.9% (176,200 official vs 190,181 GT)**.
+
+  Both campaigns under one category mapping -- 864 at P52, the checkpoint
+  immediately before its hash work:
+
+  | category | 864 off | 864 GT | delta | 1152 off | 1152 GT | delta |
+  |---|---:|---:|---:|---:|---:|---:|
+  | hash | 69,959 | 70,856 | +897 | 84,789 | 86,642 | +1,852 |
+  | forward | 22,556 | 20,373 | **-2,183** | 28,884 | 26,277 | **-2,607** |
+  | inverse | 4,603 | 4,760 | +157 | 6,295 | 7,419 | +1,125 |
+  | basemul | 11,944 | 10,449 | **-1,495** | 16,134 | 15,963 | -171 |
+  | baseinv | 8,349 | 8,337 | -12 | 10,592 | 12,992 | +2,399 |
+  | **serialize** | 10,934 | 8,700 | **-2,234** | 10,066 | 20,975 | **+10,909** |
+  | sample | 4,430 | 4,062 | -368 | 3,895 | 4,460 | +565 |
+  | **SUM** | 132,775 | 127,537 | **-5,238** | 160,657 | 174,729 | **+14,072** |
+
+  **864 won pre-hash because its serializer was a win.** At -2,234 it was 864's
+  second largest advantage after the forward NTT. 1152's is +10,909, sign
+  reversed, and alone it exceeds the whole deficit. The official side is not
+  harder here: official serialize is 10,934 at 864 and 10,066 at 1152.
+
+  Transferring 864's pre-hash ratio in each category onto 1152's official
+  baseline gives **-3.68%**, against 864's own -3.95%. The forward NTT shows it
+  directly: ratio 0.903 at 864, **0.910 at 1152**. Where the 19,981 sits:
+  serialize +12,966 (64.9%), baseinv +2,415, basemul +1,848, inverse +909,
+  sample +889, hash +766, forward +188.
+
+  **The mechanism, from the source.** 864's `pack.c` is twelve lines of wrapper;
+  `pack_full_top` performs the GT-to-natural permutation *in registers* with 200
+  `trn`, 108 `uzp`, 54 `tbl` and 24 `ext`, fused with the Barrett reduce and the
+  12-bit pack, storing wire bytes as plain full-vector `stur`. No intermediate
+  array. 1152's P12 codec declares `uint16_t nat[1152]` in all three entry points
+  and runs two passes over memory. Measured per call: `poly_frombytes` 2,185
+  against the official's 509, `poly_tobytes_small` 1,817 and `poly_tobytes` 2,368
+  against 1,147. P14's pieces, against a 156-cycle copy floor: pack alone 461,
+  permute GT->natural 941, natural->GT 1,418.
+
+  **P15's rejection does not close the fused route.** P15 fused within the
+  lane-indexed store family (`vst3_lane_u8`, 8 halfword lane stores becoming 16
+  byte lane stores). 864 uses no lane-indexed store at all. That route is
+  untried at 1152, and degree-4 should suit it better than degree-3 -- 864 needs
+  its 54 `tbl` and 24 `ext` precisely because three-coefficient leaves do not
+  align. It is not cheap either way: 864 reached -2,234 with 7,751 lines of
+  Slothy-scheduled assembly over roughly twenty gates.
+
+  **The hash is not what separates the campaigns.** 1152's hash ratio is 1.022
+  against 864's pre-hash 1.013; the whole category is 766 of the 19,981. M2-1 is
+  a large win *on top of* parity, as it was for 864 (-3.95% to -11/-21/-13%).
 
 ## Standing rules
 
