@@ -57,6 +57,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P27 | Done — **first SLOTHY run of this campaign** | M2-2: schedule `basemul_rinv` | **3,054 -> 2,744 cycles**; `poly_basemul_rinv` +634 -> **+232**; decaps -0.86% -> **-1.68%**; KEM -1.55% -> **-1.79%**. Byte-identical to the C oracle over 4,000 trials. Evidence in `gt1152-p27-slothy-basemul-rinv/` and `dev/` |
 | P28 | Done — second target not justified | Does a per-microarchitecture schedule pay? | **A76: scheduling worth ~10%, target choice irrelevant** (2,744 vs 2,739). **M2 Pro: all three identical** at ~278 ns. SLOTHY's M1 model predicts 81 cycles/group where Apple silicon measures 25. Evidence in `gt1152-p28-cross-target/` |
 | P29 | Done | SUPERCOP after the assembly and scheduling work | **GT 109,446 vs official 111,401, -1.75%** — GT is now faster under SUPERCOP's own measurement, from +28.2% at G9 and +0.68% at P20. Per operation keygen **-3.13%**, enc **-1.87%**, dec **-1.75%**; the q1 sum is -2.26% against the profiler's -2.29%. Evidence in `gt1152-p29-supercop-final/` |
+| P30 | Done | Survey `poly_frombytes`, the last losing component | **P19's "structural, ~100% of floor" was wrong on both counts.** It was at 90%, and one of four per-lane operations was avoidable: reading each block as eight 16-bit windows instead of four 24-bit ones lets one `ushl` with a per-lane count replace `ushr` + `uzp1`. **723 -> 645; +895 -> +599; KEM -2.29% -> -2.51%.** Evidence in `gt1152-p30-frombytes-survey/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -1346,6 +1347,60 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   preprocessor, so `#ifdef __APPLE__` becomes a second `.global` and a second
   label. The leaf was test-compiled first: 20 objects, no errors, all four
   kernel symbols defined.
+
+- **P30 done. The last losing component was not structural after all.**
+  `experiments/gt1152-p30-frombytes-survey/`.
+
+  P19 called `frombytes` structural and at "~100% of its issue floor", and every
+  gate since repeated it. **Both halves were wrong.**
+
+  **The permutation genuinely cannot be skipped**: all four call sites feed
+  `poly_basemul` or `poly_basemul_rinv`, which read the Good-Thomas layout. And
+  P14's Option A is now *more* firmly rejected than when it was measured -- its
+  accounting credited 9,741 cycles of codec saving, but after P18 and P19 the
+  codec is 9,033 against the official's 10,067, already a win, so the credit is
+  gone while the 8,130 it must pay is not.
+
+  **But the floor was not where P19 put it.** Issuing the exact per-pair mix with
+  every chain independent, and removing one piece at a time:
+
+  | variant | cycles/pair | x18 |
+  |---|---:|---:|
+  | full mix | 36.50 | **657** |
+  | without the 24-op transpose | 25.50 | 459 |
+  | without the 8 V1-pinned `ushr` | 32.00 | 576 |
+  | without the 8 offset-table loads | 37.50 | 675 |
+
+  The permutation costs **198**, the shift **81**, the offset table nothing. And
+  723 against 657 is **90.4%**, not ~100%.
+
+  **What was avoidable.** The decode read each twelve-byte block as four 24-bit
+  values, needing a shift to separate the pair, a `uzp1` to collect, and a mask:
+  four operations a lane. Read as **eight 16-bit windows** instead and the shift
+  and the collection merge -- lanes 0..3 take bytes `(3j, 3j+1)` whose low twelve
+  bits are the even coefficient, lanes 4..7 take `(3m+1, 3m+2)` which hold the
+  odd one shifted up by four, and one `ushl` with a per-lane count
+  `{0,0,0,0,-4,-4,-4,-4}` fixes both at once. Three operations a lane, same
+  output order, index still inside the twelve bytes.
+
+  Floor 657 -> 576, measured **723 -> 645**, same 90% utilisation.
+
+  **What is left**: the 198-cycle transpose is minimal -- an 8x8 transpose of
+  16-bit elements from two-input shuffles needs `log2(8) x 8 = 24` operations and
+  uses exactly that, and `st4` cannot substitute because it writes
+  `x[4i+j] = v[j][i]` where the layout needs `x[8c+k] = u[k][c]`. Plus ~69 cycles
+  of scheduling headroom, which makes `frombytes` a candidate for `dev/`.
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | keygen | 64,087 | 62,042 | -3.19% | -3.09% |
+  | encaps | 59,483 | 58,264 | -2.05% | -1.98% |
+  | **decaps** | 52,516 | **51,353** | **-2.21%** | -1.67% |
+  | **total** | **176,086** | **171,660** | **-2.51%** | -2.29% |
+
+  `poly_frombytes` is +599 where it was +895. Every package gate green and the
+  codec's seven oracle checks pass unchanged, including the 3,456-case canonical
+  rejection sweep, which a wrong unpack index would break first.
 
 ## Standing rules
 

@@ -39,9 +39,18 @@
 static const uint8_t pack_idx[16] = {
     0, 1, 2,  4, 5, 6,  8, 9, 10,  12, 13, 14,  255, 255, 255, 255
 };
+/*
+ * The decode reads each twelve-byte block as eight 16-bit windows rather than
+ * four 24-bit ones.  Lanes 0..3 take bytes (3j, 3j+1), whose low twelve bits
+ * are the even coefficient; lanes 4..7 take bytes (3m+1, 3m+2), which hold the
+ * odd coefficient shifted up by four.  One `ushl` with a per-lane count then
+ * fixes both halves at once, so the separate `ushr` and `uzp1` the 24-bit form
+ * needed collapse into a single instruction.
+ */
 static const uint8_t unpack_idx[16] = {
-    0, 1, 2, 255,  3, 4, 5, 255,  6, 7, 8, 255,  9, 10, 11, 255
+    0, 1,  3, 4,  6, 7,  9, 10,    1, 2,  4, 5,  7, 8,  10, 11
 };
+static const int16_t unpack_shift[8] = {0, 0, 0, 0, -4, -4, -4, -4};
 
 /*
  * The 8x8 int16 transpose, three trn levels.  A transpose is an involution, so
@@ -212,19 +221,12 @@ static inline void unpack_pair(int16x8_t v[8], const uint8_t *in,
                                uint16x8_t *hi, int safe)
 {
     const uint16x8_t m12 = vdupq_n_u16(0x0FFF);
+    const int16x8_t sh = vld1q_s16(unpack_shift);
 
     for (int k = 0; k < 8; k++) {
         uint8x16_t raw = safe ? load12(in + w[k]) : vld1q_u8(in + w[k]);
-        uint32x4_t y = vreinterpretq_u32_u8(vqtbl1q_u8(raw, idx));
-        /*
-         * y holds four 24-bit values, each an even coefficient in its low
-         * twelve bits and an odd one above.  y >> 12 is therefore the odd
-         * coefficient exactly, needing no mask, and one uzp1 collects the four
-         * low halfwords of each -- so a single mask afterwards yields all eight
-         * coefficients in the order the transpose wants.
-         */
-        uint16x8_t t = vreinterpretq_u16_u32(vshrq_n_u32(y, 12));
-        uint16x8_t u = vandq_u16(vuzp1q_u16(vreinterpretq_u16_u32(y), t), m12);
+        uint16x8_t win = vreinterpretq_u16_u8(vqtbl1q_u8(raw, idx));
+        uint16x8_t u = vandq_u16(vshlq_u16(win, sh), m12);
 
         /* One running maximum rather than a compare and an or per lane: some
          * coefficient is out of range exactly when the maximum is. */
