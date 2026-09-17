@@ -27,6 +27,13 @@ CUMULATIVE_SOURCES = IMPLEMENTATION_SOURCES + (
     "gt9x16_prod3_cumulative_ma2.S",
 )
 
+WIRE_COMMON_SOURCES = (
+    "add.s", "baseinv.s", "basemul.s", "cbd.s", "crepmod3.s",
+    "invntt.s", "ntt.s", "pack.s", "consts.c", "kem.c", "poly.c",
+    "symmetric.c", "fips202.c", "KeccakP-1600-AVX2.s",
+    "top_split_adapter.c", "gt9x16_prod3_aos_branch0.S",
+)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -34,7 +41,7 @@ def main() -> int:
     parser.add_argument("--implementation", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cc", default="cc")
-    parser.add_argument("--profile", choices=("h1", "cumulative"), default="h1")
+    parser.add_argument("--profile", choices=("h1", "cumulative", "wire"), default="h1")
     args = parser.parse_args()
     if args.output.exists():
         raise SystemExit(f"refusing to overwrite {args.output}")
@@ -50,8 +57,14 @@ def main() -> int:
     implementation = root / "crypto_kem/ntruplus1152" / args.implementation
     if not implementation.is_dir():
         raise SystemExit(f"missing implementation: {implementation}")
-    implementation_sources = (CUMULATIVE_SOURCES if args.profile == "cumulative"
-                              else IMPLEMENTATION_SOURCES)
+    if args.profile == "wire":
+        manifest_record = json.loads(
+            (implementation / "SOURCE-MANIFEST.json").read_text(encoding="utf-8"))
+        installed = manifest_record["wire_monotone_native_rebase2"]["installed_sources"]
+        implementation_sources = WIRE_COMMON_SOURCES + tuple(installed.values())
+    else:
+        implementation_sources = (CUMULATIVE_SOURCES if args.profile == "cumulative"
+                                  else IMPLEMENTATION_SOURCES)
     missing = [name for name in implementation_sources
                if not (implementation / name).is_file()]
     if missing:
@@ -113,8 +126,10 @@ def main() -> int:
             "candidate_manifest_sha256": (
                 sha256_file(manifest) if manifest.is_file() else None),
             "kem_source_sha256": sha256_file(implementation / "kem.c"),
-            "h1_source_sha256": sha256_file(
-                implementation / "gt9x16_prod3_ma2_hash_h1.S"),
+            "h1_source_sha256": (
+                sha256_file(implementation / "gt9x16_prod3_ma2_hash_h1.S")
+                if (implementation / "gt9x16_prod3_ma2_hash_h1.S").is_file()
+                else None),
             "native_performance_run": False,
         }
     args.output.parent.mkdir(parents=True, exist_ok=True)
