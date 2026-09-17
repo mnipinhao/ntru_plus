@@ -19,6 +19,7 @@ engineering records.
 
 ## Baseline explanations
 
+- [NTRU+768/864/1152 AVX2 transform-shape survey（中文）](ntruplus-avx2-shape-survey-768-864-1152-zh.md)
 - [Frozen AArch64 NTT assembly explanation](baseline/aarch64/ntt-s-explanation.md)
 - [NTTRU AVX2 精華（中文）](nttru-avx2-essence-zh.md)
 - [NTTRU AVX2 reading and NTRU+768 comparison guide](nttru-avx2-comparison-guide.md)
