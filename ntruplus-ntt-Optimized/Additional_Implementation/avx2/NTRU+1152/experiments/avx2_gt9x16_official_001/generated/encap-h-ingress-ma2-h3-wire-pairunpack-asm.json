@@ -1,0 +1,38 @@
+{
+  "alignment": {
+    "constants": 32,
+    "entry": 32,
+    "out_r_m": 32,
+    "pk": 1
+  },
+  "arguments": [
+    "out_scale4",
+    "pk_bytes",
+    "r_natural_scale4",
+    "m_natural_scale4"
+  ],
+  "benchmark_authorized": false,
+  "checkpoint": "ENCAP-H-INGRESS-MA2-H3-ASM",
+  "expected": {
+    "blocks": 9,
+    "consumer_required_routes": 144,
+    "h_r2_montgomery": 72,
+    "h_reloads": 0,
+    "h_stores": 0,
+    "h_times_r_montgomery": 288,
+    "lambda_montgomery": 54,
+    "output_stores": 72,
+    "peak_ymm": 16,
+    "pk_loads": 54,
+    "pure_h_abi_routes": 0,
+    "stack_bytes": 0,
+    "total_instruction_delta_vs_h1": -91,
+    "validation_instruction_delta_vs_h1": 54
+  },
+  "formation_mode": "pair-unpack",
+  "return": "1 iff Official poly_frombytes rejects pk, otherwise 0",
+  "schema": "encap-h-ingress-ma2-h3-asm/v1",
+  "symbol": "ntruplus1152_exp001_encap_h_ingress_ma2_h3_wire_pairunpack",
+  "terminal_hook": "H3_TERMINAL_C before every coefficient-plane store",
+  "valid_output": "raw bit-exact in the wire-monotone MA2 ABI"
+}
