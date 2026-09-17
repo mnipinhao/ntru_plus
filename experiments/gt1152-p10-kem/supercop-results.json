@@ -1,0 +1,34 @@
+{
+  "host": "pi@100.99.191.9 Cortex-A76",
+  "supercop": "20260831",
+  "date": "20260917",
+  "core": 3,
+  "compiler": "gcc 14.2.0 -march=native -mtune=native",
+  "goal": "constbranchindex",
+  "checksum_validated": "2275d10293515833d4651b83e003df32321d6c6cfa2f52fffc6f5df5e4d13ad8",
+  "selection_cycles": {
+    "aarch64": {
+      "cycles": 111341,
+      "opt": "O3"
+    },
+    "aarch64-gt1152": {
+      "cycles": 142741,
+      "opt": "O3"
+    },
+    "opt": {
+      "cycles": 193389,
+      "opt": "O3"
+    },
+    "ref": {
+      "cycles": 297607,
+      "opt": "O3"
+    }
+  },
+  "gt_vs_official": {
+    "official": 111341,
+    "gt": 142741,
+    "delta": 31400,
+    "percent": 28.2
+  },
+  "note": "selection_cycles is the A/B: same run, same host, same compiler set, checksum validated by SUPERCOP itself. Per-operation splits need a fresh-date run because SUPERCOP caches by version/host/date."
+}

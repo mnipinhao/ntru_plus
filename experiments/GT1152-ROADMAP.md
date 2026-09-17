@@ -37,7 +37,8 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | G7 | Done | Pack / unpack for the degree-4 layout | 7 checks: exact wire bytes over every int16 extreme, round trip, 3456-case canonical rejection sweep, constant-time compare. Evidence in `gt1152-p09-pack/` |
 | G8a | Done | KEM assembly and KAT, local | **KAT reproduced byte for byte** (sha256 `2ddfc810c4...64c3`) plus 64 KEM round trips with tampered rejection, on macOS/arm64. Evidence in `gt1152-p10-kem/` |
 | G8b | Done | Release gates on Linux/AArch64 | On Pi 5 Cortex-A76 / GCC 14.2.0: KAT byte-identical, 64 KEM round trips, **288/288 per-leaf non-invertibility**, 13,824 canonical cases, zeroization, **8/8 ABI sentinels**. Evidence in `gt1152-p10-kem/pi-results.json`. Manifest and SUPERCOP export move to G9 |
-| G9 | Next | SUPERCOP packaging and first honest measurement | SUPERCOP accepts the scheme (not `unknown`); stabilized quartiles against official 1152 on one host, compiler and SUPERCOP revision |
+| G9 | Done | SUPERCOP packaging and first honest measurement | SUPERCOP validated the KEM byte contract against its built-in `ntruplus1152` checksum; **GT 142,741 vs official 111,341 cycles, +28.2%**. Evidence in `gt1152-p10-kem/supercop-results.json` |
+| M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
 
@@ -462,6 +463,36 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
 
   Still owed: source manifest and deterministic SUPERCOP export, both folded
   into G9. No performance measurement of any kind was taken.
+
+- **G9 done.** `crypto_kem/ntruplus1152/aarch64-gt1152` on supercop-20260831,
+  Pi 5 core 3, GCC 14.2.0 `-march=native`, goal `constbranchindex`. Evidence in
+  `gt1152-p10-kem/supercop-results.json`, raw data `supercop-1152-data.txt`.
+
+  **SUPERCOP validated the KEM byte contract against its own built-in
+  `ntruplus1152` checksum** `2275d102...3ad8` - an independent confirmation
+  stronger than the KAT, covering keypair, enc and dec under SUPERCOP's
+  randomness discipline. The `ntruplus1152repo` checksum gap recorded earlier
+  turned out to be moot: SUPERCOP ships a checksum for this scheme, so the GT
+  leaf was added as a sibling implementation rather than a separate scheme.
+
+  | implementation | cycles (best, -O3) | vs official |
+  |---|---:|---:|
+  | `aarch64` (official) | 111,341 | - |
+  | `aarch64-gt1152` | **142,741** | **+28.2%** |
+  | `opt` | 193,389 | +73.7% |
+  | `ref` | 297,607 | +167.3% |
+
+  **The port is 28% slower than the official NEON implementation**, 26% faster
+  than `opt` and 52% faster than `ref`. That is the expected result and every
+  reason is on record: the hash is the generic sponge (864's fixed-size version
+  was worth ~4358 + ~4103 cycles, its single largest lever, reached at gate 53
+  of 58); `inverse16_tail` is C at 4096 MACs against 589 assembly instructions;
+  the codec is plain C where 864 spends 45% of its source on routed assembly;
+  BaseInv has no ILP split; and nothing was ever Slothy-scheduled for 1152.
+  For scale, 864's GT beats its official by 11-21% after 58 gates.
+
+  Owed: per-operation attribution of the 28%, which needs a fresh-date run
+  because SUPERCOP caches by version/host/date.
 
 ## Standing rules
 

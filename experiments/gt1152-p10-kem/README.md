@@ -76,10 +76,52 @@ entry points preserve every callee-saved register. That is what makes the asm
 driver's `SAVE_PUBLIC` correct around leaves that clobber v8–v15, and what makes
 calling the C tail from assembly safe.
 
+## SUPERCOP — the first measurement (G9)
+
+`crypto_kem/ntruplus1152/aarch64-gt1152` on `supercop-20260831`, Pi 5 core 3,
+GCC 14.2.0 `-march=native -mtune=native`, goal `constbranchindex`.
+Evidence: `supercop-results.json`, raw data `supercop-1152-data.txt`.
+
+**SUPERCOP validated the KEM byte contract against its own built-in
+`ntruplus1152` checksum** `2275d102…3ad8`. That is an independent confirmation
+stronger than the KAT: it covers keypair, enc and dec under SUPERCOP's own
+randomness discipline.
+
+| implementation | cycles (best, −O3) | vs official |
+|---|---:|---:|
+| `aarch64` (official) | **111,341** | — |
+| **`aarch64-gt1152`** | **142,741** | **+28.2%** |
+| `opt` | 193,389 | +73.7% |
+| `ref` | 297,607 | +167.3% |
+
+**The port is 28% slower than the official NEON implementation.** It is 26%
+faster than `opt` and 52% faster than `ref`.
+
+### That is the expected result, and the reasons are all on record
+
+Nothing in Milestone 1 was optimized. Specifically:
+
+- **The hash is the generic sponge.** In NTRU+864 the fixed-size specialization
+  was worth ≈4358 (`hash_g`) and ≈4103 (`hash_f`) cycles per operation — the
+  single largest lever in that entire campaign, and 864 reached it at gate 53
+  of 58. Recorded as M2-1.
+- **`inverse16_tail` is C**: 4096 multiply-accumulates against 589 assembly
+  instructions (G6b).
+- **The codec is plain C** with a table-lookup scatter, where 864 spends 45% of
+  its source on routed assembly (G7, D5).
+- **BaseInv has no ILP split**: 36 sequential groups where 864 uses 12 steps ×
+  3 chains (G5).
+- **Nothing was ever Slothy-scheduled for 1152.** Milestone 1 deliberately ran
+  no solver (D4).
+
+For scale: 864's GT beats its official by 11–21%, after 58 gates.
+
 ## Still owed
 
-- Source manifest and deterministic SUPERCOP export — the latter belongs to G9.
-- No performance measurement of any kind. Nothing here was timed.
+- Source manifest is generated (`SOURCE-MANIFEST.sha256`, 43 files, self-check
+  passes) but is not yet a gated release artifact.
+- Per-operation splits for the GT leaf: SUPERCOP caches by version/host/date,
+  so a fresh-date run is needed to attribute the 28% across keypair/enc/dec.
 
 ## Not yet promoted
 
