@@ -18,10 +18,6 @@ basemul_rinv_kernel:
     dup v0.8h, w8
     mov w8, #-12929
     dup v1.8h, w8
-    mov w8, #1728
-    dup v2.8h, w8
-    mov w8, #-1728
-    dup v3.8h, w8
     mov x4, #36
 basemul_rinv_loop:
     ldr Q<a0>, [x1, #0]
@@ -67,73 +63,49 @@ basemul_rinv_loop:
     smlal V<tmpv_16>.4s, V<tmpv_19>.4h, v0.4h
     smlal2 V<tmpv_17>.4s, V<tmpv_19>.8h, v0.8h
     uzp2 V<tmpv_20>.8h, V<tmpv_16>.8h, V<tmpv_17>.8h
-    cmgt V<tmpv_21>.8h, V<tmpv_20>.8h, v2.8h
-    and V<tmpv_21>.16b, V<tmpv_21>.16b, v0.16b
-    sub V<tmpv_22>.8h, V<tmpv_20>.8h, V<tmpv_21>.8h
-    cmgt V<tmpv_23>.8h, v3.8h, V<tmpv_22>.8h
-    and V<tmpv_23>.16b, V<tmpv_23>.16b, v0.16b
-    add V<tmpv_24>.8h, V<tmpv_22>.8h, V<tmpv_23>.8h
-    str Q<tmpv_24>, [x0, #0]
-    smull V<tmpv_25>.4s, V<a0>.4h, V<b1>.4h
-    smull2 V<tmpv_26>.4s, V<a0>.8h, V<b1>.8h
-    smlal V<tmpv_25>.4s, V<a1>.4h, V<b0>.4h
-    smlal2 V<tmpv_26>.4s, V<a1>.8h, V<b0>.8h
-    smlal V<tmpv_25>.4s, V<a2>.4h, V<tmpv_15>.4h
-    smlal2 V<tmpv_26>.4s, V<a2>.8h, V<tmpv_15>.8h
-    smlal V<tmpv_25>.4s, V<a3>.4h, V<tmpv_10>.4h
-    smlal2 V<tmpv_26>.4s, V<a3>.8h, V<tmpv_10>.8h
-    uzp1 V<tmpv_27>.8h, V<tmpv_25>.8h, V<tmpv_26>.8h
-    mul V<tmpv_28>.8h, V<tmpv_27>.8h, v1.8h
-    smlal V<tmpv_25>.4s, V<tmpv_28>.4h, v0.4h
-    smlal2 V<tmpv_26>.4s, V<tmpv_28>.8h, v0.8h
-    uzp2 V<tmpv_29>.8h, V<tmpv_25>.8h, V<tmpv_26>.8h
-    cmgt V<tmpv_30>.8h, V<tmpv_29>.8h, v2.8h
-    and V<tmpv_30>.16b, V<tmpv_30>.16b, v0.16b
-    sub V<tmpv_31>.8h, V<tmpv_29>.8h, V<tmpv_30>.8h
-    cmgt V<tmpv_32>.8h, v3.8h, V<tmpv_31>.8h
-    and V<tmpv_32>.16b, V<tmpv_32>.16b, v0.16b
-    add V<tmpv_33>.8h, V<tmpv_31>.8h, V<tmpv_32>.8h
-    str Q<tmpv_33>, [x0, #16]
-    smull V<tmpv_34>.4s, V<a0>.4h, V<b2>.4h
-    smull2 V<tmpv_35>.4s, V<a0>.8h, V<b2>.8h
-    smlal V<tmpv_34>.4s, V<a1>.4h, V<b1>.4h
-    smlal2 V<tmpv_35>.4s, V<a1>.8h, V<b1>.8h
-    smlal V<tmpv_34>.4s, V<a2>.4h, V<b0>.4h
-    smlal2 V<tmpv_35>.4s, V<a2>.8h, V<b0>.8h
-    smlal V<tmpv_34>.4s, V<a3>.4h, V<tmpv_15>.4h
-    smlal2 V<tmpv_35>.4s, V<a3>.8h, V<tmpv_15>.8h
-    uzp1 V<tmpv_36>.8h, V<tmpv_34>.8h, V<tmpv_35>.8h
-    mul V<tmpv_37>.8h, V<tmpv_36>.8h, v1.8h
-    smlal V<tmpv_34>.4s, V<tmpv_37>.4h, v0.4h
-    smlal2 V<tmpv_35>.4s, V<tmpv_37>.8h, v0.8h
-    uzp2 V<tmpv_38>.8h, V<tmpv_34>.8h, V<tmpv_35>.8h
-    cmgt V<tmpv_39>.8h, V<tmpv_38>.8h, v2.8h
-    and V<tmpv_39>.16b, V<tmpv_39>.16b, v0.16b
-    sub V<tmpv_40>.8h, V<tmpv_38>.8h, V<tmpv_39>.8h
-    cmgt V<tmpv_41>.8h, v3.8h, V<tmpv_40>.8h
-    and V<tmpv_41>.16b, V<tmpv_41>.16b, v0.16b
-    add V<tmpv_42>.8h, V<tmpv_40>.8h, V<tmpv_41>.8h
-    str Q<tmpv_42>, [x0, #32]
-    smull V<tmpv_43>.4s, V<a0>.4h, V<b3>.4h
-    smull2 V<tmpv_44>.4s, V<a0>.8h, V<b3>.8h
-    smlal V<tmpv_43>.4s, V<a1>.4h, V<b2>.4h
-    smlal2 V<tmpv_44>.4s, V<a1>.8h, V<b2>.8h
-    smlal V<tmpv_43>.4s, V<a2>.4h, V<b1>.4h
-    smlal2 V<tmpv_44>.4s, V<a2>.8h, V<b1>.8h
-    smlal V<tmpv_43>.4s, V<a3>.4h, V<b0>.4h
-    smlal2 V<tmpv_44>.4s, V<a3>.8h, V<b0>.8h
-    uzp1 V<tmpv_45>.8h, V<tmpv_43>.8h, V<tmpv_44>.8h
-    mul V<tmpv_46>.8h, V<tmpv_45>.8h, v1.8h
-    smlal V<tmpv_43>.4s, V<tmpv_46>.4h, v0.4h
-    smlal2 V<tmpv_44>.4s, V<tmpv_46>.8h, v0.8h
-    uzp2 V<tmpv_47>.8h, V<tmpv_43>.8h, V<tmpv_44>.8h
-    cmgt V<tmpv_48>.8h, V<tmpv_47>.8h, v2.8h
-    and V<tmpv_48>.16b, V<tmpv_48>.16b, v0.16b
-    sub V<tmpv_49>.8h, V<tmpv_47>.8h, V<tmpv_48>.8h
-    cmgt V<tmpv_50>.8h, v3.8h, V<tmpv_49>.8h
-    and V<tmpv_50>.16b, V<tmpv_50>.16b, v0.16b
-    add V<tmpv_51>.8h, V<tmpv_49>.8h, V<tmpv_50>.8h
-    str Q<tmpv_51>, [x0, #48]
+    str Q<tmpv_20>, [x0, #0]
+    smull V<tmpv_21>.4s, V<a0>.4h, V<b1>.4h
+    smull2 V<tmpv_22>.4s, V<a0>.8h, V<b1>.8h
+    smlal V<tmpv_21>.4s, V<a1>.4h, V<b0>.4h
+    smlal2 V<tmpv_22>.4s, V<a1>.8h, V<b0>.8h
+    smlal V<tmpv_21>.4s, V<a2>.4h, V<tmpv_15>.4h
+    smlal2 V<tmpv_22>.4s, V<a2>.8h, V<tmpv_15>.8h
+    smlal V<tmpv_21>.4s, V<a3>.4h, V<tmpv_10>.4h
+    smlal2 V<tmpv_22>.4s, V<a3>.8h, V<tmpv_10>.8h
+    uzp1 V<tmpv_23>.8h, V<tmpv_21>.8h, V<tmpv_22>.8h
+    mul V<tmpv_24>.8h, V<tmpv_23>.8h, v1.8h
+    smlal V<tmpv_21>.4s, V<tmpv_24>.4h, v0.4h
+    smlal2 V<tmpv_22>.4s, V<tmpv_24>.8h, v0.8h
+    uzp2 V<tmpv_25>.8h, V<tmpv_21>.8h, V<tmpv_22>.8h
+    str Q<tmpv_25>, [x0, #16]
+    smull V<tmpv_26>.4s, V<a0>.4h, V<b2>.4h
+    smull2 V<tmpv_27>.4s, V<a0>.8h, V<b2>.8h
+    smlal V<tmpv_26>.4s, V<a1>.4h, V<b1>.4h
+    smlal2 V<tmpv_27>.4s, V<a1>.8h, V<b1>.8h
+    smlal V<tmpv_26>.4s, V<a2>.4h, V<b0>.4h
+    smlal2 V<tmpv_27>.4s, V<a2>.8h, V<b0>.8h
+    smlal V<tmpv_26>.4s, V<a3>.4h, V<tmpv_15>.4h
+    smlal2 V<tmpv_27>.4s, V<a3>.8h, V<tmpv_15>.8h
+    uzp1 V<tmpv_28>.8h, V<tmpv_26>.8h, V<tmpv_27>.8h
+    mul V<tmpv_29>.8h, V<tmpv_28>.8h, v1.8h
+    smlal V<tmpv_26>.4s, V<tmpv_29>.4h, v0.4h
+    smlal2 V<tmpv_27>.4s, V<tmpv_29>.8h, v0.8h
+    uzp2 V<tmpv_30>.8h, V<tmpv_26>.8h, V<tmpv_27>.8h
+    str Q<tmpv_30>, [x0, #32]
+    smull V<tmpv_31>.4s, V<a0>.4h, V<b3>.4h
+    smull2 V<tmpv_32>.4s, V<a0>.8h, V<b3>.8h
+    smlal V<tmpv_31>.4s, V<a1>.4h, V<b2>.4h
+    smlal2 V<tmpv_32>.4s, V<a1>.8h, V<b2>.8h
+    smlal V<tmpv_31>.4s, V<a2>.4h, V<b1>.4h
+    smlal2 V<tmpv_32>.4s, V<a2>.8h, V<b1>.8h
+    smlal V<tmpv_31>.4s, V<a3>.4h, V<b0>.4h
+    smlal2 V<tmpv_32>.4s, V<a3>.8h, V<b0>.8h
+    uzp1 V<tmpv_33>.8h, V<tmpv_31>.8h, V<tmpv_32>.8h
+    mul V<tmpv_34>.8h, V<tmpv_33>.8h, v1.8h
+    smlal V<tmpv_31>.4s, V<tmpv_34>.4h, v0.4h
+    smlal2 V<tmpv_32>.4s, V<tmpv_34>.8h, v0.8h
+    uzp2 V<tmpv_35>.8h, V<tmpv_31>.8h, V<tmpv_32>.8h
+    str Q<tmpv_35>, [x0, #48]
     add x0, x0, #64
     add x1, x1, #64
     add x2, x2, #64

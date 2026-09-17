@@ -86,35 +86,22 @@ static inline int16x8_t fqmul(int16x8_t a, int16x8_t b)
 }
 
 /*
- * D7's normalization, without touching the multiply pipe.
+ * D7's normalization is gone, and with it the whole of the gap P24 could not
+ * close: the official's basemul issues an identical multiply multiset and no
+ * reduction at all.
  *
- * The purpose is only to bring basemul_rinv's output, which G2 bounds at 2752,
- * inside NTRU+864's documented inverse input contract of 2497, so that the 864
- * bound chain holds a fortiori instead of needing re-derivation.  A centered
- * Barrett does that but costs two multiply-class instructions per vector, and
- * the multiply pipe is what bounds this kernel: the official's basemul_scale
- * issues exactly the same 52 widening multiplies and 7 muls and simply has no
- * reduction at the end.
+ * D7 added one because the output was bounded at 2752, above the inverse's
+ * inherited input contract of 2497.  That 2752 assumes inputs on [0,4095].  The
+ * only caller feeds two poly_frombytes results and aborts unless both decode,
+ * so the inputs are canonical, and with |a|,|b| <= q-1 the Montgomery bound is
  *
- * A single conditional subtract is enough and uses no multiply at all.  With
- * |x| <= 2752 < 1728 + q, exactly one of the three cases applies:
+ *     q/2 + 4(q-1)^2 / 2^16  =  1728.5 + 729.0  =  2458
  *
- *     x >  1728  ->  x - q  in (-1729, -705]
- *     x < -1728  ->  x + q  in [705, 1729)
- *     otherwise  ->  |x| <= 1728
- *
- * so the output lands in [-1728, 1728], one tighter than the Barrett's
- * [-1729, 1729], and D7's contract is honoured exactly.
+ * which is inside the contract, so the NTRU+864 bound chain still holds a
+ * fortiori and nothing is re-derived.  P31 measures 2266 over 20,000 trials on
+ * that domain.  The declaration in inverse.h now states the canonical
+ * precondition rather than [0,4095].
  */
-static inline int16x8_t normalize_d7(int16x8_t a)
-{
-    const int16x8_t q = vdupq_n_s16(Q);
-    const int16x8_t hi = vdupq_n_s16(1728);
-    const int16x8_t lo = vdupq_n_s16(-1728);
-
-    a = vsubq_s16(a, vandq_s16(vreinterpretq_s16_u16(vcgtq_s16(a, hi)), q));
-    return vaddq_s16(a, vandq_s16(vreinterpretq_s16_u16(vcltq_s16(a, lo)), q));
-}
 
 /* Inverse in Z_q via the reference addition chain for exponent 3455. */
 static inline int16x8_t fqinv(int16x8_t a)
@@ -225,8 +212,6 @@ void basemul_rinv_asm(int16_t out[BASE_COEFFICIENTS],
         acc = multiply_add(acc, av[3], bv[0]);
         r[3] = montgomery_reduce(acc);
 
-        for (int i = 0; i < 4; i++)
-            r[i] = normalize_d7(r[i]);
         STORE4(out, offset, r);
     }
 }

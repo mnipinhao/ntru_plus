@@ -136,12 +136,18 @@ def basemul_rinv():
     cross -> reduce -> xzeta -> accumulate -> reduce in series.  P24 established
     that this is algebraically identical and is the form the official's
     instruction histogram matches.
+
+    There is no normalization.  D7 added one because the output was bounded at
+    2752, above the inverse's inherited input contract of 2497 -- but 2752 comes
+    from assuming inputs on [0,4095].  The only caller feeds two `poly_frombytes`
+    results and aborts unless both decode, so the inputs are canonical: with
+    |a|,|b| <= q-1 the Montgomery bound is q/2 + 4(q-1)^2/2^16 = 2458, inside the
+    contract, and P31 measures 2266 over 20,000 trials.  The official issues no
+    normalization either, which is the whole of the gap P24 could not close.
     """
     d = DAG()
     d.constant(QREG, Q)
     d.constant(QI, NEG_QINV)
-    d.constant(HI, HALF)
-    d.constant(LO, -HALF)
     d.emit("mov x4, #36")
     d.label("basemul_rinv_loop")
 
@@ -159,7 +165,7 @@ def basemul_rinv():
         acc = d.wide(*row[0])
         for x, y in row[1:]:
             d.wide(x, y, acc)
-        d.store(d.normalize_d7(d.redc(acc)), "x0", 16 * i)
+        d.store(d.redc(acc), "x0", 16 * i)
 
     d.emit("add x0, x0, #64")
     d.emit("add x1, x1, #64")

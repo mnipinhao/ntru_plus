@@ -58,6 +58,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P28 | Done — second target not justified | Does a per-microarchitecture schedule pay? | **A76: scheduling worth ~10%, target choice irrelevant** (2,744 vs 2,739). **M2 Pro: all three identical** at ~278 ns. SLOTHY's M1 model predicts 81 cycles/group where Apple silicon measures 25. Evidence in `gt1152-p28-cross-target/` |
 | P29 | Done | SUPERCOP after the assembly and scheduling work | **GT 109,446 vs official 111,401, -1.75%** — GT is now faster under SUPERCOP's own measurement, from +28.2% at G9 and +0.68% at P20. Per operation keygen **-3.13%**, enc **-1.87%**, dec **-1.75%**; the q1 sum is -2.26% against the profiler's -2.29%. Evidence in `gt1152-p29-supercop-final/` |
 | P30 | Done | Survey `poly_frombytes`, the last losing component | **P19's "structural, ~100% of floor" was wrong on both counts.** It was at 90%, and one of four per-lane operations was avoidable: reading each block as eight 16-bit windows instead of four 24-bit ones lets one `ushl` with a per-lane count replace `ushr` + `uzp1`. **723 -> 645; +895 -> +599; KEM -2.29% -> -2.51%.** Evidence in `gt1152-p30-frombytes-survey/` |
+| P31 | Done | Was D7's normalization ever needed? | **No.** Its 2752 bound assumed inputs on [0,4095], but the only caller aborts unless both `poly_frombytes` decode, so inputs are canonical and the bound is 2458 < 2497. Removing it: `poly_basemul_rinv` **+227 -> -142**, decaps -2.21% -> **-2.75%**, KEM **-2.69%**. Evidence in `gt1152-p31-basemul-rinv-bound/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -72,7 +73,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | D4 | Milestone 1 uses no Slothy at all | The reused inverse cores keep their 864 schedule (see D6); new degree-4 arithmetic is written as NEON intrinsics C, exactly as 864's production `base.c` is | 2026-09-17 |
 | D5 | Pack/unpack starts from the simple stock-shaped codec | 864's 7,751 lines of routing exist only to work around degree-3 lane misalignment, which 1152 does not have. G9's profile decides whether more is needed | 2026-09-17 |
 | D6 | **Corrected by G6.** Immediate remap works for `packed_i9` and `invntt16_asm` only. `invntt16_tail_asm` must grow from 96 to 128 outputs | Static `strh` counts: 864 is 6x128 + 96 = 864; 1152 needs 8x128 + 128 = 1152. The first two kernels are driven by a per-component loop so their per-call work is invariant; the tail is called once and covers all components, so its work grows with the component count. The original reasoning (component count and total both grow 4/3) only applies to the per-component kernels. Mitigating: the tail's vector arithmetic is already eight-lane and matches the main kernel's (309 vs 311 ops), so the two lanes 864 leaves as padding already hold correct results - the gap is exactly 32 umov/strh pairs | 2026-09-17, corrected 2026-09-17 |
-| D7 | **Resolved: add one `barrett_reduce` at `basemul_rinv` output.** 1152's output is ≤ 2752 against 864's ≤ 2497 inverse input contract (ratio 1.102); barrett brings it to `[−1729,1728]`, tighter than 2497 | The 864 inverse chain (I9 2617, I16 21397, ternary 5143) then holds a fortiori instead of needing re-derivation. Sound because the inverse operates on the 288-point transform — leaf degree changes bank and component counts, but every coefficient passes the same butterfly network, so its bound chain depends only on input magnitude, not leaf degree. Cost ~3–4 instructions per vector over 36 tiles, Decaps-only. Re-deriving at 2752 is deferred to M2 | 2026-09-17 |
+| D7 | **Withdrawn by P31.** The normalization it added was never needed: its 2752 output bound assumed inputs on [0,4095], but the only caller guarantees canonical inputs, for which the bound is 2458, inside the 2497 contract | **Resolved: add one `barrett_reduce` at `basemul_rinv` output.** 1152's output is ≤ 2752 against 864's ≤ 2497 inverse input contract (ratio 1.102); barrett brings it to `[−1729,1728]`, tighter than 2497 | The 864 inverse chain (I9 2617, I16 21397, ternary 5143) then holds a fortiori instead of needing re-derivation. Sound because the inverse operates on the 288-point transform — leaf degree changes bank and component counts, but every coefficient passes the same butterfly network, so its bound chain depends only on input magnitude, not leaf degree. Cost ~3–4 instructions per vector over 36 tiles, Decaps-only. Re-deriving at 2752 is deferred to M2 | 2026-09-17 |
 
 ## Structural findings that the port rests on
 
@@ -1401,6 +1402,57 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   `poly_frombytes` is +599 where it was +895. Every package gate green and the
   codec's seven oracle checks pass unchanged, including the 3,456-case canonical
   rejection sweep, which a wrong unpack index would break first.
+
+- **P31 done. D7's normalization was never needed.**
+  `experiments/gt1152-p31-basemul-rinv-bound/`.
+
+  P24 found the official's `poly_basemul_scale` issues an identical multiply
+  multiset and differs only by having no reduction, and concluded the rest was
+  scheduling. P27 scheduled it, leaving +227. **That +227 was D7's
+  normalization, and D7's premise was wrong.**
+
+  D7 added it because the output was bounded at 2752, above the inverse's
+  inherited 2497 contract. **That 2752 assumes inputs on [0,4095]**, which is
+  what `inverse.h` declared -- and the declaration was looser than the truth. The
+  only caller is decapsulation, which calls `poly_frombytes` three times under a
+  short-circuiting `||` and aborts on any failure; `poly_frombytes` rejects any
+  coefficient `>= q`. So both operands are **canonical**.
+
+  With `|a|,|b| <= q-1` the accumulator is at most `4(q-1)^2 = 47,775,744` and
+  the signed Montgomery bound is `q/2 + 4(q-1)^2/2^16 = 1728.5 + 729.0 = 2458`,
+  inside the contract with 39 to spare, so the 864 chain still holds a fortiori
+  and **nothing is re-derived**. Probed over 20,000 trials on that domain
+  including the all-`q-1` case: **max output 2266**.
+
+  `inverse.h` and `inverse_asm.h` now state the canonical precondition instead of
+  [0,4095] -- the actual change is a declaration corrected to match what the
+  caller already guarantees.
+
+  The kernel loses 24 operations a group, so the clean source went 126 -> 98
+  instructions and SLOTHY re-solved in 191s.
+
+  | | cycles |
+  |---|---:|
+  | with normalization, scheduled (P27) | 2,744 |
+  | intrinsics C, no normalization | 2,485 |
+  | **scheduled, no normalization** | **2,379** |
+  | official | 2,551 |
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | keygen | 64,044 | 62,046 | -3.12% | -3.19% |
+  | encaps | 59,547 | 58,248 | -2.18% | -2.05% |
+  | **decaps** | 52,496 | **51,051** | **-2.75%** | -2.21% |
+  | **total** | **176,087** | **171,345** | **-2.69%** | -2.51% |
+
+  `poly_basemul_rinv` is **-142** where it was +227. Of the three components
+  still losing, `basemul_rinv` is now a win, `frombytes` is +599 with ~69 cycles
+  a call of scheduling left and then a minimal transpose, and `hash_g_fr0`'s
+  +1,090 is M2-1's territory.
+
+  **Worth recording separately: a declared contract looser than the caller's
+  actual guarantee cost 227 cycles, and three gates reasoned from the
+  declaration without checking it against the call site.**
 
 ## Standing rules
 
