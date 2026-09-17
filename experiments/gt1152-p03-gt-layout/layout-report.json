@@ -1,0 +1,117 @@
+{
+  "measured_864": {
+    "formula": "top*432 + row*48 + halfcol*24 + component*8 + lane",
+    "components": 3,
+    "row_stride_int16": 48,
+    "halfcol_stride_int16": 24,
+    "top_stride_int16": 432,
+    "store_stride_bytes": 96
+  },
+  "predicted_1152": {
+    "formula": "top*576 + row*64 + halfcol*32 + component*8 + lane",
+    "components": 4,
+    "row_stride_int16": 64,
+    "halfcol_stride_int16": 32,
+    "top_stride_int16": 576,
+    "store_stride_bytes": 128,
+    "banks": 8,
+    "bank_base_bytes": [
+      0,
+      256,
+      512,
+      768,
+      1024,
+      1280,
+      1536,
+      1792
+    ],
+    "tail_base_bytes": 2048,
+    "scratch_bytes": 2304
+  },
+  "checks": [
+    {
+      "check": "864/layout_is_bijection",
+      "pass": true,
+      "detail": "index = top*432 + row*48 + halfcol*24 + component*8 + lane covers 0..863 exactly once"
+    },
+    {
+      "check": "1152/layout_is_bijection",
+      "pass": true,
+      "detail": "index = top*576 + row*64 + halfcol*32 + component*8 + lane covers 0..1151 exactly once"
+    },
+    {
+      "check": "zetas_identical",
+      "pass": true,
+      "detail": "reference zetas[288] agree between 864 and 1152"
+    },
+    {
+      "check": "864/basemul_zetas_matches_measured_permutation",
+      "pass": true,
+      "detail": "base_tables.h equals the reference leaf zetas reordered by the measured GT permutation, an independent confirmation of both"
+    },
+    {
+      "check": "1152/basemul_zetas_transfers_verbatim",
+      "pass": true,
+      "detail": "the same table is correct for 1152, so base_tables.h is copied unchanged"
+    }
+  ],
+  "pack_scatter": {
+    "864": {
+      "leaf_indices": [
+        0,
+        48,
+        96,
+        16,
+        64,
+        112,
+        32,
+        80
+      ],
+      "natural_coefficient_starts": [
+        0,
+        48,
+        96,
+        144,
+        192,
+        240,
+        288,
+        336
+      ],
+      "gaps": [
+        48
+      ],
+      "int16_per_leaf": 3,
+      "bytes_per_leaf_stored": 6,
+      "bytes_per_leaf_packed_12bit": 4.5
+    },
+    "1152": {
+      "leaf_indices": [
+        0,
+        48,
+        96,
+        16,
+        64,
+        112,
+        32,
+        80
+      ],
+      "natural_coefficient_starts": [
+        0,
+        64,
+        128,
+        192,
+        256,
+        320,
+        384,
+        448
+      ],
+      "gaps": [
+        64
+      ],
+      "int16_per_leaf": 4,
+      "bytes_per_leaf_stored": 8,
+      "bytes_per_leaf_packed_12bit": 6.0
+    }
+  },
+  "pass": true
+}

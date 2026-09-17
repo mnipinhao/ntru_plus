@@ -1,0 +1,58 @@
+{
+  "constant": 621199,
+  "q": 3457,
+  "c_times_q_minus_2_31": 1295,
+  "relative_error": 6.030313670635223e-07,
+  "bounds": {
+    "frombytes [0,4095]": {
+      "widest_accumulator": 67076100,
+      "bound": 1768.9489922802895
+    },
+    "measured GT forward +/-15951": {
+      "widest_accumulator": 1017737604,
+      "bound": 2342.2276986520737
+    },
+    "degree-4 headroom 22551": {
+      "widest_accumulator": 2034190404,
+      "bound": 2955.180620191619
+    },
+    "full int32": {
+      "widest_accumulator": 2147483647,
+      "bound": 3023.4999993969686
+    },
+    "int32 accumulator limit": {
+      "widest_accumulator": 2147481919,
+      "bound": 3023.4989573587663
+    }
+  },
+  "ntruplus864_documented_degree3": 2911,
+  "sampled_worst_output": 3019,
+  "checks": [
+    {
+      "check": "reciprocal_shape",
+      "pass": true,
+      "detail": "C*Q = 2147484943 = 2^31 + 1295, so the quotient estimate carries a relative error of 1295/2^31 = 6.030314e-07"
+    },
+    {
+      "check": "transfers_at_every_width",
+      "pass": true,
+      "detail": "the Barrett output fits int16 at every reachable accumulator width, peaking at 3023.5 even over the whole int32 range"
+    },
+    {
+      "check": "qhat_times_q_fits_int32_over_reachable_accumulators",
+      "pass": true,
+      "detail": "|qhat*Q| stays below 2^31 only for |x| <= 2147481919 (100.000% of int32); the widest reachable degree-4 accumulator is 2034190404, inside it with 113291515 to spare"
+    },
+    {
+      "check": "congruence",
+      "pass": true,
+      "detail": "x - qhat*Q stays congruent to x mod q over 160015 samples spanning every reachable domain and both ends of the accumulator limit"
+    },
+    {
+      "check": "sampled_within_analytic",
+      "pass": true,
+      "detail": "largest sampled |out| = 3019 <= analytic 3023.5 at the accumulator limit"
+    }
+  ],
+  "pass": true
+}

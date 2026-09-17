@@ -45,11 +45,43 @@ representations:
   output: canonical 12-bit little-endian wire encoding, two coefficients per 3 bytes
   canonical_or_bounded: canonical at the wire boundary
 ranges:
-  status: not established for degree-4 arithmetic
+  status: leaf arithmetic established by G2; transform bounds pending G3
+  established_by: experiments/gt1152-p02-degree4-bounds/bounds-report.json
+  leaf_zeta: [-1727, 1727]
+  int32_overflows: 0
+  int16_violations: 0
+  basemul_rinv:
+    frombytes_x_frombytes: 2752     # decapsulation first product, [0,4095]^2
+    reference_ntt: 1913
+    decaps_sub_x_frombytes: 3184
+    gt_forward: 17258               # over the measured forward range +/-15951
+    widest_coefficient: r3 = a0b3+a1b2+a2b1+a3b0, four direct products, no zeta fold
+  basemul: 1764
+  basemul_add: 1768
+  baseinv: 1781
+  gt_forward_output:
+    measured_864: 15951
+    measured_1152: 14607
+    status: observed, not proved
+    source: experiments/gt1152-p04-forward-8bank/forward-bound.json
+    note: >
+      An earlier version of this file cited 4577 as the forward bound. That was
+      wrong: 4577 is the raw ternary-consumer limit in NTRU+864's inverse chain
+      (2497/2617/21397/4577). G3b measured the real value by running both
+      kernels over the [-3,4] input contract.
+  headroom:
+    degree_3_max_input: 26039
+    degree_4_max_input: 22551
+    margin_over_measured_forward: 1.41
+  pending:
+    inverse_chain: >
+      Inherited from NTRU+864 (I9 2617, I16 21397, ternary consumer 5143) under
+      the D7 normalization, and re-verified in G6.
   note: >
     Every NTRU+864 bound (Barrett reciprocal 621199 with [-2911,2911], I9 2617,
-    I16 21397, raw 4577, ToBytes small [-3023,3023]) is proved for degree-3
-    accumulators and does not transfer. G2 owns the degree-4 bound chain.
+    I16 21397, raw ternary 4577, ToBytes small [-3023,3023]) is proved for degree-3
+    accumulators. The G2 model reproduces 864's documented 2497 as 2496 when run
+    at degree 3, which is how the method was validated before use at degree 4.
 security:
   secret_operands: [f, g, r, m, sk]
   public_operands: [pk, ct]

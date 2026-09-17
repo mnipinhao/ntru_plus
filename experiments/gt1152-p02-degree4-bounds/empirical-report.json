@@ -1,0 +1,113 @@
+{
+  "iterations": 2,
+  "observed": {
+    "baseinv/in0": {
+      "lo": -1728,
+      "hi": 1726,
+      "abs_max": 1728
+    },
+    "baseinv/out": {
+      "lo": -1751,
+      "hi": 1746,
+      "abs_max": 1751
+    },
+    "baseinv/zeta": {
+      "lo": -1727,
+      "hi": 1727,
+      "abs_max": 1727
+    },
+    "basemul/in0": {
+      "lo": -1728,
+      "hi": 5108,
+      "abs_max": 5108
+    },
+    "basemul/in1": {
+      "lo": -1751,
+      "hi": 3456,
+      "abs_max": 3456
+    },
+    "basemul/out": {
+      "lo": -1742,
+      "hi": 1742,
+      "abs_max": 1742
+    },
+    "basemul/zeta": {
+      "lo": -1727,
+      "hi": 1727,
+      "abs_max": 1727
+    },
+    "basemul_add/in0": {
+      "lo": 2,
+      "hi": 3454,
+      "abs_max": 3454
+    },
+    "basemul_add/in1": {
+      "lo": -1724,
+      "hi": 1727,
+      "abs_max": 1727
+    },
+    "basemul_add/in2": {
+      "lo": -1726,
+      "hi": 1727,
+      "abs_max": 1727
+    },
+    "basemul_add/out": {
+      "lo": -1746,
+      "hi": 1740,
+      "abs_max": 1746
+    },
+    "basemul_add/zeta": {
+      "lo": -1727,
+      "hi": 1727,
+      "abs_max": 1727
+    },
+    "montgomery_reduce/input": {
+      "lo": -13235821,
+      "hi": 34493959,
+      "abs_max": 34493959
+    },
+    "montgomery_reduce/output": {
+      "lo": -1844,
+      "hi": 2081,
+      "abs_max": 2081
+    }
+  },
+  "checks": [
+    {
+      "key": "basemul/out",
+      "observed_abs_max": 1742,
+      "analytic_bound": 1961,
+      "within": true,
+      "note": "widest analytic basemul/basemul_add bound"
+    },
+    {
+      "key": "basemul_add/out",
+      "observed_abs_max": 1746,
+      "analytic_bound": 1961,
+      "within": true,
+      "note": "widest analytic basemul/basemul_add bound"
+    },
+    {
+      "key": "baseinv/out",
+      "observed_abs_max": 1751,
+      "analytic_bound": 1826,
+      "within": true,
+      "note": "widest analytic baseinv bound"
+    },
+    {
+      "key": "montgomery_reduce/output",
+      "observed_abs_max": 2081,
+      "analytic_bound": 32767,
+      "within": true,
+      "note": "must fit int16"
+    },
+    {
+      "key": "montgomery_reduce/input",
+      "observed_abs_max": 34493959,
+      "analytic_bound": 2147483647,
+      "within": true,
+      "note": "must fit int32"
+    }
+  ],
+  "pass": true
+}
