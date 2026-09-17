@@ -23,7 +23,7 @@ fi
 mkdir "$target_dir"
 for name in \
 	KeccakP-1600-AVX2.s KeccakP-1600-SnP.h \
-	Makefile \
+	LICENSE Makefile \
 	add.s api.h architectures baseinv.c baseinv.h baseinv_impl.inc \
 	baseinv_tables.inc basemul.h basemul.s batch_inverse.s cbd.s consts.c \
 	consts.h crepmod3.s decap.c encap.c fips202.c fips202.h goal-constbranch \

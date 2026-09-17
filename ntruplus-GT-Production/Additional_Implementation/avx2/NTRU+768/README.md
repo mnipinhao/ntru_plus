@@ -1,9 +1,9 @@
 # NTRU+768 AVX2 GT Clean implementation
 
 This directory is the production-shaped source root of the fastest qualified
-GT implementation.  It follows SUPERcop's flat implementation layout.  The
-`experiments/` subdirectory is archival research material and is not part of
-the production source list.
+GT implementation.  It follows SUPERcop's flat implementation layout.  It
+carries the promoted source closure only; the numbered research archive that
+selected it is not part of this release package.
 
 The public API is unchanged:
 
@@ -55,19 +55,19 @@ TF1, B3-final-store-add, sidecar, streaming Q24-to-B3, and arbitrary
 linker-padding variants. A candidate enters this directory only after it is
 selected as a whole-operation component.
 
-The numbered research archive and its current architecture-closure summary are
-documented in [`experiments/README.md`](experiments/README.md).
+The numbered research archive and its architecture-closure summary are kept
+on the AVX2 development branch, outside this release tree.
 
-The frozen Official implementation is not duplicated here.  Local tests and
-KAT harnesses are taken from:
+The frozen Official implementation is not duplicated here.  The functional
+test, the KAT generator, and `randombytes` are vendored from the Official
+NTRU+ AVX2 tree into `test/`, `kat/`, and this directory, so validation does
+not link to another source tree.  `LICENSE` is the upstream NTRU+ MIT license
+covering that vendored material.
 
-```text
-../../../../third_party/NTRUplus-official-main/Additional_Implementation/avx2/NTRU+768
-```
-
-`make check` builds and runs the GT Clean functional test and KAT generator
-using that frozen third-party harness.  Production source files remain the
-flat files in this directory.
+`make check` verifies the source closure against `SHA256SUMS`, builds and runs
+the GT Clean functional test, regenerates the known-answer files, and compares
+them against the Official vectors in `kat/expected/`.  Production source files
+remain the flat files in this directory.
 
 ## Link-time constant-table closure
 
