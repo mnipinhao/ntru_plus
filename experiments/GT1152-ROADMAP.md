@@ -48,6 +48,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P18 | Done | Rewrite the serializer with the permutation in registers, 864's way | **Serialize +10,909 -> +911; whole KEM +7.9% -> +1.8%; encaps now -1.0%, faster than the official.** Byte-identical to P12 on all four entry points; all 7 oracle checks and every package gate pass. Evidence in `gt1152-p18-codec-registers/` |
 | P20 | Done | Fresh SUPERCOP measurement, superseding G9 | **GT 112,107 vs official 111,351, +0.68%** under SUPERCOP's own measurement, down from G9's +28.2%; encaps **-1.77%**. Agrees with the profiler to within 0.2pp on every operation. Evidence in `gt1152-p20-supercop-fresh/` |
 | P19 | Done — asm rejected | Should the serializer be hand-written in assembly? | **No.** Measured issue floor puts the codec at 90-100%; scheduling is worth under 10%. Cutting instructions instead took **serialize +911 -> -1,034 and the KEM +1.8% -> +0.65%**, encaps -1.97%. Evidence in `gt1152-p19-serializer-floor/` |
+| P21 | Done — analysis | Where is the remaining deficit, per operation? | **Only decaps loses.** keygen +454 (all of it `baseinv`, which is keygen-only), encaps -1,271, decaps +2,085. The C `invntt16_tail` measures **1,469 cycles** alone, against 864's 592-instruction assembly; `poly_sotp_decode` is 2.6x the official because it does 144 horizontal reductions where the official uses a bit-transpose. Evidence in `gt1152-p21-decaps-targets/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -869,6 +870,43 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   The 28.2% closed to 0.68% with **no change to any assembly** -- P12, P13, P18
   and P19 are all C. NTRU+864 for scale stood at -3.95% before its hash campaign
   and reached -11%/-21%/-13% after it; 1152's hash is still the generic sponge.
+
+- **P21 done, the next targets identified.** `experiments/gt1152-p21-decaps-targets/`.
+
+  P19's aggregate ranked `baseinv` (+2,406) first. Per operation that is
+  misleading: **`baseinv` is keygen-only, and keygen is the operation least
+  behind.** keygen +454 attributed (SUPERCOP +1.17% q1), encaps -1,271 (-1.77%),
+  **decaps +2,085 (+3.29%)** -- decapsulation is the only operation still losing.
+
+  Decaps, component by component: `poly_invntt_ternary` 7,433 against
+  `poly_invntt` + `poly_crepmod3` 6,299 (**+1,134**); `poly_sotp_decode` 1,343
+  against 508 (**+835**); `poly_basemul_rinv` 3,385 against `poly_basemul_scale`
+  2,551 (**+834**); `poly_frombytes` +663; against `poly_ntt` -869 and
+  `poly_basemul` -263.
+
+  **Two new measurements.** The C `invntt16_tail` costs **1,469 cycles per call**
+  standalone -- more than the entire inverse deficit. 864's `inverse16_tail.S` is
+  592 instructions with a Slothy estimate of 147 cycles, and D6 already
+  established that 1152 needs the *same* vector arithmetic plus exactly 32
+  `umov`/`strh` pairs (96 outputs to 128), so it is 656 instructions of
+  known-correct arithmetic rather than a re-derivation.
+
+  And the cause of `poly_sotp_decode`'s 2.6x: P13's version does a horizontal
+  `vaddvq_u16` **per output byte**, 144 of them, packing eight 0/1 lanes by
+  multiplying by `{1,2,...,128}` and reducing. The official's `cbd.s` has no
+  horizontal reduction at all -- `sqxtn` to narrow, a bit-transpose network
+  (`trn` at .4s, .8h, .16b), then `add`/`shl`/`orr`. The same substitution P18
+  made in the codec.
+
+  `poly_frombytes` (+663) is **not a target**: P19 measured it at its issue
+  floor, the cost being the Good-Thomas permutation the official never performs.
+
+  **Recommended order:** `invntt16_tail` to assembly (largest, measured, shaped
+  by D6, and D8's declared plan), then `poly_sotp_decode` (cheapest, no new
+  mathematics), then `poly_basemul_rinv` (M2-2, the first Slothy gate). If all
+  three reach parity decaps goes from +2,085 to roughly -900 and every operation
+  beats the official before the hash campaign. `baseinv` follows, to turn
+  keygen's +454 into a clear win.
 
 ## Standing rules
 
