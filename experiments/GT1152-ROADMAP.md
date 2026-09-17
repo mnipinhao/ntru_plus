@@ -56,6 +56,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P26 | Done | `baseinv`: split the batch inversion into three chains | Serial phase **1,928 -> 1,191**; `poly_baseinv` **+2,397 -> +850**; **keygen +1.09% -> -1.65%**, **KEM -0.53% -> -1.55%**. **All three operations now beat the official.** Evidence in `gt1152-p26-baseinv-ilp/` |
 | P27 | Done — **first SLOTHY run of this campaign** | M2-2: schedule `basemul_rinv` | **3,054 -> 2,744 cycles**; `poly_basemul_rinv` +634 -> **+232**; decaps -0.86% -> **-1.68%**; KEM -1.55% -> **-1.79%**. Byte-identical to the C oracle over 4,000 trials. Evidence in `gt1152-p27-slothy-basemul-rinv/` and `dev/` |
 | P28 | Done — second target not justified | Does a per-microarchitecture schedule pay? | **A76: scheduling worth ~10%, target choice irrelevant** (2,744 vs 2,739). **M2 Pro: all three identical** at ~278 ns. SLOTHY's M1 model predicts 81 cycles/group where Apple silicon measures 25. Evidence in `gt1152-p28-cross-target/` |
+| P29 | Done | SUPERCOP after the assembly and scheduling work | **GT 109,446 vs official 111,401, -1.75%** — GT is now faster under SUPERCOP's own measurement, from +28.2% at G9 and +0.68% at P20. Per operation keygen **-3.13%**, enc **-1.87%**, dec **-1.75%**; the q1 sum is -2.26% against the profiler's -2.29%. Evidence in `gt1152-p29-supercop-final/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -1298,6 +1299,53 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   from a model that mispredicts by three. The tree keeps the capability; nothing
   ships. The multi-target structure still earned its place -- it is what made
   this measurable rather than a guess.
+
+- **P29 done. GT beats the official under SUPERCOP.**
+  `experiments/gt1152-p29-supercop-final/`.
+
+  P20 measured +0.68%. Since then P22, P23, P24, P26, P27 and the two scheduled
+  `baseinv` loops landed.
+
+  | implementation | cycles | P20 | G9 |
+  |---|---:|---:|---:|
+  | **`aarch64-gt1152`** | **109,446** | 112,107 | 142,741 |
+  | `aarch64` (official) | 111,401 | 111,351 | 111,341 |
+  | `opt` | 193,469 | 193,424 | 193,389 |
+  | `ref` | 297,624 | 297,517 | 297,607 |
+
+  **GT -1,955 cycles, -1.75%.** The official has moved by 60 cycles in 111,341
+  across all three runs, 0.05%, so the measurement is stable and the whole change
+  is GT's. The campaign reads **+28.2% -> +0.68% -> -1.75%**.
+
+  GT won selection this time, so the all-implementations run's detailed records
+  are GT's; a third round with the official isolated gives both sides from the
+  same session.
+
+  | operation | stat | official | GT | % |
+  |---|---|---:|---:|---:|
+  | keypair | **q1** | 57,262 | **55,472** | **-3.13%** |
+  | **enc** | q1/med/q3 | 59,016 | **57,915** | **-1.87%** |
+  | **dec** | q1/med/q3 | 52,485 | **51,565** | **-1.75%** |
+
+  enc and dec are flat across all three quartiles. Keypair is still read at q1
+  for P20's reason: keygen retries on a non-invertible sample, so the median and
+  q3 move with a run's retry count.
+
+  **Agreement with the component profiler**: keygen -3.09% vs -3.13%, encaps
+  -1.98% vs -1.87%, decaps -1.67% vs -1.75%, **total -2.29% vs -2.26%** — within
+  0.11 percentage points on every operation and 0.03 on the total. That total is
+  the sum of the three q1 figures, 168,763 against 164,952, not the selection
+  metric, which is a single aggregate weighted differently and reads -1.75%.
+
+  **Two things SUPERCOP's build does differently**, now handled by
+  `refresh_leaf.py`: it compiles every source in the directory with its own
+  flags, so the `NTRUPLUS1152_ASM_*` selectors are prepended to the leaf's
+  `inverse.c` rather than passed on the command line -- verified by `inverse.o`
+  carrying the three kernel names as undefined symbols, which only happens when
+  they are active; and the leaf's lowercase `.s` is assembled without the
+  preprocessor, so `#ifdef __APPLE__` becomes a second `.global` and a second
+  label. The leaf was test-compiled first: 20 objects, no errors, all four
+  kernel symbols defined.
 
 ## Standing rules
 
