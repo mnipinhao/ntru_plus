@@ -1,0 +1,31 @@
+{
+  "cases": 10,
+  "basemul_rinv_observed": {
+    "lo": -1727,
+    "hi": 1728
+  },
+  "d7_target": 1729,
+  "checks": [
+    {
+      "check": "baseinv_matches_oracle",
+      "pass": true,
+      "detail": "10 cases, including exact out==in aliasing (3 were non-invertible and checked for rc=1 plus a zeroed output)"
+    },
+    {
+      "check": "basemul_rinv_scale",
+      "pass": true,
+      "detail": "out * R is congruent to the R0 basemul for every coefficient, and exact aliasing reproduces the non-aliased result"
+    },
+    {
+      "check": "d7_normalization",
+      "pass": true,
+      "detail": "basemul_rinv output observed in [-1727, 1728], inside the [-1729,1728] Barrett range and so inside NTRU+864's 2497 inverse input contract"
+    },
+    {
+      "check": "noninvertible_rejected",
+      "pass": true,
+      "detail": "an all-zero transform-domain input returns 1 and leaves the output entirely zero"
+    }
+  ],
+  "pass": true
+}

@@ -1,0 +1,57 @@
+{
+  "source": "ntruplus-GT-Production/Additional_Implementation/aarch64/NTRU+864/inverse.S",
+  "rules": [
+    {
+      "why": "scratch: 8 banks x 256 + 256 tail",
+      "occurrences": 1
+    },
+    {
+      "why": "matching restore",
+      "occurrences": 1
+    },
+    {
+      "why": "tail padding base",
+      "occurrences": 1
+    },
+    {
+      "why": "tail scratch base",
+      "occurrences": 2
+    },
+    {
+      "why": "tail lane stride: 2 tops x 4 branches fills all eight lanes",
+      "occurrences": 1
+    },
+    {
+      "why": "GT input top stride",
+      "occurrences": 1
+    },
+    {
+      "why": "GT input half-column stride",
+      "occurrences": 1
+    },
+    {
+      "why": "packed_i9 component count",
+      "occurrences": 1
+    },
+    {
+      "why": "natural-order half stride: 4 m-values x 4 branches x 2 bytes",
+      "occurrences": 1
+    },
+    {
+      "why": "invntt16 component count",
+      "occurrences": 1
+    },
+    {
+      "why": "tail output base: 4*8*2 bytes",
+      "occurrences": 1
+    },
+    {
+      "why": "wipe iterations: 18 x 128 = 2304",
+      "occurrences": 1
+    },
+    {
+      "why": "comment",
+      "occurrences": 1
+    }
+  ]
+}

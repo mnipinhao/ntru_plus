@@ -31,10 +31,12 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | G3a | Done | Measure the GT transform-domain layout | 864 GT forward built and run on the local arm64 host; permutation is a bijection, exact mod q with no scale factor, stable over 6 random inputs, and independently confirmed by `base_tables.h`. 1152 layout derived. Evidence in `gt1152-p03-gt-layout/` |
 | G3b | Done | Forward NTT eight-bank port (`ntt_top.S`, `ntt_tail.S`, `ntt9.S`, `ntt.S`) | 24 cases x 1152 coefficients match the G1 oracle under the predicted layout, which simultaneously confirms the transform, the layout formula and the permutation; forward output bound measured and fed back into G2. Evidence in `gt1152-p04-forward-8bank/` |
 | G4 | Done | Degree-4 `basemul` / `basemul_add` (NEON intrinsics C) | 14 cases x 6 modes x 1152 coefficients match the G1 oracle, including every aliasing pattern; NTRU+864's Barrett reciprocal re-proved for the degree-4 accumulator union. Evidence in `gt1152-p05-basemul/` |
-| G5 | Active | Degree-4 `basemul_rinv` and BaseInv | Oracle differential; non-invertible-input failure path constant-time and zeroizing; alias and wipe |
-| G6 | Next | Inverse NTT immediate remap (`inverse9.S`, `inverse16.S`, `inverse16_tail.S`, `inverse.S`) | Instruction-multiset audit shows zero difference from 864 except declared immediates; bounds re-verified at the G2 input contract; oracle differential exact |
-| G7 | Next | Pack / unpack for the degree-4 layout | Exact byte oracle including every output byte position corrupted independently; canonical and malformed rejection; alias |
-| G8 | Next | KEM assembly and KAT — the correctness milestone | `make check` green on Pi 5: manifest, KEM, canonical, zeroization, KAT byte-identical, export self-check |
+| G5 | Done | Degree-4 `basemul_rinv` and BaseInv | Matches the G1 oracle over 10 cases with exact aliasing; D7 normalization applied and measured; reject path returns 1 with a zeroed output. Evidence in `gt1152-p06-baseinv/`. **Owed:** a targeted per-leaf failure suite equivalent to 864's 808 cases |
+| G6a | Done | Establish whether the inverse Slothy artifacts can be remapped | NTRU+864's chain validated end to end on the local host; per-call accounting settles D6; immediate maps derived for the two kernels that transfer. Evidence in `gt1152-p07-inverse/` |
+| G6b | Done | Port the inverse NTT | Full decapsulation chain `forward -> basemul_rinv -> invntt_ternary` equals `crepmod3(schoolbook)` over 16 cases x 1152 coefficients. Evidence in `gt1152-p08-inverse-port/` |
+| G7 | Done | Pack / unpack for the degree-4 layout | 7 checks: exact wire bytes over every int16 extreme, round trip, 3456-case canonical rejection sweep, constant-time compare. Evidence in `gt1152-p09-pack/` |
+| G8a | Done | KEM assembly and KAT, local | **KAT reproduced byte for byte** (sha256 `2ddfc810c4...64c3`) plus 64 KEM round trips with tampered rejection, on macOS/arm64. Evidence in `gt1152-p10-kem/` |
+| G8b | Active | Release gates on Linux/AArch64 | manifest, ABI sentinels, package canonical sweep, zeroization, deterministic SUPERCOP export, and the per-leaf non-invertibility suite owed since G5 |
 | G9 | Next | SUPERCOP packaging and first honest measurement | SUPERCOP accepts the scheme (not `unknown`); stabilized quartiles against official 1152 on one host, compiler and SUPERCOP revision |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -48,7 +50,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | D3 | Performance baseline is SUPERCOP official 1152 | Matches how 864's P58 claim is stated; the only basis valid for an external claim | 2026-09-17 |
 | D4 | Milestone 1 uses no Slothy at all | The reused inverse cores keep their 864 schedule (see D6); new degree-4 arithmetic is written as NEON intrinsics C, exactly as 864's production `base.c` is | 2026-09-17 |
 | D5 | Pack/unpack starts from the simple stock-shaped codec | 864's 7,751 lines of routing exist only to work around degree-3 lane misalignment, which 1152 does not have. G9's profile decides whether more is needed | 2026-09-17 |
-| D6 | Inverse NTT is an immediate remap, not a reschedule | Per-call work is invariant: `invntt16_asm` handles 864/6 = 1152/8 = 144 coefficients either way; `packed_i9` handles 72 values either way. Instruction multiset unchanged, so the A76 schedule stays legal | 2026-09-17 |
+| D6 | **Corrected by G6.** Immediate remap works for `packed_i9` and `invntt16_asm` only. `invntt16_tail_asm` must grow from 96 to 128 outputs | Static `strh` counts: 864 is 6x128 + 96 = 864; 1152 needs 8x128 + 128 = 1152. The first two kernels are driven by a per-component loop so their per-call work is invariant; the tail is called once and covers all components, so its work grows with the component count. The original reasoning (component count and total both grow 4/3) only applies to the per-component kernels. Mitigating: the tail's vector arithmetic is already eight-lane and matches the main kernel's (309 vs 311 ops), so the two lanes 864 leaves as padding already hold correct results - the gap is exactly 32 umov/strh pairs | 2026-09-17, corrected 2026-09-17 |
 | D7 | **Resolved: add one `barrett_reduce` at `basemul_rinv` output.** 1152's output is ≤ 2752 against 864's ≤ 2497 inverse input contract (ratio 1.102); barrett brings it to `[−1729,1728]`, tighter than 2497 | The 864 inverse chain (I9 2617, I16 21397, ternary 5143) then holds a fortiori instead of needing re-derivation. Sound because the inverse operates on the 288-point transform — leaf degree changes bank and component counts, but every coefficient passes the same butterfly network, so its bound chain depends only on input magnitude, not leaf degree. Cost ~3–4 instructions per vector over 36 tiles, Decaps-only. Re-deriving at 2752 is deferred to M2 | 2026-09-17 |
 
 ## Structural findings that the port rests on
@@ -295,6 +297,143 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
     the last 1729 values. The widest reachable degree-4 accumulator is
     2034190404, inside with 113291515 to spare. Safe, but not unconditionally
     so: a lazier forward spends from this margin as well as from G2's 1.41x.
+
+- **G5 done.** `experiments/gt1152-p06-baseinv/`, `make check`.
+
+  - `baseinv` and `basemul_rinv` as NEON intrinsics C, matching the G1 oracle
+    under the GT layout over 10 cases, each also run with exact `out == in`
+    aliasing. 3 of the 10 inputs were genuinely non-invertible and returned 1
+    with a fully zeroed output; an all-zero transform input does the same.
+  - **Degree 4 is simpler than degree 3 here.** `X^4 - zeta` is a quadratic
+    tower (u = X^2, u^2 = zeta), so inversion is two nested quadratic
+    conjugations; degree 3 needs a cubic resultant. The `+,-,+,-` sign pattern
+    on the four outputs *is* that conjugation, deferred to the final scaling.
+  - **The scale trap was settled before writing C.** The batch inversion's
+    running multiply is `fqmul`, which is Montgomery and carries `R^-i` into the
+    prefix. Checked in Python against the oracle: the batch result is exactly
+    elementwise `fqinv`, because the `R` powers cancel across prefix, inversion
+    and walk-back; and separately, `fqinv(a) = a^-1` with no scale factor at
+    all. Getting this wrong would have produced a uniformly scaled, entirely
+    plausible-looking wrong answer.
+  - **D7 applied and measured.** `basemul_rinv` stops one Montgomery stage
+    before R0, so it carries the input magnitude through (G2: 2752 over the
+    decapsulation domain, above 864's 2497 contract). The `barrett_reduce`
+    brings it to `[-1729,1728]`, observed here as `[-1727,1728]`.
+  - Phases mirror 864's (numerator, prefix, inverse, recover, finish) so
+    assembly can be swapped in piece by piece. 864's 12-step x 3-chain split is
+    an ILP optimization and is left to a later gate; this uses 36 sequential
+    groups with one 8-lane inversion.
+
+  **Owed:** a targeted per-leaf non-invertibility suite equivalent to NTRU+864's
+  808-case failure/alias/wipe gate. G8 must not claim the failure path is
+  covered without it.
+
+- **G6a done.** `experiments/gt1152-p07-inverse/`, `make check`.
+
+  - **NTRU+864's decapsulation arithmetic chain validated end to end on this
+    host**: `forward -> basemul_rinv -> invntt_ternary` equals
+    `crepmod3(schoolbook product)` over 6 random ternary cases. This pins the
+    I/O contract before anything is remapped.
+  - **D6 is wrong about the tail.** Static `strh` counts give
+    `864 = 6x128 + 96` and `1152 = 8x128 + 128`, so `invntt16_tail_asm` must
+    produce 128 outputs where 864 produces 96. Its instruction multiset cannot
+    be preserved. `packed_i9` and `invntt16_asm` are unaffected - both are
+    driven by a per-component loop, so their per-call work really is invariant.
+  - **The damage is small.** The tail's vector arithmetic is already eight-lane
+    and essentially identical to the main kernel's (309 vs 311 ops): NTRU+864
+    computes all eight lanes and simply never stores two of them. The gap is
+    exactly `128 - 96 = 32 = 2 padding lanes x 16 t`, in `umov`/`strh` pairs.
+  - Immediate maps derived for the two kernels that do transfer:
+    `inverse9.S` needs one change, `[x2, #96k] -> [x2, #128k]`, the
+    Good-Thomas row stride; every other base uses 16-byte strides.
+    `inverse16.S` has all 128 `strh` offsets as multiples of 6 (the branch is
+    folded into the base pointer by the driver), so they scale by 8/6 exactly.
+    `inverse16_tail.S` decomposes as `6m + 2b` with `b` in 0..2, and 1152 needs
+    0..3 - which is exactly why its store count grows.
+
+  **Decision taken (D8):** rewrite the tail in intrinsics C for M1, assembly
+  still the target. Its structure was then measured rather than read.
+  `invntt16_tail_asm` emits raw values (`crepmod3_raw.S` does the ternary step),
+  so it is linear in its scratch input and recoverable by delta probes.
+  Findings: each bank reaches 32 outputs and banks overlap completely, because
+  the terminal does the alpha/beta inverse CRT; **the three branch maps are
+  byte-for-byte identical**; every column has exactly 32 non-zero entries at
+  output m indices that are all multiples of 9, the s=8 row. So the kernel is
+  three copies of one *2 banks x 16 t -> 32 outputs* map, and **1152 is the same
+  map run four times**. The map carries over unchanged because the 16-point
+  inverse and the CRT are leaf-degree independent and n/d = 288 for both. That
+  turns the rewrite from 1205 lines of Slothy output into a measured 32x32 map
+  per branch. Cost stated honestly: 1024 multiplies x 4 branches against 589
+  assembly instructions - correct, directly derived, and materially slower.
+
+- **G6b done.** `experiments/gt1152-p08-inverse-port/`, `make check`.
+
+  - **The whole NTRU+1152 decapsulation arithmetic chain runs**:
+    `forward -> basemul_rinv -> invntt_ternary` equals
+    `crepmod3(schoolbook product)` over 16 cases x 1152 coefficients, exactly,
+    against a model sharing no code with any of it.
+  - `inverse9.S` (8 offsets), `inverse16.S` (127 offsets) and `crepmod3_raw.S`
+    (loop 27 -> 36) are generated remaps with the instruction multiset asserted
+    unchanged. `inverse_ntt.S` is generated from 864's driver under 13 declared
+    rules. The driver stays assembly because `packed_i9` and `invntt16_asm`
+    clobber v8-v15; a C driver would violate AAPCS64.
+  - **Slothy annotations stripped, not carried over.** They describe the
+    schedule produced for 864; no solver ran for 1152. A first version of the
+    generator silently rewrote offsets inside those comments as well (256 strh
+    lines: 128 real, 128 commented) - stripping removes the problem instead of
+    papering over it.
+  - **The C tail came from measurement, not from reading solver output.** The
+    kernel emits raw values so it is linear; 128 delta probes recover it, and
+    superposition was checked to hold mod q on random inputs (not bit-exact,
+    because lazy reduction picks different representatives - congruence is what
+    the contract asks). Cost: 4096 multiply-accumulates against 589 assembly
+    instructions. Assembly stays the target.
+
+- **G7 done.** `experiments/gt1152-p09-pack/`, `make check`. Seven checks:
+  exact wire bytes over 17 cases including every int16 extreme and the measured
+  Forward bound; Small agreeing with Full on `(-q, q)`; round trip; a
+  **3456-case canonical rejection sweep** covering every one of the 1152
+  positions carrying each of `q`, `q+1`, `4095`; and a constant-time compare
+  that catches 256 sampled single-bit corruptions.
+
+  - Plain C with a table-lookup scatter, per D5 - not a port of 864's 7,751
+    lines and 111 Slothy windows. Those exist because degree-3 leaves are 6
+    bytes stored and 4.5 bytes packed, neither aligned. Degree 4 is 8 bytes
+    stored and 6 whole bytes packed. **The scatter itself does not improve**:
+    G3a measured a GT vector's eight leaves at natural starts 0, 64, ..., 448,
+    structurally identical to 864.
+  - Full and Small are genuinely different, not aliases. `kem.c` calls Full on
+    raw Forward output (+/-14607 per G3b), so it must reduce arbitrary int16;
+    Small is called on basemul/baseinv output bounded at 1764/1768/1781 by G2
+    and G4, so it only folds the sign bit.
+  - **A correction the gate produced:** `full_exact_bytes` failed first time and
+    the fault was in the test. The G1 oracle's `poly_tobytes` is the reference
+    serializer, defined only on `(-q, q)`; comparing Full against it over
+    arbitrary int16 was the wrong model. The right model is the canonical
+    representative of `x mod q`, and the oracle now cross-checks it where it is
+    defined.
+
+- **G8a done.** `experiments/gt1152-p10-kem/`, `make check`.
+
+  **A complete, runnable NTRU+1152 Good-Thomas KEM reproduces the checked-in
+  KAT byte for byte**, sha256 `2ddfc810c44f63f8d24086da7c33faf17d66c393f519a5b9cb76b0b7509464c3`,
+  the value recorded in G1's ring profile. 64 KEM round trips with tampered
+  ciphertext rejection also pass. This is Milestone 1's correctness milestone.
+
+  - `kem.c` and the symmetric/randombytes/secure_clear layer are verbatim from
+    the 864 package; `params.h` verbatim from the 1152 reference. The transform,
+    leaf arithmetic, inverse and codec come from G3b through G7.
+  - New here: `symmetric.c` (generic sponge, not 864's fixed-size
+    specialization - that is M2-1), `support.c` (cbd1, sotp, sub, triple,
+    transcribed from the 1152 reference) and `api_glue.c`. Headers were split
+    the way 864 splits them: `*_asm.h` for the raw-array kernels, `pack.h` and
+    `inverse.h` for the `poly *` API `kem.c` compiles against.
+  - **Scope:** this ran on macOS/arm64 and is not the 864 release gate. G8b owes
+    manifest, ABI sentinels, package-level canonical sweep, zeroization,
+    deterministic SUPERCOP export, and the per-leaf non-invertibility suite
+    outstanding since G5. A `-D__STDC_WANT_LIB_EXT1__=1` flag was needed for
+    `secure_clear` here; the Linux path should be confirmed, not assumed.
+  - Not promoted: this lives in `experiments/`, not in the GT-Production tree.
 
 ## Standing rules
 

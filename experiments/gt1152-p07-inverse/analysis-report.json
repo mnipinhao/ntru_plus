@@ -1,0 +1,115 @@
+{
+  "per_call_outputs": {
+    "packed_i9": 72,
+    "invntt16_asm": 128,
+    "invntt16_tail_asm": 96
+  },
+  "calls_864": {
+    "packed_i9": 12,
+    "invntt16_asm": 6,
+    "invntt16_tail_asm": 1
+  },
+  "calls_1152": {
+    "packed_i9": 16,
+    "invntt16_asm": 8,
+    "invntt16_tail_asm": 1
+  },
+  "required_tail_outputs_1152": 128,
+  "instruction_counts": {
+    "inverse9.S": {
+      "mov": 8,
+      "ldr": 27,
+      "dup": 7,
+      "sub": 24,
+      "sqrdmulh": 19,
+      "mul": 19,
+      "mls": 19,
+      "add": 21,
+      "trn1": 8,
+      "trn2": 8,
+      "str": 8,
+      "st1": 16,
+      "ret": 1
+    },
+    "inverse16.S": {
+      "ldr": 86,
+      "mov": 2,
+      "orr": 32,
+      "add": 64,
+      "sub": 32,
+      "dup": 2,
+      "mul": 49,
+      "sqrdmulh": 51,
+      "mls": 51,
+      "ext": 32,
+      "umov": 128,
+      "strh": 128,
+      "ret": 1
+    },
+    "inverse16_tail.S": {
+      "ldr": 86,
+      "mov": 1,
+      "dup": 1,
+      "orr": 32,
+      "sub": 32,
+      "add": 64,
+      "mul": 49,
+      "sqrdmulh": 50,
+      "mls": 50,
+      "ext": 32,
+      "umov": 96,
+      "strh": 96,
+      "ret": 1
+    }
+  },
+  "d6_holds": {
+    "packed_i9": true,
+    "invntt16_asm": true,
+    "invntt16_tail_asm": false
+  },
+  "findings": [
+    {
+      "item": "total_864",
+      "detail": "invntt16 6 x 128 + tail 96 = 864, equals 864: True"
+    },
+    {
+      "item": "required_tail_1152",
+      "detail": "1152 - invntt16 8 x 128 = 128 outputs, against 864's 96"
+    },
+    {
+      "item": "packed_i9",
+      "detail": "invariant: 9 rows x 8 lanes per call either way; 12 calls become 16",
+      "invariant": true
+    },
+    {
+      "item": "invntt16_asm",
+      "detail": "invariant: 128 outputs per call either way; 6 calls become 8",
+      "invariant": true
+    },
+    {
+      "item": "invntt16_tail_asm",
+      "detail": "NOT invariant: 96 outputs must become 128",
+      "invariant": false
+    },
+    {
+      "item": "vector_arithmetic",
+      "detail": "inverse16.S 311 vs inverse16_tail.S 309 - essentially identical, so the two lanes NTRU+864 leaves as padding already carry correct results"
+    },
+    {
+      "item": "difference",
+      "detail": "inverse16.S has 128 umov / 128 strh; the tail has 96 / 96. The gap is exactly 32 = 2 padding lanes x 16 t"
+    },
+    {
+      "item": "inverse9.S",
+      "detail": "one change: [x2, #96k] -> [x2, #128k] over 9 offsets; every other base uses 16-byte strides"
+    },
+    {
+      "item": "inverse16.S",
+      "detail": "all 128 strh offsets are multiples of 6 (6*m, branch folded into the base pointer), so they scale by 8/6 exactly; range [0..1692] becomes [0..2256]"
+    },
+    {
+      "item": "inverse16_tail.S",
+      "detail": "offsets decompose as 6m + 2b with b in [0, 1, 2]; 1152 needs b in [0, 1, 2, 3], which is why the store count grows"
+    }
+  ]
+}
