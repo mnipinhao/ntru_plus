@@ -50,6 +50,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P19 | Done — asm rejected | Should the serializer be hand-written in assembly? | **No.** Measured issue floor puts the codec at 90-100%; scheduling is worth under 10%. Cutting instructions instead took **serialize +911 -> -1,034 and the KEM +1.8% -> +0.65%**, encaps -1.97%. Evidence in `gt1152-p19-serializer-floor/` |
 | P21 | Done — analysis | Where is the remaining deficit, per operation? | **Only decaps loses.** keygen +454 (all of it `baseinv`, which is keygen-only), encaps -1,271, decaps +2,085. The C `invntt16_tail` measures **1,469 cycles** alone, against 864's 592-instruction assembly; `poly_sotp_decode` is 2.6x the official because it does 144 horizontal reductions where the official uses a bit-transpose. Evidence in `gt1152-p21-decaps-targets/` |
 | P22 | Done | Port `invntt16_tail` from C to assembly | **311 cycles against the C version's 1,469, 4.7x.** `inverse` +1,134 -> **-14**; decaps +3.11% -> +0.90%; **whole KEM +0.65% -> +0.00%**. 512,000 outputs agree mod q with the C contract. Evidence in `gt1152-p22-tail-asm/` |
+| P23 | Done | `poly_sotp_decode` without horizontal reductions | **484 cycles against P13's 1,332, and below the official's 508.** +835 -> **-17**; **decaps +0.90% -> -0.53%**; **KEM +0.00% -> -0.44%**. 20,000 differential trials against the reference. Evidence in `gt1152-p23-sotp-decode/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -963,6 +964,56 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
 
   `inverse` is now **-14** where it was +1,134. **The KEM is at parity with the
   official**, five cycles apart on 176,000, with the hash still generic.
+
+- **P23 done, decapsulation now beats the official too.**
+  `experiments/gt1152-p23-sotp-decode/`.
+
+  P21 found the cause: P13's version does a horizontal `vaddvq_u16` **per output
+  byte**, 144 of them. But the reference's message is just
+  `msg[i] = packLSB(a[8i..8i+7]) ^ buf[144+i] ^ buf[i]` -- no bit-plane expansion
+  is needed at all.
+
+  Following the official's `cbd.s`, the coefficients are carried as `a + 1` in
+  **two-bit fields, four to a byte**. A buf byte then lines up directly, its even
+  bits as `b2 & 0x55` and its odd bits as `(b2 >> 1) & 0x55`, so nothing is
+  `dup`ped from a scalar. With `f = a + 1 + b2 = t4 + 1`, bit 0 of
+  `f ^ (f >> 1)` is 1 exactly for f in {1,2}, that is t4 in {0,1} -- **the
+  failure test falls out of the same packing**, and the message bit is the
+  complement of the field's bit 0.
+
+  **Non-ternary coefficients are handled, not assumed away.** Two-bit fields
+  would overflow on one, but the reference fails on any such coefficient anyway,
+  since `t4 = a + b2` read as uint16 then exceeds 1 whichever way b2 falls. A
+  saturating narrow preserves that and a running `vmaxq_u8` reports it.
+
+  **One defect, and how it was caught.** The three `uzp` levels leave the planes
+  in the order **0,2,1,3,4,6,5,7**, not the bit-reversal assumed. It survived the
+  first differential because that test's only accepted cases were the all-zero
+  polynomial, where every field is valid whatever the order. Simulating
+  `uzp1`/`uzp2` symbolically settled it, and the test was strengthened to build
+  genuinely valid encodings (pick the message bit m, set a = m - b2 so t4 = m).
+
+  | | cycles |
+  |---|---:|
+  | P13, horizontal reduction | 1,332 |
+  | **P23, two-bit fields** | **484** |
+  | official | 508 |
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | keygen | 64,061 | 64,775 | +1.12% | +1.06% |
+  | **encaps** | 59,551 | **58,337** | **-2.04%** | -1.92% |
+  | **decaps** | 52,498 | **52,218** | **-0.53%** | +0.90% |
+  | **total** | **176,109** | **175,331** | **-0.44%** | +0.00% |
+
+  20,000 differential trials against the reference across four modes -- valid
+  encodings, valid with one coefficient corrupted, random ternary, and
+  out-of-range -- with zero mismatches on return code and all 144 message bytes.
+  Every package gate green.
+
+  **Two of three operations now beat the official and so does the total**, with
+  the hash still generic. `baseinv` (+2,406, keygen-only) is what keeps keygen
+  positive.
 
 ## Standing rules
 
