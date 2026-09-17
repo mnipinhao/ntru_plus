@@ -1,15 +1,13 @@
 # NTRU+864 / 1152 AVX2 optimization instructions
 
-These instructions apply to the
-`experiment/avx2-ntruplus864-1152-polymul-001` branch.
+These instructions apply to the `avx2-gt-ntt-864-1152` branch.
 
 ## Required startup
 
 Before modifying files:
 
 1. Run `git branch --show-current` and `git status --short`.
-2. Confirm the branch is
-   `experiment/avx2-ntruplus864-1152-polymul-001`.
+2. Confirm the branch is `avx2-gt-ntt-864-1152`.
 3. Read `WORKFLOW.md` and
    `docs/avx2-864-1152-polymul-workflow.md` completely.
 

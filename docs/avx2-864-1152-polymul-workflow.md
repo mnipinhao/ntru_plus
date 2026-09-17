@@ -19,7 +19,7 @@ but no experimental result becomes production merely because one kernel wins.
 
 ## Branch and commit sequence
 
-Work on `experiment/avx2-ntruplus864-1152-polymul-001`, based on commit
+Work on `avx2-gt-ntt-864-1152`, based on commit
 `20c7116`. Keep benchmark infrastructure, shared algebra, parameter work, and
 promotion in reviewable commits:
 

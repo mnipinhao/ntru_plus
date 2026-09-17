@@ -2,7 +2,7 @@
 
 日期：2026-09-10  
 範圍：NTRU+768、NTRU+864、NTRU+1152；x86-64 AVX2  
-研究 branch：`experiment/avx2-ntruplus864-1152-polymul-001`
+研究 branch：`avx2-gt-ntt-864-1152`
 
 ## 結論先行
 
