@@ -40,6 +40,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | G9 | Done | SUPERCOP packaging and first honest measurement | SUPERCOP validated the KEM byte contract against its built-in `ntruplus1152` checksum; **GT 142,741 vs official 111,341 cycles, +28.2%**. Evidence in `gt1152-p10-kem/supercop-results.json` |
 | P11 | Done | Component profile: where the 28% goes | PMU attribution on Pi 5. **Polynomial multiplication is at parity (+787); serialization is +30,750.** Evidence in `gt1152-p11-profile/` |
 | P14 | Done — Option A rejected | Should the transform output natural order? | Measured: net -1,612 cycles (0.85%) for a major `ntt9.S` restructure. Codec fusion recovers ~5,066 with no contract change. Evidence in `gt1152-p14-layout-study/` |
+| P16 | Done — closed | Is there headroom left in `ntt9.S`? | **No.** It is multiply-throughput bound at 93% of the A76 floor (484 vs 450 cycles/bank). Slothy is worth at most 0.85% of the KEM. Evidence in `gt1152-p16-ntt9-study/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred | First Slothy gate: degree-4 `basemul_rinv` | Reproducible Pi 5 PMU improvement over the G4/G5 intrinsics baseline |
@@ -562,9 +563,57 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   official's 10,086, and that residual +5,872 is the permutation. It is
   structural, because the official does none at all.
 
-  **Reopen condition:** Option A is worth revisiting only if `ntt9.S` is being
-  restructured for another reason, so the four-component grouping is paid for
-  anyway. Not on its own.
+  **Reopen condition: void as of P16.** Option A was parked behind "worth
+  revisiting only if `ntt9.S` is being restructured for another reason, so the
+  four-component grouping is paid for anyway". P16 measured `ntt9.S` at 93% of
+  the hardware multiply-throughput floor, so no such reason exists and none can
+  arise. Option A stays rejected on its own -1,612.
+
+- **P16 done, `ntt9.S` closed.** `experiments/gt1152-p16-ntt9-study/`.
+
+  P11 found `poly_ntt` is GT's biggest win (-2,592 vs official). This gate asked
+  whether more is available and by what mechanism. The forward NTT is `ntt9.S`
+  and almost nothing else: `ntt_top` 449, `ntt_tail` 35, **`ntt9` 3,871 cycles
+  per call, 89.1%** -- 484 cycles per bank over 8 banks.
+
+  One bank (`ntt9.S:233-745`) is 512 instructions, of which **225 are multiplies**:
+  75 Barrett-Shoup triples `mul` / `sqrdmulh` / `mls`, one per twiddle
+  multiplication. The Slothy A76 model pins all three to `ExecutionUnit.V0()`, a
+  single pipe, at inverse throughput 2.
+
+  **Confirmed on the hardware, not just the model.** Twelve independent chains:
+  `sqrdmulh` 2.000 cycles/op, `mul` 2.000, `add` 0.500, `trn1` 0.500 -- and
+  `sqrdmulh` mixed with an equal count of `add` or `trn1` is still **2.000 per
+  multiply**. Non-multiply vector work is free; it hides in the multiply pipe's
+  shadow.
+
+  So the floor is 225 x 2 = **450 cycles per bank against 484 measured, 93.0%**.
+  The other 219 vector ops and 66 loads fit inside it with room to spare.
+
+  | | cycles |
+  |---|---:|
+  | measured, per bank | 484 |
+  | multiply-pipe floor, per bank | 450 |
+  | slack per bank | 34 |
+  | slack per `poly_ntt` call (8 banks) | 271 |
+  | **slack across the KEM (6 calls)** | **1,626 = 0.85% of 190,214** |
+
+  That 0.85% is the *unreachable* ceiling on Slothy-scheduling `ntt9.S`. D4's
+  choice to run no solver in Milestone 1 costs at most this, and the question is
+  now closed rather than deferred.
+
+  The only other lever is issuing fewer multiplies, and it is nearly exhausted
+  as well. Both NEON int16 modular-multiply idioms cost the same 6 VEC0 cycles:
+  Barrett-Shoup `mul`(2)+`sqrdmulh`(2)+`mls`(2), and widening Montgomery
+  `smull`(1)+`smull2`(1)+`mul`(2)+`smlal`(1)+`smlal2`(1). The widening form's
+  cheaper per-op throughput is exactly cancelled by needing five ops for 8 lanes
+  instead of three. And 75 vector twiddle multiplications is 600
+  lane-multiplications for 144 points against ~516 for an idealised radix-2
+  transform with perfect packing -- within 16% of a bound that already ignores
+  the 9-into-8 packing loss that forces `ntt_tail` to exist.
+
+  **The forward NTT is finished.** Remaining effort belongs to M2-1 (hash, ~45%
+  of total) and the items P11 ranked.
 
 ## Standing rules
 
@@ -582,6 +631,8 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
 - A *proof* of the forward NTT output bound. G3b measured it and G2 consumes
   the measurement, but no interval model of `.Lntt_one_bank` exists.
 - The inverse NTT's internal bounds. Inherited from 864 under D7's
-  normalization, to be re-verified in G6.
-- Any GT-domain byte layout or wire permutation for 1152 (G3).
-- Any performance measurement whatsoever. Nothing has run on hardware.
+  normalization. G6b validated the chain by differential over 16 cases x 1152
+  coefficients, which is evidence of agreement, not an interval proof.
+- The *count* of twiddle multiplications in `ntt9.S` is not proved minimal.
+  P16 bounds it within ~16% of an idealised radix-2 count, which is an
+  estimate, not a lower-bound proof for the 9x16 Good-Thomas decomposition.
