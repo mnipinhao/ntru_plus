@@ -253,30 +253,53 @@ int baseinv_asm(int16_t out[BASE_COEFFICIENTS],
         STORE4(out, offset, r);
     }
 
-    /* ---- prefix, one inversion, recover ---- */
-    prefix[0] = den[0];
-    for (int i = 1; i < 36; i++)
-        prefix[i] = fqmul(prefix[i - 1], den[i]);
-
-    /*
-     * Prefix values lie inside (-q,q), so only integer zero represents zero.
-     * vminvq_u16 folds all eight lanes with no early exit, and the single
-     * branch below depends on public non-invertibility, not on lane data.
-     */
-    if (!vminvq_u16(vreinterpretq_u16_s16(prefix[35]))) {
-        for (int i = 0; i < BASE_COEFFICIENTS; i++)
-            out[i] = 0;
-        return 1;
-    }
-
+    /* ---- 3 independent prefix chains, one inversion, 3 recover chains ---- */
     {
-        int16x8_t inv = fqinv(prefix[35]);
-        for (int i = 35; i > 0; i--) {
-            int16x8_t di = den[i];
-            den[i] = fqmul(prefix[i - 1], inv);
-            inv = fqmul(inv, di);
+        const int K = 3, M = 12;
+        int16x8_t cpre[3], ip[3], carry[3];
+
+        for (int c = 0; c < K; c++)
+            prefix[c * M] = den[c * M];
+        for (int j = 1; j < M; j++)
+            for (int c = 0; c < K; c++)
+                prefix[c * M + j] = fqmul(prefix[c * M + j - 1], den[c * M + j]);
+
+        /* the same batch inversion, one level up, over the K chain products */
+        cpre[0] = prefix[M - 1];
+        for (int c = 1; c < K; c++)
+            cpre[c] = fqmul(cpre[c - 1], prefix[c * M + M - 1]);
+
+        /*
+         * cpre[K-1] is the product of all 36, exactly what the single-chain
+         * version inverted.  Prefix values lie inside (-q,q), so only integer
+         * zero represents zero; vminvq_u16 folds all eight lanes with no early
+         * exit and the branch depends on public non-invertibility.
+         */
+        if (!vminvq_u16(vreinterpretq_u16_s16(cpre[K - 1]))) {
+            for (int i = 0; i < BASE_COEFFICIENTS; i++)
+                out[i] = 0;
+            return 1;
         }
-        den[0] = inv;
+
+        {
+            int16x8_t t = fqinv(cpre[K - 1]);
+            for (int c = K - 1; c > 0; c--) {
+                ip[c] = fqmul(cpre[c - 1], t);
+                t = fqmul(t, prefix[c * M + M - 1]);
+            }
+            ip[0] = t;
+        }
+
+        for (int c = 0; c < K; c++)
+            carry[c] = ip[c];
+        for (int j = M - 1; j > 0; j--)
+            for (int c = 0; c < K; c++) {
+                int16x8_t di = den[c * M + j];
+                den[c * M + j] = fqmul(prefix[c * M + j - 1], carry[c]);
+                carry[c] = fqmul(carry[c], di);
+            }
+        for (int c = 0; c < K; c++)
+            den[c * M] = carry[c];
     }
 
     /* ---- finish: apply with the +,-,+,- conjugation signs ---- */

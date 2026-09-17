@@ -53,6 +53,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P23 | Done | `poly_sotp_decode` without horizontal reductions | **484 cycles against P13's 1,332, and below the official's 508.** +835 -> **-17**; **decaps +0.90% -> -0.53%**; **KEM +0.00% -> -0.44%**. 20,000 differential trials against the reference. Evidence in `gt1152-p23-sotp-decode/` |
 | P24 | Done | `poly_basemul_rinv`: why it trailed | **Not the arithmetic — the official issues identical multiplies.** D7's Barrett cost 16 VEC0 cycles a group; a conditional subtract honours D7 exactly with no multiply. 3,378 -> **3,054**, +827 -> **+634**. What remains is a real scheduling gap (M2-2). Evidence in `gt1152-p24-basemul-rinv/` |
 | P25 | Done — analysis | Is `baseinv` next, and does `inverse` still have headroom? | **`baseinv` yes, two separate problems**: 1,928 cycles of strictly serial batch inversion (needs 864's 12x3 ILP split) plus both parallel phases at ~78% of their multiply floor. **`inverse` is level with the official** (6,293 vs 6,292) with ~1,200 cycles of absolute headroom and no competitive gap. Evidence in `gt1152-p25-baseinv-inverse-floors/` |
+| P26 | Done | `baseinv`: split the batch inversion into three chains | Serial phase **1,928 -> 1,191**; `poly_baseinv` **+2,397 -> +850**; **keygen +1.09% -> -1.65%**, **KEM -0.53% -> -1.55%**. **All three operations now beat the official.** Evidence in `gt1152-p26-baseinv-ilp/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | Deferred | Hash fusion: fixed-size SHAKE256 1728 → 288/32 | Byte identity against generic `fips202.c` plus paired Pi 5 PMU |
 | M2-2 | Deferred — **now justified by measurement** | First Slothy gate: degree-4 `basemul_rinv` | P24 measured 3,054 against a 2,376 issue floor, 78%, with the official proving 2,551 reachable on the same instruction multiset. Worth about 500 cycles |
@@ -1119,6 +1120,62 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   **Next: `baseinv`, and the ILP split before the scheduling** -- the larger of
   its two levers, known in shape from 864, and a restructure rather than a
   re-derivation, so it carries no bound risk.
+
+- **P26 done. Every operation now beats the official.**
+  `experiments/gt1152-p26-baseinv-ilp/`.
+
+  P25 measured `baseinv`'s batch inversion at 1,928 cycles of strictly serial
+  work. Splitting the 36 groups into K chains is **the same algorithm one level
+  up**: each chain builds its own prefix product, and the K chain products are
+  batch-inverted by the identical routine.
+
+  **Correct by associativity, with the Montgomery bookkeeping unchanged.**
+  `cpre[K-1] = P_0...P_(K-1) R^-(K-1) = (prod of all 36) R^-(K(M-1)+K-1) =
+  (prod of all 36) R^-(KM-1)` -- exactly what the single chain fed to `fqinv`, so
+  `fqinv` sees the same value in the same representation, and the inner inversion
+  yields `ip[c] = P_c^-1 R^-m`, precisely the initial carry each recover loop
+  needs. **No range or representation change, so no bound is re-derived.** The
+  non-invertibility test moves to the same product and stays exact: a residue of
+  0 has one representative in (-q,q) whatever the multiplication order.
+
+  | K | chain | serial depth | cycles |
+  |---|---:|---:|---:|
+  | 1 | 36 | 70 | ~6,550 |
+  | 2 | 18 | 36 | 5,904 |
+  | **3** | 12 | 26 | **5,793** |
+  | 4 | 9 | 22 | 5,792 |
+  | 6 | 6 | 20 | 5,813 |
+
+  K=3 and K=4 tie within noise; K=3 taken, matching 864's documented 12x3.
+
+  **The differential needed correcting, not the code.** A byte comparison reports
+  mismatches on 1.5-2.7% of trials, rising with K. They are all **congruences**:
+  `montgomery_reduce`'s output lies in (-q,q), which is not a unique
+  representative -- 100 and -3357 are both in range and congruent -- so a
+  different multiplication order legitimately lands on a different one. Checked
+  properly over 4,000 trials (1,909 invertible, 2,091 with a leaf forced
+  singular): **zero real mismatches**. The KAT confirms it byte for byte.
+
+  Phases: numerator 3,783 -> 3,711, **serial 1,928 -> 1,191**, finish 1,087 ->
+  1,095. Only the serial phase moves, by 737, as designed.
+
+  **What is left is scheduling**: numerator 3,711 against a 2,952 floor and
+  finish 1,095 against 864, both 79%. Unrolling does not reach it -- at 2, 3 and
+  4 groups per iteration and with `-funroll-loops` the result lands between 5,751
+  and 5,783 against 5,793, run-to-run noise. The remaining ~990 cycles belong to
+  M2-2 with `basemul_rinv`'s 503.
+
+  | operation | official | GT | delta | was |
+  |---|---:|---:|---:|---:|
+  | **keygen** | 64,074 | **63,020** | **-1.65%** | +1.09% |
+  | **encaps** | 59,533 | **58,316** | **-2.05%** | -2.03% |
+  | **decaps** | 52,492 | **52,039** | **-0.86%** | -0.80% |
+  | **total** | **176,100** | **173,374** | **-1.55%** | -0.53% |
+
+  **Every operation now beats the official, with the hash still the generic
+  sponge.** For scale, NTRU+864 stood at -3.95% before its hash campaign and
+  reached -11%/-21%/-13% after it. Remaining: hash +902 (M2-1), ~990 + ~503 of
+  scheduling (M2-2), `frombytes` +659 structural, `inverse` level.
 
 ## Standing rules
 
