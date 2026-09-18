@@ -11,12 +11,12 @@ PYTHON ?= python3
 CFLAGS ?= -O3 -std=c11 -D_DEFAULT_SOURCE -I. -DNTRUPLUS1152_ASM_BASEMUL_RINV -DNTRUPLUS1152_ASM_BASEINV_NUM -DNTRUPLUS1152_ASM_BASEINV_FINISH
 C_SRC := kem.c symmetric.c fips202.c hash_fixed.c base.c inverse.c \
          pack.c support.c api_glue.c
-ASM_SRC := keccakf1600.S basemul_rinv.S baseinv_num.S baseinv_finish.S ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
+ASM_SRC := keccakf1600.S keccakf1600_v84a.S basemul_rinv.S baseinv_num.S baseinv_finish.S ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
            inverse_ntt.S inverse9.S inverse16.S crepmod3_raw.S
 
 TESTS := test_kem test_canonical test_abi test_baseinv_fail
 
-.PHONY: check kat kat-check tests clean shake-prefixed
+.PHONY: check kat kat-check tests clean shake-prefixed keccak-v84a
 
 test_kem: test/test_kem.c randombytes.c $(C_SRC) $(ASM_SRC)
 	$(CC) $(CFLAGS) $^ -o $@
@@ -46,7 +46,7 @@ test_zeroization: test/test_zeroization.c randombytes.c $(C_SRC) $(ASM_SRC)
 tests: $(TESTS) test_zeroization
 	@for t in $(TESTS) test_zeroization; do echo "--- $$t"; ./$$t || exit 1; done
 
-check: kat-check tests shake-prefixed
+check: kat-check tests shake-prefixed keccak-v84a
 
 clean:
 	$(RM) test_shake_prefixed
@@ -55,5 +55,11 @@ clean:
 
 shake-prefixed:
 	$(CC) $(CPPFLAGS) $(CFLAGS) -I. -o test_shake_prefixed \
-	  test/test_shake_prefixed.c fips202.c keccakf1600.S
+	  test/test_shake_prefixed.c fips202.c keccakf1600.S keccakf1600_v84a.S
 	./test_shake_prefixed
+
+# Reports "skipped" rather than failing where the target has no FEAT_SHA3.
+keccak-v84a:
+	$(CC) $(CPPFLAGS) $(CFLAGS) -I. -o test_keccak_v84a \
+	  test/test_keccak_v84a.c keccakf1600.S keccakf1600_v84a.S
+	./test_keccak_v84a

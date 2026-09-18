@@ -357,17 +357,33 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
 }
 #else
 /*
- * On AArch64 the portable body above is never used: keccakf1600.S's scalar
- * permutation always is.  That is the mlkem-native routine, and keeping the
+ * On AArch64 the portable body above is never used: one of the two assembly
+ * backends always is.  Both are the mlkem-native routines, and keeping the
  * assembly to the permutation alone -- with the sponge in portable C over it --
  * is the arrangement NTRU+768 and mldsa-native both use.
  */
+#if defined(__ARM_FEATURE_SHA3)
+/*
+ * keccakf1600_v84a.S: eor3/rax1/xar/bcax, about twice the scalar backend on
+ * cores that implement FEAT_SHA3.  Verified byte-identical to the scalar
+ * backend over 100003 states by test/test_keccak_v84a.c.  Selected by the
+ * compiler's own predefined macro, so nothing in the build system has to probe
+ * for it; FEAT_SHA3 is optional and absent on, for example, the Raspberry Pi 5.
+ */
+extern void ntruplus_keccak_f1600_x1_v84a_aarch64(uint64_t *state,
+                                                  const uint64_t *rc);
+
+static void KeccakF1600_StatePermute(uint64_t *state) {
+    ntruplus_keccak_f1600_x1_v84a_aarch64(state, KeccakF_RoundConstants);
+}
+#else
 extern void ntruplus_keccak_f1600_x1_aarch64(uint64_t *state,
                                              const uint64_t *rc);
 
 static void KeccakF1600_StatePermute(uint64_t *state) {
     ntruplus_keccak_f1600_x1_aarch64(state, KeccakF_RoundConstants);
 }
+#endif
 #endif /* !__aarch64__ */
 
 /*************************************************
