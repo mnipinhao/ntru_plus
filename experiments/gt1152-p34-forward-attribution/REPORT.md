@@ -143,6 +143,56 @@ these ones.
   `.section .note.GNU-stack` directive, so it assembled into a non-executable
   section and the binary took `SIGILL`.
 
+## 6. Follow-up: is the shipped package clean?
+
+The harness bug raised the obvious question -- does anything in the package
+itself call an inner kernel from C?  **No.**  `api_glue.c` declares only
+`ntt_asm`, and `ntt_asm` is the wrapper that saves `d8`-`d15`; the three inner
+kernels are reached only from assembly, and `inverse_ntt.S`'s header already
+says in so many words that it stays assembly because `packed_i9` and
+`invntt16_asm` clobber `v8`-`v15`.
+
+`audit_abi.py` checks this for every exported symbol rather than by grep.  It
+expands `.macro` bodies (so a save inside `SAVE_PUBLIC` is seen), splits each
+`.S` into the regions its exported labels own, and propagates "clobbers" along
+the `bl` graph with a save/restore pair acting as a barrier; C sources have
+comments stripped first, because a symbol named only in a comment is not a call.
+
+```
+inverse16.S      invntt16_asm         d8-d15   False   internal only; caller must save
+inverse16_tail.S invntt16_tail_asm    d8-d15   False   internal only; caller must save
+inverse9.S       packed_i9            d8-d15   False   internal only; caller must save
+ntt9.S           ntt9_asm             d8-d15   False   internal only; caller must save
+inverse_ntt.S    invntt_ternary_asm        -    True   ok
+ntt.S            ntt_asm                   -    True   ok
+...                                                    violations: 0
+```
+
+Negative control: appending P34's exact mistake (a C wrapper calling `ntt9_asm`
+directly) to a scratch copy of `api_glue.c` makes it report the violation and
+exit 1, so the zero is a result and not a silent pass.
+
+Three earlier greps of mine were each wrong in a way the tool is not: a bare
+`grep invntt16_asm` over the C sources hits a **comment** in
+`inverse16_tables.h`; a `.global` regex that assumes a bare name misses
+`inverse_ntt.S`, which exports through a `C(name)` macro; and a save-detector
+that does not expand macros misses `SAVE_PUBLIC` entirely.
+
+**One real gap did turn up.**  `test/abi_sentinel.S` wrapped eleven entry
+points, but not the two fused SHAKE256 kernels P32 added.  They are correct --
+they save `x19`-`x28` and never touch `v8`-`v15`, Keccak being all scalar -- but
+nothing asserted it.  Sentinels added; the package gate now reads 13/13:
+
+```
+keypair .. tobytes-compare   mask=0x00000   (11, as before)
+hash-f-fixed                 mask=0x00000
+hash-g-fixed                 mask=0x00000
+```
+
+`make check` on the Pi is green throughout: 64 KEM round trips with tampered
+rejection, 13,824 canonical cases, 288/288 baseinv leaves rejecting and
+clearing, `clear_calls=23 clear_bytes=32338 nonzero_after=0`.
+
 ## Reproduce
 
 ```sh
@@ -151,4 +201,9 @@ cp $OFF/ntt.s off_ntt.s
 gcc -O3 -march=native -D_DEFAULT_SOURCE -I. bench_fwd.c probes.S off_ntt.s \
     $G/ntt.S $G/ntt_top.S $G/ntt_tail.S $G/ntt9.S -o bench_fwd
 taskset -c 3 ./bench_fwd
+```
+
+```sh
+python3 audit_abi.py ../gt1152-p10-kem     # exits 1 on any violation
+ssh <pi> 'cd <package> && make check'
 ```

@@ -1657,3 +1657,23 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   three candidates came back as ~6e252 rather than a time. **A measurement that
   reads as absurd is more often an ABI violation in the harness than a surprise
   in the code.**
+
+  **Follow-up: is the shipped package clean? Yes.** `api_glue.c` declares only
+  `ntt_asm`, which is the wrapper that does the save; the three inner kernels
+  are reached only from assembly. `gt1152-p34-forward-attribution/audit_abi.py`
+  proves this for every exported symbol rather than by grep -- it expands
+  `.macro` bodies, splits each `.S` by exported label, and propagates "clobbers"
+  along the `bl` graph with a save/restore pair as a barrier. **0 violations**,
+  and a negative control (a C wrapper calling `ntt9_asm` directly) makes it
+  report the violation and exit 1, so the zero is a result.
+
+  Three greps I tried first were each wrong in a way the tool is not: a bare
+  grep hits a **comment** in `inverse16_tables.h`; a `.global` regex assuming a
+  bare name misses `inverse_ntt.S`, which exports through a `C(name)` macro; and
+  a save-detector that does not expand macros misses `SAVE_PUBLIC`.
+
+  **One real gap: `test/abi_sentinel.S` did not cover the two fused SHAKE256
+  entry points P32 added.** They are correct -- they save `x19`-`x28` and never
+  touch `v8`-`v15`, Keccak being all scalar -- but nothing asserted it.
+  Sentinels added, `SOURCE-MANIFEST.sha256` refreshed; the ABI gate now reads
+  **13/13 masks zero** and `make check` is green on the Pi throughout.
