@@ -92,6 +92,7 @@ static const uint64_t KeccakF_RoundConstants[NROUNDS] = {
  *
  * Arguments:   - uint64_t *state: pointer to input/output Keccak state
  **************************************************/
+#if !defined(__aarch64__)
 static void KeccakF1600_StatePermute(uint64_t *state) {
     int round;
 
@@ -354,6 +355,20 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
     state[23] = Aso;
     state[24] = Asu;
 }
+#else
+/*
+ * On AArch64 the portable body above is never used: keccakf1600.S's scalar
+ * permutation always is.  That is the mlkem-native routine, and keeping the
+ * assembly to the permutation alone -- with the sponge in portable C over it --
+ * is the arrangement NTRU+768 and mldsa-native both use.
+ */
+extern void ntruplus_keccak_f1600_x1_aarch64(uint64_t *state,
+                                             const uint64_t *rc);
+
+static void KeccakF1600_StatePermute(uint64_t *state) {
+    ntruplus_keccak_f1600_x1_aarch64(state, KeccakF_RoundConstants);
+}
+#endif /* !__aarch64__ */
 
 /*************************************************
  * Name:        shake256_prefixed
