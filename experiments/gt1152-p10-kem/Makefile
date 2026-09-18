@@ -41,10 +41,11 @@ tests: $(TESTS) test_zeroization
 check: kat-check tests shake-prefixed
 
 clean:
+	$(RM) test_shake_prefixed
 	$(RM) $(TESTS) test_zeroization PQCgenKAT_kem PQCkemKAT_3488.req PQCkemKAT_3488.rsp
 	$(RM) -r *.dSYM
 
 shake-prefixed:
-	$(CC) $(CPPFLAGS) $(CFLAGS) -I. -o $(BUILD_DIR)/test_shake_prefixed \
+	$(CC) $(CPPFLAGS) $(CFLAGS) -I. -o test_shake_prefixed \
 	  test/test_shake_prefixed.c fips202.c keccakf1600.S
-	$(BUILD_DIR)/test_shake_prefixed
+	./test_shake_prefixed
