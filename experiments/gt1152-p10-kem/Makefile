@@ -8,7 +8,7 @@ ASM_SRC := keccakf1600.S basemul_rinv.S baseinv_num.S baseinv_finish.S ntt.S inv
 
 TESTS := test_kem test_canonical test_abi test_baseinv_fail
 
-.PHONY: check kat kat-check tests clean
+.PHONY: check kat kat-check tests clean shake-prefixed
 
 test_kem: test/test_kem.c randombytes.c $(C_SRC) $(ASM_SRC)
 	$(CC) $(CFLAGS) $^ -o $@
@@ -38,8 +38,13 @@ test_zeroization: test/test_zeroization.c randombytes.c $(C_SRC) $(ASM_SRC)
 tests: $(TESTS) test_zeroization
 	@for t in $(TESTS) test_zeroization; do echo "--- $$t"; ./$$t || exit 1; done
 
-check: kat-check tests
+check: kat-check tests shake-prefixed
 
 clean:
 	$(RM) $(TESTS) test_zeroization PQCgenKAT_kem PQCkemKAT_3488.req PQCkemKAT_3488.rsp
 	$(RM) -r *.dSYM
+
+shake-prefixed:
+	$(CC) $(CPPFLAGS) $(CFLAGS) -I. -o $(BUILD_DIR)/test_shake_prefixed \
+	  test/test_shake_prefixed.c fips202.c keccakf1600.S
+	$(BUILD_DIR)/test_shake_prefixed
