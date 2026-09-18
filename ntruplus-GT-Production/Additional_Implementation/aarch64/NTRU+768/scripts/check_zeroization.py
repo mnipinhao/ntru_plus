@@ -30,11 +30,16 @@ g = s[s.index('void hash_g'):s.index('void hash_h')]
 assert 'ntruplus_hash_g_fixed(buf, msg);' in g
 assert 'uint8_t data[' not in g
 require('fips202.c', ('void ntruplus_hash_g_fixed(', 'secure_clear(s, sizeof s);'))
-require('keccakf1600.S', ('ntruplus_hash_g_fused_aarch64:',
-                         'mov x17, xzr', 'stp xzr, xzr, [sp, #128]'))
-require('keccakf1600_v84a.S',
-        ('ntruplus_hash_g_fused_v84a_aarch64:',
-         'movi v0.16b, #0', 'movi v31.16b, #0'))
+# The fused hash_g kernels are gone: the sponge is portable C over the
+# permutation, so the wipe that used to live at the end of each kernel now lives
+# once in shake256_prefixed, checked above.  Assert the assembly is back to the
+# permutation alone, with no fixed-size sponge left to audit separately.
+for backend in ('keccakf1600.S', 'keccakf1600_v84a.S'):
+    text = (ROOT / backend).read_text()
+    if 'fused' in text:
+        raise SystemExit(f'{backend}: a fused sponge is back; re-audit its wipe')
+require('keccakf1600.S', ('ntruplus_keccak_f1600_x1_aarch64:',))
+require('keccakf1600_v84a.S', ('ntruplus_keccak_f1600_x1_v84a_aarch64:',))
 # hash_f and hash_h used to build 0x00||msg and 0x02||msg in a stack buffer and
 # (for hash_h) wipe it afterwards.  They now absorb through shake256_prefixed,
 # so there is no copy to wipe -- the same invariant hash_g already had above,
