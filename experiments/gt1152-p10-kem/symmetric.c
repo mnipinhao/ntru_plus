@@ -7,14 +7,16 @@
 /*
  * NTRU+1152 symmetric layer.
  *
- * hash_f and hash_g use the fused fixed-size kernels: their input is always one
- * domain byte followed by exactly NTRUPLUS_POLYBYTES, and their output is always
- * the same length, so the sponge needs no state array, no length arithmetic, and
- * no copy to prepend the domain byte.  1 + 1728 is 12 blocks of 136 plus a
- * 97-byte tail; hash_g's 288 bytes are two squeeze blocks plus 16.
+ * All three transcripts go through fips202.c's shake256_prefixed: SHAKE256 over
+ * a domain byte followed by the message, absorbed straight out of the caller's
+ * buffer so the concatenation is never built.  hash_f and hash_g take
+ * 1 + 1728 bytes, which is 12 full rate blocks plus a 97-byte tail; hash_h
+ * takes 1 + 176, which is one full block plus a 41-byte tail.
  *
- * hash_h keeps the generic sponge.  Its input is 176 bytes, a single block,
- * where the fusion would have nothing to amortize.
+ * hash_h is not the single-block call an earlier version of this comment
+ * claimed.  Counting permutations as ceil((inlen+1)/r) + ceil(outlen/r) - 1 --
+ * the -1 because the padded final absorb block and the first squeeze share one
+ * permutation -- it is 2 + 3 - 1 = 4, against 13 for hash_f and 15 for hash_g.
  */
 
 #define HASH_F_INBYTES  (NTRUPLUS_POLYBYTES)
