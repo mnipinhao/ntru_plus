@@ -92,21 +92,7 @@ static const uint64_t KeccakF_RoundConstants[NROUNDS] = {
  *
  * Arguments:   - uint64_t *state: pointer to input/output Keccak state
  **************************************************/
-#if defined(__ARM_FEATURE_SHA3)
-/*
- * ARMv8.4-A SHA3 backend (keccakf1600_v84a.S).  Verified byte-identical
- * to the portable body below over 100003 states by test/test_keccak_v84a.c.  Selected by the
- * compiler's own __ARM_FEATURE_SHA3, so nothing in the build system has to probe
- * for it; the portable body stays the default because FEAT_SHA3 is optional and
- * is absent on, for example, the Raspberry Pi 5.
- */
-extern void ntruplus_keccak_f1600_x1_v84a_aarch64(uint64_t *state,
-                                             const uint64_t *rc);
-
-static void KeccakF1600_StatePermute(uint64_t *state) {
-    ntruplus_keccak_f1600_x1_v84a_aarch64(state, KeccakF_RoundConstants);
-}
-#else
+#if !defined(__aarch64__)
 static void KeccakF1600_StatePermute(uint64_t *state) {
     int round;
 
@@ -369,7 +355,35 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
     state[23] = Aso;
     state[24] = Asu;
 }
-#endif /* __ARM_FEATURE_SHA3 */
+#else
+#if defined(__ARM_FEATURE_SHA3)
+/*
+ * ARMv8.4-A SHA3 backend (keccakf1600_v84a.S).  Verified byte-identical
+ * to the portable body below over 100003 states by test/test_keccak_v84a.c.  Selected by the
+ * compiler's own __ARM_FEATURE_SHA3, so nothing in the build system has to probe
+ * for it; the portable body stays the default because FEAT_SHA3 is optional and
+ * is absent on, for example, the Raspberry Pi 5.
+ */
+extern void ntruplus_keccak_f1600_x1_v84a_aarch64(uint64_t *state,
+                                             const uint64_t *rc);
+
+static void KeccakF1600_StatePermute(uint64_t *state) {
+    ntruplus_keccak_f1600_x1_v84a_aarch64(state, KeccakF_RoundConstants);
+}
+#else
+/*
+ * Scalar AArch64 permutation (keccakf1600.S), the mlkem-native routine.  On
+ * AArch64 the portable body above is never used: one of the two assembly
+ * backends always is, which is how NTRU+768 is arranged.
+ */
+extern void ntruplus_keccak_f1600_x1_aarch64(uint64_t *state,
+                                             const uint64_t *rc);
+
+static void KeccakF1600_StatePermute(uint64_t *state) {
+    ntruplus_keccak_f1600_x1_aarch64(state, KeccakF_RoundConstants);
+}
+#endif
+#endif /* !__aarch64__ */
 
 /*************************************************
  * Name:        shake256_prefixed
