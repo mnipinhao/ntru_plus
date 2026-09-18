@@ -1,3 +1,8 @@
+/* Mach-O prefixes C symbols with an underscore; the other kernels in this
+ * tree and all of NTRU+864's baseinv_*.S do the same rename. */
+#ifdef __APPLE__
+#define baseinv_finish_kernel _baseinv_finish_kernel
+#endif
 .text
 .global baseinv_finish_kernel
 baseinv_finish_kernel:
