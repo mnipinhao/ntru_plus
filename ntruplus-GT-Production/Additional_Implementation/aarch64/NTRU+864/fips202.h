@@ -88,6 +88,11 @@ void shake128_inc_ctx_release(shake128incctx *state);
  * This function does not support being called multiple times
  * with the same state.
  */
+/* One-shot SHAKE256 over (domain || input), without materialising the
+ * concatenation.  Exact input/output aliasing is supported. */
+void shake256_prefixed(uint8_t *output, size_t outlen, uint8_t domain,
+                       const uint8_t *input, size_t inlen);
+
 void shake256_absorb(shake256ctx *state, const uint8_t *input, size_t inlen);
 /* Squeeze output out of the sponge.
  *

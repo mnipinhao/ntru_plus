@@ -10,11 +10,7 @@
 #include "secure_clear.h"
 #include "randombytes.h"
 
-#ifdef DSUPPORTS_SHAKE256_ASM
-#include "CE/fips202.h"
-#else
 #include "fips202.h"
-#endif
 
 /*************************************************
 * Name:        verify

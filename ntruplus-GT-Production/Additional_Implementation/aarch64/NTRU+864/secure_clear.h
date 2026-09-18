@@ -15,6 +15,17 @@
 #include <windows.h>
 #endif
 
+#if defined(__APPLE__)
+/*
+ * macOS provides memset_s but does not define __STDC_LIB_EXT1__, and the
+ * __STDC_WANT_LIB_EXT1__ above only exposes the declaration when this header is
+ * included before <string.h>.  Translation units do not all do that, so declare
+ * it here and make the include order irrelevant.
+ */
+extern int memset_s(void *address, size_t address_size, int value,
+                    size_t length);
+#endif
+
 #ifdef SECURE_CLEAR_AUDIT_HOOK
 void gt_secure_clear_audit_hook(const void *address, size_t length);
 #endif
