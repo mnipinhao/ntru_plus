@@ -11,6 +11,7 @@ TEST_ZEROIZATION := $(BUILD_DIR)/test_zeroization
 TEST_CANONICAL := $(BUILD_DIR)/test_canonical
 TEST_NTT_SMALL := $(BUILD_DIR)/test_ntt_small
 TEST_SUPPORT := $(BUILD_DIR)/test_support
+TEST_SHAKE_PREFIXED := $(BUILD_DIR)/test_shake_prefixed
 KAT_GENERATOR := $(BUILD_DIR)/PQCgenKAT_kem
 
 CPPFLAGS := -I.
@@ -63,6 +64,7 @@ GENERATED_KAT_RSP := $(BUILD_DIR)/PQCkemKAT_2336.rsp
 
 .PHONY: all check check-release manifest-check test abi canonical zeroization
 .PHONY: zeroization-source-check kat kat-check size symbols clean
+.PHONY: shake-prefixed
 
 all: $(TEST_KEM)
 
@@ -131,7 +133,14 @@ kat-check: kat $(KAT_REQ) $(KAT_RSP)
 	cmp $(GENERATED_KAT_RSP) $(KAT_RSP)
 	shasum -a 256 $(GENERATED_KAT_RSP)
 
-check: manifest-check test canonical small zeroization kat-check
+$(TEST_SHAKE_PREFIXED): test/test_shake_prefixed.c fips202.c keccakf1600.S \
+  keccakf1600_v84a.S | $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+shake-prefixed: $(TEST_SHAKE_PREFIXED)
+	$(TEST_SHAKE_PREFIXED)
+
+check: manifest-check test canonical small zeroization kat-check shake-prefixed
 
 size: $(TEST_KEM)
 	size $(SIZE_FLAGS) $(TEST_KEM)

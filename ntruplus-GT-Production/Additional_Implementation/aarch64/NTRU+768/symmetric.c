@@ -15,12 +15,13 @@
 
 void hash_f(uint8_t *buf, const uint8_t *msg)
 {
-    uint8_t data[1 + HASH_F_INBYTES];
-
-    data[0] = 0x00;
-    memcpy(data + 1, msg, HASH_F_INBYTES);
-    shake256(buf, HASH_F_OUTBYTES, data, HASH_F_INBYTES + 1);
-    /* hash_f input is public; follow the Official cleanup policy. */
+    /*
+     * The prefixed entry point absorbs 0x00 || msg without building it, so
+     * this no longer keeps a copy of the message on the stack, and no longer
+     * routes it through the generic sponge's malloc'd state -- which
+     * shake256_ctx_release() frees without wiping.
+     */
+    shake256_prefixed(buf, HASH_F_OUTBYTES, 0x00, msg, HASH_F_INBYTES);
 }
 
 void hash_g(uint8_t *buf, const uint8_t *msg)
@@ -32,10 +33,11 @@ void hash_g(uint8_t *buf, const uint8_t *msg)
 
 void hash_h(uint8_t *buf, const uint8_t *msg)
 {
-    uint8_t data[1 + HASH_H_INBYTES];
-
-    data[0] = 0x02;
-    memcpy(data + 1, msg, HASH_H_INBYTES);
-    shake256(buf, HASH_H_OUTBYTES, data, HASH_H_INBYTES + 1);
-    secure_clear(data, sizeof data);
+    /*
+     * The prefixed entry point absorbs 0x02 || msg without building it, so
+     * this no longer keeps a copy of the message on the stack, and no longer
+     * routes it through the generic sponge's malloc'd state -- which
+     * shake256_ctx_release() frees without wiping.
+     */
+    shake256_prefixed(buf, HASH_H_OUTBYTES, 0x02, msg, HASH_H_INBYTES);
 }

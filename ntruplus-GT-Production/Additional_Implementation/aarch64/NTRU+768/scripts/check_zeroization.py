@@ -35,9 +35,17 @@ require('keccakf1600.S', ('ntruplus_hash_g_fused_aarch64:',
 require('keccakf1600_v84a.S',
         ('ntruplus_hash_g_fused_v84a_aarch64:',
          'movi v0.16b, #0', 'movi v31.16b, #0'))
-for start, end in [('void hash_h', None)]:
+# hash_f and hash_h used to build 0x00||msg and 0x02||msg in a stack buffer and
+# (for hash_h) wipe it afterwards.  They now absorb through shake256_prefixed,
+# so there is no copy to wipe -- the same invariant hash_g already had above,
+# which is strictly stronger than wiping one.
+for start, end in [('void hash_f', 'void hash_g'), ('void hash_h', None)]:
     section = s[s.index(start):s.index(end) if end else len(s)]
-    assert 'secure_clear(data, sizeof data);' in section
+    assert 'uint8_t data[' not in section, start
+    assert 'memcpy(' not in section, start
+    assert 'shake256_prefixed(' in section, start
+require('fips202.c', ('void shake256_prefixed(', 'secure_clear(s, sizeof s);',
+                      'secure_clear(tail, sizeof tail);'))
 for p in ROOT.glob('*.S'):
     assert 'P0-B:' not in p.read_text(), p
 # Existing small keygen register cleanups remain; no full-frame wipe promise.
