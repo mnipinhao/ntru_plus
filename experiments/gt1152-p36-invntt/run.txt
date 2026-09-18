@@ -1,0 +1,70 @@
+  official invntt_scale + crepmod3                    6237.9
+    official poly_invntt_scale                        5617.0
+    official poly_crepmod3                             591.0
+  GT invntt_ternary_asm (whole)                       6219.8
+    minus packed_i9 x16                               4004.5
+    minus invntt16_asm x8                             3517.0
+    minus invntt16_tail_asm                           5913.0
+    minus crepmod3_ternary_asm                        5643.1
+    minus the 2304-byte wipe                          6080.8
+    driver skeleton only (all stages removed)          275.0
+  floor: GT multiply multiset (2557 ops)              5111.0
+  floor: official multiply multiset (2904 ops)        5805.0
+  floor: packed_i9 instruction mix x16                2005.0
+  floor: invntt16_asm instruction mix x8              2557.8
+
+--- GT stage attribution ---
+  packed_i9 x16            2215.3   ( 138.5 each, floor 114.0)
+  invntt16_asm x8          2702.8   ( 337.8 each, floor 302.0)
+  invntt16_tail_asm         306.8   (floor 298.0)
+  crepmod3_ternary_asm      576.8   (floor 576.0)
+  the 2304-byte wipe        139.0
+  driver skeleton           275.0   (address arithmetic, 26 bl/ret, prologue)
+  stages + skeleton        6215.7   vs whole   6219.8
+
+--- versus the official ---
+  GT         6219.8   floor   5111.0    82.2% of floor   overhead  1108.8
+  official   6237.9   floor   5805.0    93.1% of floor   overhead   432.9
+  static advantage 11.95%, measured -0.29%
+  if GT reached the official's efficiency: 5492.1  (a further 727.7)
+
+--- the two big stages against their INSTRUCTION-MIX floor ---
+  packed_i9 x16        2215.3   mix floor   2005.0    90.5%   headroom   210.3
+  invntt16_asm x8      2702.8   mix floor   2557.8    94.6%   headroom   145.0
+  (multiply-only floors were 1824.0 and 2416.0, i.e. not the binding resource)
+=====
+  official invntt_scale + crepmod3                    6237.9
+    official poly_invntt_scale                        5617.0
+    official poly_crepmod3                             591.0
+  GT invntt_ternary_asm (whole)                       6219.8
+    minus packed_i9 x16                               4004.5
+    minus invntt16_asm x8                             3517.0
+    minus invntt16_tail_asm                           5913.1
+    minus crepmod3_ternary_asm                        5643.1
+    minus the 2304-byte wipe                          6080.8
+    driver skeleton only (all stages removed)          275.0
+  floor: GT multiply multiset (2557 ops)              5111.0
+  floor: official multiply multiset (2904 ops)        5805.0
+  floor: packed_i9 instruction mix x16                2005.0
+  floor: invntt16_asm instruction mix x8              2557.9
+
+--- GT stage attribution ---
+  packed_i9 x16            2215.3   ( 138.5 each, floor 114.0)
+  invntt16_asm x8          2702.8   ( 337.9 each, floor 302.0)
+  invntt16_tail_asm         306.8   (floor 298.0)
+  crepmod3_ternary_asm      576.8   (floor 576.0)
+  the 2304-byte wipe        139.0
+  driver skeleton           275.0   (address arithmetic, 26 bl/ret, prologue)
+  stages + skeleton        6215.7   vs whole   6219.8
+
+--- versus the official ---
+  GT         6219.8   floor   5111.0    82.2% of floor   overhead  1108.8
+  official   6237.9   floor   5805.0    93.1% of floor   overhead   432.9
+  static advantage 11.95%, measured -0.29%
+  if GT reached the official's efficiency: 5492.1  (a further 727.7)
+
+--- the two big stages against their INSTRUCTION-MIX floor ---
+  packed_i9 x16        2215.3   mix floor   2005.0    90.5%   headroom   210.3
+  invntt16_asm x8      2702.8   mix floor   2557.9    94.6%   headroom   145.0
+  (multiply-only floors were 1824.0 and 2416.0, i.e. not the binding resource)
+=====

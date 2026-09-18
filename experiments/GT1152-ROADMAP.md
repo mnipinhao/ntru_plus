@@ -63,6 +63,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P33 | Done | SUPERCOP after the hash campaign | **GT 92,079 vs official 111,403, -17.35%.** Per operation keygen -12.12%, enc **-20.39%**, dec -13.77%; q1 sum -15.53% against the profiler's -15.25%. Within a percentage point of NTRU+864 on every operation. Evidence in `gt1152-p33-supercop-hash/` |
 | P34 | Done | Why did the forward's static multiply advantage not cash out? | **It did. The 25.4% static figure was my arithmetic error** -- wrong file and wrong loop bounds. True static advantage **9.96%** (1,880 vs 2,088 multiply ops), measured **9.04%**, and the 16-cycle residual is accounted for: both sides sit at the same distance above their own issue floor (GT 86.4%, official 87.3%). **The forward is closed**: `ntt_top` 95.7% of floor, `ntt9` 92.9%, total headroom ~294 of 4,348 cycles per call. Evidence in `gt1152-p34-forward-attribution/` |
 | P35 | Done | What does `hash_h` actually cost? | **Four permutations, counted by instrumenting fips202.c** -- P32 said one, P34's correction said five, both wrong. Generic 5,458 at 1,365/permutation against 927 for the assembly one, because **`fips202.c` never calls the assembly permutation**; `shake256()` also `malloc`s. Fused `hash_h` = 3,653, **saving 1,806/call, 3,611 across the KEM** -- the largest item left. A 25-line asm-permutation sponge captures 76.3% of it and is verified byte-identical. `genf`/`geng` seed expansion is the same shape, 3 permutations, 4,111. Evidence in `gt1152-p35-hash-h/` |
+| P36 | Done | Why is the inverse level with the official despite 12% fewer multiplies? | **Three reasons, one of them fixable.** 414 cycles the official never spends (275 driver skeleton + 139 wipe); GT's kernels carry 0.274 non-multiply cycles per multiply against the official's 0.149; and **neither big kernel has ever been scheduled for 1152** -- their headers say so. The multiply floor does not bind: measured mix floors are 2,005 and 2,558 against multiply floors 1,824 and 2,416, so `packed_i9` is at **90.5%** and `invntt16_asm` at **94.6%**. ~630 of 6,220 available, ~10%. Evidence in `gt1152-p36-invntt/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | **Done** (P32) | Hash fusion: fixed-size SHAKE256 1728 -> 288/32 | 4,000-input differential against the generic sponge, zero mismatches; KEM -2.69% -> **-15.25%** |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -1732,3 +1733,59 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
 
   This supersedes P34's "~2,100" estimate, which came from a five-permutation
   count and from dividing hash_g's 13,765 by 16 instead of 15.
+
+- **P36 done. The inverse's 12% multiply advantage does not cash, and now we
+  know exactly why.** `experiments/gt1152-p36-invntt/`.
+
+  Static: GT 2,557 multiply ops against the official's 2,904, **−11.95%**
+  (2,557 × 2.000 = 5,114, the multiply floor P25 recorded — independent
+  agreement). Measured: GT 6,219.8 against 6,237.9, **−0.29%**.
+
+  Stage attribution, by emitting seven driver variants with one stage removed
+  each (stages + skeleton 6,215.7 vs whole 6,219.8):
+
+  | stage | measured | binding floor | of floor | headroom |
+  |---|---:|---:|---:|---:|
+  | `packed_i9` x16 | 2,215.3 | 2,005.0 (mix) | **90.5%** | 210.3 |
+  | `invntt16_asm` x8 | 2,702.8 | 2,557.9 (mix) | **94.6%** | 145.0 |
+  | `invntt16_tail_asm` | 306.8 | 298.0 (multiply) | 97.1% | 8.8 |
+  | `crepmod3_ternary_asm` | 576.8 | 576.0 (multiply) | **99.9%** | 0.8 |
+  | the 2,304-byte wipe | 139.0 | ~144 (store pipe) | **at floor** | 0 |
+  | driver skeleton | 275.0 | -- | -- | **275.0** |
+
+  **Both mix floors exceed the corresponding multiply floors** (2,005 > 1,824;
+  2,558 > 2,416), so the multiply pipe does not bind either kernel and the
+  "82% of floor" headline was measured against a floor that does not apply.
+
+  Three reasons the 12% does not cash:
+
+  1. **414 cycles the official never spends.** It is one function with two
+     loops; GT is a driver over a 2,304-byte stack scratch. The wipe is at the
+     store pipe's floor (72 `stp q` = 144 stores = 144 cycles), irreducible
+     *given the scratch*. The skeleton is not: per `packed_i9` call the driver
+     reloads five loop-invariant constants (`mov x8, #8/#1152/#64/#576/#288`)
+     into chained 3-cycle `madd`s, sixteen times, in a regular nest with fixed
+     strides.
+  2. **GT's kernels carry more non-multiply work per multiply** -- 0.274 cycles
+     against the official's 0.149. `packed_i9` is 30% multiply by instruction
+     count and `invntt16_asm` 23%, against the official loops' 44% and 57%.
+     That is the price of the decomposition, not a defect.
+  3. **Neither big kernel has ever been scheduled for 1152.** Their own headers
+     say "no solver was run for 1152"; G6 remapped immediates and argued
+     legality from the unchanged multiset, which is sound for legality and
+     silent on optimality. The one inverse kernel re-derived for 1152 --
+     `invntt16_tail_asm`, where P22 folded 96 `umov`/`strh` into 32 `str d` --
+     is the one now at 97.1%.
+
+  **Available: ~630 of 6,220 (~10%)**, which would put the inverse near −10%
+  against the official instead of level. Caveat: 90.5% is exactly the line that
+  rejected scheduling in P16/P18/P30 -- the difference is that those had been
+  solved and this has not.
+
+  **Method correction worth keeping.** The first mix floors grouped each
+  kernel's instructions by opcode and came back at **112.5%** and **153.5%** of
+  the kernels they were meant to bound. A floor above the thing it bounds is
+  not a floor: clustering by opcode manufactures a serialization the real
+  kernel avoids by interleaving. The corrected probes preserve Slothy's exact
+  instruction sequence and GPR names -- so the `umov`/`strh` pairing distances
+  survive -- and rename only vector source operands.
