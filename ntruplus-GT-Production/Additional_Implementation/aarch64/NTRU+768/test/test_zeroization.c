@@ -23,6 +23,11 @@ void secure_clear_audit_hook(const void *address, size_t length)
         saw_keygen_large++;
     if (length == 200 || length == 208)
         saw_fips_state++;
+    /*
+     * The 0x00||msg and 0x02||msg stack copies hash_f and hash_h used to build.
+     * They absorb through shake256_prefixed now, so these lengths must never be
+     * seen again -- not building a secret copy is stronger than wiping one.
+     */
     if (length == 1153 || length == 129)
         saw_domain_image++;
     for (i = 0; i < length; i++)
@@ -49,7 +54,7 @@ int main(void)
            clear_calls, clear_bytes, nonzero_after_clear,
            saw_keygen_large, saw_fips_state, saw_domain_image);
     if (nonzero_after_clear != 0 || saw_keygen_large < 2 ||
-        saw_fips_state == 0 || saw_domain_image == 0) {
+        saw_fips_state == 0 || saw_domain_image != 0) {
         fputs("P0 zeroization harness: incomplete clear coverage\n", stderr);
         return 1;
     }
