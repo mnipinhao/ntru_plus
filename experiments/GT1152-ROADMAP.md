@@ -64,6 +64,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P34 | Done | Why did the forward's static multiply advantage not cash out? | **It did. The 25.4% static figure was my arithmetic error** -- wrong file and wrong loop bounds. True static advantage **9.96%** (1,880 vs 2,088 multiply ops), measured **9.04%**, and the 16-cycle residual is accounted for: both sides sit at the same distance above their own issue floor (GT 86.4%, official 87.3%). **The forward is closed**: `ntt_top` 95.7% of floor, `ntt9` 92.9%, total headroom ~294 of 4,348 cycles per call. Evidence in `gt1152-p34-forward-attribution/` |
 | P35 | Done | What does `hash_h` actually cost? | **Four permutations, counted by instrumenting fips202.c** -- P32 said one, P34's correction said five, both wrong. Generic 5,458 at 1,365/permutation against 927 for the assembly one, because **`fips202.c` never calls the assembly permutation**; `shake256()` also `malloc`s. Fused `hash_h` = 3,653, **saving 1,806/call, 3,611 across the KEM** -- the largest item left. A 25-line asm-permutation sponge captures 76.3% of it and is verified byte-identical. `genf`/`geng` seed expansion is the same shape, 3 permutations, 4,111. Evidence in `gt1152-p35-hash-h/` |
 | P36 | Done | Why is the inverse level with the official despite 12% fewer multiplies? | **Three reasons, one of them fixable.** 414 cycles the official never spends (275 driver skeleton + 139 wipe); GT's kernels carry 0.274 non-multiply cycles per multiply against the official's 0.149; and **neither big kernel has ever been scheduled for 1152** -- their headers say so. The multiply floor does not bind: measured mix floors are 2,005 and 2,558 against multiply floors 1,824 and 2,416, so `packed_i9` is at **90.5%** and `invntt16_asm` at **94.6%**. ~630 of 6,220 available, ~10%. Evidence in `gt1152-p36-invntt/` |
+| P37 | Done | Optimize the inverse driver's skeleton | **Both loop nests flattened into 16 + 8 straight-line call sites**, every pointer a base plus an `add` immediate (largest 2190, limit 4095), so the five loop-invariant constants reloaded into chained `madd`s are gone. **Skeleton 275 -> 62; the inverse 6,227 -> 5,953 standalone and -0.29% -> -4.91% against the official; decaps -13.96% -> -14.40%, KEM -15.25% -> -15.35%.** Constants checked by symbolically executing the old nest (80/80), output bit-identical over 4,000 x 1,152 coefficients. Evidence in `gt1152-p37-driver-flat/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | **Done** (P32) | Hash fusion: fixed-size SHAKE256 1728 -> 288/32 | 4,000-input differential against the generic sponge, zero mismatches; KEM -2.69% -> **-15.25%** |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -1789,3 +1790,72 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   kernel avoids by interleaving. The corrected probes preserve Slothy's exact
   instruction sequence and GPR names -- so the `umov`/`strh` pairing distances
   survive -- and rename only vector source operands.
+
+- **P37 done. The inverse driver's skeleton is gone: 275 cycles -> 62.**
+  `experiments/gt1152-p37-driver-flat/`.
+
+  P36 identified the skeleton as the one item in the inverse that is waste
+  rather than a price paid for the decomposition. Per `packed_i9` call the nest
+  reloaded five loop-invariant constants into `x8` and fed them to chained
+  three-cycle `madd`s, sixteen times, in a nest whose trip counts and strides
+  are fixed at assembly time.
+
+  The nests are 2x4x2 and 4x2, so there are only 16 + 8 call sites, and every
+  pointer at every site is a base register plus a constant inside the `add`
+  immediate range (largest 2190 against a limit of 4095):
+
+  ```asm
+      add x0, x25, #K0
+      add x1, x25, #K1
+      add x2, x20, #K2
+      add x3, x21, #K3
+      bl  C(packed_i9)
+  ```
+
+  Loop order is preserved, so every kernel's view of the scratch is unchanged;
+  the sites are independent anyway (their 128 tail-region halfword slots are
+  distinct and exactly fill scratch bytes 2048..2303). Static size 137 -> 218
+  instructions; dynamic address-and-bookkeeping work ~432 -> 128.
+
+  | | cycles |
+  |---|---:|
+  | skeleton, loop nest | 275.0 |
+  | skeleton, flattened | **62.0** |
+  | the inverse, loop nest | 6,227.4 |
+  | the inverse, flattened | **5,952.5** |
+
+  The whole saves 275 where the skeleton saves 213; the extra ~62 is the loop
+  branches no longer competing with the kernels for fetch.
+
+  | | official | GT | was |
+  |---|---:|---:|---:|
+  | inverse boundary | 6,290.9 | **5,982.0** | 6,272 (-0.29%) |
+  | | | **-4.91%** | |
+  | keygen | 64,061 | 56,824 | -11.36% -> **-11.30%** |
+  | encaps | 59,538 | 47,298 | -20.57% -> **-20.56%** |
+  | decaps | 52,497 | **44,936** | -13.96% -> **-14.40%** |
+  | **total** | **176,095** | **149,058** | -15.25% -> **-15.35%** |
+
+  **The constants are not transcribed.** `verify_constants.py` symbolically
+  executes the shipped nest's instructions -- a small interpreter over
+  `mov`/`add`/`add-shifted`/`madd` that raises on anything it does not
+  recognise rather than skipping it -- for every value of the loop counters:
+  **80/80 agree**. The generator also refuses to emit if any `.Lp8inv_*` label
+  or any `madd` survives, if either nest's text is not found exactly once, or
+  if a constant exceeds the immediate range. Differential against the shipped
+  driver: **4,000 trials x 1,152 coefficients, 0 mismatches**, the first four
+  being the all-zero, all +/-2497 and alternating boundaries of the inherited
+  input contract. Package gate green throughout.
+
+  **Also fixed: `gt1152-p11-profile/build.sh` had drifted from the package
+  Makefile.** It still listed `inverse16_tail.c`, a C file P22 replaced with
+  assembly, omitted `hash_fixed.c`, `keccakf1600.S` and the three
+  `basemul_rinv`/`baseinv` kernels, and did not pass the three
+  `NTRUPLUS1152_ASM_*` defines -- without which `inverse.c` compiles its C
+  fallbacks and the profile is of a different implementation than the one
+  shipped. Brought back in step, with an assertion that fails if the lists
+  drift again.
+
+  Left in the inverse: `packed_i9` ~210 and `invntt16_asm` ~145 (neither ever
+  solved for 1152), and the 139-cycle wipe, which is at the store pipe's floor
+  and only removable structurally.

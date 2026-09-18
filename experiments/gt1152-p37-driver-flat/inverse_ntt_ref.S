@@ -1,0 +1,177 @@
+/* NTRU+1152 fused inverse-to-ternary driver.
+ *
+ * Renamed copy of the shipped p07 loop-nest driver, for the P37 differential.
+ * This stays assembly on purpose: packed_i9 and invntt16_asm clobber
+ * v8-v15, so SAVE_PUBLIC_REF must preserve d8-d15 around them and a C driver
+ * would violate AAPCS64.  invntt16_tail_asm is a C function here and is
+ * called through the ordinary AAPCS64 argument registers.
+ */
+#ifdef __APPLE__
+#define C(name) _##name
+#else
+#define C(name) name
+#endif
+.text
+
+.macro SAVE_PUBLIC_REF
+    stp x29, x30, [sp, #-160]!
+    mov x29, sp
+    stp x19, x20, [sp, #16]
+    stp x21, x22, [sp, #32]
+    stp x23, x24, [sp, #48]
+    stp x25, x26, [sp, #64]
+    stp x27, x28, [sp, #80]
+    stp d8, d9, [sp, #96]
+    stp d10, d11, [sp, #112]
+    stp d12, d13, [sp, #128]
+    stp d14, d15, [sp, #144]
+.endm
+.macro RESTORE_PUBLIC_REF
+    /* Erase volatile SIMD state, including high halves of v8-v15. */
+    movi v0.16b, #0
+    movi v1.16b, #0
+    movi v2.16b, #0
+    movi v3.16b, #0
+    movi v4.16b, #0
+    movi v5.16b, #0
+    movi v6.16b, #0
+    movi v7.16b, #0
+    movi v8.16b, #0
+    movi v9.16b, #0
+    movi v10.16b, #0
+    movi v11.16b, #0
+    movi v12.16b, #0
+    movi v13.16b, #0
+    movi v14.16b, #0
+    movi v15.16b, #0
+    movi v16.16b, #0
+    movi v17.16b, #0
+    movi v18.16b, #0
+    movi v19.16b, #0
+    movi v20.16b, #0
+    movi v21.16b, #0
+    movi v22.16b, #0
+    movi v23.16b, #0
+    movi v24.16b, #0
+    movi v25.16b, #0
+    movi v26.16b, #0
+    movi v27.16b, #0
+    movi v28.16b, #0
+    movi v29.16b, #0
+    movi v30.16b, #0
+    movi v31.16b, #0
+    ldp d8, d9, [sp, #96]
+    ldp d10, d11, [sp, #112]
+    ldp d12, d13, [sp, #128]
+    ldp d14, d15, [sp, #144]
+    ldp x19, x20, [sp, #16]
+    ldp x21, x22, [sp, #32]
+    ldp x23, x24, [sp, #48]
+    ldp x25, x26, [sp, #64]
+    ldp x27, x28, [sp, #80]
+    ldp x29, x30, [sp], #160
+    ret
+.endm
+
+.global invntt_ternary_ref
+invntt_ternary_ref:
+    SAVE_PUBLIC_REF
+    sub sp, sp, #2304
+    mov x19, x0
+    mov x20, x1
+    mov x21, x2
+    mov x22, x3
+    mov x23, x4
+    mov x24, x5
+    mov x25, sp
+    // Only tail padding requires initialization, not the entire main buffer.
+    // Exact 256-byte padding clear, eight full-vector stores.
+    movi v0.16b, #0
+    add x9, sp, #2048
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    mov x26, #0                // top
+.Lp8inv_top_ref:
+    mov x27, #0                // component
+.Lp8inv_component_ref:
+    mov x28, #0                // eight-column block
+.Lp8inv_i9_ref:
+    add x0, x25, x27, lsl #9
+    add x0, x0, x28, lsl #7
+    add x0, x0, x26, lsl #3
+    add x1, x25, #2048
+    add x1, x1, x28, lsl #7
+    mov x8, #8
+    madd x1, x26, x8, x1
+    add x1, x1, x27, lsl #1
+    mov x8, #1152
+    madd x2, x26, x8, x20
+    mov x8, #64
+    madd x2, x28, x8, x2
+    add x2, x2, x27, lsl #4
+    mov x8, #576
+    madd x3, x26, x8, x21
+    mov x8, #288
+    madd x3, x28, x8, x3
+    bl C(packed_i9)
+    add x28, x28, #1
+    cmp x28, #2
+    b.ne .Lp8inv_i9_ref
+    add x27, x27, #1
+    cmp x27, #4
+    b.ne .Lp8inv_component_ref
+    add x26, x26, #1
+    cmp x26, #2
+    b.ne .Lp8inv_top_ref
+    mov x26, #0                // component
+.Lp8inv_main_ref_component_ref:
+    mov x27, #0                // four-row half
+.Lp8inv_main_ref:
+    add x0, x19, x26, lsl #1
+    mov x8, #32
+    madd x0, x27, x8, x0
+    add x1, x25, x26, lsl #9
+    add x1, x1, x27, lsl #8
+    mov x2, #0
+    mov x3, x22
+    mov x4, x23
+    // KEM-only helper: representatives are closed against the ternary consumer.
+    bl C(invntt16_asm)
+    add x27, x27, #1
+    cmp x27, #2
+    b.ne .Lp8inv_main_ref
+    add x26, x26, #1
+    cmp x26, #4
+    b.ne .Lp8inv_main_ref_component_ref
+    add x0, x19, #64
+    add x1, x25, #2048
+    mov x2, #0
+    mov x3, x22
+    mov x4, x24
+    bl C(invntt16_tail_asm)
+    // One raw-to-ternary pass; constants stay resident.
+    mov x0, x19
+    bl C(crepmod3_ternary_asm)
+    // Exact 2304-byte wipe, 128 bytes per fixed iteration.
+    movi v0.16b, #0
+    mov x9, sp
+    mov x10, #18
+.Lp13inv_wipe_ref:
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    stp q0, q0, [x9], #32
+    subs x10, x10, #1
+    b.ne .Lp13inv_wipe_ref
+    add sp, sp, #2304
+    RESTORE_PUBLIC_REF
+
+#if defined(__ELF__)
+.section .note.GNU-stack,"",%progbits
+#endif

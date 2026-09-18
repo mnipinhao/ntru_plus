@@ -6,6 +6,9 @@ set -eu
 GT=${GT:-/home/pi/ntruplus-experiments/gt1152-p10-kem-20260917}
 OFF=${OFF:-/home/pi/supercop-20260831/crypto_kem/ntruplus1152/aarch64}
 CF="-O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -fPIC -ffunction-sections -fdata-sections"
+# The package selects its assembly kernels with these; without them inverse.c
+# compiles its C fallbacks and the profile is of a different implementation.
+CF="$CF -DNTRUPLUS1152_ASM_BASEMUL_RINV -DNTRUPLUS1152_ASM_BASEINV_NUM -DNTRUPLUS1152_ASM_BASEINV_FINISH"
 
 REDIR_COMMON="-Dpoly_tobytes=prof_poly_tobytes -Dpoly_frombytes=prof_poly_frombytes \
  -Dpoly_cbd1=prof_poly_cbd1 -Dpoly_sotp_encode=prof_poly_sotp_encode \
@@ -21,8 +24,9 @@ REDIR_GT="$REDIR_COMMON -Dpoly_tobytes_small=prof_poly_tobytes_small \
 REDIR_OFF="$REDIR_COMMON -Dpoly_invntt_scale=prof_poly_invntt_scale -Dpoly_crepmod3=prof_poly_crepmod3 -Dpoly_basemul_scale=prof_poly_basemul_scale"
 
 # ---- GT ----
-GT_C="kem.c symmetric.c fips202.c base.c inverse.c inverse16_tail.c pack.c support.c api_glue.c"
-GT_S="ntt.S ntt_top.S ntt_tail.S ntt9.S inverse_ntt.S inverse9.S inverse16.S crepmod3_raw.S"
+GT_C="kem.c symmetric.c fips202.c hash_fixed.c base.c inverse.c pack.c support.c api_glue.c"
+GT_S="keccakf1600.S basemul_rinv.S baseinv_num.S baseinv_finish.S ntt.S inverse16_tail.S \
+      ntt_top.S ntt_tail.S ntt9.S inverse_ntt.S inverse9.S inverse16.S crepmod3_raw.S"
 rm -rf build && mkdir -p build/gt build/off
 cd build/gt
 for f in $GT_C $GT_S; do cp "$GT/$f" .; done
