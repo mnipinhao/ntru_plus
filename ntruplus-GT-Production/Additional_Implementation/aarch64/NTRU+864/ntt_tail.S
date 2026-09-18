@@ -1,13 +1,16 @@
-/* Accepted T1 boundary: transpose [t][bank] scratch to [bank][t] in place. */
-#ifdef __APPLE__
-#define C(name) _##name
-#else
-#define C(name) name
-#endif
+/* Accepted T1 boundary: transpose [t][bank] scratch to [bank][t] in place.
+ *
+ * Both symbol spellings are defined so callers may use either: ntt.S calls the
+ * unprefixed name, which Mach-O does not resolve to the underscored one, so
+ * defining only C(ntt_tail_asm) left the tree unlinkable on macOS.  NTRU+1152's
+ * port already carries this fix.
+ */
 .text
 .p2align 4
-.global C(ntt_tail_asm)
-C(ntt_tail_asm):
+.global ntt_tail_asm
+.global _ntt_tail_asm
+ntt_tail_asm:
+_ntt_tail_asm:
     ldr q16, [x0, #0]
     ldr q17, [x0, #16]
     ldr q18, [x0, #32]

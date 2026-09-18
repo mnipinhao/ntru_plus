@@ -1,3 +1,18 @@
+/*
+ * Mach-O has no .type/.size and prefixes C symbols with an underscore, so the
+ * sentinel names and the functions they wrap need both spellings.  SYM picks
+ * the right one; TYPEDIR and SIZEDIR expand to nothing off ELF.
+ */
+#if defined(__APPLE__)
+#define SYM(n)      _##n
+#define TYPEDIR(n)
+#define SIZEDIR(n)
+#else
+#define SYM(n)      n
+#define TYPEDIR(n)  .type n, %function
+#define SIZEDIR(n)  .size n, .-n
+#endif
+
 .text
 .align 2
 
@@ -26,9 +41,9 @@
 .endm
 
 .macro ABI_SENTINEL name, target
-.global \name
-.type \name, %function
-\name:
+.global SYM(\name)
+TYPEDIR(SYM(\name))
+SYM(\name):
     stp x29, x30, [sp, #-16]!
     mov x29, sp
     sub sp, sp, #176
@@ -71,7 +86,7 @@
     fmov d15, x9
     ldp x0, x1, [sp, #144]
     ldp x2, x3, [sp, #160]
-    bl \target
+    bl SYM(\target)
     mov x0, xzr
     CHECK_X x19, 0x1919, 0
     CHECK_X x20, 0x2020, 1
@@ -103,7 +118,7 @@
     add sp, sp, #176
     ldp x29, x30, [sp], #16
     ret
-.size \name, .-\name
+SIZEDIR(SYM(\name))
 .endm
 
 ABI_SENTINEL abi_crypto_kem_keypair, crypto_kem_keypair

@@ -22,7 +22,14 @@ CFLAGS ?= -O3
 # and the scalar backend on hosts that do not (Raspberry Pi 5).
 CFLAGS += -std=c11 -D_DEFAULT_SOURCE
 CFLAGS += -ffunction-sections -fdata-sections
+# macOS ld spells dead-code elimination differently and rejects --gc-sections.
+# Same split NTRU+768 uses.
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+LDFLAGS += -Wl,-dead_strip
+else
 LDFLAGS += -Wl,--gc-sections
+endif
 
 # keccakf1600_v84a.S is compiled unconditionally: the file guards itself on the
 # compiler's own __ARM_FEATURE_SHA3, so it is empty on targets without FEAT_SHA3
