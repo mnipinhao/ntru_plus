@@ -62,6 +62,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P32 | Done | M2-1: fused fixed-size SHAKE256 for hash_f and hash_g | **hash +998 -> -21,082.** `hash_f` 17,754 -> 11,947 and `hash_g` 20,339 -> 13,765 per call. **keygen -11.36%, encaps -20.57%, decaps -13.96%, KEM -15.25%** — within a percentage point of NTRU+864 on every operation. Evidence in `gt1152-p32-hash-fused/` |
 | P33 | Done | SUPERCOP after the hash campaign | **GT 92,079 vs official 111,403, -17.35%.** Per operation keygen -12.12%, enc **-20.39%**, dec -13.77%; q1 sum -15.53% against the profiler's -15.25%. Within a percentage point of NTRU+864 on every operation. Evidence in `gt1152-p33-supercop-hash/` |
 | P34 | Done | Why did the forward's static multiply advantage not cash out? | **It did. The 25.4% static figure was my arithmetic error** -- wrong file and wrong loop bounds. True static advantage **9.96%** (1,880 vs 2,088 multiply ops), measured **9.04%**, and the 16-cycle residual is accounted for: both sides sit at the same distance above their own issue floor (GT 86.4%, official 87.3%). **The forward is closed**: `ntt_top` 95.7% of floor, `ntt9` 92.9%, total headroom ~294 of 4,348 cycles per call. Evidence in `gt1152-p34-forward-attribution/` |
+| P35 | Done | What does `hash_h` actually cost? | **Four permutations, counted by instrumenting fips202.c** -- P32 said one, P34's correction said five, both wrong. Generic 5,458 at 1,365/permutation against 927 for the assembly one, because **`fips202.c` never calls the assembly permutation**; `shake256()` also `malloc`s. Fused `hash_h` = 3,653, **saving 1,806/call, 3,611 across the KEM** -- the largest item left. A 25-line asm-permutation sponge captures 76.3% of it and is verified byte-identical. `genf`/`geng` seed expansion is the same shape, 3 permutations, 4,111. Evidence in `gt1152-p35-hash-h/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | **Done** (P32) | Hash fusion: fixed-size SHAKE256 1728 -> 288/32 | 4,000-input differential against the generic sponge, zero mismatches; KEM -2.69% -> **-15.25%** |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -1677,3 +1678,57 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
   touch `v8`-`v15`, Keccak being all scalar -- but nothing asserted it.
   Sentinels added, `SOURCE-MANIFEST.sha256` refreshed; the ABI gate now reads
   **13/13 masks zero** and `make check` is green on the Pi throughout.
+
+- **P35 done. hash_h is four permutations, and fusing it is worth ~3,611 --
+  the largest item left in the campaign.**
+  `experiments/gt1152-p35-hash-h/`.
+
+  Three times I stated the permutation count from reasoning and got it wrong:
+  P32 said one, P34's correction said five. This gate counts them by putting a
+  counter on every `KeccakF1600_StatePermute` call site. **Four**: absorb is
+  177 bytes = 1 full block + a 41-byte tail, and `keccak_absorb` permutes only
+  per *full* block; squeeze is 320 bytes = 3 reads, and `keccak_squeezeblocks`
+  permutes *before* each. The same accounting gives 13 for hash_f and 15 for
+  hash_g, and the two fused kernels then agree at 917.8 and 916.6 cycles per
+  permutation -- 0.13% apart, which is what a correct count looks like.
+
+  | | cycles | per perm |
+  |---|---:|---:|
+  | `hash_h`, generic, as shipped | 5,458.3 | 1,364.6 |
+  | 4 bare assembly permutations | 3,709.6 | 927.4 |
+  | `hash_h` over the asm permutation | 4,081.0 | 1,020.2 |
+  | `genf`/`geng` seed expand (32 in, 288 out) | 4,111.1 | 1,370.4 |
+  | `hash_f` fused | 11,931.8 | 917.8 |
+  | `hash_g` fused | 13,749.0 | 916.6 |
+
+  **The thing I had missed: `fips202.c` never calls
+  `ntruplus_keccak_f1600_x1_aarch64`.** It has its own C permutation, and that
+  is what every `shake256()` in the KEM runs -- P34's own `audit_abi.py` had
+  printed `C reaches = False` for that symbol and I did not read it. So the
+  saving is mostly *not* fusion: C -> assembly permutation is 1,750 of the
+  1,806, the in-register stage adds 56, and `shake256`'s internal
+  `malloc`/`free` (37) and the prefix `memcpy` (12) account for the rest.
+  Every generic sponge call in this KEM heap-allocates.
+
+  **Two routes.** (a) Keep the sponge shape, call the shipped assembly
+  permutation: ~25 lines of C, verified byte-identical to `shake256` on all 320
+  output bytes, 4,081 -- **76.3%** of the benefit. (b) A fused kernel like
+  hash_f/hash_g: 2 absorb + 2 squeeze stages = 3,652.8, a further 428/call.
+  (b) is still the target, but (a) is what should ship first.
+
+  | | per call | x 2 calls |
+  |---|---:|---:|
+  | as shipped | 5,458.3 | 10,916.6 |
+  | (a) asm-permutation sponge | 4,081.0 | 8,162.0 |
+  | (b) fused kernel | 3,652.8 | 7,305.6 |
+  | **saving, (b)** | **1,805.5** | **3,611.0** |
+
+  **`hash_h` is not the only site left.** `kem.c:55` and `kem.c:81`
+  (`genf_derand`, `geng_derand`) expand a 32-byte seed to 288 bytes = 3
+  permutations, 4,111 measured, twice per keygen *attempt*. Fused it would save
+  ~1,380/call and shares everything with hash_h except the block counts. Total
+  still on the C permutation across keygen+encaps+decaps: **14 permutations,
+  ~19,000 cycles, ~6,400 recoverable.**
+
+  This supersedes P34's "~2,100" estimate, which came from a five-permutation
+  count and from dividing hash_g's 13,765 by 16 instead of 15.

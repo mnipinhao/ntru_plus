@@ -1,0 +1,33 @@
+asm-sponge hash_h vs shake256: identical, 320/320 bytes
+
+permutation counts, measured by instrumenting fips202.c:
+  hash_h  generic, 176 in + 1 prefix, 320 out : 4
+  (fused hash_f 13 and hash_g 15 by construction: 12 full + 1 tail absorb, then 0 / 2 squeeze)
+
+                                            cycles  per perm
+  hash_h, generic sponge (as shipped)       5458.3    1364.6
+    ... without the prefix memcpy           5453.8    1363.5
+    the malloc/free pair alone                37.5         -
+    the prefix memcpy alone                   11.5         -
+  4 bare assembly permutations              3709.6     927.4
+  hash_h over the asm permutation           4081.0    1020.2
+  genf/geng seed expand (32 in, 288 out)    4111.1    1370.4
+  hash_f fused (1729 in, 32 out)           11931.8     917.8
+  hash_g fused (1729 in, 288 out)          13749.0     916.6
+
+--- what a fused hash_h would cost ---
+  fused absorb stage     917.8   (hash_f / 13)
+  fused squeeze stage    908.6   ((hash_g - hash_f) / 2)
+  fused hash_h = 2 absorb + 2 squeeze  =  3652.8
+  generic hash_h as shipped            =  5458.3
+  4 bare permutations (no sponge)      =  3709.6
+  saving per call  1805.5   x2 calls =  3610.9
+
+--- versus the cheap alternative ---
+  hash_h over the asm permutation      =  4081.0   saving  1377.3/call
+  a fused kernel buys a further        =   428.2/call
+  so the cheap change captures            76.3% of the total
+
+--- the other generic-sponge site ---
+  genf/geng seed expand   4111.1  over 3 permutations (1370.4 each)
+  same shape: still on the C permutation, 2 calls per keygen attempt
