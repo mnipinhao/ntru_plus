@@ -61,6 +61,7 @@ Status meanings, matching `NTRU+864/docs/OPTIMIZATION-ROADMAP.md`:
 | P31 | Done | Was D7's normalization ever needed? | **No.** Its 2752 bound assumed inputs on [0,4095], but the only caller aborts unless both `poly_frombytes` decode, so inputs are canonical and the bound is 2458 < 2497. Removing it: `poly_basemul_rinv` **+227 -> -142**, decaps -2.21% -> **-2.75%**, KEM **-2.69%**. Evidence in `gt1152-p31-basemul-rinv-bound/` |
 | P32 | Done | M2-1: fused fixed-size SHAKE256 for hash_f and hash_g | **hash +998 -> -21,082.** `hash_f` 17,754 -> 11,947 and `hash_g` 20,339 -> 13,765 per call. **keygen -11.36%, encaps -20.57%, decaps -13.96%, KEM -15.25%** — within a percentage point of NTRU+864 on every operation. Evidence in `gt1152-p32-hash-fused/` |
 | P33 | Done | SUPERCOP after the hash campaign | **GT 92,079 vs official 111,403, -17.35%.** Per operation keygen -12.12%, enc **-20.39%**, dec -13.77%; q1 sum -15.53% against the profiler's -15.25%. Within a percentage point of NTRU+864 on every operation. Evidence in `gt1152-p33-supercop-hash/` |
+| P34 | Done | Why did the forward's static multiply advantage not cash out? | **It did. The 25.4% static figure was my arithmetic error** -- wrong file and wrong loop bounds. True static advantage **9.96%** (1,880 vs 2,088 multiply ops), measured **9.04%**, and the 16-cycle residual is accounted for: both sides sit at the same distance above their own issue floor (GT 86.4%, official 87.3%). **The forward is closed**: `ntt_top` 95.7% of floor, `ntt9` 92.9%, total headroom ~294 of 4,348 cycles per call. Evidence in `gt1152-p34-forward-attribution/` |
 | M1 | **Complete** | Milestone 1: a runnable, KAT-passing, SUPERCOP-validated NTRU+1152 GT KEM | All correctness gates pass on Pi 5; performance is measured and honest, not yet competitive |
 | M2-1 | **Done** (P32) | Hash fusion: fixed-size SHAKE256 1728 -> 288/32 | 4,000-input differential against the generic sponge, zero mismatches; KEM -2.69% -> **-15.25%** |
 | M2-2 | **Done for `basemul_rinv`** (P27) | First Slothy gate: degree-4 `basemul_rinv` | 3,054 -> 2,744, 310 of the predicted ~500 taken. `baseinv`'s two loops remain |
@@ -1581,3 +1582,78 @@ The entire forward NTT is hand-written, so G3 is a direct edit.
 - The *count* of twiddle multiplications in `ntt9.S` is not proved minimal.
   P16 bounds it within ~16% of an idealised radix-2 count, which is an
   estimate, not a lower-bound proof for the 9x16 Good-Thomas decomposition.
+
+- **P34 done. The forward transform is closed, and the "unexplained 16 points"
+  never existed.** `experiments/gt1152-p34-forward-attribution/`.
+
+  The P33 follow-up analysis claimed the forward had a 25.4% static multiply
+  advantage that only cashed out as 8.9% measured, and called that the one item
+  with a clear ceiling and no explanation. **The 25.4% was wrong.** It came from
+  slicing line ranges out of the *local* `ntruplus-ntt-Optimized` copy of
+  `ntt.s` -- not the SUPERCOP leaf that is actually benchmarked -- on the
+  assumption that `_looptop_012` began right after `mov counter, #128`. The
+  label is 2 lines further down with a 19-line preamble in between, and the
+  slice also ran past `b.ne` into the next stage. Reading the labels instead of
+  assuming them:
+
+  | | multiply ops |
+  |---|---:|
+  | official `poly_ntt` (936 + 1,152) | **2,088** |
+  | GT forward (`ntt9` 1,800 + `ntt_top` 80 + `ntt_tail` 0) | **1,880** |
+  | | **-9.96%** |
+
+  Measured standalone on core 3, min over 30 interleaved passes, bit-identical
+  across three consecutive runs:
+
+  | | cycles |
+  |---|---:|
+  | official `poly_ntt` | 4,780.0 |
+  | GT `ntt_asm` | **4,347.7** |
+  | &nbsp;&nbsp;`ntt_top_asm` | 447.0 |
+  | &nbsp;&nbsp;`ntt_tail_asm` | 32.7 |
+  | &nbsp;&nbsp;`ntt9_asm` | 3,872.5 |
+  | floor, GT multiply multiset (1,880 ops) | 3,757.0 |
+  | floor, official multiply multiset (2,088 ops) | 4,173.0 |
+  | floor, `ntt_top` instruction mix | 428.0 |
+
+  Both floors land on 2.000 cycles per multiply to within 0.1%, which
+  re-confirms the campaign's single-pipe VEC0 cost independently. And the delta
+  closes exactly:
+
+  ```
+  predicted from multiply count       416.0
+  overhead delta (607.1 - 590.7)       16.4
+                                      -----
+                                      432.4   measured 432.3
+  ```
+
+  The profiler was never diluted either -- `run-fwd.csv` records **2 calls per
+  operation on both sides**, so per call GT 4,382 vs official 4,813 = -8.95%,
+  against -9.04% standalone.
+
+  **Headroom, and why the forward is now closed:**
+
+  | stage | measured | floor | of floor | headroom/call |
+  |---|---:|---:|---:|---:|
+  | `ntt_top` | 447.0 | **428.0** | **95.7%** | 19.0 |
+  | `ntt_tail` | 32.7 | ~0 | -- | ~33 |
+  | `ntt9` | 3,872.5 | 3,597.1 | **92.9%** | 275.4 |
+
+  I expected `ntt_top` to be latency-bound -- 39 instructions per iteration, 5
+  of them multiplies, everything downstream of two `ld4 {4 x 8H}`, no software
+  pipelining, 27.9 cycles per iteration against a single-resource bound near 10.
+  **Wrong again.** The identical mix with every chain independent still costs
+  428: the three binding resources do not overlap on this core (10 `str q` per
+  iteration on the one 128-bit store pipe, 5 `mul` on VEC0, two 4-register `LD4`
+  de-interleaves). `ntt9`'s 92.9% reproduces P16's 93% independently, and P16
+  rejected scheduling at that figure. Only a decomposition issuing fewer than
+  1,880 multiplies or fewer than 160 stores could move this, not a better
+  schedule.
+
+  **Harness lesson, recorded because it cost two builds:** `ntt9_asm` clobbers
+  `d8`-`d15` without saving them -- legitimate, since `ntt.S` wraps it and does
+  the save -- so calling it directly from C violates AAPCS. GCC had spilled the
+  harness's live `double` into the callee-saved half of the vector file, and
+  three candidates came back as ~6e252 rather than a time. **A measurement that
+  reads as absurd is more often an ABI violation in the harness than a surprise
+  in the code.**

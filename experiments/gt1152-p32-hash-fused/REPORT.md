@@ -72,9 +72,17 @@ zero, 288/288 baseinv, zeroization clean.
 hash_f and hash_g no longer allocate and wipe a 1729-byte copy of the message,
 because they no longer make one.  Less secret material is duplicated, not more.
 
-`hash_h` keeps the generic sponge deliberately — its input is 176 bytes, a
-single block, where the fusion has nothing to amortize.  Measured 10,687 against
-the official's 10,663, unchanged.
+`hash_h` keeps the generic sponge in this gate.  Measured 10,687 against the
+official's 10,663, unchanged.
+
+**Correction (2026-09-18).** This gate justified leaving it alone by calling its
+input "176 bytes, a single block, where the fusion has nothing to amortize".
+That is wrong.  `HASH_H_INBYTES` is `N/8 + SYMBYTES` = 176, so input + prefix is
+177 = one rate-136 block + a 41-byte tail, which is **two** absorb permutations;
+`HASH_H_OUTBYTES` is `SYMBYTES + N/4` = 320 = two full blocks + 48, which is
+**three** squeeze permutations.  `hash_h` is five permutations, not one, and the
+fusion has exactly as much to amortize per permutation as it does in hash_f and
+hash_g.  See the P34 entry in GT1152-ROADMAP.md.
 
 ## 4. Measured
 
