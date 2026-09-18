@@ -1,6 +1,14 @@
 CC ?= cc
 PYTHON ?= python3
-CFLAGS ?= -O3 -std=c11 -march=armv8-a+simd -D_DEFAULT_SOURCE -D__STDC_WANT_LIB_EXT1__=1 -I. -DNTRUPLUS1152_ASM_BASEMUL_RINV -DNTRUPLUS1152_ASM_BASEINV_NUM -DNTRUPLUS1152_ASM_BASEINV_FINISH
+# No -march here on purpose.  NEON is baseline on AArch64, so -march=armv8-a+simd
+# added nothing, but it suppresses __ARM_FEATURE_SHA3 -- which is what selects a
+# v8.4-A Keccak backend.  NTRU+864 hit exactly that and had to drop the flag
+# before its backend became reachable; letting the compiler's default target
+# decide matches NTRU+768 and NTRU+864.
+#
+# -D__STDC_WANT_LIB_EXT1__=1 is gone too: secure_clear.h declares memset_s
+# itself now, so the flag no longer changes anything.
+CFLAGS ?= -O3 -std=c11 -D_DEFAULT_SOURCE -I. -DNTRUPLUS1152_ASM_BASEMUL_RINV -DNTRUPLUS1152_ASM_BASEINV_NUM -DNTRUPLUS1152_ASM_BASEINV_FINISH
 C_SRC := kem.c symmetric.c fips202.c hash_fixed.c base.c inverse.c \
          pack.c support.c api_glue.c
 ASM_SRC := keccakf1600.S basemul_rinv.S baseinv_num.S baseinv_finish.S ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
