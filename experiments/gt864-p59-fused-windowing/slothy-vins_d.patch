@@ -1,0 +1,231 @@
+diff --git a/slothy/targets/aarch64/cortex_a76.py b/slothy/targets/aarch64/cortex_a76.py
+index d18598b..9e140be 100644
+--- a/slothy/targets/aarch64/cortex_a76.py
++++ b/slothy/targets/aarch64/cortex_a76.py
+@@ -56,6 +56,7 @@ from slothy.targets.aarch64.aarch64_neon import (
+     vmov,
+     vmovi,
+     vadd,
++    vumax,
+     vxtn,
+     vusra,
+     vdup,
+@@ -124,9 +125,15 @@ from slothy.targets.aarch64.aarch64_neon import (
+     Ld3,
+     Ld2,
+     q_ld1_2,
++    q_ld1_3_with_postinc,
++    q_st1_3_with_postinc,
++    d_str_with_inc,
+     St2,
+     mov_wtov_s,
+     mov_vtov_d,
++    vins_h_lane,
++    vins_d,
++    LaneStore,
+     lsr,
+     movk_imm_lsl,
+ )
+@@ -203,7 +210,11 @@ def _fixed(**usages):
+ 
+ 
+ def _with_integer_writeback(inst, alternatives):
+-    has_writeback = inst.increment is not None or isinstance(inst, Q_Ld2_Lane_Post_Inc)
++    has_writeback = (
++        inst.increment is not None
++        or getattr(inst, "register_post_increment", False)
++        or isinstance(inst, Q_Ld2_Lane_Post_Inc)
++    )
+     if not has_writeback:
+         return alternatives
+ 
+@@ -246,7 +257,7 @@ execution_units = {
+     VecToGprMov: ExecutionUnit.V1(),
+     Transpose: ExecutionUnit.V(),
+     vmovi: ExecutionUnit.V(),
+-    (vadd, vsub): ExecutionUnit.V(),
++    (vadd, vsub, vumax): ExecutionUnit.V(),
+     vxtn: ExecutionUnit.V(),
+     VShiftImmediateBasic: ExecutionUnit.V1(),
+     VShiftRegBasic: ExecutionUnit.V1(),
+@@ -274,7 +285,7 @@ execution_units = {
+     # The 8B/8H reduction uses both vector pipelines.
+     vuaddlv_sform: [[ExecutionUnit.VEC0, ExecutionUnit.VEC1]],
+     mov_wtov_s: ExecutionUnit.V(),
+-    mov_vtov_d: ExecutionUnit.V(),
++    (mov_vtov_d, vins_h_lane, vins_d): ExecutionUnit.V(),
+     lsr: ExecutionUnit.I(),
+     movk_imm_lsl: ExecutionUnit.I(),
+ }
+@@ -287,7 +298,7 @@ inverse_throughput = {
+     AArch64NeonCount: 1,
+     (Vzip, uaddlp, Vrev): 1,
+     VecToGprMov: 1,
+-    (vadd, vsub, vmov, ASimdCompare, Transpose): 1,
++    (vadd, vsub, vumax, vmov, ASimdCompare, Transpose): 1,
+     AESInstruction: 1,
+     AArch64NeonLogical: 1,
+     vext: 1,
+@@ -314,7 +325,7 @@ inverse_throughput = {
+     AArch64Multiply: 3,
+     AArch64CRC32: 1,
+     (vdup, vdup_w, umull_wform, vuaddlv_sform): 1,
+-    (mov_wtov_s, mov_vtov_d, lsr, movk_imm_lsl): 1,
++    (mov_wtov_s, mov_vtov_d, vins_h_lane, vins_d, lsr, movk_imm_lsl): 1,
+ }
+ 
+ 
+@@ -331,7 +342,7 @@ default_latencies = {
+     AArch64NeonLogical: 2,
+     vext: 2,
+     Transpose: 2,
+-    (vadd, vsub, vmov, vmovi): 2,
++    (vadd, vsub, vumax, vmov, vmovi): 2,
+     (Vmul, Vmla, Vqdmulh): 5,
+     vusra: 4,
+     (Vmull, Vmlal): 4,
+@@ -358,7 +369,7 @@ default_latencies = {
+     (vtbl, vtbl_2): 2,
+     vuaddlv_sform: 5,
+     mov_wtov_s: 5,
+-    mov_vtov_d: 2,
++    (mov_vtov_d, vins_h_lane, vins_d): 2,
+     (lsr, movk_imm_lsl): 1,
+ }
+ 
+@@ -415,10 +426,34 @@ def _structured_store_usage(inst):
+ 
+ def get_resource_usages(inst):
+     """Return alternative per-pipeline occupancy mappings for ``inst``."""
++    if isinstance(inst, LaneStore):
++        # SWOG 3.19: ST1 lane is 1/cycle; ST3 lane is 1/2 per cycle.
++        duration = 4 if inst.register_count == 3 else 2
++        usages = _one_from_each(
++            [(unit, duration) for unit in ExecutionUnit.L()],
++            [(unit, duration) for unit in ExecutionUnit.V()],
++        )
++        return _with_integer_writeback(inst, usages)
+     if isinstance(inst, (Ld2, Ld3, Ld4)):
+         usages = _structured_load_usage(inst)
+     elif isinstance(inst, (St2, St3, St4)):
+         usages = _structured_store_usage(inst)
++    elif isinstance(inst, q_ld1_3_with_postinc):
++        # SWOG 3.18: three L pipeline-cycles across two alternatives => 2/3.
++        usages = _one_of(ExecutionUnit.L(), 3)
++    elif isinstance(inst, q_st1_3_with_postinc):
++        # SWOG 3.19: Q-form is 1/3; D-form is 2/3. As elsewhere in
++        # this model, durations represent aggregate pipeline pressure.
++        usages = _one_from_each(
++            [(unit, 3) for unit in ExecutionUnit.L()],
++            [(unit, 6 if _is_q_form(inst) else 3) for unit in ExecutionUnit.V()],
++        )
++    elif isinstance(inst, d_str_with_inc):
++        # SWOG 3.14: D-register STR has throughput 2, using L and V.
++        usages = _one_from_each(
++            [(unit, 1) for unit in ExecutionUnit.L()],
++            [(unit, 1) for unit in ExecutionUnit.V()],
++        )
+     elif isinstance(inst, q_st1_4_with_postinc):
+         usages = _fixed(LSU0=2, LSU1=2, VEC0=4, VEC1=4)
+     elif isinstance(inst, (Q_Ld2_Lane_Post_Inc, q_ld2_lane_s)):
+@@ -478,6 +513,8 @@ def get_resource_usages(inst):
+             St3,
+             St4,
+             q_st1_4_with_postinc,
++            q_ld1_3_with_postinc,
++            q_st1_3_with_postinc,
+             Q_Ld2_Lane_Post_Inc,
+         ),
+     ) and not isinstance(inst, q_ld1_2):
+@@ -488,6 +525,7 @@ def get_resource_usages(inst):
+ def get_dispatch_uops(inst):
+     """Return dispatch uops, including the optional address-update uop."""
+     split_classes = (
++        LaneStore,
+         Str_X,
+         Stp_X,
+         Stp_W,
+@@ -503,12 +541,18 @@ def get_dispatch_uops(inst):
+         St3,
+         St4,
+         q_st1_4_with_postinc,
++        q_st1_3_with_postinc,
++        d_str_with_inc,
+         Q_Ld2_Lane_Post_Inc,
+         q_ld2_lane_s,
+         q_ldr1_stack,
+     )
+     uops = 2 if isinstance(inst, split_classes) else 1
+-    if inst.increment is not None or isinstance(inst, Q_Ld2_Lane_Post_Inc):
++    if (
++        inst.increment is not None
++        or getattr(inst, "register_post_increment", False)
++        or isinstance(inst, Q_Ld2_Lane_Post_Inc)
++    ):
+         uops += 1
+     return uops
+ 
+@@ -519,12 +563,25 @@ def get_latency(src, out_idx, dst):
+     instclass_src = find_class(src)
+     instclass_dst = find_class(dst)
+ 
++    if isinstance(src, LaneStore):
++        # SWOG 3.19: the base update runs separately from the store-data
++        # operation. Preserve its 1-cycle forwarding to address consumers.
++        if src.register_post_increment and src.addr in dst.args_in + dst.args_in_out:
++            return 1
++        return 5 if src.register_count == 3 and _datatype(src) == "d" else 4
++
+     # FP/ASIMD loads need one more cycle than a standard integer load to
+     # forward into the V pipelines (SWOG sections 3.13 and 3.18).
+     if isinstance(src, (Ldr_D, Ldr_Q)):
+         return 5
+     if isinstance(src, Ldp_Q):
+         return 7
++    if isinstance(src, q_ld1_3_with_postinc):
++        return 6
++    if isinstance(src, q_st1_3_with_postinc):
++        return 4 if _is_q_form(src) else 3
++    if isinstance(src, d_str_with_inc):
++        return 2
+     if isinstance(src, q_ld1_2):
+         return 5
+     if isinstance(src, (Q_Ld2_Lane_Post_Inc, q_ld2_lane_s, q_ldr1_stack)):
+@@ -611,8 +668,17 @@ def get_inverse_throughput(inst):
+ 
+     The rich resource interface is authoritative. This compatibility function
+     returns the reciprocal throughput for integral cases and the conservative
+-    ceiling (4) for D-form LD4's documented 2/7 throughput.
++    ceiling for fractional cases: 4 for D-form LD4's 2/7 throughput,
++    and 2 for three-register LD1 or D-form ST1's 2/3 throughput.
+     """
++    if isinstance(inst, LaneStore):
++        return 2 if inst.register_count == 3 else 1
++    if isinstance(inst, q_ld1_3_with_postinc):
++        return 2
++    if isinstance(inst, q_st1_3_with_postinc):
++        return 3 if _is_q_form(inst) else 2
++    if isinstance(inst, d_str_with_inc):
++        return 1
+     if isinstance(inst, Ld4):
+         return 5 if _is_q_form(inst) else 4
+     if isinstance(inst, Ld3):
+@@ -698,12 +764,18 @@ def is_partial_register_hazard_consumer(inst):
+     if isinstance(
+         inst,
+         (
++            LaneStore,
++            vins_h_lane,
++            vins_d,
++    vins_d,
+             Str_Q,
+             Stp_Q,
+             St2,
+             St3,
+             St4,
+             q_st1_4_with_postinc,
++            q_st1_3_with_postinc,
++            d_str_with_inc,
+             vmov,
+             mov_vtov_d,
+         ),
