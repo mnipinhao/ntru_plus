@@ -12,13 +12,20 @@ each, so the dynamic multiply count is a hard floor.  Counting it per stage:
 |---|---:|---:|---:|---:|
 | `packed_i9` x12 | 684 | 1,368 | 1,653 | 285 |
 | `invntt16` main + tail | 1,055 | 2,110 | 2,356 | 246 |
-| `crepmod3` | 8 | 16 | 433 | **417** |
+| `crepmod3` (27 internal iterations) | 216 | 432 | 433 | **1** |
 | driver address arithmetic | **0** | **0** | 378 | **378** |
 | scratch wipe | **0** | **0** | 101 | **101** |
-| total | 1,747 | **3,494** | 4,820 | 1,326 |
+| total | 1,955 | **3,910** | 4,820 | 910 |
 
-Official retires about 1,898 modular multiplies (P26: GT is 151 fewer), so its
-floor is roughly 3,796 against a measured 4,755.
+Official retires about 2,106 modular multiplies (P26: GT is 151 fewer), so its
+floor is roughly 4,212 against a measured 4,755.
+
+**Correction.**  An earlier version of this table credited `crepmod3` with 8
+dynamic multiplies and therefore 417 idle cycles.  That was wrong: `crepmod3` is
+the only kernel here with an internal loop, 27 iterations of 4 vectors, so it
+retires 216.  Its floor is 432 cycles against a measured 433 -- it is exactly at
+the multiply-pipe bound and there is nothing in it to recover.  The other three
+kernels are straight-line, so their counts stand.
 
 **GT's floor is 8% below Official's.**  GT was running 38% above its floor,
 Official 25% above its.  The measured gap between them was only 65 cycles: GT's
@@ -70,18 +77,22 @@ Keygen and encaps are unchanged, as expected.
 
 After the change, against the same 3,494-cycle floor:
 
-| stage | idle |
-|---|---:|
-| `crepmod3` | 417 |
-| `packed_i9` | 287 |
-| `invntt16` | 214 |
-| driver (was 378) | 223 |
-| wipe | 102 |
+| stage | idle | where it is |
+|---|---:|---|
+| `packed_i9` | 287 | inside Slothy-scheduled code |
+| `invntt16` | 214 | inside Slothy-scheduled code |
+| prologue, dispatch, epilogue | 112 | measured directly, all stages nop'd |
+| scratch wipe | 102 | 56 stp against a 56-cycle store-pipe floor |
+| `crepmod3` | 1 | at its bound |
 
-`crepmod3` is the largest: 951 instructions and 433 cycles in which the multiply
-pipe is essentially idle.  P60 fused that reduction into the producers, but it
-also changed the delivery to `ST3` and added stack spills, so the reduction's
-fusion has never been measured on its own.
+Two things this rules out.  A call boundary costs **4.25 cycles** here -- twelve
+extra `bl` to an empty leaf cost 51 cycles on A76 -- so all eighteen boundaries
+are worth about 77 cycles and inlining is not worth 26KB of extra text.  And
+`crepmod3` cannot be improved, in place or by fusion, because it already runs at
+the multiply-pipe bound.
+
+What is left sits mostly inside kernels Slothy has already scheduled, plus the
+wipe and the SIMD-erasure epilogue, both of which are there for zeroization.
 
 ## Why this was missed
 
