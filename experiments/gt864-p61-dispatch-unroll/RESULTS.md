@@ -75,7 +75,7 @@ Keygen and encaps are unchanged, as expected.
 
 ## What is left
 
-After the change, against the same 3,494-cycle floor:
+After the change, against the corrected 3,910-cycle floor:
 
 | stage | idle | where it is |
 |---|---:|---|
