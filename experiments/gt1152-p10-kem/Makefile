@@ -16,7 +16,13 @@ ASM_SRC := rebase.S keccakf1600.S keccakf1600_v84a.S basemul_rinv.S baseinv_num.
 
 TESTS := test_kem test_canonical test_abi test_baseinv_fail
 
-.PHONY: check kat kat-check tests clean shake-prefixed keccak-v84a
+.PHONY: check kat kat-check tests clean shake-prefixed keccak-v84a check-inplace
+
+# inverse_ntt.S overlays the rebase buffer on the scratch; that is only
+# safe while packed_i9's data loads all retire before its first store.
+check-inplace:
+	$(PYTHON) ../gt1152-p71-scratch-overlay/check_inplace.py inverse9.S
+
 
 test_kem: test/test_kem.c randombytes.c $(C_SRC) $(ASM_SRC)
 	$(CC) $(CFLAGS) $^ -o $@
