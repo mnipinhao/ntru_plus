@@ -18,6 +18,7 @@ generate:
 	python3 tools/generate_fused_basemul.py
 	python3 tools/generate_shared_basemul.py
 	python3 tools/generate_forward_early_const.py
+	python3 tools/generate_phase_profile.py
 
 $(BUILD):
 	mkdir -p $(BUILD)
@@ -64,4 +65,7 @@ $(BUILD)/bench_matrix: bench/bench_matrix.c tests/support/crypto_declassify.c $(
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
 
 $(BUILD)/bench_cutpoints: bench/bench_cutpoints.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_phase_research: bench/bench_phase_research.c generated/poly_phase_profile.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(filter-out $(OFFICIAL)/poly.c,$(COMMON_C)) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
