@@ -133,9 +133,11 @@ unpacking against about 99 paid by two forward transforms and one inverse:
 
 **It is still not next.**  `ntt9.S` leaves its live values 64 slots apart, so the
 four consecutive vectors the transpose needs are not co-resident; this is a
-change to the bank schedule, not to store addressing.  And the file is generated
-by a `generate_ntt9.py` that is not on this machine, 872 lines of Slothy-scheduled
-assembly marked "do not edit".
+change to the bank schedule, not to store addressing.  The file is 872 lines of Slothy-scheduled
+assembly marked "do not edit"; its generator *is* on disk, at
+`experiments/gt1152-p04-forward-8bank/generate_ntt9.py`, contrary to what P85
+first recorded -- but the binding obstacle was always the bank schedule, not the
+generator.
 
 Revisit after item 3, with the packer's real cost known, and only if the
 schedule can be regenerated rather than hand-edited.
@@ -158,8 +160,19 @@ basis is `new(j,t,c,h) = j*128 + t*8 + (c + 4h)`; 864's decomposition is
 2 x 9 x 16 against 1152's 4 x 288, so the mapping has to be re-derived, but the
 method and the kernels are there.
 
-**Done when:** 864's decap invNTT is within Official's 239 ns, both machines,
-no regression.
+**Studied 2026-09-21, and the premise is false** -- see
+`experiments/gt864-p89-inverse-study/`.  The two trees run identical arithmetic;
+the whole +143 ns is 1,728 of 6,784 dynamic instructions spent on `umov` +
+`strh`.  1152's lane swap collapses those into `str d` because it has four
+components filling four inner lanes.  864 has three: swapping costs eight calls
+where six suffice, and the extra calls exceed what the stores save.  Same
+obstacle as P87's serializer, now having blocked two ports.
+
+What is available is mechanical: `str s` for the tail, whose lanes are already
+contiguous, and post-indexed `st1 {v.h}[l], [xT], #6` for the main kernel, whose
+four lanes are three halfwords apart.  About -10%, 419 -> 376 ns, 43 of the 143.
+Both files are Slothy-scheduled and the post-indexed address register serialises
+stores the scheduler interleaved, so the tail is the safer half.
 
 ---
 
