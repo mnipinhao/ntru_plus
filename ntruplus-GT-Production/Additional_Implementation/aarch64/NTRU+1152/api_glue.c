@@ -1,0 +1,70 @@
+#include "secure_clear.h"
+#include "poly.h"
+#include "base.h"
+#include "inverse.h"
+#include "inverse_asm.h"
+#include "pack_asm.h"
+#include "pack.h"
+#include "inverse_tables.h"
+#include "invntt9_lane_tables.h"
+#include "inverse16_tables.h"
+
+/* Thin wrappers, mirroring NTRU+864's ntt_api.c / inverse_api.c / pack.c. */
+
+void ntt_asm(int16_t out[NTRUPLUS_N], const int16_t in[NTRUPLUS_N], int16_t *scratch);
+void invntt_ternary_asm(int16_t *, const int16_t *, const int16_t *,
+                        const int16_t *, const int16_t *, const int16_t *,
+                        int16_t *);
+
+void poly_ntt(poly *out, const poly *in)
+{
+    /* The leaf works out of this buffer and allocates none of its own, so the
+     * forward transform of f, g and the recovered message is reachable from C
+     * and is cleared here.  It previously allocated 2304 bytes itself and
+     * cleared nothing -- the gap NTRU+864's ntt.S had, inherited with the port. */
+    int16_t scratch[1152];
+
+    ntt_asm(out->coeffs, in->coeffs, scratch);
+    secure_clear(scratch, sizeof scratch);
+}
+
+void poly_basemul(poly *out, const poly *a, const poly *b)
+{ basemul_asm(out->coeffs, a->coeffs, b->coeffs); }
+
+void poly_basemul_add(poly *out, const poly *a, const poly *b, const poly *c)
+{ basemul_add_asm(out->coeffs, a->coeffs, b->coeffs, c->coeffs); }
+
+int poly_baseinv(poly *out, const poly *in)
+{ return baseinv_asm(out->coeffs, in->coeffs); }
+
+void poly_basemul_rinv(int16_t *out, const int16_t *a, const int16_t *b)
+{ basemul_rinv_asm(out, a, b); }
+
+void poly_invntt_ternary(poly *out, const poly *in)
+{
+    /* The transform cannot run in place -- every invntt16 call scatters its
+     * output across ranges the other calls still have to read (P72) -- so the
+     * scratch is structural.  It is declared here rather than inside the
+     * assembly so that the leaf allocates nothing the caller cannot name; the
+     * leaf still clears it, being the last thing to touch it. */
+    poly scratch;
+
+    invntt_ternary_asm(out->coeffs, in->coeffs,
+                       &invntt9_constants_lane[0][0][0][0],
+                       &invntt16_constants[0][0],
+                       &invntt16_main_constants[0][0],
+                       &invntt16_tail_constants[0][0],
+                       scratch.coeffs);
+}
+
+void poly_tobytes(uint8_t r[NTRUPLUS_POLYBYTES], const poly *a)
+{ tobytes_full_asm(r, a->coeffs); }
+
+void poly_tobytes_small(uint8_t r[NTRUPLUS_POLYBYTES], const poly *a)
+{ tobytes_small_asm(r, a->coeffs); }
+
+int poly_tobytes_compare(const uint8_t expected[NTRUPLUS_POLYBYTES], const poly *a)
+{ return tobytes_compare_asm(expected, a->coeffs); }
+
+int poly_frombytes(poly *r, const uint8_t a[NTRUPLUS_POLYBYTES])
+{ return frombytes_asm(r->coeffs, a); }
