@@ -333,3 +333,11 @@ no verified schedule in this round. Next work must start with a concrete
 range/scale identity or a same-DAG dependency and liveness mechanism, then
 test one change at a time. Neither source-line count nor `.text` size is a
 substitute for full-caller pricing.
+
+## Round 3: BaseInv / Decap ingress / Forward diagnostics
+
+The three follow-up research lines were measured in a new valid-input,
+SUPERCOP-derived phase campaign and audited against linked Official code.
+No new optimization ASM or Native candidate was introduced. The detailed
+machine/caller ledger, limits of the measurements, and next proof gates are in
+[the round-3 report](/home/nuc/src/ntru_plus-official-opt/docs/ntruplus768-official-opt-round3.md).
