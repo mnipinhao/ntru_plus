@@ -1,0 +1,21 @@
+{
+  "class": "supercop-derived-component; not Native KEM",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "cpu": 1,
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "launches": 9,
+  "elf_sha256": "9b8f7aed560493f359e5875726fd121c4057ff80bbdc2d37b52b431bb4f25cc4",
+  "source_sha256": {
+    "bench/bench_phase_research.c": "8fd0eb9a149061782b7f30ac538667d398d08c3fc229da6649974245f44e570c",
+    "generated/poly_phase_profile.c": "d3339d121f39b76ae0df07479551111187bd6b477ca5ae1dac251135514b33e1",
+    "upstream/supercop-avx2/poly.c": "cf8dc307c7acce70270f623ccc1ea8354e2580e307986b4e8fbabcbc6181d77b",
+    "tools/generate_phase_profile.py": "09c82a797876ff1389127995efa2bf21d9eaa61620df31a96c996d093a10712b"
+  },
+  "preflight": "BaseInv phases raw-exact; valid CT/SK ingress raw-exact",
+  "resets": "destructive phase input reset outside timed region",
+  "decoder_scope": "three direct poly_frombytes calls on valid inputs; real Decap declassifies the secret-key decode results and short-circuits failures",
+  "warning": "isolated phase costs cannot be summed into full caller"
+}

@@ -1,0 +1,154 @@
+{
+  "class": "source-level dynamic opcode census; not linked timing or range proof",
+  "source_sha256": "992b613701be5988e83798a4a8f56a798c7e47e4616db70e65eee7feb75332f4",
+  "stages": {
+    "top_split": {
+      "inner_iterations": 8,
+      "inner_arithmetic_static": {
+        "vpmullw": 3,
+        "vpmulhw": 0,
+        "vpmulhrsw": 0,
+        "vpaddw": 6,
+        "vpsubw": 3
+      },
+      "inner_arithmetic_dynamic": {
+        "vpmullw": 24,
+        "vpmulhw": 0,
+        "vpmulhrsw": 0,
+        "vpaddw": 48,
+        "vpsubw": 24
+      },
+      "scope_note": "stage-1 outer constant broadcasts are not multiplied by inner trips"
+    },
+    "radix3": {
+      "inner_iterations": 16,
+      "inner_arithmetic_static": {
+        "vpmullw": 3,
+        "vpmulhw": 6,
+        "vpmulhrsw": 0,
+        "vpaddw": 3,
+        "vpsubw": 7
+      },
+      "inner_arithmetic_dynamic": {
+        "vpmullw": 48,
+        "vpmulhw": 96,
+        "vpmulhrsw": 0,
+        "vpaddw": 48,
+        "vpsubw": 112
+      },
+      "scope_note": "stage-1 outer constant broadcasts are not multiplied by inner trips"
+    },
+    "radix2_first": {
+      "inner_iterations": 6,
+      "inner_arithmetic_static": {
+        "vpmullw": 4,
+        "vpmulhw": 8,
+        "vpmulhrsw": 0,
+        "vpaddw": 4,
+        "vpsubw": 8
+      },
+      "inner_arithmetic_dynamic": {
+        "vpmullw": 24,
+        "vpmulhw": 48,
+        "vpmulhrsw": 0,
+        "vpaddw": 24,
+        "vpsubw": 48
+      },
+      "scope_note": "stage-1 outer constant broadcasts are not multiplied by inner trips"
+    },
+    "radix2_d8": {
+      "inner_iterations": 6,
+      "inner_arithmetic_static": {
+        "vpmullw": 4,
+        "vpmulhw": 8,
+        "vpmulhrsw": 0,
+        "vpaddw": 4,
+        "vpsubw": 8
+      },
+      "inner_arithmetic_dynamic": {
+        "vpmullw": 24,
+        "vpmulhw": 48,
+        "vpmulhrsw": 0,
+        "vpaddw": 24,
+        "vpsubw": 48
+      },
+      "scope_note": "stage-1 outer constant broadcasts are not multiplied by inner trips"
+    },
+    "radix2_d4": {
+      "inner_iterations": 6,
+      "inner_arithmetic_static": {
+        "vpmullw": 4,
+        "vpmulhw": 8,
+        "vpmulhrsw": 0,
+        "vpaddw": 4,
+        "vpsubw": 8
+      },
+      "inner_arithmetic_dynamic": {
+        "vpmullw": 24,
+        "vpmulhw": 48,
+        "vpmulhrsw": 0,
+        "vpaddw": 24,
+        "vpsubw": 48
+      },
+      "scope_note": "stage-1 outer constant broadcasts are not multiplied by inner trips"
+    },
+    "radix2_d2": {
+      "inner_iterations": 6,
+      "inner_arithmetic_static": {
+        "vpmullw": 4,
+        "vpmulhw": 8,
+        "vpmulhrsw": 0,
+        "vpaddw": 4,
+        "vpsubw": 8
+      },
+      "inner_arithmetic_dynamic": {
+        "vpmullw": 24,
+        "vpmulhw": 48,
+        "vpmulhrsw": 0,
+        "vpaddw": 24,
+        "vpsubw": 48
+      },
+      "scope_note": "stage-1 outer constant broadcasts are not multiplied by inner trips"
+    },
+    "radix2_d1": {
+      "inner_iterations": 6,
+      "inner_arithmetic_static": {
+        "vpmullw": 12,
+        "vpmulhw": 8,
+        "vpmulhrsw": 8,
+        "vpaddw": 4,
+        "vpsubw": 16
+      },
+      "inner_arithmetic_dynamic": {
+        "vpmullw": 72,
+        "vpmulhw": 48,
+        "vpmulhrsw": 48,
+        "vpaddw": 24,
+        "vpsubw": 96
+      },
+      "scope_note": "stage-1 outer constant broadcasts are not multiplied by inner trips"
+    }
+  },
+  "fixed_twiddle_montgomery_chains": 168,
+  "top_split_raw_multiply_vectors": 24,
+  "terminal_barrett_vectors": 48,
+  "terminal_barrett_instructions": 144,
+  "terminal_barrett_full_signed_word": {
+    "q": 3457,
+    "v": 9,
+    "input": [
+      -32768,
+      32767
+    ],
+    "output": [
+      -3291,
+      3291
+    ],
+    "mod_q_preserved": true
+  },
+  "unproven": [
+    "per-lane pre-reduction bounds",
+    "consumer acceptance of lazy output",
+    "BaseInv and BaseMul no-overflow if terminal reduction removed"
+  ]
+}
