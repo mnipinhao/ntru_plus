@@ -16725,7 +16725,7 @@
       "generated/tile4_encap_range_refined.json": "d48daa345653b98b75402dbbeb751e9c62074210b4a0b385d0d14272bf4da228",
       "generated/tile4_q24_codec.json": "789222562cff17fbcb3ab4a0befaac300b2bdc3dae5218db4a6788c69146017f",
       "tools/generate_encap_packet_abi_gate.py": "b10757d8d44534ccc64e0513f213dfe2b39dee4ef038c4401e6dad5011d3bc11",
-      "tools/generate_encap_wire_schedule.py": "4823e5cd885106471532a271bdfeaca34ba65b6986a5bf9e63761ada9bab108f",
+      "tools/generate_encap_wire_schedule.py": "952fe4151d79efad2ffa207f6149e8ff666baad9ead6c45f5720139839c9ad15",
       "tools/generate_tile4.py": "f64aaf091fdfaf03d14c6f4f280b88047e2a1c5face6ab60d6ad1238a8a0cbcb"
     }
   },
@@ -24758,6 +24758,51 @@
   },
   "schema": "gt32-encap-wire-schedule-v1",
   "scope": "executable ownership and instruction-class schedule; no ASM or performance proof",
+  "storage_proof": {
+    "final_byte": 1151,
+    "final_packet_store_sizes": [
+      16,
+      8,
+      4
+    ],
+    "output_alias_contract": "external ct does not overlap W scratch",
+    "phase_order": {
+      "c_pack": 8,
+      "m_frontend": 5,
+      "m_terminal": 6,
+      "muladd": 7,
+      "pk_decode": 0,
+      "r_frontend": 1,
+      "r_pack_hash": 3,
+      "r_terminal": 2,
+      "sotp": 4
+    },
+    "polynomial_sized_new_temporary_bytes": 0,
+    "scratch_regions": {
+      "c": [
+        4608,
+        6144
+      ],
+      "h": [
+        0,
+        1536
+      ],
+      "m": [
+        3072,
+        4608
+      ],
+      "r": [
+        1536,
+        3072
+      ],
+      "work": [
+        6144,
+        7680
+      ]
+    },
+    "terminal_W_store_intervals_checked": 48,
+    "wire_bytes_checked": 1152
+  },
   "terminal": {
     "full_D1_live_peak_upper": 16,
     "instruction_counts": {

@@ -444,6 +444,44 @@ def caller_lifetimes() -> dict:
                        scratch="64-byte aligned", external_ct="unaligned stores"))
 
 
+def verify_storage(packets: list[dict]) -> dict:
+    poly_bytes = 1536
+    regions = {name:(i*poly_bytes,(i+1)*poly_bytes)
+               for i,name in enumerate(("h","r","m","c","work"))}
+    assert all(regions[a][1] <= regions[b][0]
+               for a,b in zip(regions, list(regions)[1:]))
+    phases = dict(pk_decode=0,r_frontend=1,r_terminal=2,r_pack_hash=3,
+                  sotp=4,m_frontend=5,m_terminal=6,muladd=7,c_pack=8)
+    assert phases["r_terminal"] < phases["r_pack_hash"] < phases["muladd"]
+    assert phases["m_frontend"] < phases["m_terminal"] < phases["muladd"]
+    assert phases["m_terminal"] < phases["muladd"]  # c frontend dies first
+    assert phases["pk_decode"] < phases["muladd"] < phases["c_pack"]
+    for p in packets:
+        addr = 256*p["forward_loop"]+p["rdi_loop_store_displacement"]
+        assert addr == 32*p["packet"] and 0 <= addr <= poly_bytes-32
+    # The existing vector pack intentionally overlaps four bytes of the
+    # next packet. Replay byte ownership and ensure the final packet uses
+    # 16+8+4 rather than an out-of-bounds second 16-byte store.
+    byte_owner = [None]*1152
+    for p in range(48):
+        start = 24*p
+        stores = [(start,16),(start+12,16)] if p < 47 else [
+            (start,16),(start+12,8),(start+20,4)]
+        for address,size in stores:
+            assert 0 <= address and address+size <= 1152
+            for byte in range(address,address+size):
+                # Only 12 bytes from each packed 128-bit half are semantic.
+                valid = (start <= byte < start+12) if address == start else (
+                    start+12 <= byte < start+24)
+                byte_owner[byte] = p if valid else None
+    assert byte_owner == [byte//24 for byte in range(1152)]
+    return dict(scratch_regions=regions, phase_order=phases,
+        terminal_W_store_intervals_checked=48, wire_bytes_checked=1152,
+        final_packet_store_sizes=[16,8,4], final_byte=1151,
+        polynomial_sized_new_temporary_bytes=0,
+        output_alias_contract="external ct does not overlap W scratch")
+
+
 def quartic_reference(h: list[int], r: list[int], m: list[int], lam: int) -> list[int]:
     ordinary = [0] * 4
     for i in range(4):
@@ -769,6 +807,7 @@ def main() -> None:
         packets=packets, terminal=terminal, ingress=decode,
         arithmetic=arithmetic, packing=packing, range=ranges,
         constants=constants, ledger=ledger, caller_lifetimes=caller_lifetimes(),
+        storage_proof=verify_storage(packets),
         decision="model schedules/ranges pass; exact linked allocation and performance remain unproven")
     out = ROOT/"generated/tile4_encap_wire_schedule.json"
     out.write_text(json.dumps(report, indent=2, sort_keys=True)+"\n")

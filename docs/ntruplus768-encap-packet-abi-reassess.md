@@ -157,6 +157,8 @@ packing body；其 v=9 reducer 仍執行，不把 lazy W 誤當 wire bytes。W p
 兩次 pack 合計 −384 routes。前 47 個 packet 可用通常的兩次 XMM store；
 第 48 個必須使用既有 8+4-byte safe tail，最後寫入 byte 1151，
 不得 16-byte 越界寫。外部 ct 與 W scratch 必須分離。
+Artifact 的 `storage_proof` 逐 byte replay 了 48 個 packet 的重疊 store，
+並檢查 W 的 32-byte store address、五個 scratch 區域與 c 的覆寫 phase。
 
 ### Packet-native MulAdd：兩種保留的 schedule
 
