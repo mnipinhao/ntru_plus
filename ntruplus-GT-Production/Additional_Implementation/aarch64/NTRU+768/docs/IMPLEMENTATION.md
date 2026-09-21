@@ -33,15 +33,15 @@ key generation:
       -> CQ pointwise products -> CQ canonical pack
 
 encapsulation:
-  canonical unpack -> block-major forward NTT
-      -> specialized a*b+c -> canonical pack
+  checked PK decode -> small Forward(r) -> loose pack -> hash_g/SOTP
+      -> small Forward(m) -> specialized a*b+c (out == m) -> canonical pack
 
 decapsulation:
-  canonical unpack -> block-major pointwise product with R^-1 retained
-      -> paired inverse NTT absorbs R^-1
+  packed ct/f checked first product with R^-1 retained; decode hinv
+      -> Decap paired inverse absorbs R^-1
       -> centered mod-3 representative
-      -> block-major forward NTT
-      -> QSoA verification product -> canonical bytes
+      -> Decap forward -> subtraction -> D1 verification product -> bytes
+      -> hash/SOTP/CBD -> second Decap forward -> bytes -> verification
 ```
 
 The KEM call graph in `kem.c` selects these paths directly. There is no
@@ -51,16 +51,16 @@ intermediate runtime dispatch.
 
 ### 3.1 Block-major GT layout
 
-`poly_ntt` writes the block-major transform layout used by encapsulation and
-decapsulation. The following production symbols consume this layout:
+`poly_ntt_loose` and `poly_ntt_encap_small` write the block-major transform
+layout used by encapsulation. The following symbols consume this layout:
 
 - `poly_basemul`
-- `poly_basemul_add`
+- `poly_basemul_add_encap`
 - `poly_invntt`, subject to the paired `R^-1` contract below
-- `poly_tobytes`, when serializing a block-major transform result
+- `poly_tobytes_encap`, when serializing a block-major transform result
 
-Block-major order is not canonical byte order. `poly_frombytes` and
-`poly_tobytes` apply the fixed permutation required at the external boundary.
+Block-major order is not canonical byte order. `poly_frombytes_encap` and
+`poly_tobytes_encap` apply the fixed permutation required at the external boundary.
 
 ### 3.2 Coefficient-quartic key-generation layout
 
@@ -81,7 +81,7 @@ block-major polynomial entrypoints.
 
 ### 3.3 QSoA verification layout
 
-The decapsulation verification endpoint uses a private QSoA representation:
+The retained older verification helpers use a private QSoA representation:
 
 ```text
 qsoa_frombytes
@@ -89,18 +89,21 @@ qsoa_frombytes
     -> qsoa_tobytes
 ```
 
-`gt_decap_verify_to_bytes` owns this complete conversion/product/serialization
-sequence. QSoA is not exposed through the public KEM or polynomial API.
+These helpers remain validation roots, not the selected kem.c sequence.
+The active Decap path uses `poly_frombytes_basemul_decap_scale`,
+`poly_invntt_decap_scale`, `poly_ntt_decap`, `poly_basemul_decap`, and
+`poly_tobytes_decap`. Its ordering must not be confused with Encap block-major.
 
 ## 4. Forward-Transform Endpoints
 
-The release exposes two terminal layouts from the same forward-transform
-arithmetic:
+The maintained Forward endpoints have distinct caller contracts:
 
 | Symbol | Input | Output | Production consumer |
 |---|---|---|---|
-| `poly_ntt` | coefficient order | block-major GT | encapsulation and decapsulation pointwise paths |
-| `gt_keygen_poly_ntt_to_cq` | coefficient order | key-generation CQ | CQ base inversion |
+| `poly_ntt_loose` | generic coefficients | block-major loose GT | validation oracle; proved loose consumers |
+| `poly_ntt_encap_small` | signed [-2,2] | bit-exact generic loose GT | Encap r/m, supports exact in-place |
+| `poly_ntt_keygen_cq` | coefficient order | key-generation CQ | CQ base inversion |
+| `poly_ntt_decap` | Decap coefficient inputs | Decap consumer layout | Decap verification |
 
 The endpoints differ at the selected final store layout. A caller must choose
 the endpoint from the next kernel's expected representation; no generic
@@ -111,23 +114,23 @@ runtime conversion is inserted between them.
 The private key-generation pipeline is:
 
 ```text
-gt_keygen_poly_ntt_to_cq
-    -> gt_keygen_baseinv_cq_to_cq_scaled_r
-    -> gt_keygen_basemul_cq_cq_to_cq_scaled_r
-    -> gt_keygen_tobytes_cq
+poly_ntt_keygen_cq
+    -> poly_baseinv_keygen_cq_scaled_r
+    -> poly_basemul_keygen_cq_scaled_r
+    -> poly_tobytes_keygen_cq
 ```
 
-`gt_keygen_baseinv_cq_to_cq_scaled_r` returns nonzero for a noninvertible
+`poly_baseinv_keygen_cq_scaled_r` returns nonzero for a noninvertible
 sample; `crypto_kem_keypair_internal` then resamples that polynomial. On
 success, its output scaling and CQ layout are the input contract of
-`gt_keygen_basemul_cq_cq_to_cq_scaled_r`.
+`poly_basemul_keygen_cq_scaled_r`.
 
-`gt_keygen_tobytes_cq` is the only CQ-to-canonical boundary in the production
+`poly_tobytes_keygen_cq` is the only CQ-to-canonical boundary in the production
 key-generation path.
 
 ## 6. Pointwise/Inverse Contract
 
-The production decapsulation pair is:
+The test-only generic pointwise/inverse pair in `test/reference/` is:
 
 ```text
 poly_basemul
@@ -140,30 +143,43 @@ poly_invntt
 These two symbols form one representation contract. `poly_invntt` is not an
 independently normalized generic inverse for arbitrary transform-domain input,
 and the output of `poly_basemul` must not be interpreted as a separately
-normalized generic product.
+normalized generic product. Their declarations live in
+`test/reference/poly_reference.h`; only the ABI test links these sources.
+Neither kernel is included in KEM_SOURCES or the SUPERCOP export.
+The shared `gt_rowbitrev_lambda` table remains in production because the
+Encap basemul-add also consumes it. `basemul_lambda.c` owns the sole C
+definition; assembly refers to the external symbol and the linker resolves it.
+No public or internal header declares the table because there is no C consumer.
+Forward NTT sources are unchanged.
 
 The three inverse Stage45 rows share one internal row helper. This changes only
 the call structure and linked text size; row arithmetic, input order, and
 output representation are unchanged.
 
+The active Decap first-product pair instead is
+`poly_frombytes_basemul_decap_scale -> poly_invntt_decap_scale`; its one-pointer
+inverse and first-product scaling must remain paired. D1 `poly_basemul_decap`
+is a later normal-domain verification product, not a replacement for that
+scaled first product.
+
 ### 6.1 Encapsulation exact-alias contract
 
-The encapsulation-only `poly_basemul_add` call passes the message polynomial as
+The encapsulation-only `poly_basemul_add_encap` call passes the message polynomial as
 both its additive input and output.  The selected assembly processes one
 64-byte block at a time and loads the complete additive-input block before
 storing that output block, so this exact alias is part of the fixed production
-contract.  The result is consumed immediately by `poly_tobytes`.
+contract.  The result is consumed immediately by `poly_tobytes_encap`.
 
 This alias is not a general public overlap guarantee: callers must not infer
-that `poly_basemul_add` supports partial overlap or output aliasing with either
+that `poly_basemul_add_encap` supports partial overlap or output aliasing with either
 multiplicative input.
 
 ## 7. Serialization Boundary
 
-`poly_tobytes` and `poly_frombytes` implement canonical NTRU+ byte order while
+`poly_tobytes_encap` and `poly_frombytes_encap` implement canonical NTRU+ byte order while
 absorbing the fixed block-major Good-Thomas permutation.
 
-The selected `poly_tobytes` has twelve layout-specific gather frontends and one
+The selected `poly_tobytes_encap` has twelve layout-specific gather frontends and one
 shared normalize/transpose/pack core. The key-generation CQ packer keeps its
 CQ-specific frontend and calls a shared pack core for its output chunks. These
 helpers do not create an intermediate public format.
@@ -174,9 +190,13 @@ QSoA storage.
 
 ## 8. Source Closure
 
-The exact release source list is defined by `Makefile`. Public arithmetic files
-remain under `asm/`; selected KEM-only endpoints are isolated under
-`asm/internal/` and `internal/`.
+The exact release source list is defined by `Makefile`. All production C,
+assembly, and headers are in the package root. Private endpoint declarations
+remain separate in `keygen.h`, `ntt.h`, and `decap_verify.h`.
+The endpoint naming and ntt/base/pack consolidation preserve parameters and
+layout contracts. Each original assembly owner has a private identifier
+namespace and a corresponding section boundary. Validation/reference endpoints
+remain; only the proved-unreferenced legacy Decap twist table was removed.
 
 Production sources are flattened: arithmetic bodies, constants, lambda tables,
 and assembly helper macros reside in the `.S` or `.c` file that owns them. No
@@ -196,7 +216,7 @@ The release intentionally excludes:
 
 Several closed-world assembly leaves use `d8-d15` as internal scratch
 registers. The public `crypto_kem_keypair`, `crypto_kem_enc`, and
-`crypto_kem_dec` wrappers in `asm/kem_api.S` save those AAPCS64 callee-saved
+`crypto_kem_dec` wrappers in `kem_api.S` save those AAPCS64 callee-saved
 lanes once, call the fixed internal KEM implementation, and restore them on
 return.
 
@@ -210,57 +230,56 @@ the fixed source closure in this directory. A compiler or optimization-policy
 change is therefore a release-contract change: it requires rebuilding the
 whole closure and rerunning `make check`, including the KEM round-trip, public
 ABI sentinel, and byte-for-byte KAT gates. The release does not claim that an
-arbitrary object assembled from `asm/internal/` is independently AAPCS64
+arbitrary private assembly object is independently AAPCS64
 callable.
 
 Validated toolchain families are GNU-compatible AArch64 GCC on Linux and Apple
 Clang on macOS. Performance claims remain tied to the exact Linux compiler
 reported by the benchmark summary.
 
-## 10. Secret-Lifetime and Zeroization Contract
+## 10. Official-Aligned Cleanup Policy
 
-The production KEM explicitly clears secret-bearing automatic and heap
-storage before the owning scope returns or releases it:
+This package follows the lower-clear policy used in SUPERCOP-20260627
+ntruplus768/aarch64, rather than the former P0-B full-frame policy.
 
-- key-generation samples, inverses, numerator scratch, and the hierarchical
-  base-inversion denominator tree
-- encapsulation and decapsulation messages, hash images, coins, and polynomial
-  temporaries
-- portable FIPS202 absorb buffers, squeeze buffers, stack states, and
-  allocated incremental contexts
-- handwritten NTT, inverse-NTT, pointwise, serialization, and base-inversion
-  spill frames
+- Keygen shares a 192-byte sample buffer and one output polynomial, clearing
+  them once at their final lifetime. Secret samples/inverses and GT-specific
+  numerator/denominator scratch are still cleared. Retry values are overwritten.
+- Encap reuses ciphertext as the pack-r/hash workspace; it clears secret
+  coins, message, hash buffer, r and m, but not the public decoded h.
+- Decap clears its complete scratch union on every exit. Reducing the buf3
+  declaration does not shrink the union because a polynomial also occupies it.
+- hash_f processes a public key and does not wipe its prefixed input copy.
+  hash_g/hash_h still clear their prefixed inputs. NO_CE uses Official's inline
+  SHAKE contexts with the same clear sites, routed through secure_clear so
+  the package audit hook and platform fallback remain available.
+- Extra P0-B assembly frame/register wipes are removed. ABI saves/restores
+  remain. Existing short keygen prepare/fqinv register cleanups remain, so this
+  is policy alignment, not identical instruction-level erasure coverage.
 
-`internal/secure_clear.h` uses one technique on every non-Windows platform,
-following mlkem-native: a plain clear followed by a compiler barrier, where the
-barrier is what stops the store being removed as a dead write. A volatile byte
-loop is kept for compilers without GNU inline asm. It previously selected among
-`memset_s`, `explicit_bzero` and that byte loop, which meant the behaviour could
-not be predicted without knowing which libc was in play -- on macOS this tree
-fell through every branch to the loop, the slowest of the three, at a measured
-cost of 39% of the whole KEM. The public KEM wrappers preserve the return value and restored
-AAPCS64 callee-saved state, then erase their spill image and the remaining
-caller-saved general-purpose and SIMD temporaries. Private assembly leaves
-clear their complete spill frames or their secret exponent/product registers
-at the point where the result has been committed.
+There is no longer a promise to erase all handwritten spill frames or all
+caller-saved registers. This explicitly trades the former additional cleanup
+for the requested Official-style policy. It is not a proof about compiler
+copies, caches, swap, or microarchitectural remanence.
 
-The policy has two release gates:
+make zeroization-source-check checks the retained clear sites and the absence
+of the retired P0-B blocks. make zeroization audits actual C cleared bytes.
+The six-path experiment audit additionally covers invalid public keys,
+noncanonical ciphertexts, and verification failures.
 
-```text
-make zeroization-source-check
-make zeroization
-```
+## 11. D1 and Encap-Small Endpoints
 
-The first checks that every audited source boundary still contains its
-required clear. The second builds with `GT_SECURE_CLEAR_AUDIT_HOOK`, runs a
-complete keypair/encapsulation/decapsulation flow, and verifies that the
-portable C clear primitive observes zero bytes after every call and sees the
-large key-generation, FIPS202-state, and domain-separated hash buffers.
-Assembly clearing is checked statically because the portable hook cannot
-intercept stores emitted directly by handwritten assembly.
+Decap verification basemul uses the e03 staggered Q31 final reduction:
+normal-domain int32 accumulator -> normal-domain int16, reciprocal 621199.
+The proved accumulator magnitude is at most 452984832 and residual magnitude
+at most 2001; serialization remains canonical and the wire contract is unchanged.
+This is not the scale-retaining pointwise/inverse endpoint described above.
 
-This is a best-effort lifetime policy for architecturally visible memory and
-register state. It does not claim erasure of compiler-created copies,
-microarchitectural state, caches, or swap. Any source, compiler, ABI, or stack
-layout change requires rerunning `make check` and reviewing the static
-coverage list in `scripts/check_zeroization.py`.
+Encap's two Forward calls use gt_internal_poly_ntt_encap_small. Only inputs
+with signed coefficients in [-2,2] are valid. For these inputs,
+floor((-6844*b + 16384)/32768) = 0, so 48 top-split quotient instructions and
+48 corrections are unnecessary. Subsequent instructions and output bits are
+identical to generic Forward, including aliasing. The shared suffix reloads
+its saved public endpoint selector after x2 has been reused as a table pointer.
+Keygen and Decap keep their existing endpoints. make small tests 4096 fixtures;
+the new endpoint is also covered by the AAPCS64 sentinel.

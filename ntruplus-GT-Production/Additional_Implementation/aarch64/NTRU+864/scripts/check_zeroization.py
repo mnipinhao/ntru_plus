@@ -14,9 +14,15 @@ require("secure_clear.h",("SECURE_CLEAR_AUDIT_HOOK",
 require("kem.c",("secure_clear(&f, sizeof f);","secure_clear(&ginv, sizeof ginv);",
                  "secure_clear(msg,sizeof msg);","secure_clear(&m,sizeof m);"))
 require("symmetric.c",("secure_clear(data, sizeof data);",))
-# ntt.S allocates nothing: its 1792-byte scratch is the caller's, and
-# ntt_api.c clears it, which is why this pins the C side instead.
+# Official-aligned cleanup, as NTRU+768 adopted: assembly working frames are
+# not wiped.  What is pinned is what survives that policy -- the leaves allocate
+# nothing the caller cannot name, and the volatile SIMD registers are still
+# erased, which costs a cycle and covers state no later work overwrites.
 require("ntt.S", ("mov x21, x2",))
-require("ntt_api.c", ("int16_t scratch[896];", "secure_clear(scratch, sizeof scratch);"))
+require("ntt_api.c", ("int16_t scratch[896];",))
 require("inverse.S",("movi v8.16b, #0","movi v31.16b, #0"))
+for f in ("inverse.S", "ntt.S"):
+    t=(ROOT/f).read_text()
+    for retired in (".Lbinv_zero_scratch", ".Lp13inv_wipe", ".Lp0b_clear_1792"):
+        if retired in t: raise SystemExit(f"{f}: retired frame wipe {retired} is back")
 print("production zeroization source coverage: ok")

@@ -1,6 +1,16 @@
+/* BEGIN original decap_verify.S; private namespace module_decap_verify_ */
+#ifdef __APPLE__
+.text
+#else
+.section .text.module_decap_verify_body,"ax",%progbits
+#endif
 // Flattened production decapsulation verification backend.
 // V3 gather pipeline with Slothy-scheduled shared helper.
+#ifdef __APPLE__
 .text
+#else
+.section .text.module_decap_verify_body,"ax",%progbits
+#endif
 .p2align 5
 .global gt_decap_verify_pointwise
 .global _gt_decap_verify_pointwise
@@ -13,7 +23,7 @@ _gt_decap_verify_pointwise:
     stp d10, d11, [sp, #32]
     stp d12, d13, [sp, #48]
     stp d14, d15, [sp, #64]
-    adr x3, .Lfused_gather_zetas_mul
+    adr x3, module_decap_verify_.Lfused_gather_zetas_mul
     ld1 {v0.8h}, [x3], #16
 
     // QSoA group 0: canonical quartics [0, 2, 4, 6, 8, 10, 12, 14]
@@ -46,7 +56,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 1: canonical quartics [1, 3, 5, 7, 9, 11, 13, 15]
     // Full earliest-death lookahead to QSoA group 2.
     ins v24.d[1], v25.d[0]
@@ -69,7 +79,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 2: canonical quartics [16, 18, 20, 22, 24, 26, 28, 30]
     // Full earliest-death lookahead to QSoA group 3.
     ins v24.d[1], v25.d[0]
@@ -92,7 +102,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 3: canonical quartics [17, 19, 21, 23, 25, 27, 29, 31]
     // Full earliest-death lookahead to QSoA group 4.
     ins v24.d[1], v25.d[0]
@@ -115,7 +125,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 4: canonical quartics [32, 34, 36, 38, 40, 42, 44, 46]
     // Full earliest-death lookahead to QSoA group 5.
     ins v24.d[1], v25.d[0]
@@ -138,7 +148,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 5: canonical quartics [33, 35, 37, 39, 41, 43, 45, 47]
     // Full earliest-death lookahead to QSoA group 6.
     ins v24.d[1], v25.d[0]
@@ -161,7 +171,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 6: canonical quartics [48, 50, 52, 54, 56, 58, 60, 62]
     // Full earliest-death lookahead to QSoA group 7.
     ins v24.d[1], v25.d[0]
@@ -184,7 +194,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 7: canonical quartics [49, 51, 53, 55, 57, 59, 61, 63]
     // Full earliest-death lookahead to QSoA group 8.
     ins v24.d[1], v25.d[0]
@@ -207,7 +217,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 8: canonical quartics [64, 66, 68, 70, 72, 74, 76, 78]
     // Full earliest-death lookahead to QSoA group 9.
     ins v24.d[1], v25.d[0]
@@ -230,7 +240,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 9: canonical quartics [65, 67, 69, 71, 73, 75, 77, 79]
     // Full earliest-death lookahead to QSoA group 10.
     ins v24.d[1], v25.d[0]
@@ -253,7 +263,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 10: canonical quartics [80, 82, 84, 86, 88, 90, 92, 94]
     // Full earliest-death lookahead to QSoA group 11.
     ins v24.d[1], v25.d[0]
@@ -276,7 +286,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 11: canonical quartics [81, 83, 85, 87, 89, 91, 93, 95]
     // Full earliest-death lookahead to QSoA group 12.
     ins v24.d[1], v25.d[0]
@@ -299,7 +309,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 12: canonical quartics [96, 98, 100, 102, 104, 106, 108, 110]
     // Full earliest-death lookahead to QSoA group 13.
     ins v24.d[1], v25.d[0]
@@ -322,7 +332,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 13: canonical quartics [97, 99, 101, 103, 105, 107, 109, 111]
     // Full earliest-death lookahead to QSoA group 14.
     ins v24.d[1], v25.d[0]
@@ -345,7 +355,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 14: canonical quartics [112, 114, 116, 118, 120, 122, 124, 126]
     // Full earliest-death lookahead to QSoA group 15.
     ins v24.d[1], v25.d[0]
@@ -368,7 +378,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 15: canonical quartics [113, 115, 117, 119, 121, 123, 125, 127]
     // Full earliest-death lookahead to QSoA group 16.
     ins v24.d[1], v25.d[0]
@@ -391,7 +401,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 16: canonical quartics [128, 130, 132, 134, 136, 138, 140, 142]
     // Full earliest-death lookahead to QSoA group 17.
     ins v24.d[1], v25.d[0]
@@ -414,7 +424,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 17: canonical quartics [129, 131, 133, 135, 137, 139, 141, 143]
     // Full earliest-death lookahead to QSoA group 18.
     ins v24.d[1], v25.d[0]
@@ -437,7 +447,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 18: canonical quartics [144, 146, 148, 150, 152, 154, 156, 158]
     // Full earliest-death lookahead to QSoA group 19.
     ins v24.d[1], v25.d[0]
@@ -460,7 +470,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 19: canonical quartics [145, 147, 149, 151, 153, 155, 157, 159]
     // Full earliest-death lookahead to QSoA group 20.
     ins v24.d[1], v25.d[0]
@@ -483,7 +493,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 20: canonical quartics [160, 162, 164, 166, 168, 170, 172, 174]
     // Full earliest-death lookahead to QSoA group 21.
     ins v24.d[1], v25.d[0]
@@ -506,7 +516,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 21: canonical quartics [161, 163, 165, 167, 169, 171, 173, 175]
     // Full earliest-death lookahead to QSoA group 22.
     ins v24.d[1], v25.d[0]
@@ -529,7 +539,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 22: canonical quartics [176, 178, 180, 182, 184, 186, 188, 190]
     // Full earliest-death lookahead to QSoA group 23.
     ins v24.d[1], v25.d[0]
@@ -552,7 +562,7 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
     // QSoA group 23: canonical quartics [177, 179, 181, 183, 185, 187, 189, 191]
     ins v24.d[1], v25.d[0]
     ins v26.d[1], v27.d[0]
@@ -566,21 +576,16 @@ _gt_decap_verify_pointwise:
     uzp1 v5.8h, v17.8h, v19.8h
     uzp2 v6.8h, v16.8h, v18.8h
     uzp2 v7.8h, v17.8h, v19.8h
-    bl .Lfused_gather_mul_group
+    bl module_decap_verify_.Lfused_gather_mul_group
 ldr x30, [sp, #0]
     ldp d8, d9, [sp, #16]
     ldp d10, d11, [sp, #32]
     ldp d12, d13, [sp, #48]
     ldp d14, d15, [sp, #64]
-    /* P0-B: erase the complete handwritten spill frame. */
-    movi v0.16b, #0
-    stp q0, q0, [sp, #0]
-    stp q0, q0, [sp, #32]
-    str q0, [sp, #64]
     add sp, sp, #80
     ret
 
-.Lfused_gather_mul_group:
+module_decap_verify_.Lfused_gather_mul_group:
     // Slothy N1 schedule; q24-q31 are live-through and untouched.
     ld1 {v8.8h, v9.8h, v10.8h, v11.8h}, [x2], #64
     ld1 {v23.8h}, [x3], #16
@@ -685,7 +690,7 @@ ldr x30, [sp, #0]
     ret
 
 .p2align 4
-.Lfused_gather_zetas_mul:
+module_decap_verify_.Lfused_gather_zetas_mul:
     .hword 0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
     .hword 0x00df, 0x0472, 0xfbdd, 0xfe73, 0xff49, 0x0677, 0x022f, 0xf976
     .hword 0xff21, 0xfb8e, 0x0423, 0x018d, 0x00b7, 0xf989, 0xfdd1, 0x068a
@@ -711,3 +716,5 @@ ldr x30, [sp, #0]
     .hword 0xffea, 0xf953, 0x0113, 0xfbac, 0xfe9e, 0x06c0, 0x03c8, 0xfca6
     .hword 0x04c5, 0xff26, 0x0126, 0xfd24, 0xfbb9, 0x037c, 0x0634, 0xfcf5
     .hword 0xfb3b, 0x00da, 0xfeda, 0x02dc, 0x0447, 0xfc84, 0xf9cc, 0x030b
+
+/* END original decap_verify.S */

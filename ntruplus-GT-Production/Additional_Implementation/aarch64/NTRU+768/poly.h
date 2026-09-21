@@ -10,12 +10,12 @@ typedef struct {
 } poly __attribute__((aligned(16)));
 
 /* Canonical public-key, secret-key, and ciphertext byte boundary. */
-void poly_tobytes(uint8_t out[NTRUPLUS_POLYBYTES], const poly *a);
+void poly_tobytes_encap(uint8_t out[NTRUPLUS_POLYBYTES], const poly *a);
 /*
  * Decode every coefficient and return 1 iff any decoded 12-bit value is
  * outside [0, NTRUPLUS_Q). The output is complete on both return paths.
  */
-int poly_frombytes(poly *out,
+int poly_frombytes_encap(poly *out,
                    const uint8_t in[NTRUPLUS_POLYBYTES]);
 
 void poly_cbd1(poly *out, const uint8_t buf[NTRUPLUS_N / 4]);
@@ -24,19 +24,13 @@ void poly_sotp_encode(poly *out, const uint8_t msg[NTRUPLUS_N / 8],
 int poly_sotp_decode(uint8_t msg[NTRUPLUS_N / 8], const poly *a,
                      const uint8_t buf[NTRUPLUS_N / 4]);
 
-/*
- * The production decapsulation pair keeps one R^-1 factor after basemul and
- * absorbs it in the inverse transform's final constants.
- */
-void poly_basemul(poly *out, const poly *a, const poly *b);
-void poly_invntt(poly *out, const poly *in);
-
 /* Encapsulation-only a*b+c endpoint; its result is packed immediately. */
-void poly_basemul_add(poly *out, const poly *a, const poly *b,
+void poly_basemul_add_encap(poly *out, const poly *a, const poly *b,
                       const poly *c);
 
 void poly_sub(poly *out, const poly *a, const poly *b);
 void poly_triple(poly *out, const poly *in);
+/* Centers modulo q, then modulo 3; input [-3456,3456]. Exact alias allowed. */
 void poly_crepmod3(poly *out, const poly *in);
 
 #endif

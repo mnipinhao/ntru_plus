@@ -1,4 +1,9 @@
+/* Section: base.S; private namespace module_base_ */
+#ifdef __APPLE__
 .text
+#else
+.section .text.module_base_body,"ax",%progbits
+#endif
 .align 4
 
 #ifdef __APPLE__
@@ -23,13 +28,13 @@ GT_RMINUS1_PAIR_DARWIN_SYMBOL:
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
     stp d14, d15, [sp, #48]
-    adr x3, .Lrminus1_pair_consts
+    adr x3, module_base_.Lrminus1_pair_consts
     ld1 {v0.8h}, [x3]
     LOAD_ADDR_PAGE(x4, gt_rowbitrev_lambda)
     LOAD_ADDR_OFF(x4, gt_rowbitrev_lambda)
     mov x8, #12
-.Lrminus1_pair_production_loop:
-        .Lrminus1_pair_slothy_start:
+module_base_.Lrminus1_pair_production_loop:
+        module_base_.Lrminus1_pair_slothy_start:
         ld4 {v28.8H, v29.8H, v30.8H, v31.8H}, [x1], #64
         ld4 {v10.8H, v11.8H, v12.8H, v13.8H}, [x2], #64
         smull2 v27.4S, v29.8H, v13.8H
@@ -184,21 +189,17 @@ GT_RMINUS1_PAIR_DARWIN_SYMBOL:
         uzp2 v3.8H, v17.8H, v6.8H
         uzp2 v4.8H, v21.8H, v27.8H
         st4 {v2.8H, v3.8H, v4.8H, v5.8H}, [x0], #64
-        .Lrminus1_pair_slothy_end:
+        module_base_.Lrminus1_pair_slothy_end:
     subs x8, x8, #1
-    b.ne .Lrminus1_pair_production_loop
+    b.ne module_base_.Lrminus1_pair_production_loop
     ldp d14, d15, [sp, #48]
     ldp d12, d13, [sp, #32]
     ldp d10, d11, [sp, #16]
     ldp d8, d9, [sp, #0]
-    /* P0-B: erase the complete handwritten spill frame. */
-    movi v0.16b, #0
-    stp q0, q0, [sp, #0]
-    stp q0, q0, [sp, #32]
     add sp, sp, #64
     ret
 .align 4
-.Lrminus1_pair_consts:
+module_base_.Lrminus1_pair_consts:
     .hword 0x0d81, 0x4bd4, 0xcd7f, 0xff6d
     .hword 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
 
@@ -208,3 +209,5 @@ GT_RMINUS1_PAIR_DARWIN_SYMBOL:
 #endif
 #undef LOAD_ADDR_PAGE
 #undef LOAD_ADDR_OFF
+
+/* End section: base.S */

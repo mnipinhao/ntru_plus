@@ -35,6 +35,7 @@ BANNED_GENERATED_NAMES = {
     "test_canonical",
     "test_kem",
     "test_zeroization",
+    "test_support",
 }
 BANNED_TOKENS = (
     "GT_EXPERIMENT_",
@@ -43,15 +44,13 @@ BANNED_TOKENS = (
     "GT_PRODUCTION_VARIANT",
 )
 REQUIRED_PUBLIC_SYMBOLS = (
-    "poly_invntt",
-    "poly_basemul",
-    "poly_basemul_add",
-    "poly_tobytes",
-    "poly_frombytes",
+    "poly_basemul_add_encap",
+    "poly_tobytes_encap",
+    "poly_frombytes_encap",
 )
 REQUIRED_INTERNAL_KEM_SYMBOLS = (
-    "gt_internal_poly_ntt_loose",
-    "gt_internal_poly_tobytes_from_loose",
+    "poly_ntt_encap_small_lazy",
+    "poly_tobytes_encap_loose",
 )
 EXPECTED_KAT_RSP_SHA256 = (
     "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8"
@@ -95,12 +94,18 @@ for path in files:
             fail(f"selector token {token!r}: {path.relative_to(ROOT)}")
 
 headers = (ROOT / "poly.h").read_text(encoding="utf-8")
+reference_header = (ROOT / "test/reference/poly_reference.h").read_text()
+for symbol in ("poly_basemul", "poly_invntt"):
+    if re.search(rf"\b{symbol}\s*\(", headers):
+        fail(f"test-only declaration in production header: {symbol}")
+    if not re.search(rf"\b{symbol}\s*\(", reference_header):
+        fail(f"missing test-only declaration: {symbol}")
 for symbol in REQUIRED_PUBLIC_SYMBOLS:
     if re.search(rf"\b{re.escape(symbol)}\s*\(", headers) is None:
         fail(f"missing public declaration: {symbol}")
 
 kem_source = (ROOT / "kem.c").read_text(encoding="utf-8")
-internal_headers = (ROOT / "internal/ntt.h").read_text(encoding="utf-8")
+internal_headers = (ROOT / "ntt.h").read_text(encoding="utf-8")
 for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
     if re.search(rf"\b{re.escape(symbol)}\s*\(", internal_headers) is None:
         fail(f"missing internal declaration: {symbol}")
@@ -108,23 +113,28 @@ for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
         fail(f"missing internal KEM consumer: {symbol}")
 
 expected = {
-    "asm/ntt.S",
-    "asm/invntt.S",
-    "asm/base.S",
-    "asm/pack.S",
-    "asm/cbd.S",
-    "asm/support.S",
-    "asm/kem_api.S",
+    "ntt.S",
+    "add.S",
+    "base.S",
+    "pack.S",
+    "cbd.S",
+    "crepmod3.S",
+    "kem_api.S",
+    "keccakf1600.S",
+    "keccakf1600_v84a.S",
     "kem.c",
     "poly.h",
     "Makefile",
     "LICENSE",
     "SOURCE-MANIFEST.sha256",
-    "internal/secure_clear.h",
-    "internal/ntt.h",
-    "scripts/check_zeroization.py","scripts/export_supercop.py",
+    "util.h",
+    "ntt.h",
+    "scripts/check_zeroization.py",
     "test/test_zeroization.c",
     "test/test_canonical.c",
+    "test/reference/basemul.S",
+    "test/reference/invntt.S",
+    "test/reference/poly_reference.h",
     "kat/expected/PQCkemKAT_2336.req",
     "kat/expected/PQCkemKAT_2336.rsp",
 }

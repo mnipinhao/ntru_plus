@@ -1,3 +1,9 @@
+/* Section: invntt.S; private namespace module_invntt_ */
+#ifdef __APPLE__
+.text
+#else
+.section .text.module_invntt_body,"ax",%progbits
+#endif
 /*
  * Production GT inverse NTT for inputs carrying one extra R^-1 factor.
  *
@@ -9,9 +15,11 @@
 
 /*
  * Production-only AArch64 NEON inverse NTT for the Good-Thomas row-bitrev
- * layout produced by asm/ntt.S.
+ * layout produced by the generic Forward NTT above.
  *
- * This file keeps only the path currently wired into production wrappers:
+ * This generic inverse is retained for the raw-factor pair and ABI tests.
+ * The active Decap entry is poly_invntt_decap_scale, defined below.
+ * Its implementation uses:
  *   - direct physical input -> inverse NTT32 stage123
  *   - stage123 stripe scratch laid out for stage45 consumption
  *   - Slothy-scheduled stage45 + row-end Barrett reduction fusion
@@ -19,39 +27,39 @@
  *   - fixed rminus1 branchfold constants
  */
 
-.macro BARRETT_REDUCE reg, tmp
+.macro module_invntt_BARRETT_REDUCE reg, tmp
     sqdmulh \tmp\().8h, \reg\().8h, v0.h[1]
     srshr   \tmp\().8h, \tmp\().8h, #11
     mls     \reg\().8h, \tmp\().8h, v0.h[0]
 .endm
 
-.macro FQMUL_LANE out, in, tw, twlane, pre, prelane, tmp
+.macro module_invntt_FQMUL_LANE out, in, tw, twlane, pre, prelane, tmp
     sqrdmulh \tmp\().8h, \in\().8h, \pre\().h[\prelane]
     mul      \out\().8h, \in\().8h, \tw\().h[\twlane]
     mls      \out\().8h, \tmp\().8h, v0.h[0]
 .endm
 
-.macro INV_BUTTERFLY_LANE lo, hi, tw, twlane, pre, prelane, prod, tmp
-    FQMUL_LANE \prod, \hi, \tw, \twlane, \pre, \prelane, \tmp
+.macro module_invntt_INV_BUTTERFLY_LANE lo, hi, tw, twlane, pre, prelane, prod, tmp
+    module_invntt_FQMUL_LANE \prod, \hi, \tw, \twlane, \pre, \prelane, \tmp
     mov      \tmp\().16b, \lo\().16b
     add      \lo\().8h, \lo\().8h, \prod\().8h
     sub      \hi\().8h, \tmp\().8h, \prod\().8h
 .endm
 
-.macro INV_BUTTERFLY_IDENTITY_LAZY lo, hi, tmp
+.macro module_invntt_INV_BUTTERFLY_IDENTITY_LAZY lo, hi, tmp
     /* Proof-gated twiddle=1 path with the reduction intentionally deferred. */
     mov      \tmp\().16b, \lo\().16b
     add      \lo\().8h, \lo\().8h, \hi\().8h
     sub      \hi\().8h, \tmp\().8h, \hi\().8h
 .endm
 
-.macro DIRECT_STAGE123_VEC dst, srcoff
+.macro module_invntt_DIRECT_STAGE123_VEC dst, srcoff
     ldr d\dst, [x3, #\srcoff]
     ldr d12, [x4, #\srcoff]
     mov v\dst\().d[1], v12.d[0]
 .endm
 
-.macro STORE_STAGE123_STRIPE_SCRATCH group
+.macro module_invntt_STORE_STAGE123_STRIPE_SCRATCH group
     /*
      * Store one 8-vector stage123 block in stage45 stripe-major order:
      *   scratch[64*j + 16*group] = stage123_output[j + 8*group]
@@ -73,96 +81,96 @@
     str q10, [x14, #(64 * 7 + 16 * \group)]
 .endm
 
-.macro DIRECT_STAGE123_BLOCK_TO_SCRATCH group, off0, off1, off2, off3, off4, off5, off6, off7
-    DIRECT_STAGE123_VEC 3, \off0
-    DIRECT_STAGE123_VEC 4, \off1
-    DIRECT_STAGE123_VEC 5, \off2
-    DIRECT_STAGE123_VEC 6, \off3
-    DIRECT_STAGE123_VEC 7, \off4
-    DIRECT_STAGE123_VEC 8, \off5
-    DIRECT_STAGE123_VEC 9, \off6
-    DIRECT_STAGE123_VEC 10, \off7
+.macro module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH group, off0, off1, off2, off3, off4, off5, off6, off7
+    module_invntt_DIRECT_STAGE123_VEC 3, \off0
+    module_invntt_DIRECT_STAGE123_VEC 4, \off1
+    module_invntt_DIRECT_STAGE123_VEC 5, \off2
+    module_invntt_DIRECT_STAGE123_VEC 6, \off3
+    module_invntt_DIRECT_STAGE123_VEC 7, \off4
+    module_invntt_DIRECT_STAGE123_VEC 8, \off5
+    module_invntt_DIRECT_STAGE123_VEC 9, \off6
+    module_invntt_DIRECT_STAGE123_VEC 10, \off7
 
     /* len=2 */
-    INV_BUTTERFLY_IDENTITY_LAZY v3, v4, v12
-    INV_BUTTERFLY_IDENTITY_LAZY v5, v6, v12
-    INV_BUTTERFLY_IDENTITY_LAZY v7, v8, v12
-    INV_BUTTERFLY_IDENTITY_LAZY v9, v10, v12
+    module_invntt_INV_BUTTERFLY_IDENTITY_LAZY v3, v4, v12
+    module_invntt_INV_BUTTERFLY_IDENTITY_LAZY v5, v6, v12
+    module_invntt_INV_BUTTERFLY_IDENTITY_LAZY v7, v8, v12
+    module_invntt_INV_BUTTERFLY_IDENTITY_LAZY v9, v10, v12
 
     /* len=4 */
-    INV_BUTTERFLY_IDENTITY_LAZY v3, v5, v12
-    INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
-    INV_BUTTERFLY_IDENTITY_LAZY v7, v9, v12
-    INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
+    module_invntt_INV_BUTTERFLY_IDENTITY_LAZY v3, v5, v12
+    module_invntt_INV_BUTTERFLY_LANE v4, v6, v1, 1, v2, 1, v11, v12
+    module_invntt_INV_BUTTERFLY_IDENTITY_LAZY v7, v9, v12
+    module_invntt_INV_BUTTERFLY_LANE v8, v10, v1, 1, v2, 1, v11, v12
 
     /* len=8 */
-    INV_BUTTERFLY_IDENTITY_LAZY v3, v7, v12
-    INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
-    INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
-    INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
+    module_invntt_INV_BUTTERFLY_IDENTITY_LAZY v3, v7, v12
+    module_invntt_INV_BUTTERFLY_LANE v4, v8, v1, 2, v2, 2, v11, v12
+    module_invntt_INV_BUTTERFLY_LANE v5, v9, v1, 3, v2, 3, v11, v12
+    module_invntt_INV_BUTTERFLY_LANE v6, v10, v1, 4, v2, 4, v11, v12
 
-    STORE_STAGE123_STRIPE_SCRATCH \group
+    module_invntt_STORE_STAGE123_STRIPE_SCRATCH \group
 .endm
 
-.macro DIRECT_STAGE123_CONSTS
-    adr x7, invntt32_stage123_consts
+.macro module_invntt_DIRECT_STAGE123_CONSTS
+    adr x7, module_invntt_invntt32_stage123_consts
     ldr q1, [x7]
     ldr q2, [x7, #16]
 .endm
 
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_BODY
+.macro module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_BODY
     /*
      * Production row input path: direct physical load -> stage123 ->
      * stripe-major scratch for stage45.  This keeps stage123 math unchanged
      * but stores the temporary in the order consumed by stage45.
      */
-    DIRECT_STAGE123_CONSTS
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 0,   0,  24,  48,  72,  96, 120, 144, 168
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 192, 216, 240, 264, 288, 312, 336, 360
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 384, 408, 432, 456, 480, 504, 528, 552
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 3, 576, 600, 624, 648, 672, 696, 720, 744
+    module_invntt_DIRECT_STAGE123_CONSTS
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 0,   0,  24,  48,  72,  96, 120, 144, 168
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 192, 216, 240, 264, 288, 312, 336, 360
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 384, 408, 432, 456, 480, 504, 528, 552
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 3, 576, 600, 624, 648, 672, 696, 720, 744
 .endm
 
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+.macro module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
     add x14, sp, #1568
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_BODY
+    module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_BODY
 .endm
 
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY
+.macro module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY
     /* k3=1 physical bytes: 256,280,...,760 then 16,40,...,232 */
-    DIRECT_STAGE123_CONSTS
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 0, 256, 280, 304, 328, 352, 376, 400, 424
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 448, 472, 496, 520, 544, 568, 592, 616
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 640, 664, 688, 712, 736, 760,  16,  40
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 3,  64,  88, 112, 136, 160, 184, 208, 232
+    module_invntt_DIRECT_STAGE123_CONSTS
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 0, 256, 280, 304, 328, 352, 376, 400, 424
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 448, 472, 496, 520, 544, 568, 592, 616
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 640, 664, 688, 712, 736, 760,  16,  40
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 3,  64,  88, 112, 136, 160, 184, 208, 232
 .endm
 
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+.macro module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
     add x14, sp, #1568
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY
+    module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY
 .endm
 
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
+.macro module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
     /* k3=2 physical bytes: 512,536,...,752 then 8,32,...,488 */
-    DIRECT_STAGE123_CONSTS
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 0, 512, 536, 560, 584, 608, 632, 656, 680
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 704, 728, 752,   8,  32,  56,  80, 104
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 128, 152, 176, 200, 224, 248, 272, 296
-    DIRECT_STAGE123_BLOCK_TO_SCRATCH 3, 320, 344, 368, 392, 416, 440, 464, 488
+    module_invntt_DIRECT_STAGE123_CONSTS
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 0, 512, 536, 560, 584, 608, 632, 656, 680
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 704, 728, 752,   8,  32,  56,  80, 104
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 2, 128, 152, 176, 200, 224, 248, 272, 296
+    module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 3, 320, 344, 368, 392, 416, 440, 464, 488
 .endm
 
-.macro DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
+.macro module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
     add x14, sp, #1568
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
+    module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
 .endm
 
-.macro RUN_INVNTT32_STAGE45_SCRATCH_ROW
+.macro module_invntt_RUN_INVNTT32_STAGE45_SCRATCH_ROW
     /*
      * Slothy N1 schedule for all eight stage45 stripes as one row kernel.
      * Contract: x14 = stage123 stripe scratch, x2 = row output buffer,
      * v0 = q/reduction constants.  x3 is set here to the stage45 const base.
      */
-    adr x3, invntt32_stage45_consts
+    adr x3, module_invntt_invntt32_stage45_consts
         ldr q14, [x3, #16]
         ldr q17, [x14, #48]
         ldr q8, [x14, #0]
@@ -495,11 +503,11 @@
         str q24, [x2, #368]
 .endm
 
-.macro POST_STORE_PTR xvec, ptr, off_lo, off_hi
-    POST_STORE_PTR_BRANCHFOLD \xvec, \ptr, \off_lo, \off_hi
+.macro module_invntt_POST_STORE_PTR xvec, ptr, off_lo, off_hi
+    module_invntt_POST_STORE_PTR_BRANCHFOLD \xvec, \ptr, \off_lo, \off_hi
 .endm
 
-.macro LOAD_BRANCHFOLD_CONSTS
+.macro module_invntt_LOAD_BRANCHFOLD_CONSTS
     ldr     q10, [x3, #0]     // low normal constants
     ldr     q11, [x3, #16]    // low sqrdmulh precompute
     ldr     q12, [x3, #32]    // high normal constants
@@ -507,7 +515,7 @@
     add     x3, x3, #64
 .endm
 
-.macro POST_STORE_PTR_BRANCHFOLD xvec, ptr, off_lo, off_hi
+.macro module_invntt_POST_STORE_PTR_BRANCHFOLD xvec, ptr, off_lo, off_hi
     /*
      * Branch-constant folded final merge:
      *
@@ -525,7 +533,7 @@
      * performs final Barrett reductions here; this matches the exact C-reference
      * output for forward-produced GT inputs.
      */
-    LOAD_BRANCHFOLD_CONSTS
+    module_invntt_LOAD_BRANCHFOLD_CONSTS
 
     sqrdmulh v17.8h, \xvec\().8h, v11.8h
     mul      v18.8h, \xvec\().8h, v10.8h
@@ -539,14 +547,14 @@
     ext      v24.16b, v23.16b, v23.16b, #8
     add      v23.8h, v23.8h, v24.8h
 
-    BARRETT_REDUCE v21, v20
-    BARRETT_REDUCE v23, v20
+    module_invntt_BARRETT_REDUCE v21, v20
+    module_invntt_BARRETT_REDUCE v23, v20
 
     str      d21, [\ptr, #\off_lo]
     str      d23, [\ptr, #\off_hi]
 .endm
 
-.macro FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+.macro module_invntt_FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
     ldr q1, [x8]
     ldr q2, [x9]
     ldr q3, [x10]
@@ -574,52 +582,52 @@
     sub      v9.8h, v1.8h, v3.8h
     sub      v9.8h, v9.8h, v6.8h
 
-    POST_STORE_PTR v7, \ptr0, \off0_lo, \off0_hi
-    POST_STORE_PTR v8, \ptr1, \off1_lo, \off1_hi
-    POST_STORE_PTR v9, \ptr2, \off2_lo, \off2_hi
+    module_invntt_POST_STORE_PTR v7, \ptr0, \off0_lo, \off0_hi
+    module_invntt_POST_STORE_PTR v8, \ptr1, \off1_lo, \off1_hi
+    module_invntt_POST_STORE_PTR v9, \ptr2, \off2_lo, \off2_hi
 .endm
 
-.macro RUN_FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
-    FUSED_POST_STRIPE \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
+.macro module_invntt_RUN_FUSED_POST_STRIPE ptr0, off0_lo, off0_hi, ptr1, off1_lo, off1_hi, ptr2, off2_lo, off2_hi
+    module_invntt_FUSED_POST_STRIPE \ptr0, \off0_lo, \off0_hi, \ptr1, \off1_lo, \off1_hi, \ptr2, \off2_lo, \off2_hi
 .endm
 
-.macro RUN_FUSED_POST_3STRIPE_GROUP
-    RUN_FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
-    RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
-    RUN_FUSED_POST_STRIPE x12, 16, 784, x13, 16, 784, x11, 16, 784
+.macro module_invntt_RUN_FUSED_POST_3STRIPE_GROUP
+    module_invntt_RUN_FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    module_invntt_RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    module_invntt_RUN_FUSED_POST_STRIPE x12, 16, 784, x13, 16, 784, x11, 16, 784
 .endm
 
-.macro RUN_FUSED_POST_3STRIPE_LOOP loop_label
+.macro module_invntt_RUN_FUSED_POST_3STRIPE_LOOP loop_label
     mov x5, #10
 \loop_label:
-    RUN_FUSED_POST_3STRIPE_GROUP
+    module_invntt_RUN_FUSED_POST_3STRIPE_GROUP
     add x11, x11, #24
     add x12, x12, #24
     add x13, x13, #24
     subs x5, x5, #1
     b.ne \loop_label\()b
-    RUN_FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
-    RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
+    module_invntt_RUN_FUSED_POST_STRIPE x11, 0, 768, x12, 0, 768, x13, 0, 768
+    module_invntt_RUN_FUSED_POST_STRIPE x13, 8, 776, x11, 8, 776, x12, 8, 776
 .endm
 
-.macro RUN_FUSED_POST_LOOP loop_label
-    RUN_FUSED_POST_3STRIPE_LOOP \loop_label
+.macro module_invntt_RUN_FUSED_POST_LOOP loop_label
+    module_invntt_RUN_FUSED_POST_3STRIPE_LOOP \loop_label
 .endm
 
-.equ INVNTT_SIMD_SAVE_OFFSET, 2080
-.equ INVNTT_STACK_SIZE, 2144
-.equ INVNTT_SAVED_X0_OFFSET, (INVNTT_STACK_SIZE + 8)
+.equ module_invntt_INVNTT_SIMD_SAVE_OFFSET, 2080
+.equ module_invntt_INVNTT_STACK_SIZE, 2144
+.equ module_invntt_INVNTT_SAVED_X0_OFFSET, (module_invntt_INVNTT_STACK_SIZE + 8)
 
-.macro INVNTT_SAVE_CALLEE_SAVED_SIMD
-    add x16, sp, #INVNTT_SIMD_SAVE_OFFSET
+.macro module_invntt_INVNTT_SAVE_CALLEE_SAVED_SIMD
+    add x16, sp, #module_invntt_INVNTT_SIMD_SAVE_OFFSET
     stp d8, d9, [x16, #0]
     stp d10, d11, [x16, #16]
     stp d12, d13, [x16, #32]
     stp d14, d15, [x16, #48]
 .endm
 
-.macro INVNTT_RESTORE_CALLEE_SAVED_SIMD
-    add x16, sp, #INVNTT_SIMD_SAVE_OFFSET
+.macro module_invntt_INVNTT_RESTORE_CALLEE_SAVED_SIMD
+    add x16, sp, #module_invntt_INVNTT_SIMD_SAVE_OFFSET
     ldp d8, d9, [x16, #0]
     ldp d10, d11, [x16, #16]
     ldp d12, d13, [x16, #32]
@@ -640,96 +648,87 @@ _poly_invntt:
 gt_block_major_poly_invntt:
 _gt_block_major_poly_invntt:
     stp x30, x0, [sp, #-16]!
-    sub sp, sp, #INVNTT_STACK_SIZE
-    INVNTT_SAVE_CALLEE_SAVED_SIMD
+    sub sp, sp, #module_invntt_INVNTT_STACK_SIZE
+    module_invntt_INVNTT_SAVE_CALLEE_SAVED_SIMD
 
-    adr x3, inv_consts
+    adr x3, module_invntt_inv_consts
     ldr q0, [x3]
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #32
     /* The final branchfold table is fixed for inputs carrying R^-1. */
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+    module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
     /*
      * live-in: x14 = stage123 stripe scratch at sp+1568,
      *          x2 = row0 row-buffer base at sp+32,
      *          q0 = q / Barrett constants.
      * live-out: row0 natural-order stage45 output at [x2].
      */
-    bl .Linvntt32_stage45_scratch_row_helper
+    bl module_invntt_.Linvntt32_stage45_scratch_row_helper
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #544
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+    module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
     /*
      * live-in: x14 = stage123 stripe scratch at sp+1568,
      *          x2 = row1 row-buffer base at sp+544,
      *          q0 = q / Barrett constants.
      * live-out: row1 natural-order stage45 output at [x2].
      */
-    bl .Linvntt32_stage45_scratch_row_helper
+    bl module_invntt_.Linvntt32_stage45_scratch_row_helper
 
     add x3, x1, #0
     add x4, x1, #768
     add x2, sp, #1056
-    DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
+    module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
     /*
      * live-in: x14 = stage123 stripe scratch at sp+1568,
      *          x2 = row2 row-buffer base at sp+1056,
      *          q0 = q / Barrett constants.
      * live-out: row2 natural-order stage45 output at [x2].
      */
-    bl .Linvntt32_stage45_scratch_row_helper
-    b L_invntt_post_tail
+    bl module_invntt_.Linvntt32_stage45_scratch_row_helper
+    b module_invntt_L_invntt_post_tail
 
-	L_invntt_post_tail:
-    adr x3, inv_consts
+	module_invntt_L_invntt_post_tail:
+    adr x3, module_invntt_inv_consts
     ldr q15, [x3, #16]
-    ldr x0, [sp, #INVNTT_SAVED_X0_OFFSET]
+    ldr x0, [sp, #module_invntt_INVNTT_SAVED_X0_OFFSET]
     add x8, sp, #32
     add x9, sp, #544
     add x10, sp, #1056
-    adr x3, inv_branchfold_vecs
+    adr x3, module_invntt_inv_branchfold_vecs
 
     add x11, x0, #0
     add x12, x0, #512
     add x13, x0, #256
-    RUN_FUSED_POST_LOOP 4
+    module_invntt_RUN_FUSED_POST_LOOP 4
 
-    INVNTT_RESTORE_CALLEE_SAVED_SIMD
-    /* P0-B: erase 2,144 bytes of inverse-NTT scratch. */
-    movi v0.16b, #0
-    mov x16, sp
-    mov x17, #134
-.Lp0b_invntt_clear:
-    str q0, [x16], #16
-    subs x17, x17, #1
-    b.ne .Lp0b_invntt_clear
-    add sp, sp, #INVNTT_STACK_SIZE
+    module_invntt_INVNTT_RESTORE_CALLEE_SAVED_SIMD
+    add sp, sp, #module_invntt_INVNTT_STACK_SIZE
     ldp x30, x0, [sp]
-    stp xzr, xzr, [sp]
     add sp, sp, #16
     ret
 
 .p2align 4
-.Linvntt32_stage45_scratch_row_helper:
-    RUN_INVNTT32_STAGE45_SCRATCH_ROW
+module_invntt_.Linvntt32_stage45_scratch_row_helper:
+    module_invntt_RUN_INVNTT32_STAGE45_SCRATCH_ROW
     ret
 
 .align 4
-inv_consts:
+module_invntt_inv_consts:
     .hword 3457, 19412, -723, -6853, 1634, 15488, -18, -171
     .hword -36, -341, 1701, 16123, 0, 0, 0, 0
 
 .align 4
-invntt32_stage123_consts:
+module_invntt_invntt32_stage123_consts:
     .hword      1,    708,   1521,    708,  -1716,      0,      0,      0
     .hword      9,   6711,  14417,   6711, -16266,      0,      0,      0
 
 .align 4
-invntt32_stage45_consts:
+module_invntt_invntt32_stage45_consts:
     // j=0: len16[j], len32[j], len32[j+8] normal multipliers and precompute
     .hword      1,      1,    708,      0,      0,      0,      0,      0
     .hword      9,      9,   6711,      0,      0,      0,      0,      0
@@ -758,11 +757,11 @@ invntt32_stage45_consts:
 .align 4
 
 .align 4
-inv_branchfold_vecs:
+module_invntt_inv_branchfold_vecs:
 /* Generated branchfold constants for inverse NTT inputs with an extra R^-1 factor.
  * Normal multipliers are the production branchfold constants multiplied
  * by R=2^16 mod q, so the final post stage returns normal R^0 output.
- * Order must match POST_STORE_PTR calls.
+ * Order must match module_invntt_POST_STORE_PTR calls.
  */
     // k=0: low/high branch-fold constants for R^-1 input
     .hword    332,    332,    332,    332,   1503,   1503,   1503,   1503
@@ -1245,27 +1244,29 @@ inv_branchfold_vecs:
     .hword   -166,   -166,   -166,   -166,   -854,   -854,   -854,   -854
     .hword  -1573,  -1573,  -1573,  -1573,  -8095,  -8095,  -8095,  -8095
 
-.purgem BARRETT_REDUCE
-.purgem FQMUL_LANE
-.purgem INV_BUTTERFLY_LANE
-.purgem DIRECT_STAGE123_VEC
-.purgem STORE_STAGE123_STRIPE_SCRATCH
-.purgem DIRECT_STAGE123_BLOCK_TO_SCRATCH
-.purgem DIRECT_STAGE123_CONSTS
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_BODY
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
-.purgem DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
-.purgem RUN_INVNTT32_STAGE45_SCRATCH_ROW
-.purgem POST_STORE_PTR
-.purgem LOAD_BRANCHFOLD_CONSTS
-.purgem POST_STORE_PTR_BRANCHFOLD
-.purgem FUSED_POST_STRIPE
-.purgem RUN_FUSED_POST_STRIPE
-.purgem RUN_FUSED_POST_3STRIPE_GROUP
-.purgem RUN_FUSED_POST_3STRIPE_LOOP
-.purgem RUN_FUSED_POST_LOOP
-.purgem INVNTT_SAVE_CALLEE_SAVED_SIMD
-.purgem INVNTT_RESTORE_CALLEE_SAVED_SIMD
+.purgem module_invntt_BARRETT_REDUCE
+.purgem module_invntt_FQMUL_LANE
+.purgem module_invntt_INV_BUTTERFLY_LANE
+.purgem module_invntt_DIRECT_STAGE123_VEC
+.purgem module_invntt_STORE_STAGE123_STRIPE_SCRATCH
+.purgem module_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH
+.purgem module_invntt_DIRECT_STAGE123_CONSTS
+.purgem module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW0_BODY
+.purgem module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW0
+.purgem module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY
+.purgem module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW1
+.purgem module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
+.purgem module_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW2
+.purgem module_invntt_RUN_INVNTT32_STAGE45_SCRATCH_ROW
+.purgem module_invntt_POST_STORE_PTR
+.purgem module_invntt_LOAD_BRANCHFOLD_CONSTS
+.purgem module_invntt_POST_STORE_PTR_BRANCHFOLD
+.purgem module_invntt_FUSED_POST_STRIPE
+.purgem module_invntt_RUN_FUSED_POST_STRIPE
+.purgem module_invntt_RUN_FUSED_POST_3STRIPE_GROUP
+.purgem module_invntt_RUN_FUSED_POST_3STRIPE_LOOP
+.purgem module_invntt_RUN_FUSED_POST_LOOP
+.purgem module_invntt_INVNTT_SAVE_CALLEE_SAVED_SIMD
+.purgem module_invntt_INVNTT_RESTORE_CALLEE_SAVED_SIMD
+
+/* End section: invntt.S */

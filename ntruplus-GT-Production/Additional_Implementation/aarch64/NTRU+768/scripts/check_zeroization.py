@@ -1,121 +1,59 @@
 #!/usr/bin/env python3
-"""Static source-coverage gate for the production P0 zeroization policy."""
-
+"""Static gate for Official-aligned C cleanup, not the retired P0-B policy."""
 from pathlib import Path
-
-
 ROOT = Path(__file__).resolve().parents[1]
-
-
-def require(relative: str, needles: tuple[str, ...]) -> None:
-    text = (ROOT / relative).read_text(encoding="utf-8")
+def require(relative, needles):
+    text = (ROOT / relative).read_text()
     for needle in needles:
         if needle not in text:
-            raise SystemExit(f"{relative}: missing {needle!r}")
-
-
-require(
-    "internal/secure_clear.h",
-    (
-        "static inline void gt_secure_clear",
-        "GT_SECURE_CLEAR_AUDIT_HOOK",
-        # the barrier is the mechanism on every compiler actually used; the
-        # byte loop below it only covers those without GNU inline asm
-        '__asm__ volatile("" : : "r"(address) : "memory")',
-        "volatile uint8_t *cursor",
-    ),
-)
-require(
-    "kem.c",
-    (
-        "if (!genf_derand(&f, &finv, coins))",
-        "if (!geng_derand(&g, &ginv, coins))",
-        "gt_secure_clear(&f, sizeof f);",
-        "gt_secure_clear(&finv, sizeof finv);",
-        "gt_secure_clear(&g, sizeof g);",
-        "gt_secure_clear(&ginv, sizeof ginv);",
-        "poly forward;",
-        "poly m_then_r;",
-        "gt_decap_checked_ct_f_basemul_scale64(",
-        "gt_secure_clear(&scratch, sizeof scratch);",
-    ),
-)
-require(
-    "internal/keygen.c",
-    (
-        "gt_secure_clear(numerator, sizeof numerator);",
-        "gt_secure_clear(den, sizeof den);",
-    ),
-)
-require(
-    "asm/internal/keygen_baseinv_prepare.S",
-    tuple(
-        [f"movi v{register}.16b, #0" for register in range(0, 8)]
-        + [f"ins v{register}.d[1], xzr" for register in range(8, 16)]
-        + [f"movi v{register}.16b, #0" for register in range(16, 32)]
-    ),
-)
-require(
-    "symmetric.c",
-    (
-        "gt_secure_clear(data, sizeof data);",
-        "HASH_F_INBYTES",
-        "HASH_G_INBYTES",
-        "HASH_H_INBYTES",
-    ),
-)
-require(
-    "NO_CE/fips202.c",
-    (
-        "gt_secure_clear(state->ctx, PQC_SHAKECTX_BYTES);",
-        "gt_secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);",
-        "state->ctx = NULL;",
-        "gt_secure_clear(t, sizeof t);",
-        "gt_secure_clear(s, sizeof s);",
-    ),
-)
-# The 1536-byte working area is the caller's and is cleared in
-# internal/ntt_scratch.c; these leaves clear only their own 160-byte frame,
-# which holds the register spills and SLOTHY's spill slot.
-require("asm/ntt.S", ("mov x10, #10", ".Lp0b_clear_160:"))
-require("internal/ntt_scratch.c",
-        ("int16_t scratch[GT_NTT_SCRATCH_I16];",
-         "gt_secure_clear(scratch, sizeof scratch);"))
-require("asm/invntt.S", ("mov x17, #134", ".Lp0b_invntt_clear:"))
-require(
-    "asm/internal/keygen_baseinv_tree.S",
-    ("mov x10, #21", "Lbpq_tree_clear:"),
-)
-require(
-    "asm/internal/keygen_baseinv_finish.S",
-    ("erase secret vector temporaries", "movi v31.16b, #0"),
-)
-require(
-    "asm/internal/fqinv.S",
-    ("v0 is the return value", "movi v21.16b, #0"),
-)
-require(
-    "asm/kem_api.S",
-    (
-        "clear every caller-saved lane",
-        "mov x17, xzr",
-        "movi v31.16b, #0",
-        "ins v15.d[1], xzr",
-    ),
-)
-for relative in (
-    "asm/base.S",
-    "asm/pack.S",
-    "asm/internal/keygen_pack.S",
-    "asm/internal/encap_muladd.S",
-    "asm/internal/decap_verify.S",
-    "asm/internal/unpack.S",
-    "asm/internal/decap_packed64.S",
-    "asm/internal/decap_base.S",
-    "asm/internal/decap_ntt.S",
-    "asm/internal/decap_pack.S",
-):
-    require(relative, ("erase the complete handwritten spill frame",))
-require("asm/internal/decap_forward.S", ("mov x10, #5", ".Lgt_decap_clear_160:"))
-
-print("P0 production zeroization source coverage: ok")
+            raise SystemExit(f'{relative}: missing {needle!r}')
+require('util.h', ('GT_SECURE_CLEAR_AUDIT_HOOK', 'volatile uint8_t *cursor'))
+require('kem.c', (
+    'if (!genf_derand(&f, &finv, coins, buf))',
+    'if (!geng_derand(&g, &ginv, coins, buf))',
+    'secure_clear(buf, sizeof buf);', 'secure_clear(coins, sizeof coins);',
+    'secure_clear(&f, sizeof f);', 'secure_clear(&finv, sizeof finv);',
+    'secure_clear(&g, sizeof g);', 'secure_clear(&ginv, sizeof ginv);',
+    'secure_clear(&h, sizeof h);', 'secure_clear(msg, sizeof msg);',
+    'secure_clear(buf1, sizeof buf1);', 'secure_clear(&r, sizeof r);',
+    'secure_clear(&m, sizeof m);', 'secure_clear(&scratch, sizeof scratch);',
+    'secure_clear(ss, NTRUPLUS_SSBYTES);',
+    'poly_tobytes_encap_loose(ct, &r);', 'hash_g(ct, ct);'))
+require('keygen.c', ('secure_clear(numerator, sizeof numerator);',
+                            'secure_clear(den, sizeof den);'))
+require('fips202.c', ('secure_clear(state->ctx, PQC_SHAKECTX_BYTES);',
+    'secure_clear(state->ctx, PQC_SHAKEINCCTX_BYTES);',
+    'secure_clear(t, sizeof t);', 'secure_clear(t, sizeof(t));'))
+s = (ROOT/'symmetric.c').read_text()
+assert 'secure_clear' not in s[s.index('void hash_f'):s.index('void hash_g')]
+g = s[s.index('void hash_g'):s.index('void hash_h')]
+assert 'ntruplus_hash_g_fixed(buf, msg);' in g
+assert 'uint8_t data[' not in g
+require('fips202.c', ('void ntruplus_hash_g_fixed(', 'secure_clear(s, sizeof s);'))
+# The fused hash_g kernels are gone: the sponge is portable C over the
+# permutation, so the wipe that used to live at the end of each kernel now lives
+# once in shake256_prefixed, checked above.  Assert the assembly is back to the
+# permutation alone, with no fixed-size sponge left to audit separately.
+for backend in ('keccakf1600.S', 'keccakf1600_v84a.S'):
+    text = (ROOT / backend).read_text()
+    if 'fused' in text:
+        raise SystemExit(f'{backend}: a fused sponge is back; re-audit its wipe')
+require('keccakf1600.S', ('ntruplus_keccak_f1600_x1_aarch64:',))
+require('keccakf1600_v84a.S', ('ntruplus_keccak_f1600_x1_v84a_aarch64:',))
+# hash_f and hash_h used to build 0x00||msg and 0x02||msg in a stack buffer and
+# (for hash_h) wipe it afterwards.  They now absorb through shake256_prefixed,
+# so there is no copy to wipe -- the same invariant hash_g already had above,
+# which is strictly stronger than wiping one.
+for start, end in [('void hash_f', 'void hash_g'), ('void hash_h', None)]:
+    section = s[s.index(start):s.index(end) if end else len(s)]
+    assert 'uint8_t data[' not in section, start
+    assert 'memcpy(' not in section, start
+    assert 'shake256_prefixed(' in section, start
+require('fips202.c', ('void shake256_prefixed(', 'secure_clear(s, sizeof s);',
+                      'secure_clear(tail, sizeof tail);'))
+for p in ROOT.glob('*.S'):
+    assert 'P0-B:' not in p.read_text(), p
+# Existing small keygen register cleanups remain; no full-frame wipe promise.
+require('base.S', ('movi v31.16b, #0',))
+require('base.S', ('movi v21.16b, #0',))
+print('Official-aligned cleanup source coverage: ok (no full-frame wipe claim)')

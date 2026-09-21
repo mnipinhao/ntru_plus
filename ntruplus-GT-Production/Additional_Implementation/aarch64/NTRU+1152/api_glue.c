@@ -18,14 +18,12 @@ void invntt_ternary_asm(int16_t *, const int16_t *, const int16_t *,
 
 void poly_ntt(poly *out, const poly *in)
 {
-    /* The leaf works out of this buffer and allocates none of its own, so the
-     * forward transform of f, g and the recovered message is reachable from C
-     * and is cleared here.  It previously allocated 2304 bytes itself and
-     * cleared nothing -- the gap NTRU+864's ntt.S had, inherited with the port. */
+    /* Caller-owned so the leaf allocates nothing the caller cannot name.  Not
+     * cleared: an assembly working frame, which the Official-aligned policy
+     * does not promise to erase. */
     int16_t scratch[1152];
 
     ntt_asm(out->coeffs, in->coeffs, scratch);
-    secure_clear(scratch, sizeof scratch);
 }
 
 void poly_basemul(poly *out, const poly *a, const poly *b)

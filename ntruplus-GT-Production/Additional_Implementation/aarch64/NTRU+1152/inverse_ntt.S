@@ -13,10 +13,11 @@
  * x0 out, x1 in, x2 invntt9_constants_lane, x3 invntt16, x4 main, x5 tail,
  * x6 scratch: 2304 bytes provided by the caller.  The leaf allocates no
  * memory of its own, so every secret it touches lies in a buffer the C caller
- * can name -- the arrangement mlkem-native's kernels use, where the assembly
- * works in place on a caller-owned poly.  The wipe below stays here because
- * the leaf is the last thing to touch the buffer and clearing it from C costs
- * more (P72: +2.5ns on M2 against -0.5 for the ownership change alone).
+ * can name -- the arrangement mlkem-native's kernels use.  The buffer is not
+ * wiped: under the Official-aligned policy NTRU+768 adopted, an assembly
+ * working frame is not secret data with a lifetime.  Measured at the wipe's own
+ * boundary the scratch does survive the call, but by the time decapsulation
+ * returns the work that follows has overwritten it either way.
  */
 #ifdef __APPLE__
 #define C(name) _##name
@@ -201,16 +202,6 @@ C(invntt_ternary_asm):
     bl C(invntt16_tail_asm)
     mov x0, x19
     bl C(crepmod3_ternary_asm)
-    movi v0.16b, #0
-    mov x9, x25
-    mov x10, #18
-.Lp68_wipe:
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    subs x10, x10, #1
-    b.ne .Lp68_wipe
     /* Erase volatile SIMD state, including the high halves of v8-v15: the ldp
      * below restores only their low 64 bits, so zeroing first leaves the upper
      * halves clear.  P68 rewrote this driver and dropped the wipe that the

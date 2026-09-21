@@ -43,10 +43,10 @@ require("kem.c", (
     "secure_clear(&m,sizeof m);",
     "secure_clear(&hinv,sizeof hinv);",
 ))
-# ntt.S allocates nothing: its 2304-byte scratch is the caller's, and api_glue.c
-# clears it.  It cleared nothing at all before, the gap NTRU+864's ntt.S had.
+# Official-aligned cleanup, as NTRU+768 adopted: assembly working frames are not
+# wiped.  Both leaves still allocate nothing the caller cannot name.
 require("ntt.S", ("mov x21, x2",))
-require("api_glue.c", ("int16_t scratch[1152];", "secure_clear(scratch, sizeof scratch);"))
+require("api_glue.c", ("int16_t scratch[1152];",))
 require("symmetric.c", ("secure_clear(data, sizeof data);",))
 require("fips202.c", ("secure_clear(s, sizeof s);", "secure_clear(tail, sizeof tail);"))
 
@@ -55,11 +55,13 @@ require("fips202.c", ("secure_clear(s, sizeof s);", "secure_clear(tail, sizeof t
 # C caller cannot reach.  Both the memory wipe and the register wipe are pinned,
 # the latter as all thirty-two registers rather than a sample, because P68
 # removed exactly that block.
-require("inverse_ntt.S", (
-    "mov x10, #18",
-    ".Lp68_wipe:",
-    "stp q0, q0, [x9], #32",
-))
+# The register wipe stays: it costs one cycle and covers volatile SIMD state
+# that no later work overwrites, unlike a stack frame.  All thirty-two are
+# enumerated rather than sampled because P68 removed exactly this block.
 require("inverse_ntt.S", tuple(f"movi v{n}.16b, #0" for n in range(32)))
+for f in ("inverse_ntt.S", "ntt.S"):
+    t = (ROOT / f).read_text()
+    if ".Lp68_wipe" in t or "clear_2304" in t:
+        raise SystemExit(f"{f}: retired frame wipe is back")
 
 print("NTRU+1152 zeroization source coverage: ok")

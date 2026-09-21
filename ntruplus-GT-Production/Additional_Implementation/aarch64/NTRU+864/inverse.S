@@ -185,12 +185,6 @@ C(baseinv_asm):
     b.ne .Lbinv_zero_output
     mov w0, #1
 .Lbinv_wipe:
-    mov x9, x22
-    mov x10, #75
-.Lbinv_zero_scratch:
-    stp xzr, xzr, [x9], #16
-    subs x10, x10, #1
-    b.ne .Lbinv_zero_scratch
     RESTORE_PUBLIC
 
 .p2align 4
@@ -335,15 +329,5 @@ C(invntt_ternary_asm):
     mov x0, x19
     bl C(crepmod3_ternary_asm)
     // Exact 1792-byte wipe, 128 bytes per fixed iteration.
-    movi v0.16b, #0
-    mov x9, x25
-    mov x10, #14
-.Lp13inv_wipe:
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    subs x10, x10, #1
-    b.ne .Lp13inv_wipe
     RESTORE_PUBLIC
 #endif

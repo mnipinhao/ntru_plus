@@ -111,13 +111,8 @@ $(BUILD_DIR)/kem_audit.o: kem.c $(HEADERS) Makefile | $(BUILD_DIR)
 $(BUILD_DIR)/symmetric_audit.o: symmetric.c $(HEADERS) Makefile | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DSECURE_CLEAR_AUDIT_HOOK=1 -c $< -o $@
 
-# ntt_api.c clears the forward transform's scratch, which is only reachable
-# from C since that buffer became caller-owned; audit it like the others.
-$(BUILD_DIR)/ntt_api_audit.o: ntt_api.c $(HEADERS) Makefile | $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -DSECURE_CLEAR_AUDIT_HOOK=1 -c $< -o $@
-
-AUDIT_OBJECTS := $(filter-out $(BUILD_DIR)/kem.o $(BUILD_DIR)/symmetric.o $(BUILD_DIR)/ntt_api.o,$(KEM_OBJECTS))
-AUDIT_OBJECTS += $(BUILD_DIR)/kem_audit.o $(BUILD_DIR)/symmetric_audit.o $(BUILD_DIR)/ntt_api_audit.o
+AUDIT_OBJECTS := $(filter-out $(BUILD_DIR)/kem.o $(BUILD_DIR)/symmetric.o,$(KEM_OBJECTS))
+AUDIT_OBJECTS += $(BUILD_DIR)/kem_audit.o $(BUILD_DIR)/symmetric_audit.o
 
 $(TEST_ZEROIZATION): test/test_zeroization.c randombytes.c $(AUDIT_OBJECTS) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DSECURE_CLEAR_AUDIT_HOOK=1 $^ $(LDFLAGS) -o $@

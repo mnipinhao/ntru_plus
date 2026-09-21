@@ -3,13 +3,17 @@
 #include <string.h>
 
 #include "api.h"
-#include "internal/decap_verify.h"
-#include "internal/keygen.h"
+#include "decap_verify.h"
+#include "legacy/verify.h"
+#include "keygen.h"
 #include "poly.h"
+#include "reference/poly_reference.h"
 
 typedef uint64_t (*abi_sentinel_fn)(void *, void *, void *, void *);
 
 uint64_t abi_internal_poly_ntt_loose(void *, void *, void *, void *);
+uint64_t abi_internal_poly_ntt_encap_small_lazy(void *, void *, void *, void *);
+uint64_t abi_internal_poly_ntt_encap_small(void *, void *, void *, void *);
 uint64_t abi_poly_invntt(void *, void *, void *, void *);
 uint64_t abi_poly_basemul(void *, void *, void *, void *);
 uint64_t abi_poly_basemul_add(void *, void *, void *, void *);
@@ -39,6 +43,7 @@ uint64_t abi_decap_ntt(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_keypair(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_enc(void *, void *, void *, void *);
 uint64_t abi_crypto_kem_dec(void *, void *, void *, void *);
+uint64_t abi_hash_g_fixed(void *, void *, void *, void *);
 
 struct abi_case {
     const char *name;
@@ -87,21 +92,25 @@ int main(void)
          ct, ss_enc, pk, NULL, 1},
         {"crypto_kem_dec", abi_crypto_kem_dec,
          ss_dec, ct, sk, NULL, 1},
+        {"hash_g_fixed", abi_hash_g_fixed, bytes_a, bytes_b, NULL, NULL, 1},
         {"internal_ntt_loose", abi_internal_poly_ntt_loose,
+         &a, &b, NULL, NULL, 1},
+        {"ntt_encap_small_lazy", abi_internal_poly_ntt_encap_small_lazy, &a, &b, NULL, NULL, 1},
+        {"ntt_encap_small", abi_internal_poly_ntt_encap_small,
          &a, &b, NULL, NULL, 1},
         {"poly_invntt", abi_poly_invntt, &a, &b, NULL, NULL, 1},
         {"poly_basemul", abi_poly_basemul, &a, &b, &c, NULL, 1},
-        {"poly_basemul_add", abi_poly_basemul_add, &a, &b, &c, &d, 1},
-        {"poly_tobytes", abi_poly_tobytes, bytes_a, &a, NULL, NULL, 1},
-        {"poly_frombytes", abi_poly_frombytes, &a, bytes_a, NULL, NULL, 1},
+        {"poly_basemul_add_encap", abi_poly_basemul_add, &a, &b, &c, &d, 1},
+        {"poly_tobytes_encap", abi_poly_tobytes, bytes_a, &a, NULL, NULL, 1},
+        {"poly_frombytes_encap", abi_poly_frombytes, &a, bytes_a, NULL, NULL, 1},
         {"poly_cbd1", abi_poly_cbd1, &a, bytes_a, NULL, NULL, 0},
         {"poly_sotp_encode", abi_poly_sotp_encode,
          &a, bytes_a, bytes_b, NULL, 0},
         {"poly_sotp_decode", abi_poly_sotp_decode,
          bytes_a, &a, bytes_b, NULL, 0},
-        {"poly_sub", abi_poly_sub, &a, &b, &c, NULL, 0},
+        {"poly_sub", abi_poly_sub, &a, &b, &c, NULL, 1},
         {"poly_triple", abi_poly_triple, &a, &b, NULL, NULL, 0},
-        {"poly_crepmod3", abi_poly_crepmod3, &a, &b, NULL, NULL, 0},
+        {"poly_crepmod3", abi_poly_crepmod3, &a, &b, NULL, NULL, 1},
         {"keygen_ntt", abi_keygen_ntt, &cq_a, &a, NULL, NULL, 1},
         {"keygen_baseinv", abi_keygen_baseinv,
          &cq_b, &cq_a, NULL, NULL, 1},

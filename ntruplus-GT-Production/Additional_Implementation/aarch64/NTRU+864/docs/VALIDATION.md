@@ -420,3 +420,34 @@ manifest validation, `test_kem`, 100-case KAT, 256 exact Inverse comparisons,
 Paired PMU measured -235 instructions, -52 branches, and -212.859 cycles per
 Inverse; complete Decaps inherited the same exact static-event reduction and
 -212.275 cycles.
+
+## Cleanup policy
+
+This package follows the same Official-aligned policy NTRU+768 adopted, rather
+than the former P0-B full-frame policy.
+
+- Secret **data** with a lifetime is still cleared in C: keys, inverses, coins,
+  messages, hash buffers and the polynomials derived from them, through
+  `secure_clear`, which is a plain clear plus a compiler barrier on every
+  non-Windows platform.
+- Assembly **working frames are not wiped.** The leaves take their scratch from
+  the caller rather than allocating it, so nothing they touch is unreachable
+  from C, but the buffer itself is not erased.
+- **Volatile SIMD registers are still erased** at the inverse boundary. That is
+  a deliberate exception: it costs one cycle, and unlike a stack frame, register
+  state is not overwritten by whatever runs next.
+
+The frame wipes were measured before being retired. At the wipe's own boundary
+the scratch does survive the call -- probing the stack immediately after
+`poly_invntt_ternary` finds the full 1,152-halfword scratch intact without it,
+and 31 halfwords with it. But by the time decapsulation returns, the transform,
+basemul, two hashes and the serializer that follow have overwritten the same
+region either way: 64 halfwords of recognisable residue, with the wipe and
+without. The window in which the wipe changes anything is the few thousand
+cycles between the inverse returning and the next write to that stack.
+
+Removing them costs nothing in coverage that survives the call and returns
+about 540 cycles on NTRU+864 and 320 on NTRU+1152 decapsulation.
+
+There is no promise to erase handwritten spill frames. This is not a proof
+about compiler copies, caches, swap, or microarchitectural remanence.
