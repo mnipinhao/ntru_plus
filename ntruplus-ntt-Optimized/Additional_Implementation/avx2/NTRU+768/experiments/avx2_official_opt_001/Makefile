@@ -13,7 +13,7 @@ KEM_INCLUDES := -Itests/support -I$(OFFICIAL) -I$(SUPERCOP_ROOT)/bench/$(SUPERCO
 VARIANT_ASM := asm/ntruplus768_officialopt_basemul_add.s asm/ntruplus768_officialopt_dup_basemul.s asm/ntruplus768_officialopt_shared_diag.s asm/ntruplus768_officialopt_ntt_early_const.s
 VARIANT_OBJS := $(BUILD)/kem_ref.o $(BUILD)/kem_dup.o $(BUILD)/kem_fused.o $(BUILD)/kem_shared.o $(BUILD)/kem_forward.o
 
-.PHONY: generate check
+.PHONY: generate check check-inverse-ct
 generate:
 	python3 tools/generate_fused_basemul.py
 	python3 tools/generate_shared_basemul.py
@@ -32,6 +32,15 @@ $(BUILD)/test_forward_schedule: tests/test_forward_schedule.c asm/ntruplus768_of
 
 $(BUILD)/test_forward_caller_lazy: tests/test_forward_caller_lazy.c asm/ntruplus768_officialopt_ntt_caller_lazy.s $(OFFICIAL)/ntt.s $(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -o $@ $^
+
+$(BUILD)/test_inverse_ct: tests/test_inverse_ct.c asm/ntruplus768_officialopt_invntt_ct.s $(OFFICIAL)/invntt.s $(OFFICIAL)/basemul.s $(OFFICIAL)/crepmod3.s $(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -o $@ $^
+
+$(BUILD)/kem_ct.o: tests/kem_ct_diag.c src/kem_ct.c | $(BUILD)
+	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dcrypto_kem_keypair=official_ct_keypair -Dcrypto_kem_enc=official_ct_enc -Dcrypto_kem_dec=official_ct_dec -c -o $@ $<
+
+$(BUILD)/test_kem_ct: tests/test_kem_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct.o asm/ntruplus768_officialopt_invntt_ct.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -o $@ $^
 
 $(BUILD)/kem_lazy.o: tests/kem_lazy_diag.c src/kem_lazy.c | $(BUILD)
 	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dcrypto_kem_keypair=official_lazy_keypair -Dcrypto_kem_enc=official_lazy_enc -Dcrypto_kem_dec=official_lazy_dec -c -o $@ $<
@@ -69,6 +78,10 @@ check: $(BUILD)/test_fused_basemul $(BUILD)/test_forward_schedule $(BUILD)/test_
 	$(BUILD)/test_kem_fused
 	$(BUILD)/test_forward_caller_lazy
 	$(BUILD)/test_kem_lazy
+
+check-inverse-ct: $(BUILD)/test_inverse_ct $(BUILD)/test_kem_ct
+	$(BUILD)/test_inverse_ct
+	$(BUILD)/test_kem_ct
 
 $(BUILD)/bench_fused: bench/bench_fused.c tests/support/crypto_declassify.c $(VARIANT_OBJS) $(VARIANT_ASM) $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
