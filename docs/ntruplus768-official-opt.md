@@ -285,30 +285,36 @@ existing six-chain batch inversion, so there is no “add batching” candidate.
 
 ### Matched pricing and decision
 
-The nine-launch O/D/F/S same-ELF diagnostic (`results/officialopt-matrix-serious-20260921/`)
-measured the following O-relative StQ2 deltas. Parentheses are favorable
+The archived nine-launch O/D/F/S diagnostic did not preserve its exact
+pre-W harness source, so it is not the final comparison. A new nine-launch
+O/D/F/S/W same-ELF campaign (`results/officialopt-matrix-fiveway-serious-20260921/`)
+preserved the exact ELF, committed harness source and all raw observations.
+It measured the following O-relative StQ2 deltas. Parentheses are favorable
 launches out of nine; negative means faster.
 
-| Region | D | F | S |
-|---|---:|---:|---:|
-| BaseMul+add | +10.1 (0/9) | −43.2 (9/9) | −37.7 (9/9) |
-| Keygen | −2.0 (7/9) | +5.0 (3/9) | −10.9 (6/9) |
-| Encap | +42.2 (0/9) | −25.5 (7/9) | −11.3 (6/9) |
-| Decap | +78.6 (0/9) | +57.3 (1/9) | +53.5 (0/9) |
+| Region | D | F | S | W |
+|---|---:|---:|---:|---:|
+| In-place Forward `r` | +1.9 (3/9) | +2.5 (0/9) | +2.2 (2/9) | +5.7 (1/9) |
+| BaseMul+add | +4.6 (0/9) | −36.9 (9/9) | −46.2 (9/9) | −0.7 (5/9) |
+| Keygen | +4.1 (4/9) | +10.6 (2/9) | +4.3 (2/9) | −7.5 (5/9) |
+| Encap | +6.0 (5/9) | −44.2 (8/9) | −18.7 (7/9) | +89.5 (0/9) |
+| Decap | −14.8 (8/9) | +64.0 (0/9) | −41.8 (9/9) | −20.4 (9/9) |
 
 O→D is a code-body/call-target perturbation, D→F adds fusion arithmetic,
 and F→S changes code organization. These deltas cannot be linearly added
 across variants. D and S do not establish a causal proof that code placement
 alone caused the old Keygen regression. They do show why an isolated fused
-BaseMul win is insufficient: S is consistently faster locally but has no
-stable full Encap win and a same-ELF Decap regression in this campaign.
+BaseMul win is insufficient: S is consistently faster locally, but Encap is
+only 7/9 favorable. Notably, S Decap was `+53.5` and 0/9 favorable in the
+archived four-way image, but `−41.8` and 9/9 in this five-way image, despite
+unchanged Decap arithmetic. This is strong **image/placement sensitivity**,
+not a robust Decap algorithmic gain.
 
-The three-launch O/D/F/S/W follow-up added a native in-place CBD1 Forward
-cutpoint, resetting identical input banks **outside** timing. W's Forward was
-`+6.0` cycles and 0/3 favorable; in the same image, full Encap was `+107.9`
-and 0/3 favorable. The W code is raw bit-exact but this specific early-load
-schedule is rejected. The W result does *not* reject broader Official Forward
-reduction or arithmetic work.
+The native in-place CBD1 Forward cutpoint resets identical input banks
+**outside** timing. In the nine-launch image W's Forward was `+5.7` cycles
+and only 1/9 favorable; full Encap was `+89.5` and 0/9 favorable. The W code
+is raw bit-exact, but this specific early-load schedule is rejected. This
+does *not* reject broader Official Forward reduction or arithmetic work.
 
 Correctness gates: 10,003 raw BaseMul/add cases; 10,003 raw W Forward cases;
 100 deterministic O/D/F/S/W KEM vectors, invalid PK/CT, canaries and input
