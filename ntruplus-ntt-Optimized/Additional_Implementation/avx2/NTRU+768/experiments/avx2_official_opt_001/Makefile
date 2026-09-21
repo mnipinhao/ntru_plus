@@ -97,3 +97,6 @@ $(BUILD)/bench_phase_research: bench/bench_phase_research.c generated/poly_phase
 
 $(BUILD)/bench_caller_lazy: bench/bench_caller_lazy.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_lazy.o asm/ntruplus768_officialopt_ntt_caller_lazy.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_inverse_ct: bench/bench_inverse_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct.o asm/ntruplus768_officialopt_invntt_ct.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
