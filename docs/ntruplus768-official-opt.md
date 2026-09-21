@@ -347,3 +347,79 @@ machine/caller ledger, limits of the measurements, and next proof gates are in
 The next proof gate is documented in the [Forward lane/consumer report](/home/nuc/src/ntru_plus-official-opt/docs/ntruplus768-official-forward-lane-range.md), with reproducible scripts and machine-readable per-lane bounds in the experiment. It replays the pinned Official Forward's physical routing at eight cutpoints and connects its lazy terminal output to unchanged BaseInv, BaseMul and serializer code. The Decap `crepmod3` output domain was corrected to `[-2,2]` after exhaustive signed-word checking; assuming `[-1,1]` would have understated the Decap Forward input.
 
 All modeled signed-i16 pre-operations and the listed downstream consumer envelopes pass. The proof therefore selects one **research prototype**, a namespaced caller-bounded Official Forward that omits only the 48 terminal Barrett vectors while leaving the general `poly_ntt` intact. It has **not** been implemented or timed. Thus no KEM performance or promotion conclusion changes in this round.
+
+## Round 5: caller-bounded lazy Forward ASM and pricing
+
+The selected prototype is now a complete namespaced ASM/KEM research candidate,
+`avx2-officialopt-caller-lazy-exp003`. Its generator asserts the pinned
+Official `ntt.s` hash, retains every top-split/radix/route/twiddle instruction
+in the same order, removes the single terminal `#reduce2` block and its
+constant load, and gives the function independent 32-byte-aligned labels.
+The general-input `poly_ntt` is unchanged; the candidate KEM's six call sites
+use the caller-bounded entry. The source change removes 48 each of
+`vpmulhrsw`, `vpmullw`, and `vpsubw` dynamically per Forward. The linked
+candidate symbol is 1,633 B, with 304 disassembly rows, zero stack references,
+calls, `vzeroupper`, or remaining terminal Barrett vectors. Its five branches
+are the unchanged public loop bounds. The exact linked audit is
+[`officialopt-forward-caller-lazy-linked-20260921.json`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/results/officialopt-forward-caller-lazy-linked-20260921.json).
+
+Correctness passed 40,012 caller-domain Forward residue/canary cases and 100
+deterministic KEM byte-exact vectors for PK, SK, CT and shared secret. Invalid
+PK rejection/zeroization and invalid CT output matched Official. ASan/UBSan
+passed the C harness with LeakSanitizer disabled for this host's ptrace
+restriction. No Keygen inversion retry occurred in those 100 vectors; that
+path remains a coverage limitation, although the unchanged retry code and
+the preceding BaseInv zero-representative proof constrain the risk. No
+general-input safety claim is made for the new entry.
+
+The same-ELF O3GC SUPERCOP-derived campaign used nine fresh processes on
+CPU 1 with `performance` governor and turbo disabled. Pooled StQ2 differences
+below are candidate minus Official, in cycles; all five regions were faster
+in 9/9 launch medians:
+
+| Matched region | Delta |
+|---|---:|
+| `r` Forward | −105.36 |
+| Keygen `f` Forward | −106.63 |
+| Full Keygen | −202.78 |
+| Full Encap | −149.75 |
+| Full Decap | −185.04 |
+
+This is a complete-caller diagnostic, not Native KEM. The raw observations
+and ELF/source hashes are in
+[`officialopt-forward-caller-lazy-serious-20260921`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/results/officialopt-forward-caller-lazy-serious-20260921/summary.json).
+
+A fresh disposable SUPERCOP 20260831 campaign then used unmodified native
+`crypto_kem/measure.c` and normal compiler selection (both implementations
+selected GCC 15.2.0 O2). Nine independently pooled launches per
+implementation gave:
+
+| Native StQ2 cycles | Official | Caller-lazy | Delta |
+|---|---:|---:|---:|
+| Keypair | 21,609.63 | 21,387.58 | −222.05 |
+| Encap | 28,178.59 | 28,009.38 | −169.21 |
+| Decap | 19,454.83 | 19,261.25 | −193.58 |
+
+These independently pooled Native numbers are not paired causal estimates.
+For placement control, four O3GC fixed ELFs were built in the disposable
+campaign. Each of normal/reversed placement × ASLR on/off received 16
+ABBA/BAAB blocks, 64 fresh launches. The paired mean deltas were:
+
+| Setting | Keypair | Encap | Decap |
+|---|---:|---:|---:|
+| Normal, ASLR off | −155.74 | −99.84 | −167.92 |
+| Normal, ASLR on | −155.30 | −119.22 | −197.77 |
+| Reversed, ASLR off | −220.46 | −110.85 | −197.72 |
+| Reversed, ASLR on | −188.57 | −105.42 | −223.73 |
+
+All 12 block-bootstrap 95% intervals lie below zero. Encap favorable
+blocks were 16/16, 12/16, 16/16, and 14/16 respectively; the full intervals,
+ELF hashes, symbol placement and raw observations are preserved in the
+[`fixed-ELF paired summary`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/results/fixed-lazy-paired-20260921/summary.json).
+
+This is a robust **research** win for this machine and these caller domains,
+not an automatic clean-production promotion. A separate qualification pass
+should explicitly exercise Keygen retry, review the namespaced entry's
+consumer contract in a clean implementation, and repeat Native confirmation
+from that clean export. The candidate has not been merged with the earlier
+BaseMul-add fusion; gains from different campaigns must not be added.

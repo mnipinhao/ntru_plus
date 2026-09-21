@@ -116,3 +116,27 @@ round4:
   full_kem_kat_for_prototype: not_run_no_candidate_asm
   native_benchmark: not_run_no_candidate_asm
   promotion: none
+round5:
+  date: 2026-09-21
+  candidate: avx2-officialopt-caller-lazy-exp003
+  scope: caller_bounded_Official_Forward_without_terminal_Barrett
+  generated_source: asm/ntruplus768_officialopt_ntt_caller_lazy.s
+  general_poly_ntt: unchanged
+  correctness:
+    primitive_residue_canary_cases: 40012
+    deterministic_kem_vectors: 100
+    observed_keygen_retries: 0
+    invalid_pk_ct: passed
+    sanitizer: passed_with_lsan_disabled_for_environment
+  linked_audit: results/officialopt-forward-caller-lazy-linked-20260921.json
+  serious_matched: results/officialopt-forward-caller-lazy-serious-20260921
+  native_official: results/native-caller-lazy-official-20260921
+  native_candidate: results/native-caller-lazy-candidate-20260921
+  fixed_paired: results/fixed-lazy-paired-20260921
+  native_stq2_candidate_minus_official_cycles:
+    keypair: -222.05
+    encap: -169.21
+    decap: -193.58
+  fixed_paired_all_95ci_below_zero: true
+  assessment: robust_research_win_on_qualification_cpu
+  clean_promotion: not_done_requires_separate_qualification_and_keygen_retry_coverage

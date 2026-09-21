@@ -100,3 +100,6 @@ python3 tools/check_forward_lazy_semantics.py --supercop-root /home/nuc/supercop
 The second and third scripts consume the recorded first-stage lane artifact,
 so a changed lane artifact must be reviewed and promoted deliberately before
 those consumer checks are treated as a new campaign.
+
+The subsequent namespaced ASM and machine-pricing results are documented in
+[Round 5 of the Official-opt report](/home/nuc/src/ntru_plus-official-opt/docs/ntruplus768-official-opt.md).
