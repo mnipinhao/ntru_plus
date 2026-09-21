@@ -48,33 +48,58 @@ transform (NTT + invNTT + baseinv) is invariant to that fusion.
 | 768 keygen | 453 | 464 | +11 | 1071 | 1079 | +8 | +38 |
 | 768 decaps | 540 | 507 | **-34** | 617 | 561 | -56 | -36 |
 | 864 keygen | 556 | 628 | +73 | 1198 | 1215 | +17 | -37 |
-| 864 decaps | 709 | 946 | **+237** | 713 | 709 | -4 | -109 |
+| 864 decaps | 709 | 834 | **+125** | 713 | 821 | +107 | -109 |
 | 1152 keygen | 704 | 705 | +1 | 2124 | 2218 | +95 | +97 |
-| 1152 decaps | 814 | 1029 | **+215** | 960 | 902 | -58 | -111 |
+| 1152 decaps | 814 | 891 | **+77** | 960 | 1040 | +80 | -111 |
 
-Two things fall out.
+**The Good-Thomas transform is not the differentiator on M2.**  In
+decapsulation 768's is 56 ns ahead of Official's; 864's and 1152's are 107 and
+80 behind, and per role that is the inverse, not the forward.
 
-**The Good-Thomas transform is not the differentiator on M2.**  It lands within
-95 ns everywhere, and in decapsulation it is a small win for all three sets,
--4 to -58 ns.  Nine gates of transform work do not show up at the KEM level on
-this machine.
+**Delivery is the other half.**  768's is 34 ns ahead, 864's 125 behind and
+1152's 77 behind.
 
-**The delivery path is.**  768's is 34 ns ahead of Official's in
-decapsulation; 864's is 237 ns behind and 1152's 215 ns behind.  That swing of
-roughly 250 ns is the whole difference between 768's margin and theirs.
+Per role, in decapsulation, with `basemul` and `crepmod3` added together
+because GT folds the mod-3 step into the multiply:
 
-Taken apart further, in decapsulation, with 864/1152's symbols unfused and
-therefore directly comparable:
-
-| | Official | GT 864 | GT 1152 |
+| role | 768 | 864 | 1152 |
 |---|---:|---:|---:|
-| pack/unpack, 864 | 387 | **631** | |
-| pack/unpack, 1152 | 307 | | **593** |
+| pack / unpack | **-78** | **+132** | **+149** |
+| invNTT | -14 | **+140** | +43 |
+| NTT | -42 | -32 | +37 |
+| basemul + crepmod3 | +45 | -7 | -72 |
+| sotp / cbd / add | +29 | +19 | +58 |
+| memory / clear | -64 | -85 | -116 |
+| **non-Keccak** | **-126** | **+124** | **+46** |
 
-864 and 1152 spend two to three times what Official spends turning coefficients
-into bytes, in `transpose_top_checked`, `packed_i9`, `pack_small_*` and
-`pack_compare_*`.  768 spends less than Official does, because it does not have
-a separate serializer to spend it in.
+and in key generation:
+
+| role | 768 | 864 | 1152 |
+|---|---:|---:|---:|
+| pack / unpack | +46 | +111 | +105 |
+| NTT | +18 | +39 | +74 |
+| baseinv | -10 | -22 | +20 |
+| basemul + crepmod3 | -35 | -38 | -104 |
+| sotp / cbd / add | +13 | +2 | **+183** |
+| memory / clear | +14 | -38 | -68 |
+| **non-Keccak** | **+57** | **+53** | **+193** |
+
+Serialization is the one deficit present in every column: +105 to +149 for 864
+and 1152, against -78 for 768's decapsulation.  864's inverse transform is the
+second, at +140, and it is 864's alone -- 1152's is +43 because the lane-basis
+rewrite of P64-P71 already landed there.  1152's third is the kernels it never
+got in assembly.
+
+### A correction
+
+The first version of this record put `packed_i9` and `p65_rebase` in the
+delivery and forward-transform buckets on the strength of their names.  Both are
+inverse-transform internals: `packed_i9` is the radix-9 inverse leaf and
+`p65_rebase` is the lane-basis rebase inside `inverse_ntt.S`.  Corrected, 864's
+decap delivery gap falls from 237 ns to 125 and its transform gap rises from
+-4 to +107; 1152's falls from 215 to 77 and rises from -58 to +80.  The
+conclusion that serialization is the consistent deficit survives; the claim that
+the transform was a win for all three does not.
 
 ## Why
 
