@@ -1,0 +1,39 @@
+{
+  "class": "supercop-derived diagnostic; not Native SUPERCOP",
+  "candidate": "ct-r3",
+  "source_sha256": {
+    "upstream/supercop-avx2/invntt.s": "991f13a75de92a1e33c5141aa81849f9619073606989a49b9c4627ea3d852b70",
+    "upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "asm/ntruplus768_officialopt_invntt_ct_r3.s": "50d61b3ffa7b51c77198c9c5c64e5aef6b3639d1a254dbd8795a5da2e3da6c88",
+    "src/kem_ct.c": "4fa2ee2eee9fd8687ec9efad4941a7f182596f39333cdca1f4f0b064452bd2b4",
+    "bench/bench_inverse_ct.c": "14e49b735ca8d4b46629f37a7eef194c10d02d28f2f94e82fe35f350d28bbc38",
+    "tools/run_inverse_ct_short.py": "aeae02d25e0ef4c34b2b76f8375bcfeba5051a633f7dd1cc59a1bc441a6f4cab"
+  },
+  "elf_sha256": "feb21693deaa330ed0cfcb9fd413d15e8bae1e7ad12c321e35f88e6250d8b006",
+  "saved_elf_sha256": "feb21693deaa330ed0cfcb9fd413d15e8bae1e7ad12c321e35f88e6250d8b006",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "smt_siblings": "1-2",
+  "cpu": 1,
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "launches": 3,
+  "observations_per_variant_region_launch": 512,
+  "cpucycles_identity": [
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000"
+  ],
+  "compiler_recipe": "Makefile common O3GC; see build rule",
+  "placement": "normal, ASLR enabled, one fixed ELF",
+  "inverse_input": "16 banks of precomputed canonical-input BaseMulScale output; reset outside timing",
+  "decap_input": "16 deterministic valid CT/SK banks; unchanged Official caller except CT inverse",
+  "command": [
+    "taskset",
+    "-c",
+    "1",
+    "/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/build/bench_inverse_ct_r3"
+  ]
+}

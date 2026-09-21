@@ -210,3 +210,60 @@ round8_inverse_ct_short:
   confirmation_favorable_launches_each_region: 0/3
   serious_and_native: not_run
   clean_production: unchanged
+round9_inverse_ct_radix3_consumer:
+  date: 2026-09-21
+  class: namespaced_research_ASM_supercop_derived_short_not_native
+  candidate: ntruplus768_officialopt_invntt_ct_r3
+  mechanism: relative_Y_Z_gauge_then_combine_common_X_gauge_with_radix3_alpha_and_output0
+  level0: Official_unchanged
+  radix2_plus_gauge_montgomery_vectors: 126
+  standalone_barrett_vectors: 24
+  added_constant_table_bytes: 12800
+  range_max_signed_preoperation: 27893
+  correctness: 5003_direct_1003_basemulscale_100_valid_Decap_100_tampered_CT_100_invalid_SK_pass
+  sanitizer: direct_harness_ASan_UBSan_pass_LSan_disabled
+  linked_audit: results/officialopt-inverse-ct-r3-linked-20260921.json
+  short_vs_official: results/officialopt-inverse-ct-r3-short-20260921
+  short_vs_old_ct: results/officialopt-inverse-ct-r3-vs-ct-short-20260921
+  inverse_stq2_delta_vs_old_ct_cycles: 9.74
+  inverse_favorable_launches_vs_old_ct: 0/3
+  complete_decap_stq2_delta_vs_old_ct_cycles: 89.86
+  serious_and_native: not_run_failed_short_gate
+  clean_production: unchanged
+round10_inverse_ct_level0_scale:
+  date: 2026-09-21
+  scope: namespaced_CT_radix3_pair_gauge_level0_Official_shear_final_scale
+  corrected_level0_map: "(U+V-phi*(U-V), phi*(U-V))"
+  invalid_direct_CT_level0_form: rejected_by_primitive_differential_before_timing
+  candidates:
+    - ntruplus768_officialopt_invntt_ct_full
+    - ntruplus768_officialopt_invntt_ct_cohort
+  ct_radix2_plus_gauge_montgomery_vectors: 118
+  old_ct_radix2_plus_gauge_montgomery_vectors: 126
+  standalone_barrett_vectors: 40
+  added_constant_table_bytes:
+    full: 13312
+    cohort: 11264
+  linked_audit:
+    full: results/officialopt-inverse-ct-full-linked-20260921.json
+    cohort: results/officialopt-inverse-ct-cohort-linked-20260921.json
+  conditional_input_abs_bound: 7644
+  max_signed_preoperation: 27900
+  correctness: both_pass_5003_direct_1003_basemulscale_100_valid_Decap_100_tampered_CT_100_invalid_SK
+  sanitizer: both_direct_harnesses_ASan_UBSan_pass_LSan_disabled
+  short_vs_official:
+    full: results/officialopt-inverse-ct-full-short-20260921
+    cohort: results/officialopt-inverse-ct-cohort-short-20260921
+  short_vs_old_ct:
+    full: results/officialopt-inverse-ct-full-vs-ct-short-20260921
+    cohort: results/officialopt-inverse-ct-cohort-vs-ct-short-20260921
+  cohort_minus_official_stq2_cycles:
+    inverse: 26.99
+    inverse_plus_crepmod3: 33.40
+    complete_decap: 50.66
+  cohort_favorable_launches:
+    inverse: 0/3
+    inverse_plus_crepmod3: 0/3
+    complete_decap: 1/3
+  serious_and_native: not_run_failed_short_gate
+  clean_production: unchanged

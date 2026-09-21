@@ -1,0 +1,43 @@
+{
+  "class": "supercop-derived diagnostic; not Native SUPERCOP",
+  "candidate": "ct-full-vs-ct",
+  "baseline": "CT control",
+  "source_sha256": {
+    "upstream/supercop-avx2/invntt.s": "991f13a75de92a1e33c5141aa81849f9619073606989a49b9c4627ea3d852b70",
+    "upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "asm/ntruplus768_officialopt_invntt_ct.s": "c952203e8787ba5b778d7de36c04b97194118c80167a0b041293b487aa3c6da1",
+    "asm/ntruplus768_officialopt_invntt_ct_full.s": "aa89449a3318e39d6828a56f4bb3c2b7113f39f1bca3257601bf130f388d27d9",
+    "tools/generate_inverse_ct_full.py": "878fed617d0f9fa3952f6a9bf13caa8542798df9a083cd14bc4f64ce5922d95c",
+    "tools/prove_inverse_ct_full_range.py": "a9afe5d1fe281f3ed4908712bf948df59f7e1677974684531be4cd9a4e7a225a",
+    "src/kem_ct.c": "4fa2ee2eee9fd8687ec9efad4941a7f182596f39333cdca1f4f0b064452bd2b4",
+    "bench/bench_inverse_ct.c": "5a3ebb596768157d3e6aa4bf41d4050d3725e9760ecb232f2282b199b3033c6c",
+    "tools/run_inverse_ct_short.py": "ac0880f455b2314abfe0afa07a39c334957541a578d57e14a169c543d97c9039"
+  },
+  "elf_sha256": "bd322b98f3c11891a07433604a2943c61f4fdf2ac6b35a0f04049a188f16e42b",
+  "saved_elf_sha256": "bd322b98f3c11891a07433604a2943c61f4fdf2ac6b35a0f04049a188f16e42b",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "smt_siblings": "1-2",
+  "cpu": 1,
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "launches": 3,
+  "observations_per_variant_region_launch": 512,
+  "cpucycles_identity": [
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000"
+  ],
+  "compiler_recipe": "Makefile common O3GC; see build rule",
+  "placement": "normal, ASLR enabled, one fixed ELF",
+  "inverse_input": "16 banks of precomputed canonical-input BaseMulScale output; reset outside timing",
+  "decap_input": "16 deterministic valid CT/SK banks; unchanged Official caller except CT inverse",
+  "command": [
+    "taskset",
+    "-c",
+    "1",
+    "/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/build/bench_inverse_ct_full_compare"
+  ]
+}

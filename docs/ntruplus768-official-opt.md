@@ -573,3 +573,136 @@ avoids the 48-vector normalization, but that would be a new mathematical,
 range and schedule candidate requiring its own proof and pricing. It must not
 inherit a claimed cycle benefit from this failed prototype. The existing
 caller-lazy Forward qualification export remains separate and unchanged.
+
+## Round 9: CT gauge consumed by radix-3 (research candidate)
+
+The next namespaced candidate removes the standalone 48-vector gauge
+restoration at the radix-2/radix-3 boundary. For each radix-3 triple, let
+`actual (X,Y,Z) = (gx X',gy Y',gz Z')`. It computes
+`Yhat = Mont(Y',gy/gx)` and `Zhat = Mont(Z',gz/gx)`; the ordinary radix-3
+butterfly then works in the common `gx` gauge. The output-1/2 constants are
+changed to `gx·alpha^-1` and `gx·alpha^-2`, so those existing Montgomery
+multiplications also remove the gauge. Output zero replaces its old Barrett
+with `Mont(X'+Yhat+Zhat,gx)`. Level zero and the external result remain
+unchanged. This is consumer-side twiddle fusion, but not full CT-gauge
+propagation through level zero.
+
+The linked object has a 2,053-byte, 32-byte-aligned inverse symbol, no stack
+reference/call/`vzeroupper`, and a conservative maximum signed-i16
+pre-operation bound of 27,893 under the conditional `±7,644` inverse input
+contract. It passes 5,003 direct inverse cases, 1,003 BaseMulScale cases,
+100 valid Decap vectors, 100 tampered ciphertext cases and 100 invalid-SK
+cases; the direct C harness also passes ASan/UBSan. The generator reproduces
+the same ASM SHA-256. These checks do not constitute a complete machine-level
+constant-time proof.
+
+| Dynamic vector operation | Old CT | CT→radix-3 |
+|---|---:|---:|
+| Radix-2 CT Montgomery | 78 | 78 |
+| Boundary-related Montgomery | 48 restoration | 32 relative inputs + 16 output zero |
+| Standalone Barrett | 40 | 24 |
+| Added constant tables | 10,752 B | 12,800 B |
+
+Thus this candidate saves the 16 radix-3 Barrett vectors but does not reduce
+the 126 total CT-prefix-plus-gauge Montgomery chains. It spends an additional
+2,048 B of tables and changes dependencies. In particular, `gx`, `gy`, and
+`gz` are generally unequal lane by lane, so simply folding one common
+constant into both alpha multiplications cannot remove the two relative-input
+operations. The source is in
+[`asm/ntruplus768_officialopt_invntt_ct_r3.s`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/asm/ntruplus768_officialopt_invntt_ct_r3.s),
+with generator, range proof and linked audit alongside the existing inverse
+research tools.
+
+Short SUPERCOP-derived same-ELF diagnostics on CPU 1, performance governor,
+turbo disabled, normal placement/ASLR-on, three fresh launches:
+
+| StQ2 delta | CT→radix-3 − Official | CT→radix-3 − old CT |
+|---|---:|---:|
+| Inverse only | +29.19 cycles (0/3 favorable) | +9.74 (0/3) |
+| Inverse + crepmod3 | +32.06 (0/3) | +8.44 (0/3) |
+| Complete Decap | −0.73 (2/3; mixed) | +89.86 (0/3) |
+
+The direct CT-vs-CT→radix-3 comparison is the appropriate incremental test;
+its complete-Decap difference may also include placement effects and cannot
+be assigned to one instruction class. Raw observations, source/ELF hashes,
+host controls and saved ELFs are in
+[`officialopt-inverse-ct-r3-vs-ct-short-20260921`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/results/officialopt-inverse-ct-r3-vs-ct-short-20260921/summary.json)
+and the corresponding Official comparison directory. Decision: this
+realization is not ready for serious or Native benchmark, and remains a
+research result. A further candidate would have to co-design level zero and
+its final scale constants, actually reduce the gauge-related Montgomery
+count, and prove the resulting range before ASM pricing; merely moving the
+same 48 chains into another stage is insufficient.
+
+## Round 10: level-0 shear and final-scale co-design
+
+The next gate corrected an important algebraic assumption before timing.
+Official level zero does **not** output the ordinary pair
+`(U+V, phi(U−V))`; its actual map is
+`(U+V−phi(U−V), phi(U−V))`, followed by separate upper/lower finalizers.
+Therefore a direct CT level zero with only gauge-adjusted final constants
+was incorrect. The differential test caught it before benchmarking; that
+failed generated form is not retained as a candidate.
+
+The working design chooses a common gauge for the two radix-3 triples that
+level zero will pair. For the first triple, its X gauge is retained and Y/Z
+need two relative Montgomery multiplications. For the corresponding triple
+in the other half, X/Y/Z each normalize to that same gauge, costing three.
+That is `8 × (2+3) = 40` boundary-related chains instead of the earlier 48.
+Radix-3 retains its existing omega/alpha arithmetic and Barrett output-zero
+reduction. Level zero retains the exact Official shear and phi multiplication;
+its 48 existing finalizer chains use constants multiplied by the propagated
+gauge. Thus this candidate **really deletes eight Montgomery chains** rather
+than relocating them, while keeping Official output scale and physical ABI.
+
+Two namespaced machine realizations were tested. `full` traverses adjacent
+level-0 vector pairs with a per-pair finalizer table. `cohort` traverses the
+three coefficient vectors with the same gauge together and reuses finalizer
+constants across them. The latter removes 64 dynamic finalizer-constant
+vector loads and 2,048 B of repeated table entries relative to `full`, but
+changes address order. Neither alters arithmetic or external ownership.
+
+| Structural metric | old CT | full | cohort |
+|---|---:|---:|---:|
+| Radix-2 CT + additional gauge Montgomery | 126 | 118 | 118 |
+| Standalone Barrett vectors | 40 | 40 | 40 |
+| Added constant tables | 10,752 B | 13,312 B | 11,264 B |
+| Linked inverse symbol `.text` | 2,245 B | 2,408 B | 2,354 B |
+
+Both machine objects are 32-byte aligned and have no stack reference, call
+or `vzeroupper`. A conservative physical-vector range replay under the
+conditional `±7,644` inverse-input envelope gives maximum signed-i16
+pre-operation magnitude 27,900. Each passed 5,003 direct inverse cases,
+1,003 BaseMulScale cases, 100 valid Decap vectors, 100 tampered-ciphertext
+cases, 100 invalid-SK cases, and the direct C harness under ASan/UBSan.
+Generator reruns reproduced the same ASM hashes. Linked evidence is in
+[`full audit`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/results/officialopt-inverse-ct-full-linked-20260921.json)
+and
+[`cohort audit`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/results/officialopt-inverse-ct-cohort-linked-20260921.json).
+
+Short SUPERCOP-derived same-ELF StQ2 cycles used CPU 1, performance governor,
+turbo disabled, normal placement/ASLR-on, three fresh launches and matched
+reset outside timing. Candidate minus comparator:
+
+| Region | full − Official | cohort − Official | cohort − old CT |
+|---|---:|---:|---:|
+| Inverse only | +44.43 (0/3 favorable) | +26.99 (0/3) | +18.05 (0/3) |
+| Inverse + crepmod3 | +49.95 (0/3) | +33.40 (0/3) | +17.20 (0/3) |
+| Complete Decap | +78.61 (0/3) | +50.66 (1/3) | +21.47 (0/3) |
+
+The `full` image's old-CT comparison had a different complete-Decap
+placement effect despite its slower isolated inverse; the cohort comparison
+is the narrower machine arbitration. Raw observations, exact ELFs, source
+hashes and host policy are retained under the respective
+`results/officialopt-inverse-ct-{full,cohort}*-20260921/` campaigns. These
+are diagnostics, not Native SUPERCOP results.
+
+**Decision:** the chain reduction is algebraically and mechanically real, but
+neither realization passes the short inverse/caller gate. No serious or Native
+campaign and no clean promotion. The remaining cost is not proven to be any
+single instruction class. The extra constant traffic, doubled radix-3 loop
+body and new dependency pattern are concrete candidate mechanisms; perf or a
+separate same-arithmetic schedule control would be needed to assign cause.
+The result narrows the next CT question: avoiding eight chains alone is not
+enough on this AVX2 machine. Do not infer that CT is globally unsuitable, but
+do not keep changing placement to seek a favorable isolated result.
