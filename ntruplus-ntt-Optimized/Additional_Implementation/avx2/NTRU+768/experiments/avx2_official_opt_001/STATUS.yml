@@ -9,7 +9,20 @@ scope:
   - keypair
   - encapsulation
   - decapsulation
-first_prototype: Official basemul plus Encap add-m
-second_prototype: pending Forward range and linked dependency audit
-performance: not_measured
-native_candidate: not_qualified
+first_prototype: Official basemul plus Encap add-m; implemented and tested
+second_prototype: not selected; no proven Forward arithmetic or same-DAG scheduling credit
+correctness:
+  primitive_raw_differential_cases: 10003
+  deterministic_kem_vectors: 100
+  matched_keygen_retries: 0
+  invalid_pk_and_ct: passed
+  sanitizer: passed_with_lsan_disabled_for_environment
+linked_audit: passed; no stack spill, call, or vzeroupper in fused symbol
+performance:
+  matched_component_delta_cycles: -24.93
+  matched_encap_delta_cycles: -39.78
+  native_enc_delta_cycles: -136.28
+  fixed_paired_enc: placement_dependent_and_ci_crosses_zero
+  fixed_paired_keypair: regression_in_all_four_settings
+native_candidate: research_only_not_qualified
+promotion: rejected_for_now
