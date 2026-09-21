@@ -1,0 +1,58 @@
+{
+  "schema": "officialopt-forward-caller-lazy-evaluation/v1",
+  "candidate": "avx2-officialopt-caller-lazy-exp003",
+  "baseline": "SUPERCOP 20260831 crypto_kem/ntruplus768/avx2",
+  "change": "KEM-caller-specific Official Forward without its 48 terminal Barrett vectors; general poly_ntt unchanged",
+  "correctness": {
+    "primitive_residue_canary_cases": 40012,
+    "deterministic_kem_vectors": 100,
+    "invalid_public_key_and_ciphertext": "passed",
+    "asan_ubsan": "passed with LeakSanitizer disabled for host ptrace restriction",
+    "observed_keygen_retries": 0,
+    "linked_audit": "officialopt-forward-caller-lazy-linked-20260921.json"
+  },
+  "matched_same_elf_o3gc": {
+    "campaign": "officialopt-forward-caller-lazy-serious-20260921",
+    "class": "SUPERCOP-derived diagnostic; not Native",
+    "launches": 9,
+    "pooled_stq2_candidate_minus_official_cycles": {
+      "forward_r": -105.36,
+      "forward_keygen_f": -106.63,
+      "keypair": -202.78,
+      "encap": -149.75,
+      "decap": -185.04
+    },
+    "favorable_launches": "9/9 for all five regions"
+  },
+  "native_supercop": {
+    "official_campaign": "native-caller-lazy-official-20260921",
+    "candidate_campaign": "native-caller-lazy-candidate-20260921",
+    "compiler": "native selection: gcc 15.2.0 -march=native -mtune=native -O2",
+    "launches_each": 9,
+    "stq2_cycles": {
+      "keypair": {"official": 21609.625, "candidate": 21387.579, "delta": -222.046},
+      "encap": {"official": 28178.588, "candidate": 28009.375, "delta": -169.213},
+      "decap": {"official": 19454.833, "candidate": 19261.255, "delta": -193.579}
+    },
+    "caveat": "independently pooled native measurements, not paired causal estimates"
+  },
+  "fixed_elf_paired_o3gc": {
+    "campaign": "fixed-lazy-paired-20260921",
+    "blocks_per_setting": 16,
+    "fresh_launches_per_setting": 64,
+    "paired_mean_delta_cycles": {
+      "normal_aslr_off": {"keypair": -155.74, "encap": -99.84, "decap": -167.92},
+      "normal_aslr_on": {"keypair": -155.30, "encap": -119.22, "decap": -197.77},
+      "reversed_aslr_off": {"keypair": -220.46, "encap": -110.85, "decap": -197.72},
+      "reversed_aslr_on": {"keypair": -188.57, "encap": -105.42, "decap": -223.73}
+    },
+    "all_bootstrap_ci95_below_zero": true,
+    "favorable_encap_blocks": {
+      "normal_aslr_off": 16,
+      "normal_aslr_on": 12,
+      "reversed_aslr_off": 16,
+      "reversed_aslr_on": 14
+    }
+  },
+  "decision": "qualified research signal for separate clean-production review; no clean promotion in this campaign"
+}

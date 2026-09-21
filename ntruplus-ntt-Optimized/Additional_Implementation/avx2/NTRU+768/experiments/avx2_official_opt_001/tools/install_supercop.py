@@ -23,6 +23,9 @@ VARIANTS = {
     "S": ("avx2-officialopt-shared-exp002",
           {"kem.c": "src/kem_shared.c",
            "basemul.s": "asm/ntruplus768_officialopt_shared_native.s"}),
+    "L": ("avx2-officialopt-caller-lazy-exp003",
+          {"kem.c": "src/kem_lazy.c",
+           "ntt_caller_lazy.s": "asm/ntruplus768_officialopt_ntt_caller_lazy.s"}),
 }
 
 

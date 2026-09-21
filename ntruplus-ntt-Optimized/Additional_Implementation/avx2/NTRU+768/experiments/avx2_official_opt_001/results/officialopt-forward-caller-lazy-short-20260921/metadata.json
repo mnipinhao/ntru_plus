@@ -1,0 +1,32 @@
+{
+  "class": "supercop-derived diagnostic; not Native SUPERCOP",
+  "source_sha256": {
+    "upstream/supercop-avx2/ntt.s": "992b613701be5988e83798a4a8f56a798c7e47e4616db70e65eee7feb75332f4",
+    "upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "asm/ntruplus768_officialopt_ntt_caller_lazy.s": "efb8a1e197ce5665da7016a40119d74675cce8b51a71f88be90ba5cd93e5848c",
+    "src/kem_lazy.c": "ffd9165c36466c2ecc57e4a157a2a847dc9f19d1fc249ebbc9c1c46baa22fd7d",
+    "bench/bench_caller_lazy.c": "0e6e5bb3d3d8dce15f84b387ce3c399bf24dd79b0baf731063f8e1d63bb5f9a4",
+    "tools/generate_forward_caller_lazy.py": "27074b7e63b64060b637f6371c4bb16fed70bc6ea20a43dfe8f7b40b0bb98160"
+  },
+  "elf_sha256": "8707c0e0f5dbff12a158f4120493be5d00d1bbb15b1ddc5e824678bf06ba0ea5",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "cpu": 1,
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "launches": 3,
+  "cpucycles_identity": [
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000"
+  ],
+  "compiler_recipe": "Makefile common O3GC; see linked ELF and build rule",
+  "primary_placement": "normal; ASLR enabled",
+  "command": [
+    "taskset",
+    "-c",
+    "1",
+    "/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/build/bench_caller_lazy"
+  ]
+}
