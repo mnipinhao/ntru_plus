@@ -1,0 +1,91 @@
+{
+  "compiler_command": [
+    "cc",
+    "-O3",
+    "-march=native",
+    "-mtune=native",
+    "-mavx2",
+    "-fwrapv",
+    "-fPIC",
+    "-fPIE",
+    "-gdwarf-4",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-Wl,--gc-sections",
+    "-I/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean",
+    "-I/home/nuc/supercop-20260627/bench/nucpromtlhcubinucai1ummsb209/include/nontimecop/amd64",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/bench/bench_encap_wire_short.c",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/encap_wire_forward.S",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/encap_wire_codec.S",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/encap_wire_muladd.S",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/encap_wire_m_add_control.S",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt.s",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt_m.s",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/basemul.s",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/baseinv.c",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/consts.c",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/add.s",
+    "/home/nuc/supercop-20260627/bench/nucpromtlhcubinucai1ummsb209/lib/nontimecop/amd64/libcpucycles.a",
+    "-o",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/encap-wire-mont-short-20260921-closed/measure"
+  ],
+  "cpucycles_library_sha256": "6cade980ab40e944510b6f8d2bb784c87cab0e59b16c15a73f3e2a11b6c16591",
+  "elf_sha256": "41fbf08eca077da83782cc2df9070b91346223258b922ae6f37f7127f3e9a528",
+  "host": {
+    "controls": {
+      "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+      "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+    },
+    "cpu": 1,
+    "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+    "sibling_list": "1-2"
+  },
+  "label": "supercop-derived diagnostic, not native KEM",
+  "linked_audit": "linked-audit.json",
+  "lock": {
+    "archive_sha256": "9a258febbfbbf6de0c09cee73f343d4014597c259415e78a598b7af4b1787208",
+    "ntruplus1152_avx2_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+    "ntruplus768_avx2_tree_sha256": "8db00172e705b67e231b63708295781d65681fef2c7422d717fe91ab48d576e7",
+    "ntruplus864_avx2_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+    "url": "https://bench.cr.yp.to/supercop/supercop-20260831.tar.xz",
+    "version": "20260831"
+  },
+  "regions": [
+    "forward_r",
+    "forward_m",
+    "forward_2x",
+    "r_state_and_hash_bytes",
+    "complete_polynomial_island"
+  ],
+  "source_sha256": {
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/add.s": "c207ca656286e51aa783925a70f1925af45410f07c22e89284860b11dd0ed605",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/baseinv.c": "d8533869ffd045ff69db59f321800c9337d74558cda94188fee72954ae612c0f",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/basemul.s": "90cf6cc1950ecdc736681ae022646461abff4b0e09dc20035d5c334ddd1437a0",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt.s": "97d383e28568cf300a14f8e008e8fe8b7cbdaf209aaf0c55ab1825272c517d83",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt_m.s": "b53b5b91997297c0e6b5a4a58ca146de56dc6098f84beef1eb10d2e61a093fbe",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s": "0ce9f0b846cc9bdb27458bbee29df9055bc1f02805059b09d9fa48747f966618",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/bench/bench_encap_wire_short.c": "ae81ee22cbc06b2426a1d16de5c889a1dd8208fc16504c4719edf5d5ae43eb03",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/encap_wire_codec.S": "ae4669cfd75ef306c51d8248e57b1258ab84fa9bf1fd0f4eb2804454e492ab49",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/encap_wire_forward.S": "2a172aa8d5d219cbef919bccaf5be9fad30648567c7db05efb6358e76256677a",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/encap_wire_m_add_control.S": "540be91926f9cb40891d153571cb95cfcb8d97fb2749933d133ae47947b690c8",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/encap_wire_muladd.S": "3202a681be61290409b5384a12ff848b53a9408044f6e3d5b454557fa0b6cd66",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/src/encap_wire_research.c": "89502cdd0591bc47e5ae5c332b3d5316b8d6ee75c8bfedef4dab8d86743c962d",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tests/test_encap_wire_asm.c": "0a3601a400e5373ea82d0c4fe34708e872c923ce7835c723282379f9417ca26d",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/audit_encap_wire_asm.py": "32ffb7af87985eb4c1a6ef0b08186994e587e26e243aabf23c2849e257cf47a6",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/generate_encap_wire_asm.py": "c684f15377d559169b1265684c9c3eaa6f5b7f8e2f8a1aa405c99fdc683a82ad",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/generate_encap_wire_schedule.py": "4da9a1cfdd903c9d9c3ba73c1fc8875995ec159b4ad0b3ae18760facbce5c43f"
+  },
+  "variants": [
+    "current_M",
+    "W_Mont_1packet",
+    "W_Mont_2packet",
+    "current_M_fused_add"
+  ],
+  "verified_supercop": {
+    "1152": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+    "768": "8db00172e705b67e231b63708295781d65681fef2c7422d717fe91ab48d576e7",
+    "864": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006"
+  }
+}

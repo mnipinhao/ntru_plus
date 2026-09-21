@@ -3774,5 +3774,13 @@ geometric-twist-stage-gauge-generate:
 shifted-dft3-two-chain-generate:
 	$(PYTHON) tools/generate_gt32_shifted_dft3_two_chain_gate.py
 
+.PHONY: encap-wire-generate encap-wire-short
+encap-wire-generate:
+	$(PYTHON) tools/generate_encap_wire_schedule.py
+	$(PYTHON) tools/generate_encap_wire_asm.py
+
+encap-wire-short:
+	$(PYTHON) tools/run_encap_wire_short.py --supercop-root "$(SUPERCOP_ROOT)" --cpu "$(or $(BENCH_CPU),1)" --tag "$(RESULT_TAG)"
+
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__
