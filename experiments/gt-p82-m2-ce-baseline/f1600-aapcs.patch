@@ -1,0 +1,28 @@
+--- /Users/chenpinhao/ntruplus/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+1152/CE/f1600.S	2026-02-11 11:22:58
++++ /tmp/m2bench/f1600_abi.S	2026-09-21 16:44:10
+@@ -95,6 +95,16 @@
+ 
+ f1600:
+ _f1600:
++    /* AAPCS64 fix for measurement: the upstream routine writes v8-v15, whose
++     * low 64 bits are callee-saved, and neither saves nor restores them.  Any
++     * caller holding a double across the call is corrupted.  Without this the
++     * Official+CE baseline cannot be timed at all -- the timer's own values
++     * come back as -inf.  NTRU+864's test_keccak_v84a asserts exactly this
++     * property for the GT backend; upstream has no equivalent. */
++    stp d8,  d9,  [sp, #-64]!
++    stp d10, d11, [sp, #16]
++    stp d12, d13, [sp, #32]
++    stp d14, d15, [sp, #48]
+     mov x2, x0
+     mov x3, #6
+ 
+@@ -162,4 +172,8 @@
+     str d23, [x0, #184]
+     str d24, [x0, #192]
+ 
++    ldp d14, d15, [sp, #48]
++    ldp d12, d13, [sp, #32]
++    ldp d10, d11, [sp, #16]
++    ldp d8,  d9,  [sp], #64
+     ret
