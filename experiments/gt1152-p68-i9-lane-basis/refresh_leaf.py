@@ -12,13 +12,13 @@ repacked radix-9 table.
 import subprocess, sys
 from pathlib import Path
 
-PKG  = Path(sys.argv[1] if len(sys.argv) > 1 else "/tmp/p68kem")
+PKG  = Path(sys.argv[1] if len(sys.argv) > 1 else "../gt1152-p10-kem")
 HOST = "pi@100.99.191.9"
 LEAF = "/home/pi/supercop-20260831/crypto_kem/ntruplus1152/aarch64-gt1152"
 STAGE = Path("/tmp/leafstage-p68")
 
 ASM   = ["inverse9.S", "inverse16.S", "inverse_ntt.S", "rebase.S"]
-PLAIN = ["api_glue.c", "invntt9_lane_tables.h"]
+PLAIN = ["api_glue.c", "invntt9_lane_tables.h", "secure_clear.h"]
 
 STAGE.mkdir(exist_ok=True)
 for f in STAGE.glob("*"):
