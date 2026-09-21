@@ -341,3 +341,9 @@ SUPERCOP-derived phase campaign and audited against linked Official code.
 No new optimization ASM or Native candidate was introduced. The detailed
 machine/caller ledger, limits of the measurements, and next proof gates are in
 [the round-3 report](/home/nuc/src/ntru_plus-official-opt/docs/ntruplus768-official-opt-round3.md).
+
+## Round 4: Forward lane × stage × caller-domain range closure
+
+The next proof gate is documented in the [Forward lane/consumer report](/home/nuc/src/ntru_plus-official-opt/docs/ntruplus768-official-forward-lane-range.md), with reproducible scripts and machine-readable per-lane bounds in the experiment. It replays the pinned Official Forward's physical routing at eight cutpoints and connects its lazy terminal output to unchanged BaseInv, BaseMul and serializer code. The Decap `crepmod3` output domain was corrected to `[-2,2]` after exhaustive signed-word checking; assuming `[-1,1]` would have understated the Decap Forward input.
+
+All modeled signed-i16 pre-operations and the listed downstream consumer envelopes pass. The proof therefore selects one **research prototype**, a namespaced caller-bounded Official Forward that omits only the 48 terminal Barrett vectors while leaving the general `poly_ntt` intact. It has **not** been implemented or timed. Thus no KEM performance or promotion conclusion changes in this round.

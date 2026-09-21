@@ -93,3 +93,26 @@ round3:
   correctness: phase_raw_exact_and_asan_ubsan_passed
   native_round3: not_run_no_complete_caller_candidate
   promotion: none
+round4:
+  date: 2026-09-21
+  scope: Forward_lane_stage_caller_domain_bounds_to_BaseInv_BaseMul_serializer
+  candidate_asm: none
+  proof: results/officialopt-forward-lane-proof-20260921.json
+  consumer_proof: results/officialopt-forward-consumer-proof-20260921.json
+  linked_consumer_differential: results/officialopt-forward-lazy-consumer-differential-20260921.json
+  physical_lanes_per_stage: 768
+  official_asm_cutpoints_checked: 8
+  forward_exact_differential_cases: 1746
+  signed_word_failures: 0
+  pre_barrett_max_abs:
+    keygen_f: 15252
+    keygen_g: 15251
+    encap_r_m: 13636
+    decap_message: 14449
+  decap_crepmod3_output_domain: [-2, 2]
+  consumer_word_and_wire_checks: passed
+  selected_reduction_prototype: namespaced_Official_Forward_without_48_terminal_Barrett_vectors
+  original_general_poly_ntt: unchanged
+  full_kem_kat_for_prototype: not_run_no_candidate_asm
+  native_benchmark: not_run_no_candidate_asm
+  promotion: none
