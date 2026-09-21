@@ -1,0 +1,123 @@
+{
+  "label": "repository-local-diagnostic-not-SUPERCOP",
+  "elf_sha256": "c60a13a6b9cea17706c6d5a63dec7305dbadcf5345d9cc53687ceac4e68641bf",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "flags": [
+    "-O3",
+    "-mavx2",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-Wl,--gc-sections",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-I/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean"
+  ],
+  "source_sha256": {
+    "experiments/avx2_gt32_tile4_official_001/tests/test_encap_wavefront.c": "6822c5e2f98b319ac9fa3625ac29927e58e1d86bb222acf7391306c667f1529c",
+    "experiments/avx2_gt32_tile4_official_001/generated/encap_wavefront_1.s": "1d223402b38c63f9090a63b0d3758f4bb288c3d7eaf9df9dc8b0359b3581b34c",
+    "experiments/avx2_gt32_tile4_official_001/generated/encap_wavefront_2.s": "2f32e4051c48acbf00ef1c532b85f1b4cd5682242e2850c14af0d752da3a8942",
+    "clean/avx2-gt32-clean/ntt.s": "97d383e28568cf300a14f8e008e8fe8b7cbdaf209aaf0c55ab1825272c517d83",
+    "clean/avx2-gt32-clean/ntt_m.s": "b53b5b91997297c0e6b5a4a58ca146de56dc6098f84beef1eb10d2e61a093fbe",
+    "clean/avx2-gt32-clean/basemul.s": "90cf6cc1950ecdc736681ae022646461abff4b0e09dc20035d5c334ddd1437a0",
+    "clean/avx2-gt32-clean/pack.s": "0ce9f0b846cc9bdb27458bbee29df9055bc1f02805059b09d9fa48747f966618",
+    "clean/avx2-gt32-clean/cbd.s": "1b1f991128d5f1eed916e6ab5ddd6594cb41ffcc6fe27308b805f6499edae63b",
+    "clean/avx2-gt32-clean/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+    "clean/avx2-gt32-clean/baseinv.c": "d8533869ffd045ff69db59f321800c9337d74558cda94188fee72954ae612c0f",
+    "clean/avx2-gt32-clean/add.s": "c207ca656286e51aa783925a70f1925af45410f07c22e89284860b11dd0ed605"
+  },
+  "host": {
+    "cpu": 1,
+    "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+    "governor": "performance",
+    "no_turbo": "1",
+    "siblings": "1-2",
+    "aslr": "2"
+  },
+  "correctness": {
+    "correctness": "pass",
+    "forward_cases": 11543,
+    "signed_i16_serializer_values": 65536,
+    "asymmetric_B3_cases": 100
+  },
+  "audit": [
+    {
+      "symbol": "ntruplus768_exp_encap_wavefront_1",
+      "address": "0x3900",
+      "address_mod64": 0,
+      "data_loads": 88,
+      "data_stores": 88,
+      "opcode_histogram": {
+        "mov": 1,
+        "vmovdqa": 84,
+        "vmovdqu": 176,
+        "vpmullw": 184,
+        "vpsubw": 368,
+        "vpaddw": 216,
+        "vpblendd": 96,
+        "vpmulhw": 320,
+        "vperm2i128": 96,
+        "vpunpcklqdq": 48,
+        "vpunpckhqdq": 48,
+        "vpshufb": 48,
+        "vpunpckldq": 24,
+        "vpunpckhdq": 24,
+        "vzeroupper": 1,
+        "ret": 1
+      },
+      "stack_bytes": 0,
+      "calls": 0,
+      "branches": 0,
+      "internal_vzeroupper": 0,
+      "linked_peak_live_ymm": 16,
+      "def_use_evidence": "SSA replay, ordered linked/source register-flow equality and backwards machine liveness"
+    },
+    {
+      "symbol": "ntruplus768_exp_encap_wavefront_2",
+      "address": "0x5f80",
+      "address_mod64": 0,
+      "data_loads": 87,
+      "data_stores": 87,
+      "opcode_histogram": {
+        "mov": 1,
+        "vmovdqa": 69,
+        "vmovdqu": 174,
+        "vpmullw": 184,
+        "vpsubw": 368,
+        "vpaddw": 216,
+        "vpblendd": 96,
+        "vpmulhw": 320,
+        "vperm2i128": 96,
+        "vpunpcklqdq": 48,
+        "vpunpckhqdq": 48,
+        "vpshufb": 48,
+        "vpunpckldq": 24,
+        "vpunpckhdq": 24,
+        "vzeroupper": 1,
+        "ret": 1
+      },
+      "stack_bytes": 0,
+      "calls": 0,
+      "branches": 0,
+      "internal_vzeroupper": 0,
+      "linked_peak_live_ymm": 16,
+      "def_use_evidence": "SSA replay, ordered linked/source register-flow equality and backwards machine liveness"
+    }
+  ],
+  "sections": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/encap-range-refinement-20260921-check/measure  :\nsection                size     addr\n.note.gnu.build-id       36      848\n.interp                  28      884\n.gnu.hash                40      912\n.dynsym                 336      952\n.dynstr                 241     1288\n.gnu.version             28     1530\n.gnu.version_r           80     1560\n.rela.dyn               288     1640\n.rela.plt               168     1928\n.init                    27     4096\n.plt                    128     4128\n.plt.got                  8     4256\n.text                 46761     4288\n.fini                    13    51052\n.rodata               80992    53248\n.eh_frame_hdr           124   134240\n.eh_frame               548   134368\n.note.gnu.property       32   134920\n.note.ABI-tag            32   134952\n.init_array               8   138608\n.fini_array               8   138616\n.data.rel.ro             24   138624\n.dynamic                496   138648\n.got                    120   139144\n.data                    16   139264\n.bss                  13120   139328\n.comment                 38        0\nTotal                143740\n\n\n",
+  "pricing": [],
+  "provenance": {},
+  "sanitizer_policy": "ASan+UBSan; LSan disabled because sandbox disallows ptrace",
+  "measurement_contract": {
+    "modes": [
+      "1x_r",
+      "1x_m",
+      "2x_forward",
+      "r_state_plus_hash_input_bytes",
+      "polynomial_island"
+    ],
+    "island": "r/m coefficient inputs + canonical PK bytes -> retained r + r wire bytes + ciphertext; SHAKE excluded",
+    "residency": "same immutable r/m/PK banks, same scratch/output banks, 32 alternating warmups",
+    "placement": "normal, ASLR-on; not selected from timings"
+  }
+}

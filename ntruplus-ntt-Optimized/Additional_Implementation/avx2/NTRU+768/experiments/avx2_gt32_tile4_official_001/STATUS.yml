@@ -3,6 +3,19 @@ status: q24-gt-unpack-and-both-centered-and-lazy10788-gt-pack-boundaries-product
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+encap_range_refinement_003:
+  scope: Encap-independent-ternary-input-superset-no-ASM-change
+  status: exact-forward-marginals-conservative-consumer-model
+  forward_stage_abs_bounds: [9844, 11466, 12668, 14397, 15592]
+  post_add_abs_bound: 17448
+  method: disjoint-input-support-replay-and-exact-integer-bitset-sumsets
+  artifact: generated/tile4_encap_range_refined.json
+  word_conformance: generated/tile4_encap_range_word_conformance.json
+  formal_theorem_prover_certificate: false
+  full_linked_binary_proof: false
+  new_reductions: 0
+  removed_reductions: 0
+  clean_modified: false
 encap_range_wavefront_002:
   status: range-closed-two-asm-prototypes-A1-island-win-Native-Encap-regression-no-promotion
   scope: Encap-small-input-only-same-DAG-M-e0

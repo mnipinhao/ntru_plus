@@ -51,9 +51,20 @@ treated as permission to delete evidence.
 6. **Small independent provenance correction**: the existing 1152 generated
    JSON wording change (`Natural-Q machine wire basis`) needs separate review.
 
-These are review groups, not a claim that all current changes have been audited
-or can be staged blindly by directory. Some files span groups. No checkpoint
-commit is made until the user chooses the commit policy. Do not use `git add .`.
+The user authorized topic commits on the existing branch. Checkpoints created:
+
+- `fc08db9`: repository hygiene and proof-refinement proposal.
+- `a7e016c`: pinned benchmark infrastructure (including existing scripts).
+- `175f23d`: reassessment, surveys and campaign evidence.
+- `cf15efe`: 768 range closure, redesign and wavefront evidence.
+- `0821e73`: 1152 machine-wire-basis wording correction.
+
+The worktree was clean after these five commits. Existing Python sources passed
+syntax parsing and no newly staged file had ELF magic. Native raw output and
+Markdown hard-break whitespace were preserved, rather than rewriting historical
+evidence to satisfy whitespace warnings. These are preservation checkpoints,
+not a fresh correctness/security audit or promotion of every historical result.
+Fixed binaries and the disposable snapshot remain local and ignored.
 
 ## Where to resume
 

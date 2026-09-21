@@ -65,5 +65,63 @@ Only after this closure should a reduction-removal candidate be considered.
 Tighter proof may permit more aggressive code; it is not evidence by itself
 that any particular reduction is redundant or that cycles will improve.
 
-Implementation of this proposal is deferred until repository organization and
-checkpoint review are complete. No new ASM or benchmark is part of this cleanup.
+## First implementation after repository checkpoints
+
+`tools/refine_encap_range.py` in the 768 tile4 experiment implements exact
+frontend marginal sets and arbitrary-width integer-bitset sumsets through all
+five NTT32 stages. Every butterfly checks that its two inputs have disjoint
+original q-input support. Thus Cartesian products are justified, not an
+assumption that two outputs of the same butterfly are independent. Correlations
+between different k3 rows are deliberately not claimed away.
+
+The domain is the independent ternary coefficient superset: every r/m caller
+input is covered, but a marginal endpoint need not be reachable under all
+additional distribution/encoding constraints of a real caller. No joint
+reachability of all terminal coefficients is asserted.
+
+| Stage | Old symmetric interval | Exact marginal maximum absolute value |
+| --- | ---: | ---: |
+| D16 | 9844 | 9844 |
+| D8 | 11478 | 11466 |
+| D4 | 12674 | 12668 |
+| D2 | 14398 | 14397 |
+| D1 | 15605 | 15592 |
+
+The conservative asymmetric h×r / lambda / R² / +m composition is reused with
+the refined lane bounds. Its post-add envelope improves from 17461 to 17448;
+consumer bounds remain conservative, not exact product reachability.
+
+This small improvement is evidence against expecting a large GLOBAL bound
+reduction merely by replacing forward intervals with exact sets. It does not
+close lane-specific reduction removal or a different arithmetic DAG.
+
+`tests/test_range_word_semantics.c` checks the model's actual fixed constants
+against AVX2 low/high-multiply/subtract on every signed-i16 input, with UBSan.
+It separately checks v=9 serializer reduction/canonicalization over 65536
+inputs and the extreme rounded-high-multiply operand pair. This is hardware
+conformance of the arithmetic macros, not a proof of the complete linked NTT.
+
+Run from the experiment directory:
+
+```sh
+python3 tools/check_range_word_semantics.py
+```
+
+Artifacts: `generated/tile4_encap_range_refined.json` and
+`generated/tile4_encap_range_word_conformance.json`. They record source/model
+hashes and the conformance compiler/flags/ELF hash. No clean source, arithmetic,
+reduction placement or performance measurement is changed.
+
+Validation completed: 323 constants × 65536 signed inputs = 21,168,128
+Montgomery hardware/model cases; 65536 serializer inputs; UBSan passed.
+The existing wavefront regression was also rebuilt and run without timing:
+11543 Forward cases, 100 asymmetric B3 cases, alias/canary/immutability and
+ASan/UBSan checks passed. Evidence is under
+`results/encap-range-refinement-20260921-check/` in the experiment. This retains
+the prior independent semantic-oracle checks; it does not elevate testing into
+a whole-binary proof.
+
+Still open: theorem-prover certification, automatic correspondence of every
+linked NTT instruction to a ledger row, richer joint consumer reachability and
+proof-driven reduction-removal experiments. Passing this model is not permission
+to remove a reduction without analyzing that changed program.
