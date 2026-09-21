@@ -3,6 +3,18 @@ status: q24-gt-unpack-and-both-centered-and-lazy10788-gt-pack-boundaries-product
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+encap_packet_abi_reassess_001:
+  status: semantic-ownership-pass-machine-schedule-open
+  artifact: generated/tile4_encap_packet_abi_gate.json
+  variants: [M-control, W-wire-AoS, WP-wire-order-planes, asymmetric-D01-historical]
+  next_schedule_target: W-direct-terminal-and-AoS-quartic-consumer
+  wire_block_to_M_block: [0, 1, 9, 8, 4, 5, 11, 10, 6, 7, 3, 2]
+  semantic_cases: 128
+  independent_full_transform_proof: false
+  executable_register_schedule_complete: false
+  ASM_emitted: false
+  benchmark_run: false
+  clean_modified: false
 encap_range_refinement_003:
   scope: Encap-independent-ternary-input-superset-no-ASM-change
   status: exact-forward-marginals-conservative-consumer-model
