@@ -423,3 +423,48 @@ should explicitly exercise Keygen retry, review the namespaced entry's
 consumer contract in a clean implementation, and repeat Native confirmation
 from that clean export. The candidate has not been merged with the earlier
 BaseMul-add fusion; gains from different campaigns must not be added.
+
+## Round 6: caller-lazy qualification export and independent Native rebase
+
+The missing retry-path coverage is now explicit. A test-only linker wrapper
+replaces the second Keygen CBD1 expansion with zero bytes, so `g=0` genuinely
+fails the unchanged BaseInv and triggers one retry. Official and caller-lazy
+both make exactly three random draws, then produce byte-identical PK/SK. A
+subsequent Encap/Decap with those keys is also byte-identical, including the
+shared secret. This is controlled *g*-retry coverage, not evidence that an
+*f*-retry occurred. The existing 100 deterministic vectors and invalid-PK/CT
+checks still pass; ASan/UBSan pass with host-restricted LeakSanitizer disabled.
+The injection exists only in the test binary, never in the exported KEM.
+
+The experiment now has a standalone flat qualification export under
+`qualification/avx2-officialopt-caller-lazy-qual001/` and a sibling JSON
+manifest. Its 26 installed source-file hashes are **identical** to the prior
+exp003 Native research candidate. The export consists only of the pinned
+Official source tree with `kem.c` and the namespaced Forward ASM overlay; it
+contains no diagnostic KEM wrapper or test harness. The exporter refuses to
+overwrite, verifies the pinned Official tree, and records every source hash.
+The installer verifies the export hash and only copies it into a newly created
+disposable SUPERCOP campaign. Neither existing `clean/`, the imported upstream,
+nor pristine SUPERCOP was changed.
+
+The new campaign uses unmodified SUPERCOP `crypto_kem/measure.c` and normal
+compiler selection. Both implementations selected GCC 15.2.0 O2; CPU 1 met
+the performance-governor/turbo-disabled policy. Nine fresh launches per
+implementation (864 raw observations per operation) gave independently pooled
+StQ2 results:
+
+| Native cycles | Official | Qualification export | Candidate − Official |
+|---|---:|---:|---:|
+| Keypair | 21,582.01 | 21,407.83 | −174.19 |
+| Encap | 28,204.63 | 27,997.69 | −206.95 |
+| Decap | 19,497.49 | 19,278.40 | −219.09 |
+
+Raw `data`, `run.out`, compiler identity, host policy and ELF hashes are in
+`results/native-lazy-qual-{official,candidate}-20260921/`. These are new
+independent Native observations, not a paired estimate; the prior four-setting
+fixed-ELF controls remain separate evidence for the **source-identical**
+exp003 candidate. No clean-production change or Official/GT combined-candidate
+claim follows automatically. The remaining explicit coverage gap is an
+actual *f*-inversion retry. Before promotion, a final package review should
+also rerun fixed-ELF placement controls on the exact release packaging if its
+source layout or link order changes.
