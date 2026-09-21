@@ -1,0 +1,52 @@
+{
+  "class": "supercop-derived diagnostic; not Native SUPERCOP",
+  "candidate": "ct-wresident-vs-cohort",
+  "baseline": "cohort control",
+  "source_sha256": {
+    "upstream/supercop-avx2/invntt.s": "991f13a75de92a1e33c5141aa81849f9619073606989a49b9c4627ea3d852b70",
+    "upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "asm/ntruplus768_officialopt_invntt_ct.s": "c952203e8787ba5b778d7de36c04b97194118c80167a0b041293b487aa3c6da1",
+    "asm/ntruplus768_officialopt_invntt_ct_cohort.s": "1a44b401fb456f639a9b156d9a9f4c22a42a004509104fd3a22f4196e065425b",
+    "tools/generate_inverse_ct_cohort.py": "5eb337bc53f8bf5683e496c2f254f4970ed3abcc31f5f17b4d8dc9030f790ecc",
+    "tools/prove_inverse_ct_full_range.py": "a9afe5d1fe281f3ed4908712bf948df59f7e1677974684531be4cd9a4e7a225a",
+    "asm/ntruplus768_officialopt_invntt_ct_wresident.s": "e1be555fb65cb1c95dbaa0591c819d05ebda1639dc11ee0484c2c5d588edf4fb",
+    "tools/generate_inverse_ct_controls.py": "868e04ab7dab5dd698dc6e4c7ca3818364b937fe60360501a7e2ee5e8ecbaaa2",
+    "tests/test_inverse_ct_controls.c": "7f11bf4fd2c1b4075d7db9127ac7ceca739ab6fc7082df4208c147368f69192a",
+    "src/kem_ct.c": "4fa2ee2eee9fd8687ec9efad4941a7f182596f39333cdca1f4f0b064452bd2b4",
+    "bench/bench_inverse_ct.c": "5a3ebb596768157d3e6aa4bf41d4050d3725e9760ecb232f2282b199b3033c6c",
+    "tools/run_inverse_ct_short.py": "a68cd813f1da4aacc7bc32bbfae9e50cc45367cf06d6e7829dfcab328d1705c5"
+  },
+  "elf_sha256": "62d2a8a70a70ac8edb535d20dcd90ae4d99164d1c7ce9cb06231877c3e709e09",
+  "saved_elf_sha256": "62d2a8a70a70ac8edb535d20dcd90ae4d99164d1c7ce9cb06231877c3e709e09",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "smt_siblings": "1-2",
+  "cpu": 1,
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "launches": 9,
+  "observations_per_variant_region_launch": 512,
+  "cpucycles_identity": [
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000",
+    "cpucycles=default-perfevent persecond=1400000000"
+  ],
+  "compiler_recipe": "Makefile common O3GC; see build rule",
+  "placement": "normal, ASLR enabled, one fixed ELF",
+  "inverse_input": "16 banks of precomputed canonical-input BaseMulScale output; reset outside timing",
+  "decap_input": "16 deterministic valid CT/SK banks; unchanged Official caller except CT inverse",
+  "command": [
+    "taskset",
+    "-c",
+    "1",
+    "/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/build/bench_inverse_ct_wresident_vs_cohort"
+  ]
+}

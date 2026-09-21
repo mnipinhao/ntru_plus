@@ -706,3 +706,73 @@ separate same-arithmetic schedule control would be needed to assign cause.
 The result narrows the next CT question: avoiding eight chains alone is not
 enough on this AVX2 machine. Do not infer that CT is globally unsuitable, but
 do not keep changing placement to seek a favorable isolated result.
+
+## Round 11: cohort constant-residency and normalization-placement controls
+
+Two namespaced controls now isolate the two proposed mechanisms without
+changing the paired-gauge arithmetic or final ABI. `wresident` keeps radix-3
+`w` and its QINV companion in two YMM registers; the same 40 relative-gauge
+chains use memory-form constants, and one alpha temporary is reassigned to a
+dead register. Its constant-load ledger is 80 relative memory operands plus
+two hoisted `w` loads, instead of 80 explicit relative loads plus 32 repeated
+`w` loads. The predicted retired-load reduction is 30 per inverse; the 80
+relative loads have **not** disappeared. `earlynorm` keeps the cohort's
+constant strategy but moves exactly the same 40 chains from the radix-3
+entrance to the level-2 egress, processing the eight live output vectors of
+each physical group. The first group retains the target gauge; the other
+five groups use the same per-vector constants in reordered table form. Its
+public group-zero branch and address cost are included.
+
+The controls are generated from the SHA-pinned cohort source by
+`tools/generate_inverse_ct_controls.py`; rerunning it reproduced both ASM
+hashes. Both passed 5,003 raw bit-exact comparisons against cohort, separate
+Official-residue/crepmod3 differentials, 100 valid Decap vectors, 100
+tampered ciphertext cases, 100 invalid secret-key cases, and C-harness
+ASan/UBSan. The conditional `±7,644` input range replay still gives maximum
+signed-i16 pre-operation magnitude 27,900: moving a normalization earlier
+does not insert a different arithmetic operation between it and its former
+location. Linked symbols are 32-byte aligned, with no stack reference, call,
+or `vzeroupper`. Both retain 118 radix-2-plus-gauge Montgomery chains,
+40 standalone Barrett vectors, and the same 11,264 B added constant tables.
+
+| Linked inverse symbol | cohort | `wresident` | `earlynorm` |
+|---|---:|---:|---:|
+| `.text` bytes | 2,354 | 2,290 | 2,450 |
+| Static instruction rows | 498 | 484 | 523 |
+
+Nine fresh-process, same-ELF, SUPERCOP-derived StQ2 comparisons on CPU 1
+(`performance`, turbo disabled, normal placement/ASLR on) gave:
+
+| Candidate minus comparator | Inverse | Inverse+crepmod3 | Full Decap |
+|---|---:|---:|---:|
+| `wresident` − cohort | −8.50 (9/9 favorable) | −7.55 (9/9) | −5.23 (5/9) |
+| `earlynorm` − cohort | +7.94 (0/9) | +7.75 (0/9) | −43.04 (9/9) |
+| `wresident` − Official | +16.06 (0/9) | +19.34 (0/9) | +3.72 (1/9) |
+| `earlynorm` − Official | +31.92 (0/9) | +36.40 (0/9) | +37.64 (0/9) |
+
+The inverse-only cutpoint is the appropriate mechanism test. `wresident`
+recovers about eight cycles, while moving normalization earlier **with the
+same chain count** worsens it by about eight cycles. Thus the hypothesized
+late-normalization critical path is not established as the principal cost in
+this realization; the proposed earlier placement adds a public branch and
+changes scheduling, so it is not a pure latency-only test. Full-Decap
+directions differ across separately linked images (notably `earlynorm` beats
+cohort but loses to Official), so they cannot be assigned to the inverse
+instruction change without placement controls.
+
+An isolated `perf stat` diagnostic ran one million inverse calls per process
+with identical in-loop reset in the same ELF. Relative to cohort, `wresident`
+retired approximately 29 fewer loads and 105 fewer instructions per call;
+`earlynorm` changed either by less than one per call. The first result agrees
+with the 30-load source ledger and confirms a real constant-load mechanism.
+This process-wide PMU test is not a cycle headline; it includes reset and
+startup, and small store differences are below useful precision. The machine
+counts are in `results/officialopt-inverse-ct-controls-pmu-20260921.json`;
+linked audits and raw paired launches are in the correspondingly named
+`results/officialopt-inverse-ct-{wresident,earlynorm}*` paths.
+
+**Decision:** neither control beats Official inverse, so neither enters Native
+SUPERCOP or clean production. Keep `wresident` as the better CT research
+control. This experiment localizes a meaningful part of the cohort regression
+to avoidable `w` reloads, but does not establish that the remaining deficit
+is solely register pressure or solely CT mathematics.

@@ -1,0 +1,47 @@
+{
+  "class": "diagnostic perf-stat; whole process includes reset and startup; not Native SUPERCOP",
+  "cpu": 1,
+  "host_policy": "performance governor; turbo disabled",
+  "elf": "build/bench_inverse_ct_pmu",
+  "elf_sha256": "58e202e87435b4ce8e6c9af52d1e218e43f5dc71c4cafb5a6d0983ff4e6672c8",
+  "repetitions_per_process": 1000000,
+  "fresh_processes_per_variant": 3,
+  "events": [
+    "cpu_core/instructions/u",
+    "cpu_core/mem_inst_retired.all_loads/u",
+    "cpu_core/mem_inst_retired.all_stores/u"
+  ],
+  "command_template": "perf stat --no-big-num -r 3 -e cpu_core/instructions/u,cpu_core/mem_inst_retired.all_loads/u,cpu_core/mem_inst_retired.all_stores/u -- taskset -c 1 build/bench_inverse_ct_pmu <variant>",
+  "counts_per_process_mean": {
+    "cohort": {
+      "instructions": 2879058213,
+      "retired_loads": 560409331,
+      "retired_stores": 244179225
+    },
+    "wresident": {
+      "instructions": 2774082345,
+      "retired_loads": 531362313,
+      "retired_stores": 244626736,
+      "running_fraction": 0.9993
+    },
+    "earlynorm": {
+      "instructions": 2879479469,
+      "retired_loads": 560687865,
+      "retired_stores": 244302086,
+      "running_fraction": 0.9967
+    }
+  },
+  "approximate_delta_per_inverse_vs_cohort": {
+    "wresident": {
+      "instructions": -104.975868,
+      "retired_loads": -29.047018,
+      "retired_stores": 0.447511
+    },
+    "earlynorm": {
+      "instructions": 0.421256,
+      "retired_loads": 0.278534,
+      "retired_stores": 0.122861
+    }
+  },
+  "interpretation": "Only the roughly 29-load wresident reduction is well above run-to-run count variation. Memory-form relative constants still perform their own 80 loads; the 30 avoided loads are repeated radix-3 w loads. Do not use process-wide cycles as a paired cycle headline."
+}
