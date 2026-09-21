@@ -17,7 +17,7 @@ HOST = "pi@100.99.191.9"
 LEAF = "/home/pi/supercop-20260831/crypto_kem/ntruplus1152/aarch64-gt1152"
 STAGE = Path("/tmp/leafstage-p68")
 
-ASM   = ["inverse9.S", "inverse16.S", "inverse_ntt.S", "rebase.S"]
+ASM   = ["inverse9.S", "inverse16.S", "inverse_ntt.S", "rebase.S", "ntt.S"]
 PLAIN = ["api_glue.c", "invntt9_lane_tables.h", "secure_clear.h"]
 
 STAGE.mkdir(exist_ok=True)
