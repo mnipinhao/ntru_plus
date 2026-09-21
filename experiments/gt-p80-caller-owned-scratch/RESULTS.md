@@ -71,6 +71,7 @@ intended.
 | tree | leaf | bytes | where the clear is now |
 |---|---|---:|---|
 | 1152 | `inverse_ntt.S` | 2,304 | assembly (leaf is last to touch it) |
+| 1152 | `ntt.S` | 2,304 | **C** — was not cleared at all |
 | 864 | `ntt.S` | 1,792 | **C** — was not cleared at all |
 | 864 | `inverse.S` baseinv | 1,200 | assembly |
 | 864 | `inverse.S` invntt | 1,792 | assembly |
@@ -97,3 +98,17 @@ neutral on both hosts, its clears having stayed in assembly.
 The buffer size was checked rather than assumed: a 64-byte guard pattern placed
 immediately after the 768-int16 scratch survives a full keypair/encapsulate/
 decapsulate flow untouched.
+
+## A seventh leaf, and a third clearing gap
+
+The first survey of this gate listed six leaves and missed NTRU+1152's `ntt.S`,
+which allocates 2,304 bytes and — like NTRU+864's, from which it was ported —
+**cleared none of it**.  Asking whether the three trees were now aligned is what
+surfaced it; the audit that found it is three greps, and it should have been run
+before the survey rather than after.
+
+Converted the same way.  `test_zeroization` now reports `clear_calls` 33 -> 41
+and `clear_bytes` 34,000 -> 52,432, which is exactly the eight `poly_ntt` calls
+x 2,304 bytes.  Closing it costs **A76 147,575 -> 148,316, +741 cycles
+(+0.50%)** — the same rate as 864's `ntt.S` per byte cleared — and about +150ns
+on M2.  That is the price of the gap having been real.

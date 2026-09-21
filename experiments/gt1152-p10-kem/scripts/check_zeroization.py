@@ -43,6 +43,10 @@ require("kem.c", (
     "secure_clear(&m,sizeof m);",
     "secure_clear(&hinv,sizeof hinv);",
 ))
+# ntt.S allocates nothing: its 2304-byte scratch is the caller's, and api_glue.c
+# clears it.  It cleared nothing at all before, the gap NTRU+864's ntt.S had.
+require("ntt.S", ("mov x21, x2",))
+require("api_glue.c", ("int16_t scratch[1152];", "secure_clear(scratch, sizeof scratch);"))
 require("symmetric.c", ("secure_clear(data, sizeof data);",))
 require("fips202.c", ("secure_clear(s, sizeof s);", "secure_clear(tail, sizeof tail);"))
 
