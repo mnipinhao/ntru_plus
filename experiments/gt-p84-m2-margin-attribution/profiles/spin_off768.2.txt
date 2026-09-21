@@ -1,0 +1,227 @@
+Analysis of sampling spin_off768 (pid 43088) every 1 millisecond
+Process:         spin_off768 [43088]
+Path:            /private/tmp/*/spin_off768
+Load Address:    0x1047dc000
+Identifier:      spin_off768
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  zsh [42976]
+Target Type:     live task
+
+Date/Time:       2026-09-21 18:07:15.939 +0800
+Launch Time:     2026-09-21 18:07:11.899 +0800
+OS Version:      macOS 26.4.1 (25E253)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         960K
+Physical footprint (peak):  992K
+Idle exit:                  untracked
+----
+
+Call graph:
+    5075 Thread_23912900   DispatchQueue_1: com.apple.main-thread  (serial)
+      1806 shake256_absorb  (in spin_off768) + 348  [0x1047de1d8]  fips202.c:699
+      + 1806 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off768) + 264,344,...  [0x1047deb1c,0x1047deb6c,...]
+      915 shake256_squeezeblocks  (in spin_off768) + 48  [0x1047de3a8]  fips202.c:715
+      + 915 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off768) + 264,344,...  [0x1047deb1c,0x1047deb6c,...]
+      336 crypto_kem_dec  (in spin_off768) + 416  [0x1047dcec4]  kem.c:320
+      + 181 looptop_210  (in spin_off768) + 600,804,...  [0x1047df6b8,0x1047df784,...]
+      + 155 looptop_6543  (in spin_off768) + 468,356,...  [0x1047df44c,0x1047df3dc,...]
+      326 crypto_kem_dec  (in spin_off768) + 448  [0x1047dcee4]  kem.c:324
+      + 203 looptop_3456  (in spin_off768) + 524,520,...  [0x1047df240,0x1047df23c,...]
+      + 122 looptop_012  (in spin_off768) + 564,20,...  [0x1047df014,0x1047dedf4,...]
+      + 1 poly_ntt  (in spin_off768) + 24  [0x1047dedd8]
+      305 crypto_kem_dec  (in spin_off768) + 632  [0x1047dcf9c]  kem.c:338
+      + 191 looptop_3456  (in spin_off768) + 524,324,...  [0x1047df240,0x1047df178,...]
+      + 114 looptop_012  (in spin_off768) + 564,156,...  [0x1047df014,0x1047dee7c,...]
+      230 crypto_kem_dec  (in spin_off768) + 492  [0x1047dcf10]  kem.c:326
+      + 229 looptop  (in spin_off768) + 356,108,...  [0x1047dffb0,0x1047dfeb8,...]
+      + 1 poly_basemul  (in spin_off768) + 16  [0x1047dfe40]
+      200 crypto_kem_dec  (in spin_off768) + 408  [0x1047dcebc]  kem.c:319
+      + 200 looptop_scale  (in spin_off768) + 308,12,...  [0x1047e011c,0x1047dfff4,...]
+      92 crypto_kem_dec  (in spin_off768) + 648  [0x1047dcfac]  kem.c:339
+      + 91 loop_tobytes  (in spin_off768) + 196,252,...  [0x1047e0a64,0x1047e0a9c,...]
+      + 1 poly_tobytes  (in spin_off768) + 20  [0x1047e0998]
+      88 crypto_kem_dec  (in spin_off768) + 516  [0x1047dcf28]  kem.c:328
+      + 88 loop_tobytes  (in spin_off768) + 168,120,...  [0x1047e0a48,0x1047e0a18,...]
+      83 shake256_absorb  (in spin_off768) + 364,128,...  [0x1047de1e8,0x1047de0fc,...]  fips202.c:699
+      68 crypto_kem_dec  (in spin_off768) + 424  [0x1047dcecc]  kem.c:321
+      + 68 looptop  (in spin_off768) + 104,96,...  [0x1047e0850,0x1047e0848,...]
+      67 crypto_kem_dec  (in spin_off768) + 568  [0x1047dcf5c]  kem.c:330
+      + 67 loop_sotp_decode  (in spin_off768) + 336,8,...  [0x1047e0f44,0x1047e0dfc,...]
+      59 crypto_kem_dec  (in spin_off768) + 80  [0x1047dcd74]  kem.c:310
+      + 59 loop_frombytes  (in spin_off768) + 180,132,...  [0x1047e0954,0x1047e0924,...]
+      58 crypto_kem_dec  (in spin_off768) + 112  [0x1047dcd94]  kem.c:312
+      + 58 loop_frombytes  (in spin_off768) + 180,148,...  [0x1047e0954,0x1047e0934,...]
+      53 crypto_kem_dec  (in spin_off768) + 96  [0x1047dcd84]  kem.c:311
+      + 53 loop_frombytes  (in spin_off768) + 180,64,...  [0x1047e0954,0x1047e08e0,...]
+      46 crypto_kem_dec  (in spin_off768) + 624  [0x1047dcf94]  kem.c:337
+      + 46 loop_cbd  (in spin_off768) + 312,184,...  [0x1047e0c38,0x1047e0bb8,...]
+      39 crypto_kem_dec  (in spin_off768) + 212  [0x1047dcdf8]  kem.c:349
+      + 39 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      +   38 _platform_memset  (in libsystem_platform.dylib) + 140,156,...  [0x18565917c,0x18565918c,...]
+      +   1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+      32 crypto_kem_dec  (in spin_off768) + 472  [0x1047dcefc]  kem.c:325
+      + 32 loop_sub  (in spin_off768) + 96,20,...  [0x1047ded40,0x1047decf4,...]
+      28 crypto_kem_dec  (in spin_off768) + 320  [0x1047dce64]  kem.c:354
+      + 26 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 26 _platform_memset  (in libsystem_platform.dylib) + 140,12,...  [0x18565917c,0x1856590fc,...]
+      + 2 memset_s  (in libsystem_c.dylib) + 8,20  [0x1854df25c,0x1854df268]
+      23 crypto_kem_dec  (in spin_off768) + 280  [0x1047dce3c]  kem.c:352
+      + 21 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 21 _platform_memset  (in libsystem_platform.dylib) + 140,28,...  [0x18565917c,0x18565910c,...]
+      + 1 DYLD-STUB$$memset_s  (in spin_off768) + 4  [0x1047e101c]
+      + 1 memset_s  (in libsystem_c.dylib) + 48  [0x1854df284]
+      23 crypto_kem_dec  (in spin_off768) + 300  [0x1047dce50]  kem.c:353
+      + 23 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      +   23 _platform_memset  (in libsystem_platform.dylib) + 140,12,...  [0x18565917c,0x1856590fc,...]
+      22 hash_g  (in spin_off768) + 56  [0x1047dd10c]  symmetric.c:25
+      + 22 _platform_memmove  (in libsystem_platform.dylib) + 180  [0x185659474]
+      20 crypto_kem_dec  (in spin_off768) + 440  [0x1047dcedc]  kem.c:323
+      + 20 _platform_memmove  (in libsystem_platform.dylib) + 180,192,...  [0x185659474,0x185659480,...]
+      20 crypto_kem_dec  (in spin_off768) + 260  [0x1047dce28]  kem.c:351
+      + 18 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 18 _platform_memset  (in libsystem_platform.dylib) + 140,160,...  [0x18565917c,0x185659190,...]
+      + 1 DYLD-STUB$$memset_s  (in spin_off768) + 4  [0x1047e101c]
+      + 1 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      18 crypto_kem_dec  (in spin_off768) + 188  [0x1047dcde0]  kem.c:348
+      + 17 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 17 _platform_memset  (in libsystem_platform.dylib) + 140,156,...  [0x18565917c,0x18565918c,...]
+      + 1 memset_s  (in libsystem_c.dylib) + 20  [0x1854df268]
+      17 shake256  (in spin_off768) + 156  [0x1047de53c]  fips202.c:755
+      + 11 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 11 _platform_memset  (in libsystem_platform.dylib) + 160,140,...  [0x185659190,0x18565917c,...]
+      + 6 memset_s  (in libsystem_c.dylib) + 68,8  [0x1854df298,0x1854df25c]
+      17 shake256  (in spin_off768) + 176  [0x1047de550]  fips202.c:756
+      + 9 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 7 _platform_memset  (in libsystem_platform.dylib) + 140,12,...  [0x18565917c,0x1856590fc,...]
+      + ! 2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+      + 4 DYLD-STUB$$memset_s  (in spin_off768) + 4  [0x1047e101c]
+      + 4 memset_s  (in libsystem_c.dylib) + 8,52,...  [0x1854df25c,0x1854df288,...]
+      10 crypto_kem_dec  (in spin_off768) + 720,692,...  [0x1047dcff4,0x1047dcfd8,...]  kem.c:341
+      9 shake256_absorb  (in spin_off768) + 712  [0x1047de344]  fips202.c:699
+      + 5 memset_s  (in libsystem_c.dylib) + 8,20,...  [0x1854df25c,0x1854df268,...]
+      + 4 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      +   3 _platform_memset  (in libsystem_platform.dylib) + 12,28,...  [0x1856590fc,0x18565910c,...]
+      +   1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+      9 shake256_squeezeblocks  (in spin_off768) + 180,144,...  [0x1047de42c,0x1047de408,...]  fips202.c:715
+      7 hash_g  (in spin_off768) + 96  [0x1047dd134]  symmetric.c:27
+      + 7 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      +   7 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+      5 crypto_kem_dec  (in spin_off768) + 36  [0x1047dcd48]  kem.c:300
+      + 5 crypto_kem_dec  (in spin_off768) + 36  [0x1047dcd48]  kem.c:300
+      +   5 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52  [0x18564ac54]
+      5 memset_s  (in libsystem_c.dylib) + 92,96  [0x1854df2b0,0x1854df2b4]
+      5 shake256  (in spin_off768) + 136  [0x1047de528]  fips202.c:752
+      + 4 _platform_memmove  (in libsystem_platform.dylib) + 428,12,...  [0x18565956c,0x1856593cc,...]
+      + 1 DYLD-STUB$$memcpy  (in spin_off768) + 4  [0x1047e1010]
+      4 crypto_kem_dec  (in spin_off768) + 236  [0x1047dce10]  kem.c:350
+      + 3 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 2 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
+      + ! 1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+      + 1 memset_s  (in libsystem_c.dylib) + 20  [0x1854df268]
+      3 hash_h  (in spin_off768) + 72  [0x1047dd1a8]  symmetric.c:34
+      3 hash_h  (in spin_off768) + 116  [0x1047dd1d4]  symmetric.c:37
+      + 3 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      +   3 _platform_memset  (in libsystem_platform.dylib) + 12,140  [0x1856590fc,0x18565917c]
+      3 shake256  (in spin_off768) + 156,176,...  [0x1047de53c,0x1047de550,...]  fips202.c:756
+      3 shake256_squeezeblocks  (in spin_off768) + 204  [0x1047de444]  fips202.c:0
+      2 crypto_kem_dec  (in spin_off768) + 164  [0x1047dcdc8]  kem.c:347
+      + 2 memset_s  (in libsystem_c.dylib) + 20  [0x1854df268]
+      2 shake256  (in spin_off768) + 36,44  [0x1047de4c4,0x1047de4cc]  fips202.c:738
+      2 shake256  (in spin_off768) + 72  [0x1047de4e8]  fips202.c:743
+      + 2 shake256_absorb  (in spin_off768) + 0  [0x1047de07c]  fips202.c:698
+      1 crypto_kem_dec  (in spin_off768) + 424  [0x1047dcecc]  kem.c:323
+      1 crypto_kem_dec  (in spin_off768) + 612  [0x1047dcf88]  kem.c:335
+      + 1 hash_h  (in spin_off768) + 12  [0x1047dd16c]  symmetric.c:31
+      1 crypto_kem_dec  (in spin_off768) + 140  [0x1047dcdb0]  kem.c:347
+      1 crypto_kem_dec  (in spin_off768) + 280  [0x1047dce3c]  kem.c:353
+      1 crypto_kem_dec  (in spin_off768) + 300  [0x1047dce50]  kem.c:354
+      1 crypto_kem_dec  (in spin_off768) + 364  [0x1047dce90]  kem.c:356
+      1 hash_g  (in spin_off768) + 36  [0x1047dd0f8]  symmetric.c:24
+      1 hash_h  (in spin_off768) + 40  [0x1047dd188]  symmetric.c:35
+      1 hash_h  (in spin_off768) + 128  [0x1047dd1e0]  symmetric.c:37
+      1 main  (in spin_off768) + 488  [0x1047dc7d8]  spin.c:23
+      + 1 crypto_kem_dec  (in spin_off768) + 28  [0x1047dcd40]  kem.c:300
+      1 shake256  (in spin_off768) + 136  [0x1047de528]  fips202.c:755
+      1 shake256_absorb  (in spin_off768) + 748  [0x1047de368]  fips202.c:700
+
+Total number in stack (recursive counted multiple, when >=5):
+        12       _platform_memset  (in libsystem_platform.dylib) + 0  [0x1856590f0]
+        12       memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        10       memset_s  (in libsystem_c.dylib) + 0  [0x1854df254]
+
+Sort by top of stack, same collapsed (when >= 5):
+        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off768)        2721
+        looptop_3456  (in spin_off768)        394
+        looptop  (in spin_off768)        297
+        looptop_012  (in spin_off768)        236
+        looptop_scale  (in spin_off768)        200
+        looptop_210  (in spin_off768)        181
+        loop_tobytes  (in spin_off768)        179
+        _platform_memset  (in libsystem_platform.dylib)        176
+        loop_frombytes  (in spin_off768)        170
+        looptop_6543  (in spin_off768)        155
+        shake256_absorb  (in spin_off768)        86
+        loop_sotp_decode  (in spin_off768)        67
+        _platform_memmove  (in libsystem_platform.dylib)        46
+        loop_cbd  (in spin_off768)        46
+        loop_sub  (in spin_off768)        32
+        memset_s  (in libsystem_c.dylib)        28
+        crypto_kem_dec  (in spin_off768)        16
+        shake256_squeezeblocks  (in spin_off768)        12
+        DYLD-STUB$$memset_s  (in spin_off768)        6
+        hash_h  (in spin_off768)        6
+        shake256  (in spin_off768)        6
+        DYLD-STUB$$mkostemps  (in libsystem_c.dylib)        5
+        ___chkstk_darwin  (in libsystem_pthread.dylib)        5
+
+Binary Images:
+       0x1047dc000 -        0x1047e160f +spin_off768 (0) <0D2642BE-CE80-34E4-B6D3-B558D400FB1C> /tmp/*/spin_off768
+       0x1851ec000 -        0x18523eb4b  libobjc.A.dylib (951.7) <2E858E25-1FF6-3DA6-84F6-911630620512> /usr/lib/libobjc.A.dylib
+       0x18523f000 -        0x185273b34  libdyld.dylib (1376.6) <2C3C5F75-3686-39A1-9202-BD4D2133379D> /usr/lib/system/libdyld.dylib
+       0x185274000 -        0x185319ec7  dyld (1.0.0 - 1376.6) <9F682DCF-340C-3BFA-BCDD-DD702F30313E> /usr/lib/dyld
+       0x18531a000 -        0x18531d228  libsystem_blocks.dylib (96) <2EA73169-CF76-3DD1-9869-F23C8B338022> /usr/lib/system/libsystem_blocks.dylib
+       0x18531e000 -        0x18537251f  libxpc.dylib (3102.100.102) <618039C8-9965-3782-A7D2-90FD4C3DD66F> /usr/lib/system/libxpc.dylib
+       0x185373000 -        0x1853939bf  libsystem_trace.dylib (1861.100.19) <08629650-54FC-3AA6-910E-EACA563804D0> /usr/lib/system/libsystem_trace.dylib
+       0x185394000 -        0x185441daf  libcorecrypto.dylib (1922.101.2) <D1EC203E-9B2E-391B-8DE3-7C58F0589437> /usr/lib/system/libcorecrypto.dylib
+       0x185442000 -        0x1854921d7  libsystem_malloc.dylib (812.100.31) <2AD21BE3-FFDB-31D5-A3D7-2F7F672D6E92> /usr/lib/system/libsystem_malloc.dylib
+       0x185493000 -        0x1854da23f  libdispatch.dylib (1542.100.32) <E17AA23F-DB2A-3302-B14C-F6B08C540FCF> /usr/lib/system/libdispatch.dylib
+       0x1854db000 -        0x1854ddffb  libsystem_featureflags.dylib (103) <0DE01F76-4B36-35A2-98F9-43DD147EDD95> /usr/lib/system/libsystem_featureflags.dylib
+       0x1854de000 -        0x18555eef7  libsystem_c.dylib (1752.100.10) <66EBD321-6899-3863-BA24-5CFC3076A0CB> /usr/lib/system/libsystem_c.dylib
+       0x18555f000 -        0x1855efae7  libc++.1.dylib (2100.43) <1E9541EC-C564-38CB-BED6-46F708E8D863> /usr/lib/libc++.1.dylib
+       0x1855f0000 -        0x18560a75f  libc++abi.dylib (2100.43) <E8D325ED-3B97-325E-B494-B1B0FF93D133> /usr/lib/libc++abi.dylib
+       0x18560b000 -        0x18564828f  libsystem_kernel.dylib (12377.101.15) <51565B39-F595-3E96-A217-FEF29815057A> /usr/lib/system/libsystem_kernel.dylib
+       0x185649000 -        0x185655b3b  libsystem_pthread.dylib (539.100.4) <E7A73008-0C09-31E3-9DD9-0C61652F0E85> /usr/lib/system/libsystem_pthread.dylib
+       0x185656000 -        0x18565e8f3  libsystem_platform.dylib (375.100.10) <D93EC420-F465-3A3A-916D-A04AF9B023EB> /usr/lib/system/libsystem_platform.dylib
+       0x18565f000 -        0x18568e6eb  libsystem_info.dylib (600) <201FD67C-3DF6-3788-B132-A69CAA2AA3D7> /usr/lib/system/libsystem_info.dylib
+       0x189624000 -        0x18962de5f  libsystem_darwin.dylib (1752.100.10) <D5BA0CAB-F283-3620-AAA9-1EEB718E1BA8> /usr/lib/system/libsystem_darwin.dylib
+       0x189a8f000 -        0x189aa0f5b  libsystem_notify.dylib (348.100.7) <9F46F30B-B7C0-3DD7-AC38-57B78C7971FF> /usr/lib/system/libsystem_notify.dylib
+       0x18bd59000 -        0x18bd73f5b  libsystem_networkextension.dylib (2226.101.1) <85169C7B-48DD-3542-AD38-F1B88EA2A95A> /usr/lib/system/libsystem_networkextension.dylib
+       0x18bdf6000 -        0x18be0dfdf  libsystem_asl.dylib (406) <6427D987-7938-3278-8C14-10FB9C06BBD5> /usr/lib/system/libsystem_asl.dylib
+       0x18d9b1000 -        0x18d9b9387  libsystem_symptoms.dylib (2169.100.30) <28B6E34E-9C7D-3437-A3F1-A3C979DE579A> /usr/lib/system/libsystem_symptoms.dylib
+       0x191c4c000 -        0x191c8425f  libsystem_containermanager.dylib (725.100.37) <14750F95-BB3A-3654-8610-A05A454643A8> /usr/lib/system/libsystem_containermanager.dylib
+       0x19305c000 -        0x1930605d7  libsystem_configuration.dylib (1405.100.8) <634F597D-F8BD-3C00-B967-86047FC15D14> /usr/lib/system/libsystem_configuration.dylib
+       0x193061000 -        0x1930678cf  libsystem_sandbox.dylib (2680.100.174) <AF76231D-EADC-3399-9414-6AD90FB4EA89> /usr/lib/system/libsystem_sandbox.dylib
+       0x1946a7000 -        0x1946aa1fb  libquarantine.dylib (196.100.8) <268FEB6E-A237-3050-BFFF-AE3A66B7EAD4> /usr/lib/system/libquarantine.dylib
+       0x194e46000 -        0x194e4cd03  libsystem_coreservices.dylib (191.4.5) <7129349D-04F9-3C3C-BF37-3082C1468654> /usr/lib/system/libsystem_coreservices.dylib
+       0x1953cb000 -        0x195408a77  libsystem_m.dylib (3312.100.1) <83B173CD-7F32-3901-8E67-C0B2676BE015> /usr/lib/system/libsystem_m.dylib
+       0x19540a000 -        0x19540d527  libmacho.dylib (1376.6) <9729ECEA-0A08-32E3-8BDB-B42FC15FF258> /usr/lib/system/libmacho.dylib
+       0x195427000 -        0x1954343a7  libcommonCrypto.dylib (600035) <710EC5FA-F77C-3646-A9E3-C037C42E1539> /usr/lib/system/libcommonCrypto.dylib
+       0x195435000 -        0x19543eca3  libunwind.dylib (2100.2) <FB0518B9-DF0F-3A03-A74B-AF1B21C26F8B> /usr/lib/system/libunwind.dylib
+       0x195447000 -        0x1954517ff  libcopyfile.dylib (240) <0B7FF027-5579-3CBF-A12B-68A4FD36641C> /usr/lib/system/libcopyfile.dylib
+       0x195452000 -        0x195455987  libcompiler_rt.dylib (103.3) <65E29E6E-7042-3F73-A1D2-F2C4EBCD7524> /usr/lib/system/libcompiler_rt.dylib
+       0x195456000 -        0x19545a78b  libsystem_collections.dylib (1752.100.10) <B81193DE-3BEC-3340-86D0-DB7F3683D135> /usr/lib/system/libsystem_collections.dylib
+       0x19545b000 -        0x19545e4cf  libsystem_secinit.dylib (168.100.7) <A6B77B36-195D-33F8-8058-FE0B5BFA9D37> /usr/lib/system/libsystem_secinit.dylib
+       0x19545f000 -        0x195461bf7  libremovefile.dylib (85.100.6) <BD89B1A3-0D06-3881-B5E1-EFC6CFBDFCC1> /usr/lib/system/libremovefile.dylib
+       0x195462000 -        0x195462f27  libkeymgr.dylib (31) <DE8F8219-0072-35C2-8932-C065491ED15D> /usr/lib/system/libkeymgr.dylib
+       0x195463000 -        0x19546be3f  libsystem_dnssd.dylib (2881.100.56.0.1) <DEC8BDD2-366C-3BF9-A123-35744DB06354> /usr/lib/system/libsystem_dnssd.dylib
+       0x19546c000 -        0x19547109b  libcache.dylib (95) <4D6833A3-C910-3A76-AA8A-303F698B36BF> /usr/lib/system/libcache.dylib
+       0x195472000 -        0x195473ce3  libSystem.B.dylib (1356) <E05F5341-06B7-365E-8014-E9CD64C352FE> /usr/lib/libSystem.B.dylib
+       0x287d55000 -        0x287d5c349  libRosetta.dylib (367.5) <2FC1EF06-04C4-35FC-8DC3-BEA1E9FBD63F> /usr/lib/libRosetta.dylib
+       0x289a32000 -        0x289a35a4b  libsystem_darwindirectory.dylib (122) <CCAA2170-32DD-34BD-A927-32DF30893969> /usr/lib/system/libsystem_darwindirectory.dylib
+       0x289a36000 -        0x289a3f5a7  libsystem_eligibility.dylib (319.101.1) <2D19994A-87BB-34B8-A343-CB8DD47FF110> /usr/lib/system/libsystem_eligibility.dylib
+       0x289a40000 -        0x289a478db  libsystem_sanitizers.dylib (26) <FCB93D2F-4437-3089-A43F-A19BC23DD65B> /usr/lib/system/libsystem_sanitizers.dylib
+       0x289a48000 -        0x289a48bb7  libsystem_trial.dylib (474.2.18) <5BB81430-4E33-3160-94D2-1FFB2B614DB2> /usr/lib/system/libsystem_trial.dylib
