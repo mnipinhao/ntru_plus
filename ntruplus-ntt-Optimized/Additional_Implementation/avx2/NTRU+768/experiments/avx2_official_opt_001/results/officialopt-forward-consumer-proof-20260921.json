@@ -1,0 +1,166 @@
+{
+  "class": "conservative signed-word consumer envelope; no candidate ASM",
+  "forward_proof": "results/officialopt-forward-lane-proof-20260921.json",
+  "assumptions": {
+    "q": 3457,
+    "terminal_lambda_abs": 1728,
+    "decoded_pk_ct_sk_abs": 3456,
+    "montgomery_bound": "ceil(A*B/65536)+1729"
+  },
+  "keygen": {
+    "f_baseinv": {
+      "input_abs": 15252,
+      "intermediate_abs_bounds": {
+        "quartic_runtime_product": 5279,
+        "double_runtime_product": 10558,
+        "three_product_t1_partial": 15837,
+        "t0": 7426,
+        "t1": 17706,
+        "t0_square": 2571,
+        "t1_square": 6513,
+        "denominator": 4472,
+        "adjugate": 5764,
+        "six_chain_local_product": 2035,
+        "three_pair_products": 1793,
+        "two_aggregate_products": 1779,
+        "R3_correction": 1742,
+        "field_inversion_chain_cap": 1800,
+        "reverse_tree_recovery": 1852,
+        "apply_inverse": 1892
+      },
+      "zero_check_argument": "Each six-chain local product has magnitude < q; a zero residue must be the exact word zero. Nonzero denominators remain nonzero in the field.",
+      "zero_check_local_product_abs": 2035
+    },
+    "g_baseinv": {
+      "input_abs": 15251,
+      "intermediate_abs_bounds": {
+        "quartic_runtime_product": 5279,
+        "double_runtime_product": 10558,
+        "three_product_t1_partial": 15837,
+        "t0": 7426,
+        "t1": 17706,
+        "t0_square": 2571,
+        "t1_square": 6513,
+        "denominator": 4472,
+        "adjugate": 5764,
+        "six_chain_local_product": 2035,
+        "three_pair_products": 1793,
+        "two_aggregate_products": 1779,
+        "R3_correction": 1742,
+        "field_inversion_chain_cap": 1800,
+        "reverse_tree_recovery": 1852,
+        "apply_inverse": 1892
+      },
+      "zero_check_argument": "Each six-chain local product has magnitude < q; a zero residue must be the exact word zero. Nonzero denominators remain nonzero in the field.",
+      "zero_check_local_product_abs": 2035
+    },
+    "f_times_ginv": {
+      "label": "keygen_f_times_ginv",
+      "input_abs": [
+        15252,
+        1892
+      ],
+      "addend_abs": 0,
+      "intermediate_abs_bounds": {
+        "runtime_montgomery_product": 2170,
+        "three_product_wrap_sum": 6510,
+        "two_product_wrap_sum": 4340,
+        "c0_pre_finalizer": 4071,
+        "c1_pre_finalizer": 6184,
+        "c2_pre_finalizer": 8297,
+        "c3_pre_finalizer": 8680,
+        "R2_finalizer": 1844
+      }
+    },
+    "g_times_finv": {
+      "label": "keygen_g_times_finv",
+      "input_abs": [
+        15251,
+        1892
+      ],
+      "addend_abs": 0,
+      "intermediate_abs_bounds": {
+        "runtime_montgomery_product": 2170,
+        "three_product_wrap_sum": 6510,
+        "two_product_wrap_sum": 4340,
+        "c0_pre_finalizer": 4071,
+        "c1_pre_finalizer": 6184,
+        "c2_pre_finalizer": 8297,
+        "c3_pre_finalizer": 8680,
+        "R2_finalizer": 1844
+      }
+    }
+  },
+  "encap": {
+    "h_times_r_plus_m": {
+      "label": "encap_h_times_r_plus_m",
+      "input_abs": [
+        13636,
+        3456
+      ],
+      "addend_abs": 13636,
+      "intermediate_abs_bounds": {
+        "runtime_montgomery_product": 2449,
+        "three_product_wrap_sum": 7347,
+        "two_product_wrap_sum": 4898,
+        "c0_pre_finalizer": 4372,
+        "c1_pre_finalizer": 6757,
+        "c2_pre_finalizer": 9141,
+        "c3_pre_finalizer": 9796,
+        "R2_finalizer": 1859,
+        "add_m_after_finalizer": 15495
+      }
+    }
+  },
+  "decap": {
+    "ciphertext_minus_message": 17905,
+    "crepmod3_word_contract": {
+      "input": [
+        -32768,
+        32767
+      ],
+      "output": [
+        -2,
+        2
+      ],
+      "all_signed_words_checked": true
+    },
+    "recovery_basemul": {
+      "label": "decap_recovered_r",
+      "input_abs": [
+        17905,
+        3456
+      ],
+      "addend_abs": 0,
+      "intermediate_abs_bounds": {
+        "runtime_montgomery_product": 2674,
+        "three_product_wrap_sum": 8022,
+        "two_product_wrap_sum": 5348,
+        "c0_pre_finalizer": 4615,
+        "c1_pre_finalizer": 7219,
+        "c2_pre_finalizer": 9822,
+        "c3_pre_finalizer": 10696,
+        "R2_finalizer": 1871
+      }
+    }
+  },
+  "serializer": {
+    "input": [
+      -32768,
+      32767
+    ],
+    "post_barrett": [
+      -3291,
+      3291
+    ],
+    "canonical_exact_for_all_signed_words": true
+  },
+  "linked_word_consumer_differential": {
+    "signed_inputs_checked": 65536,
+    "poly_tobytes_byte_exact_vs_canonical": true,
+    "poly_crepmod3_word_exact": true,
+    "pack_source_sha256": "dd1d2b9690de0780d68cd6ab0902190c559b1e661aca9735312eaeb845a1a3c6",
+    "crepmod3_source_sha256": "87334090de02e4e451d36162870c357646d7bba095470fbc6ff106f29b5f5cd1"
+  },
+  "conclusion": "All listed i16 arithmetic envelopes and serializer word canonicalization pass; raw representative equality is not required. Differential and invalid-input gates remain before timing or promotion."
+}
