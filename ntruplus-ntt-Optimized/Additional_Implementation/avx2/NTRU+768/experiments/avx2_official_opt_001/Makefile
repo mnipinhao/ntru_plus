@@ -18,6 +18,7 @@ generate:
 	python3 tools/generate_fused_basemul.py
 	python3 tools/generate_shared_basemul.py
 	python3 tools/generate_forward_early_const.py
+	python3 tools/generate_forward_caller_lazy.py
 	python3 tools/generate_phase_profile.py
 
 $(BUILD):
@@ -28,6 +29,15 @@ $(BUILD)/test_fused_basemul: tests/test_fused_basemul.c asm/ntruplus768_official
 
 $(BUILD)/test_forward_schedule: tests/test_forward_schedule.c asm/ntruplus768_officialopt_ntt_early_const.s $(OFFICIAL)/ntt.s $(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -o $@ $^
+
+$(BUILD)/test_forward_caller_lazy: tests/test_forward_caller_lazy.c asm/ntruplus768_officialopt_ntt_caller_lazy.s $(OFFICIAL)/ntt.s $(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -o $@ $^
+
+$(BUILD)/kem_lazy.o: tests/kem_lazy_diag.c src/kem_lazy.c | $(BUILD)
+	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dcrypto_kem_keypair=official_lazy_keypair -Dcrypto_kem_enc=official_lazy_enc -Dcrypto_kem_dec=official_lazy_dec -c -o $@ $<
+
+$(BUILD)/test_kem_lazy: tests/test_kem_lazy.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_lazy.o asm/ntruplus768_officialopt_ntt_caller_lazy.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -Wl,--wrap=randombytes -o $@ $^
 
 $(BUILD)/kem_ref.o: tests/kem_ref_diag.c src/kem_reference.c | $(BUILD)
 	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dcrypto_kem_keypair=official_ref_keypair -Dcrypto_kem_enc=official_ref_enc -Dcrypto_kem_dec=official_ref_dec -c -o $@ $<
@@ -53,10 +63,12 @@ $(BUILD)/kat_rng.o: $(KAT)/kat/rng.c | $(BUILD)
 $(BUILD)/test_kem_fused: tests/test_kem_fused.c tests/support/crypto_declassify.c $(VARIANT_OBJS) $(VARIANT_ASM) $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -Wl,--wrap=randombytes -o $@ $^
 
-check: $(BUILD)/test_fused_basemul $(BUILD)/test_forward_schedule $(BUILD)/test_kem_fused
+check: $(BUILD)/test_fused_basemul $(BUILD)/test_forward_schedule $(BUILD)/test_kem_fused $(BUILD)/test_forward_caller_lazy $(BUILD)/test_kem_lazy
 	$(BUILD)/test_fused_basemul
 	$(BUILD)/test_forward_schedule
 	$(BUILD)/test_kem_fused
+	$(BUILD)/test_forward_caller_lazy
+	$(BUILD)/test_kem_lazy
 
 $(BUILD)/bench_fused: bench/bench_fused.c tests/support/crypto_declassify.c $(VARIANT_OBJS) $(VARIANT_ASM) $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
@@ -68,4 +80,7 @@ $(BUILD)/bench_cutpoints: bench/bench_cutpoints.c tests/support/crypto_declassif
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
 
 $(BUILD)/bench_phase_research: bench/bench_phase_research.c generated/poly_phase_profile.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(filter-out $(OFFICIAL)/poly.c,$(COMMON_C)) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_caller_lazy: bench/bench_caller_lazy.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_lazy.o asm/ntruplus768_officialopt_ntt_caller_lazy.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
