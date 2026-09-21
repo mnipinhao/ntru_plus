@@ -38,11 +38,12 @@ def median(values):
     return statistics.median(values)
 
 
-def one(binary: Path, cut: str, impl: str, iterations: int, group: str):
+def one(binary: Path, cut: str, impl: str, iterations: int, group: str,
+        aslr: str):
     env = os.environ.copy()
     env["ENCAP_PMU_GROUP"] = group
-    command = ["setarch", "x86_64", "-R", str(binary),
-               "--self-pmu-waterfall2", cut, impl, str(iterations)]
+    command = (["setarch", "x86_64", "-R"] if aslr == "off" else []) + [
+        str(binary), "--self-pmu-waterfall2", cut, impl, str(iterations)]
     proc = subprocess.run(command, check=True, capture_output=True,
                           text=True, env=env)
     line = next(line for line in proc.stdout.splitlines()
@@ -56,13 +57,14 @@ def one(binary: Path, cut: str, impl: str, iterations: int, group: str):
     }
 
 
-def abba_pair(binary, cut, iterations, group, pair_index):
+def abba_pair(binary, cut, iterations, group, pair_index, aslr):
     order = ("official", "gt", "gt", "official")
     if pair_index & 1:
         order = tuple(reversed(order))
     observations = {"official": [], "gt": []}
     for impl in order:
-        observations[impl].append(one(binary, cut, impl, iterations, group))
+        observations[impl].append(one(binary, cut, impl, iterations, group,
+                                      aslr))
     averaged = {}
     for impl, rows in observations.items():
         averaged[impl] = {
@@ -94,12 +96,13 @@ def increment(cumulative, prior, current, event):
     return summarize(values)
 
 
-def run_placement(binary, iterations, pairs):
+def run_placement(binary, iterations, pairs, aslr):
     by_group = {}
     for group in GROUP_EVENTS:
         raw = {name: [] for name, _ in CUTS}
         for name, _stage in CUTS:
-            raw[name] = [abba_pair(binary, name, iterations, group, index)
+            raw[name] = [abba_pair(binary, name, iterations, group, index,
+                                   aslr)
                          for index in range(pairs)]
         cumulative = {}
         for name, _ in CUTS:
@@ -126,6 +129,7 @@ def main():
     parser.add_argument("--reversed-binary", required=True, type=Path)
     parser.add_argument("--iterations", type=int, default=10000)
     parser.add_argument("--pairs", type=int, default=4)
+    parser.add_argument("--aslr", choices=("on", "off"), default="off")
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
 
@@ -134,13 +138,14 @@ def main():
                               ("reversed", args.reversed_binary)):
         placements[placement] = {
             "binary": str(binary),
-            "groups": run_placement(binary, args.iterations, args.pairs),
+            "groups": run_placement(binary, args.iterations, args.pairs,
+                                    args.aslr),
         }
 
     output = {
         "schema": "ntruplus768-gt32-encap-outside-island-waterfall-v2",
         "experiment": "SAME-ELF-ENCAP-OUTSIDE-ISLAND-RESIDUAL-001",
-        "aslr": "disabled-with-setarch-R",
+        "aslr": args.aslr,
         "cpu_affinity": 1,
         "iterations": args.iterations,
         "pairs": args.pairs,

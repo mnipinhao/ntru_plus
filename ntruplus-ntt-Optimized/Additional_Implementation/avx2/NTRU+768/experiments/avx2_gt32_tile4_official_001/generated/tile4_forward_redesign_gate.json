@@ -1,0 +1,260 @@
+{
+  "schema": "ntruplus768-forward-redesign-gate-v2-corrected-scope",
+  "experiment": "NTRUPLUS768-FORWARD-REDESIGN-001",
+  "frozen": {
+    "Official": "SUPERCOP-20260831 crypto_kem/ntruplus768/avx2",
+    "current_GT": "avx2-gt32-clean",
+    "external_wire_and_API": true,
+    "terminal_quartic_factors": true,
+    "output_Montgomery_exponent": 0
+  },
+  "consumer_contracts": {
+    "r": "coeff -> arithmetic M state plus exact hash-input bytes",
+    "m": "coeff -> transformed M addend -> h*r+m -> exact ciphertext bytes",
+    "h": "validated Q24 PK bytes -> M leaves with matching lambda identity"
+  },
+  "families": {
+    "A": {
+      "name": "A-GT3-first-joint-frontend-NTT32",
+      "qualified_control": "materialized frontend -> six terminal tiles",
+      "dependency_geometry": {
+        "frontend_iterations": 8,
+        "terminal_tiles": 6,
+        "vectors_emitted_per_iteration": 6,
+        "vectors_required_before_one_terminal_tile_can_start": 8,
+        "materialized_boundary_vector_stores": 48,
+        "materialized_boundary_vector_reloads": 48
+      },
+      "tested_schedules": {
+        "dependency_only_F14": {
+          "forward_tsc_delta_range": [
+            -7.324,
+            -5.809
+          ],
+          "two_forward_tsc_delta_range": [
+            -15.701,
+            -13.442
+          ],
+          "forward_core_cycle_delta_range": [
+            -11.868,
+            -10.387
+          ],
+          "two_forward_core_cycle_delta_range": [
+            -23.104,
+            -20.955
+          ],
+          "typical_wins_per_20": [
+            18,
+            20
+          ]
+        },
+        "next_packet_preload_W2": {
+          "mechanism": "move two next-packet high-vector loads between the two current-packet DFT3 tails",
+          "boundaries": 7,
+          "peak_ymm": 16,
+          "spills": 0,
+          "instruction_delta": 0,
+          "symbol_bytes": {
+            "F14": 3917,
+            "W2": 3917
+          },
+          "normal": {
+            "forward_tsc_median_delta": -1.2055,
+            "forward_core_cycle_median_delta": -2.299,
+            "two_forward_tsc_median_delta": -2.3855,
+            "two_forward_core_cycle_median_delta": -3.896,
+            "negative_launches": "8/8"
+          },
+          "reversed": {
+            "forward_tsc_median_delta": -1.5565,
+            "forward_core_cycle_median_delta": -1.681,
+            "two_forward_tsc_median_delta": -2.654,
+            "two_forward_core_cycle_median_delta": -4.088,
+            "negative_launches": "8/8"
+          },
+          "decision": "retain benchmark-only micro-win; too small for independent production promotion"
+        }
+      },
+      "current_macro_peak_YMM": 16,
+      "one_or_two_tile_persistence": "not allocatable by merely retaining current outputs; it requires a different frontend circuit or a deliberate spill/reload schedule",
+      "decision": "superseded-by-wavefront-002",
+      "reason": "fixed prior allocation only; partial D16/D8 readiness was not tested",
+      "historical_decision": "no-new-ASM",
+      "historical_reason": "The only executable current-DAG wavefronts hide latency but remove no store/reload or dependency layer.  W2 is explicitly excluded and no new allocation mechanism closes the 16-register frontier."
+    },
+    "B": {
+      "name": "B-N32-first-interleaved-GT",
+      "new_mechanism": "specialize representative proof to Encap [-1,1]",
+      "range_gate": {
+        "input_domain": "actual Encap r/m coefficients [-1,1]",
+        "method": "exact enumeration of every fixed-factor signed Montgomery product over propagated intervals, followed by the qualified R1-U/inverse proof",
+        "branches": [
+          {
+            "branch": 0,
+            "raw_top_interval": [
+              -723,
+              723
+            ],
+            "row_residual_montgomery_factors": [
+              -147,
+              -248,
+              -682
+            ],
+            "DFT3_output_abs_bounds": [
+              13256,
+              13262,
+              13196
+            ],
+            "DFT3_worst_intermediate_abs_bound": 13262
+          },
+          {
+            "branch": 1,
+            "raw_top_interval": [
+              -724,
+              724
+            ],
+            "row_residual_montgomery_factors": [
+              -147,
+              1265,
+              460
+            ],
+            "DFT3_output_abs_bounds": [
+              13442,
+              13296,
+              13415
+            ],
+            "DFT3_worst_intermediate_abs_bound": 13442
+          }
+        ],
+        "Forward_signed_int16_safe": true,
+        "R1U_max_abs_bound": 14485,
+        "inverse_IDFT3_internal_abs_bound": 28686,
+        "inverse_stage_abs_bounds": [
+          54386,
+          56410,
+          59098,
+          61881,
+          65102
+        ],
+        "inverse_all_frontiers_signed_int16_safe": false,
+        "zero_row0_repair_contract_closes": false,
+        "failure": "small input shrinks the raw top split, but the raw representative still violates the frozen R1-U/inverse signed-i16 contract"
+      },
+      "decision": "deferred",
+      "reason": "R1-U/inverse proof is not the actual Encap consumer; no overflow witness",
+      "historical_decision": "no-new-ASM",
+      "historical_reason": "small input shrinks the raw top split, but the raw representative still violates the frozen R1-U/inverse signed-i16 contract"
+    },
+    "C": {
+      "name": "C-Official-like-hybrid-consumer-landing",
+      "GT_to_Official_landing": {
+        "direct_vperm2i128": 256,
+        "direct_vpshufb": 256,
+        "direct_vpor": 208,
+        "direct_stores": 48,
+        "direct_route_instruction_total": 720,
+        "selected_private_terminal_shuffle_total": 144,
+        "extra_route_instructions_vs_private_terminal": 576,
+        "max_routes_per_target": 6,
+        "note": "Each Official vector mixes five or six packed source-half routes"
+      },
+      "GT_to_Official_decision": {
+        "max_extra_core_cycles_per_forward": 15.0,
+        "max_extra_static_instructions_per_forward": 48,
+        "assembly_eligible": false,
+        "decision": "static-hard-stop-before-asm",
+        "reason": "five/six-route targets require a large OR/permute network"
+      },
+      "M_to_distinct_final_P_best": {
+        "q_axes": [
+          "q2",
+          "q1",
+          "q0",
+          "q3",
+          "q4"
+        ],
+        "physical_layout": [
+          "q2",
+          "q1",
+          "q0",
+          "q3",
+          "c0",
+          "c1",
+          "q4"
+        ],
+        "is_M": false,
+        "Forward_m_instruction_delta": -48,
+        "B3_MxM_to_P_transition": {
+          "instructions_per_tile": 16,
+          "instructions_per_polynomial": 96,
+          "operations": [
+            {
+              "instruction_family": "vpshufb+vpermq-cross-half-lane-bit-permutation",
+              "instructions_per_tile": 16,
+              "peak_YMM": 9,
+              "spill": false,
+              "before": [
+                "q2",
+                "q3",
+                "q0",
+                "q1",
+                "c0",
+                "c1",
+                "q4"
+              ],
+              "after": [
+                "q2",
+                "q1",
+                "q0",
+                "q3",
+                "c0",
+                "c1",
+                "q4"
+              ],
+              "physical_bit_positions": [
+                1,
+                3
+              ],
+              "exact_mapping": "unary-lane-bit-swap"
+            }
+          ]
+        },
+        "Q24_route": {
+          "compact": true,
+          "half_patterns": {
+            "00": 22,
+            "01": 4,
+            "10": 3,
+            "11": 19
+          },
+          "identity_masks": 22,
+          "symmetric_masks_absorbed_by_transpose": 19,
+          "runtime_residual_vpshufb": 7,
+          "cross_128_repairs": 0,
+          "global_materialization": false
+        },
+        "Q24_instruction_delta": -41,
+        "add_P_plus_P_direct": true,
+        "total_representation_instruction_delta": 7,
+        "complete_transition_removed": false,
+        "extra_montgomery_chains": 0,
+        "extra_reduction_checkpoints": 0,
+        "spill_required": false
+      },
+      "decision": "deferred",
+      "reason": "specific bridge counts only; no cycle proof or direct-hybrid machine test",
+      "historical_decision": "no-new-ASM",
+      "historical_reason": "The exact Official landing mixes five or six source-half routes per target and adds 576 routing instructions over the private terminal. The bounded Encap final-layout search also finds no distinct P that beats retaining M.  A new hybrid needs a direct consumer DAG, not a bridge."
+    }
+  },
+  "prototype_budget": 2,
+  "prototypes_emitted": 0,
+  "decision": "A-reopened-in-range-wavefront-002;B-C-deferred-not-rejected",
+  "retained_research_baseline": "current GT remains the Forward/Encap research baseline; existing F14 is a benchmark-only dependency schedule, not a new decomposition",
+  "historical_decision": "stop-after-gates-no-qualified-new-mechanism",
+  "historical_rationale": "The plan permits fewer than two prototypes.  A removes no complete boundary with the allocatable schedule, B fails the actual Encap consumer range contract, and C pays a larger exact bridge than it removes.",
+  "superseding_artifacts": [
+    "tile4_encap_range_closure.json",
+    "tile4_encap_wavefront_search.json"
+  ]
+}

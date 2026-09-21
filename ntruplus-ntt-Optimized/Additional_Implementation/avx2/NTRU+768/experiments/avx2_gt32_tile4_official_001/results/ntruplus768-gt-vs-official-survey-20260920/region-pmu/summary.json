@@ -1,0 +1,804 @@
+{
+  "binary": "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/build/bench_keygen_encap_attribution",
+  "contract": "mode selected before the counted loop; one identical process-level noop run is subtracted; setup is amortized over the stated iterations",
+  "cpu": 1,
+  "created_at": "2026-09-20T07:32:07.456714+00:00",
+  "fresh_processes": 3,
+  "iterations": 10000,
+  "regions": {
+    "encap.E2_two_forwards": {
+      "basic": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/instructions/u",
+          "cpu_core/mem_inst_retired.all_loads/u",
+          "cpu_core/mem_inst_retired.all_stores/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": -195.7799,
+          "cpu_core/instructions/u": -1030.0012999999994,
+          "cpu_core/mem_inst_retired.all_loads/u": 251.9996,
+          "cpu_core/mem_inst_retired.all_stores/u": -290.00059999999996
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 13809349.0,
+            "cpu_core/instructions/u": 37409939.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 9045423.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 2032106.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 520547.0,
+            "cpu_core/instructions/u": 796276.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 124561.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 51548.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 15767148.0,
+            "cpu_core/instructions/u": 47709952.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 6525427.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 4932112.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 1328.8802,
+            "cpu_core/instructions/u": 3661.3663,
+            "cpu_core/mem_inst_retired.all_loads/u": 892.0862,
+            "cpu_core/mem_inst_retired.all_stores/u": 198.0558
+          },
+          "official": {
+            "cpu_core/cycles/u": 1524.6601,
+            "cpu_core/instructions/u": 4691.3676,
+            "cpu_core/mem_inst_retired.all_loads/u": 640.0866,
+            "cpu_core/mem_inst_retired.all_stores/u": 488.0564
+          }
+        },
+        "valid": true
+      },
+      "blocks": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/ld_blocks.store_forward/u",
+          "cpu_core/ld_blocks.address_alias/u",
+          "cpu_core/resource_stalls.sb/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": -191.38580000000002,
+          "cpu_core/ld_blocks.address_alias/u": 0.008400000000000001,
+          "cpu_core/ld_blocks.store_forward/u": 0.0017000000000000001,
+          "cpu_core/resource_stalls.sb/u": -4.9912
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 13847513.0,
+            "cpu_core/ld_blocks.address_alias/u": 97.0,
+            "cpu_core/ld_blocks.store_forward/u": 606.0,
+            "cpu_core/resource_stalls.sb/u": 158.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 550511.0,
+            "cpu_core/ld_blocks.address_alias/u": 6.0,
+            "cpu_core/ld_blocks.store_forward/u": 559.0,
+            "cpu_core/resource_stalls.sb/u": 132.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 15761371.0,
+            "cpu_core/ld_blocks.address_alias/u": 13.0,
+            "cpu_core/ld_blocks.store_forward/u": 589.0,
+            "cpu_core/resource_stalls.sb/u": 50070.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 1329.7002,
+            "cpu_core/ld_blocks.address_alias/u": 0.0091,
+            "cpu_core/ld_blocks.store_forward/u": 0.0047,
+            "cpu_core/resource_stalls.sb/u": 0.0026
+          },
+          "official": {
+            "cpu_core/cycles/u": 1521.086,
+            "cpu_core/ld_blocks.address_alias/u": 0.0007,
+            "cpu_core/ld_blocks.store_forward/u": 0.003,
+            "cpu_core/resource_stalls.sb/u": 4.9938
+          }
+        },
+        "valid": true
+      },
+      "cache": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/frontend_retired.l1i_miss/u",
+          "cpu_core/mem_load_retired.l1_miss/u",
+          "cpu_core/mem_load_retired.l2_miss/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": -194.27870000000007,
+          "cpu_core/frontend_retired.l1i_miss/u": 0.005900000000000001,
+          "cpu_core/mem_load_retired.l1_miss/u": 0.0125,
+          "cpu_core/mem_load_retired.l2_miss/u": 0.0007
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 13799244.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 1199.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1396.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 230.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 518892.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 995.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1134.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 229.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 15742031.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 1140.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1271.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 223.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 1328.0352,
+            "cpu_core/frontend_retired.l1i_miss/u": 0.0204,
+            "cpu_core/mem_load_retired.l1_miss/u": 0.0262,
+            "cpu_core/mem_load_retired.l2_miss/u": 0.0001
+          },
+          "official": {
+            "cpu_core/cycles/u": 1522.3139,
+            "cpu_core/frontend_retired.l1i_miss/u": 0.0145,
+            "cpu_core/mem_load_retired.l1_miss/u": 0.0137,
+            "cpu_core/mem_load_retired.l2_miss/u": -0.0006
+          }
+        },
+        "valid": true
+      },
+      "frontend": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/idq.dsb_uops/u",
+          "cpu_core/idq.mite_uops/u",
+          "cpu_core/idq_uops_not_delivered.core/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": -204.8429000000001,
+          "cpu_core/idq.dsb_uops/u": -945.9010999999996,
+          "cpu_core/idq.mite_uops/u": 12.360200000000003,
+          "cpu_core/idq_uops_not_delivered.core/u": -9.1876
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 13782172.0,
+            "cpu_core/idq.dsb_uops/u": 37077028.0,
+            "cpu_core/idq.mite_uops/u": 446176.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1061163.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 524705.0,
+            "cpu_core/idq.dsb_uops/u": 672525.0,
+            "cpu_core/idq.mite_uops/u": 264932.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 952516.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 15830601.0,
+            "cpu_core/idq.dsb_uops/u": 46536039.0,
+            "cpu_core/idq.mite_uops/u": 322574.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1153039.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 1325.7467,
+            "cpu_core/idq.dsb_uops/u": 3640.4503,
+            "cpu_core/idq.mite_uops/u": 18.1244,
+            "cpu_core/idq_uops_not_delivered.core/u": 10.8647
+          },
+          "official": {
+            "cpu_core/cycles/u": 1530.5896,
+            "cpu_core/idq.dsb_uops/u": 4586.3514,
+            "cpu_core/idq.mite_uops/u": 5.7642,
+            "cpu_core/idq_uops_not_delivered.core/u": 20.0523
+          }
+        },
+        "valid": true
+      }
+    },
+    "encap.E3_general_basemul": {
+      "basic": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/instructions/u",
+          "cpu_core/mem_inst_retired.all_loads/u",
+          "cpu_core/mem_inst_retired.all_stores/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": -17.21640000000002,
+          "cpu_core/instructions/u": -169.99739999999997,
+          "cpu_core/mem_inst_retired.all_loads/u": 104.99990000000003,
+          "cpu_core/mem_inst_retired.all_stores/u": -12.0
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 5536896.0,
+            "cpu_core/instructions/u": 17080234.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 3645482.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 922164.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 543192.0,
+            "cpu_core/instructions/u": 796276.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 124561.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 51548.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 5709060.0,
+            "cpu_core/instructions/u": 18780208.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 2595483.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 1042164.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 499.3704,
+            "cpu_core/instructions/u": 1628.3958,
+            "cpu_core/mem_inst_retired.all_loads/u": 352.0921,
+            "cpu_core/mem_inst_retired.all_stores/u": 87.0616
+          },
+          "official": {
+            "cpu_core/cycles/u": 516.5868,
+            "cpu_core/instructions/u": 1798.3932,
+            "cpu_core/mem_inst_retired.all_loads/u": 247.0922,
+            "cpu_core/mem_inst_retired.all_stores/u": 99.0616
+          }
+        },
+        "valid": true
+      },
+      "blocks": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/ld_blocks.store_forward/u",
+          "cpu_core/ld_blocks.address_alias/u",
+          "cpu_core/resource_stalls.sb/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": -11.961599999999976,
+          "cpu_core/ld_blocks.address_alias/u": 0.00030000000000000035,
+          "cpu_core/ld_blocks.store_forward/u": -0.00030000000000000014,
+          "cpu_core/resource_stalls.sb/u": -0.0028
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 5603283.0,
+            "cpu_core/ld_blocks.address_alias/u": 10.0,
+            "cpu_core/ld_blocks.store_forward/u": 541.0,
+            "cpu_core/resource_stalls.sb/u": 139.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 522739.0,
+            "cpu_core/ld_blocks.address_alias/u": 39.0,
+            "cpu_core/ld_blocks.store_forward/u": 557.0,
+            "cpu_core/resource_stalls.sb/u": 159.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 5722899.0,
+            "cpu_core/ld_blocks.address_alias/u": 7.0,
+            "cpu_core/ld_blocks.store_forward/u": 544.0,
+            "cpu_core/resource_stalls.sb/u": 167.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 508.0544,
+            "cpu_core/ld_blocks.address_alias/u": -0.0029,
+            "cpu_core/ld_blocks.store_forward/u": -0.0016,
+            "cpu_core/resource_stalls.sb/u": -0.002
+          },
+          "official": {
+            "cpu_core/cycles/u": 520.016,
+            "cpu_core/ld_blocks.address_alias/u": -0.0032,
+            "cpu_core/ld_blocks.store_forward/u": -0.0013,
+            "cpu_core/resource_stalls.sb/u": 0.0008
+          }
+        },
+        "valid": true
+      },
+      "cache": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/frontend_retired.l1i_miss/u",
+          "cpu_core/mem_load_retired.l1_miss/u",
+          "cpu_core/mem_load_retired.l2_miss/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": -16.04970000000003,
+          "cpu_core/frontend_retired.l1i_miss/u": -0.0032999999999999995,
+          "cpu_core/mem_load_retired.l1_miss/u": 0.0023,
+          "cpu_core/mem_load_retired.l2_miss/u": 0.0005
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 5602226.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 988.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1163.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 230.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 518409.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 966.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1140.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 239.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 5762723.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 1021.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1140.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 225.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 508.3817,
+            "cpu_core/frontend_retired.l1i_miss/u": 0.0022,
+            "cpu_core/mem_load_retired.l1_miss/u": 0.0023,
+            "cpu_core/mem_load_retired.l2_miss/u": -0.0009
+          },
+          "official": {
+            "cpu_core/cycles/u": 524.4314,
+            "cpu_core/frontend_retired.l1i_miss/u": 0.0055,
+            "cpu_core/mem_load_retired.l1_miss/u": 0.0,
+            "cpu_core/mem_load_retired.l2_miss/u": -0.0014
+          }
+        },
+        "valid": true
+      },
+      "frontend": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/idq.dsb_uops/u",
+          "cpu_core/idq.mite_uops/u",
+          "cpu_core/idq_uops_not_delivered.core/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": -18.66840000000002,
+          "cpu_core/idq.dsb_uops/u": -160.0802000000001,
+          "cpu_core/idq.mite_uops/u": -2.9365999999999994,
+          "cpu_core/idq_uops_not_delivered.core/u": 7.7011
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 5539678.0,
+            "cpu_core/idq.dsb_uops/u": 16860947.0,
+            "cpu_core/idq.mite_uops/u": 279969.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1094246.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 521063.0,
+            "cpu_core/idq.dsb_uops/u": 639841.0,
+            "cpu_core/idq.mite_uops/u": 257969.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 948456.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 5726362.0,
+            "cpu_core/idq.dsb_uops/u": 18461749.0,
+            "cpu_core/idq.mite_uops/u": 309335.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1017235.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 501.8615,
+            "cpu_core/idq.dsb_uops/u": 1622.1106,
+            "cpu_core/idq.mite_uops/u": 2.2,
+            "cpu_core/idq_uops_not_delivered.core/u": 14.579
+          },
+          "official": {
+            "cpu_core/cycles/u": 520.5299,
+            "cpu_core/idq.dsb_uops/u": 1782.1908,
+            "cpu_core/idq.mite_uops/u": 5.1366,
+            "cpu_core/idq_uops_not_delivered.core/u": 6.8779
+          }
+        },
+        "valid": true
+      }
+    },
+    "encap.E4b_serialize_rhat": {
+      "basic": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/instructions/u",
+          "cpu_core/mem_inst_retired.all_loads/u",
+          "cpu_core/mem_inst_retired.all_stores/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": 22.708699999999993,
+          "cpu_core/instructions/u": 59.993600000000015,
+          "cpu_core/mem_inst_retired.all_loads/u": 95.99910000000001,
+          "cpu_core/mem_inst_retired.all_stores/u": 60.998900000000006
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 3005001.0,
+            "cpu_core/instructions/u": 8721540.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 1645788.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 1072401.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 526374.0,
+            "cpu_core/instructions/u": 796274.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 124560.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 51548.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 2777914.0,
+            "cpu_core/instructions/u": 8121604.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 685797.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 462412.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 247.8627,
+            "cpu_core/instructions/u": 792.5266,
+            "cpu_core/mem_inst_retired.all_loads/u": 152.1228,
+            "cpu_core/mem_inst_retired.all_stores/u": 102.0853
+          },
+          "official": {
+            "cpu_core/cycles/u": 225.154,
+            "cpu_core/instructions/u": 732.533,
+            "cpu_core/mem_inst_retired.all_loads/u": 56.1237,
+            "cpu_core/mem_inst_retired.all_stores/u": 41.0864
+          }
+        },
+        "valid": true
+      },
+      "blocks": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/ld_blocks.store_forward/u",
+          "cpu_core/ld_blocks.address_alias/u",
+          "cpu_core/resource_stalls.sb/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": 20.31310000000002,
+          "cpu_core/ld_blocks.address_alias/u": -0.0003,
+          "cpu_core/ld_blocks.store_forward/u": -0.0023,
+          "cpu_core/resource_stalls.sb/u": 0.0013999999999999998
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 2993098.0,
+            "cpu_core/ld_blocks.address_alias/u": 8.0,
+            "cpu_core/ld_blocks.store_forward/u": 534.0,
+            "cpu_core/resource_stalls.sb/u": 138.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 525810.0,
+            "cpu_core/ld_blocks.address_alias/u": 4.0,
+            "cpu_core/ld_blocks.store_forward/u": 546.0,
+            "cpu_core/resource_stalls.sb/u": 148.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 2789967.0,
+            "cpu_core/ld_blocks.address_alias/u": 11.0,
+            "cpu_core/ld_blocks.store_forward/u": 557.0,
+            "cpu_core/resource_stalls.sb/u": 124.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 246.7288,
+            "cpu_core/ld_blocks.address_alias/u": 0.0004,
+            "cpu_core/ld_blocks.store_forward/u": -0.0012,
+            "cpu_core/resource_stalls.sb/u": -0.001
+          },
+          "official": {
+            "cpu_core/cycles/u": 226.4157,
+            "cpu_core/ld_blocks.address_alias/u": 0.0007,
+            "cpu_core/ld_blocks.store_forward/u": 0.0011,
+            "cpu_core/resource_stalls.sb/u": -0.0024
+          }
+        },
+        "valid": true
+      },
+      "cache": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/frontend_retired.l1i_miss/u",
+          "cpu_core/mem_load_retired.l1_miss/u",
+          "cpu_core/mem_load_retired.l2_miss/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": 23.941900000000004,
+          "cpu_core/frontend_retired.l1i_miss/u": 0.004699999999999999,
+          "cpu_core/mem_load_retired.l1_miss/u": 0.0003,
+          "cpu_core/mem_load_retired.l2_miss/u": 0.0002000000000000001
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 3021652.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 1042.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1147.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 235.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 523500.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 1102.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1140.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 216.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 2782233.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 995.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1144.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 233.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 249.8152,
+            "cpu_core/frontend_retired.l1i_miss/u": -0.006,
+            "cpu_core/mem_load_retired.l1_miss/u": 0.0007,
+            "cpu_core/mem_load_retired.l2_miss/u": 0.0019
+          },
+          "official": {
+            "cpu_core/cycles/u": 225.8733,
+            "cpu_core/frontend_retired.l1i_miss/u": -0.0107,
+            "cpu_core/mem_load_retired.l1_miss/u": 0.0004,
+            "cpu_core/mem_load_retired.l2_miss/u": 0.0017
+          }
+        },
+        "valid": true
+      },
+      "frontend": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/idq.dsb_uops/u",
+          "cpu_core/idq.mite_uops/u",
+          "cpu_core/idq_uops_not_delivered.core/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": 25.587000000000018,
+          "cpu_core/idq.dsb_uops/u": 107.60219999999993,
+          "cpu_core/idq.mite_uops/u": 5.6606,
+          "cpu_core/idq_uops_not_delivered.core/u": 0.16579999999999995
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 3036983.0,
+            "cpu_core/idq.dsb_uops/u": 9049319.0,
+            "cpu_core/idq.mite_uops/u": 335385.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1032948.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 533711.0,
+            "cpu_core/idq.dsb_uops/u": 708479.0,
+            "cpu_core/idq.mite_uops/u": 246488.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1001625.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 2781113.0,
+            "cpu_core/idq.dsb_uops/u": 7973297.0,
+            "cpu_core/idq.mite_uops/u": 278779.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1031290.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 250.3272,
+            "cpu_core/idq.dsb_uops/u": 834.084,
+            "cpu_core/idq.mite_uops/u": 8.8897,
+            "cpu_core/idq_uops_not_delivered.core/u": 3.1323
+          },
+          "official": {
+            "cpu_core/cycles/u": 224.7402,
+            "cpu_core/idq.dsb_uops/u": 726.4818,
+            "cpu_core/idq.mite_uops/u": 3.2291,
+            "cpu_core/idq_uops_not_delivered.core/u": 2.9665
+          }
+        },
+        "valid": true
+      }
+    },
+    "encap.E4c_serialize_chat": {
+      "basic": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/instructions/u",
+          "cpu_core/mem_inst_retired.all_loads/u",
+          "cpu_core/mem_inst_retired.all_stores/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": 21.12220000000002,
+          "cpu_core/instructions/u": 60.99950000000001,
+          "cpu_core/mem_inst_retired.all_loads/u": 95.99959999999999,
+          "cpu_core/mem_inst_retired.all_stores/u": 60.9997
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 2997054.0,
+            "cpu_core/instructions/u": 8732043.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 1645885.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 1072477.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 541716.0,
+            "cpu_core/instructions/u": 796273.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 124561.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 51548.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 2785832.0,
+            "cpu_core/instructions/u": 8122048.0,
+            "cpu_core/mem_inst_retired.all_loads/u": 685889.0,
+            "cpu_core/mem_inst_retired.all_stores/u": 462480.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 245.5338,
+            "cpu_core/instructions/u": 793.577,
+            "cpu_core/mem_inst_retired.all_loads/u": 152.1324,
+            "cpu_core/mem_inst_retired.all_stores/u": 102.0929
+          },
+          "official": {
+            "cpu_core/cycles/u": 224.4116,
+            "cpu_core/instructions/u": 732.5775,
+            "cpu_core/mem_inst_retired.all_loads/u": 56.1328,
+            "cpu_core/mem_inst_retired.all_stores/u": 41.0932
+          }
+        },
+        "valid": true
+      },
+      "blocks": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/ld_blocks.store_forward/u",
+          "cpu_core/ld_blocks.address_alias/u",
+          "cpu_core/resource_stalls.sb/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": 22.568600000000004,
+          "cpu_core/ld_blocks.address_alias/u": 0.09119999999999999,
+          "cpu_core/ld_blocks.store_forward/u": -0.0013,
+          "cpu_core/resource_stalls.sb/u": -0.0029000000000000002
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 3006779.0,
+            "cpu_core/ld_blocks.address_alias/u": 920.0,
+            "cpu_core/ld_blocks.store_forward/u": 553.0,
+            "cpu_core/resource_stalls.sb/u": 133.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 526381.0,
+            "cpu_core/ld_blocks.address_alias/u": 11.0,
+            "cpu_core/ld_blocks.store_forward/u": 533.0,
+            "cpu_core/resource_stalls.sb/u": 135.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 2781093.0,
+            "cpu_core/ld_blocks.address_alias/u": 8.0,
+            "cpu_core/ld_blocks.store_forward/u": 566.0,
+            "cpu_core/resource_stalls.sb/u": 162.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 248.0398,
+            "cpu_core/ld_blocks.address_alias/u": 0.0909,
+            "cpu_core/ld_blocks.store_forward/u": 0.002,
+            "cpu_core/resource_stalls.sb/u": -0.0002
+          },
+          "official": {
+            "cpu_core/cycles/u": 225.4712,
+            "cpu_core/ld_blocks.address_alias/u": -0.0003,
+            "cpu_core/ld_blocks.store_forward/u": 0.0033,
+            "cpu_core/resource_stalls.sb/u": 0.0027
+          }
+        },
+        "valid": true
+      },
+      "cache": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/frontend_retired.l1i_miss/u",
+          "cpu_core/mem_load_retired.l1_miss/u",
+          "cpu_core/mem_load_retired.l2_miss/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": 23.435099999999977,
+          "cpu_core/frontend_retired.l1i_miss/u": 0.001,
+          "cpu_core/mem_load_retired.l1_miss/u": -0.0017999999999999997,
+          "cpu_core/mem_load_retired.l2_miss/u": -0.00039999999999999996
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 3021955.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 1035.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1137.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 232.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 536436.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 1084.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1126.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 217.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 2787604.0,
+            "cpu_core/frontend_retired.l1i_miss/u": 1025.0,
+            "cpu_core/mem_load_retired.l1_miss/u": 1155.0,
+            "cpu_core/mem_load_retired.l2_miss/u": 236.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 248.5519,
+            "cpu_core/frontend_retired.l1i_miss/u": -0.0049,
+            "cpu_core/mem_load_retired.l1_miss/u": 0.0011,
+            "cpu_core/mem_load_retired.l2_miss/u": 0.0015
+          },
+          "official": {
+            "cpu_core/cycles/u": 225.1168,
+            "cpu_core/frontend_retired.l1i_miss/u": -0.0059,
+            "cpu_core/mem_load_retired.l1_miss/u": 0.0029,
+            "cpu_core/mem_load_retired.l2_miss/u": 0.0019
+          }
+        },
+        "valid": true
+      },
+      "frontend": {
+        "events": [
+          "cpu_core/cycles/u",
+          "cpu_core/idq.dsb_uops/u",
+          "cpu_core/idq.mite_uops/u",
+          "cpu_core/idq_uops_not_delivered.core/u"
+        ],
+        "gt32_minus_official": {
+          "cpu_core/cycles/u": 23.3193,
+          "cpu_core/idq.dsb_uops/u": 107.31940000000009,
+          "cpu_core/idq.mite_uops/u": 10.235700000000001,
+          "cpu_core/idq_uops_not_delivered.core/u": 2.153999999999999
+        },
+        "medians": {
+          "gt32": {
+            "cpu_core/cycles/u": 3003360.0,
+            "cpu_core/idq.dsb_uops/u": 9005229.0,
+            "cpu_core/idq.mite_uops/u": 366109.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1040486.0
+          },
+          "noop": {
+            "cpu_core/cycles/u": 517880.0,
+            "cpu_core/idq.dsb_uops/u": 681100.0,
+            "cpu_core/idq.mite_uops/u": 250159.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 945307.0
+          },
+          "official": {
+            "cpu_core/cycles/u": 2770167.0,
+            "cpu_core/idq.dsb_uops/u": 7932035.0,
+            "cpu_core/idq.mite_uops/u": 263752.0,
+            "cpu_core/idq_uops_not_delivered.core/u": 1018946.0
+          }
+        },
+        "per_operation_adjusted": {
+          "gt32": {
+            "cpu_core/cycles/u": 248.548,
+            "cpu_core/idq.dsb_uops/u": 832.4129,
+            "cpu_core/idq.mite_uops/u": 11.595,
+            "cpu_core/idq_uops_not_delivered.core/u": 9.5179
+          },
+          "official": {
+            "cpu_core/cycles/u": 225.2287,
+            "cpu_core/idq.dsb_uops/u": 725.0935,
+            "cpu_core/idq.mite_uops/u": 1.3593,
+            "cpu_core/idq_uops_not_delivered.core/u": 7.3639
+          }
+        },
+        "valid": true
+      }
+    }
+  },
+  "role": "diagnostic-only-not-promotion-headline",
+  "schema": "ntruplus768-region-pmu/v1"
+}

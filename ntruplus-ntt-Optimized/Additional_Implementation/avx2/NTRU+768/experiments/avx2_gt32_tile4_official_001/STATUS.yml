@@ -3,6 +3,70 @@ status: q24-gt-unpack-and-both-centered-and-lazy10788-gt-pack-boundaries-product
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+encap_range_wavefront_002:
+  status: range-closed-two-asm-prototypes-A1-island-win-Native-Encap-regression-no-promotion
+  scope: Encap-small-input-only-same-DAG-M-e0
+  range_artifact: generated/tile4_encap_range_closure.json
+  forward_stage_abs_bounds: [9844, 11478, 12674, 14398, 15605]
+  h_input_range: [0, 3456]
+  basemul_e0_abs_bound: 1856
+  post_add_abs_bound: 17461
+  serializer_domain: signed-i16-exhaustive
+  new_reductions: 0
+  search_artifact: generated/tile4_encap_wavefront_search.json
+  schedules_tested: 126
+  prototypes_emitted: 2
+  A1:
+    selected_tiles: [0]
+    total_data_loads_stores: [88, 88]
+    explicit_extra_boundary_stores_reloads: [0, 0]
+    island_stq2_delta: -17.148148148148266
+    island_favorable_launches: 9
+    decision: Native-Encap-regression-retain-experiment
+    native_enc_stq2: 28390.814814814814
+    native_enc_minus_current: 214.22685185185037
+    native_enc_minus_official: 305.05092592592337
+  A2:
+    selected_tiles: [0, 1]
+    total_data_loads_stores: [87, 87]
+    explicit_extra_boundary_stores_reloads: [7, 7]
+    island_stq2_delta: -2.6296296296295623
+    island_favorable_launches: 7
+    decision: retain-research-only-no-stable-island-direction
+  validation: raw-exact-11543-cases-root-oracle-alias-canary-ASan-UBSan-linked-def-use
+  serious_results: results/encap-range-wavefront-20260921-serious/summary.json
+  post_timing_poisoned_validation: results/encap-range-wavefront-20260921-poisoned-recheck/summary.json
+  native_results_repo_relative: results/encap-wavefront-native-20260921/summary.json
+  native_candidate: avx2-gt32-encap-wavefront1-exp-sc20260831
+  candidate_KAT: 100-byte-exact-vectors
+  candidate_API: 32-valid-tampered-trials-plus-invalid-PK-zeroization
+  fixed_placement_confirmation: not-triggered-Native-Encap-winner-prerequisite-failed
+  clean_modified: false
+forward_redesign_001:
+  evidence_correction: historical-gate-overclaimed-A-allocation-B-Encap-contract-and-C-cycle-inference
+  scope: Encap-first A/B/C decomposition-and-consumer-ABI gate
+  official: SUPERCOP-20260831-ntruplus768-avx2
+  current_gt: avx2-gt32-clean
+  external_wire_api: frozen
+  output_montgomery_exponent: 0
+  A_gt3_first_joint:
+    boundary_vectors_each_direction: 48
+    current_executable_peak_ymm: 16
+    result: superseded-by-encap_range_wavefront_002
+  B_n32_first_encap_range:
+    input_domain: '[-1,1]'
+    forward_max_abs: 13442
+    r1u_max_abs: 14485
+    inverse_stage_max_abs: 65102
+    result: deferred-inverse-proof-is-not-Encap-and-not-overflow-witness
+  C_official_hybrid:
+    gt_to_official_extra_routes: 576
+    best_distinct_final_p_net_instruction_delta: 7
+    result: deferred-bridge-counts-do-not-reject-direct-hybrid
+  prototypes_budget: 2
+  prototypes_emitted: 0
+  decision: historical-only-A-reopened-B-C-not-extended
+  artifact: generated/tile4_forward_redesign_gate.json
 implemented:
   - generator-owned complete frontend/output/inverse mapping
   - compact execution-order forward and inverse twiddle streams
@@ -9233,3 +9297,88 @@ gt32_encap_h_d01_mixed_tmvp_b3_20260817:
       - consumer-accepts-e-minus1-without-R2-finalizer
       - wider-ISA-removes-register-and-half-merge-debt
   artifact: generated/tile4_encap_h_d01_mixed_tmvp_gate.json
+
+gt32_next_priorities_encap_residual_20260920:
+  experiment: GT32-ENCAP-PLACEMENT-RESIDUAL-REBASE-001
+  status: complete-placement-sensitive-not-local-caller-debt
+  method:
+    compiler: common-O3GC
+    blocks_per_setting: 16
+    ordering: ABBA-BAAB
+    settings:
+      - normal-aslr-off
+      - normal-aslr-on
+      - reversed-aslr-off
+      - reversed-aslr-on
+  current_GT_minus_Official_enc_cycles:
+    normal_aslr_off: {mean: -2.796, ci95: [-64.452, 52.051]}
+    normal_aslr_on: {mean: 18.339, ci95: [-109.621, 120.858]}
+    reversed_aslr_off: {mean: -6.366, ci95: [-43.406, 31.815]}
+    reversed_aslr_on: {mean: 74.509, ci95: [17.583, 138.199]}
+  interpretation:
+    - prior-about-plus238-native-coordinate-is-not-a-stable-local-stage
+    - polynomial-island-remains-faster-than-Official
+    - ASLR-and-relative-code-geometry-dominate-the-remaining-Encap-residual
+    - no-unstructured-padding-alignment-or-symbol-order-sweep
+  artifacts:
+    - ../../../../../../../results/ntruplus768-next-priorities-20260920/paired-current/summary.json
+    - ../../../../../../../docs/ntruplus768-next-priorities-20260920.md
+
+gt32_serializer_unify_20260920:
+  experiment: GT32-M-WIRE-SERIALIZER-UNIFY-001
+  status: correctness-pass-performance-reject
+  hypothesis:
+    - one-lazy-M-to-wire-body-serves-Encap-r-Encap-ciphertext-and-Decap-recovered-r
+    - physically-remove-the-centered-only-serializer-emission
+  correctness:
+    kat_vectors: 100
+    byte_exact: true
+    asan_ubsan: pass
+    api_semantics_trials: 32
+    invalid_pk_ct_zeroization: pass
+  linked_audit:
+    text_bytes: {current: 64407, candidate: 60567, delta: -3840}
+    centered_symbol_present: false
+    native_measure_elf_sha256: a85216e704ab100e4761b38f79ad973734e72068f7e08c03f1bd08daaefcb500
+  candidate_minus_current_fixed_elf_cycles:
+    normal_aslr_off: {keypair: 48.350, encap: 214.047, decap: 150.798}
+    normal_aslr_on: {keypair: 23.055, encap: 193.510, decap: 209.513}
+    reversed_aslr_off: {keypair: 49.889, encap: 216.983, decap: 233.729}
+    reversed_aslr_on: {keypair: 5.013, encap: 131.846, decap: 256.503}
+  decision:
+    production_changed: false
+    candidate_promoted: false
+    reasons:
+      - lazy-recovered-r-body-is-more-expensive-than-centered-body
+      - code-size-reduction-shifts-hot-symbol-geometry-and-regresses-all-operations
+      - smaller-text-is-not-a-performance-proof
+  artifacts:
+    - ../../../../../../../scripts/install_supercop_768_serializer_unify.py
+    - ../../../../../../../results/ntruplus768-next-priorities-20260920/summary.json
+    - ../../../../../../../results/ntruplus768-next-priorities-20260920/paired-serializer-unify-vs-current/summary.json
+
+gt32_decap_ingress_reassessment_20260920:
+  experiment: GT32-DECAP-INGRESS-REASSESS-001
+  status: retain-current-materialized-ingress
+  current:
+    contract: one-init-three-compact-decode-bodies-then-validate-before-arithmetic
+    decoder_core_cycles: 184.915
+    validation_core_cycles: 18.431
+  decode2_B3_streaming:
+    vector_stores_removed: 96
+    vector_reloads_removed: 96
+    materialization_bytes_removed: 6144
+    minimum_dynamic_instruction_saving: 146
+    normal_candidate_minus_control_cycles: 65.807
+    reversed_candidate_minus_control_cycles: 64.269
+    negative_launch_medians: 0-of-16-both-placements
+  blocked_D01_mixed_TMVP:
+    complete_edge_instruction_delta: 96
+    assembly_emitted: false
+  decision:
+    new_asm: false
+    reason: both-available-AVX2-fusion-mechanisms-are-already-closed-by-machine-or-static-evidence
+    reopen_only_if:
+      - compact-streaming-preserves-decoder-loop-throughput
+      - consumer-contract-removes-private-M-transpose-or-accepts-D01
+      - wider-ISA-provides-full-width-byte-permutation

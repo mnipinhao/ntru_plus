@@ -1,0 +1,165 @@
+{
+  "label": "supercop-native-kem",
+  "fresh_processes_per_implementation": 9,
+  "records": {
+    "official": {
+      "identity": {
+        "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "cpucycles_implementation": "default-perfevent",
+        "cpucycles_persecond": "1400000000",
+        "cpuid": "unknown_CPU_ID_",
+        "implementation": "crypto_kem/ntruplus768/avx2 -"
+      },
+      "operations": {
+        "dec_cycles": {
+          "observations": 864,
+          "stq1": 19297.527777777777,
+          "stq2": 19437.833333333332,
+          "stq3": 19572.814814814814
+        },
+        "enc_cycles": {
+          "observations": 864,
+          "stq1": 27971.39814814815,
+          "stq2": 28085.76388888889,
+          "stq3": 28478.71759259259
+        },
+        "keypair_cycles": {
+          "observations": 864,
+          "stq1": 21467.458333333332,
+          "stq2": 21600.63425925926,
+          "stq3": 21755.824074074073
+        }
+      },
+      "elf_sha256": "1c731fa6571b7214ea0b965a903df4496d9192a85878c28e6ab31257f4ba5aff",
+      "sections": {
+        ".text": 40599,
+        ".rodata": 5416
+      }
+    },
+    "current-gt": {
+      "identity": {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "cpucycles_implementation": "default-perfevent",
+        "cpucycles_persecond": "1400000000",
+        "cpuid": "unknown_CPU_ID_",
+        "implementation": "crypto_kem/ntruplus768/avx2-gt32-clean -"
+      },
+      "operations": {
+        "dec_cycles": {
+          "observations": 864,
+          "stq1": 19079.453703703704,
+          "stq2": 19190.21759259259,
+          "stq3": 19307.574074074073
+        },
+        "enc_cycles": {
+          "observations": 864,
+          "stq1": 27999.685185185186,
+          "stq2": 28176.587962962964,
+          "stq3": 28544.324074074073
+        },
+        "keypair_cycles": {
+          "observations": 864,
+          "stq1": 21120.560185185186,
+          "stq2": 21248.060185185186,
+          "stq3": 21387.12037037037
+        }
+      },
+      "elf_sha256": "ac367e1a87b8ce8e8fee815a370ca9f6867953dd3d7c3f6f1dd7f29b9e3bef9f",
+      "sections": {
+        ".text": 64919,
+        ".rodata": 60520
+      }
+    },
+    "wavefront1": {
+      "identity": {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "cpucycles_implementation": "default-perfevent",
+        "cpucycles_persecond": "1400000000",
+        "cpuid": "unknown_CPU_ID_",
+        "implementation": "crypto_kem/ntruplus768/avx2-gt32-encap-wavefront1-exp-sc20260831 -"
+      },
+      "operations": {
+        "dec_cycles": {
+          "observations": 864,
+          "stq1": 19025.171296296296,
+          "stq2": 19123.37962962963,
+          "stq3": 19296.26388888889
+        },
+        "enc_cycles": {
+          "observations": 864,
+          "stq1": 28166.597222222223,
+          "stq2": 28390.814814814814,
+          "stq3": 28751.14351851852
+        },
+        "keypair_cycles": {
+          "observations": 864,
+          "stq1": 21066.037037037036,
+          "stq2": 21183.87037037037,
+          "stq3": 21323.675925925927
+        }
+      },
+      "elf_sha256": "424e618946b3b9a7902697ac2d92aa94b187fb1ee81d881f8ef2d5f654bc14ef",
+      "sections": {
+        ".text": 74775,
+        ".rodata": 85320
+      }
+    }
+  },
+  "deltas": {
+    "keypair_cycles": {
+      "wavefront_minus_current": -64.18981481481751,
+      "wavefront_minus_official": -416.7638888888905,
+      "current_minus_official": -352.574074074073
+    },
+    "enc_cycles": {
+      "wavefront_minus_current": 214.22685185185037,
+      "wavefront_minus_official": 305.05092592592337,
+      "current_minus_official": 90.824074074073
+    },
+    "dec_cycles": {
+      "wavefront_minus_current": -66.83796296295986,
+      "wavefront_minus_official": -314.45370370370074,
+      "current_minus_official": -247.61574074074088
+    }
+  },
+  "decision": "no-promotion-Encap-regresses-vs-current-and-Official",
+  "scope": "only Encap Forward source changed; Keygen/Decap deltas are not arithmetic credit",
+  "limitations": [
+    "serial Native compiler-selected runs, not paired causal attribution",
+    "footprint/placement may contribute but are not established mechanisms",
+    "no placement confirmation: Native winner prerequisite failed"
+  ],
+  "validation": {
+    "kat": {
+      "cases": 100,
+      "comparison": "byte-exact against frozen KAT",
+      "created_at": "2026-09-21T05:27:10.509520+00:00",
+      "implementation": "avx2-gt32-encap-wavefront1-exp-sc20260831",
+      "parameter": 768,
+      "passed": true,
+      "request_sha256": "36c27b6089b8910733a01fea1136469769b3ca3c35f2b375cfcc592f2112cfaa",
+      "response_sha256": "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8",
+      "sanitizers": null,
+      "schema": "ntruplus-flat-kat/v1",
+      "source_manifest_sha256": "ad90542198c7527057c5c05602a50f8ff2c77fe5a078d184d49c941f9d403c73"
+    },
+    "api": {
+      "alias_note": "public KEM API does not declare overlapping-buffer support; aliases are not claimed",
+      "checks": [
+        "valid roundtrip",
+        "tampered ciphertext rejection and zeroization",
+        "invalid public-key rejection and zeroization",
+        "input immutability",
+        "output canaries"
+      ],
+      "created_at": "2026-09-21T05:27:13.832597+00:00",
+      "implementation": "avx2-gt32-encap-wavefront1-exp-sc20260831",
+      "manifest_sha256": "ad90542198c7527057c5c05602a50f8ff2c77fe5a078d184d49c941f9d403c73",
+      "parameter": 768,
+      "passed": true,
+      "schema": "ntruplus-api-semantics/v1",
+      "stdout": "api-semantics: 32 valid/tampered trials plus invalid-PK zeroization passed",
+      "valid_trials": 32
+    }
+  }
+}

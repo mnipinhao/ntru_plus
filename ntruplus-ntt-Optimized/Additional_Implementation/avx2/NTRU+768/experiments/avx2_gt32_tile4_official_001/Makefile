@@ -171,6 +171,19 @@ SOURCES := src/tile4_ref.c src/tile4_frontend.c src/tile4_basemul.c \
 
 .PHONY: n5-scale-edge-survey-generate scale-consumer-fusion-generate
 .PHONY: encap-representation-architecture-generate
+.PHONY: forward-redesign-generate
+.PHONY: encap-range-wavefront-generate encap-range-wavefront-check
+
+encap-range-wavefront-generate:
+	$(PYTHON) tools/generate_encap_range_wavefront.py
+	$(PYTHON) tools/generate_encap_wavefront.py
+
+# Non-overwriting campaign; override RESULT_TAG to repeat a validation run.
+encap-range-wavefront-check:
+	$(PYTHON) tools/run_encap_wavefront.py --tag "$(if $(RESULT_TAG),$(RESULT_TAG),encap-range-wavefront-check)"
+
+forward-redesign-generate:
+	$(PYTHON) tools/generate_forward_redesign_gate.py
 
 encap-representation-architecture-generate: $(ENCAP_REP_ARCH_GATE)
 
