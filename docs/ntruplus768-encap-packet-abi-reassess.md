@@ -113,29 +113,33 @@ artifact 為 `generated/tile4_encap_wire_schedule.json`。它沒有新增 ASM、
 benchmark，也沒有修改 clean。表中的 opcode 數是 proposed schedule 展開數，
 不是 linked machine object 或 cycle 數。
 
-### D1 live → W：direct path 成立
+### D1 live → W：machine mapping 修正
 
-從 clean `ntt_m.s` 的 `FR_MONT_QWORD_PACKED` 輸出接既有 `vpshufb`，
-每個 AoS YMM 再用一條 `vpermq` 直接寫入 W packet 位址。48 個 packet 各來自
-**單一** D1 後 AoS YMM；每個 packet 的 qword 選擇與 store displacement 都列在
-artifact。六次 D1 loop 的 `rdi` 照舊每次前進 256 bytes，目標位址用組譯時
-固定 displacement 表示，沒有 M buffer 中轉，也沒有新增 polynomial scratch。
-標籤 replay 覆蓋 768/768 owners，並和原 Q24 codec 的 48 個 packet 對照。
-例如第一個 wire packet 直接取 D1 後 AoS vector 3，qwords 排列
-`[1,0,3,2]`（`vpermq $177`），寫 `W+0`；第二個 packet 取 vector 2、
-排列 `[3,2,0,1]`（`$75`），寫 `W+32`。
+後續 ASM 的 raw differential 發現本節原來的「每 packet 只取一個 D1 YMM」
+假設錯誤。原模型的 `source_aos_vector` 是 semantic AoS 編號，不能當成
+`ntt_m.s` 的實際 register 編號。反向 replay clean
+`FR_PACKED_TO_PLANES` 的 `vpshufb`／unpack 後，48 個 wire packet **每個都
+取自兩個相鄰的 D1 YMM**。例如第一個 packet 的四個 qwords 取自 raw D1
+words `52,36,60,44`，不是同一個 YMM。
+
+已修正為每 packet 兩次 `vpermq`、一次 `vpblendd`、一次 W store。
+六個 tile epilogue 編碼各自固定 immediates／地址；D1 arithmetic 只有一份
+共用 body，選擇 epilogue 的分支只看公開 loop index。此路徑不形成 M buffer，
+也不需要原本形成 M planes 的 `vpshufb`。raw differential 覆蓋
+768/768 coefficients。
 
 | Encap 全部兩次 Forward 的 terminal | current M | direct W |
 | --- | ---: | ---: |
-| 既有 `vpshufb` | 96 | 96 |
+| `vpshufb` | 96 | 0 |
 | M plane unpack routing | 192 | 0 |
-| W qword `vpermq` | 0 | 96 |
+| W qword `vpermq` | 0 | 192 |
+| W `vpblendd` | 0 | 96 |
 | vector stores | 96 | 96 |
 
-因此 terminal routing 的靜態淨差是 −96，而**不是**「完全免費落 W」。
-現有 D1 live registers `ymm0:7`、mask `ymm14`、q `ymm15` 不變；
-deposit 的 `vpshufb`／`vpermq` 可原位覆寫。這是 source/machine-model
-推論，不冒充 full macro-expansion 的 linked liveness proof。
+兩次 Forward 的 terminal routing 靜態總量都是 288；W 的收益發生在
+PK ingress 與兩次 pack。linked CFG liveness 顯示 Forward 峰值 13 YMM，
+沒有 stack spill。新增的 public branch／address 成本已留在完整 island
+短測內，不以 routing 數推算 cycles。
 
 ### PK ingress、兩次 pack 與生命週期
 
@@ -220,14 +224,57 @@ pack cases。模型的 r/c bytes exact 與 r immutability 都已通過。
 這些是**模型／scalar oracle**，不替代未來 ASM 的 KAT、linked ABI、
 sanitizer、constant-time 或 Native SUPERCOP。
 
-決策：direct-W、兩種 arithmetic、一／雙 packet 的 instruction model
-和 range 均合格；**不宣稱 W 比 M 快**。若下一輪授權 ASM，優先
-W-Montgomery 作較小 arithmetic realization，W-VPMADDWD 保留為
-dependency/REDC 對照。只有完整 Encap island 實測後才能判斷 movement
-credit 是否足以支付每 packet arithmetic 與常數成本。
+本段原屬 schedule gate。下方的 ASM checkpoint 以 linked machine object
+和短測更新結論；VPMADDWD 仍只保留為模型研究。
 
 重跑：
 
 ```sh
 python3 tools/generate_encap_wire_schedule.py
 ```
+
+## ENCAP-WIRE-AOS-MONT-ASM-PRICE（2026-09-21）
+
+已實作 namespaced W Forward、PK decode/validate、W packet pack，以及
+Montgomery 單／雙 packet MulAdd。Research Encap caller 保留 clean 的提前
+PK validation、hash／SOTP 順序與五份 1536-byte scratch。
+
+ASM differential 驗證：Forward 對 current M 經 reference map 後 raw
+bit-exact；MulAdd 對 current B3+add modulo q 一致；r/c wire bytes 與
+100 組 deterministic Encap ciphertext／shared secret byte-exact。48 個
+invalid-PK packet 位置的 return、ct zeroization、ss clear 一致。
+guard page 覆蓋 decoder 尾端 load 與 serializer 尾端 store；ASan／UBSan
+通過。`linked-audit.json` 依 CFG replay registers，五顆 W symbols 峰值
+分別為 Forward 13、decode 4、pack 4、MulAdd 單 packet 9／雙 packet 12
+個 YMM，無 stack traffic、call 或新增 `vzeroupper`；入口皆 32-byte aligned。
+
+短測使用 pinned SUPERCOP 20260831 `cpucycles()`、共同 O3GC、同一 ELF、
+CPU 1／performance／turbo off、normal placement／ASLR on、三個 fresh
+processes。主數字為 pooled StQ2 的 candidate−current M；以下皆為
+**SUPERCOP-derived diagnostic**，不是 Native KEM：
+
+| Cutpoint | W 單 packet | W 雙 packet | M fused-add control |
+| --- | ---: | ---: | ---: |
+| 1×r Forward | +9.02 | +8.19 | — |
+| 1×m Forward | +6.54 | +6.94 | — |
+| 2×Forward | +18.10 | +17.15 | — |
+| r state＋hash input bytes | −48.56 | −49.35 | — |
+| 完整 polynomial island | **+345.67** | **+433.10** | **−53.92** |
+
+完整 island 的 W 兩版均 0/3 launches 勝出；M fused-add control 3/3
+勝出。W 的 r packing credit 確實存在，但每 packet 4-leaf arithmetic
+與 constants 成本在整條 Encap island 裡大幅超過它。本輪將 W-Mont
+標為 **correctness pass／short diagnostic reject**，不進 serious、Native
+或 clean production。M fused-add 是獨立局部結果，不歸因於 W。
+
+重跑：
+
+```sh
+python3 tools/generate_encap_wire_schedule.py
+python3 tools/generate_encap_wire_asm.py
+python3 tools/run_encap_wire_short.py --supercop-root <pinned-root> --cpu 1 --tag <new-tag>
+```
+
+Raw observations、source／ELF hash、compiler command、sanitizer output、
+linked audit 與 summary 保存於
+`results/encap-wire-mont-short-20260921-closed/`。

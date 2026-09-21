@@ -9426,3 +9426,57 @@ gt32_decap_ingress_reassessment_20260920:
       - compact-streaming-preserves-decoder-loop-throughput
       - consumer-contract-removes-private-M-transpose-or-accepts-D01
       - wider-ISA-provides-full-width-byte-permutation
+
+gt32_encap_wire_aos_mont_asm_price_20260921:
+  experiment: ENCAP-WIRE-AOS-MONT-ASM-PRICE
+  status: correctness-pass-short-diagnostic-reject
+  branch: avx2-gt-ntt
+  source_control: clean/avx2-gt32-clean-unchanged
+  machine_mapping_correction:
+    prior_single_d1_vector_per_wire_packet: rejected-by-raw-differential
+    actual_d1_vectors_per_wire_packet: 2
+    terminal_per_packet: 2-vpermq-plus-1-vpblendd-plus-1-store
+    full_M_materialization: false
+    forward_arithmetic_changed: false
+  correctness:
+    deterministic_encap_vectors: 100
+    ciphertext_and_shared_secret: byte-exact
+    invalid_pk_packet_positions: 48
+    raw_forward_differential: pass
+    muladd_modq_differential: pass
+    r_immutability: pass
+    guard_page_tail_decode_pack: pass
+    asan_ubsan: pass
+  linked_peak_live_ymm:
+    forward: 13
+    decode: 4
+    pack: 4
+    muladd_1packet: 9
+    muladd_2packet: 12
+  linked_structural:
+    entry_alignment_bytes: 32
+    vector_stack_spills: 0
+    internal_calls: 0
+    added_vzeroupper: 0
+  short_benchmark:
+    label: supercop-derived-diagnostic
+    root_version: 20260831
+    cpu: 1
+    governor: performance
+    turbo_disabled: true
+    fresh_processes: 3
+    setting: normal-placement-aslr-on
+    estimator: pooled-StQ2
+    candidate_minus_current_M_cycles:
+      forward_2x: {W_1packet: 18.10, W_2packet: 17.15}
+      r_state_plus_hash_bytes: {W_1packet: -48.56, W_2packet: -49.35}
+      complete_polynomial_island: {W_1packet: 345.67, W_2packet: 433.10}
+      M_fused_add_control_complete_island: -53.92
+    W_favorable_full_island_launches: 0-of-3
+  decision:
+    W_montgomery_serious: false
+    W_montgomery_native: false
+    clean_promotion: false
+    retain_M_fused_add_as_separate_local_result: true
+    reason: W_packet_arithmetic_and_constant_cost_exceeds_representation_credit
+  artifact: results/encap-wire-mont-short-20260921-closed/
