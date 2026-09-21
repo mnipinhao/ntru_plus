@@ -3,8 +3,27 @@ status: q24-gt-unpack-and-both-centered-and-lazy10788-gt-pack-boundaries-product
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+encap_wire_aos_schedule_002:
+  status: instruction-model-and-range-pass-no-ASM-no-benchmark
+  branch: avx2-gt-ntt
+  generator: tools/generate_encap_wire_schedule.py
+  artifact: generated/tile4_encap_wire_schedule.json
+  document: docs/ntruplus768-encap-packet-abi-reassess.md
+  control: clean/avx2-gt32-clean
+  direct_D1_to_W: raw-owner-exact-48-packets-no-M-materialization
+  PK_ingress: decode-validate-before-W-store-no-extra-pass
+  variants: [W-Montgomery-1packet, W-Montgomery-2packet, W-VPMADDWD-1packet, W-VPMADDWD-2packet]
+  model_peak_YMM: {Montgomery_1: 9, Montgomery_2: 14, VPMADDWD_1: 8, VPMADDWD_2: 12}
+  signed_range_safe: true
+  range_scope: Encap-small-r-m-and-valid-decoded-h-only
+  retained_r_immutable: true
+  new_polynomial_scratch: false
+  linked_binary_proof: false
+  performance_evidence: none
+  recommendation_if_ASM_authorized: W-Montgomery-first-VPMADDWD-control
+  clean_modified: false
 encap_packet_abi_reassess_001:
-  status: semantic-ownership-pass-machine-schedule-open
+  status: semantic-ownership-pass-followed-by-W-instruction-model
   artifact: generated/tile4_encap_packet_abi_gate.json
   variants: [M-control, W-wire-AoS, WP-wire-order-planes, asymmetric-D01-historical]
   next_schedule_target: W-direct-terminal-and-AoS-quartic-consumer
