@@ -2,11 +2,7 @@
 #include "symmetric.h"
 #include "secure_clear.h"
 
-#ifdef SUPPORTS_SHAKE256_ASM
-#include "CE/fips202.h"
-#else
 #include "fips202.h"
-#endif
 
 #define HASH_F_INBYTES  (NTRUPLUS_POLYBYTES)
 #define HASH_F_OUTBYTES (32)
@@ -42,10 +38,11 @@ void hash_g_fr0(uint8_t *buf, const int16_t coeffs[NTRUPLUS_N])
 
 void hash_h(uint8_t *buf, const uint8_t *msg)
 {
-    uint8_t data[1 + HASH_H_INBYTES];
-
-    data[0] = 0x02;
-    memcpy(data + 1, msg, HASH_H_INBYTES);
-    shake256(buf, HASH_H_OUTBYTES, data, HASH_H_INBYTES + 1);
-    secure_clear(data, sizeof data);
+    /*
+     * The prefixed entry point absorbs 0x02 || msg without building it, so this
+     * no longer keeps a copy of the message on the stack, and no longer routes
+     * the shared secret through the generic sponge's malloc'd state -- which
+     * shake256_ctx_release() frees without wiping.
+     */
+    shake256_prefixed(buf, HASH_H_OUTBYTES, 0x02, msg, HASH_H_INBYTES);
 }

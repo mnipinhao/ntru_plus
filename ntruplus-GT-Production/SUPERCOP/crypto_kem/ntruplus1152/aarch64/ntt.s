@@ -18,7 +18,7 @@ _ntt_asm:
     mov x0, x21
     mov x1, x20
     bl ntt_top_asm
-    add x0, x21, #1536
+    add x0, x21, #2048
     mov x1, x0
     bl ntt_tail_asm
     mov x0, x19
@@ -32,3 +32,4 @@ _ntt_asm:
     ldp x19, x20, [sp, #16]
     ldp x29, x30, [sp], #112
     ret
+.section .note.GNU-stack,"",%progbits

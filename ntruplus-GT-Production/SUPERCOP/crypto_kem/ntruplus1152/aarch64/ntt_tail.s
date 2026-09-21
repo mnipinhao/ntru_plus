@@ -50,6 +50,8 @@ _ntt_tail_asm:
     str q6, [x0, #96]
     str q1, [x0, #128]
     str q5, [x0, #160]
+    str q3, [x0, #192]
+    str q7, [x0, #224]
     trn1 v0.8h, v24.8h, v25.8h
     trn2 v1.8h, v24.8h, v25.8h
     trn1 v2.8h, v26.8h, v27.8h
@@ -80,5 +82,7 @@ _ntt_tail_asm:
     str q6, [x0, #112]
     str q1, [x0, #144]
     str q5, [x0, #176]
+    str q3, [x0, #208]
+    str q7, [x0, #240]
     ret
 .section .note.GNU-stack,"",%progbits

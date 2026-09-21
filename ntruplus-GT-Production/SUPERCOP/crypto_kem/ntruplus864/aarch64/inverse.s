@@ -69,13 +69,12 @@
 .global baseinv_asm
 baseinv_asm:
     SAVE_PUBLIC
-    sub sp, sp, #1200
     mov x19, x0
     mov x20, x1
     mov x21, x2
-    mov x22, sp
-    add x23, sp, #576
-    add x24, sp, #1152
+    mov x22, x3
+    add x23, x3, #576
+    add x24, x3, #1152
     mov x25, #0
     mov x27, x19
     mov x28, x20
@@ -171,13 +170,6 @@ baseinv_asm:
     b.ne .Lbinv_zero_output
     mov w0, #1
 .Lbinv_wipe:
-    mov x9, sp
-    mov x10, #75
-.Lbinv_zero_scratch:
-    stp xzr, xzr, [x9], #16
-    subs x10, x10, #1
-    b.ne .Lbinv_zero_scratch
-    add sp, sp, #1200
     RESTORE_PUBLIC
 .p2align 4
 .global basemul_rinv_asm
@@ -205,14 +197,13 @@ basemul_rinv_asm:
 .global invntt_ternary_asm
 invntt_ternary_asm:
     SAVE_PUBLIC
-    sub sp, sp, #1792
     mov x19, x0
     mov x20, x1
     mov x21, x2
     mov x22, x3
     mov x23, x4
     mov x24, x5
-    mov x25, sp
+    mov x25, x6
     movi v0.16b, #0
     add x9, sp, #1536
     stp q0, q0, [x9], #32
@@ -223,58 +214,87 @@ invntt_ternary_asm:
     stp q0, q0, [x9], #32
     stp q0, q0, [x9], #32
     stp q0, q0, [x9], #32
-    mov x26, #0
-.Lp8inv_top:
-    mov x27, #0
-.Lp8inv_component:
-    mov x28, #0
-.Lp8inv_i9:
-    add x0, x25, x27, lsl #9
-    add x0, x0, x28, lsl #7
-    add x0, x0, x26, lsl #3
+    mov x0, x25
     add x1, x25, #1536
-    add x1, x1, x28, lsl #7
-    mov x8, #6
-    madd x1, x26, x8, x1
-    add x1, x1, x27, lsl #1
-    mov x8, #864
-    madd x2, x26, x8, x20
-    mov x8, #48
-    madd x2, x28, x8, x2
-    add x2, x2, x27, lsl #4
-    mov x8, #576
-    madd x3, x26, x8, x21
-    mov x8, #288
-    madd x3, x28, x8, x3
+    mov x2, x20
+    mov x3, x21
     bl packed_i9
-    add x28, x28, #1
-    cmp x28, #2
-    b.ne .Lp8inv_i9
-    add x27, x27, #1
-    cmp x27, #3
-    b.ne .Lp8inv_component
-    add x26, x26, #1
-    cmp x26, #2
-    b.ne .Lp8inv_top
-    mov x26, #0
-.Lp8inv_main_component:
-    mov x27, #0
-.Lp8inv_main:
-    add x0, x19, x26, lsl #1
-    mov x8, #24
-    madd x0, x27, x8, x0
-    add x1, x25, x26, lsl #9
-    add x1, x1, x27, lsl #8
+    add x0, x25, #128
+    add x1, x25, #1664
+    add x2, x20, #48
+    add x3, x21, #288
+    bl packed_i9
+    add x0, x25, #512
+    add x1, x25, #1538
+    add x2, x20, #16
+    mov x3, x21
+    bl packed_i9
+    add x0, x25, #640
+    add x1, x25, #1666
+    add x2, x20, #64
+    add x3, x21, #288
+    bl packed_i9
+    add x0, x25, #1024
+    add x1, x25, #1540
+    add x2, x20, #32
+    mov x3, x21
+    bl packed_i9
+    add x0, x25, #1152
+    add x1, x25, #1668
+    add x2, x20, #80
+    add x3, x21, #288
+    bl packed_i9
+    add x0, x25, #8
+    add x1, x25, #1542
+    add x2, x20, #864
+    add x3, x21, #576
+    bl packed_i9
+    add x0, x25, #136
+    add x1, x25, #1670
+    add x2, x20, #912
+    add x3, x21, #864
+    bl packed_i9
+    add x0, x25, #520
+    add x1, x25, #1544
+    add x2, x20, #880
+    add x3, x21, #576
+    bl packed_i9
+    add x0, x25, #648
+    add x1, x25, #1672
+    add x2, x20, #928
+    add x3, x21, #864
+    bl packed_i9
+    add x0, x25, #1032
+    add x1, x25, #1546
+    add x2, x20, #896
+    add x3, x21, #576
+    bl packed_i9
+    add x0, x25, #1160
+    add x1, x25, #1674
+    add x2, x20, #944
+    add x3, x21, #864
+    bl packed_i9
     mov x2, #0
     mov x3, x22
     mov x4, x23
+    mov x0, x19
+    mov x1, x25
     bl invntt16_asm
-    add x27, x27, #1
-    cmp x27, #2
-    b.ne .Lp8inv_main
-    add x26, x26, #1
-    cmp x26, #3
-    b.ne .Lp8inv_main_component
+    add x0, x19, #24
+    add x1, x25, #256
+    bl invntt16_asm
+    add x0, x19, #2
+    add x1, x25, #512
+    bl invntt16_asm
+    add x0, x19, #26
+    add x1, x25, #768
+    bl invntt16_asm
+    add x0, x19, #4
+    add x1, x25, #1024
+    bl invntt16_asm
+    add x0, x19, #28
+    add x1, x25, #1280
+    bl invntt16_asm
     add x0, x19, #48
     add x1, x25, #1536
     mov x2, #0
@@ -283,15 +303,4 @@ invntt_ternary_asm:
     bl invntt16_tail_asm
     mov x0, x19
     bl crepmod3_ternary_asm
-    movi v0.16b, #0
-    mov x9, sp
-    mov x10, #14
-.Lp13inv_wipe:
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    subs x10, x10, #1
-    b.ne .Lp13inv_wipe
-    add sp, sp, #1792
     RESTORE_PUBLIC
