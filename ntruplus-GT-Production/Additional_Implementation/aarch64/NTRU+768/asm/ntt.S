@@ -13,31 +13,31 @@
 .align 4
 .equ STACK_LOC_0, 0
 
-.global gt_internal_poly_ntt_loose
-.global _gt_internal_poly_ntt_loose
-.global gt_internal_block_major_poly_ntt_loose
-.global _gt_internal_block_major_poly_ntt_loose
+.global gt_internal_poly_ntt_loose_core
+.global _gt_internal_poly_ntt_loose_core
+.global gt_internal_block_major_poly_ntt_loose_core
+.global _gt_internal_block_major_poly_ntt_loose_core
 #ifndef __APPLE__
-.type gt_internal_poly_ntt_loose, %function
+.type gt_internal_poly_ntt_loose_core, %function
 #endif
-gt_internal_poly_ntt_loose:
-_gt_internal_poly_ntt_loose:
-gt_internal_block_major_poly_ntt_loose:
-_gt_internal_block_major_poly_ntt_loose:
-    mov w2, #0
+gt_internal_poly_ntt_loose_core:
+_gt_internal_poly_ntt_loose_core:
+gt_internal_block_major_poly_ntt_loose_core:
+_gt_internal_block_major_poly_ntt_loose_core:
+    mov w3, #0
     b .Lgt_shared_core_entry
 
-.global gt_keygen_poly_ntt_to_cq
-.global _gt_keygen_poly_ntt_to_cq
+.global gt_keygen_poly_ntt_to_cq_core
+.global _gt_keygen_poly_ntt_to_cq_core
 #ifndef __APPLE__
-.type gt_keygen_poly_ntt_to_cq, %function
+.type gt_keygen_poly_ntt_to_cq_core, %function
 #endif
-gt_keygen_poly_ntt_to_cq:
-_gt_keygen_poly_ntt_to_cq:
-    mov w2, #1
+gt_keygen_poly_ntt_to_cq_core:
+_gt_keygen_poly_ntt_to_cq_core:
+    mov w3, #1
 .Lgt_shared_core_entry:
-    sub sp, sp, #1696
-    str w2, [sp, #8]  // public endpoint selector
+    sub sp, sp, #160
+    str w3, [sp, #8]  // public endpoint selector
     stp x19, x20, [sp, #16]
     stp x21, x22, [sp, #32]
     str x23, [sp, #48]
@@ -48,7 +48,7 @@ _gt_keygen_poly_ntt_to_cq:
 
     mov x19, x0
     mov x20, x1
-    add x21, sp, #160
+    mov x21, x2                 // working area, 1536 bytes, CALLER-OWNED
 
     adr x2, u01_block_first_zetas
     ldr q0, [x2]
@@ -6785,20 +6785,23 @@ _gt_keygen_poly_ntt_to_cq:
     ldr x23, [sp, #48]
     ldp x21, x22, [sp, #32]
     ldp x19, x20, [sp, #16]
-    /* P0-B: erase the complete handwritten spill frame. */
+    /* P0-B: erase this leaf's own 160-byte frame.  The 1536-byte working area
+     * that used to sit above it is the caller's now, and is cleared there, so
+     * that the transform's intermediates are reachable from C rather than
+     * living where only this leaf can see them. */
     movi v0.16b, #0
     mov x9, sp
-    mov x10, #106
-.Lp0b_clear_1696:
+    mov x10, #10
+.Lp0b_clear_160:
     str q0, [x9], #16
     subs x10, x10, #1
-    b.ne .Lp0b_clear_1696
-    add sp, sp, #1696
+    b.ne .Lp0b_clear_160
+    add sp, sp, #160
     ret
 .Lgt_shared_core_end:
 #ifndef __APPLE__
-.size gt_internal_poly_ntt_loose, .Lgt_shared_core_end-gt_internal_poly_ntt_loose
-.size gt_keygen_poly_ntt_to_cq, .Lgt_shared_core_end-gt_keygen_poly_ntt_to_cq
+.size gt_internal_poly_ntt_loose_core, .Lgt_shared_core_end-gt_internal_poly_ntt_loose_core
+.size gt_keygen_poly_ntt_to_cq_core, .Lgt_shared_core_end-gt_keygen_poly_ntt_to_cq_core
 #endif
 .global gt_internal_poly_ntt_loose_end
 gt_internal_poly_ntt_loose_end:

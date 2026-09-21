@@ -80,13 +80,12 @@
 .global C(baseinv_asm)
 C(baseinv_asm):
     SAVE_PUBLIC
-    sub sp, sp, #1200
     mov x19, x0                 // output; exact out=in is legal
     mov x20, x1
     mov x21, x2                 // 36 zR vectors, advanced in tile order
-    mov x22, sp                 // den[12][3][8]: 576 bytes
-    add x23, sp, #576           // prefix[12][3][8]: 576 bytes
-    add x24, sp, #1152          // running inverse[3][8]: 48 bytes
+    mov x22, x3                 // den[12][3][8]: 576 bytes, CALLER-OWNED
+    add x23, x3, #576           // prefix[12][3][8]: 576 bytes
+    add x24, x3, #1152          // running inverse[3][8]: 48 bytes
     mov x25, #0                // chain
     mov x27, x19
     mov x28, x20
@@ -186,13 +185,12 @@ C(baseinv_asm):
     b.ne .Lbinv_zero_output
     mov w0, #1
 .Lbinv_wipe:
-    mov x9, sp
+    mov x9, x22
     mov x10, #75
 .Lbinv_zero_scratch:
     stp xzr, xzr, [x9], #16
     subs x10, x10, #1
     b.ne .Lbinv_zero_scratch
-    add sp, sp, #1200
     RESTORE_PUBLIC
 
 .p2align 4
@@ -223,14 +221,13 @@ C(basemul_rinv_asm):
 .global C(invntt_ternary_asm)
 C(invntt_ternary_asm):
     SAVE_PUBLIC
-    sub sp, sp, #1792
     mov x19, x0
     mov x20, x1
     mov x21, x2
     mov x22, x3
     mov x23, x4
     mov x24, x5
-    mov x25, sp
+    mov x25, x6                 // scratch, 1792 bytes, CALLER-OWNED
     // Only tail padding requires initialization, not the entire main buffer.
     // Exact 256-byte padding clear, eight full-vector stores.
     movi v0.16b, #0
@@ -339,7 +336,7 @@ C(invntt_ternary_asm):
     bl C(crepmod3_ternary_asm)
     // Exact 1792-byte wipe, 128 bytes per fixed iteration.
     movi v0.16b, #0
-    mov x9, sp
+    mov x9, x25
     mov x10, #14
 .Lp13inv_wipe:
     stp q0, q0, [x9], #32
@@ -348,6 +345,5 @@ C(invntt_ternary_asm):
     stp q0, q0, [x9], #32
     subs x10, x10, #1
     b.ne .Lp13inv_wipe
-    add sp, sp, #1792
     RESTORE_PUBLIC
 #endif

@@ -66,9 +66,34 @@ sentinel, which calls the leaf directly and segfaulted until it was given a
 scratch to pass.  That sentinel failure is the ABI contract working as
 intended.
 
-## Not converted
+## All six converted
 
-768's two leaves and 864's two `inverse.S` sites remain.  Both trees' clears
-there are already present and pinned, so converting them buys the structural
-property and audit coverage but not a fix — unlike 864's `ntt.S`, which was a
-real gap.  Worth doing, but as its own step.
+| tree | leaf | bytes | where the clear is now |
+|---|---|---:|---|
+| 1152 | `inverse_ntt.S` | 2,304 | assembly (leaf is last to touch it) |
+| 864 | `ntt.S` | 1,792 | **C** — was not cleared at all |
+| 864 | `inverse.S` baseinv | 1,200 | assembly |
+| 864 | `inverse.S` invntt | 1,792 | assembly |
+| 768 | `asm/ntt.S` | 1,536 of 1,696 | **C** |
+| 768 | `asm/internal/decap_forward.S` | 1,536 of 1,696 | **C** |
+
+768's two leaves needed a different shape.  Their 1,696-byte frame is not a
+separate scratch below a standard prologue: it holds SLOTHY's spill slot at
+offset 0, the endpoint selector at 8, `x19-x23` and `d8-d15` up to 128, and
+only then 1,536 bytes of working area, reached solely through `add x21, sp,
+#160`.  So the frame splits — 160 bytes stay and are still cleared in assembly,
+the working area becomes the caller's.  `asm/ntt.S` also had to move its
+endpoint selector from `w2` to `w3`, because `x2` now carries the scratch.
+
+The public symbols are unchanged: the leaves were renamed with a `_core` suffix
+and `internal/ntt_scratch.c` supplies wrappers that declare the buffer and clear
+it, so none of the six call sites in `kem.c` moved.
+
+**768 got faster: A76 107,842 -> 107,507, -335 cycles (-0.31%)**, because
+`gt_secure_clear` reaches libc's `memset` for the 1,536 bytes where the
+handwritten `str q` loop did not.  M2 flat.  864's `inverse.S` conversion is
+neutral on both hosts, its clears having stayed in assembly.
+
+The buffer size was checked rather than assumed: a 64-byte guard pattern placed
+immediately after the 768-int16 scratch survives a full keypair/encapsulate/
+decapsulate flow untouched.

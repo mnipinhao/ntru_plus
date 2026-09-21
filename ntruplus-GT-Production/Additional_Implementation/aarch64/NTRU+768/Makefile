@@ -55,7 +55,8 @@ INTERNAL_C := \
 	internal/keygen.c \
 	internal/keygen_lambda.c \
 	internal/basemul_lambda.c \
-	internal/decap_verify.c
+	internal/decap_verify.c \
+	internal/ntt_scratch.c
 
 KEM_SOURCES := \
 	kem.c \

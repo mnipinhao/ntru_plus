@@ -6,18 +6,18 @@
 .align 4
 .equ STACK_LOC_0, 0
 
-.global gt_decap_poly_ntt
-.global _gt_decap_poly_ntt
-.global gt_decap_gt_poly_ntt
-.global _gt_decap_gt_poly_ntt
+.global gt_decap_poly_ntt_core
+.global _gt_decap_poly_ntt_core
+.global gt_decap_gt_poly_ntt_core
+.global _gt_decap_gt_poly_ntt_core
 #ifndef __APPLE__
-.type gt_decap_poly_ntt, %function
+.type gt_decap_poly_ntt_core, %function
 #endif
-gt_decap_poly_ntt:
-_gt_decap_poly_ntt:
-gt_decap_gt_poly_ntt:
-_gt_decap_gt_poly_ntt:
-    sub sp, sp, #1696
+gt_decap_poly_ntt_core:
+_gt_decap_poly_ntt_core:
+gt_decap_gt_poly_ntt_core:
+_gt_decap_gt_poly_ntt_core:
+    sub sp, sp, #160
     stp x19, x20, [sp, #16]
     stp x21, x22, [sp, #32]
     str x23, [sp, #48]
@@ -28,7 +28,7 @@ _gt_decap_gt_poly_ntt:
 
     mov x19, x0
     mov x20, x1
-    add x21, sp, #160
+    mov x21, x2                 // working area, 1536 bytes, CALLER-OWNED
 
     adr x2, u01_block_first_zetas
     ldr q0, [x2]
@@ -5247,22 +5247,21 @@ gt_decap_stage345_decap_row2_slothy_end:
     ldr x23, [sp, #48]
     ldp x21, x22, [sp, #32]
     ldp x19, x20, [sp, #16]
-    /* P0-B: erase the complete 1696-byte handwritten frame. */
+    /* P0-B: erase this leaf's own 160-byte frame.  The 1536-byte working area
+     * that used to sit above it is the caller's now, and is cleared there, so
+     * that the transform's intermediates are reachable from C rather than
+     * living where only this leaf can see them. */
     movi v0.16b, #0
     mov x9, sp
-    mov x10, #13
-.Lgt_decap_clear_1696:
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
+    mov x10, #5
+.Lgt_decap_clear_160:
     stp q0, q0, [x9], #32
     subs x10, x10, #1
-    b.ne .Lgt_decap_clear_1696
-    stp q0, q0, [x9], #32
-    add sp, sp, #1696
+    b.ne .Lgt_decap_clear_160
+    add sp, sp, #160
     ret
 #ifndef __APPLE__
-.size gt_decap_poly_ntt, .-gt_decap_poly_ntt
+.size gt_decap_poly_ntt_core, .-gt_decap_poly_ntt_core
 #endif
 .global gt_decap_poly_ntt_end
 gt_decap_poly_ntt_end:

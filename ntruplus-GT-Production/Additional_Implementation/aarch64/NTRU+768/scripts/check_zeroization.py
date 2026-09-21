@@ -74,7 +74,13 @@ require(
         "gt_secure_clear(s, sizeof s);",
     ),
 )
-require("asm/ntt.S", ("mov x10, #106", ".Lp0b_clear_1696:"))
+# The 1536-byte working area is the caller's and is cleared in
+# internal/ntt_scratch.c; these leaves clear only their own 160-byte frame,
+# which holds the register spills and SLOTHY's spill slot.
+require("asm/ntt.S", ("mov x10, #10", ".Lp0b_clear_160:"))
+require("internal/ntt_scratch.c",
+        ("int16_t scratch[GT_NTT_SCRATCH_I16];",
+         "gt_secure_clear(scratch, sizeof scratch);"))
 require("asm/invntt.S", ("mov x17, #134", ".Lp0b_invntt_clear:"))
 require(
     "asm/internal/keygen_baseinv_tree.S",
@@ -110,9 +116,6 @@ for relative in (
     "asm/internal/decap_pack.S",
 ):
     require(relative, ("erase the complete handwritten spill frame",))
-require(
-    "asm/internal/decap_forward.S",
-    ("erase the complete 1696-byte handwritten frame",),
-)
+require("asm/internal/decap_forward.S", ("mov x10, #5", ".Lgt_decap_clear_160:"))
 
 print("P0 production zeroization source coverage: ok")
