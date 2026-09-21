@@ -16725,7 +16725,7 @@
       "generated/tile4_encap_range_refined.json": "d48daa345653b98b75402dbbeb751e9c62074210b4a0b385d0d14272bf4da228",
       "generated/tile4_q24_codec.json": "789222562cff17fbcb3ab4a0befaac300b2bdc3dae5218db4a6788c69146017f",
       "tools/generate_encap_packet_abi_gate.py": "b10757d8d44534ccc64e0513f213dfe2b39dee4ef038c4401e6dad5011d3bc11",
-      "tools/generate_encap_wire_schedule.py": "0ad9e592e36a9089a087dbaab00162e146962cf375905c985d2e3945f3d48b51",
+      "tools/generate_encap_wire_schedule.py": "4da9a1cfdd903c9d9c3ba73c1fc8875995ec159b4ad0b3ae18760facbce5c43f",
       "tools/generate_tile4.py": "f64aaf091fdfaf03d14c6f4f280b88047e2a1c5face6ab60d6ad1238a8a0cbcb"
     }
   },
@@ -21998,9 +21998,10 @@
         "runtime_product_Montgomery_chains": 192
       },
       "forward_terminal": {
+        "public_tile_epilogues": 6,
         "stores": 96,
-        "vpermq": 96,
-        "vpshufb": 96
+        "vpblendd": 96,
+        "vpermq": 192
       },
       "h_ingress": {
         "W_stores": 48,
@@ -22106,7 +22107,7 @@
     "interpretation": {
       "add_m_fusion_credit": "48 c reloads + 48 c stores removed; m loads and 48 vpaddw remain",
       "caution": "W arithmetic handles 4 leaves per YMM vs M's 16; static instruction deltas are not cycle predictions",
-      "representation_credit": "terminal/decoder/pack routes removed, exact counts above"
+      "representation_credit": "no terminal routing reduction: direct W needs two D1 vectors; decode and two packs remove 480 routes per Encap before linked audit"
     },
     "multiplicity": {
       "h_decode": 1,
@@ -22137,6 +22138,16 @@
         -223,
         1138,
         -1138
+      ],
+      "machine_d1_source_qwords": [
+        13,
+        9,
+        15,
+        11
+      ],
+      "machine_d1_source_vectors": [
+        2,
+        3
       ],
       "packet": 0,
       "rdi_loop_store_displacement": 0,
@@ -22190,6 +22201,16 @@
         -397,
         397
       ],
+      "machine_d1_source_qwords": [
+        14,
+        10,
+        8,
+        12
+      ],
+      "machine_d1_source_vectors": [
+        2,
+        3
+      ],
       "packet": 1,
       "rdi_loop_store_displacement": 32,
       "source_aos_vector": 2,
@@ -22241,6 +22262,16 @@
         183,
         1655,
         -1655
+      ],
+      "machine_d1_source_qwords": [
+        6,
+        2,
+        0,
+        4
+      ],
+      "machine_d1_source_vectors": [
+        0,
+        1
       ],
       "packet": 2,
       "rdi_loop_store_displacement": 64,
@@ -22294,6 +22325,16 @@
         -1674,
         1674
       ],
+      "machine_d1_source_qwords": [
+        7,
+        3,
+        1,
+        5
+      ],
+      "machine_d1_source_vectors": [
+        0,
+        1
+      ],
       "packet": 3,
       "rdi_loop_store_displacement": 96,
       "source_aos_vector": 1,
@@ -22345,6 +22386,16 @@
         -277,
         933,
         -933
+      ],
+      "machine_d1_source_qwords": [
+        29,
+        25,
+        31,
+        27
+      ],
+      "machine_d1_source_vectors": [
+        6,
+        7
       ],
       "packet": 4,
       "rdi_loop_store_displacement": 128,
@@ -22398,6 +22449,16 @@
         437,
         -437
       ],
+      "machine_d1_source_qwords": [
+        30,
+        26,
+        24,
+        28
+      ],
+      "machine_d1_source_vectors": [
+        6,
+        7
+      ],
       "packet": 5,
       "rdi_loop_store_displacement": 160,
       "source_aos_vector": 6,
@@ -22449,6 +22510,16 @@
         1514,
         242,
         -242
+      ],
+      "machine_d1_source_qwords": [
+        22,
+        18,
+        16,
+        20
+      ],
+      "machine_d1_source_vectors": [
+        4,
+        5
       ],
       "packet": 6,
       "rdi_loop_store_displacement": 192,
@@ -22502,6 +22573,16 @@
         432,
         -432
       ],
+      "machine_d1_source_qwords": [
+        23,
+        19,
+        17,
+        21
+      ],
+      "machine_d1_source_vectors": [
+        4,
+        5
+      ],
       "packet": 7,
       "rdi_loop_store_displacement": 224,
       "source_aos_vector": 5,
@@ -22553,6 +22634,16 @@
         1583,
         696,
         -696
+      ],
+      "machine_d1_source_qwords": [
+        144,
+        148,
+        146,
+        150
+      ],
+      "machine_d1_source_vectors": [
+        36,
+        37
       ],
       "packet": 8,
       "rdi_loop_store_displacement": -768,
@@ -22606,6 +22697,16 @@
         1671,
         -1671
       ],
+      "machine_d1_source_qwords": [
+        145,
+        149,
+        147,
+        151
+      ],
+      "machine_d1_source_vectors": [
+        36,
+        37
+      ],
       "packet": 9,
       "rdi_loop_store_displacement": -736,
       "source_aos_vector": 37,
@@ -22657,6 +22758,16 @@
         -927,
         514,
         -514
+      ],
+      "machine_d1_source_qwords": [
+        152,
+        156,
+        154,
+        158
+      ],
+      "machine_d1_source_vectors": [
+        38,
+        39
       ],
       "packet": 10,
       "rdi_loop_store_displacement": -704,
@@ -22710,6 +22821,16 @@
         489,
         -489
       ],
+      "machine_d1_source_qwords": [
+        153,
+        157,
+        155,
+        159
+      ],
+      "machine_d1_source_vectors": [
+        38,
+        39
+      ],
       "packet": 11,
       "rdi_loop_store_displacement": -672,
       "source_aos_vector": 39,
@@ -22761,6 +22882,16 @@
         -297,
         601,
         -601
+      ],
+      "machine_d1_source_qwords": [
+        136,
+        140,
+        138,
+        142
+      ],
+      "machine_d1_source_vectors": [
+        34,
+        35
       ],
       "packet": 12,
       "rdi_loop_store_displacement": -640,
@@ -22814,6 +22945,16 @@
         1130,
         -1130
       ],
+      "machine_d1_source_qwords": [
+        137,
+        141,
+        139,
+        143
+      ],
+      "machine_d1_source_vectors": [
+        34,
+        35
+      ],
       "packet": 13,
       "rdi_loop_store_displacement": -608,
       "source_aos_vector": 35,
@@ -22865,6 +23006,16 @@
         -1322,
         871,
         -871
+      ],
+      "machine_d1_source_qwords": [
+        129,
+        133,
+        131,
+        135
+      ],
+      "machine_d1_source_vectors": [
+        32,
+        33
       ],
       "packet": 14,
       "rdi_loop_store_displacement": -576,
@@ -22918,6 +23069,16 @@
         1212,
         -1212
       ],
+      "machine_d1_source_qwords": [
+        130,
+        134,
+        132,
+        128
+      ],
+      "machine_d1_source_vectors": [
+        32,
+        33
+      ],
       "packet": 15,
       "rdi_loop_store_displacement": -544,
       "source_aos_vector": 32,
@@ -22969,6 +23130,16 @@
         312,
         -352,
         352
+      ],
+      "machine_d1_source_qwords": [
+        67,
+        71,
+        69,
+        65
+      ],
+      "machine_d1_source_vectors": [
+        16,
+        17
       ],
       "packet": 16,
       "rdi_loop_store_displacement": 0,
@@ -23022,6 +23193,16 @@
         943,
         -943
       ],
+      "machine_d1_source_qwords": [
+        68,
+        64,
+        70,
+        66
+      ],
+      "machine_d1_source_vectors": [
+        16,
+        17
+      ],
       "packet": 17,
       "rdi_loop_store_displacement": 32,
       "source_aos_vector": 16,
@@ -23073,6 +23254,16 @@
         -8,
         1250,
         -1250
+      ],
+      "machine_d1_source_qwords": [
+        75,
+        79,
+        77,
+        73
+      ],
+      "machine_d1_source_vectors": [
+        18,
+        19
       ],
       "packet": 18,
       "rdi_loop_store_displacement": 64,
@@ -23126,6 +23317,16 @@
         1660,
         -1660
       ],
+      "machine_d1_source_qwords": [
+        76,
+        72,
+        78,
+        74
+      ],
+      "machine_d1_source_vectors": [
+        18,
+        19
+      ],
       "packet": 19,
       "rdi_loop_store_displacement": 96,
       "source_aos_vector": 18,
@@ -23177,6 +23378,16 @@
         31,
         1206,
         -1206
+      ],
+      "machine_d1_source_qwords": [
+        83,
+        87,
+        85,
+        81
+      ],
+      "machine_d1_source_vectors": [
+        20,
+        21
       ],
       "packet": 20,
       "rdi_loop_store_displacement": 128,
@@ -23230,6 +23441,16 @@
         -1247,
         1247
       ],
+      "machine_d1_source_qwords": [
+        84,
+        80,
+        86,
+        82
+      ],
+      "machine_d1_source_vectors": [
+        20,
+        21
+      ],
       "packet": 21,
       "rdi_loop_store_displacement": 160,
       "source_aos_vector": 20,
@@ -23281,6 +23502,16 @@
         -444,
         235,
         -235
+      ],
+      "machine_d1_source_qwords": [
+        91,
+        95,
+        93,
+        89
+      ],
+      "machine_d1_source_vectors": [
+        22,
+        23
       ],
       "packet": 22,
       "rdi_loop_store_displacement": 192,
@@ -23334,6 +23565,16 @@
         -1209,
         1209
       ],
+      "machine_d1_source_qwords": [
+        92,
+        88,
+        94,
+        90
+      ],
+      "machine_d1_source_vectors": [
+        22,
+        23
+      ],
       "packet": 23,
       "rdi_loop_store_displacement": 224,
       "source_aos_vector": 22,
@@ -23385,6 +23626,16 @@
         -361,
         230,
         -230
+      ],
+      "machine_d1_source_qwords": [
+        186,
+        190,
+        188,
+        184
+      ],
+      "machine_d1_source_vectors": [
+        46,
+        47
       ],
       "packet": 24,
       "rdi_loop_store_displacement": -512,
@@ -23438,6 +23689,16 @@
         582,
         -582
       ],
+      "machine_d1_source_qwords": [
+        187,
+        191,
+        189,
+        185
+      ],
+      "machine_d1_source_vectors": [
+        46,
+        47
+      ],
       "packet": 25,
       "rdi_loop_store_displacement": -480,
       "source_aos_vector": 47,
@@ -23489,6 +23750,16 @@
         -1409,
         1501,
         -1501
+      ],
+      "machine_d1_source_qwords": [
+        179,
+        183,
+        181,
+        177
+      ],
+      "machine_d1_source_vectors": [
+        44,
+        45
       ],
       "packet": 26,
       "rdi_loop_store_displacement": -448,
@@ -23542,6 +23813,16 @@
         251,
         -251
       ],
+      "machine_d1_source_qwords": [
+        180,
+        176,
+        182,
+        178
+      ],
+      "machine_d1_source_vectors": [
+        44,
+        45
+      ],
       "packet": 27,
       "rdi_loop_store_displacement": -416,
       "source_aos_vector": 44,
@@ -23593,6 +23874,16 @@
         -1022,
         -1063,
         1063
+      ],
+      "machine_d1_source_qwords": [
+        163,
+        167,
+        165,
+        161
+      ],
+      "machine_d1_source_vectors": [
+        40,
+        41
       ],
       "packet": 28,
       "rdi_loop_store_displacement": -384,
@@ -23646,6 +23937,16 @@
         1188,
         -1188
       ],
+      "machine_d1_source_qwords": [
+        164,
+        160,
+        166,
+        162
+      ],
+      "machine_d1_source_vectors": [
+        40,
+        41
+      ],
       "packet": 29,
       "rdi_loop_store_displacement": -352,
       "source_aos_vector": 40,
@@ -23697,6 +23998,16 @@
         -417,
         -1391,
         1391
+      ],
+      "machine_d1_source_qwords": [
+        171,
+        175,
+        173,
+        169
+      ],
+      "machine_d1_source_vectors": [
+        42,
+        43
       ],
       "packet": 30,
       "rdi_loop_store_displacement": -320,
@@ -23750,6 +24061,16 @@
         -1626,
         1626
       ],
+      "machine_d1_source_qwords": [
+        172,
+        168,
+        174,
+        170
+      ],
+      "machine_d1_source_vectors": [
+        42,
+        43
+      ],
       "packet": 31,
       "rdi_loop_store_displacement": -288,
       "source_aos_vector": 42,
@@ -23801,6 +24122,16 @@
         -1685,
         -315,
         315
+      ],
+      "machine_d1_source_qwords": [
+        109,
+        105,
+        111,
+        107
+      ],
+      "machine_d1_source_vectors": [
+        26,
+        27
       ],
       "packet": 32,
       "rdi_loop_store_displacement": 256,
@@ -23854,6 +24185,16 @@
         -1248,
         1248
       ],
+      "machine_d1_source_qwords": [
+        110,
+        106,
+        104,
+        108
+      ],
+      "machine_d1_source_vectors": [
+        26,
+        27
+      ],
       "packet": 33,
       "rdi_loop_store_displacement": 288,
       "source_aos_vector": 26,
@@ -23905,6 +24246,16 @@
         -400,
         274,
         -274
+      ],
+      "machine_d1_source_qwords": [
+        102,
+        98,
+        96,
+        100
+      ],
+      "machine_d1_source_vectors": [
+        24,
+        25
       ],
       "packet": 34,
       "rdi_loop_store_displacement": 320,
@@ -23958,6 +24309,16 @@
         32,
         -32
       ],
+      "machine_d1_source_qwords": [
+        103,
+        99,
+        97,
+        101
+      ],
+      "machine_d1_source_vectors": [
+        24,
+        25
+      ],
       "packet": 35,
       "rdi_loop_store_displacement": 352,
       "source_aos_vector": 25,
@@ -24009,6 +24370,16 @@
         1550,
         1531,
         -1531
+      ],
+      "machine_d1_source_qwords": [
+        125,
+        121,
+        127,
+        123
+      ],
+      "machine_d1_source_vectors": [
+        30,
+        31
       ],
       "packet": 36,
       "rdi_loop_store_displacement": 384,
@@ -24062,6 +24433,16 @@
         -124,
         124
       ],
+      "machine_d1_source_qwords": [
+        126,
+        122,
+        120,
+        124
+      ],
+      "machine_d1_source_vectors": [
+        30,
+        31
+      ],
       "packet": 37,
       "rdi_loop_store_displacement": 416,
       "source_aos_vector": 30,
@@ -24113,6 +24494,16 @@
         -1458,
         1379,
         -1379
+      ],
+      "machine_d1_source_qwords": [
+        118,
+        114,
+        112,
+        116
+      ],
+      "machine_d1_source_vectors": [
+        28,
+        29
       ],
       "packet": 38,
       "rdi_loop_store_displacement": 448,
@@ -24166,6 +24557,16 @@
         -1681,
         1681
       ],
+      "machine_d1_source_qwords": [
+        119,
+        115,
+        113,
+        117
+      ],
+      "machine_d1_source_vectors": [
+        28,
+        29
+      ],
       "packet": 39,
       "rdi_loop_store_displacement": 480,
       "source_aos_vector": 29,
@@ -24217,6 +24618,16 @@
         -22,
         1709,
         -1709
+      ],
+      "machine_d1_source_qwords": [
+        48,
+        52,
+        50,
+        54
+      ],
+      "machine_d1_source_vectors": [
+        12,
+        13
       ],
       "packet": 40,
       "rdi_loop_store_displacement": 1024,
@@ -24270,6 +24681,16 @@
         1108,
         -1108
       ],
+      "machine_d1_source_qwords": [
+        49,
+        53,
+        51,
+        55
+      ],
+      "machine_d1_source_vectors": [
+        12,
+        13
+      ],
       "packet": 41,
       "rdi_loop_store_displacement": 1056,
       "source_aos_vector": 13,
@@ -24321,6 +24742,16 @@
         -354,
         -1728,
         1728
+      ],
+      "machine_d1_source_qwords": [
+        56,
+        60,
+        58,
+        62
+      ],
+      "machine_d1_source_vectors": [
+        14,
+        15
       ],
       "packet": 42,
       "rdi_loop_store_displacement": 1088,
@@ -24374,6 +24805,16 @@
         858,
         -858
       ],
+      "machine_d1_source_qwords": [
+        57,
+        61,
+        59,
+        63
+      ],
+      "machine_d1_source_vectors": [
+        14,
+        15
+      ],
       "packet": 43,
       "rdi_loop_store_displacement": 1120,
       "source_aos_vector": 15,
@@ -24425,6 +24866,16 @@
         -1221,
         -218,
         218
+      ],
+      "machine_d1_source_qwords": [
+        40,
+        44,
+        42,
+        46
+      ],
+      "machine_d1_source_vectors": [
+        10,
+        11
       ],
       "packet": 44,
       "rdi_loop_store_displacement": 1152,
@@ -24478,6 +24929,16 @@
         -732,
         732
       ],
+      "machine_d1_source_qwords": [
+        41,
+        45,
+        43,
+        47
+      ],
+      "machine_d1_source_vectors": [
+        10,
+        11
+      ],
       "packet": 45,
       "rdi_loop_store_displacement": 1184,
       "source_aos_vector": 11,
@@ -24530,6 +24991,16 @@
         892,
         -892
       ],
+      "machine_d1_source_qwords": [
+        33,
+        37,
+        35,
+        39
+      ],
+      "machine_d1_source_vectors": [
+        8,
+        9
+      ],
       "packet": 46,
       "rdi_loop_store_displacement": 1216,
       "source_aos_vector": 9,
@@ -24581,6 +25052,16 @@
         -1588,
         -779,
         779
+      ],
+      "machine_d1_source_qwords": [
+        34,
+        38,
+        36,
+        32
+      ],
+      "machine_d1_source_vectors": [
+        8,
+        9
       ],
       "packet": 47,
       "rdi_loop_store_displacement": 1248,
@@ -25011,124 +25492,43 @@
     "full_D1_live_peak_upper": 16,
     "instruction_counts": {
       "vmovdqu": 48,
-      "vpermq": 48,
-      "vpshufb": 48
+      "vpblendd": 48,
+      "vpermq": 96
     },
     "no_M_materialization": true,
-    "packet_deposit_peak": 5,
-    "physical_register_contract": "same ymm0:7 D1 results, ymm14 byte mask, ymm15 q; vpshufb/vpermq in-place; ymm8:13 D1 temporaries dead at deposit",
+    "packet_deposit_peak": 11,
+    "physical_register_contract": "ymm0:7 D1 results, ymm15 q; ymm8:10 permute/blend temporaries; six public tile epilogues",
     "raw_owner_exact": 768,
     "steps": [
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_0"
-        ],
-        "writes": [
-          "quartic_0"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
         "op": "vpermq",
-        "reads": [
-          "quartic_0"
-        ],
-        "writes": [
-          "wire_2"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+64",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_2"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_1"
-        ],
-        "writes": [
-          "quartic_1"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_1"
-        ],
-        "writes": [
-          "wire_3"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+96",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_3"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
         "reads": [
           "d1_2"
         ],
         "writes": [
-          "quartic_2"
+          "pkt0_src0"
         ]
       },
       {
         "kind": "routing",
         "memory": null,
         "op": "vpermq",
-        "reads": [
-          "quartic_2"
-        ],
-        "writes": [
-          "wire_1"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+32",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_1"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
         "reads": [
           "d1_3"
         ],
         "writes": [
-          "quartic_3"
+          "pkt0_src1"
         ]
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpermq",
+        "op": "vpblendd",
         "reads": [
-          "quartic_3"
+          "pkt0_src0",
+          "pkt0_src1"
         ],
         "writes": [
           "wire_0"
@@ -25146,12 +25546,12 @@
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_4"
+          "d1_2"
         ],
         "writes": [
-          "quartic_4"
+          "pkt1_src0"
         ]
       },
       {
@@ -25159,382 +25559,22 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_4"
+          "d1_3"
         ],
         "writes": [
-          "wire_6"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+192",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_6"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_5"
-        ],
-        "writes": [
-          "quartic_5"
+          "pkt1_src1"
         ]
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpermq",
+        "op": "vpblendd",
         "reads": [
-          "quartic_5"
+          "pkt1_src0",
+          "pkt1_src1"
         ],
         "writes": [
-          "wire_7"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+224",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_7"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_6"
-        ],
-        "writes": [
-          "quartic_6"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_6"
-        ],
-        "writes": [
-          "wire_5"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+160",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_5"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_7"
-        ],
-        "writes": [
-          "quartic_7"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_7"
-        ],
-        "writes": [
-          "wire_4"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+128",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_4"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_8"
-        ],
-        "writes": [
-          "quartic_8"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_8"
-        ],
-        "writes": [
-          "wire_47"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+1248",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_47"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_9"
-        ],
-        "writes": [
-          "quartic_9"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_9"
-        ],
-        "writes": [
-          "wire_46"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+1216",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_46"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_10"
-        ],
-        "writes": [
-          "quartic_10"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_10"
-        ],
-        "writes": [
-          "wire_44"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+1152",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_44"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_11"
-        ],
-        "writes": [
-          "quartic_11"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_11"
-        ],
-        "writes": [
-          "wire_45"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+1184",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_45"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_12"
-        ],
-        "writes": [
-          "quartic_12"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_12"
-        ],
-        "writes": [
-          "wire_40"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+1024",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_40"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_13"
-        ],
-        "writes": [
-          "quartic_13"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_13"
-        ],
-        "writes": [
-          "wire_41"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+1056",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_41"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_14"
-        ],
-        "writes": [
-          "quartic_14"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_14"
-        ],
-        "writes": [
-          "wire_42"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+1088",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_42"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_15"
-        ],
-        "writes": [
-          "quartic_15"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_15"
-        ],
-        "writes": [
-          "wire_43"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+1120",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_43"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_16"
-        ],
-        "writes": [
-          "quartic_16"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_16"
-        ],
-        "writes": [
-          "wire_17"
+          "wire_1"
         ]
       },
       {
@@ -25542,19 +25582,19 @@
         "memory": "rdi+32",
         "op": "vmovdqu",
         "reads": [
-          "wire_17"
+          "wire_1"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_17"
+          "d1_0"
         ],
         "writes": [
-          "quartic_17"
+          "pkt2_src0"
         ]
       },
       {
@@ -25562,72 +25602,22 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_17"
+          "d1_1"
         ],
         "writes": [
-          "wire_16"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+0",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_16"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_18"
-        ],
-        "writes": [
-          "quartic_18"
+          "pkt2_src1"
         ]
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpermq",
+        "op": "vpblendd",
         "reads": [
-          "quartic_18"
+          "pkt2_src0",
+          "pkt2_src1"
         ],
         "writes": [
-          "wire_19"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+96",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_19"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_19"
-        ],
-        "writes": [
-          "quartic_19"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_19"
-        ],
-        "writes": [
-          "wire_18"
+          "wire_2"
         ]
       },
       {
@@ -25635,19 +25625,19 @@
         "memory": "rdi+64",
         "op": "vmovdqu",
         "reads": [
-          "wire_18"
+          "wire_2"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_20"
+          "d1_0"
         ],
         "writes": [
-          "quartic_20"
+          "pkt3_src0"
         ]
       },
       {
@@ -25655,30 +25645,42 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_20"
+          "d1_1"
         ],
         "writes": [
-          "wire_21"
+          "pkt3_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt3_src0",
+          "pkt3_src1"
+        ],
+        "writes": [
+          "wire_3"
         ]
       },
       {
         "kind": "data-store",
-        "memory": "rdi+160",
+        "memory": "rdi+96",
         "op": "vmovdqu",
         "reads": [
-          "wire_21"
+          "wire_3"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_21"
+          "d1_6"
         ],
         "writes": [
-          "quartic_21"
+          "pkt4_src0"
         ]
       },
       {
@@ -25686,10 +25688,22 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_21"
+          "d1_7"
         ],
         "writes": [
-          "wire_20"
+          "pkt4_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt4_src0",
+          "pkt4_src1"
+        ],
+        "writes": [
+          "wire_4"
         ]
       },
       {
@@ -25697,19 +25711,19 @@
         "memory": "rdi+128",
         "op": "vmovdqu",
         "reads": [
-          "wire_20"
+          "wire_4"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_22"
+          "d1_6"
         ],
         "writes": [
-          "quartic_22"
+          "pkt5_src0"
         ]
       },
       {
@@ -25717,30 +25731,42 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_22"
+          "d1_7"
         ],
         "writes": [
-          "wire_23"
+          "pkt5_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt5_src0",
+          "pkt5_src1"
+        ],
+        "writes": [
+          "wire_5"
         ]
       },
       {
         "kind": "data-store",
-        "memory": "rdi+224",
+        "memory": "rdi+160",
         "op": "vmovdqu",
         "reads": [
-          "wire_23"
+          "wire_5"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_23"
+          "d1_4"
         ],
         "writes": [
-          "quartic_23"
+          "pkt6_src0"
         ]
       },
       {
@@ -25748,10 +25774,22 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_23"
+          "d1_5"
         ],
         "writes": [
-          "wire_22"
+          "pkt6_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt6_src0",
+          "pkt6_src1"
+        ],
+        "writes": [
+          "wire_6"
         ]
       },
       {
@@ -25759,19 +25797,19 @@
         "memory": "rdi+192",
         "op": "vmovdqu",
         "reads": [
-          "wire_22"
+          "wire_6"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_24"
+          "d1_4"
         ],
         "writes": [
-          "quartic_24"
+          "pkt7_src0"
         ]
       },
       {
@@ -25779,371 +25817,42 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_24"
+          "d1_5"
         ],
         "writes": [
-          "wire_34"
+          "pkt7_src1"
         ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+320",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_34"
-        ],
-        "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpblendd",
         "reads": [
-          "d1_25"
+          "pkt7_src0",
+          "pkt7_src1"
         ],
         "writes": [
-          "quartic_25"
+          "wire_7"
         ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+224",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_7"
+        ],
+        "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
         "op": "vpermq",
-        "reads": [
-          "quartic_25"
-        ],
-        "writes": [
-          "wire_35"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+352",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_35"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_26"
-        ],
-        "writes": [
-          "quartic_26"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_26"
-        ],
-        "writes": [
-          "wire_33"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+288",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_33"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_27"
-        ],
-        "writes": [
-          "quartic_27"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_27"
-        ],
-        "writes": [
-          "wire_32"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+256",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_32"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_28"
-        ],
-        "writes": [
-          "quartic_28"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_28"
-        ],
-        "writes": [
-          "wire_38"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+448",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_38"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_29"
-        ],
-        "writes": [
-          "quartic_29"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_29"
-        ],
-        "writes": [
-          "wire_39"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+480",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_39"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_30"
-        ],
-        "writes": [
-          "quartic_30"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_30"
-        ],
-        "writes": [
-          "wire_37"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+416",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_37"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_31"
-        ],
-        "writes": [
-          "quartic_31"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_31"
-        ],
-        "writes": [
-          "wire_36"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+384",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_36"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_32"
-        ],
-        "writes": [
-          "quartic_32"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_32"
-        ],
-        "writes": [
-          "wire_15"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+-544",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_15"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_33"
-        ],
-        "writes": [
-          "quartic_33"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_33"
-        ],
-        "writes": [
-          "wire_14"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+-576",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_14"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_34"
-        ],
-        "writes": [
-          "quartic_34"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_34"
-        ],
-        "writes": [
-          "wire_12"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+-640",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_12"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
-        "reads": [
-          "d1_35"
-        ],
-        "writes": [
-          "quartic_35"
-        ]
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpermq",
-        "reads": [
-          "quartic_35"
-        ],
-        "writes": [
-          "wire_13"
-        ]
-      },
-      {
-        "kind": "data-store",
-        "memory": "rdi+-608",
-        "op": "vmovdqu",
-        "reads": [
-          "wire_13"
-        ],
-        "writes": []
-      },
-      {
-        "kind": "routing",
-        "memory": null,
-        "op": "vpshufb",
         "reads": [
           "d1_36"
         ],
         "writes": [
-          "quartic_36"
+          "pkt8_src0"
         ]
       },
       {
@@ -26151,7 +25860,19 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_36"
+          "d1_37"
+        ],
+        "writes": [
+          "pkt8_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt8_src0",
+          "pkt8_src1"
         ],
         "writes": [
           "wire_8"
@@ -26169,12 +25890,12 @@
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_37"
+          "d1_36"
         ],
         "writes": [
-          "quartic_37"
+          "pkt9_src0"
         ]
       },
       {
@@ -26182,7 +25903,19 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_37"
+          "d1_37"
+        ],
+        "writes": [
+          "pkt9_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt9_src0",
+          "pkt9_src1"
         ],
         "writes": [
           "wire_9"
@@ -26200,12 +25933,12 @@
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
           "d1_38"
         ],
         "writes": [
-          "quartic_38"
+          "pkt10_src0"
         ]
       },
       {
@@ -26213,7 +25946,19 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_38"
+          "d1_39"
+        ],
+        "writes": [
+          "pkt10_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt10_src0",
+          "pkt10_src1"
         ],
         "writes": [
           "wire_10"
@@ -26231,12 +25976,12 @@
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_39"
+          "d1_38"
         ],
         "writes": [
-          "quartic_39"
+          "pkt11_src0"
         ]
       },
       {
@@ -26244,7 +25989,19 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_39"
+          "d1_39"
+        ],
+        "writes": [
+          "pkt11_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt11_src0",
+          "pkt11_src1"
         ],
         "writes": [
           "wire_11"
@@ -26262,12 +26019,12 @@
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_40"
+          "d1_34"
         ],
         "writes": [
-          "quartic_40"
+          "pkt12_src0"
         ]
       },
       {
@@ -26275,30 +26032,42 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_40"
+          "d1_35"
         ],
         "writes": [
-          "wire_29"
+          "pkt12_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt12_src0",
+          "pkt12_src1"
+        ],
+        "writes": [
+          "wire_12"
         ]
       },
       {
         "kind": "data-store",
-        "memory": "rdi+-352",
+        "memory": "rdi+-640",
         "op": "vmovdqu",
         "reads": [
-          "wire_29"
+          "wire_12"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_41"
+          "d1_34"
         ],
         "writes": [
-          "quartic_41"
+          "pkt13_src0"
         ]
       },
       {
@@ -26306,30 +26075,42 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_41"
+          "d1_35"
         ],
         "writes": [
-          "wire_28"
+          "pkt13_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt13_src0",
+          "pkt13_src1"
+        ],
+        "writes": [
+          "wire_13"
         ]
       },
       {
         "kind": "data-store",
-        "memory": "rdi+-384",
+        "memory": "rdi+-608",
         "op": "vmovdqu",
         "reads": [
-          "wire_28"
+          "wire_13"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_42"
+          "d1_32"
         ],
         "writes": [
-          "quartic_42"
+          "pkt14_src0"
         ]
       },
       {
@@ -26337,30 +26118,42 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_42"
+          "d1_33"
         ],
         "writes": [
-          "wire_31"
+          "pkt14_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt14_src0",
+          "pkt14_src1"
+        ],
+        "writes": [
+          "wire_14"
         ]
       },
       {
         "kind": "data-store",
-        "memory": "rdi+-288",
+        "memory": "rdi+-576",
         "op": "vmovdqu",
         "reads": [
-          "wire_31"
+          "wire_14"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_43"
+          "d1_32"
         ],
         "writes": [
-          "quartic_43"
+          "pkt15_src0"
         ]
       },
       {
@@ -26368,30 +26161,42 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_43"
+          "d1_33"
         ],
         "writes": [
-          "wire_30"
+          "pkt15_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt15_src0",
+          "pkt15_src1"
+        ],
+        "writes": [
+          "wire_15"
         ]
       },
       {
         "kind": "data-store",
-        "memory": "rdi+-320",
+        "memory": "rdi+-544",
         "op": "vmovdqu",
         "reads": [
-          "wire_30"
+          "wire_15"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_44"
+          "d1_16"
         ],
         "writes": [
-          "quartic_44"
+          "pkt16_src0"
         ]
       },
       {
@@ -26399,30 +26204,42 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_44"
+          "d1_17"
         ],
         "writes": [
-          "wire_27"
+          "pkt16_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt16_src0",
+          "pkt16_src1"
+        ],
+        "writes": [
+          "wire_16"
         ]
       },
       {
         "kind": "data-store",
-        "memory": "rdi+-416",
+        "memory": "rdi+0",
         "op": "vmovdqu",
         "reads": [
-          "wire_27"
+          "wire_16"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_45"
+          "d1_16"
         ],
         "writes": [
-          "quartic_45"
+          "pkt17_src0"
         ]
       },
       {
@@ -26430,30 +26247,300 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_45"
+          "d1_17"
         ],
         "writes": [
-          "wire_26"
+          "pkt17_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt17_src0",
+          "pkt17_src1"
+        ],
+        "writes": [
+          "wire_17"
         ]
       },
       {
         "kind": "data-store",
-        "memory": "rdi+-448",
+        "memory": "rdi+32",
         "op": "vmovdqu",
         "reads": [
-          "wire_26"
+          "wire_17"
         ],
         "writes": []
       },
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
+        "reads": [
+          "d1_18"
+        ],
+        "writes": [
+          "pkt18_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_19"
+        ],
+        "writes": [
+          "pkt18_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt18_src0",
+          "pkt18_src1"
+        ],
+        "writes": [
+          "wire_18"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+64",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_18"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_18"
+        ],
+        "writes": [
+          "pkt19_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_19"
+        ],
+        "writes": [
+          "pkt19_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt19_src0",
+          "pkt19_src1"
+        ],
+        "writes": [
+          "wire_19"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+96",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_19"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_20"
+        ],
+        "writes": [
+          "pkt20_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_21"
+        ],
+        "writes": [
+          "pkt20_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt20_src0",
+          "pkt20_src1"
+        ],
+        "writes": [
+          "wire_20"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+128",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_20"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_20"
+        ],
+        "writes": [
+          "pkt21_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_21"
+        ],
+        "writes": [
+          "pkt21_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt21_src0",
+          "pkt21_src1"
+        ],
+        "writes": [
+          "wire_21"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+160",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_21"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_22"
+        ],
+        "writes": [
+          "pkt22_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_23"
+        ],
+        "writes": [
+          "pkt22_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt22_src0",
+          "pkt22_src1"
+        ],
+        "writes": [
+          "wire_22"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+192",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_22"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_22"
+        ],
+        "writes": [
+          "pkt23_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_23"
+        ],
+        "writes": [
+          "pkt23_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt23_src0",
+          "pkt23_src1"
+        ],
+        "writes": [
+          "wire_23"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+224",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_23"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
         "reads": [
           "d1_46"
         ],
         "writes": [
-          "quartic_46"
+          "pkt24_src0"
         ]
       },
       {
@@ -26461,7 +26548,19 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_46"
+          "d1_47"
+        ],
+        "writes": [
+          "pkt24_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt24_src0",
+          "pkt24_src1"
         ],
         "writes": [
           "wire_24"
@@ -26479,12 +26578,12 @@
       {
         "kind": "routing",
         "memory": null,
-        "op": "vpshufb",
+        "op": "vpermq",
         "reads": [
-          "d1_47"
+          "d1_46"
         ],
         "writes": [
-          "quartic_47"
+          "pkt25_src0"
         ]
       },
       {
@@ -26492,7 +26591,19 @@
         "memory": null,
         "op": "vpermq",
         "reads": [
-          "quartic_47"
+          "d1_47"
+        ],
+        "writes": [
+          "pkt25_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt25_src0",
+          "pkt25_src1"
         ],
         "writes": [
           "wire_25"
@@ -26504,6 +26615,952 @@
         "op": "vmovdqu",
         "reads": [
           "wire_25"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_44"
+        ],
+        "writes": [
+          "pkt26_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_45"
+        ],
+        "writes": [
+          "pkt26_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt26_src0",
+          "pkt26_src1"
+        ],
+        "writes": [
+          "wire_26"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+-448",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_26"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_44"
+        ],
+        "writes": [
+          "pkt27_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_45"
+        ],
+        "writes": [
+          "pkt27_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt27_src0",
+          "pkt27_src1"
+        ],
+        "writes": [
+          "wire_27"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+-416",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_27"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_40"
+        ],
+        "writes": [
+          "pkt28_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_41"
+        ],
+        "writes": [
+          "pkt28_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt28_src0",
+          "pkt28_src1"
+        ],
+        "writes": [
+          "wire_28"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+-384",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_28"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_40"
+        ],
+        "writes": [
+          "pkt29_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_41"
+        ],
+        "writes": [
+          "pkt29_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt29_src0",
+          "pkt29_src1"
+        ],
+        "writes": [
+          "wire_29"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+-352",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_29"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_42"
+        ],
+        "writes": [
+          "pkt30_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_43"
+        ],
+        "writes": [
+          "pkt30_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt30_src0",
+          "pkt30_src1"
+        ],
+        "writes": [
+          "wire_30"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+-320",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_30"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_42"
+        ],
+        "writes": [
+          "pkt31_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_43"
+        ],
+        "writes": [
+          "pkt31_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt31_src0",
+          "pkt31_src1"
+        ],
+        "writes": [
+          "wire_31"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+-288",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_31"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_26"
+        ],
+        "writes": [
+          "pkt32_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_27"
+        ],
+        "writes": [
+          "pkt32_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt32_src0",
+          "pkt32_src1"
+        ],
+        "writes": [
+          "wire_32"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+256",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_32"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_26"
+        ],
+        "writes": [
+          "pkt33_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_27"
+        ],
+        "writes": [
+          "pkt33_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt33_src0",
+          "pkt33_src1"
+        ],
+        "writes": [
+          "wire_33"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+288",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_33"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_24"
+        ],
+        "writes": [
+          "pkt34_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_25"
+        ],
+        "writes": [
+          "pkt34_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt34_src0",
+          "pkt34_src1"
+        ],
+        "writes": [
+          "wire_34"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+320",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_34"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_24"
+        ],
+        "writes": [
+          "pkt35_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_25"
+        ],
+        "writes": [
+          "pkt35_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt35_src0",
+          "pkt35_src1"
+        ],
+        "writes": [
+          "wire_35"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+352",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_35"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_30"
+        ],
+        "writes": [
+          "pkt36_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_31"
+        ],
+        "writes": [
+          "pkt36_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt36_src0",
+          "pkt36_src1"
+        ],
+        "writes": [
+          "wire_36"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+384",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_36"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_30"
+        ],
+        "writes": [
+          "pkt37_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_31"
+        ],
+        "writes": [
+          "pkt37_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt37_src0",
+          "pkt37_src1"
+        ],
+        "writes": [
+          "wire_37"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+416",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_37"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_28"
+        ],
+        "writes": [
+          "pkt38_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_29"
+        ],
+        "writes": [
+          "pkt38_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt38_src0",
+          "pkt38_src1"
+        ],
+        "writes": [
+          "wire_38"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+448",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_38"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_28"
+        ],
+        "writes": [
+          "pkt39_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_29"
+        ],
+        "writes": [
+          "pkt39_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt39_src0",
+          "pkt39_src1"
+        ],
+        "writes": [
+          "wire_39"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+480",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_39"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_12"
+        ],
+        "writes": [
+          "pkt40_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_13"
+        ],
+        "writes": [
+          "pkt40_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt40_src0",
+          "pkt40_src1"
+        ],
+        "writes": [
+          "wire_40"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+1024",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_40"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_12"
+        ],
+        "writes": [
+          "pkt41_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_13"
+        ],
+        "writes": [
+          "pkt41_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt41_src0",
+          "pkt41_src1"
+        ],
+        "writes": [
+          "wire_41"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+1056",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_41"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_14"
+        ],
+        "writes": [
+          "pkt42_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_15"
+        ],
+        "writes": [
+          "pkt42_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt42_src0",
+          "pkt42_src1"
+        ],
+        "writes": [
+          "wire_42"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+1088",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_42"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_14"
+        ],
+        "writes": [
+          "pkt43_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_15"
+        ],
+        "writes": [
+          "pkt43_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt43_src0",
+          "pkt43_src1"
+        ],
+        "writes": [
+          "wire_43"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+1120",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_43"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_10"
+        ],
+        "writes": [
+          "pkt44_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_11"
+        ],
+        "writes": [
+          "pkt44_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt44_src0",
+          "pkt44_src1"
+        ],
+        "writes": [
+          "wire_44"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+1152",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_44"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_10"
+        ],
+        "writes": [
+          "pkt45_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_11"
+        ],
+        "writes": [
+          "pkt45_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt45_src0",
+          "pkt45_src1"
+        ],
+        "writes": [
+          "wire_45"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+1184",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_45"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_8"
+        ],
+        "writes": [
+          "pkt46_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_9"
+        ],
+        "writes": [
+          "pkt46_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt46_src0",
+          "pkt46_src1"
+        ],
+        "writes": [
+          "wire_46"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+1216",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_46"
+        ],
+        "writes": []
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_8"
+        ],
+        "writes": [
+          "pkt47_src0"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpermq",
+        "reads": [
+          "d1_9"
+        ],
+        "writes": [
+          "pkt47_src1"
+        ]
+      },
+      {
+        "kind": "routing",
+        "memory": null,
+        "op": "vpblendd",
+        "reads": [
+          "pkt47_src0",
+          "pkt47_src1"
+        ],
+        "writes": [
+          "wire_47"
+        ]
+      },
+      {
+        "kind": "data-store",
+        "memory": "rdi+1248",
+        "op": "vmovdqu",
+        "reads": [
+          "wire_47"
         ],
         "writes": []
       }

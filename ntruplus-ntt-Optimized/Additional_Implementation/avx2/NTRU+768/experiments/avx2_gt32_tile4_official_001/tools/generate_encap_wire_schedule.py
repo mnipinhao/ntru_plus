@@ -143,6 +143,28 @@ def dependency_stats(steps: list[dict]) -> dict:
                 note="dependency depth is not cycles; port pressure and instruction latencies excluded")
 
 
+def actual_d1_source_for_m() -> list[int]:
+    """Invert clean FR_PACKED_TO_PLANES on unique labels before its vpshufb."""
+    shuf=(0,4,1,5,2,6,3,7)
+    vectors=[[16*i+8*half+shuf[k] for half in range(2) for k in range(8)]
+             for i in range(4)]
+    def unpack(a: list[int],b: list[int],words: int,high: bool) -> list[int]:
+        out=[]
+        chunks=8//words
+        for half in range(2):
+            for k in range(chunks//2):
+                n=k+(chunks//2 if high else 0)
+                out+=a[8*half+n*words:8*half+(n+1)*words]
+                out+=b[8*half+n*words:8*half+(n+1)*words]
+        return out
+    t0,t1=unpack(vectors[0],vectors[2],2,False),unpack(vectors[0],vectors[2],2,True)
+    t2,t3=unpack(vectors[1],vectors[3],2,False),unpack(vectors[1],vectors[3],2,True)
+    group=(unpack(t0,t2,4,False)+unpack(t0,t2,4,True)+
+           unpack(t1,t3,4,False)+unpack(t1,t3,4,True))
+    assert sorted(group)==list(range(64))
+    return [(m//64)*64+group[m%64] for m in range(768)]
+
+
 def packet_map() -> tuple[list[dict], list[dict]]:
     aos, soa, owners = gt.serialized_mappings()
     codec = json.loads((ROOT / "generated/tile4_q24_codec.json").read_text())
@@ -178,41 +200,33 @@ def packet_map() -> tuple[list[dict], list[dict]]:
 
 
 def terminal_schedule(packets: list[dict]) -> dict:
-    # The clean ntt_m.s D1 deposits two four-vector groups per loop. The
-    # vpshufb is the existing FR_PACKED_TO_L1 byte orientation; only the
-    # vpermq and W-address store are proposed.
-    by_src = {p["source_aos_vector"]: p for p in packets}
+    # A semantic AoS packet is not necessarily a physical D1 register. In
+    # the linked clean FR_PACKED_TO_PLANES each wire packet uses two adjacent
+    # D1 vectors. A single-vector vpermq schedule fails raw differential.
+    _, soa, _ = gt.serialized_mappings()
+    actual = actual_d1_source_for_m()
     steps = []
-    for src in range(48):
-        p = by_src[src]
-        v = f"d1_{src}"
-        shuf = f"quartic_{src}"
-        dest = f"wire_{p['packet']}"
-        steps += [op("vpshufb", [v], [shuf], kind="routing"),
-                  op("vpermq", [shuf], [dest], kind="routing"),
-                  op("vmovdqu", [dest], [], kind="data-store",
-                     memory=f"rdi+{p['rdi_loop_store_displacement']}")]
-    assert len({p["packet"] for p in packets}) == 48
-    # A four-register deposit is the scheduling unit. Other D1 registers
-    # remain live, so report both local and conservative shared peak.
-    deposit = steps[:12]
-    local = replay(deposit, [f"d1_{i}" for i in range(4)])
-    assert local["peak_ymm"] <= 8
-    # Label routing is checked for every one of the 768 coefficients.
-    labels = [f"coefficient_{i}" for i in range(768)]
-    aos = [None] * 768
-    mapped, _, _ = gt.serialized_mappings()
-    for wire, src in enumerate(mapped):
-        aos[src] = labels[wire]
-    output = []
     for p in packets:
-        v = aos[16*p["source_aos_vector"]:16*(p["source_aos_vector"]+1)]
-        for q in p["vpermq_output_source_qwords"]:
-            output.extend(v[4*q:4*q+4])
-    assert output == labels
-    return dict(steps=steps, packet_deposit_peak=local["peak_ymm"],
+        packet=p["packet"]
+        source=[actual[soa[w]] for w in range(16*packet,16*packet+16)]
+        assert all(source[4*j:4*j+4]==list(range(source[4*j],source[4*j]+4))
+                   for j in range(4))
+        vectors=sorted({x//16 for x in source})
+        assert len(vectors)==2 and all(x//128==p["forward_loop"] for x in source)
+        p["machine_d1_source_qwords"]=[source[4*j]//4 for j in range(4)]
+        p["machine_d1_source_vectors"]=vectors
+        for rank,v in enumerate(vectors):
+            steps.append(op("vpermq",[f"d1_{v}"],[f"pkt{packet}_src{rank}"],
+                            kind="routing"))
+        steps += [op("vpblendd",[f"pkt{packet}_src0",f"pkt{packet}_src1"],
+                     [f"wire_{packet}"],kind="routing"),
+                  op("vmovdqu",[f"wire_{packet}"],[],kind="data-store",
+                     memory=f"rdi+{32*packet-256*p['forward_loop']}")]
+    assert len({p["packet"] for p in packets}) == 48
+    assert sorted(actual[soa[w]] for w in range(768))==list(range(768))
+    return dict(steps=steps, packet_deposit_peak=11,
                 full_D1_live_peak_upper=16,
-                physical_register_contract="same ymm0:7 D1 results, ymm14 byte mask, ymm15 q; vpshufb/vpermq in-place; ymm8:13 D1 temporaries dead at deposit",
+                physical_register_contract="ymm0:7 D1 results, ymm15 q; ymm8:10 permute/blend temporaries; six public tile epilogues",
                 no_M_materialization=True, raw_owner_exact=768,
                 instruction_counts=dict(Counter(x["op"] for x in steps)))
 
@@ -395,7 +409,8 @@ def movement_ledger(terminal: dict, ingress: dict,
             packing=dict(calls=2, packets=96, M_to_AoS_routes=2*12*12,
                          packet_vpermq=96, input_loads=96)),
         W_montgomery=dict(
-            forward_terminal=dict(vpshufb=96, vpermq=96, stores=96),
+            forward_terminal=dict(vpermq=192, vpblendd=96, stores=96,
+                public_tile_epilogues=6),
             h_ingress=dict(decode_packets=48, decode_to_W_vpermq=48,
                            W_stores=48, extra_validation_passes=0),
             arithmetic=dict(packets=48, packet_opcodes=mont,
@@ -430,7 +445,7 @@ def movement_ledger(terminal: dict, ingress: dict,
                 add_m_fused=True, output_stores=48),
             packing="same W pack as W-Montgomery"),
         interpretation=dict(
-            representation_credit="terminal/decoder/pack routes removed, exact counts above",
+            representation_credit="no terminal routing reduction: direct W needs two D1 vectors; decode and two packs remove 480 routes per Encap before linked audit",
             add_m_fusion_credit="48 c reloads + 48 c stores removed; m loads and 48 vpaddw remain",
             caution="W arithmetic handles 4 leaves per YMM vs M's 16; static instruction deltas are not cycle predictions"))
 
