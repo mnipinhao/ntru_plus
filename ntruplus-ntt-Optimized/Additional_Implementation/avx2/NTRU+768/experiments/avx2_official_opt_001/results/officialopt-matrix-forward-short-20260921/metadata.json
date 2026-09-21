@@ -1,0 +1,37 @@
+{
+  "benchmark_class": "supercop-derived-diagnostic",
+  "cpu": 1,
+  "launches": 3,
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "elf_sha256": "0f1bc2334a47665aaf0b65762fc8527bb04818a3f827b6d9d61157c1055502fe",
+  "source_sha256": {
+    "bench/bench_matrix.c": "2ccbffcd6acb41e23e25798ec0f826b6b726f7121013afe9d0d832c9f2c42b71",
+    "src/kem_reference.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "src/kem_dup.c": "c75164747ded1fba92e714c58aedca3f7361ce8a2f3b0a4f3729105a5fa0e2fd",
+    "src/kem_fused.c": "5fe512d25cd05fcbdf693572f2b306af42adf688108bead6b5016721f82b7baf",
+    "src/kem_shared.c": "3d372f9380b07e40f453c4e72b6f44fcf0bdef75c131b2622b97a72e3b2499c5",
+    "src/kem_forward.c": "2776a7debe32bfc3f3a2e1ab618d8effbaff0933128f60e4ebecbc35b9211ae1",
+    "asm/ntruplus768_officialopt_dup_basemul.s": "d27e501b581e4a966b2380740f8dca5d106d72646e9f9c842efdd55ba38d4341",
+    "asm/ntruplus768_officialopt_basemul_add.s": "ff8b2f74e31ee0108d7bbe2e7cf3102ac2d5ebde8aef6304ad20c66aec78268b",
+    "asm/ntruplus768_officialopt_shared_diag.s": "c992fb32cddeeadf130dc85aea338ab8542cd0866edcc1b68a3beb66e3000da6",
+    "asm/ntruplus768_officialopt_ntt_early_const.s": "25b2fb4691e807ef8307ad06725976ebf8558c2876d9ab8b46ea13609448d398"
+  },
+  "regions": [
+    "basemul_add",
+    "keygen",
+    "encap",
+    "decap"
+  ],
+  "variants": [
+    "O",
+    "D",
+    "F",
+    "S",
+    "W"
+  ],
+  "source_and_elf_placement": "same diagnostic ELF"
+}
