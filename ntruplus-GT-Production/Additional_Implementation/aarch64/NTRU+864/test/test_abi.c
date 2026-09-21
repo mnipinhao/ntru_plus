@@ -17,11 +17,12 @@ int main(void)
     uint8_t ct[CRYPTO_CIPHERTEXTBYTES], ss[CRYPTO_BYTES], got[CRYPTO_BYTES];
     uint8_t bytes[NTRUPLUS_POLYBYTES] = {0};
     poly a = {{0}}, b = {{0}}, c = {{0}};
+    int16_t ntt_scratch[896] = {0};   /* ntt_asm's caller-owned scratch */
     struct item { const char *name; sentinel fn; void *a, *b, *c, *d; } cases[] = {
         {"keypair", abi_crypto_kem_keypair, pk, sk, 0, 0},
         {"enc", abi_crypto_kem_enc, ct, ss, pk, 0},
         {"dec", abi_crypto_kem_dec, got, ct, sk, 0},
-        {"forward", abi_gt_forward, &a, &b, 0, 0},
+        {"forward", abi_gt_forward, &a, &b, ntt_scratch, 0},
         {"baseinv", abi_gt_baseinv, &a, &b, 0, 0},
         {"basemul-inverse", abi_gt_basemul_inverse, &a, &b, &c, 0},
         {"inverse-ternary", abi_gt_inverse_ternary, &a, &b, 0, 0},

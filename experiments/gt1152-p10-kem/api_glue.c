@@ -12,7 +12,8 @@
 
 void ntt_asm(int16_t out[NTRUPLUS_N], const int16_t in[NTRUPLUS_N]);
 void invntt_ternary_asm(int16_t *, const int16_t *, const int16_t *,
-                        const int16_t *, const int16_t *, const int16_t *);
+                        const int16_t *, const int16_t *, const int16_t *,
+                        int16_t *);
 
 void poly_ntt(poly *out, const poly *in) { ntt_asm(out->coeffs, in->coeffs); }
 
@@ -30,11 +31,19 @@ void poly_basemul_rinv(int16_t *out, const int16_t *a, const int16_t *b)
 
 void poly_invntt_ternary(poly *out, const poly *in)
 {
+    /* The transform cannot run in place -- every invntt16 call scatters its
+     * output across ranges the other calls still have to read (P72) -- so the
+     * scratch is structural.  It is declared here rather than inside the
+     * assembly so that the leaf allocates nothing the caller cannot name; the
+     * leaf still clears it, being the last thing to touch it. */
+    poly scratch;
+
     invntt_ternary_asm(out->coeffs, in->coeffs,
                        &invntt9_constants_lane[0][0][0][0],
                        &invntt16_constants[0][0],
                        &invntt16_main_constants[0][0],
-                       &invntt16_tail_constants[0][0]);
+                       &invntt16_tail_constants[0][0],
+                       scratch.coeffs);
 }
 
 void poly_tobytes(uint8_t r[NTRUPLUS_POLYBYTES], const poly *a)

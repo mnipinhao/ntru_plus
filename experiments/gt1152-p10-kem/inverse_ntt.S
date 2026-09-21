@@ -10,7 +10,13 @@
  *     tail-padding clear is gone.  inverse16_tail.S itself is unchanged: its
  *     lanes were already (component, half), which is what made this possible.
  *
- * x0 out, x1 in, x2 invntt9_constants_lane, x3 invntt16, x4 main, x5 tail.
+ * x0 out, x1 in, x2 invntt9_constants_lane, x3 invntt16, x4 main, x5 tail,
+ * x6 scratch: 2304 bytes provided by the caller.  The leaf allocates no
+ * memory of its own, so every secret it touches lies in a buffer the C caller
+ * can name -- the arrangement mlkem-native's kernels use, where the assembly
+ * works in place on a caller-owned poly.  The wipe below stays here because
+ * the leaf is the last thing to touch the buffer and clearing it from C costs
+ * more (P72: +2.5ns on M2 against -0.5 for the ownership change alone).
  */
 #ifdef __APPLE__
 #define C(name) _##name
@@ -32,14 +38,13 @@ C(invntt_ternary_asm):
     stp d10, d11, [sp, #112]
     stp d12, d13, [sp, #128]
     stp d14, d15, [sp, #144]
-    sub sp, sp, #2304
     mov x19, x0
     mov x20, x1
     mov x21, x2
     mov x22, x3
     mov x23, x4
     mov x24, x5
-    mov x25, sp                 // scratch [s][t], 2304 bytes
+    mov x25, x6                 // scratch [s][t], 2304 bytes, caller-owned
     mov x26, x25                // the rebase buffer IS the scratch:
                                 // packed_i9 call t reads j*256+t*16 and
                                 // writes s*256+t*16, the same nine
@@ -197,7 +202,7 @@ C(invntt_ternary_asm):
     mov x0, x19
     bl C(crepmod3_ternary_asm)
     movi v0.16b, #0
-    mov x9, sp
+    mov x9, x25
     mov x10, #18
 .Lp68_wipe:
     stp q0, q0, [x9], #32
@@ -206,7 +211,6 @@ C(invntt_ternary_asm):
     stp q0, q0, [x9], #32
     subs x10, x10, #1
     b.ne .Lp68_wipe
-    add sp, sp, #2304
     /* Erase volatile SIMD state, including the high halves of v8-v15: the ldp
      * below restores only their low 64 bits, so zeroing first leaves the upper
      * halves clear.  P68 rewrote this driver and dropped the wipe that the
