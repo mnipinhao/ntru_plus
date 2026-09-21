@@ -190,3 +190,140 @@ compare a smaller fused symbol/code organization or explicit source order while
 holding arithmetic fixed, and obtain a new independently confirmed Encap
 campaign. Forward's arithmetic/reduction opportunity remains open but needs
 its own range and dependency proof before a second ASM prototype is justified.
+
+## Round 2: three-caller attribution and compact-code experiment (2026-09-21)
+
+This round compared five separately named implementations in a **single
+diagnostic ELF**: O is imported Official; D duplicates the original BaseMul
+without fusing `poly_add`; F is the previous duplicated fused function; S has
+one multiplication body and two finalizers (plain and `+m`); W is an
+independent same-DAG Forward schedule experiment. O/D/F/S/W are diagnostic
+labels, not SUPERCOP implementation names. The two *new optimization ASM*
+prototypes are S and W; D is a control copy. The third permitted prototype was
+not used.
+
+Deterministic test entry points now live only in `tests/kem_*_diag.c`; no test
+wrapper is installed into a SUPERCOP candidate. The disposable installer for
+D/F/S refuses overwrite and writes hashes of all installed source files to
+`SOURCE-MANIFEST.json`. Re-running `make generate` reproduced identical hashes
+for the seven new generated ASM/C files. The S and D research installations
+in the disposable SUPERCOP campaign were **not** used for Native timing.
+
+### What changed in the machine objects
+
+S retains the Official quartic multiplication loop and makes a public
+entry-state choice immediately before the R² finalizer. The plain entry and
+the add-`m` entry execute the same multiply body. The choice is once per call,
+not once per coefficient or vector. This preserves the original output
+layout, Montgomery scale and formula; the add occurs after the original
+finalizer. W only moves the two level-6 twiddle loads ahead of independent
+lane routing, leaving all arithmetic and stores in the same order. It is a
+dependency/scheduling experiment, **not** a reduction removal.
+
+The linked O3GC image's bounded code regions are below. Sizes include
+alignment and are not hot-footprint or cache-miss measurements. The W region
+is 16 B smaller than O because of padding/encoding, with the same arithmetic
+opcode multiset. Every region has zero stack references, calls and
+`vzeroupper`. S uses a `%r10` pointer from the public fourth argument; its
+branch does not depend on a secret value.
+
+| Code region | bytes | linked static instruction rows |
+|---|---:|---:|
+| O BaseMul | 1,339 | 283 |
+| D duplicate BaseMul | 1,344 | 284 |
+| F duplicate fused BaseMul | 1,376 | 290 |
+| S shared body, both entries and finalizers | 1,536 | 325 |
+| O Forward | 1,792 | 334 |
+| W Forward | 1,776 | 332 |
+
+The last instruction-row difference includes two `cs` alignment prefixes in
+O, not removed arithmetic. The complete static opcode and address ledger is
+in `results/officialopt-matrix-forward-cutpoint-20260921/linked-audit.json`.
+This region-level audit establishes no stack spill in these hand-written ASM
+regions; it is not a global register-liveness proof for the surrounding C.
+
+### Caller and range contracts
+
+The three caller cutpoints each restart from matching prepared valid inputs.
+Keygen's cutpoints use fixed `f/g` coins and price a *successful* inversion
+path; randombytes/retry time is excluded there but included in Native KEM.
+All nine preflights observed `retry_f=retry_g=0`, so retry cost remains an
+unmeasured part of this attribution. Encap starts with PK bytes and coins;
+Decap starts with CT/SK bytes. A cutpoint does not consume the previous
+cutpoint's warmed output. Each cumulative series uses one estimator family;
+incremental figures are differences of cumulative pooled StQ2, not sums of
+independently benchmarked primitives. SHAKE/hash work is retained in the
+caller, but is not automatically an AVX2 polynomial optimization opportunity.
+
+The immutable input-domain contract read from the reachable Official caller
+is: Keygen `f=1+3·CBD1` (coefficient 0 can be 4), `g=3·CBD1`; Encap
+`r=CBD1`, `m=SOTP`; Decap's first inverse follows BaseMulScale, then
+`crepmod3` produces a message for the message Forward, and reencryption
+forwards fresh CBD1 output. The PK decoder rejects noncanonical coefficients;
+the ciphertext decoder and failure/zeroization order remain unchanged. No
+new Forward reduction is removed, so W inherits Official's exact raw
+representatives and S inherits its BaseMul preconditions. These are **caller
+domain contracts**, not a new complete per-lane proof of the Official Forward
+or BaseInv. Such a proof remains mandatory before any reduction or scale
+prototype. The 10,003 raw Forward tests and 100 KEM vectors do not replace it.
+
+Nine fresh processes on CPU 1 gave the following approximate incremental
+pooled-StQ2 costs, in cycles. Fused regions are intentionally left fused:
+
+| Caller | Significant cutpoints |
+|---|---|
+| Keygen | sample `f` 2,794; Forward `f` 753; BaseInv `f` 1,046; sample `g` 2,540; Forward `g` 744; BaseInv `g` 1,035; products+PK/SK packing 755+960; `hash_f` 10,652 |
+| Encap | PK decode 366; prehash+CBD `r` 13,329; Forward `r` 752; serialize `r` 208; `hash_g` 11,963; Forward `m` 723; BaseMul+add 567; ciphertext packing 264 |
+| Decap | CT/SK decode 667; BaseMulScale 427; inverse+crepmod3 951; message Forward/sub 843; recovery BaseMul 528; recovered-`r` bytes 222; `hash_g` 11,881; reencryption Forward 901; reencryption pack/compare/clear 673 |
+
+Raw launch observations, three StQ estimates for *each cumulative cutpoint*,
+ELF/source hashes, host controls and retry preflights are preserved under
+`results/officialopt-cutpoints-serious-20260921/`. These costs locate work;
+they are not a subtraction against GT, and their sum must not be used as a
+Native performance prediction. In particular, BaseInv uses Official's
+existing six-chain batch inversion, so there is no “add batching” candidate.
+
+### Matched pricing and decision
+
+The nine-launch O/D/F/S same-ELF diagnostic (`results/officialopt-matrix-serious-20260921/`)
+measured the following O-relative StQ2 deltas. Parentheses are favorable
+launches out of nine; negative means faster.
+
+| Region | D | F | S |
+|---|---:|---:|---:|
+| BaseMul+add | +10.1 (0/9) | −43.2 (9/9) | −37.7 (9/9) |
+| Keygen | −2.0 (7/9) | +5.0 (3/9) | −10.9 (6/9) |
+| Encap | +42.2 (0/9) | −25.5 (7/9) | −11.3 (6/9) |
+| Decap | +78.6 (0/9) | +57.3 (1/9) | +53.5 (0/9) |
+
+O→D is a code-body/call-target perturbation, D→F adds fusion arithmetic,
+and F→S changes code organization. These deltas cannot be linearly added
+across variants. D and S do not establish a causal proof that code placement
+alone caused the old Keygen regression. They do show why an isolated fused
+BaseMul win is insufficient: S is consistently faster locally but has no
+stable full Encap win and a same-ELF Decap regression in this campaign.
+
+The three-launch O/D/F/S/W follow-up added a native in-place CBD1 Forward
+cutpoint, resetting identical input banks **outside** timing. W's Forward was
+`+6.0` cycles and 0/3 favorable; in the same image, full Encap was `+107.9`
+and 0/3 favorable. The W code is raw bit-exact but this specific early-load
+schedule is rejected. The W result does *not* reject broader Official Forward
+reduction or arithmetic work.
+
+Correctness gates: 10,003 raw BaseMul/add cases; 10,003 raw W Forward cases;
+100 deterministic O/D/F/S/W KEM vectors, invalid PK/CT, canaries and input
+immutability; ASan+UBSan C wrappers (LeakSanitizer disabled for this host).
+No observed Keygen retry means the retry-path differential remains limited.
+No candidate met the plan's “complete caller signal → Native” gate, so this
+round deliberately did **not** start a new Native or fixed-ELF campaign and
+did not produce a new Official-vs-GT-vs-Official-opt Native ranking. The
+historical Native table above remains historical evidence only.
+
+The third ASM slot remains open. BaseInv is sizable in Keygen but its current
+tree already exposes six parallel product chains; the cutpoint alone does not
+identify a safe scale identity, movement removal or critical-path shortening.
+Likewise, Decap's ingress/inverse and equality edge have measurable cost but
+no verified schedule in this round. Next work must start with a concrete
+range/scale identity or a same-DAG dependency and liveness mechanism, then
+test one change at a time. Neither source-line count nor `.text` size is a
+substitute for full-caller pricing.

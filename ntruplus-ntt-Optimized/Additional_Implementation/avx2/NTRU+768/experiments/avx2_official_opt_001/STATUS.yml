@@ -26,3 +26,35 @@ performance:
   fixed_paired_keypair: regression_in_all_four_settings
 native_candidate: research_only_not_qualified
 promotion: rejected_for_now
+round2:
+  date: 2026-09-21
+  comparison: O_imported_official_D_duplicate_plain_F_duplicate_fused_S_shared_fused_W_forward_schedule
+  optimization_asm_prototypes: 2
+  third_prototype: unused_no_qualified_mechanism
+  source_generation: deterministic_hashes_rechecked
+  correctness:
+    basemul_raw_cases: 10003
+    forward_raw_cases: 10003
+    deterministic_kem_vectors: 100
+    invalid_pk_ct: passed
+    sanitizer: passed_with_lsan_disabled_for_environment
+    observed_keygen_retries: 0
+  linked:
+    shared_multiply_body: one_copy
+    shared_entry_selection: public_once_before_finalizer
+    stack_references_in_new_asm: 0
+    calls_in_new_asm: 0
+    vzeroupper_in_new_asm: 0
+  results:
+    serious_matrix: results/officialopt-matrix-serious-20260921
+    serious_caller_cutpoints: results/officialopt-cutpoints-serious-20260921
+    forward_short: results/officialopt-matrix-forward-cutpoint-20260921
+    shared_basemul_add_delta_cycles: -37.73
+    shared_encap_delta_cycles: -11.28
+    shared_encap_favorable_launches: 6/9
+    shared_decap_delta_cycles: 53.50
+    forward_schedule_inplace_delta_cycles: 5.97
+    forward_schedule_favorable_launches: 0/3
+  native_round2: not_run_no_complete_caller_candidate_passed
+  range_status: caller_input_domains_recorded_no_new_per_lane_reduction_proof
+  decision: S_local_win_only_W_schedule_rejected_no_clean_promotion
