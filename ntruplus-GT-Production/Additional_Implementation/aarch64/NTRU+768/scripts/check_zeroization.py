@@ -19,6 +19,9 @@ require(
     (
         "static inline void gt_secure_clear",
         "GT_SECURE_CLEAR_AUDIT_HOOK",
+        # the barrier is the mechanism on every compiler actually used; the
+        # byte loop below it only covers those without GNU inline asm
+        '__asm__ volatile("" : : "r"(address) : "memory")',
         "volatile uint8_t *cursor",
     ),
 )

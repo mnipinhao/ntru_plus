@@ -231,9 +231,14 @@ storage before the owning scope returns or releases it:
 - handwritten NTT, inverse-NTT, pointwise, serialization, and base-inversion
   spill frames
 
-`internal/secure_clear.h` selects a platform primitive when one is available
-and otherwise uses a volatile byte loop so the clear cannot be removed as a
-dead store. The public KEM wrappers preserve the return value and restored
+`internal/secure_clear.h` uses one technique on every non-Windows platform,
+following mlkem-native: a plain clear followed by a compiler barrier, where the
+barrier is what stops the store being removed as a dead write. A volatile byte
+loop is kept for compilers without GNU inline asm. It previously selected among
+`memset_s`, `explicit_bzero` and that byte loop, which meant the behaviour could
+not be predicted without knowing which libc was in play -- on macOS this tree
+fell through every branch to the loop, the slowest of the three, at a measured
+cost of 39% of the whole KEM. The public KEM wrappers preserve the return value and restored
 AAPCS64 callee-saved state, then erase their spill image and the remaining
 caller-saved general-purpose and SIMD temporaries. Private assembly leaves
 clear their complete spill frames or their secret exponent/product registers
