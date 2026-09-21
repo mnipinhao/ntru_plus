@@ -58,6 +58,13 @@ adapter+='int crypto_kem_dec(unsigned char*s,const unsigned char*c,const unsigne
 (a.destination/'adapter.c').write_text(adapter)
 (a.destination/'architectures').write_text('aarch64\n')
 (a.destination/'LICENSE').write_bytes((root/'LICENSE').read_bytes())
+# Without these two, SUPERCOP builds the leaf only for the timingleaks goal and
+# never for constbranchindex, which is where the `try` rows and therefore every
+# cycle count come from.  The leaf compiles at all four optimization levels and
+# then contributes nothing, with no error.
+(a.destination/'goal-constbranch').write_text('')
+(a.destination/'goal-constindex').write_text('')
+(a.destination/'implementors').write_text('Chen Pin-Hao and contributors\n')
 # Metadata is beside, never inside the implementation leaf.
 a.destination.with_suffix('.export.json').write_text(json.dumps({'prefix':a.prefix,'symbols':sorted(defined),'files':provenance},indent=2)+'\n')
 print(a.destination)
