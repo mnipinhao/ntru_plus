@@ -16,7 +16,12 @@ ASM_SRC := rebase.S keccakf1600.S keccakf1600_v84a.S basemul_rinv.S baseinv_num.
 
 TESTS := test_kem test_canonical test_abi test_baseinv_fail
 
-.PHONY: check kat kat-check tests clean shake-prefixed keccak-v84a check-inplace
+.PHONY: check kat kat-check tests clean shake-prefixed keccak-v84a check-inplace zeroization-source-check
+
+# Assembly clearing must be checked statically: the runtime hook in
+# test_zeroization only sees clears made through the C primitive.
+zeroization-source-check:
+	$(PYTHON) scripts/check_zeroization.py
 
 # inverse_ntt.S overlays the rebase buffer on the scratch; that is only
 # safe while packed_i9's data loads all retire before its first store.
@@ -49,7 +54,7 @@ test_baseinv_fail: test/test_baseinv_fail.c randombytes.c $(C_SRC) $(ASM_SRC)
 test_zeroization: test/test_zeroization.c randombytes.c $(C_SRC) $(ASM_SRC)
 	$(CC) $(CFLAGS) -DSECURE_CLEAR_AUDIT_HOOK=1 $^ -o $@
 
-tests: $(TESTS) test_zeroization
+tests: zeroization-source-check check-inplace $(TESTS) test_zeroization
 	@for t in $(TESTS) test_zeroization; do echo "--- $$t"; ./$$t || exit 1; done
 
 check: kat-check tests shake-prefixed keccak-v84a
