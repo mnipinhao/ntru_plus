@@ -115,59 +115,30 @@ carry.
 
 ---
 
-## Item 1 — serialization  *(largest, present in every column)*
+## Item 1 — serialization  *(gate 1b measured 2026-09-21; deferred behind item 3)*
 
-**Prize:** 864 decap +132, 1152 decap +149, 864 keygen +111, 1152 keygen +105.
-768's decap serializer is 78 ns *ahead* of Official's, so the target is known to
-be reachable.
+See `experiments/gt-p85-gate1b-wire-order/`.  Three things were settled.
 
-**What is actually wrong.**  Good-Thomas scatters the coefficients and the wire
-order is fixed by the specification, so a permutation between them is
-unavoidable.  It can be paid three ways: a separate pass over memory, register
-shuffles inside the serializer, or the addressing of a kernel that was going to
-touch the data anyway.  864 and 1152 pay it the second way; 768 pays it the
-third and therefore pays nothing.
+**The permutation is an 8xL transpose, L the leaf degree** -- 3 at 864, 4 at
+1152 -- not the 8x8 an early reading suggested.  864's degree-3 runs are 6 bytes
+and never align; 1152's degree-4 runs are one `str d`.  **1152 is the easier
+target, not 864.**
 
-Evidence: 768's `poly_frombytes_decap` and `poly_tobytes_decap` are sequential
-loops, 66 instructions and **18 permutation instructions per 64 coefficients** --
-exactly Official's 18, which is what 12-bit bit-packing costs on its own.  The
-scatter lives in the decap forward transform's stores: 72 of them in the row0
-block, 72 distinct immediate offsets spanning 0..1528.  864's `pack_small.S` is
-1029 instructions of which **772 are permutation**, 57 per 64 coefficients,
-fully unrolled with no loop.
+**The cost moves rather than doubles.**  A transform final stage storing
+transposed and scattered costs +33 ns per forward pass over 1152 coefficients
+against four contiguous `str q`.  With the NTT-domain layout equal to wire
+order, decapsulation's serializers give back 109 ns of packing and 79 of
+unpacking against about 99 paid by two forward transforms and one inverse:
+**about -89 ns, 1.6% of the operation.**
 
-**The permutation, extracted empirically** (feed value = index, decode the wire
-fields):
+**It is still not next.**  `ntt9.S` leaves its live values 64 slots apart, so the
+four consecutive vectors the transpose needs are not co-resident; this is a
+change to the bank schedule, not to store addressing.  And the file is generated
+by a `generate_ntt9.py` that is not on this machine, 872 lines of Slothy-scheduled
+assembly marked "do not edit".
 
-- 864: GT slot `v*8 + t`  ->  wire `perm[t] * 48 + v`, `perm = [0,3,6,1,4,7,2,5]`
-- 1152: same shape, stride 64
-
-So eight consecutive GT vectors, transposed 8x8 (24 `trn`), give eight vectors
-each holding eight **wire-contiguous** coefficients.  The permutation *is* that
-transpose.  The minimum is therefore 24 permutation instructions per 64
-coefficients against the 57 that 864 spends and the 18 Official spends.
-
-**Plan.**
-
-1. **1a.** Move the 8x8 transpose out of the serializer and into the final stage
-   of the transform that feeds it, so the serializer becomes sequential.  Do 864
-   first: its `ntt9.S` final stage already stores `str q` at 16-byte steps, so
-   the change is the store addressing plus a transpose the stage can absorb.
-2. **1b.** Check the cost actually moved rather than doubled.  Adding 24 `trn`
-   per 64 coefficients to the transform costs about 23 ns at 864 on M2; the
-   serializer must give up more than that.  If it does not, stop and say so --
-   this is the measurement that decides whether the whole item is real.
-3. **1c.** Repeat at 1152, where it merges with item 3 (there is no packer
-   assembly to move the work out of yet).
-4. **1d.** The same contract covers key generation; 768's `poly_ntt_keygen_cq` /
-   `poly_tobytes_keygen_cq` pair is the model.  The +111 and +105 are its share.
-
-**Risk:** scattered `str d` stores are half the width of `st1` quads, so the
-transform pays store-port pressure.  On A76 this hides in the mul-port shadow;
-on M2 it does not.  1b is the gate.
-
-**Done when:** 864 and 1152 decap pack/unpack is at or below Official's, both
-machines measured, no regression.
+Revisit after item 3, with the packer's real cost known, and only if the
+schedule can be regenerated rather than hand-edited.
 
 ---
 
