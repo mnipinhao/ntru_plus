@@ -243,6 +243,11 @@ ASM differential 驗證：Forward 對 current M 經 reference map 後 raw
 bit-exact；MulAdd 對 current B3+add modulo q 一致；r/c wire bytes 與
 100 組 deterministic Encap ciphertext／shared secret byte-exact。48 個
 invalid-PK packet 位置的 return、ct zeroization、ss clear 一致。
+另以 clean Keygen 產生的真實 PK/SK 驗證 100 組 deterministic coins：
+current M、W 單／雙 packet 的密文與 shared secret byte-exact，valid
+ciphertext 可由 clean Decap 還原相同 shared secret；每組單 bit 竄改的
+ciphertext 均遭拒絕並清空 shared secret。這是 research caller 的 KEM
+correctness check，不是 Native SUPERCOP performance。
 guard page 覆蓋 decoder 尾端 load 與 serializer 尾端 store；ASan／UBSan
 通過。`linked-audit.json` 依 CFG replay registers，五顆 W symbols 峰值
 分別為 Forward 13、decode 4、pack 4、MulAdd 單 packet 9／雙 packet 12
@@ -272,6 +277,7 @@ processes。主數字為 pooled StQ2 的 candidate−current M；以下皆為
 ```sh
 python3 tools/generate_encap_wire_schedule.py
 python3 tools/generate_encap_wire_asm.py
+make encap-wire-kem-check
 python3 tools/run_encap_wire_short.py --supercop-root <pinned-root> --cpu 1 --tag <new-tag>
 ```
 

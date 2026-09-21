@@ -3782,5 +3782,24 @@ encap-wire-generate:
 encap-wire-short:
 	$(PYTHON) tools/run_encap_wire_short.py --supercop-root "$(SUPERCOP_ROOT)" --cpu "$(or $(BENCH_CPU),1)" --tag "$(RESULT_TAG)"
 
+WIRE_CLEAN := ../../clean/avx2-gt32-clean
+WIRE_KEM_C := keygen.c encap.c decap.c poly.c symmetric.c fips202.c baseinv.c consts.c
+WIRE_KEM_ASM := KeccakP-1600-AVX2.s cbd.s crepmod3.s add.s ntt.s ntt_m.s ntt_p.s invntt.s basemul.s batch_inverse.s pack.s
+WIRE_KEM_SOURCES := $(addprefix $(WIRE_CLEAN)/,$(WIRE_KEM_C) $(WIRE_KEM_ASM))
+
+$(BUILD)/test_encap_wire_kem: tests/test_encap_wire_kem.c src/encap_wire_research.c \
+		generated/encap_wire_forward.S generated/encap_wire_codec.S \
+		generated/encap_wire_muladd.S $(WIRE_KEM_SOURCES) \
+		$(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) \
+		-o $@ tests/test_encap_wire_kem.c src/encap_wire_research.c \
+		generated/encap_wire_forward.S generated/encap_wire_codec.S \
+		generated/encap_wire_muladd.S $(WIRE_KEM_SOURCES) \
+		$(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c
+
+.PHONY: encap-wire-kem-check
+encap-wire-kem-check: $(BUILD)/test_encap_wire_kem
+	$(BUILD)/test_encap_wire_kem
+
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__
