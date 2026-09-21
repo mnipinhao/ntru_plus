@@ -72,7 +72,7 @@ GENERATED_KAT_REQ := $(BUILD_DIR)/PQCkemKAT_2336.req
 GENERATED_KAT_RSP := $(BUILD_DIR)/PQCkemKAT_2336.rsp
 
 .PHONY: all check check-release manifest-check test abi canonical zeroization
-.PHONY: zeroization-source-check kat kat-check size symbols clean
+.PHONY: zeroization-source-check kat kat-check size symbols clean export-check
 
 all: $(TEST_KEM)
 
@@ -125,7 +125,10 @@ kat-check: kat $(KAT_REQ) $(KAT_RSP)
 	cmp $(GENERATED_KAT_RSP) $(KAT_RSP)
 	shasum -a 256 $(GENERATED_KAT_RSP)
 
-check: manifest-check test canonical zeroization kat-check
+export-check:
+	$(PYTHON) scripts/export_supercop.py --self-check
+
+check: manifest-check test canonical zeroization kat-check export-check
 
 size: $(TEST_KEM)
 	size $(SIZE_FLAGS) $(TEST_KEM)

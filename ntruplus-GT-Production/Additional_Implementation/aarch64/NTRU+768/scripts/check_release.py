@@ -122,7 +122,7 @@ expected = {
     "SOURCE-MANIFEST.sha256",
     "internal/secure_clear.h",
     "internal/ntt.h",
-    "scripts/check_zeroization.py",
+    "scripts/check_zeroization.py","scripts/export_supercop.py",
     "test/test_zeroization.c",
     "test/test_canonical.c",
     "kat/expected/PQCkemKAT_2336.req",
