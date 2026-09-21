@@ -101,3 +101,62 @@ decapsulation, two in key generation, one in encapsulation, so at roughly
 -35 ns a call this is about -70 ns on decapsulation and key generation and
 -35 on encapsulation -- against arithmetic deficits, after P84's correction, of
 +124, +53 and -5 ns.
+
+---
+
+# Implemented, 2026-09-21
+
+The six-coefficient scheme landed.  `pack_full.S` and `pack_small.S` are gone --
+564 KB of assembly replaced by about a hundred lines of C intrinsics in
+`pack.c`, driven by a generated `pack6.h`.
+
+## Per kernel, M2 Pro, gated harness
+
+|  | assembly | P87 C | |
+|---|---:|---:|---|
+| `tobytes_full` | 123.7 | **97.2** | **-26.5** |
+| `tobytes_small` | 114.1 | **69.7** | **-44.4** |
+| `tobytes_compare` | 133.0 | 161.8 | *+28.8, not adopted* |
+
+Official's `poly_tobytes` is 78.7 for scale.
+
+The fused compare does not survive the move.  Its cost is the nine-byte fetch of
+the expected run: an eight-byte load plus a lane insert goes through a
+general-purpose register, and replacing it with a masked sixteen-byte load was
+worse still (161.6).  The assembly `pack_compare.S` is kept.
+
+## At the KEM level
+
+| | keygen | encaps | decaps |
+|---|---:|---:|---:|
+| **M2 Pro** | **-109** | **-66** | **-37** |
+| **Cortex-A76**, `taskset -c 3` | **-359 (-2.3%)** | **-239 (-1.6%)** | **-143 (-1.0%)** |
+
+**A76 gains more than M2, in both absolute and relative terms.**  That was not
+expected: the campaign's standing explanation is that delivery work hides in the
+shadow of A76's single multiply pipe.  It does not hide here, because the packer
+was never multiply-bound -- it was bound on `tbl` and `uzp`, and removing them
+helps a machine with one permute pipe more than one with several.
+
+## The compare is now the thing to fix
+
+| | ns |
+|---|---:|
+| assembly `tobytes_compare` | 133.0 |
+| **P87 `tobytes_full` + constant-time `verify`** | **114.0** |
+| assembly `tobytes_full` + `verify` | 140.8 |
+
+Packing into a buffer and verifying now beats the fused compare by 19 ns,
+where against the old packer it lost by 7.5.  It needs 1296 bytes that decap
+does not currently have spare, though `buf3` is `POLYBYTES + SYMBYTES` and its
+tail is dead after `poly_cbd1` consumes it.  That is roadmap item 4, and it is
+the same conclusion 1152 reached from the other direction.
+
+## Verification
+
+400 random vectors across `tobytes_full` (arbitrary signed int16),
+`tobytes_small` and `tobytes_compare`, including a flipped bit that both
+implementations must catch, all bit-identical to the assembly.  `make check`
+passes on both machines: 10,368 canonical-boundary cases, ABI masks all zero,
+zeroization 21 calls / 24,028 bytes / nothing left, KAT matching
+`kat/expected`, deterministic export.  SUPERCOP leaf regenerated.

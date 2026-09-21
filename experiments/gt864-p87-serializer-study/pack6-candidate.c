@@ -15,11 +15,9 @@
  * and only nine bytes are stored; the fifth halfword's high byte is zero by
  * construction and is simply not written.
  */
-#include "pack.h"
-#include "pack_asm.h"
-#include "pack6.h"
-
+#include <stdint.h>
 #include <arm_neon.h>
+#include "pack6.h"
 
 #define Q 3457
 
@@ -119,17 +117,39 @@ static inline void tobytes6(uint8_t *out, const int16_t *in, int full)
     }
 }
 
-/* The `_asm` names are historical: these were hand-written kernels until P87
- * replaced them, and the ABI test, the manifest and pack_asm.h all name them. */
-void tobytes_full_asm(uint8_t *out, const int16_t *in)  { tobytes6(out, in, 1); }
-void tobytes_small_asm(uint8_t *out, const int16_t *in) { tobytes6(out, in, 0); }
+void p87_tobytes_full(uint8_t *out, const int16_t *in)  { tobytes6(out, in, 1); }
+void p87_tobytes_small(uint8_t *out, const int16_t *in) { tobytes6(out, in, 0); }
 
-int tobytes_compare_asm(const uint8_t *, const int16_t *);
+/*
+ * Compare without materialising.  The nine live bytes of a run are fetched with
+ * one 16-byte load and the seven bytes past them are masked off; `g[k]` is
+ * already zero there, the fifth halfword's high byte included.  A byte load and
+ * lane insert would be two instructions and a general-purpose round trip.
+ *
+ * The final run ends exactly at 1296, so it takes an eight-byte load and a
+ * lane insert rather than reading past the buffer.
+ */
+static const uint8_t mask9[16] = {255,255,255,255,255,255,255,255,255,0,0,0,0,0,0,0};
 
-void poly_tobytes(uint8_t *out, const poly *in) { tobytes_full_asm(out, in->coeffs); }
-void poly_tobytes_small(uint8_t *out, const poly *in) { tobytes_small_asm(out, in->coeffs); }
-int poly_tobytes_compare(const uint8_t *expected, const poly *in)
+int p87_tobytes_compare(const uint8_t *expected, const int16_t *in)
 {
-    return tobytes_compare_asm(expected, in->coeffs);
-}
+    const uint8x16_t m = vld1q_u8(mask9);
+    uint8x16_t acc = vdupq_n_u8(0);
 
+    for (int p = 0; p < PACK6_GROUPS; p++) {
+        const unsigned short *w = pack6_off[p];
+        int16x8_t g[8];
+        group(g, in, p, 1);
+        for (int k = 0; k < 8; k++) {
+            uint8x16_t e;
+            if (w[k] + 16 <= 1296) {
+                e = vld1q_u8(expected + w[k]);
+            } else {
+                e = vcombine_u8(vld1_u8(expected + w[k]), vdup_n_u8(0));
+                e = vsetq_lane_u8(expected[w[k] + 8], e, 8);
+            }
+            acc = vorrq_u8(acc, vandq_u8(veorq_u8(vreinterpretq_u8_s16(g[k]), e), m));
+        }
+    }
+    return vmaxvq_u8(acc) != 0;
+}
