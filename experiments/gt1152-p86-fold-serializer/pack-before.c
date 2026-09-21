@@ -34,24 +34,23 @@
  * coefficients land on a 12-byte boundary every time.
  */
 
+/* Wire order inside one lane's twelve bytes: the four 24-bit little-endian
+ * pairs (c0|c1<<12), (c2|c3<<12), (c4|c5<<12), (c6|c7<<12). */
+static const uint8_t pack_idx[16] = {
+    0, 1, 2,  4, 5, 6,  8, 9, 10,  12, 13, 14,  255, 255, 255, 255
+};
 /*
- * The twelve wire bytes of a block are built without a table.  Four
- * coefficients become three halfwords with shift-insert alone,
- *
- *   h0 = c0 | c1 << 12,  h1 = c1 >> 4 | c2 << 8,  h2 = c2 >> 8 | c3 << 4,
- *
- * and the operands are lane-aligned before the transpose, where lane j of
- * vector i already holds coefficient i of block j.  This is the shape the
- * official serializer uses, and it costs ten instructions a pair against the
- * twenty-four the previous widen-and-`tbl` encoding needed on top of its
- * transpose.  P86 measured 129.2 -> 98.0 ns for the reduced path and
- * 92.9 -> 65.4 for the already-reduced one.
+ * The decode reads each twelve-byte block as eight 16-bit windows rather than
+ * four 24-bit ones.  Lanes 0..3 take bytes (3j, 3j+1), whose low twelve bits
+ * are the even coefficient; lanes 4..7 take bytes (3m+1, 3m+2), which hold the
+ * odd coefficient shifted up by four.  One `ushl` with a per-lane count then
+ * fixes both halves at once, so the separate `ushr` and `uzp1` the 24-bit form
+ * needed collapse into a single instruction.
  */
-/*
- * The decode runs the same fold backwards: three halfwords carry four
- * coefficients, and ushr/sli/and recover them, so the table lookup and the
- * per-lane shift vector the 24-bit form needed both disappear.
- */
+static const uint8_t unpack_idx[16] = {
+    0, 1,  3, 4,  6, 7,  9, 10,    1, 2,  4, 5,  7, 8,  10, 11
+};
+static const int16_t unpack_shift[8] = {0, 0, 0, 0, -4, -4, -4, -4};
 
 /*
  * The 8x8 int16 transpose, three trn levels.  A transpose is an involution, so
@@ -88,7 +87,14 @@ static inline void transpose8(int16x8_t v[8])
     v[7] = S16_64(vtrn2q_s64(S64(b3), S64(b7)));
 }
 
-/* ---- reduction to canonical [0, q) ---- */
+/* ---- reduction to canonical [0, q), unchanged from P12 ---- */
+
+static inline int16x8_t barrett_reduce(int16x8_t a)
+{
+    int16x8_t t = vqdmulhq_n_s16(a, BARRETT_V);
+    t = vrshrq_n_s16(t, 11);
+    return vmlsq_n_s16(a, t, (int16_t)Q);
+}
 
 /*
  * Canonical in two instructions rather than three.  Every input is in (-q, q),
@@ -103,46 +109,11 @@ static inline int16x8_t canonical(int16x8_t a)
 }
 
 /*
- * Reduce and make canonical in four instructions a vector rather than five:
- * a rounding multiply-high and a multiply-subtract land in (-q, q), then a
- * sign mask and a second multiply-subtract add q back where it is negative.
- */
-static inline int16x8_t reduce_canon(int16x8_t a)
-{
-    int16x8_t t = vqrdmulhq_n_s16(a, 9);          /* round(2^15/q) = 9 */
-    a = vmlsq_n_s16(a, t, (int16_t)Q);
-    int16x8_t m = vreinterpretq_s16_u16(vcltq_s16(a, vdupq_n_s16(0)));
-    return vmlsq_n_s16(a, m, (int16_t)Q);
-}
-
-/* four lane-aligned coefficients -> three halfwords */
-static inline void fold4(uint16x8_t o[3], int16x8_t c0, int16x8_t c1,
-                         int16x8_t c2, int16x8_t c3)
-{
-    uint16x8_t u0 = vreinterpretq_u16_s16(c0), u1 = vreinterpretq_u16_s16(c1);
-    uint16x8_t u2 = vreinterpretq_u16_s16(c2), u3 = vreinterpretq_u16_s16(c3);
-    o[0] = vsliq_n_u16(u0, u1, 12);
-    o[1] = vsliq_n_u16(vshrq_n_u16(u1, 4), u2, 8);
-    o[2] = vsliq_n_u16(vshrq_n_u16(u2, 8), u3, 4);
-}
-
-/* and back again */
-static inline void unfold4(int16x8_t *c0, int16x8_t *c1, int16x8_t *c2,
-                           int16x8_t *c3, uint16x8_t h0, uint16x8_t h1,
-                           uint16x8_t h2)
-{
-    const uint16x8_t m12 = vdupq_n_u16(0x0FFF);
-    *c0 = vreinterpretq_s16_u16(vandq_u16(h0, m12));
-    *c1 = vreinterpretq_s16_u16(vandq_u16(vsliq_n_u16(vshrq_n_u16(h0,12), h1, 4), m12));
-    *c2 = vreinterpretq_s16_u16(vandq_u16(vsliq_n_u16(vshrq_n_u16(h1, 8), h2, 8), m12));
-    *c3 = vreinterpretq_s16_u16(vshrq_n_u16(h2, 4));
-}
-
-/*
- * One pair's eight vectors, lane-aligned rather than transposed: vector i
- * holds coefficient i of every block, which is the order `fold4` consumes.
- * The four consecutive coefficients of a block live in v[0], v[4], v[1],
- * v[5] and the next four in v[2], v[6], v[3], v[7].
+ * Load one pair's eight vectors already ordered for the transpose: the rows
+ * must be (c0, c2) of the first group, (c0, c2) of the second, then (c1, c3)
+ * of each, so that a transposed lane reads out as the four even coefficients
+ * followed by the four odd ones -- exactly the operand order the 12-bit
+ * encoding wants, at no cost.
  */
 static inline void load_pair(int16x8_t v[8], const int16_t *gt, int p, int full)
 {
@@ -154,19 +125,19 @@ static inline void load_pair(int16x8_t v[8], const int16_t *gt, int p, int full)
     v[4] = vld1q_s16(a + 8);  v[5] = vld1q_s16(a + 24);
     v[6] = vld1q_s16(b + 8);  v[7] = vld1q_s16(b + 24);
 
-    if (full) for (int i = 0; i < 8; i++) v[i] = reduce_canon(v[i]);
-    else      for (int i = 0; i < 8; i++) v[i] = canonical(v[i]);
+    if (full)
+        for (int i = 0; i < 8; i++) v[i] = barrett_reduce(v[i]);
+    for (int i = 0; i < 8; i++) v[i] = canonical(v[i]);
+    transpose8(v);
 }
 
-/* the six halfword streams of a pair, gathered so lane k is block k's bytes */
-static inline void fold_pair(int16x8_t g[8], int16x8_t v[8])
+/* One lane's eight canonical coefficients as twelve wire bytes in lanes 0..11. */
+static inline uint8x16_t encode_lane(int16x8_t u, uint8x16_t idx)
 {
-    uint16x8_t e[6];
-    fold4(e,     v[0], v[4], v[1], v[5]);
-    fold4(e + 3, v[2], v[6], v[3], v[7]);
-    for (int i = 0; i < 6; i++) g[i] = vreinterpretq_s16_u16(e[i]);
-    g[6] = g[7] = vdupq_n_s16(0);
-    transpose8(g);
+    uint16x8_t x = vreinterpretq_u16_s16(u);
+    uint32x4_t y = vmovl_u16(vget_low_u16(x));       /* even coefficients   */
+    y = vmlal_high_n_u16(y, x, 4096);                /* += odd << 12        */
+    return vqtbl1q_u8(vreinterpretq_u8_u32(y), idx);
 }
 
 static inline void store12(uint8_t *out, uint8x16_t b)
@@ -187,15 +158,16 @@ static inline uint8x16_t load12(const uint8_t *in)
 
 static inline void tobytes(uint8_t *out, const int16_t *in, int full)
 {
+    const uint8x16_t idx = vld1q_u8(pack_idx);
+
 #pragma GCC unroll 18
     for (int p = 0; p < CODEC_PAIRS; p++) {
         const unsigned short *w = pair_wire[p];
-        int16x8_t v[8], g[8];
+        int16x8_t v[8];
 
         load_pair(v, in, p, full);
-        fold_pair(g, v);
         for (int k = 0; k < 8; k++)
-            store12(out + w[k], vreinterpretq_u8_s16(g[k]));
+            store12(out + w[k], encode_lane(v[k], idx));
     }
 }
 
@@ -219,56 +191,64 @@ void tobytes_small_asm(uint8_t out[NTRUPLUS1152_POLYBYTES],
 int tobytes_compare_asm(const uint8_t expected[NTRUPLUS1152_POLYBYTES],
                         const int16_t in[NTRUPLUS1152_N])
 {
+    const uint8x16_t idx = vld1q_u8(pack_idx);
     uint8x16_t acc = vdupq_n_u8(0);
 
     for (int p = 0; p < CODEC_PAIRS; p++) {
         const unsigned short *w = pair_wire[p];
-        int16x8_t v[8], g[8];
+        int16x8_t v[8];
 
         load_pair(v, in, p, 1);
-        fold_pair(g, v);
         for (int k = 0; k < 8; k++)
-            acc = vorrq_u8(acc, veorq_u8(vreinterpretq_u8_s16(g[k]),
+            acc = vorrq_u8(acc, veorq_u8(encode_lane(v[k], idx),
                                          load12(expected + w[k])));
     }
     return vmaxvq_u8(acc) != 0;
 }
 
 /*
- * Decode.  Each block's twelve bytes are fetched whole and the eight blocks of
- * a pair are transposed so that lane k of the six halfword streams is block k;
- * `unfold4` then recovers the coefficients without a table.
+ * One pair's eight twelve-byte blocks, decoded into transposed lanes.
  *
- * The plain 16-byte load reads four bytes past a block, which the transpose
- * discards.  Only the final block, at offset 1716, would read past the
- * 1728-byte input, so that one takes the two-load path.
+ * `safe` is a compile-time constant at both call sites.  With it clear the
+ * block is fetched with a plain 16-byte load, four bytes wider than the block:
+ * the table lookup only ever reads bytes 0..11, so the extra bytes are ignored,
+ * and halving the loads is worth it.  Only the very last block, at offset 1716,
+ * would read past the 1728-byte input; it lives at lane 7 of pair 17, so the
+ * final pair takes the two-load path instead.
  */
+static inline void unpack_pair(int16x8_t v[8], const uint8_t *in,
+                               const unsigned short *w, uint8x16_t idx,
+                               uint16x8_t *hi, int safe)
+{
+    const uint16x8_t m12 = vdupq_n_u16(0x0FFF);
+    const int16x8_t sh = vld1q_s16(unpack_shift);
+
+    for (int k = 0; k < 8; k++) {
+        uint8x16_t raw = safe ? load12(in + w[k]) : vld1q_u8(in + w[k]);
+        uint16x8_t win = vreinterpretq_u16_u8(vqtbl1q_u8(raw, idx));
+        uint16x8_t u = vandq_u16(vshlq_u16(win, sh), m12);
+
+        /* One running maximum rather than a compare and an or per lane: some
+         * coefficient is out of range exactly when the maximum is. */
+        *hi = vmaxq_u16(*hi, u);
+        v[k] = vreinterpretq_s16_u16(u);
+    }
+    transpose8(v);
+}
+
 int frombytes_asm(int16_t out[NTRUPLUS1152_N],
                   const uint8_t in[NTRUPLUS1152_POLYBYTES])
 {
+    const uint8x16_t idx = vld1q_u8(unpack_idx);
     uint16x8_t hi = vdupq_n_u16(0);
 
     for (int p = 0; p < CODEC_PAIRS; p++) {
-        const unsigned short *w = pair_wire[p];
         int16_t *a = out + 32 * pair_group[p];
         int16_t *b = a + 32 * 9;
-        int16x8_t g[8], v[8];
+        int16x8_t v[8];
 
-        for (int k = 0; k < 8; k++)
-            g[k] = (p == CODEC_PAIRS - 1 && k == 7)
-                 ? vreinterpretq_s16_u8(load12(in + w[k]))
-                 : vreinterpretq_s16_u8(vld1q_u8(in + w[k]));
-        transpose8(g);
-
-        unfold4(&v[0], &v[4], &v[1], &v[5], vreinterpretq_u16_s16(g[0]),
-                vreinterpretq_u16_s16(g[1]), vreinterpretq_u16_s16(g[2]));
-        unfold4(&v[2], &v[6], &v[3], &v[7], vreinterpretq_u16_s16(g[3]),
-                vreinterpretq_u16_s16(g[4]), vreinterpretq_u16_s16(g[5]));
-
-        /* one running maximum rather than a compare per lane: some coefficient
-         * is out of range exactly when the maximum is */
-        for (int i = 0; i < 8; i++)
-            hi = vmaxq_u16(hi, vreinterpretq_u16_s16(v[i]));
+        if (p == CODEC_PAIRS - 1) unpack_pair(v, in, pair_wire[p], idx, &hi, 1);
+        else                      unpack_pair(v, in, pair_wire[p], idx, &hi, 0);
 
         vst1q_s16(a,      v[0]); vst1q_s16(a +  8, v[4]);
         vst1q_s16(a + 16, v[1]); vst1q_s16(a + 24, v[5]);
