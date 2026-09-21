@@ -13,6 +13,17 @@ int official_lazy_enc(unsigned char *, unsigned char *, const unsigned char *);
 int official_lazy_dec(unsigned char *, const unsigned char *, const unsigned char *);
 
 static unsigned long long random_calls;
+static unsigned keygen_shake_calls;
+static int force_zero_g_once;
+void __real_fips202avx_shake256(uint8_t *, size_t, const uint8_t *, size_t);
+void __wrap_fips202avx_shake256(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen) {
+    if (force_zero_g_once && outlen == NTRUPLUS_N / 4 && inlen == 32 &&
+        ++keygen_shake_calls == 2) {
+        memset(out, 0, outlen); /* CBD1(g)=0; BaseInv must reject and retry. */
+        return;
+    }
+    __real_fips202avx_shake256(out, outlen, in, inlen);
+}
 void __real_randombytes(unsigned char *, unsigned long long);
 void __wrap_randombytes(unsigned char *out, unsigned long long length) {
     random_calls++;
@@ -77,6 +88,42 @@ int main(void) {
             return 1;
         }
     }
+
+    /* Force one genuine g=0 BaseInv failure via test-only CBD1 input.
+     * Both KEM implementations execute their unchanged retry loops. */
+    seed_rng(100000);
+    random_calls = 0;
+    keygen_shake_calls = 0;
+    force_zero_g_once = 1;
+    int retry_status_o = official_ref_keypair(pk_o, sk_o);
+    unsigned long long retry_calls = random_calls;
+    unsigned shake_calls_o = keygen_shake_calls;
+    seed_rng(100000);
+    random_calls = 0;
+    keygen_shake_calls = 0;
+    int retry_status_l = official_lazy_keypair(pk_l, sk_l);
+    force_zero_g_once = 0;
+    if (retry_status_o || retry_status_l || retry_calls != 3 ||
+        random_calls != retry_calls || shake_calls_o != 3 || keygen_shake_calls != 3 ||
+        memcmp(pk_o, pk_l, sizeof pk_o) || memcmp(sk_o, sk_l, sizeof sk_o)) {
+        fprintf(stderr, "lazy Keygen retry mismatch calls=%llu/%llu shakes=%u/%u\n",
+                retry_calls, random_calls, shake_calls_o, keygen_shake_calls);
+        return 1;
+    }
+    seed_rng(100001);
+    int retry_enc_o = official_ref_enc(ct_o, ss_o, pk_o);
+    seed_rng(100001);
+    int retry_enc_l = official_lazy_enc(ct_l, ss_l, pk_l);
+    if (retry_enc_o || retry_enc_l || memcmp(ct_o, ct_l, sizeof ct_o) ||
+        memcmp(ss_o, ss_l, sizeof ss_o) ||
+        official_ref_dec(dec_o, ct_o, sk_o) ||
+        official_lazy_dec(dec_l, ct_l, sk_l) ||
+        memcmp(dec_o, dec_l, sizeof dec_o) ||
+        memcmp(dec_o, ss_o, sizeof dec_o)) {
+        fputs("KEM mismatch after forced Keygen retry\n", stderr);
+        return 1;
+    }
+    puts("Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)");
 
     pk_o[0] = (unsigned char)NTRUPLUS_Q;
     pk_o[1] = (unsigned char)((pk_o[1] & 0xf0U) | (NTRUPLUS_Q >> 8));

@@ -37,7 +37,7 @@ $(BUILD)/kem_lazy.o: tests/kem_lazy_diag.c src/kem_lazy.c | $(BUILD)
 	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dcrypto_kem_keypair=official_lazy_keypair -Dcrypto_kem_enc=official_lazy_enc -Dcrypto_kem_dec=official_lazy_dec -c -o $@ $<
 
 $(BUILD)/test_kem_lazy: tests/test_kem_lazy.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_lazy.o asm/ntruplus768_officialopt_ntt_caller_lazy.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
-	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -Wl,--wrap=randombytes -o $@ $^
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -Wl,--wrap=randombytes -Wl,--wrap=fips202avx_shake256 -o $@ $^
 
 $(BUILD)/kem_ref.o: tests/kem_ref_diag.c src/kem_reference.c | $(BUILD)
 	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dcrypto_kem_keypair=official_ref_keypair -Dcrypto_kem_enc=official_ref_enc -Dcrypto_kem_dec=official_ref_dec -c -o $@ $<
