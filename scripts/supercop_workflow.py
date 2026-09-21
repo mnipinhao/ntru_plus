@@ -17,6 +17,7 @@ REQUIRED_LOCK_KEYS = (
     "version",
     "url",
     "archive_sha256",
+    "ntruplus768_avx2_tree_sha256",
     "ntruplus864_avx2_tree_sha256",
     "ntruplus1152_avx2_tree_sha256",
 )
@@ -75,7 +76,7 @@ def sha256_tree(root: Path) -> str:
 
 
 def implementation_path(root: Path, parameter: str) -> Path:
-    if parameter not in ("864", "1152"):
+    if parameter not in ("768", "864", "1152"):
         raise ValueError(f"unsupported NTRU+ parameter: {parameter}")
     return root / "crypto_kem" / f"ntruplus{parameter}" / "avx2"
 
@@ -89,7 +90,7 @@ def verify_supercop(root: Path, lock: dict[str, str]) -> dict[str, str]:
     if actual_version != lock["version"]:
         raise ValueError(f"SUPERCOP version mismatch: {actual_version} != {lock['version']}")
     hashes = {}
-    for parameter in ("864", "1152"):
+    for parameter in ("768", "864", "1152"):
         actual = sha256_tree(implementation_path(root, parameter))
         expected = lock[f"ntruplus{parameter}_avx2_tree_sha256"]
         if actual != expected:

@@ -40,7 +40,7 @@ def main() -> int:
             "url": url,
             "archive_sha256": sha256_file(archive),
         }
-        for parameter in ("864", "1152"):
+        for parameter in ("768", "864", "1152"):
             tree = implementation_path(extracted, parameter)
             if not tree.is_dir():
                 raise SystemExit(f"release lacks {tree.relative_to(extracted)}")

@@ -226,7 +226,7 @@ def perf_diagnostics(path: Path, cpu: int, result_dir: Path) -> dict[str, object
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--campaign-root", type=Path, required=True)
-    parser.add_argument("--parameter", choices=("864", "1152"), required=True)
+    parser.add_argument("--parameter", choices=("768", "864", "1152"), required=True)
     parser.add_argument("--implementation", required=True)
     parser.add_argument("--cpu", type=int, required=True)
     parser.add_argument("--mode", choices=("native-kem", "derived-poly", "derived-itail",
@@ -253,7 +253,10 @@ def main() -> int:
                                            "derived-scale1-r-serializer-hash-boundary",
                                            "derived-scale1-r-serializer-v2",
                                            "derived-scale1-r-serializer-v2-stage",
-                                           "derived-wire-monotone-native-attribution-v3"),
+                                           "derived-wire-monotone-native-attribution-v3",
+                                           "derived-component-768",
+                                           "derived-component-864-d3",
+                                           "derived-component-1152-current"),
                         required=True)
     parser.add_argument("--result-dir", type=Path, required=True)
     parser.add_argument("--compiler-wrapper", type=Path,
@@ -285,8 +288,13 @@ def main() -> int:
                      "derived-scale1-r-serializer-hash-boundary",
                      "derived-scale1-r-serializer-v2",
                      "derived-scale1-r-serializer-v2-stage",
-                     "derived-wire-monotone-native-attribution-v3") and args.parameter != "1152":
+                     "derived-wire-monotone-native-attribution-v3",
+                     "derived-component-1152-current") and args.parameter != "1152":
         raise SystemExit("the selected derived measure is defined only for NTRU+1152")
+    if args.mode == "derived-component-768" and args.parameter != "768":
+        raise SystemExit("the 768 component measure requires NTRU+768")
+    if args.mode == "derived-component-864-d3" and args.parameter != "864":
+        raise SystemExit("the D3 component measure requires NTRU+864")
 
     root = args.campaign_root.resolve()
     marker = root / ".ntruplus-campaign.json"
@@ -396,7 +404,9 @@ def main() -> int:
                          "derived-scale1-r-serializer-hash-boundary",
                          "derived-scale1-r-serializer-v2",
                          "derived-scale1-r-serializer-v2-stage",
-                         "derived-wire-monotone-native-attribution-v3"):
+                         "derived-wire-monotone-native-attribution-v3",
+                         "derived-component-768", "derived-component-864-d3",
+                         "derived-component-1152-current"):
             replacement_name = {
                 "derived-poly": "poly_measure.c",
                 "derived-itail": "itail_measure.c",
@@ -445,6 +455,9 @@ def main() -> int:
                     "scale1_r_serializer_v2_stage_measure.c",
                 "derived-wire-monotone-native-attribution-v3":
                     "wire_monotone_native_attribution_v3_measure.c",
+                "derived-component-768": "component_768_measure.c",
+                "derived-component-864-d3": "component_864_d3_measure.c",
+                "derived-component-1152-current": "component_1152_current_measure.c",
             }[args.mode]
             replacement = REPO_ROOT / "bench" / "supercop" / replacement_name
             shutil.copyfile(replacement, measure_path)
@@ -500,8 +513,16 @@ def main() -> int:
     if args.mode == "native-kem":
         required = ("keypair_cycles", "enc_cycles", "dec_cycles")
     elif args.mode == "derived-poly":
-        required = ("forward_small_cycles", "forward_general_cycles", "basemul_cycles",
-                    "inverse_cycles", "baseinv_cycles", "poly_mul_small_cycles",
+        required = ("forward_small_native_inplace_cycles",
+                    "forward_small_preserve_input_cycles",
+                    "forward_general_native_inplace_unqualified_cycles",
+                    "forward_general_preserve_input_unqualified_cycles", "basemul_cycles",
+                    "basemul_scale_cycles", "inverse_cycles", "baseinv_cycles",
+                    "poly_frombytes_cycles", "poly_tobytes_cycles", "cbd1_cycles",
+                    "crepmod3_cycles", "poly_add_cycles", "poly_sub_cycles",
+                    "sotp_encode_cycles", "sotp_decode_cycles",
+                    "hash_f_cycles", "hash_g_cycles", "hash_h_cycles",
+                    "poly_mul_small_cycles",
                     "poly_mul_general_cycles")
     elif args.mode == "derived-itail":
         required = ("inverse_ntt9_b0_first_cycles", "inverse_ntt9_b1_second_cycles",
@@ -680,6 +701,22 @@ def main() -> int:
                                       ("wire", "second"),
                                       ("wire", "first"),
                                       ("official", "second")))
+    elif args.mode == "derived-component-768":
+        required = tuple(f"{name}_cycles" for name in (
+            "forward_frontend", "forward_m_terminal", "forward_p_terminal",
+            "forward_m_full", "forward_p_full", "baseinv_j1", "basemul_f0_j1",
+            "basemul_general_m", "basemul_scale_m", "inverse_m_core",
+            "inverse_m_tail", "inverse_m_full", "q24_unpack_m",
+            "q24_pack_m_centered", "q24_pack_m_lazy", "q24_pack_m_highrange",
+            "q24_pack_p", "q24_equal_m"))
+    elif args.mode == "derived-component-864-d3":
+        required = ("d3_packed_t3_baseline_cycles", "d3_packed_t3_mr32_cycles")
+    elif args.mode == "derived-component-1152-current":
+        required = tuple(f"{name}_cycles" for name in (
+            "official_forward_native_inplace", "official_forward_preserve_input",
+            "top_split", "gt_forward_full",
+            "serializer_v2", "serializer_v2_hash_g",
+            "gt_tail_decode_ma2_egress", "official_tail"))
     else:
         required = ("f0_ma0_first_cycles", "f0_ma2_second_cycles",
                     "f0_ma2_first_cycles", "f0_ma0_second_cycles")
@@ -2163,6 +2200,9 @@ def main() -> int:
                             else "supercop-derived-scale1-r-serializer-v2" if args.mode == "derived-scale1-r-serializer-v2"
                             else "supercop-derived-scale1-r-serializer-v2-stage" if args.mode == "derived-scale1-r-serializer-v2-stage"
                             else "supercop-derived-wire-monotone-native-attribution-v3" if args.mode == "derived-wire-monotone-native-attribution-v3"
+                            else "supercop-derived-component-768" if args.mode == "derived-component-768"
+                            else "supercop-derived-component-864-d3-research" if args.mode == "derived-component-864-d3"
+                            else "supercop-derived-component-1152-current" if args.mode == "derived-component-1152-current"
                             else "supercop-derived-itail"),
         "bench_cpu": args.cpu,
         "campaign": str(root),
@@ -2237,7 +2277,11 @@ def main() -> int:
               "derived-scale1-r-serializer-v2-stage":
                   "scale1_r_serializer_v2_stage_measure.c",
               "derived-wire-monotone-native-attribution-v3":
-                  "wire_monotone_native_attribution_v3_measure.c"}[args.mode])
+                  "wire_monotone_native_attribution_v3_measure.c",
+              "derived-component-768": "component_768_measure.c",
+              "derived-component-864-d3": "component_864_d3_measure.c",
+              "derived-component-1152-current":
+                  "component_1152_current_measure.c"}[args.mode])
         ),
         "parameter": args.parameter,
         "result_data_source": str(data_files[0]),

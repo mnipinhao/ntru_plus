@@ -49,7 +49,8 @@ rejections, and next step.
 ## SUPERCOP baseline lifecycle
 
 `scripts/refresh_supercop_lock.py` discovers the newest official release,
-downloads it, hashes the archive, verifies the two AVX2 implementations, and
+downloads it, hashes the archive, verifies the 768/864/1152 AVX2
+implementations, and
 rewrites the lock. Normal tests never refresh implicitly.
 
 `scripts/prepare_supercop.py` verifies an existing pristine tree against the
@@ -59,7 +60,7 @@ selection, compiler forcing, and custom `measure.c` replacement are allowed
 only in the campaign copy.
 
 `scripts/import_supercop_ntruplus.py` copies the pinned
-`crypto_kem/ntruplus{864,1152}/avx2` directories into experiment `upstream/`
+`crypto_kem/ntruplus{768,864,1152}/avx2` directories into experiment `upstream/`
 locations and records `UPSTREAM.json`. It refuses to overwrite an import.
 
 ## Optimization and symbol flow
@@ -236,13 +237,13 @@ Repository cycle results are diagnostic and cannot promote production.
 ### Native SUPERCOP KEM
 
 Install Official and candidate as separate directories below
-`crypto_kem/ntruplus{864,1152}/`. Run SUPERCOP `do-part` with one enabled
+`crypto_kem/ntruplus{768,864,1152}/`. Run SUPERCOP `do-part` with one enabled
 implementation at a time and the unmodified `crypto_kem/measure.c`. Preserve
 `keypair_cycles`, `enc_cycles`, `dec_cycles`, the selected compiler, machine
 data, run log, and SUPERCOP data file. Label these results
 `supercop-native-kem`.
 
-For this pinned 20260627 release, native `crypto_kem/measure.c` uses 32
+For the release pinned in `bench/supercop.lock`, native `crypto_kem/measure.c` uses 32
 successive timings and SUPERCOP builds it with `LOOPS=3`, producing 96 raw
 observations per operation and process. Serious campaigns replay the exact
 SUPERCOP-built measure ELF in 9 fresh pinned processes and pool 864

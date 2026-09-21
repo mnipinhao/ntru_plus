@@ -28,7 +28,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--campaign-root", type=Path, required=True)
     parser.add_argument("--experiment", type=Path, required=True)
-    parser.add_argument("--parameter", choices=("864", "1152"), required=True)
+    parser.add_argument("--parameter", choices=("768", "864", "1152"), required=True)
     parser.add_argument("--implementation", required=True)
     args = parser.parse_args()
     campaign = args.campaign_root.resolve()

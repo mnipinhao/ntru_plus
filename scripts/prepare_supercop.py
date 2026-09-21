@@ -60,6 +60,7 @@ def main() -> int:
             "source": str(root.resolve()),
             "supercop_version": lock["version"],
             "archive_sha256": lock["archive_sha256"],
+            "ntruplus768_avx2_tree_sha256": hashes["768"],
             "ntruplus864_avx2_tree_sha256": hashes["864"],
             "ntruplus1152_avx2_tree_sha256": hashes["1152"],
         }

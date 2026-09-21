@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import tempfile
 from datetime import datetime, timezone
@@ -42,6 +43,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cc", default="cc")
     parser.add_argument("--profile", choices=("h1", "cumulative", "wire"), default="h1")
+    parser.add_argument("--sanitize", action="store_true")
     args = parser.parse_args()
     if args.output.exists():
         raise SystemExit(f"refusing to overwrite {args.output}")
@@ -62,6 +64,12 @@ def main() -> int:
             (implementation / "SOURCE-MANIFEST.json").read_text(encoding="utf-8"))
         installed = manifest_record["wire_monotone_native_rebase2"]["installed_sources"]
         implementation_sources = WIRE_COMMON_SOURCES + tuple(installed.values())
+        exp017 = manifest_record.get("exp017_serializer_v2_native")
+        if exp017:
+            implementation_sources += tuple(exp017["installed_sources"].values())
+            # r_serializer is already present through the updated cumulative
+            # source map; keep every translation unit exactly once.
+            implementation_sources = tuple(dict.fromkeys(implementation_sources))
     else:
         implementation_sources = (CUMULATIVE_SOURCES if args.profile == "cumulative"
                                   else IMPLEMENTATION_SOURCES)
@@ -85,6 +93,10 @@ def main() -> int:
         "-fomit-frame-pointer", f"-I{experiment / 'tests/kat_compat'}",
         f"-I{implementation}", f"-I{include / 'amd64'}", f"-I{include}",
     ]
+    if args.sanitize:
+        compile_command.extend(("-fsanitize=address,undefined",
+                                "-fno-sanitize-recover=all",
+                                "-fno-omit-frame-pointer"))
     compile_command.extend(str(kat_dir / name) for name in (
         "PQCgenKAT_kem.c", "aes.c", "rng.c"))
     compile_command.extend(str(implementation / name)
@@ -95,7 +107,10 @@ def main() -> int:
         command = compile_command[:]
         command[1:1] = ["-o", str(binary)]
         subprocess.run(command, cwd=implementation, check=True)
-        subprocess.run([str(binary)], cwd=work, check=True)
+        environment = os.environ.copy()
+        if args.sanitize:
+            environment["ASAN_OPTIONS"] = "detect_leaks=0"
+        subprocess.run([str(binary)], cwd=work, env=environment, check=True)
         request = work / "PQCkemKAT_3488.req"
         response = work / "PQCkemKAT_3488.rsp"
         frozen_request = frozen / request.name
@@ -118,6 +133,7 @@ def main() -> int:
             "compiler": compiler,
             "cases": 100,
             "passed": True,
+            "sanitizers": "address,undefined" if args.sanitize else None,
             "comparison": "byte-exact against frozen NTRU+1152 KAT",
             "request_sha256": sha256_file(request),
             "response_sha256": sha256_file(response),

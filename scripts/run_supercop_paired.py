@@ -14,7 +14,7 @@ from pathlib import Path
 
 from supercop_workflow import LOCK_PATH, read_lock, sha256_file
 
-OPERATIONS = ("keypair_cycles", "enc_cycles", "dec_cycles")
+DEFAULT_OPERATIONS = ("keypair_cycles", "enc_cycles", "dec_cycles")
 
 
 def elf_info(path: Path) -> dict[str, object]:
@@ -45,7 +45,8 @@ def observations(text: str, operation: str) -> list[int]:
     return values
 
 
-def launch(binary: Path, cpu: int, aslr_off: bool) -> tuple[str, dict[str, int]]:
+def launch(binary: Path, cpu: int, aslr_off: bool,
+           operations: tuple[str, ...], minimum: int) -> tuple[str, dict[str, int]]:
     command = ["taskset", "-c", str(cpu)]
     if aslr_off:
         command.extend(["setarch", platform.machine(), "-R"])
@@ -53,10 +54,11 @@ def launch(binary: Path, cpu: int, aslr_off: bool) -> tuple[str, dict[str, int]]
     result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     if result.returncode:
         raise SystemExit(f"fixed ELF failed ({result.returncode}): {' '.join(command)}\n{result.stdout}")
-    counts = {operation: len(observations(result.stdout, operation)) for operation in OPERATIONS}
-    short = {operation: count for operation, count in counts.items() if count < 96}
+    counts = {operation: len(observations(result.stdout, operation)) for operation in operations}
+    short = {operation: count for operation, count in counts.items() if count < minimum}
     if short:
-        raise SystemExit(f"fixed ELF produced fewer than 96 observations: {short}")
+        raise SystemExit(
+            f"fixed ELF produced fewer than {minimum} observations: {short}")
     return result.stdout, counts
 
 
@@ -69,10 +71,27 @@ def main() -> int:
     parser.add_argument("--cpu", type=int, required=True)
     parser.add_argument("--blocks", type=int, default=16)
     parser.add_argument("--compiler-recipe", required=True)
+    parser.add_argument("--operation", action="append", dest="operations",
+                        help="measured output label; repeat for component ELFs")
+    parser.add_argument("--operations-file", type=Path,
+                        help="newline-delimited operation labels")
+    parser.add_argument("--minimum-observations", type=int, default=96)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.blocks != 16:
         raise SystemExit("formal paired campaigns require exactly 16 blocks")
+    if args.operations and args.operations_file:
+        raise SystemExit("use --operation or --operations-file, not both")
+    if args.operations_file:
+        operations = tuple(line.strip() for line in
+                           args.operations_file.read_text(encoding="utf-8").splitlines()
+                           if line.strip() and not line.lstrip().startswith("#"))
+    else:
+        operations = tuple(args.operations or DEFAULT_OPERATIONS)
+    if not operations or len(set(operations)) != len(operations):
+        raise SystemExit("operation labels must be nonempty and unique")
+    if args.minimum_observations < 1:
+        raise SystemExit("--minimum-observations must be positive")
     if args.output.exists():
         raise SystemExit(f"refusing to overwrite {args.output}")
     args.output.mkdir(parents=True)
@@ -96,7 +115,8 @@ def main() -> int:
         "compiler_recipe": args.compiler_recipe,
         "cpu": args.cpu,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "observations_per_operation_per_launch_minimum": 96,
+        "operations": list(operations),
+        "observations_per_operation_per_launch_minimum": args.minimum_observations,
         "binaries": binary_info,
     }
     records = []
@@ -111,7 +131,8 @@ def main() -> int:
                     "candidate", "official", "official", "candidate")
                 for slot, implementation in enumerate(order, 1):
                     launch_number += 1
-                    output, counts = launch(pair[implementation], args.cpu, aslr_off)
+                    output, counts = launch(pair[implementation], args.cpu, aslr_off,
+                                            operations, args.minimum_observations)
                     filename = f"block-{block:02d}-slot-{slot}-{implementation}.out"
                     (setting_dir / filename).write_text(output, encoding="utf-8")
                     records.append({"setting": setting, "block": block, "slot": slot,

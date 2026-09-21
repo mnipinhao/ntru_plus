@@ -12,6 +12,8 @@ from supercop_workflow import REPO_ROOT, copy_tree_nonoverwriting, implementatio
 
 
 def experiment_root(parameter: str) -> Path:
+    experiment = ("avx2_gt32_tile4_official_001" if parameter == "768"
+                  else "avx2_gt9x16_official_001")
     return (
         REPO_ROOT
         / "ntruplus-ntt-Optimized"
@@ -19,14 +21,14 @@ def experiment_root(parameter: str) -> Path:
         / "avx2"
         / f"NTRU+{parameter}"
         / "experiments"
-        / "avx2_gt9x16_official_001"
+        / experiment
     )
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--supercop-root", type=Path, required=True)
-    parser.add_argument("--parameter", choices=("864", "1152"), required=True)
+    parser.add_argument("--parameter", choices=("768", "864", "1152"), required=True)
     parser.add_argument("--destination", type=Path)
     args = parser.parse_args()
     lock = read_lock()

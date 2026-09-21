@@ -53,3 +53,24 @@ Each result retains `run.out`, SUPERCOP `data`, `metadata.json`, the exact
 `measure` ELF, `fresh-launches/*.out`, `stq-summary.json`, and the lock file.
 Repository-local paired timings remain useful diagnostics but are not
 SUPERCOP headlines.
+
+The unified 768/864/1152 campaign additionally uses the
+`derived-component-768`, `derived-component-864-d3`, and
+`derived-component-1152-current` modes.  Hash, SOTP, add/sub, and polynomial
+entries in `poly_measure.c` are caller building blocks; they remain
+`supercop-derived-component` evidence and must not be summed to predict the
+Native KEM totals.
+
+Forward attribution distinguishes `native_inplace` from `preserve_input`.
+The latter includes a real polynomial copy before the implementation's native
+in-place transform.  Reports must state which ownership contract is being
+answered; a preserve-input wrapper is not the Official production kernel.
+`forward_general_*_unqualified` is diagnostic only until the implementation's
+general-input range and differential contract is proved.
+
+PMU mode selection is parsed once before the 4096-operation loop.  The matched
+baseline uses the same switch and loop geometry with a compiler memory barrier.
+Any negative baseline-subtracted event invalidates that component's PMU record.
+The 4096-bank Forward PMU working set prevents repeated in-place transformation
+of already-transformed data; its cycle count diagnoses residency and is not a
+component timing headline.
