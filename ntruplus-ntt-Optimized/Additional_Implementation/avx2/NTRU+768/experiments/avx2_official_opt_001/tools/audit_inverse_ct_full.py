@@ -17,7 +17,7 @@ def command(*argv):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--variant", choices=("full", "cohort"), required=True)
+    parser.add_argument("--variant", choices=("full", "cohort", "wresident", "earlynorm"), required=True)
     args = parser.parse_args()
     name = f"ntruplus768_officialopt_invntt_ct_{args.variant}"
     elf = ROOT / "build" / f"test_inverse_ct_{args.variant}"
@@ -38,7 +38,7 @@ def main():
     # The stage-1 pair alignment uses 2 multiplies for eight triples and
     # 3 multiplies for the paired eight: 40, genuinely eight fewer than
     # the CT control's 48 independent gauge restorations.
-    table_bytes = 5 * 24 * 64 + 40 * 64 + (16 if args.variant == "cohort" else 48) * 64
+    table_bytes = 5 * 24 * 64 + 40 * 64 + (48 if args.variant == "full" else 16) * 64
     result = {"kind": "research_CT_level0_linked_not_native",
               "variant": args.variant,
               "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -52,6 +52,8 @@ def main():
               "ct_control_radix2_plus_gauge_montgomery_vectors": 126,
               "standalone_barrett_vectors": 40,
               "added_constant_table_bytes": table_bytes,
+              "control_mechanism": ({"wresident": "radix-3 w remains in two YMM; relative constants are memory operands",
+                                     "earlynorm": "same 40 relative normalizations at level-2 egress"}.get(args.variant)),
               "range_max_signed_preoperation": prove()["max_signed_preoperation"]}
     out = ROOT / "results" / f"officialopt-inverse-ct-{args.variant}-linked-20260921.json"
     out.write_text(json.dumps(result, indent=2) + "\n")
