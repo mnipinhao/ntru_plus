@@ -1,186 +1,190 @@
-Analysis of sampling spin_off864 (pid 42901) every 1 millisecond
-Process:         spin_off864 [42901]
+Analysis of sampling spin_off864 (pid 49498) every 1 millisecond
+Process:         spin_off864 [49498]
 Path:            /private/tmp/*/spin_off864
-Load Address:    0x10004c000
+Load Address:    0x100d70000
 Identifier:      spin_off864
 Version:         0
 Code Type:       ARM64
 Platform:        macOS
-Parent Process:  zsh [42878]
+Parent Process:  zsh [49470]
 Target Type:     live task
 
-Date/Time:       2026-09-21 18:05:16.855 +0800
-Launch Time:     2026-09-21 18:05:12.819 +0800
+Date/Time:       2026-09-21 21:15:36.368 +0800
+Launch Time:     2026-09-21 21:15:30.328 +0800
 OS Version:      macOS 26.4.1 (25E253)
 Report Version:  7
 Analysis Tool:   /usr/bin/sample
 
-Physical footprint:         976K
-Physical footprint (peak):  992K
+Physical footprint:         960K
+Physical footprint (peak):  976K
 Idle exit:                  untracked
 ----
 
 Call graph:
-    5105 Thread_23910151   DispatchQueue_1: com.apple.main-thread  (serial)
-      1732 shake256_absorb  (in spin_off864) + 196  [0x10004e6b0]  fips202.c:799
-      + 1732 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off864) + 1080,124,...  [0x100050154,0x10004fd98,...]
-      900 shake256_squeezeblocks  (in spin_off864) + 48  [0x10004e870]  fips202.c:815
-      + 900 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off864) + 768,1080,...  [0x10005001c,0x100050154,...]
-      370 poly_baseinv  (in spin_off864) + 52  [0x10004d28c]  poly.c:208
-      + 369 looptop_baseinv_1  (in spin_off864) + 520,304,...  [0x100052740,0x100052668,...]
-      + 1 poly_baseinv_1  (in spin_off864) + 4  [0x100052520]
-      358 poly_baseinv  (in spin_off864) + 968,1004,...  [0x10004d620,0x10004d644,...]  poly.c:210
-      287 crypto_kem_keypair  (in spin_off864) + 256  [0x10004c9c8]  kem.c:175
-      + 146 looptop_3456  (in spin_off864) + 408,144,...  [0x1000509d8,0x1000508d0,...]
-      + 141 looptop_012  (in spin_off864) + 1052,32,...  [0x100050820,0x100050424,...]
-      240 crypto_kem_keypair  (in spin_off864) + 160  [0x10004c968]  kem.c:169
-      + 123 looptop_012  (in spin_off864) + 32,108,...  [0x100050424,0x100050470,...]
-      + 117 looptop_3456  (in spin_off864) + 408,232,...  [0x1000509d8,0x100050928,...]
-      169 crypto_kem_keypair  (in spin_off864) + 292  [0x10004c9ec]  kem.c:179
-      + 168 looptop  (in spin_off864) + 240,124,...  [0x1000522ac,0x100052238,...]
-      + 1 poly_basemul  (in spin_off864) + 20  [0x1000521b4]
-      169 crypto_kem_keypair  (in spin_off864) + 332  [0x10004ca14]  kem.c:179
-      + 169 looptop  (in spin_off864) + 240,204,...  [0x1000522ac,0x100052288,...]
-      132 poly_baseinv  (in spin_off864) + 1284,1256,...  [0x10004d75c,0x10004d740,...]  poly.c:219
-      107 crypto_kem_keypair  (in spin_off864) + 348  [0x10004ca24]  kem.c:179
-      + 107 loop_tobytes  (in spin_off864) + 272,64,...  [0x100052cc4,0x100052bf4,...]
-      102 crypto_kem_keypair  (in spin_off864) + 308  [0x10004c9fc]  kem.c:179
-      + 102 loop_tobytes  (in spin_off864) + 272,8,...  [0x100052cc4,0x100052bbc,...]
-      99 crypto_kem_keypair  (in spin_off864) + 364  [0x10004ca34]  kem.c:179
-      + 99 loop_tobytes  (in spin_off864) + 272,92,...  [0x100052cc4,0x100052c10,...]
-      67 shake256  (in spin_off864) + 144  [0x10004eae8]  fips202.c:890
-      + 33 _xzm_free  (in libsystem_malloc.dylib) + 1048  [0x18546d484]
-      + ! 32 mach_absolute_time  (in libsystem_kernel.dylib) + 108,112,...  [0x18560c10c,0x18560c110,...]
+    5081 Thread_24011850   DispatchQueue_1: com.apple.main-thread  (serial)
+      1662 shake256_absorb  (in spin_off864) + 196  [0x100d72848]  fips202.c:799
+      + 1662 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off864) + 1080,124,...  [0x100d742ec,0x100d73f30,...]
+      933 shake256_squeezeblocks  (in spin_off864) + 48  [0x100d72a08]  fips202.c:815
+      + 933 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off864) + 124,1080,...  [0x100d73f30,0x100d742ec,...]
+      385 poly_baseinv  (in spin_off864) + 52  [0x100d71424]  poly.c:208
+      + 384 looptop_baseinv_1  (in spin_off864) + 520,12,...  [0x100d768d0,0x100d766d4,...]
+      + 1 poly_baseinv_1  (in spin_off864) + 4  [0x100d766b0]
+      345 poly_baseinv  (in spin_off864) + 212,1004,...  [0x100d714c4,0x100d717dc,...]  poly.c:210
+      265 crypto_kem_keypair  (in spin_off864) + 160  [0x100d70b00]  kem.c:169
+      + 145 looptop_3456  (in spin_off864) + 408,204,...  [0x100d74b68,0x100d74a9c,...]
+      + 120 looptop_012  (in spin_off864) + 32,196,...  [0x100d745b4,0x100d74658,...]
+      257 crypto_kem_keypair  (in spin_off864) + 256  [0x100d70b60]  kem.c:175
+      + 137 looptop_3456  (in spin_off864) + 292,116,...  [0x100d74af4,0x100d74a44,...]
+      + 119 looptop_012  (in spin_off864) + 168,536,...  [0x100d7463c,0x100d747ac,...]
+      + 1 poly_ntt  (in spin_off864) + 12  [0x100d7457c]
+      180 crypto_kem_keypair  (in spin_off864) + 332  [0x100d70bac]  kem.c:179
+      + 180 looptop  (in spin_off864) + 240,76,...  [0x100d7643c,0x100d76398,...]
+      173 crypto_kem_keypair  (in spin_off864) + 292  [0x100d70b84]  kem.c:179
+      + 173 looptop  (in spin_off864) + 240,112,...  [0x100d7643c,0x100d763bc,...]
+      129 poly_baseinv  (in spin_off864) + 1284,1256,...  [0x100d718f4,0x100d718d8,...]  poly.c:219
+      93 crypto_kem_keypair  (in spin_off864) + 348  [0x100d70bbc]  kem.c:179
+      + 93 loop_tobytes  (in spin_off864) + 272,208,...  [0x100d76e54,0x100d76e14,...]
+      86 crypto_kem_keypair  (in spin_off864) + 364  [0x100d70bcc]  kem.c:179
+      + 86 loop_tobytes  (in spin_off864) + 92,208,...  [0x100d76da0,0x100d76e14,...]
+      79 crypto_kem_keypair  (in spin_off864) + 308  [0x100d70b94]  kem.c:179
+      + 79 loop_tobytes  (in spin_off864) + 272,8,...  [0x100d76e54,0x100d76d4c,...]
+      77 shake256  (in spin_off864) + 144  [0x100d72c80]  fips202.c:890
+      + 42 _xzm_free  (in libsystem_malloc.dylib) + 1048  [0x18546d484]
+      + ! 41 mach_absolute_time  (in libsystem_kernel.dylib) + 108,112,...  [0x18560c10c,0x18560c110,...]
       + ! 1 DYLD-STUB$$mach_absolute_time  (in libsystem_malloc.dylib) + 12  [0x185484b18]
-      + 19 _xzm_free  (in libsystem_malloc.dylib) + 232,264,...  [0x18546d154,0x18546d174,...]
-      + 6 _xzm_free  (in libsystem_malloc.dylib) + 352  [0x18546d1cc]
-      + ! 4 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+      + 24 _xzm_free  (in libsystem_malloc.dylib) + 996,28,...  [0x18546d450,0x18546d088,...]
+      + 4 _free  (in libsystem_malloc.dylib) + 0,36,...  [0x18547cc4c,0x18547cc70,...]
+      + 4 _xzm_free  (in libsystem_malloc.dylib) + 352  [0x18546d1cc]
+      + ! 2 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
       + ! 1 DYLD-STUB$$_platform_bzero  (in libsystem_malloc.dylib) + 8  [0x1854847f4]
       + ! 1 __bzero  (in libsystem_platform.dylib) + 0  [0x185659090]
-      + 5 _free  (in libsystem_malloc.dylib) + 96,12,...  [0x18547ccac,0x18547cc58,...]
-      + 3 DYLD-STUB$$free  (in spin_off864) + 4  [0x100053670]
-      + 1 xzm_malloc_zone_try_free_default  (in libsystem_malloc.dylib) + 0  [0x185478108]
-      41 shake256_absorb  (in spin_off864) + 60  [0x10004e628]  fips202.c:795
-      + 19 _xzm_xzone_malloc_tiny  (in libsystem_malloc.dylib) + 420,468,...  [0x185472078,0x1854720a8,...]
-      + 9 _xzm_malloc_zone_malloc_type_calloc_entry  (in libsystem_malloc.dylib) + 160,48,...  [0x18547b0b8,0x18547b048,...]
-      + 6 _malloc_zone_calloc  (in libsystem_malloc.dylib) + 12,84,...  [0x18547c274,0x18547c2bc,...]
-      + 6 _xzm_xzone_malloc  (in libsystem_malloc.dylib) + 324,24,...  [0x18546ca04,0x18546c8d8,...]
-      + 1 DYLD-STUB$$calloc  (in spin_off864) + 4  [0x100053640]
-      38 crypto_kem_keypair  (in spin_off864) + 240  [0x10004c9b8]  kem.c:175
-      + 38 loop_cbd  (in spin_off864) + 268,120,...  [0x100052fa8,0x100052f14,...]
-      33 crypto_kem_keypair  (in spin_off864) + 124  [0x10004c944]  kem.c:169
-      + 33 loop_cbd  (in spin_off864) + 112,276,...  [0x100052f0c,0x100052fb0,...]
-      26 shake256  (in spin_off864) + 136  [0x10004eae0]  fips202.c:887
-      + 26 _platform_memmove  (in libsystem_platform.dylib) + 180,428,...  [0x185659474,0x18565956c,...]
-      24 shake256_absorb  (in spin_off864) + 112,548,...  [0x10004e65c,0x10004e810,...]  fips202.c:799
-      21 crypto_kem_keypair  (in spin_off864) + 248  [0x10004c9c0]  kem.c:175
-      + 21 loop_triple  (in spin_off864) + 36,84,...  [0x10005039c,0x1000503cc,...]
-      18 crypto_kem_keypair  (in spin_off864) + 136  [0x10004c950]  kem.c:169
-      + 18 loop_triple  (in spin_off864) + 84,36,...  [0x1000503cc,0x10005039c,...]
-      18 crypto_kem_keypair  (in spin_off864) + 472  [0x10004caa0]  kem.c:183
+      + 3 DYLD-STUB$$free  (in spin_off864) + 4  [0x100d77818]
+      51 shake256_absorb  (in spin_off864) + 60  [0x100d727c0]  fips202.c:795
+      + 25 _xzm_xzone_malloc_tiny  (in libsystem_malloc.dylib) + 12,536,...  [0x185471ee0,0x1854720ec,...]
+      + 11 _xzm_malloc_zone_malloc_type_calloc_entry  (in libsystem_malloc.dylib) + 160,48,...  [0x18547b0b8,0x18547b048,...]
+      + 8 _xzm_xzone_malloc  (in libsystem_malloc.dylib) + 192,8,...  [0x18546c980,0x18546c8c8,...]
+      + 7 _malloc_zone_calloc  (in libsystem_malloc.dylib) + 12,44,...  [0x18547c274,0x18547c294,...]
+      36 crypto_kem_keypair  (in spin_off864) + 124  [0x100d70adc]  kem.c:169
+      + 34 loop_cbd  (in spin_off864) + 140,312,...  [0x100d770b8,0x100d77164,...]
+      + 2 poly_cbd1  (in spin_off864) + 332,344  [0x100d7701c,0x100d77028]
+      32 crypto_kem_keypair  (in spin_off864) + 240  [0x100d70b50]  kem.c:175
+      + 30 loop_cbd  (in spin_off864) + 312,176,...  [0x100d77164,0x100d770dc,...]
+      + 2 poly_cbd1  (in spin_off864) + 204,332  [0x100d76f9c,0x100d7701c]
+      30 shake256  (in spin_off864) + 136  [0x100d72c78]  fips202.c:887
+      + 29 _platform_memmove  (in libsystem_platform.dylib) + 180,428,...  [0x185659474,0x18565956c,...]
+      + 1 DYLD-STUB$$memcpy  (in spin_off864) + 4  [0x100d77830]
+      25 crypto_kem_keypair  (in spin_off864) + 512  [0x100d70c60]  kem.c:185
+      + 22 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 20 _platform_memset  (in libsystem_platform.dylib) + 140,152  [0x18565917c,0x185659188]
+      + ! 2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+      + 3 memset_s  (in libsystem_c.dylib) + 20,68  [0x1854df268,0x1854df298]
+      24 shake256_absorb  (in spin_off864) + 112,144,...  [0x100d727f4,0x100d72814,...]  fips202.c:799
+      23 crypto_kem_keypair  (in spin_off864) + 248  [0x100d70b58]  kem.c:175
+      + 23 loop_triple  (in spin_off864) + 84,8,...  [0x100d74564,0x100d74518,...]
+      20 crypto_kem_keypair  (in spin_off864) + 492  [0x100d70c4c]  kem.c:184
       + 18 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      +   18 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
-      16 crypto_kem_keypair  (in spin_off864) + 512  [0x10004cac8]  kem.c:185
-      + 14 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      + ! 14 _platform_memset  (in libsystem_platform.dylib) + 140,156,...  [0x18565917c,0x18565918c,...]
-      + 1 DYLD-STUB$$memset_s  (in spin_off864) + 4  [0x100053694]
-      + 1 memset_s  (in libsystem_c.dylib) + 20  [0x1854df268]
-      16 crypto_kem_keypair  (in spin_off864) + 532  [0x10004cadc]  kem.c:186
-      + 15 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      + ! 15 _platform_memset  (in libsystem_platform.dylib) + 140,12,...  [0x18565917c,0x1856590fc,...]
-      + 1 memset_s  (in libsystem_c.dylib) + 20  [0x1854df268]
-      16 shake256_squeezeblocks  (in spin_off864) + 108,156,...  [0x10004e8ac,0x10004e8dc,...]  fips202.c:815
-      14 hash_f  (in spin_off864) + 52  [0x10004d0e8]  symmetric.c:16
-      + 14 _platform_memmove  (in libsystem_platform.dylib) + 180,12  [0x185659474,0x1856593cc]
-      13 crypto_kem_keypair  (in spin_off864) + 492  [0x10004cab4]  kem.c:184
-      + 13 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      +   13 _platform_memset  (in libsystem_platform.dylib) + 140,28  [0x18565917c,0x18565910c]
-      12 poly_baseinv  (in spin_off864) + 1360  [0x10004d7a8]  poly.c:0
-      + 9 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      + ! 9 _platform_memset  (in libsystem_platform.dylib) + 140,160,...  [0x18565917c,0x185659190,...]
-      + 3 memset_s  (in libsystem_c.dylib) + 68,20  [0x1854df298,0x1854df268]
-      11 poly_baseinv  (in spin_off864) + 1160  [0x10004d6e0]  poly.c:210
-      + 7 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      + ! 6 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
-      + ! 1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-      + 2 DYLD-STUB$$memset_s  (in spin_off864) + 4  [0x100053694]
-      + 2 memset_s  (in libsystem_c.dylib) + 20,68  [0x1854df268,0x1854df298]
-      8 crypto_kem_keypair  (in spin_off864) + 28  [0x10004c8e4]  kem.c:159
-      + 8 crypto_kem_keypair  (in spin_off864) + 28  [0x10004c8e4]  kem.c:159
-      +   8 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52  [0x18564ac54]
-      7 crypto_kem_keypair  (in spin_off864) + 448  [0x10004ca88]  kem.c:182
-      + 5 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      + ! 3 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-      + ! 2 _platform_memset  (in libsystem_platform.dylib) + 124,140  [0x18565916c,0x18565917c]
+      + ! 18 _platform_memset  (in libsystem_platform.dylib) + 140,28,...  [0x18565917c,0x18565910c,...]
       + 2 memset_s  (in libsystem_c.dylib) + 8,68  [0x1854df25c,0x1854df298]
-      6 crypto_kem_keypair  (in spin_off864) + 76  [0x10004c914]  kem.c:168
-      + 3 randombytes  (in spin_off864) + 100  [0x10004c850]  rb.c:13
-      + 2 randombytes  (in spin_off864) + 164,172  [0x10004c890,0x10004c898]  rb.c:14
-      + 1 randombytes  (in spin_off864) + 56  [0x10004c824]  rb.c:15
-      6 crypto_kem_keypair  (in spin_off864) + 400  [0x10004ca58]  kem.c:179
+      19 crypto_kem_keypair  (in spin_off864) + 136  [0x100d70ae8]  kem.c:169
+      + 19 loop_triple  (in spin_off864) + 84,8,...  [0x100d74564,0x100d74518,...]
+      18 crypto_kem_keypair  (in spin_off864) + 472  [0x100d70c38]  kem.c:183
+      + 15 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 15 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
+      + 3 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      18 crypto_kem_keypair  (in spin_off864) + 532  [0x100d70c74]  kem.c:186
+      + 17 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 17 _platform_memset  (in libsystem_platform.dylib) + 140,12,...  [0x18565917c,0x1856590fc,...]
+      + 1 DYLD-STUB$$memset_s  (in spin_off864) + 4  [0x100d7783c]
+      17 shake256_squeezeblocks  (in spin_off864) + 180,156,...  [0x100d72a8c,0x100d72a74,...]  fips202.c:815
+      15 hash_f  (in spin_off864) + 52  [0x100d71280]  symmetric.c:16
+      + 15 _platform_memmove  (in libsystem_platform.dylib) + 180,204  [0x185659474,0x18565948c]
+      14 crypto_kem_keypair  (in spin_off864) + 400  [0x100d70bf0]  kem.c:179
+      + 13 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 13 _platform_memset  (in libsystem_platform.dylib) + 140,144,...  [0x18565917c,0x185659180,...]
+      + 1 DYLD-STUB$$memset_s  (in spin_off864) + 4  [0x100d7783c]
+      12 crypto_kem_keypair  (in spin_off864) + 76  [0x100d70aac]  kem.c:168
+      + 7 randombytes  (in spin_off864) + 100,104  [0x100d709e8,0x100d709ec]  rb.c:13
+      + 1 randombytes  (in spin_off864) + 72  [0x100d709cc]  rb.c:0
+      + 1 randombytes  (in spin_off864) + 88  [0x100d709dc]  rb.c:11
+      + 1 randombytes  (in spin_off864) + 172  [0x100d70a30]  rb.c:14
+      + 1 randombytes  (in spin_off864) + 56  [0x100d709bc]  rb.c:15
+      + 1 randombytes  (in spin_off864) + 216  [0x100d70a5c]  rb.c:17
+      9 crypto_kem_keypair  (in spin_off864) + 28  [0x100d70a7c]  kem.c:159
+      + 9 crypto_kem_keypair  (in spin_off864) + 28  [0x100d70a7c]  kem.c:159
+      +   9 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52,8  [0x18564ac54,0x18564ac28]
+      8 crypto_kem_keypair  (in spin_off864) + 196  [0x100d70b24]  kem.c:174
+      + 3 randombytes  (in spin_off864) + 100  [0x100d709e8]  rb.c:13
+      + 3 randombytes  (in spin_off864) + 164  [0x100d70a28]  rb.c:14
+      + 1 randombytes  (in spin_off864) + 212  [0x100d70a58]  rb.c:11
+      + 1 randombytes  (in spin_off864) + 56  [0x100d709bc]  rb.c:15
+      8 poly_baseinv  (in spin_off864) + 1360  [0x100d71940]  poly.c:0
       + 6 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      +   5 _platform_memset  (in libsystem_platform.dylib) + 140,144,...  [0x18565917c,0x185659180,...]
-      +   1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 12  [0x185557ad4]
-      5 poly_baseinv  (in spin_off864) + 1360,1372,...  [0x10004d7a8,0x10004d7b4,...]  poly.c:0
-      4 crypto_kem_keypair  (in spin_off864) + 196  [0x10004c98c]  kem.c:174
-      + 2 randombytes  (in spin_off864) + 108,164  [0x10004c858,0x10004c890]  rb.c:14
-      + 1 randombytes  (in spin_off864) + 48  [0x10004c81c]  rb.c:0
-      + 1 randombytes  (in spin_off864) + 100  [0x10004c850]  rb.c:13
-      3 crypto_kem_keypair  (in spin_off864) + 424  [0x10004ca70]  kem.c:181
-      + 2 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-      + ! 1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-      + ! 1 _platform_memset  (in libsystem_platform.dylib) + 180  [0x1856591a4]
-      + 1 memset_s  (in libsystem_c.dylib) + 8  [0x1854df25c]
-      3 shake256  (in spin_off864) + 136  [0x10004eae0]  fips202.c:890
-      2 memset_s  (in libsystem_c.dylib) + 92  [0x1854df2b0]
-      2 shake256_squeezeblocks  (in spin_off864) + 204  [0x10004e90c]  fips202.c:0
-      1 crypto_kem_keypair  (in spin_off864) + 448  [0x10004ca88]  kem.c:183
-      1 crypto_kem_keypair  (in spin_off864) + 576  [0x10004cb08]  kem.c:188
-      1 shake256  (in spin_off864) + 36  [0x10004ea7c]  fips202.c:873
-      1 shake256  (in spin_off864) + 72  [0x10004eaa0]  fips202.c:878
-      + 1 shake256_absorb  (in spin_off864) + 4  [0x10004e5f0]  fips202.c:794
-      1 shake256  (in spin_off864) + 64  [0x10004ea98]  fips202.c:878
-      1 shake256  (in spin_off864) + 88  [0x10004eab0]  fips202.c:881
-      1 shake256  (in spin_off864) + 120  [0x10004ead0]  fips202.c:885
-      + 1 shake256_squeezeblocks  (in spin_off864) + 24  [0x10004e858]  fips202.c:815
-      1 shake256  (in spin_off864) + 176  [0x10004eb08]  fips202.c:891
-      1 shake256_absorb  (in spin_off864) + 48  [0x10004e61c]  fips202.c:795
-      1 shake256_absorb  (in spin_off864) + 576  [0x10004e82c]  fips202.c:800
+      + ! 6 _platform_memset  (in libsystem_platform.dylib) + 140,28,...  [0x18565917c,0x18565910c,...]
+      + 1 DYLD-STUB$$memset_s  (in spin_off864) + 4  [0x100d7783c]
+      + 1 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      6 memset_s  (in libsystem_c.dylib) + 92  [0x1854df2b0]
+      5 poly_baseinv  (in spin_off864) + 1340,1372,...  [0x100d7192c,0x100d7194c,...]  poly.c:0
+      5 poly_baseinv  (in spin_off864) + 1160  [0x100d71878]  poly.c:210
+      + 3 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      + ! 3 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+      + 1 DYLD-STUB$$memset_s  (in spin_off864) + 4  [0x100d7783c]
+      + 1 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      3 crypto_kem_keypair  (in spin_off864) + 448  [0x100d70c20]  kem.c:182
+      + 3 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      +   2 _platform_memset  (in libsystem_platform.dylib) + 12,140  [0x1856590fc,0x18565917c]
+      +   1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+      3 shake256  (in spin_off864) + 136  [0x100d72c78]  fips202.c:890
+      2 _xzm_free  (in libsystem_malloc.dylib) + 1548,1552  [0x18546d678,0x18546d67c]
+      2 poly_baseinv  (in spin_off864) + 1404  [0x100d7196c]  poly.c:223
+      2 shake256  (in spin_off864) + 120  [0x100d72c68]  fips202.c:885
+      + 2 shake256_squeezeblocks  (in spin_off864) + 24  [0x100d729f0]  fips202.c:815
+      1 crypto_kem_keypair  (in spin_off864) + 424  [0x100d70c08]  kem.c:181
+      + 1 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+      +   1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+      1 crypto_kem_keypair  (in spin_off864) + 400  [0x100d70bf0]  kem.c:181
+      1 crypto_kem_keypair  (in spin_off864) + 576  [0x100d70ca0]  kem.c:188
+      1 main  (in spin_off864) + 844  [0x100d7093c]  spin.c:32
+      + 1 crypto_kem_keypair  (in spin_off864) + 20  [0x100d70a74]  kem.c:159
+      1 shake256  (in spin_off864) + 36  [0x100d72c14]  fips202.c:873
+      1 shake256  (in spin_off864) + 72  [0x100d72c38]  fips202.c:878
+      + 1 shake256_absorb  (in spin_off864) + 20  [0x100d72798]  fips202.c:794
+      1 shake256  (in spin_off864) + 64  [0x100d72c30]  fips202.c:878
+      1 shake256  (in spin_off864) + 88  [0x100d72c48]  fips202.c:881
+      1 shake256_absorb  (in spin_off864) + 68  [0x100d727c8]  fips202.c:0
+      1 shake256_squeezeblocks  (in spin_off864) + 204  [0x100d72aa4]  fips202.c:0
 
 Total number in stack (recursive counted multiple, when >=5):
-        10       _platform_memset  (in libsystem_platform.dylib) + 0  [0x1856590f0]
+        9       _platform_memset  (in libsystem_platform.dylib) + 0  [0x1856590f0]
         9       memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        7       memset_s  (in libsystem_c.dylib) + 0  [0x1854df254]
+        6       memset_s  (in libsystem_c.dylib) + 0  [0x1854df254]
 
 Sort by top of stack, same collapsed (when >= 5):
-        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off864)        2632
-        poly_baseinv  (in spin_off864)        495
-        looptop_baseinv_1  (in spin_off864)        369
-        looptop  (in spin_off864)        337
-        loop_tobytes  (in spin_off864)        308
-        looptop_012  (in spin_off864)        264
-        looptop_3456  (in spin_off864)        263
-        _platform_memset  (in libsystem_platform.dylib)        87
-        loop_cbd  (in spin_off864)        71
-        _platform_memmove  (in libsystem_platform.dylib)        40
-        loop_triple  (in spin_off864)        39
-        mach_absolute_time  (in libsystem_kernel.dylib)        32
-        shake256_absorb  (in spin_off864)        27
-        _xzm_free  (in libsystem_malloc.dylib)        19
-        _xzm_xzone_malloc_tiny  (in libsystem_malloc.dylib)        19
-        shake256_squeezeblocks  (in spin_off864)        19
-        memset_s  (in libsystem_c.dylib)        12
-        randombytes  (in spin_off864)        10
-        _xzm_malloc_zone_malloc_type_calloc_entry  (in libsystem_malloc.dylib)        9
-        ___chkstk_darwin  (in libsystem_pthread.dylib)        8
-        shake256  (in spin_off864)        7
-        DYLD-STUB$$mkostemps  (in libsystem_c.dylib)        6
-        _malloc_zone_calloc  (in libsystem_malloc.dylib)        6
-        _xzm_xzone_malloc  (in libsystem_malloc.dylib)        6
-        _free  (in libsystem_malloc.dylib)        5
+        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_off864)        2595
+        poly_baseinv  (in spin_off864)        481
+        looptop_baseinv_1  (in spin_off864)        384
+        looptop  (in spin_off864)        353
+        looptop_3456  (in spin_off864)        282
+        loop_tobytes  (in spin_off864)        258
+        looptop_012  (in spin_off864)        239
+        _platform_memset  (in libsystem_platform.dylib)        96
+        loop_cbd  (in spin_off864)        64
+        _platform_memmove  (in libsystem_platform.dylib)        44
+        loop_triple  (in spin_off864)        42
+        mach_absolute_time  (in libsystem_kernel.dylib)        41
+        _xzm_free  (in libsystem_malloc.dylib)        26
+        shake256_absorb  (in spin_off864)        26
+        _xzm_xzone_malloc_tiny  (in libsystem_malloc.dylib)        25
+        randombytes  (in spin_off864)        20
+        shake256_squeezeblocks  (in spin_off864)        20
+        memset_s  (in libsystem_c.dylib)        16
+        _xzm_malloc_zone_malloc_type_calloc_entry  (in libsystem_malloc.dylib)        11
+        ___chkstk_darwin  (in libsystem_pthread.dylib)        9
+        _xzm_xzone_malloc  (in libsystem_malloc.dylib)        8
+        _malloc_zone_calloc  (in libsystem_malloc.dylib)        7
+        shake256  (in spin_off864)        6
 
 Binary Images:
-       0x10004c000 -        0x10005417f +spin_off864 (0) <617D1FDC-E622-38A8-B029-01F5645E7C9E> /tmp/*/spin_off864
+       0x100d70000 -        0x100d78337 +spin_off864 (0) <E957DCE4-4508-398A-9E55-4F27334C16E1> /tmp/*/spin_off864
        0x1851ec000 -        0x18523eb4b  libobjc.A.dylib (951.7) <2E858E25-1FF6-3DA6-84F6-911630620512> /usr/lib/libobjc.A.dylib
        0x18523f000 -        0x185273b34  libdyld.dylib (1376.6) <2C3C5F75-3686-39A1-9202-BD4D2133379D> /usr/lib/system/libdyld.dylib
        0x185274000 -        0x185319ec7  dyld (1.0.0 - 1376.6) <9F682DCF-340C-3BFA-BCDD-DD702F30313E> /usr/lib/dyld

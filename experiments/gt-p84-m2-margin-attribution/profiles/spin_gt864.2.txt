@@ -1,572 +1,572 @@
-Analysis of sampling spin_gt864 (pid 42708) every 1 millisecond
-Process:         spin_gt864 [42708]
+Analysis of sampling spin_gt864 (pid 49920) every 1 millisecond
+Process:         spin_gt864 [49920]
 Path:            /private/tmp/*/spin_gt864
-Load Address:    0x100e80000
+Load Address:    0x102004000
 Identifier:      spin_gt864
 Version:         0
 Code Type:       ARM64
 Platform:        macOS
-Parent Process:  zsh [42701]
+Parent Process:  zsh [49470]
 Target Type:     live task
 
-Date/Time:       2026-09-21 18:02:02.320 +0800
-Launch Time:     2026-09-21 18:01:58.284 +0800
+Date/Time:       2026-09-21 21:18:13.800 +0800
+Launch Time:     2026-09-21 21:18:07.766 +0800
 OS Version:      macOS 26.4.1 (25E253)
 Report Version:  7
 Analysis Tool:   /usr/bin/sample
 
-Physical footprint:         976K
+Physical footprint:         992K
 Physical footprint (peak):  992K
 Idle exit:                  untracked
 ----
 
 Call graph:
-    5080 Thread_23906937   DispatchQueue_1: com.apple.main-thread  (serial)
-      5080 start  (in dyld) + 6992  [0x185293da4]
-        5079 main  (in spin_gt864) + 492  [0x100e807dc]  spin.c:23
-        + 2161 crypto_kem_dec  (in spin_gt864) + 528  [0x100e85cec]  kem.c:291
-        + ! 1743 shake256_prefixed  (in spin_gt864) + 264  [0x100e80a6c]  fips202.c:438
-        + ! : 1743 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 456,1080,...  [0x100e8c0fc,0x100e8c36c,...]
-        + ! 393 shake256_prefixed  (in spin_gt864) + 740  [0x100e80c48]  fips202.c:464
-        + ! : 393 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 456,768,...  [0x100e8c0fc,0x100e8c234,...]
-        + ! 7 shake256_prefixed  (in spin_gt864) + 204,160,...  [0x100e80a30,0x100e80a04,...]  fips202.c:435
-        + ! 5 shake256_prefixed  (in spin_gt864) + 764  [0x100e80c60]  fips202.c:469
-        + ! 3 shake256_prefixed  (in spin_gt864) + 236,552  [0x100e80a50,0x100e80b8c]  fips202.c:0
-        + ! 2 shake256_prefixed  (in spin_gt864) + 96  [0x100e809c4]  fips202.c:424
-        + ! 1 shake256_prefixed  (in spin_gt864) + 556  [0x100e80b90]  fips202.c:0
-        + ! : 1 DYLD-STUB$$mkdtempat_np  (in libsystem_c.dylib) + 8  [0x185557ab0]
-        + ! 1 shake256_prefixed  (in spin_gt864) + 16  [0x100e80974]  fips202.c:416
-        + ! 1 shake256_prefixed  (in spin_gt864) + 280  [0x100e80a7c]  fips202.c:428
-        + ! 1 shake256_prefixed  (in spin_gt864) + 332  [0x100e80ab0]  fips202.c:431
-        + ! 1 shake256_prefixed  (in spin_gt864) + 264  [0x100e80a6c]  fips202.c:439
-        + ! 1 shake256_prefixed  (in spin_gt864) + 788  [0x100e80c78]  fips202.c:471
-        + ! 1 shake256_prefixed  (in spin_gt864) + 708  [0x100e80c28]  fips202.c:474
-        + ! 1 shake256_prefixed  (in spin_gt864) + 1044  [0x100e80d78]  fips202.c:479
-        + 604 crypto_kem_dec  (in spin_gt864) + 592  [0x100e85d2c]  kem.c:297
-        + ! 380 shake256_prefixed  (in spin_gt864) + 740  [0x100e80c48]  fips202.c:464
-        + ! : 380 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 124,768,...  [0x100e8bfb0,0x100e8c234,...]
-        + ! 201 shake256_prefixed  (in spin_gt864) + 264  [0x100e80a6c]  fips202.c:438
-        + ! : 201 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 1080,456,...  [0x100e8c36c,0x100e8c0fc,...]
-        + ! 11 shake256_prefixed  (in spin_gt864) + 764  [0x100e80c60]  fips202.c:469
-        + ! 2 shake256_prefixed  (in spin_gt864) + 96  [0x100e809c4]  fips202.c:424
-        + ! 2 shake256_prefixed  (in spin_gt864) + 648  [0x100e80bec]  fips202.c:456
-        + ! 2 shake256_prefixed  (in spin_gt864) + 1060  [0x100e80d88]  fips202.c:479
-        + ! 1 shake256_prefixed  (in spin_gt864) + 556  [0x100e80b90]  fips202.c:0
-        + ! : 1 _platform_memmove  (in libsystem_platform.dylib) + 452  [0x185659584]
-        + ! 1 shake256_prefixed  (in spin_gt864) + 552  [0x100e80b8c]  fips202.c:0
-        + ! 1 shake256_prefixed  (in spin_gt864) + 24  [0x100e8097c]  fips202.c:416
-        + ! 1 shake256_prefixed  (in spin_gt864) + 280  [0x100e80a7c]  fips202.c:428
-        + ! 1 shake256_prefixed  (in spin_gt864) + 612  [0x100e80bc8]  fips202.c:458
-        + ! 1 shake256_prefixed  (in spin_gt864) + 768  [0x100e80c64]  fips202.c:468
-        + 520 crypto_kem_dec  (in spin_gt864) + 436  [0x100e85c90]  kem.c:283
-        + ! 520 poly_invntt_ternary  (in spin_gt864) + 72  [0x100e8947c]  inverse_api.c:23
-        + !   59 invntt_ternary_asm  (in spin_gt864) + 468  [0x100e89a14]
-        + !   : 58 <deduplicated_symbol>  (in spin_gt864) + 124,68,...  [0x100e8b57c,0x100e8b544,...]
-        + !   : 1 crepmod3_slothy_end  (in spin_gt864) + 8  [0x100e8b588]
-        + !   53 invntt_ternary_asm  (in spin_gt864) + 400  [0x100e899d0]
-        + !   : 53 invntt16_asm  (in spin_gt864) + 1048,1596,...  [0x100e8a570,0x100e8a794,...]
-        + !   50 invntt_ternary_asm  (in spin_gt864) + 460  [0x100e89a0c]
-        + !   : 50 invntt16_tail_asm  (in spin_gt864) + 2120,96,...  [0x100e8b3e8,0x100e8ac00,...]
-        + !   47 invntt_ternary_asm  (in spin_gt864) + 424  [0x100e899e8]
-        + !   : 47 invntt16_asm  (in spin_gt864) + 440,996,...  [0x100e8a310,0x100e8a53c,...]
-        + !   45 invntt_ternary_asm  (in spin_gt864) + 376  [0x100e899b8]
-        + !   : 45 invntt16_asm  (in spin_gt864) + 1620,204,...  [0x100e8a7ac,0x100e8a224,...]
-        + !   45 invntt_ternary_asm  (in spin_gt864) + 412  [0x100e899dc]
-        + !   : 45 invntt16_asm  (in spin_gt864) + 1856,768,...  [0x100e8a898,0x100e8a458,...]
-        + !   38 invntt_ternary_asm  (in spin_gt864) + 388  [0x100e899c4]
-        + !   : 38 invntt16_asm  (in spin_gt864) + 68,276,...  [0x100e8a19c,0x100e8a26c,...]
-        + !   37 invntt_ternary_asm  (in spin_gt864) + 436  [0x100e899f4]
-        + !   : 37 invntt16_asm  (in spin_gt864) + 44,496,...  [0x100e8a184,0x100e8a348,...]
-        + !   17 invntt_ternary_asm  (in spin_gt864) + 232  [0x100e89928]
-        + !   : 17 packed_i9  (in spin_gt864) + 176,32,...  [0x100e8b738,0x100e8b6a8,...]
-        + !   14 invntt_ternary_asm  (in spin_gt864) + 332  [0x100e8998c]
-        + !   : 14 packed_i9  (in spin_gt864) + 200,176,...  [0x100e8b750,0x100e8b738,...]
-        + !   14 invntt_ternary_asm  (in spin_gt864) + 352  [0x100e899a0]
-        + !   : 14 packed_i9  (in spin_gt864) + 64,380,...  [0x100e8b6c8,0x100e8b804,...]
-        + !   12 invntt_ternary_asm  (in spin_gt864) + 172  [0x100e898ec]
-        + !   : 12 packed_i9  (in spin_gt864) + 620,712,...  [0x100e8b8f4,0x100e8b950,...]
-        + !   12 invntt_ternary_asm  (in spin_gt864) + 292  [0x100e89964]
-        + !   : 12 packed_i9  (in spin_gt864) + 176,504,...  [0x100e8b738,0x100e8b880,...]
-        + !   11 invntt_ternary_asm  (in spin_gt864) + 152  [0x100e898d8]
-        + !   : 11 packed_i9  (in spin_gt864) + 248,688,...  [0x100e8b780,0x100e8b938,...]
-        + !   11 invntt_ternary_asm  (in spin_gt864) + 252  [0x100e8993c]
-        + !   : 11 packed_i9  (in spin_gt864) + 632,684,...  [0x100e8b900,0x100e8b934,...]
-        + !   11 invntt_ternary_asm  (in spin_gt864) + 312  [0x100e89978]
-        + !   : 11 packed_i9  (in spin_gt864) + 156,288,...  [0x100e8b724,0x100e8b7a8,...]
-        + !   10 invntt_ternary_asm  (in spin_gt864) + 132  [0x100e898c4]
-        + !   : 10 packed_i9  (in spin_gt864) + 36,340,...  [0x100e8b6ac,0x100e8b7dc,...]
-        + !   10 invntt_ternary_asm  (in spin_gt864) + 36,272,...  [0x100e89864,0x100e89950,...]
-        + !   9 invntt_ternary_asm  (in spin_gt864) + 272  [0x100e89950]
-        + !   : 9 packed_i9  (in spin_gt864) + 324,268,...  [0x100e8b7cc,0x100e8b794,...]
-        + !   8 invntt_ternary_asm  (in spin_gt864) + 212  [0x100e89914]
-        + !   : 8 packed_i9  (in spin_gt864) + 200,320,...  [0x100e8b750,0x100e8b7c8,...]
-        + !   7 invntt_ternary_asm  (in spin_gt864) + 192  [0x100e89900]
-        + !     7 packed_i9  (in spin_gt864) + 32,176,...  [0x100e8b6a8,0x100e8b738,...]
-        + 274 crypto_kem_dec  (in spin_gt864) + 448  [0x100e85c9c]  kem.c:286
-        + ! 274 poly_ntt  (in spin_gt864) + 40  [0x100e82acc]  ntt_api.c:14
-        + !   53 ntt_asm  (in spin_gt864) + 56  [0x100e836f4]
-        + !   : 51 .Ltop_split_loop  (in spin_gt864) + 160,20,...  [0x100e849d0,0x100e84944,...]
-        + !   : 2 ntt_top_asm  (in spin_gt864) + 56  [0x100e84928]
-        + !   45 ntt9_asm  (in spin_gt864) + 52  [0x100e83764]
-        + !   : 45 .Lntt_one_bank  (in spin_gt864) + 352,516,...  [0x100e83af4,0x100e83b98,...]
-        + !   39 ntt9_asm  (in spin_gt864) + 244  [0x100e83824]
-        + !   : 37 .Lntt_one_bank  (in spin_gt864) + 2040,1080,...  [0x100e8418c,0x100e83dcc,...]
-        + !   : 2 ntt9_asm  (in spin_gt864) + 276,312  [0x100e83844,0x100e83868]
-        + !   33 ntt9_asm  (in spin_gt864) + 148  [0x100e837c4]
-        + !   : 32 .Lntt_one_bank  (in spin_gt864) + 88,508,...  [0x100e839ec,0x100e83b90,...]
-        + !   : 1 ntt9_asm  (in spin_gt864) + 180  [0x100e837e4]
-        + !   32 ntt9_asm  (in spin_gt864) + 340  [0x100e83884]
-        + !   : 32 .Lntt_one_bank  (in spin_gt864) + 1104,1680,...  [0x100e83de4,0x100e84024,...]
-        + !   32 ntt9_asm  (in spin_gt864) + 436  [0x100e838e4]
-        + !   : 32 .Lntt_one_bank  (in spin_gt864) + 1452,560,...  [0x100e83f40,0x100e83bc4,...]
-        + !   32 ntt9_asm  (in spin_gt864) + 532  [0x100e83944]
-        + !   : 31 .Lntt_one_bank  (in spin_gt864) + 996,656,...  [0x100e83d78,0x100e83c24,...]
-        + !   : 1 ntt9_asm  (in spin_gt864) + 564  [0x100e83964]
-        + !   7 ntt_asm  (in spin_gt864) + 68  [0x100e83700]
-        + !   : 7 ntt_tail_asm  (in spin_gt864) + 88,284,...  [0x100e85dd8,0x100e85e9c,...]
-        + !   1 ntt_asm  (in spin_gt864) + 8  [0x100e836c4]
-        + 266 crypto_kem_dec  (in spin_gt864) + 616  [0x100e85d44]  kem.c:300
-        + ! 266 poly_ntt  (in spin_gt864) + 40  [0x100e82acc]  ntt_api.c:14
-        + !   48 ntt_asm  (in spin_gt864) + 56  [0x100e836f4]
-        + !   : 44 .Ltop_split_loop  (in spin_gt864) + 160,72,...  [0x100e849d0,0x100e84978,...]
-        + !   : 4 ntt_top_asm  (in spin_gt864) + 28,48  [0x100e8490c,0x100e84920]
-        + !   47 ntt9_asm  (in spin_gt864) + 52  [0x100e83764]
-        + !   : 47 .Lntt_one_bank  (in spin_gt864) + 1668,672,...  [0x100e84018,0x100e83c34,...]
-        + !   39 ntt9_asm  (in spin_gt864) + 148  [0x100e837c4]
-        + !   : 39 .Lntt_one_bank  (in spin_gt864) + 1436,64,...  [0x100e83f30,0x100e839d4,...]
-        + !   35 ntt9_asm  (in spin_gt864) + 340  [0x100e83884]
-        + !   : 35 .Lntt_one_bank  (in spin_gt864) + 1076,408,...  [0x100e83dc8,0x100e83b2c,...]
-        + !   33 ntt9_asm  (in spin_gt864) + 436  [0x100e838e4]
-        + !   : 33 .Lntt_one_bank  (in spin_gt864) + 1000,1960,...  [0x100e83d7c,0x100e8413c,...]
-        + !   32 ntt9_asm  (in spin_gt864) + 532  [0x100e83944]
-        + !   : 31 .Lntt_one_bank  (in spin_gt864) + 968,912,...  [0x100e83d5c,0x100e83d24,...]
-        + !   : 1 ntt9_asm  (in spin_gt864) + 600  [0x100e83988]
-        + !   30 ntt9_asm  (in spin_gt864) + 244  [0x100e83824]
-        + !   : 30 .Lntt_one_bank  (in spin_gt864) + 596,116,...  [0x100e83be8,0x100e83a08,...]
-        + !   2 ntt_asm  (in spin_gt864) + 68  [0x100e83700]
-        + !     2 ntt_tail_asm  (in spin_gt864) + 300  [0x100e85eac]
-        + 174 crypto_kem_dec  (in spin_gt864) + 632  [0x100e85d54]  kem.c:301
-        + ! 86 tobytes_compare_asm  (in spin_gt864) + 60  [0x100e85efc]
-        + ! : 12 <deduplicated_symbol>  (in spin_gt864) + 60,116,...  [0x100e866b4,0x100e866ec,...]
-        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 68,40,...  [0x100e871b4,0x100e87198,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 144,64,...  [0x100e86068,0x100e86018,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 72,104,...  [0x100e864b4,0x100e864d4,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 240,20,...  [0x100e86cf4,0x100e86c18,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 228,44,...  [0x100e8736c,0x100e872b4,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 20,32,...  [0x100e86598,0x100e865a4,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 252,100,...  [0x100e868b0,0x100e86818,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 20,116,...  [0x100e86d18,0x100e86d78,...]
-        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 8,88,...  [0x100e86148,0x100e86198,...]
-        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 32,72,...  [0x100e86370,0x100e86398,...]
-        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 24,160,...  [0x100e8706c,0x100e870f4,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 80,100  [0x100e86298,0x100e862ac]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 100,132  [0x100e8692c,0x100e8694c]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 148,212,...  [0x100e86a74,0x100e86ab4,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 124,92  [0x100e86b54,0x100e86b34]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 8,36,...  [0x100e86e4c,0x100e86e68,...]
-        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 232  [0x100e87034]
-        + ! 85 tobytes_compare_asm  (in spin_gt864) + 40  [0x100e85ee8]
-        + ! : 9 <deduplicated_symbol>  (in spin_gt864) + 44,16,...  [0x100e86498,0x100e8647c,...]
-        + ! : 9 <deduplicated_symbol>  (in spin_gt864) + 200,60,...  [0x100e86ba0,0x100e86b14,...]
-        + ! : 8 <deduplicated_symbol>  (in spin_gt864) + 32,180,...  [0x100e868e8,0x100e8697c,...]
-        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 28,56,...  [0x100e86f68,0x100e86f84,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 52,80,...  [0x100e867e8,0x100e86804,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 168,92,...  [0x100e861e8,0x100e8619c,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 280,24,...  [0x100e86468,0x100e86368,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 160,64,...  [0x100e86624,0x100e865c4,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 44,72,...  [0x100e87080,0x100e8709c,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 180,80,...  [0x100e87224,0x100e871c0,...]
-        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 300,60,...  [0x100e867a4,0x100e866b4,...]
-        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 116,156,...  [0x100e872fc,0x100e87324,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 8,228  [0x100e869e8,0x100e86ac4]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 276,304  [0x100e86e18,0x100e86e34]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 64,164,...  [0x100e86e84,0x100e86ee8,...]
-        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 80,332  [0x100e86028,0x100e86124]
-        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 220  [0x100e86324]
-        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 228  [0x100e86ce8]
-        + ! 3 tobytes_compare_asm  (in spin_gt864) + 164,216,...  [0x100e85f64,0x100e85f98,...]
-        + 172 crypto_kem_dec  (in spin_gt864) + 424  [0x100e85c84]  kem.c:282
-        + ! 170 .Lbm_tile  (in spin_gt864) + 20  [0x100e89774]
-        + ! : 154 bm_rinv_tile  (in spin_gt864) + 240,192,...  [0x100e8b680,0x100e8b650,...]
-        + ! : 16 .Lbm_tile  (in spin_gt864) + 20,44,...  [0x100e89774,0x100e8978c,...]
-        + ! 1 basemul_rinv_asm  (in spin_gt864) + 24  [0x100e89738]
-        + ! 1 crypto_kem_dec  (in spin_gt864) + 424  [0x100e85c84]  kem.c:282
-        + !   1 .Lbm_tile  (in spin_gt864) + 4  [0x100e89764]
-        + 161 crypto_kem_dec  (in spin_gt864) + 508  [0x100e85cd8]  kem.c:290
-        + ! 81 tobytes_small_asm  (in spin_gt864) + 52  [0x100e88454]
-        + ! : 9 <deduplicated_symbol>  (in spin_gt864) + 24,136,...  [0x100e88fe8,0x100e89058,...]
-        + ! : 8 <deduplicated_symbol>  (in spin_gt864) + 176,12,...  [0x100e88f88,0x100e88ee4,...]
-        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 232,12,...  [0x100e88ae4,0x100e88a08,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 24,96,...  [0x100e88968,0x100e889b0,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 56,72,...  [0x100e88cc4,0x100e88cd4,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 184,208,...  [0x100e89208,0x100e89220,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 52,84,...  [0x100e89328,0x100e89348,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 216,52,...  [0x100e885e4,0x100e88540,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 44,16,...  [0x100e89250,0x100e89234,...]
-        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 156,4,...  [0x100e88788,0x100e886f0,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 44,72,...  [0x100e88be8,0x100e88c04,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 104,192,...  [0x100e88da4,0x100e88dfc,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 24,72  [0x100e88e38,0x100e88e68]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 180,128  [0x100e89144,0x100e89110]
-        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 28,56  [0x100e88648,0x100e88664]
-        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 92,196  [0x100e888dc,0x100e88944]
-        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 144  [0x100e88b80]
-        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 148  [0x100e88840]
-        + ! 78 tobytes_small_asm  (in spin_gt864) + 40  [0x100e88448]
-        + ! : 10 <deduplicated_symbol>  (in spin_gt864) + 24,80,...  [0x100e88644,0x100e8867c,...]
-        + ! : 8 <deduplicated_symbol>  (in spin_gt864) + 116,160,...  [0x100e88580,0x100e885ac,...]
-        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 104,236,...  [0x100e88a64,0x100e88ae8,...]
-        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 16,92,...  [0x100e88b00,0x100e88b4c,...]
-        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 36,64,...  [0x100e888a4,0x100e888c0,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 12,24,...  [0x100e88d48,0x100e88d54,...]
-        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 88,168,...  [0x100e8934c,0x100e8939c,...]
-        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 28,120,...  [0x100e887c8,0x100e88824,...]
-        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 60,84  [0x100e8898c,0x100e889a4]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 32,84,...  [0x100e8870c,0x100e88740,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 12,48,...  [0x100e88bc8,0x100e88bec,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 0,28,...  [0x100e88c8c,0x100e88ca8,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 52,92,...  [0x100e89004,0x100e8902c,...]
-        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 160  [0x100e892c4]
-        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 24,164  [0x100e88e38,0x100e88ec4]
-        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 116,240  [0x100e88f4c,0x100e88fc8]
-        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 116,152  [0x100e89104,0x100e89128]
-        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 208  [0x100e89220]
-        + ! 2 tobytes_small_asm  (in spin_gt864) + 20,148  [0x100e88434,0x100e884b4]
-        + 154 crypto_kem_dec  (in spin_gt864) + 492  [0x100e85cc8]  kem.c:288
-        + ! 73 basemul_asm  (in spin_gt864) + 132,104,...  [0x100e82b84,0x100e82b68,...]  base.c:111
-        + ! 24 basemul_asm  (in spin_gt864) + 284,268,...  [0x100e82c1c,0x100e82c0c,...]  base.c:115
-        + ! 22 basemul_asm  (in spin_gt864) + 288  [0x100e82c20]  base.c:101
-        + ! 18 basemul_asm  (in spin_gt864) + 216,220,...  [0x100e82bd8,0x100e82bdc,...]  base.c:113
-        + ! 15 basemul_asm  (in spin_gt864) + 236,240,...  [0x100e82bec,0x100e82bf0,...]  base.c:114
-        + ! 2 basemul_asm  (in spin_gt864) + 60  [0x100e82b3c]  base.c:103
-        + 104 crypto_kem_dec  (in spin_gt864) + 116  [0x100e85b50]  kem.c:276
-        + ! 55 frombytes_asm  (in spin_gt864) + 28  [0x100e84a00]  unpack.c:504
-        + ! : 3 transpose_top_checked  (in spin_gt864) + 2068  [0x100e85244]  unpack.c:328
-        + ! : 3 transpose_top_checked  (in spin_gt864) + 3012,3008  [0x100e855f4,0x100e855f0]  unpack.c:501
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 820  [0x100e84d64]  unpack.c:130
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2096  [0x100e85260]  unpack.c:334
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2360  [0x100e85368]  unpack.c:351
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2332  [0x100e8534c]  unpack.c:377
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 200  [0x100e84af8]  unpack.c:38
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2584  [0x100e85448]  unpack.c:417
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 544  [0x100e84c50]  unpack.c:83
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 720  [0x100e84d00]  unpack.c:110
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 760  [0x100e84d28]  unpack.c:116
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 900  [0x100e84db4]  unpack.c:139
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 924  [0x100e84dcc]  unpack.c:141
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 948  [0x100e84de4]  unpack.c:143
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 72  [0x100e84a78]  unpack.c:15
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 980  [0x100e84e04]  unpack.c:150
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1044  [0x100e84e44]  unpack.c:166
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 92  [0x100e84a8c]  unpack.c:17
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1204  [0x100e84ee4]  unpack.c:184
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 124  [0x100e84aac]  unpack.c:19
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1360  [0x100e84f80]  unpack.c:206
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1452  [0x100e84fdc]  unpack.c:228
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1544  [0x100e85038]  unpack.c:234
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1572  [0x100e85054]  unpack.c:237
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1628  [0x100e8508c]  unpack.c:254
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1680  [0x100e850c0]  unpack.c:261
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1800  [0x100e85138]  unpack.c:280
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2028  [0x100e8521c]  unpack.c:326
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2124  [0x100e8527c]  unpack.c:344
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2148  [0x100e85294]  unpack.c:346
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2180  [0x100e852b4]  unpack.c:348
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2208  [0x100e852d0]  unpack.c:350
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2412  [0x100e8539c]  unpack.c:391
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2556  [0x100e8542c]  unpack.c:415
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2644  [0x100e85484]  unpack.c:421
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 284  [0x100e84b4c]  unpack.c:46
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2796  [0x100e8551c]  unpack.c:470
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2824  [0x100e85538]  unpack.c:472
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 308  [0x100e84b64]  unpack.c:48
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2948  [0x100e855b4]  unpack.c:485
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2976  [0x100e855d0]  unpack.c:492
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 332  [0x100e84b7c]  unpack.c:50
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 360  [0x100e84b98]  unpack.c:56
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 424  [0x100e84bd8]  unpack.c:73
-        + ! 49 frombytes_asm  (in spin_gt864) + 44  [0x100e84a10]  unpack.c:505
-        + !   2 transpose_top_checked  (in spin_gt864) + 1128  [0x100e84e98]  unpack.c:172
-        + !   2 transpose_top_checked  (in spin_gt864) + 1392  [0x100e84fa0]  unpack.c:214
-        + !   2 transpose_top_checked  (in spin_gt864) + 1784  [0x100e85128]  unpack.c:276
-        + !   2 transpose_top_checked  (in spin_gt864) + 248  [0x100e84b28]  unpack.c:44
-        + !   2 transpose_top_checked  (in spin_gt864) + 460  [0x100e84bfc]  unpack.c:75
-        + !   1 transpose_top_checked  (in spin_gt864) + 628  [0x100e84ca4]  unpack.c:104
-        + !   1 transpose_top_checked  (in spin_gt864) + 800  [0x100e84d50]  unpack.c:124
-        + !   1 transpose_top_checked  (in spin_gt864) + 772  [0x100e84d34]  unpack.c:127
-        + !   1 transpose_top_checked  (in spin_gt864) + 48  [0x100e84a60]  unpack.c:13
-        + !   1 transpose_top_checked  (in spin_gt864) + 836  [0x100e84d74]  unpack.c:135
-        + !   1 transpose_top_checked  (in spin_gt864) + 916  [0x100e84dc4]  unpack.c:141
-        + !   1 transpose_top_checked  (in spin_gt864) + 996  [0x100e84e14]  unpack.c:154
-        + !   1 transpose_top_checked  (in spin_gt864) + 1012  [0x100e84e24]  unpack.c:158
-        + !   1 transpose_top_checked  (in spin_gt864) + 1072  [0x100e84e60]  unpack.c:168
-        + !   1 transpose_top_checked  (in spin_gt864) + 1108  [0x100e84e84]  unpack.c:170
-        + !   1 transpose_top_checked  (in spin_gt864) + 1152  [0x100e84eb0]  unpack.c:175
-        + !   1 transpose_top_checked  (in spin_gt864) + 1280  [0x100e84f30]  unpack.c:199
-        + !   1 transpose_top_checked  (in spin_gt864) + 1368  [0x100e84f88]  unpack.c:207
-        + !   1 transpose_top_checked  (in spin_gt864) + 1416  [0x100e84fb8]  unpack.c:220
-        + !   1 transpose_top_checked  (in spin_gt864) + 1528  [0x100e85028]  unpack.c:234
-        + !   1 transpose_top_checked  (in spin_gt864) + 1588  [0x100e85064]  unpack.c:241
-        + !   1 transpose_top_checked  (in spin_gt864) + 1624  [0x100e85088]  unpack.c:252
-        + !   1 transpose_top_checked  (in spin_gt864) + 1668  [0x100e850b4]  unpack.c:261
-        + !   1 transpose_top_checked  (in spin_gt864) + 1724  [0x100e850ec]  unpack.c:265
-        + !   1 transpose_top_checked  (in spin_gt864) + 1908  [0x100e851a4]  unpack.c:308
-        + !   1 transpose_top_checked  (in spin_gt864) + 2132  [0x100e85284]  unpack.c:344
-        + !   1 transpose_top_checked  (in spin_gt864) + 2216  [0x100e852d8]  unpack.c:350
-        + !   1 transpose_top_checked  (in spin_gt864) + 2240  [0x100e852f0]  unpack.c:368
-        + !   1 transpose_top_checked  (in spin_gt864) + 2288  [0x100e85320]  unpack.c:372
-        + !   1 transpose_top_checked  (in spin_gt864) + 2316  [0x100e8533c]  unpack.c:375
-        + !   1 transpose_top_checked  (in spin_gt864) + 2344  [0x100e85358]  unpack.c:380
-        + !   1 transpose_top_checked  (in spin_gt864) + 2436  [0x100e853b4]  unpack.c:393
-        + !   1 transpose_top_checked  (in spin_gt864) + 2508  [0x100e853fc]  unpack.c:411
-        + !   1 transpose_top_checked  (in spin_gt864) + 2696  [0x100e854b8]  unpack.c:440
-        + !   1 transpose_top_checked  (in spin_gt864) + 2724  [0x100e854d4]  unpack.c:455
-        + !   1 transpose_top_checked  (in spin_gt864) + 268  [0x100e84b3c]  unpack.c:46
-        + !   1 transpose_top_checked  (in spin_gt864) + 2824  [0x100e85538]  unpack.c:472
-        + !   1 transpose_top_checked  (in spin_gt864) + 2852  [0x100e85554]  unpack.c:474
-        + !   1 transpose_top_checked  (in spin_gt864) + 2880  [0x100e85570]  unpack.c:478
-        + !   1 transpose_top_checked  (in spin_gt864) + 2972  [0x100e855cc]  unpack.c:491
-        + !   1 transpose_top_checked  (in spin_gt864) + 2996  [0x100e855e4]  unpack.c:497
-        + !   1 transpose_top_checked  (in spin_gt864) + 364  [0x100e84b9c]  unpack.c:56
-        + !   1 transpose_top_checked  (in spin_gt864) + 392  [0x100e84bb8]  unpack.c:63
-        + !   1 transpose_top_checked  (in spin_gt864) + 560  [0x100e84c60]  unpack.c:88
-        + 101 crypto_kem_dec  (in spin_gt864) + 100  [0x100e85b40]  kem.c:275
-        + ! 60 frombytes_asm  (in spin_gt864) + 44  [0x100e84a10]  unpack.c:505
-        + ! : 3 transpose_top_checked  (in spin_gt864) + 1208  [0x100e84ee8]  unpack.c:184
-        + ! : 3 transpose_top_checked  (in spin_gt864) + 1360  [0x100e84f80]  unpack.c:206
-        + ! : 3 transpose_top_checked  (in spin_gt864) + 1860  [0x100e85174]  unpack.c:299
-        + ! : 3 transpose_top_checked  (in spin_gt864) + 340  [0x100e84b84]  unpack.c:51
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 1180  [0x100e84ecc]  unpack.c:180
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 124  [0x100e84aac]  unpack.c:19
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 152  [0x100e84ac8]  unpack.c:24
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2236  [0x100e852ec]  unpack.c:368
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2264  [0x100e85308]  unpack.c:370
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2700  [0x100e854bc]  unpack.c:441
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2728  [0x100e854d8]  unpack.c:456
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2916  [0x100e85594]  unpack.c:482
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 636  [0x100e84cac]  unpack.c:104
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 720  [0x100e84d00]  unpack.c:110
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 744  [0x100e84d18]  unpack.c:112
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 792  [0x100e84d48]  unpack.c:122
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 820  [0x100e84d64]  unpack.c:130
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 896  [0x100e84db0]  unpack.c:139
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 928  [0x100e84dd0]  unpack.c:141
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 68  [0x100e84a74]  unpack.c:15
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 100  [0x100e84a94]  unpack.c:17
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1088  [0x100e84e70]  unpack.c:170
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1320  [0x100e84f58]  unpack.c:201
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1452  [0x100e84fdc]  unpack.c:228
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1484  [0x100e84ffc]  unpack.c:230
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1512  [0x100e85018]  unpack.c:232
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1536  [0x100e85030]  unpack.c:234
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1576  [0x100e85058]  unpack.c:238
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1604  [0x100e85074]  unpack.c:243
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1676  [0x100e850bc]  unpack.c:261
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1756  [0x100e8510c]  unpack.c:270
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1940  [0x100e851c4]  unpack.c:310
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2056  [0x100e85238]  unpack.c:328
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2292  [0x100e85324]  unpack.c:373
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2320  [0x100e85340]  unpack.c:375
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2532  [0x100e85414]  unpack.c:413
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2556  [0x100e8542c]  unpack.c:415
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2584  [0x100e85448]  unpack.c:417
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2616  [0x100e85468]  unpack.c:419
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2856  [0x100e85558]  unpack.c:474
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2948  [0x100e855b4]  unpack.c:485
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 368  [0x100e84ba0]  unpack.c:57
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 396  [0x100e84bbc]  unpack.c:64
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 588  [0x100e84c7c]  unpack.c:94
-        + ! 41 frombytes_asm  (in spin_gt864) + 28  [0x100e84a00]  unpack.c:504
-        + !   3 transpose_top_checked  (in spin_gt864) + 772  [0x100e84d34]  unpack.c:127
-        + !   2 transpose_top_checked  (in spin_gt864) + 1072  [0x100e84e60]  unpack.c:168
-        + !   2 transpose_top_checked  (in spin_gt864) + 1704  [0x100e850d8]  unpack.c:263
-        + !   2 transpose_top_checked  (in spin_gt864) + 2280  [0x100e85318]  unpack.c:372
-        + !   2 transpose_top_checked  (in spin_gt864) + 2532  [0x100e85414]  unpack.c:413
-        + !   1 transpose_top_checked  (in spin_gt864) + 636  [0x100e84cac]  unpack.c:104
-        + !   1 transpose_top_checked  (in spin_gt864) + 12  [0x100e84a3c]  unpack.c:11
-        + !   1 transpose_top_checked  (in spin_gt864) + 800  [0x100e84d50]  unpack.c:124
-        + !   1 transpose_top_checked  (in spin_gt864) + 48  [0x100e84a60]  unpack.c:13
-        + !   1 transpose_top_checked  (in spin_gt864) + 868  [0x100e84d94]  unpack.c:137
-        + !   1 transpose_top_checked  (in spin_gt864) + 896  [0x100e84db0]  unpack.c:139
-        + !   1 transpose_top_checked  (in spin_gt864) + 972  [0x100e84dfc]  unpack.c:148
-        + !   1 transpose_top_checked  (in spin_gt864) + 76  [0x100e84a7c]  unpack.c:15
-        + !   1 transpose_top_checked  (in spin_gt864) + 1180  [0x100e84ecc]  unpack.c:180
-        + !   1 transpose_top_checked  (in spin_gt864) + 1224  [0x100e84ef8]  unpack.c:187
-        + !   1 transpose_top_checked  (in spin_gt864) + 1328  [0x100e84f60]  unpack.c:203
-        + !   1 transpose_top_checked  (in spin_gt864) + 1452  [0x100e84fdc]  unpack.c:228
-        + !   1 transpose_top_checked  (in spin_gt864) + 1500  [0x100e8500c]  unpack.c:231
-        + !   1 transpose_top_checked  (in spin_gt864) + 1588  [0x100e85064]  unpack.c:241
-        + !   1 transpose_top_checked  (in spin_gt864) + 1648  [0x100e850a0]  unpack.c:259
-        + !   1 transpose_top_checked  (in spin_gt864) + 1776  [0x100e85120]  unpack.c:274
-        + !   1 transpose_top_checked  (in spin_gt864) + 1832  [0x100e85158]  unpack.c:295
-        + !   1 transpose_top_checked  (in spin_gt864) + 1916  [0x100e851ac]  unpack.c:308
-        + !   1 transpose_top_checked  (in spin_gt864) + 2048  [0x100e85230]  unpack.c:328
-        + !   1 transpose_top_checked  (in spin_gt864) + 2368  [0x100e85370]  unpack.c:386
-        + !   1 transpose_top_checked  (in spin_gt864) + 2572  [0x100e8543c]  unpack.c:415
-        + !   1 transpose_top_checked  (in spin_gt864) + 2592  [0x100e85450]  unpack.c:417
-        + !   1 transpose_top_checked  (in spin_gt864) + 2616  [0x100e85468]  unpack.c:419
-        + !   1 transpose_top_checked  (in spin_gt864) + 2644  [0x100e85484]  unpack.c:421
-        + !   1 transpose_top_checked  (in spin_gt864) + 240  [0x100e84b20]  unpack.c:43
-        + !   1 transpose_top_checked  (in spin_gt864) + 252  [0x100e84b2c]  unpack.c:44
-        + !   1 transpose_top_checked  (in spin_gt864) + 2988  [0x100e855dc]  unpack.c:495
-        + !   1 transpose_top_checked  (in spin_gt864) + 3012  [0x100e855f4]  unpack.c:501
-        + !   1 transpose_top_checked  (in spin_gt864) + 384  [0x100e84bb0]  unpack.c:60
-        + !   1 transpose_top_checked  (in spin_gt864) + 460  [0x100e84bfc]  unpack.c:75
-        + 98 crypto_kem_dec  (in spin_gt864) + 84  [0x100e85b30]  kem.c:274
-        + ! 60 frombytes_asm  (in spin_gt864) + 28  [0x100e84a00]  unpack.c:504
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 756  [0x100e84d24]  unpack.c:114
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 1096  [0x100e84e78]  unpack.c:170
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 1284,1288  [0x100e84f34,0x100e84f38]  unpack.c:199
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 1592  [0x100e85068]  unpack.c:250
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 1796  [0x100e85134]  unpack.c:266
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 1848  [0x100e85168]  unpack.c:298
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 1880  [0x100e85188]  unpack.c:302
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2436  [0x100e853b4]  unpack.c:393
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 2916,2924  [0x100e85594,0x100e8559c]  unpack.c:482
-        + ! : 2 transpose_top_checked  (in spin_gt864) + 360  [0x100e84b98]  unpack.c:56
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 720  [0x100e84d00]  unpack.c:110
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 780  [0x100e84d3c]  unpack.c:115
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 896  [0x100e84db0]  unpack.c:139
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 924  [0x100e84dcc]  unpack.c:141
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 948  [0x100e84de4]  unpack.c:143
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 68  [0x100e84a74]  unpack.c:15
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1012  [0x100e84e24]  unpack.c:158
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1032  [0x100e84e38]  unpack.c:163
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1072  [0x100e84e60]  unpack.c:168
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1232  [0x100e84f00]  unpack.c:192
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1396  [0x100e84fa4]  unpack.c:209
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1424  [0x100e84fc0]  unpack.c:222
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1596  [0x100e8506c]  unpack.c:242
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1620  [0x100e85084]  unpack.c:248
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1648  [0x100e850a0]  unpack.c:259
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1668  [0x100e850b4]  unpack.c:261
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1756  [0x100e8510c]  unpack.c:270
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1792  [0x100e85130]  unpack.c:278
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 1876  [0x100e85184]  unpack.c:301
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2028  [0x100e8521c]  unpack.c:326
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 180  [0x100e84ae4]  unpack.c:34
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2156  [0x100e8529c]  unpack.c:346
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2200  [0x100e852c8]  unpack.c:348
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2216  [0x100e852d8]  unpack.c:350
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2268  [0x100e8530c]  unpack.c:371
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2324  [0x100e85344]  unpack.c:375
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2352  [0x100e85360]  unpack.c:382
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2356  [0x100e85364]  unpack.c:383
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2404  [0x100e85394]  unpack.c:391
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2612  [0x100e85464]  unpack.c:419
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2732  [0x100e854dc]  unpack.c:457
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2736  [0x100e854e0]  unpack.c:458
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2764  [0x100e854fc]  unpack.c:468
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2792  [0x100e85518]  unpack.c:470
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2820  [0x100e85534]  unpack.c:472
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 300  [0x100e84b5c]  unpack.c:48
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2884  [0x100e85574]  unpack.c:480
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 2976  [0x100e855d0]  unpack.c:492
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 3004  [0x100e855ec]  unpack.c:500
-        + ! : 1 transpose_top_checked  (in spin_gt864) + 400  [0x100e84bc0]  unpack.c:62
-        + ! 38 frombytes_asm  (in spin_gt864) + 44  [0x100e84a10]  unpack.c:505
-        + !   2 transpose_top_checked  (in spin_gt864) + 868  [0x100e84d94]  unpack.c:137
-        + !   2 transpose_top_checked  (in spin_gt864) + 2188  [0x100e852bc]  unpack.c:348
-        + !   2 transpose_top_checked  (in spin_gt864) + 2240  [0x100e852f0]  unpack.c:368
-        + !   2 transpose_top_checked  (in spin_gt864) + 2280,2284  [0x100e85318,0x100e8531c]  unpack.c:372
-        + !   2 transpose_top_checked  (in spin_gt864) + 2456  [0x100e853c8]  unpack.c:399
-        + !   2 transpose_top_checked  (in spin_gt864) + 2572,2576  [0x100e8543c,0x100e85440]  unpack.c:415
-        + !   2 transpose_top_checked  (in spin_gt864) + 2988  [0x100e855dc]  unpack.c:495
-        + !   1 transpose_top_checked  (in spin_gt864) + 712  [0x100e84cf8]  unpack.c:110
-        + !   1 transpose_top_checked  (in spin_gt864) + 772  [0x100e84d34]  unpack.c:127
-        + !   1 transpose_top_checked  (in spin_gt864) + 896  [0x100e84db0]  unpack.c:139
-        + !   1 transpose_top_checked  (in spin_gt864) + 1072  [0x100e84e60]  unpack.c:168
-        + !   1 transpose_top_checked  (in spin_gt864) + 1100  [0x100e84e7c]  unpack.c:169
-        + !   1 transpose_top_checked  (in spin_gt864) + 1180  [0x100e84ecc]  unpack.c:180
-        + !   1 transpose_top_checked  (in spin_gt864) + 1272  [0x100e84f28]  unpack.c:199
-        + !   1 transpose_top_checked  (in spin_gt864) + 140  [0x100e84abc]  unpack.c:21
-        + !   1 transpose_top_checked  (in spin_gt864) + 1384  [0x100e84f98]  unpack.c:212
-        + !   1 transpose_top_checked  (in spin_gt864) + 1416  [0x100e84fb8]  unpack.c:220
-        + !   1 transpose_top_checked  (in spin_gt864) + 1588  [0x100e85064]  unpack.c:241
-        + !   1 transpose_top_checked  (in spin_gt864) + 1804  [0x100e8513c]  unpack.c:280
-        + !   1 transpose_top_checked  (in spin_gt864) + 1836  [0x100e8515c]  unpack.c:296
-        + !   1 transpose_top_checked  (in spin_gt864) + 1880  [0x100e85188]  unpack.c:302
-        + !   1 transpose_top_checked  (in spin_gt864) + 1904  [0x100e851a0]  unpack.c:305
-        + !   1 transpose_top_checked  (in spin_gt864) + 2080  [0x100e85250]  unpack.c:330
-        + !   1 transpose_top_checked  (in spin_gt864) + 2108  [0x100e8526c]  unpack.c:337
-        + !   1 transpose_top_checked  (in spin_gt864) + 2384  [0x100e85380]  unpack.c:389
-        + !   1 transpose_top_checked  (in spin_gt864) + 2428  [0x100e853ac]  unpack.c:392
-        + !   1 transpose_top_checked  (in spin_gt864) + 2616  [0x100e85468]  unpack.c:419
-        + !   1 transpose_top_checked  (in spin_gt864) + 2688  [0x100e854b0]  unpack.c:439
-        + !   1 transpose_top_checked  (in spin_gt864) + 276  [0x100e84b44]  unpack.c:46
-        + !   1 transpose_top_checked  (in spin_gt864) + 2816  [0x100e85530]  unpack.c:471
-        + !   1 transpose_top_checked  (in spin_gt864) + 2892  [0x100e8557c]  unpack.c:480
-        + 55 poly_sotp_decode  (in spin_gt864) + 24  [0x100e8b9e4]
-        + ! 49 loop_sotp_decode  (in spin_gt864) + 336,172,...  [0x100e83698,0x100e835f4,...]
-        + ! 6 raw_poly_sotp_decode  (in spin_gt864) + 28,36,...  [0x100e833fc,0x100e83404,...]
-        + 53 poly_cbd1  (in spin_gt864) + 24  [0x100e8b984]
-        + ! 44 loop_cbd  (in spin_gt864) + 316,304,...  [0x100e8312c,0x100e83120,...]
-        + ! 9 raw_poly_cbd1  (in spin_gt864) + 16,132,...  [0x100e82eb4,0x100e82f28,...]
-        + 42 poly_sub  (in spin_gt864) + 24  [0x100e8ba14]
-        + ! 42 loop_sub  (in spin_gt864) + 96,68,...  [0x100e82de0,0x100e82dc4,...]
-        + 32 crypto_kem_dec  (in spin_gt864) + 276  [0x100e85bf0]  kem.c:310
-        + ! 30 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
-        + ! 1 DYLD-STUB$$bzero  (in spin_gt864) + 4  [0x100e8c548]
-        + ! 1 __bzero  (in libsystem_platform.dylib) + 0  [0x185659090]
-        + 23 crypto_kem_dec  (in spin_gt864) + 316  [0x100e85c18]  kem.c:312
-        + ! 22 _platform_memset  (in libsystem_platform.dylib) + 140,152  [0x18565917c,0x185659188]
-        + ! 1 __bzero  (in libsystem_platform.dylib) + 24  [0x1856590a8]
-        + 18 crypto_kem_dec  (in spin_gt864) + 300  [0x100e85c08]  kem.c:311
-        + ! 17 _platform_memset  (in libsystem_platform.dylib) + 140,148  [0x18565917c,0x185659184]
-        + ! 1 __bzero  (in libsystem_platform.dylib) + 24  [0x1856590a8]
-        + 16 crypto_kem_dec  (in spin_gt864) + 332  [0x100e85c28]  kem.c:313
-        + ! 16 _platform_memset  (in libsystem_platform.dylib) + 140,144,...  [0x18565917c,0x185659180,...]
-        + 16 crypto_kem_dec  (in spin_gt864) + 348  [0x100e85c38]  kem.c:314
-        + ! 16 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
-        + 13 crypto_kem_dec  (in spin_gt864) + 36  [0x100e85b00]  kem.c:261
-        + ! 13 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52,20,...  [0x18564ac54,0x18564ac34,...]
-        + 11 crypto_kem_dec  (in spin_gt864) + 184  [0x100e85b94]  kem.c:308
-        + ! 10 _platform_memset  (in libsystem_platform.dylib) + 140,116,...  [0x18565917c,0x185659164,...]
-        + ! 1 __bzero  (in libsystem_platform.dylib) + 0  [0x185659090]
-        + 6 shake256_prefixed  (in spin_gt864) + 1100,1096  [0x100e80db0,0x100e80dac]  fips202.c:480
-        + 1 crypto_kem_dec  (in spin_gt864) + 472  [0x100e85cb4]  kem.c:287
-        + ! 1 poly_sub  (in spin_gt864) + 16  [0x100e8ba0c]
-        + 1 crypto_kem_dec  (in spin_gt864) + 604  [0x100e85d38]  kem.c:299
-        + ! 1 poly_cbd1  (in spin_gt864) + 16  [0x100e8b97c]
-        + 1 crypto_kem_dec  (in spin_gt864) + 184  [0x100e85b94]  kem.c:309
-        + 1 crypto_kem_dec  (in spin_gt864) + 276  [0x100e85bf0]  kem.c:310
-        + 1 poly_ntt  (in spin_gt864) + 72  [0x100e82aec]  ntt_api.c:15
-        1 crypto_kem_dec  (in spin_gt864) + 396  [0x100e85c68]  kem.c:315
+    5069 Thread_24016755   DispatchQueue_1: com.apple.main-thread  (serial)
+      5069 start  (in dyld) + 6992  [0x185293da4]
+        5066 main  (in spin_gt864) + 900  [0x102004974]  spin.c:34
+        + 2214 crypto_kem_dec  (in spin_gt864) + 528  [0x102009e8c]  kem.c:291
+        + ! 1811 shake256_prefixed  (in spin_gt864) + 264  [0x102004c04]  fips202.c:438
+        + ! : 1811 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 1080,456,...  [0x10201050c,0x10201029c,...]
+        + ! 373 shake256_prefixed  (in spin_gt864) + 740  [0x102004de0]  fips202.c:464
+        + ! : 373 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 124,768,...  [0x102010150,0x1020103d4,...]
+        + ! 6 shake256_prefixed  (in spin_gt864) + 164,204,...  [0x102004ba0,0x102004bc8,...]  fips202.c:435
+        + ! 6 shake256_prefixed  (in spin_gt864) + 764  [0x102004df8]  fips202.c:469
+        + ! 4 shake256_prefixed  (in spin_gt864) + 236  [0x102004be8]  fips202.c:0
+        + ! 4 shake256_prefixed  (in spin_gt864) + 280  [0x102004c14]  fips202.c:428
+        + ! 2 shake256_prefixed  (in spin_gt864) + 556  [0x102004d28]  fips202.c:0
+        + ! : 2 _platform_memmove  (in libsystem_platform.dylib) + 0  [0x1856593c0]
+        + ! 2 shake256_prefixed  (in spin_gt864) + 636,676  [0x102004d78,0x102004da0]  fips202.c:458
+        + ! 2 shake256_prefixed  (in spin_gt864) + 768,772  [0x102004dfc,0x102004e00]  fips202.c:468
+        + ! 1 shake256_prefixed  (in spin_gt864) + 332  [0x102004c48]  fips202.c:431
+        + ! 1 shake256_prefixed  (in spin_gt864) + 496  [0x102004cec]  fips202.c:443
+        + ! 1 shake256_prefixed  (in spin_gt864) + 712  [0x102004dc4]  fips202.c:475
+        + ! 1 shake256_prefixed  (in spin_gt864) + 1020  [0x102004ef8]  fips202.c:478
+        + 617 crypto_kem_dec  (in spin_gt864) + 592  [0x102009ecc]  kem.c:297
+        + ! 406 shake256_prefixed  (in spin_gt864) + 740  [0x102004de0]  fips202.c:464
+        + ! : 406 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 124,768,...  [0x102010150,0x1020103d4,...]
+        + ! 189 shake256_prefixed  (in spin_gt864) + 264  [0x102004c04]  fips202.c:438
+        + ! : 189 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 1080,532,...  [0x10201050c,0x1020102e8,...]
+        + ! 10 shake256_prefixed  (in spin_gt864) + 764  [0x102004df8]  fips202.c:469
+        + ! 4 shake256_prefixed  (in spin_gt864) + 1032,1040,...  [0x102004f04,0x102004f0c,...]  fips202.c:479
+        + ! 2 shake256_prefixed  (in spin_gt864) + 72,96  [0x102004b44,0x102004b5c]  fips202.c:424
+        + ! 2 shake256_prefixed  (in spin_gt864) + 772,780  [0x102004e00,0x102004e08]  fips202.c:468
+        + ! 1 shake256_prefixed  (in spin_gt864) + 556  [0x102004d28]  fips202.c:0
+        + ! : 1 DYLD-STUB$$__memcpy_chk  (in spin_gt864) + 4  [0x1020106c4]
+        + ! 1 shake256_prefixed  (in spin_gt864) + 552  [0x102004d24]  fips202.c:0
+        + ! 1 shake256_prefixed  (in spin_gt864) + 332  [0x102004c48]  fips202.c:431
+        + ! 1 shake256_prefixed  (in spin_gt864) + 676  [0x102004da0]  fips202.c:458
+        + 467 crypto_kem_dec  (in spin_gt864) + 436  [0x102009e30]  kem.c:283
+        + ! 467 poly_invntt_ternary  (in spin_gt864) + 72  [0x10200d61c]  inverse_api.c:23
+        + !   58 invntt_ternary_asm  (in spin_gt864) + 468  [0x10200dbb4]
+        + !   : 55 <deduplicated_symbol>  (in spin_gt864) + 124,40,...  [0x10200f71c,0x10200f6c8,...]
+        + !   : 3 crepmod3_slothy_end  (in spin_gt864) + 8  [0x10200f728]
+        + !   49 invntt_ternary_asm  (in spin_gt864) + 376  [0x10200db58]
+        + !   : 49 invntt16_asm  (in spin_gt864) + 1624,616,...  [0x10200e950,0x10200e560,...]
+        + !   43 invntt_ternary_asm  (in spin_gt864) + 388  [0x10200db64]
+        + !   : 43 invntt16_asm  (in spin_gt864) + 732,1468,...  [0x10200e5d4,0x10200e8b4,...]
+        + !   40 invntt_ternary_asm  (in spin_gt864) + 412  [0x10200db7c]
+        + !   : 40 invntt16_asm  (in spin_gt864) + 76,524,...  [0x10200e344,0x10200e504,...]
+        + !   35 invntt_ternary_asm  (in spin_gt864) + 400  [0x10200db70]
+        + !   : 35 invntt16_asm  (in spin_gt864) + 148,1348,...  [0x10200e38c,0x10200e83c,...]
+        + !   35 invntt_ternary_asm  (in spin_gt864) + 460  [0x10200dbac]
+        + !   : 35 invntt16_tail_asm  (in spin_gt864) + 1796,196,...  [0x10200f444,0x10200ee04,...]
+        + !   34 invntt_ternary_asm  (in spin_gt864) + 424  [0x10200db88]
+        + !   : 34 invntt16_asm  (in spin_gt864) + 524,872,...  [0x10200e504,0x10200e660,...]
+        + !   31 invntt_ternary_asm  (in spin_gt864) + 436  [0x10200db94]
+        + !   : 31 invntt16_asm  (in spin_gt864) + 84,404,...  [0x10200e34c,0x10200e48c,...]
+        + !   18 invntt_ternary_asm  (in spin_gt864) + 232  [0x10200dac8]
+        + !   : 18 packed_i9  (in spin_gt864) + 372,132,...  [0x10200f99c,0x10200f8ac,...]
+        + !   15 invntt_ternary_asm  (in spin_gt864) + 152  [0x10200da78]
+        + !   : 15 packed_i9  (in spin_gt864) + 200,156,...  [0x10200f8f0,0x10200f8c4,...]
+        + !   15 invntt_ternary_asm  (in spin_gt864) + 352,292,...  [0x10200db40,0x10200db04,...]
+        + !   14 invntt_ternary_asm  (in spin_gt864) + 292  [0x10200db04]
+        + !   : 14 packed_i9  (in spin_gt864) + 28,200,...  [0x10200f844,0x10200f8f0,...]
+        + !   12 invntt_ternary_asm  (in spin_gt864) + 132  [0x10200da64]
+        + !   : 12 packed_i9  (in spin_gt864) + 280,532,...  [0x10200f940,0x10200fa3c,...]
+        + !   12 invntt_ternary_asm  (in spin_gt864) + 312  [0x10200db18]
+        + !   : 12 packed_i9  (in spin_gt864) + 32,148,...  [0x10200f848,0x10200f8bc,...]
+        + !   11 invntt_ternary_asm  (in spin_gt864) + 192  [0x10200daa0]
+        + !   : 11 packed_i9  (in spin_gt864) + 308,176,...  [0x10200f95c,0x10200f8d8,...]
+        + !   9 invntt_ternary_asm  (in spin_gt864) + 272  [0x10200daf0]
+        + !   : 9 packed_i9  (in spin_gt864) + 128,200,...  [0x10200f8a8,0x10200f8f0,...]
+        + !   8 invntt_ternary_asm  (in spin_gt864) + 172  [0x10200da8c]
+        + !   : 8 packed_i9  (in spin_gt864) + 92,32,...  [0x10200f884,0x10200f848,...]
+        + !   8 invntt_ternary_asm  (in spin_gt864) + 212  [0x10200dab4]
+        + !   : 8 packed_i9  (in spin_gt864) + 224,344,...  [0x10200f908,0x10200f980,...]
+        + !   7 invntt_ternary_asm  (in spin_gt864) + 332  [0x10200db2c]
+        + !   : 7 packed_i9  (in spin_gt864) + 428,32,...  [0x10200f9d4,0x10200f848,...]
+        + !   7 invntt_ternary_asm  (in spin_gt864) + 352  [0x10200db40]
+        + !   : 7 packed_i9  (in spin_gt864) + 344,384,...  [0x10200f980,0x10200f9a8,...]
+        + !   6 invntt_ternary_asm  (in spin_gt864) + 252  [0x10200dadc]
+        + !     6 packed_i9  (in spin_gt864) + 284,200,...  [0x10200f944,0x10200f8f0,...]
+        + 293 crypto_kem_dec  (in spin_gt864) + 448  [0x102009e3c]  kem.c:286
+        + ! 293 poly_ntt  (in spin_gt864) + 40  [0x102006c64]  ntt_api.c:14
+        + !   50 ntt9_asm  (in spin_gt864) + 52  [0x102007904]
+        + !   : 49 .Lntt_one_bank  (in spin_gt864) + 1668,352,...  [0x1020081b8,0x102007c94,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 116  [0x102007944]
+        + !   50 ntt9_asm  (in spin_gt864) + 436  [0x102007a84]
+        + !   : 49 .Lntt_one_bank  (in spin_gt864) + 1832,2032,...  [0x10200825c,0x102008324,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 504  [0x102007ac8]
+        + !   43 ntt9_asm  (in spin_gt864) + 244  [0x1020079c4]
+        + !   : 43 .Lntt_one_bank  (in spin_gt864) + 328,1756,...  [0x102007c7c,0x102008210,...]
+        + !   43 ntt9_asm  (in spin_gt864) + 532  [0x102007ae4]
+        + !   : 42 .Lntt_one_bank  (in spin_gt864) + 1800,428,...  [0x10200823c,0x102007ce0,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 600  [0x102007b28]
+        + !   37 ntt_asm  (in spin_gt864) + 56  [0x10200788c]
+        + !   : 37 .Ltop_split_loop  (in spin_gt864) + 160,72,...  [0x102008b70,0x102008b18,...]
+        + !   34 ntt9_asm  (in spin_gt864) + 148  [0x102007964]
+        + !   : 33 .Lntt_one_bank  (in spin_gt864) + 732,828,...  [0x102007e10,0x102007e70,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 180  [0x102007984]
+        + !   34 ntt9_asm  (in spin_gt864) + 340  [0x102007a24]
+        + !   : 33 .Lntt_one_bank  (in spin_gt864) + 1780,280,...  [0x102008228,0x102007c4c,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 408  [0x102007a68]
+        + !   2 ntt_asm  (in spin_gt864) + 68  [0x102007898]
+        + !     2 ntt_tail_asm  (in spin_gt864) + 28,180  [0x102009f3c,0x102009fd4]
+        + 280 crypto_kem_dec  (in spin_gt864) + 616  [0x102009ee4]  kem.c:300
+        + ! 280 poly_ntt  (in spin_gt864) + 40  [0x102006c64]  ntt_api.c:14
+        + !   48 ntt9_asm  (in spin_gt864) + 340  [0x102007a24]
+        + !   : 48 .Lntt_one_bank  (in spin_gt864) + 1780,328,...  [0x102008228,0x102007c7c,...]
+        + !   43 ntt_asm  (in spin_gt864) + 56  [0x10200788c]
+        + !   : 43 .Ltop_split_loop  (in spin_gt864) + 160,20,...  [0x102008b70,0x102008ae4,...]
+        + !   41 ntt9_asm  (in spin_gt864) + 436  [0x102007a84]
+        + !   : 40 .Lntt_one_bank  (in spin_gt864) + 844,788,...  [0x102007e80,0x102007e48,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 468  [0x102007aa4]
+        + !   39 ntt9_asm  (in spin_gt864) + 532  [0x102007ae4]
+        + !   : 38 .Lntt_one_bank  (in spin_gt864) + 80,1096,...  [0x102007b84,0x102007f7c,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 564  [0x102007b04]
+        + !   38 ntt9_asm  (in spin_gt864) + 244  [0x1020079c4]
+        + !   : 38 .Lntt_one_bank  (in spin_gt864) + 668,824,...  [0x102007dd0,0x102007e6c,...]
+        + !   34 ntt9_asm  (in spin_gt864) + 52  [0x102007904]
+        + !   : 32 .Lntt_one_bank  (in spin_gt864) + 444,732,...  [0x102007cf0,0x102007e10,...]
+        + !   : 2 ntt9_asm  (in spin_gt864) + 84,116  [0x102007924,0x102007944]
+        + !   34 ntt9_asm  (in spin_gt864) + 148  [0x102007964]
+        + !   : 33 .Lntt_one_bank  (in spin_gt864) + 1372,572,...  [0x102008090,0x102007d70,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 208  [0x1020079a0]
+        + !   2 ntt_asm  (in spin_gt864) + 104  [0x1020078bc]
+        + !   1 ntt_asm  (in spin_gt864) + 68  [0x102007898]
+        + !     1 ntt_tail_asm  (in spin_gt864) + 300  [0x10200a04c]
+        + 170 crypto_kem_dec  (in spin_gt864) + 424  [0x102009e24]  kem.c:282
+        + ! 170 .Lbm_tile  (in spin_gt864) + 20  [0x10200d914]
+        + !   148 bm_rinv_tile  (in spin_gt864) + 240,192,...  [0x10200f820,0x10200f7f0,...]
+        + !   22 .Lbm_tile  (in spin_gt864) + 20,44,...  [0x10200d914,0x10200d92c,...]
+        + 161 crypto_kem_dec  (in spin_gt864) + 632  [0x102009ef4]  kem.c:301
+        + ! 83 tobytes_compare_asm  (in spin_gt864) + 40  [0x10200a088]
+        + ! : 9 <deduplicated_symbol>  (in spin_gt864) + 104,152,...  [0x10200a558,0x10200a588,...]
+        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 220,248,...  [0x10200a4c4,0x10200a4e0,...]
+        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 200,260,...  [0x10200aa1c,0x10200aa58,...]
+        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 16,80,...  [0x10200a188,0x10200a1c8,...]
+        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 32,64,...  [0x10200a744,0x10200a764,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 72,124,...  [0x10200a654,0x10200a688,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 12,32,...  [0x10200a824,0x10200a838,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 180,32,...  [0x10200ab1c,0x10200aa88,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 200,236,...  [0x10200ad40,0x10200ad64,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 172,60,...  [0x10200b4d4,0x10200b464,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 40,68,...  [0x10200a308,0x10200a324,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 36,136,...  [0x10200aba4,0x10200ac08,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 100,128,...  [0x10200af08,0x10200af24,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 64,108,...  [0x10200b024,0x10200b050,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 52,132,...  [0x10200b344,0x10200b394,...]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 56,176  [0x10200b124,0x10200b19c]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 32  [0x10200adc4]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 176  [0x10200b2a4]
+        + ! 75 tobytes_compare_asm  (in spin_gt864) + 60  [0x10200a09c]
+        + ! : 8 <deduplicated_symbol>  (in spin_gt864) + 68,96,...  [0x10200b354,0x10200b370,...]
+        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 156,252,...  [0x10200a9f0,0x10200aa50,...]
+        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 132,160,...  [0x10200aaec,0x10200ab08,...]
+        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 72,260,...  [0x10200a538,0x10200a5f4,...]
+        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 96,20,...  [0x10200a784,0x10200a738,...]
+        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 104,128,...  [0x10200b154,0x10200b16c,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 36,108,...  [0x10200b008,0x10200b050,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 80,112,...  [0x10200adf4,0x10200ae14,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 24,116,...  [0x10200b20c,0x10200b268,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 44,16,...  [0x10200b454,0x10200b438,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 112,140,...  [0x10200a350,0x10200a36c,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 160,208,...  [0x10200a8b8,0x10200a8e8,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 4,68,...  [0x10200ab84,0x10200abc4,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 20,48,...  [0x10200aeb8,0x10200aed4,...]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 12,320  [0x10200a184,0x10200a2b8]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 4,104  [0x10200a610,0x10200a674]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 64,92  [0x10200acb8,0x10200acd4]
+        + ! 3 tobytes_compare_asm  (in spin_gt864) + 220,164  [0x10200a13c,0x10200a104]
+        + 154 crypto_kem_dec  (in spin_gt864) + 492  [0x102009e68]  kem.c:288
+        + ! 77 basemul_asm  (in spin_gt864) + 132,104,...  [0x102006d1c,0x102006d00,...]  base.c:111
+        + ! 35 basemul_asm  (in spin_gt864) + 288,272  [0x102006db8,0x102006da8]  base.c:101
+        + ! 19 basemul_asm  (in spin_gt864) + 264,268,...  [0x102006da0,0x102006da4,...]  base.c:115
+        + ! 14 basemul_asm  (in spin_gt864) + 216,228,...  [0x102006d70,0x102006d7c,...]  base.c:113
+        + ! 9 basemul_asm  (in spin_gt864) + 248,256,...  [0x102006d90,0x102006d98,...]  base.c:114
+        + 133 crypto_kem_dec  (in spin_gt864) + 508  [0x102009e78]  kem.c:290
+        + ! 68 tobytes_small_asm  (in spin_gt864) + 52  [0x10200c5f4]
+        + ! : 8 <deduplicated_symbol>  (in spin_gt864) + 188,12,...  [0x10200d134,0x10200d084,...]
+        + ! : 8 <deduplicated_symbol>  (in spin_gt864) + 80,184,...  [0x10200d340,0x10200d3a8,...]
+        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 184,24,...  [0x10200ca04,0x10200c964,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 204,44,...  [0x10200ce28,0x10200cd88,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 88,24,...  [0x10200d018,0x10200cfd8,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 56,84,...  [0x10200d268,0x10200d284,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 156,16,...  [0x10200c748,0x10200c6bc,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 56,72,...  [0x10200ce64,0x10200ce74,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 16,44,...  [0x10200d3d4,0x10200d3f0,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 76,104,...  [0x10200cbe8,0x10200cc04,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 16,144,...  [0x10200cca0,0x10200cd20,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 24,52,...  [0x10200cef4,0x10200cf10,...]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 28,108  [0x10200c7e8,0x10200c838]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 84,124  [0x10200c8e0,0x10200c908]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 52,84  [0x10200cb24,0x10200cb44]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 52,84  [0x10200d4c8,0x10200d4e8]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 92  [0x10200ca7c]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 116  [0x10200d1e4]
+        + ! 63 tobytes_small_asm  (in spin_gt864) + 40  [0x10200c5e8]
+        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 120,24,...  [0x10200d1e8,0x10200d188,...]
+        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 60,0,...  [0x10200ce68,0x10200ce2c,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 240,116,...  [0x10200d168,0x10200d0ec,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 24,80,...  [0x10200c7e4,0x10200c81c,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 188,76,...  [0x10200cc58,0x10200cbe8,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 12,24,...  [0x10200cee8,0x10200cef4,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 164,24,...  [0x10200d064,0x10200cfd8,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 60,88,...  [0x10200d26c,0x10200d288,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 52,88,...  [0x10200d4c8,0x10200d4ec,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 0,188  [0x10200c94c,0x10200ca08]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 36,136,...  [0x10200ca44,0x10200caa8,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 120,144,...  [0x10200cd08,0x10200cd20,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 52,148,...  [0x10200d324,0x10200d384,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 196,160  [0x10200d488,0x10200d464]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 32,60  [0x10200c8ac,0x10200c8c8]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 220  [0x10200c788]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 60  [0x10200cb2c]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 100  [0x10200cdc0]
+        + ! : 1 pack_small_top  (in spin_gt864) + 12  [0x10200c69c]
+        + ! 2 tobytes_small_asm  (in spin_gt864) + 180  [0x10200c674]
+        + 112 crypto_kem_dec  (in spin_gt864) + 100  [0x102009ce0]  kem.c:275
+        + ! 57 frombytes_asm  (in spin_gt864) + 44  [0x102008bb0]  unpack.c:505
+        + ! : 3 transpose_top_checked  (in spin_gt864) + 840,832  [0x102008f18,0x102008f10]  unpack.c:135
+        + ! : 3 transpose_top_checked  (in spin_gt864) + 1600  [0x102009210]  unpack.c:251
+        + ! : 3 transpose_top_checked  (in spin_gt864) + 2288  [0x1020094c0]  unpack.c:372
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 696  [0x102008e88]  unpack.c:108
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 744  [0x102008eb8]  unpack.c:112
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 820  [0x102008f04]  unpack.c:130
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1128  [0x102009038]  unpack.c:172
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1204  [0x102009084]  unpack.c:184
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2528  [0x1020095b0]  unpack.c:413
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 572  [0x102008e0c]  unpack.c:90
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 636  [0x102008e4c]  unpack.c:104
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 720  [0x102008ea0]  unpack.c:110
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 772  [0x102008ed4]  unpack.c:127
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 816  [0x102008f00]  unpack.c:128
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 860  [0x102008f2c]  unpack.c:137
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 956  [0x102008f8c]  unpack.c:144
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 980  [0x102008fa4]  unpack.c:150
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 120  [0x102008c48]  unpack.c:18
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1368  [0x102009128]  unpack.c:207
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1452  [0x10200917c]  unpack.c:228
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 148  [0x102008c64]  unpack.c:23
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1512  [0x1020091b8]  unpack.c:232
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1576  [0x1020091f8]  unpack.c:238
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1676  [0x10200925c]  unpack.c:261
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1708  [0x10200927c]  unpack.c:263
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1732  [0x102009294]  unpack.c:265
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1884  [0x10200932c]  unpack.c:302
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1940  [0x102009364]  unpack.c:310
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1964  [0x10200937c]  unpack.c:312
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 192  [0x102008c90]  unpack.c:36
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2236  [0x10200948c]  unpack.c:368
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2344  [0x1020094f8]  unpack.c:380
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2404  [0x102009534]  unpack.c:391
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2640  [0x102009620]  unpack.c:421
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2672  [0x102009640]  unpack.c:436
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 244  [0x102008cc4]  unpack.c:44
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2800  [0x1020096c0]  unpack.c:470
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2820  [0x1020096d4]  unpack.c:472
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2848  [0x1020096f0]  unpack.c:473
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2916  [0x102009734]  unpack.c:482
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2976  [0x102009770]  unpack.c:492
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 368  [0x102008d40]  unpack.c:57
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 480  [0x102008db0]  unpack.c:77
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 564  [0x102008e04]  unpack.c:88
+        + ! 55 frombytes_asm  (in spin_gt864) + 28  [0x102008ba0]  unpack.c:504
+        + !   4 transpose_top_checked  (in spin_gt864) + 2772  [0x1020096a4]  unpack.c:469
+        + !   3 transpose_top_checked  (in spin_gt864) + 1452,1444  [0x10200917c,0x102009174]  unpack.c:228
+        + !   2 transpose_top_checked  (in spin_gt864) + 696  [0x102008e88]  unpack.c:108
+        + !   2 transpose_top_checked  (in spin_gt864) + 1180  [0x10200906c]  unpack.c:180
+        + !   2 transpose_top_checked  (in spin_gt864) + 1860  [0x102009314]  unpack.c:299
+        + !   2 transpose_top_checked  (in spin_gt864) + 2268  [0x1020094ac]  unpack.c:371
+        + !   2 transpose_top_checked  (in spin_gt864) + 2296  [0x1020094c8]  unpack.c:373
+        + !   2 transpose_top_checked  (in spin_gt864) + 2564  [0x1020095d4]  unpack.c:415
+        + !   2 transpose_top_checked  (in spin_gt864) + 2964  [0x102009764]  unpack.c:489
+        + !   1 transpose_top_checked  (in spin_gt864) + 720  [0x102008ea0]  unpack.c:110
+        + !   1 transpose_top_checked  (in spin_gt864) + 800  [0x102008ef0]  unpack.c:124
+        + !   1 transpose_top_checked  (in spin_gt864) + 840  [0x102008f18]  unpack.c:135
+        + !   1 transpose_top_checked  (in spin_gt864) + 868  [0x102008f34]  unpack.c:137
+        + !   1 transpose_top_checked  (in spin_gt864) + 948  [0x102008f84]  unpack.c:143
+        + !   1 transpose_top_checked  (in spin_gt864) + 972  [0x102008f9c]  unpack.c:148
+        + !   1 transpose_top_checked  (in spin_gt864) + 76  [0x102008c1c]  unpack.c:15
+        + !   1 transpose_top_checked  (in spin_gt864) + 1032  [0x102008fd8]  unpack.c:163
+        + !   1 transpose_top_checked  (in spin_gt864) + 1336  [0x102009108]  unpack.c:203
+        + !   1 transpose_top_checked  (in spin_gt864) + 1360  [0x102009120]  unpack.c:206
+        + !   1 transpose_top_checked  (in spin_gt864) + 1500  [0x1020091ac]  unpack.c:231
+        + !   1 transpose_top_checked  (in spin_gt864) + 1548  [0x1020091dc]  unpack.c:234
+        + !   1 transpose_top_checked  (in spin_gt864) + 1576  [0x1020091f8]  unpack.c:238
+        + !   1 transpose_top_checked  (in spin_gt864) + 1628  [0x10200922c]  unpack.c:254
+        + !   1 transpose_top_checked  (in spin_gt864) + 1876  [0x102009324]  unpack.c:301
+        + !   1 transpose_top_checked  (in spin_gt864) + 1888  [0x102009330]  unpack.c:303
+        + !   1 transpose_top_checked  (in spin_gt864) + 1964  [0x10200937c]  unpack.c:312
+        + !   1 transpose_top_checked  (in spin_gt864) + 1992  [0x102009398]  unpack.c:318
+        + !   1 transpose_top_checked  (in spin_gt864) + 184  [0x102008c88]  unpack.c:34
+        + !   1 transpose_top_checked  (in spin_gt864) + 2240  [0x102009490]  unpack.c:368
+        + !   1 transpose_top_checked  (in spin_gt864) + 2508  [0x10200959c]  unpack.c:411
+        + !   1 transpose_top_checked  (in spin_gt864) + 2616  [0x102009608]  unpack.c:419
+        + !   1 transpose_top_checked  (in spin_gt864) + 2644  [0x102009624]  unpack.c:421
+        + !   1 transpose_top_checked  (in spin_gt864) + 2688  [0x102009650]  unpack.c:439
+        + !   1 transpose_top_checked  (in spin_gt864) + 2696  [0x102009658]  unpack.c:440
+        + !   1 transpose_top_checked  (in spin_gt864) + 2704  [0x102009660]  unpack.c:442
+        + !   1 transpose_top_checked  (in spin_gt864) + 288  [0x102008cf0]  unpack.c:46
+        + !   1 transpose_top_checked  (in spin_gt864) + 2924  [0x10200973c]  unpack.c:482
+        + !   1 transpose_top_checked  (in spin_gt864) + 2948  [0x102009754]  unpack.c:485
+        + !   1 transpose_top_checked  (in spin_gt864) + 356  [0x102008d34]  unpack.c:55
+        + !   1 transpose_top_checked  (in spin_gt864) + 412  [0x102008d6c]  unpack.c:68
+        + !   1 transpose_top_checked  (in spin_gt864) + 432  [0x102008d80]  unpack.c:73
+        + !   1 transpose_top_checked  (in spin_gt864) + 548  [0x102008df4]  unpack.c:84
+        + !   1 transpose_top_checked  (in spin_gt864) + 572  [0x102008e0c]  unpack.c:90
+        + 109 crypto_kem_dec  (in spin_gt864) + 116  [0x102009cf0]  kem.c:276
+        + ! 60 frombytes_asm  (in spin_gt864) + 44  [0x102008bb0]  unpack.c:505
+        + ! : 4 transpose_top_checked  (in spin_gt864) + 980  [0x102008fa4]  unpack.c:150
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 688,700  [0x102008e80,0x102008e8c]  unpack.c:108
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 720  [0x102008ea0]  unpack.c:110
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 888,896  [0x102008f48,0x102008f50]  unpack.c:139
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1128  [0x102009038]  unpack.c:172
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1392  [0x102009140]  unpack.c:214
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1792  [0x1020092d0]  unpack.c:278
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1964  [0x10200937c]  unpack.c:312
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2080  [0x1020093f0]  unpack.c:330
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2412  [0x10200953c]  unpack.c:391
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2824  [0x1020096d8]  unpack.c:472
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2892  [0x10200971c]  unpack.c:480
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 628  [0x102008e44]  unpack.c:104
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 772  [0x102008ed4]  unpack.c:127
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 40  [0x102008bf8]  unpack.c:13
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 916  [0x102008f64]  unpack.c:141
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 960  [0x102008f90]  unpack.c:145
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 92  [0x102008c2c]  unpack.c:17
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1152  [0x102009050]  unpack.c:175
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1512  [0x1020091b8]  unpack.c:232
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1608  [0x102009218]  unpack.c:244
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1624  [0x102009228]  unpack.c:252
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1668  [0x102009254]  unpack.c:261
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1736  [0x102009298]  unpack.c:265
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1892  [0x102009334]  unpack.c:303
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1916  [0x10200934c]  unpack.c:308
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2028  [0x1020093bc]  unpack.c:326
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2132  [0x102009424]  unpack.c:344
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2180  [0x102009454]  unpack.c:348
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 192  [0x102008c90]  unpack.c:36
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2268  [0x1020094ac]  unpack.c:371
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2296  [0x1020094c8]  unpack.c:373
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2352  [0x102009500]  unpack.c:382
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2592  [0x1020095f0]  unpack.c:417
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2616  [0x102009608]  unpack.c:419
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 228  [0x102008cb4]  unpack.c:42
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2644  [0x102009624]  unpack.c:421
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2696  [0x102009658]  unpack.c:440
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2728  [0x102009678]  unpack.c:456
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2800  [0x1020096c0]  unpack.c:470
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2880  [0x102009710]  unpack.c:478
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2976  [0x102009770]  unpack.c:492
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 508  [0x102008dcc]  unpack.c:79
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 532  [0x102008de4]  unpack.c:81
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 560  [0x102008e00]  unpack.c:88
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 604  [0x102008e2c]  unpack.c:98
+        + ! 49 frombytes_asm  (in spin_gt864) + 28  [0x102008ba0]  unpack.c:504
+        + !   2 transpose_top_checked  (in spin_gt864) + 1036,1044  [0x102008fdc,0x102008fe4]  unpack.c:166
+        + !   2 transpose_top_checked  (in spin_gt864) + 1452  [0x10200917c]  unpack.c:228
+        + !   2 transpose_top_checked  (in spin_gt864) + 1648  [0x102009240]  unpack.c:259
+        + !   2 transpose_top_checked  (in spin_gt864) + 1904  [0x102009340]  unpack.c:305
+        + !   2 transpose_top_checked  (in spin_gt864) + 2268,2272  [0x1020094ac,0x1020094b0]  unpack.c:371
+        + !   2 transpose_top_checked  (in spin_gt864) + 2480  [0x102009580]  unpack.c:404
+        + !   2 transpose_top_checked  (in spin_gt864) + 296  [0x102008cf8]  unpack.c:47
+        + !   2 transpose_top_checked  (in spin_gt864) + 332  [0x102008d1c]  unpack.c:50
+        + !   2 transpose_top_checked  (in spin_gt864) + 3012  [0x102009794]  unpack.c:501
+        + !   1 transpose_top_checked  (in spin_gt864) + 656  [0x102008e60]  unpack.c:105
+        + !   1 transpose_top_checked  (in spin_gt864) + 40  [0x102008bf8]  unpack.c:13
+        + !   1 transpose_top_checked  (in spin_gt864) + 868  [0x102008f34]  unpack.c:137
+        + !   1 transpose_top_checked  (in spin_gt864) + 924  [0x102008f6c]  unpack.c:141
+        + !   1 transpose_top_checked  (in spin_gt864) + 988  [0x102008fac]  unpack.c:152
+        + !   1 transpose_top_checked  (in spin_gt864) + 1120  [0x102009030]  unpack.c:172
+        + !   1 transpose_top_checked  (in spin_gt864) + 1336  [0x102009108]  unpack.c:203
+        + !   1 transpose_top_checked  (in spin_gt864) + 1404  [0x10200914c]  unpack.c:216
+        + !   1 transpose_top_checked  (in spin_gt864) + 1416  [0x102009158]  unpack.c:220
+        + !   1 transpose_top_checked  (in spin_gt864) + 1512  [0x1020091b8]  unpack.c:232
+        + !   1 transpose_top_checked  (in spin_gt864) + 1612  [0x10200921c]  unpack.c:246
+        + !   1 transpose_top_checked  (in spin_gt864) + 1828  [0x1020092f4]  unpack.c:294
+        + !   1 transpose_top_checked  (in spin_gt864) + 1856  [0x102009310]  unpack.c:299
+        + !   1 transpose_top_checked  (in spin_gt864) + 1884  [0x10200932c]  unpack.c:302
+        + !   1 transpose_top_checked  (in spin_gt864) + 1960  [0x102009378]  unpack.c:311
+        + !   1 transpose_top_checked  (in spin_gt864) + 2096  [0x102009400]  unpack.c:334
+        + !   1 transpose_top_checked  (in spin_gt864) + 184  [0x102008c88]  unpack.c:34
+        + !   1 transpose_top_checked  (in spin_gt864) + 2132  [0x102009424]  unpack.c:344
+        + !   1 transpose_top_checked  (in spin_gt864) + 200  [0x102008c98]  unpack.c:38
+        + !   1 transpose_top_checked  (in spin_gt864) + 2368  [0x102009510]  unpack.c:386
+        + !   1 transpose_top_checked  (in spin_gt864) + 2492  [0x10200958c]  unpack.c:407
+        + !   1 transpose_top_checked  (in spin_gt864) + 2532  [0x1020095b4]  unpack.c:413
+        + !   1 transpose_top_checked  (in spin_gt864) + 2644  [0x102009624]  unpack.c:421
+        + !   1 transpose_top_checked  (in spin_gt864) + 2768  [0x1020096a0]  unpack.c:468
+        + !   1 transpose_top_checked  (in spin_gt864) + 2780  [0x1020096ac]  unpack.c:469
+        + !   1 transpose_top_checked  (in spin_gt864) + 2796  [0x1020096bc]  unpack.c:470
+        + !   1 transpose_top_checked  (in spin_gt864) + 2948  [0x102009754]  unpack.c:485
+        + !   1 transpose_top_checked  (in spin_gt864) + 424  [0x102008d78]  unpack.c:73
+        + !   1 transpose_top_checked  (in spin_gt864) + 480  [0x102008db0]  unpack.c:77
+        + !   1 transpose_top_checked  (in spin_gt864) + 556  [0x102008dfc]  unpack.c:86
+        + !   1 transpose_top_checked  (in spin_gt864) + 572  [0x102008e0c]  unpack.c:90
+        + 88 crypto_kem_dec  (in spin_gt864) + 84  [0x102009cd0]  kem.c:274
+        + ! 51 frombytes_asm  (in spin_gt864) + 28  [0x102008ba0]  unpack.c:504
+        + ! : 3 transpose_top_checked  (in spin_gt864) + 300  [0x102008cfc]  unpack.c:48
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 628  [0x102008e44]  unpack.c:104
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 916,924  [0x102008f64,0x102008f6c]  unpack.c:141
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1072  [0x102009000]  unpack.c:168
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1228  [0x10200909c]  unpack.c:190
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1244,1252  [0x1020090ac,0x1020090b4]  unpack.c:197
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 424,432  [0x102008d78,0x102008d80]  unpack.c:73
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 696  [0x102008e88]  unpack.c:108
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 4  [0x102008bd4]  unpack.c:11
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 756  [0x102008ec4]  unpack.c:114
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 784  [0x102008ee0]  unpack.c:120
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 832  [0x102008f10]  unpack.c:135
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 868  [0x102008f34]  unpack.c:137
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 948  [0x102008f84]  unpack.c:143
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 68  [0x102008c14]  unpack.c:15
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 976  [0x102008fa0]  unpack.c:150
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 996  [0x102008fb4]  unpack.c:154
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1044  [0x102008fe4]  unpack.c:166
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1104  [0x102009020]  unpack.c:170
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1444  [0x102009174]  unpack.c:228
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1476  [0x102009194]  unpack.c:230
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1504  [0x1020091b0]  unpack.c:232
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1596  [0x10200920c]  unpack.c:242
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1676  [0x10200925c]  unpack.c:261
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1880  [0x102009328]  unpack.c:302
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1932  [0x10200935c]  unpack.c:310
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2028  [0x1020093bc]  unpack.c:326
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2120  [0x102009418]  unpack.c:341
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2136  [0x102009428]  unpack.c:344
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2156  [0x10200943c]  unpack.c:346
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2188  [0x10200945c]  unpack.c:348
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2216  [0x102009478]  unpack.c:350
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 212  [0x102008ca4]  unpack.c:40
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2476  [0x10200957c]  unpack.c:403
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2592  [0x1020095f0]  unpack.c:417
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2616  [0x102009608]  unpack.c:419
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2668  [0x10200963c]  unpack.c:436
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2820  [0x1020096d4]  unpack.c:472
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2924  [0x10200973c]  unpack.c:482
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2968  [0x102009768]  unpack.c:490
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2992  [0x102009780]  unpack.c:496
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 3012  [0x102009794]  unpack.c:501
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 588  [0x102008e1c]  unpack.c:94
+        + ! 36 frombytes_asm  (in spin_gt864) + 44  [0x102008bb0]  unpack.c:505
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1752,1756  [0x1020092a8,0x1020092ac]  unpack.c:270
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1892  [0x102009334]  unpack.c:303
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2104  [0x102009408]  unpack.c:336
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 372  [0x102008d44]  unpack.c:57
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 636  [0x102008e4c]  unpack.c:104
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 744  [0x102008eb8]  unpack.c:112
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 800  [0x102008ef0]  unpack.c:124
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1096  [0x102009018]  unpack.c:170
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1184  [0x102009070]  unpack.c:180
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1484  [0x10200919c]  unpack.c:230
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1504  [0x1020091b0]  unpack.c:232
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1560  [0x1020091e8]  unpack.c:236
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1784  [0x1020092c8]  unpack.c:276
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1864  [0x102009318]  unpack.c:300
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1916  [0x10200934c]  unpack.c:308
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2028  [0x1020093bc]  unpack.c:326
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2108  [0x10200940c]  unpack.c:337
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2268  [0x1020094ac]  unpack.c:371
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2284  [0x1020094bc]  unpack.c:372
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2564  [0x1020095d4]  unpack.c:415
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2648  [0x102009628]  unpack.c:421
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2896  [0x102009720]  unpack.c:422
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2720  [0x102009670]  unpack.c:454
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 268  [0x102008cdc]  unpack.c:46
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2748  [0x10200968c]  unpack.c:467
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2776  [0x1020096a8]  unpack.c:469
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2924  [0x10200973c]  unpack.c:482
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 3012  [0x102009794]  unpack.c:501
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 416  [0x102008d70]  unpack.c:69
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 460  [0x102008d9c]  unpack.c:75
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 532  [0x102008de4]  unpack.c:81
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 588  [0x102008e1c]  unpack.c:94
+        + ! 1 frombytes_asm  (in spin_gt864) + 8  [0x102008b8c]  unpack.c:503
+        + 66 poly_cbd1  (in spin_gt864) + 24  [0x10200fb24]
+        + ! 59 loop_cbd  (in spin_gt864) + 316,304,...  [0x1020072c4,0x1020072b8,...]
+        + ! 7 raw_poly_cbd1  (in spin_gt864) + 16,72,...  [0x10200704c,0x102007084,...]
+        + 56 poly_sotp_decode  (in spin_gt864) + 24  [0x10200fb84]
+        + ! 51 loop_sotp_decode  (in spin_gt864) + 336,272,...  [0x102007830,0x1020077f0,...]
+        + ! 5 raw_poly_sotp_decode  (in spin_gt864) + 292,28,...  [0x10200769c,0x102007594,...]
+        + 27 poly_sub  (in spin_gt864) + 24  [0x10200fbb4]
+        + ! 27 loop_sub  (in spin_gt864) + 8,16,...  [0x102006f20,0x102006f28,...]
+        + 24 crypto_kem_dec  (in spin_gt864) + 316  [0x102009db8]  kem.c:312
+        + ! 24 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
+        + 23 crypto_kem_dec  (in spin_gt864) + 276  [0x102009d90]  kem.c:310
+        + ! 21 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
+        + ! 2 DYLD-STUB$$bzero  (in spin_gt864) + 4  [0x1020106e8]
+        + 17 crypto_kem_dec  (in spin_gt864) + 332  [0x102009dc8]  kem.c:313
+        + ! 17 _platform_memset  (in libsystem_platform.dylib) + 140,156  [0x18565917c,0x18565918c]
+        + 15 crypto_kem_dec  (in spin_gt864) + 184  [0x102009d34]  kem.c:308
+        + ! 12 _platform_memset  (in libsystem_platform.dylib) + 140,116  [0x18565917c,0x185659164]
+        + ! 3 DYLD-STUB$$bzero  (in spin_gt864) + 4,0  [0x1020106e8,0x1020106e4]
+        + 12 crypto_kem_dec  (in spin_gt864) + 300  [0x102009da8]  kem.c:311
+        + ! 11 _platform_memset  (in libsystem_platform.dylib) + 140,148  [0x18565917c,0x185659184]
+        + ! 1 DYLD-STUB$$bzero  (in spin_gt864) + 4  [0x1020106e8]
+        + 9 crypto_kem_dec  (in spin_gt864) + 348  [0x102009dd8]  kem.c:314
+        + ! 9 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+        + 5 crypto_kem_dec  (in spin_gt864) + 36  [0x102009ca0]  kem.c:261
+        + ! 5 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52  [0x18564ac54]
+        + 3 crypto_kem_dec  (in spin_gt864) + 220,184  [0x102009d58,0x102009d34]  kem.c:309
+        + 3 frombytes_asm  (in spin_gt864) + 68,72  [0x102008bc8,0x102008bcc]  unpack.c:506
+        + 3 shake256_prefixed  (in spin_gt864) + 1100  [0x102004f48]  fips202.c:480
+        + 1 crypto_kem_dec  (in spin_gt864) + 472  [0x102009e54]  kem.c:287
+        + ! 1 poly_sub  (in spin_gt864) + 16  [0x10200fbac]
+        + 1 crypto_kem_dec  (in spin_gt864) + 548  [0x102009ea0]  kem.c:292
+        + ! 1 poly_sotp_decode  (in spin_gt864) + 12  [0x10200fb78]
+        + 1 crypto_kem_dec  (in spin_gt864) + 276  [0x102009d90]  kem.c:310
+        + 1 poly_ntt  (in spin_gt864) + 72  [0x102006c84]  ntt_api.c:15
+        + 1 poly_sotp_decode  (in spin_gt864) + 40  [0x10200fb94]
+        2 crypto_kem_dec  (in spin_gt864) + 396  [0x102009e08]  kem.c:315
+        1 main  (in spin_gt864) + 884  [0x102004964]  spin.c:34
 
 Total number in stack (recursive counted multiple, when >=5):
-        12       .Lntt_one_bank  (in spin_gt864) + 0  [0x100e83994]
-        12       packed_i9  (in spin_gt864) + 0  [0x100e8b688]
+        12       .Lntt_one_bank  (in spin_gt864) + 0  [0x102007b34]
+        12       packed_i9  (in spin_gt864) + 0  [0x10200f828]
+        9       ntt9_asm  (in spin_gt864) + 0  [0x1020078d0]
         6       _platform_memset  (in libsystem_platform.dylib) + 0  [0x1856590f0]
-        6       invntt16_asm  (in spin_gt864) + 0  [0x100e8a158]
-        5       transpose_top_checked  (in spin_gt864) + 0  [0x100e84a30]  unpack.c:139
+        6       invntt16_asm  (in spin_gt864) + 0  [0x10200e2f8]
+        5       transpose_top_checked  (in spin_gt864) + 0  [0x102008bd0]  unpack.c:232
+        5       transpose_top_checked  (in spin_gt864) + 0  [0x102008bd0]  unpack.c:421
 
 Sort by top of stack, same collapsed (when >= 5):
-        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864)        2717
-        .Lntt_one_bank  (in spin_gt864)        424
-        <deduplicated_symbol>  (in spin_gt864)        388
-        transpose_top_checked  (in spin_gt864)        303
-        invntt16_asm  (in spin_gt864)        265
+        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864)        2779
+        .Lntt_one_bank  (in spin_gt864)        478
+        <deduplicated_symbol>  (in spin_gt864)        343
+        transpose_top_checked  (in spin_gt864)        308
+        invntt16_asm  (in spin_gt864)        232
         basemul_asm  (in spin_gt864)        154
-        bm_rinv_tile  (in spin_gt864)        154
-        packed_i9  (in spin_gt864)        136
-        _platform_memset  (in libsystem_platform.dylib)        111
-        .Ltop_split_loop  (in spin_gt864)        95
+        bm_rinv_tile  (in spin_gt864)        148
+        packed_i9  (in spin_gt864)        127
+        _platform_memset  (in libsystem_platform.dylib)        94
+        .Ltop_split_loop  (in spin_gt864)        80
+        loop_cbd  (in spin_gt864)        59
         shake256_prefixed  (in spin_gt864)        52
-        invntt16_tail_asm  (in spin_gt864)        50
-        loop_sotp_decode  (in spin_gt864)        49
-        loop_cbd  (in spin_gt864)        44
-        loop_sub  (in spin_gt864)        42
-        .Lbm_tile  (in spin_gt864)        17
-        ___chkstk_darwin  (in libsystem_pthread.dylib)        13
-        invntt_ternary_asm  (in spin_gt864)        10
-        ntt_tail_asm  (in spin_gt864)        9
-        raw_poly_cbd1  (in spin_gt864)        9
-        ntt_top_asm  (in spin_gt864)        6
-        raw_poly_sotp_decode  (in spin_gt864)        6
-        ntt9_asm  (in spin_gt864)        5
+        loop_sotp_decode  (in spin_gt864)        51
+        invntt16_tail_asm  (in spin_gt864)        35
+        loop_sub  (in spin_gt864)        27
+        .Lbm_tile  (in spin_gt864)        22
+        invntt_ternary_asm  (in spin_gt864)        15
+        ntt9_asm  (in spin_gt864)        10
+        raw_poly_cbd1  (in spin_gt864)        7
+        DYLD-STUB$$bzero  (in spin_gt864)        6
+        crypto_kem_dec  (in spin_gt864)        6
+        ___chkstk_darwin  (in libsystem_pthread.dylib)        5
+        raw_poly_sotp_decode  (in spin_gt864)        5
 
 Binary Images:
-       0x100e80000 -        0x100e8da37 +spin_gt864 (0) <7A3FAF63-8745-311A-A21E-691280C38B83> /tmp/*/spin_gt864
+       0x102004000 -        0x102011bf7 +spin_gt864 (0) <FFCF3EC7-AE48-3A84-A3A0-D9F81F11A5DC> /tmp/*/spin_gt864
        0x1851ec000 -        0x18523eb4b  libobjc.A.dylib (951.7) <2E858E25-1FF6-3DA6-84F6-911630620512> /usr/lib/libobjc.A.dylib
        0x18523f000 -        0x185273b34  libdyld.dylib (1376.6) <2C3C5F75-3686-39A1-9202-BD4D2133379D> /usr/lib/system/libdyld.dylib
        0x185274000 -        0x185319ec7  dyld (1.0.0 - 1376.6) <9F682DCF-340C-3BFA-BCDD-DD702F30313E> /usr/lib/dyld

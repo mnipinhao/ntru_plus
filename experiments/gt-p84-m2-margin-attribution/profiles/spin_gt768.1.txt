@@ -1,0 +1,247 @@
+Analysis of sampling spin_gt768 (pid 49545) every 1 millisecond
+Process:         spin_gt768 [49545]
+Path:            /private/tmp/*/spin_gt768
+Load Address:    0x104628000
+Identifier:      spin_gt768
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  zsh [49470]
+Target Type:     live task
+
+Date/Time:       2026-09-21 21:16:36.910 +0800
+Launch Time:     2026-09-21 21:16:30.868 +0800
+OS Version:      macOS 26.4.1 (25E253)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         944K
+Physical footprint (peak):  976K
+Idle exit:                  untracked
+----
+
+Call graph:
+    4601 Thread_24013500   DispatchQueue_1: com.apple.main-thread  (serial)
+      4601 main  (in spin_gt768) + 804  [0x104628924]  spin.c:33
+        2662 shake256_prefixed  (in spin_gt768) + 260  [0x104629258]  fips202.c:429
+        + 2662 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768) + 264,344,...  [0x10463b3f8,0x10463b448,...]
+        826 shake256_prefixed  (in spin_gt768) + 736  [0x104629434]  fips202.c:455
+        + 826 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768) + 264,292,...  [0x10463b3f8,0x10463b414,...]
+        193 crypto_kem_enc_internal  (in spin_gt768) + 256  [0x104628dd4]  kem.c:282
+        + 75 module_ntt_.Lencap_small_front  (in spin_gt768) + 432,2236,...  [0x104630928,0x104631034,...]
+        + 33 .Lencap_lazy_join0  (in spin_gt768) + 1316,424,...  [0x10462bba0,0x10462b824,...]
+        + 31 .Lencap_lazy_join1  (in spin_gt768) + 1960,140,...  [0x10462c918,0x10462c1fc,...]
+        + 27 .Lencap_lazy_join2  (in spin_gt768) + 204,708,...  [0x10462cd30,0x10462cf28,...]
+        + 8 .Lencap_lazy_row0  (in spin_gt768) + 52,116,...  [0x10463615c,0x10463619c,...]
+        + 8 .Lencap_lazy_row1  (in spin_gt768) + 472,8,...  [0x104636518,0x104636348,...]
+        + 5 .Lencap_lazy_row2  (in spin_gt768) + 52,244,...  [0x10463658c,0x10463664c,...]
+        + 4 module_ntt_.Lgt_shared_core_epilogue  (in spin_gt768) + 24,4,...  [0x10462faa8,0x10462fa94,...]
+        + 1 module_ntt_.Lgt_shared_core_entry  (in spin_gt768) + 64  [0x104629fec]
+        + 1 module_ntt_.Lntt_endpoint_suffix  (in spin_gt768) + 0  [0x10462b418]
+        191 crypto_kem_enc_internal  (in spin_gt768) + 332  [0x104628e20]  kem.c:282
+        + 191 module_encap_muladd_Lpoly_basemul_add_loop  (in spin_gt768) + 688,392,...  [0x104637a04,0x1046378dc,...]
+        175 crypto_kem_enc_internal  (in spin_gt768) + 312  [0x104628e0c]  kem.c:282
+        + 61 module_ntt_.Lencap_small_front  (in spin_gt768) + 3868,528,...  [0x104631694,0x104630988,...]
+        + 31 .Lencap_lazy_join1  (in spin_gt768) + 268,1756,...  [0x10462c27c,0x10462c84c,...]
+        + 30 .Lencap_lazy_join0  (in spin_gt768) + 232,620,...  [0x10462b764,0x10462b8e8,...]
+        + 28 .Lencap_lazy_join2  (in spin_gt768) + 364,1256,...  [0x10462cdd0,0x10462d14c,...]
+        + 8 .Lencap_lazy_row0  (in spin_gt768) + 472,216,...  [0x104636300,0x104636200,...]
+        + 8 .Lencap_lazy_row1  (in spin_gt768) + 308,472,...  [0x104636474,0x104636518,...]
+        + 4 .Lencap_lazy_row2  (in spin_gt768) + 116,324,...  [0x1046365cc,0x10463669c,...]
+        + 4 module_ntt_.Lgt_shared_core_epilogue  (in spin_gt768) + 24,4  [0x10462faa8,0x10462fa94]
+        + 1 module_ntt_.Lntt_endpoint_suffix  (in spin_gt768) + 0  [0x10462b418]
+        80 crypto_kem_enc_internal  (in spin_gt768) + 92  [0x104628d30]  kem.c:282
+        + 80 poly_frombytes_encap  (in spin_gt768) + 2664,160,...  [0x104639488,0x104638ac0,...]
+        41 crypto_kem_enc_internal  (in spin_gt768) + 244  [0x104628dc8]  kem.c:282
+        + 41 loop_cbd  (in spin_gt768) + 316,116,...  [0x10463a95c,0x10463a894,...]
+        40 crypto_kem_enc_internal  (in spin_gt768) + 300  [0x104628e00]  kem.c:282
+        + 40 loop_sotp_encode  (in spin_gt768) + 328,240,...  [0x10463aac0,0x10463aa68,...]
+        31 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 932  [0x1046386f0]
+        + 26 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 220,336,...  [0x104638984,0x1046389f8,...]
+        + 3 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0  [0x104638840]
+        + 2 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 980  [0x104638720]
+        26 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 232  [0x104638434]
+        + 22 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 336,136,...  [0x1046389f8,0x104638930,...]
+        + 2 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 80  [0x104638890]
+        + 2 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 280  [0x104638464]
+        22 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 532  [0x104638560]
+        + 19 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 84,336,...  [0x1046388fc,0x1046389f8,...]
+        + 3 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 580  [0x104638590]
+        19 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 732  [0x104638628]
+        + 13 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 128,84,...  [0x104638928,0x1046388fc,...]
+        + 5 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0,68  [0x104638840,0x104638884]
+        + 1 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 744  [0x104638634]
+        19 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 1032  [0x104638754]
+        + 15 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 336,80,...  [0x1046389f8,0x1046388f8,...]
+        + 3 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0,80  [0x104638840,0x104638890]
+        + 1 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 1080  [0x104638784]
+        19 shake256_prefixed  (in spin_gt768) + 760,756  [0x10462944c,0x104629448]  fips202.c:460
+        17 crypto_kem_enc_internal  (in spin_gt768) + 444  [0x104628e90]  kem.c:282
+        + 17 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        +   17 _platform_memset  (in libsystem_platform.dylib) + 140,152,...  [0x18565917c,0x185659188,...]
+        17 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 132  [0x1046383d0]
+        + 13 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 276,100,...  [0x1046389bc,0x10463890c,...]
+        + 3 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 180  [0x104638400]
+        + 1 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0  [0x104638840]
+        17 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 332  [0x104638498]
+        + 14 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 232,320,...  [0x104638990,0x1046389e8,...]
+        + 3 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 96,68  [0x1046388a0,0x104638884]
+        15 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 832  [0x10463868c]
+        + 11 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 164,272,...  [0x10463894c,0x1046389b8,...]
+        + 3 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0  [0x104638840]
+        + 1 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 848  [0x10463869c]
+        14 shake256_prefixed  (in spin_gt768) + 672,588,...  [0x1046293f4,0x1046293a0,...]  fips202.c:449
+        13 crypto_kem_enc_internal  (in spin_gt768) + 424  [0x104628e7c]  kem.c:282
+        + 13 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        +   12 _platform_memset  (in libsystem_platform.dylib) + 140,148  [0x18565917c,0x185659184]
+        +   1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        13 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 1132  [0x1046387b8]
+        + 11 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 336,64,...  [0x1046389f8,0x1046388e8,...]
+        + 2 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0,96  [0x104638840,0x1046388a0]
+        13 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 1232  [0x10463881c]
+        + 11 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 136,192,...  [0x104638930,0x104638968,...]
+        + 2 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0  [0x104638840]
+        12 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 432  [0x1046384fc]
+        + 10 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 60,208,...  [0x1046388e4,0x104638978,...]
+        + 2 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0  [0x104638840]
+        11 shake256_prefixed  (in spin_gt768) + 472,460  [0x10462932c,0x104629320]  fips202.c:434
+        10 crypto_kem_enc_internal  (in spin_gt768) + 80  [0x104628d24]  kem.c:281
+        + 6 randombytes  (in spin_gt768) + 100  [0x1046289f8]  rb.c:13
+        + 2 randombytes  (in spin_gt768) + 164  [0x104628a38]  rb.c:14
+        + 1 randombytes  (in spin_gt768) + 72  [0x1046289dc]  rb.c:0
+        + 1 randombytes  (in spin_gt768) + 56  [0x1046289cc]  rb.c:15
+        10 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 632  [0x1046385c4]
+        + 6 module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 164,196,...  [0x10463894c,0x10463896c,...]
+        + 2 module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 80  [0x104638890]
+        + 2 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 680  [0x1046385f4]
+        10 shake256_prefixed  (in spin_gt768) + 552  [0x10462937c]  fips202.c:0
+        + 6 _platform_memmove  (in libsystem_platform.dylib) + 24,196,...  [0x1856593d8,0x185659484,...]
+        + 2 DYLD-STUB$$__memcpy_chk  (in spin_gt768) + 4  [0x10463b5bc]
+        + 1 DYLD-STUB$$mkdtempat_np  (in libsystem_c.dylib) + 8  [0x185557ab0]
+        + 1 __memcpy_chk  (in libsystem_c.dylib) + 8  [0x1854e3b6c]
+        9 shake256_prefixed  (in spin_gt768) + 244,232,...  [0x104629248,0x10462923c,...]  fips202.c:0
+        8 shake256_prefixed  (in spin_gt768) + 192,156,...  [0x104629214,0x1046291f0,...]  fips202.c:426
+        8 shake256_prefixed  (in spin_gt768) + 1076,1072  [0x104629588,0x104629584]  fips202.c:471
+        6 shake256_prefixed  (in spin_gt768) + 1012  [0x104629548]  fips202.c:469
+        + 4 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8,12  [0x185557ad0,0x185557ad4]
+        + ! 2 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+        + 2 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x10463b628]
+        6 shake256_prefixed  (in spin_gt768) + 1032  [0x10462955c]  fips202.c:470
+        + 3 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 3 _platform_memset  (in libsystem_platform.dylib) + 124,148,...  [0x18565916c,0x185659184,...]
+        + 2 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x10463b628]
+        + 1 memset_s  (in libsystem_c.dylib) + 20  [0x1854df268]
+        5 memset_s  (in libsystem_c.dylib) + 92  [0x1854df2b0]
+        5 shake256_prefixed  (in spin_gt768) + 260  [0x104629258]  fips202.c:430
+        5 shake256_prefixed  (in spin_gt768) + 736,764  [0x104629434,0x104629450]  fips202.c:459
+        4 crypto_kem_enc_internal  (in spin_gt768) + 404  [0x104628e68]  kem.c:282
+        + 4 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        +   2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        +   2 _platform_memset  (in libsystem_platform.dylib) + 28,140  [0x18565910c,0x18565917c]
+        4 shake256_prefixed  (in spin_gt768) + 784  [0x104629464]  fips202.c:462
+        3 shake256_prefixed  (in spin_gt768) + 276  [0x104629268]  fips202.c:419
+        3 shake256_prefixed  (in spin_gt768) + 344,392,...  [0x1046292ac,0x1046292dc,...]  fips202.c:422
+        2 crypto_kem_enc_internal  (in spin_gt768) + 344  [0x104628e2c]  kem.c:282
+        + 2 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 16  [0x10463835c]
+        2 crypto_kem_enc_internal  (in spin_gt768) + 380  [0x104628e50]  kem.c:282
+        + 2 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        +   1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        +   1 _platform_memset  (in libsystem_platform.dylib) + 28  [0x18565910c]
+        2 shake256_prefixed  (in spin_gt768) + 556  [0x104629380]  fips202.c:445
+        2 shake256_prefixed  (in spin_gt768) + 704  [0x104629414]  fips202.c:465
+        2 shake256_prefixed  (in spin_gt768) + 1044  [0x104629568]  fips202.c:470
+        1 crypto_kem_enc  (in spin_gt768) + 48  [0x10463ad50]
+        1 crypto_kem_enc_internal  (in spin_gt768) + 28  [0x104628cf0]  kem.c:277
+        + 1 crypto_kem_enc_internal  (in spin_gt768) + 28  [0x104628cf0]  kem.c:277
+        +   1 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52  [0x18564ac54]
+        1 crypto_kem_enc_internal  (in spin_gt768) + 204  [0x104628da0]  kem.c:282
+        + 1 shake256_prefixed  (in spin_gt768) + 8  [0x10462915c]  fips202.c:407
+        1 crypto_kem_enc_internal  (in spin_gt768) + 232  [0x104628dbc]  kem.c:282
+        + 1 shake256_prefixed  (in spin_gt768) + 24  [0x10462916c]  fips202.c:407
+        1 crypto_kem_enc_internal  (in spin_gt768) + 268  [0x104628de0]  kem.c:282
+        + 1 module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 48  [0x10463837c]
+        1 crypto_kem_enc_internal  (in spin_gt768) + 472  [0x104628eac]  kem.c:283
+        + 1 memset_s  (in libsystem_c.dylib) + 52  [0x1854df288]
+        1 crypto_kem_enc_internal  (in spin_gt768) + 484  [0x104628eb8]  kem.c:283
+        1 shake256_prefixed  (in spin_gt768) + 92  [0x1046291b0]  fips202.c:415
+        1 shake256_prefixed  (in spin_gt768) + 500  [0x104629348]  fips202.c:443
+
+Total number in stack (recursive counted multiple, when >=5):
+        12       module_pack_.Lwave8_pack_already_reduced  (in spin_gt768) + 0  [0x1046388a8]
+        11       module_pack_.Lcanonical_pack_compact_core  (in spin_gt768) + 0  [0x104638840]
+        10       module_pack_.Lwave8_dual_pack_entry  (in spin_gt768) + 0  [0x10463834c]
+        6       _platform_memset  (in libsystem_platform.dylib) + 0  [0x1856590f0]
+        6       memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+
+Sort by top of stack, same collapsed (when >= 5):
+        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768)        3488
+        module_encap_muladd_Lpoly_basemul_add_loop  (in spin_gt768)        191
+        module_pack_.Lwave8_pack_already_reduced  (in spin_gt768)        171
+        module_ntt_.Lencap_small_front  (in spin_gt768)        136
+        shake256_prefixed  (in spin_gt768)        99
+        poly_frombytes_encap  (in spin_gt768)        80
+        .Lencap_lazy_join0  (in spin_gt768)        63
+        .Lencap_lazy_join1  (in spin_gt768)        62
+        .Lencap_lazy_join2  (in spin_gt768)        55
+        loop_cbd  (in spin_gt768)        41
+        loop_sotp_encode  (in spin_gt768)        40
+        _platform_memset  (in libsystem_platform.dylib)        37
+        module_pack_.Lcanonical_pack_compact_core  (in spin_gt768)        28
+        module_pack_.Lwave8_dual_pack_entry  (in spin_gt768)        18
+        .Lencap_lazy_row0  (in spin_gt768)        16
+        .Lencap_lazy_row1  (in spin_gt768)        16
+        randombytes  (in spin_gt768)        10
+        .Lencap_lazy_row2  (in spin_gt768)        9
+        module_ntt_.Lgt_shared_core_epilogue  (in spin_gt768)        8
+        memset_s  (in libsystem_c.dylib)        7
+        DYLD-STUB$$mkostemps  (in libsystem_c.dylib)        6
+        _platform_memmove  (in libsystem_platform.dylib)        6
+
+Binary Images:
+       0x104628000 -        0x10463be77 +spin_gt768 (0) <27BE5349-CDB1-3D7A-A320-EC317E74D9B4> /tmp/*/spin_gt768
+       0x1851ec000 -        0x18523eb4b  libobjc.A.dylib (951.7) <2E858E25-1FF6-3DA6-84F6-911630620512> /usr/lib/libobjc.A.dylib
+       0x18523f000 -        0x185273b34  libdyld.dylib (1376.6) <2C3C5F75-3686-39A1-9202-BD4D2133379D> /usr/lib/system/libdyld.dylib
+       0x185274000 -        0x185319ec7  dyld (1.0.0 - 1376.6) <9F682DCF-340C-3BFA-BCDD-DD702F30313E> /usr/lib/dyld
+       0x18531a000 -        0x18531d228  libsystem_blocks.dylib (96) <2EA73169-CF76-3DD1-9869-F23C8B338022> /usr/lib/system/libsystem_blocks.dylib
+       0x18531e000 -        0x18537251f  libxpc.dylib (3102.100.102) <618039C8-9965-3782-A7D2-90FD4C3DD66F> /usr/lib/system/libxpc.dylib
+       0x185373000 -        0x1853939bf  libsystem_trace.dylib (1861.100.19) <08629650-54FC-3AA6-910E-EACA563804D0> /usr/lib/system/libsystem_trace.dylib
+       0x185394000 -        0x185441daf  libcorecrypto.dylib (1922.101.2) <D1EC203E-9B2E-391B-8DE3-7C58F0589437> /usr/lib/system/libcorecrypto.dylib
+       0x185442000 -        0x1854921d7  libsystem_malloc.dylib (812.100.31) <2AD21BE3-FFDB-31D5-A3D7-2F7F672D6E92> /usr/lib/system/libsystem_malloc.dylib
+       0x185493000 -        0x1854da23f  libdispatch.dylib (1542.100.32) <E17AA23F-DB2A-3302-B14C-F6B08C540FCF> /usr/lib/system/libdispatch.dylib
+       0x1854db000 -        0x1854ddffb  libsystem_featureflags.dylib (103) <0DE01F76-4B36-35A2-98F9-43DD147EDD95> /usr/lib/system/libsystem_featureflags.dylib
+       0x1854de000 -        0x18555eef7  libsystem_c.dylib (1752.100.10) <66EBD321-6899-3863-BA24-5CFC3076A0CB> /usr/lib/system/libsystem_c.dylib
+       0x18555f000 -        0x1855efae7  libc++.1.dylib (2100.43) <1E9541EC-C564-38CB-BED6-46F708E8D863> /usr/lib/libc++.1.dylib
+       0x1855f0000 -        0x18560a75f  libc++abi.dylib (2100.43) <E8D325ED-3B97-325E-B494-B1B0FF93D133> /usr/lib/libc++abi.dylib
+       0x18560b000 -        0x18564828f  libsystem_kernel.dylib (12377.101.15) <51565B39-F595-3E96-A217-FEF29815057A> /usr/lib/system/libsystem_kernel.dylib
+       0x185649000 -        0x185655b3b  libsystem_pthread.dylib (539.100.4) <E7A73008-0C09-31E3-9DD9-0C61652F0E85> /usr/lib/system/libsystem_pthread.dylib
+       0x185656000 -        0x18565e8f3  libsystem_platform.dylib (375.100.10) <D93EC420-F465-3A3A-916D-A04AF9B023EB> /usr/lib/system/libsystem_platform.dylib
+       0x18565f000 -        0x18568e6eb  libsystem_info.dylib (600) <201FD67C-3DF6-3788-B132-A69CAA2AA3D7> /usr/lib/system/libsystem_info.dylib
+       0x189624000 -        0x18962de5f  libsystem_darwin.dylib (1752.100.10) <D5BA0CAB-F283-3620-AAA9-1EEB718E1BA8> /usr/lib/system/libsystem_darwin.dylib
+       0x189a8f000 -        0x189aa0f5b  libsystem_notify.dylib (348.100.7) <9F46F30B-B7C0-3DD7-AC38-57B78C7971FF> /usr/lib/system/libsystem_notify.dylib
+       0x18bd59000 -        0x18bd73f5b  libsystem_networkextension.dylib (2226.101.1) <85169C7B-48DD-3542-AD38-F1B88EA2A95A> /usr/lib/system/libsystem_networkextension.dylib
+       0x18bdf6000 -        0x18be0dfdf  libsystem_asl.dylib (406) <6427D987-7938-3278-8C14-10FB9C06BBD5> /usr/lib/system/libsystem_asl.dylib
+       0x18d9b1000 -        0x18d9b9387  libsystem_symptoms.dylib (2169.100.30) <28B6E34E-9C7D-3437-A3F1-A3C979DE579A> /usr/lib/system/libsystem_symptoms.dylib
+       0x191c4c000 -        0x191c8425f  libsystem_containermanager.dylib (725.100.37) <14750F95-BB3A-3654-8610-A05A454643A8> /usr/lib/system/libsystem_containermanager.dylib
+       0x19305c000 -        0x1930605d7  libsystem_configuration.dylib (1405.100.8) <634F597D-F8BD-3C00-B967-86047FC15D14> /usr/lib/system/libsystem_configuration.dylib
+       0x193061000 -        0x1930678cf  libsystem_sandbox.dylib (2680.100.174) <AF76231D-EADC-3399-9414-6AD90FB4EA89> /usr/lib/system/libsystem_sandbox.dylib
+       0x1946a7000 -        0x1946aa1fb  libquarantine.dylib (196.100.8) <268FEB6E-A237-3050-BFFF-AE3A66B7EAD4> /usr/lib/system/libquarantine.dylib
+       0x194e46000 -        0x194e4cd03  libsystem_coreservices.dylib (191.4.5) <7129349D-04F9-3C3C-BF37-3082C1468654> /usr/lib/system/libsystem_coreservices.dylib
+       0x1953cb000 -        0x195408a77  libsystem_m.dylib (3312.100.1) <83B173CD-7F32-3901-8E67-C0B2676BE015> /usr/lib/system/libsystem_m.dylib
+       0x19540a000 -        0x19540d527  libmacho.dylib (1376.6) <9729ECEA-0A08-32E3-8BDB-B42FC15FF258> /usr/lib/system/libmacho.dylib
+       0x195427000 -        0x1954343a7  libcommonCrypto.dylib (600035) <710EC5FA-F77C-3646-A9E3-C037C42E1539> /usr/lib/system/libcommonCrypto.dylib
+       0x195435000 -        0x19543eca3  libunwind.dylib (2100.2) <FB0518B9-DF0F-3A03-A74B-AF1B21C26F8B> /usr/lib/system/libunwind.dylib
+       0x195447000 -        0x1954517ff  libcopyfile.dylib (240) <0B7FF027-5579-3CBF-A12B-68A4FD36641C> /usr/lib/system/libcopyfile.dylib
+       0x195452000 -        0x195455987  libcompiler_rt.dylib (103.3) <65E29E6E-7042-3F73-A1D2-F2C4EBCD7524> /usr/lib/system/libcompiler_rt.dylib
+       0x195456000 -        0x19545a78b  libsystem_collections.dylib (1752.100.10) <B81193DE-3BEC-3340-86D0-DB7F3683D135> /usr/lib/system/libsystem_collections.dylib
+       0x19545b000 -        0x19545e4cf  libsystem_secinit.dylib (168.100.7) <A6B77B36-195D-33F8-8058-FE0B5BFA9D37> /usr/lib/system/libsystem_secinit.dylib
+       0x19545f000 -        0x195461bf7  libremovefile.dylib (85.100.6) <BD89B1A3-0D06-3881-B5E1-EFC6CFBDFCC1> /usr/lib/system/libremovefile.dylib
+       0x195462000 -        0x195462f27  libkeymgr.dylib (31) <DE8F8219-0072-35C2-8932-C065491ED15D> /usr/lib/system/libkeymgr.dylib
+       0x195463000 -        0x19546be3f  libsystem_dnssd.dylib (2881.100.56.0.1) <DEC8BDD2-366C-3BF9-A123-35744DB06354> /usr/lib/system/libsystem_dnssd.dylib
+       0x19546c000 -        0x19547109b  libcache.dylib (95) <4D6833A3-C910-3A76-AA8A-303F698B36BF> /usr/lib/system/libcache.dylib
+       0x195472000 -        0x195473ce3  libSystem.B.dylib (1356) <E05F5341-06B7-365E-8014-E9CD64C352FE> /usr/lib/libSystem.B.dylib
+       0x287d55000 -        0x287d5c349  libRosetta.dylib (367.5) <2FC1EF06-04C4-35FC-8DC3-BEA1E9FBD63F> /usr/lib/libRosetta.dylib
+       0x289a32000 -        0x289a35a4b  libsystem_darwindirectory.dylib (122) <CCAA2170-32DD-34BD-A927-32DF30893969> /usr/lib/system/libsystem_darwindirectory.dylib
+       0x289a36000 -        0x289a3f5a7  libsystem_eligibility.dylib (319.101.1) <2D19994A-87BB-34B8-A343-CB8DD47FF110> /usr/lib/system/libsystem_eligibility.dylib
+       0x289a40000 -        0x289a478db  libsystem_sanitizers.dylib (26) <FCB93D2F-4437-3089-A43F-A19BC23DD65B> /usr/lib/system/libsystem_sanitizers.dylib
+       0x289a48000 -        0x289a48bb7  libsystem_trial.dylib (474.2.18) <5BB81430-4E33-3160-94D2-1FFB2B614DB2> /usr/lib/system/libsystem_trial.dylib

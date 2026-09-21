@@ -1,0 +1,256 @@
+Analysis of sampling spin_gt1152 (pid 49859) every 1 millisecond
+Process:         spin_gt1152 [49859]
+Path:            /private/tmp/*/spin_gt1152
+Load Address:    0x104890000
+Identifier:      spin_gt1152
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  zsh [49470]
+Target Type:     live task
+
+Date/Time:       2026-09-21 21:17:25.353 +0800
+Launch Time:     2026-09-21 21:17:19.314 +0800
+OS Version:      macOS 26.4.1 (25E253)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         976K
+Physical footprint (peak):  992K
+Idle exit:                  untracked
+----
+
+Call graph:
+    5106 Thread_24015679   DispatchQueue_1: com.apple.main-thread  (serial)
+      5106 start  (in dyld) + 6992  [0x185293da4]
+        5105 main  (in spin_gt1152) + 808  [0x104890928]  spin.c:33
+        + 1987 crypto_kem_enc  (in spin_gt1152) + 276  [0x104890e20]  kem.c:243
+        + ! 1869 hash_g_fr0  (in spin_gt1152) + 64  [0x10489128c]  symmetric.c:50
+        + ! : 1495 shake256_prefixed  (in spin_gt1152) + 264  [0x1048913e4]  fips202.c:439
+        + ! : | 1495 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt1152) + 1080,456,...  [0x104897240,0x104896fd0,...]
+        + ! : 343 shake256_prefixed  (in spin_gt1152) + 740  [0x1048915c0]  fips202.c:465
+        + ! : | 343 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt1152) + 768,1080,...  [0x104897108,0x104897240,...]
+        + ! : 8 shake256_prefixed  (in spin_gt1152) + 764  [0x1048915d8]  fips202.c:470
+        + ! : 5 shake256_prefixed  (in spin_gt1152) + 160,196,...  [0x10489137c,0x1048913a0,...]  fips202.c:436
+        + ! : 4 shake256_prefixed  (in spin_gt1152) + 676,636,...  [0x104891580,0x104891558,...]  fips202.c:459
+        + ! : 3 shake256_prefixed  (in spin_gt1152) + 348,380,...  [0x104891438,0x104891458,...]  fips202.c:432
+        + ! : 2 shake256_prefixed  (in spin_gt1152) + 556  [0x104891508]  fips202.c:0
+        + ! : | 1 __memcpy_chk  (in libsystem_c.dylib) + 8  [0x1854e3b6c]
+        + ! : | 1 _platform_memmove  (in libsystem_platform.dylib) + 12  [0x1856593cc]
+        + ! : 2 shake256_prefixed  (in spin_gt1152) + 240  [0x1048913cc]  fips202.c:0
+        + ! : 2 shake256_prefixed  (in spin_gt1152) + 264  [0x1048913e4]  fips202.c:440
+        + ! : 2 shake256_prefixed  (in spin_gt1152) + 768,772  [0x1048915dc,0x1048915e0]  fips202.c:469
+        + ! : 1 shake256_prefixed  (in spin_gt1152) + 88  [0x104891334]  fips202.c:425
+        + ! : 1 shake256_prefixed  (in spin_gt1152) + 504  [0x1048914d4]  fips202.c:453
+        + ! : 1 shake256_prefixed  (in spin_gt1152) + 708  [0x1048915a0]  fips202.c:475
+        + ! 100 hash_g_fr0  (in spin_gt1152) + 52  [0x104891280]  symmetric.c:49
+        + ! : 57 tobytes  (in spin_gt1152) + 2624,5540,...  [0x104894800,0x104895364,...]  pack.c:168
+        + ! : 43 tobytes  (in spin_gt1152) + 2816,4128,...  [0x1048948c0,0x104894de0,...]  pack.c:170
+        + ! 18 hash_g_fr0  (in spin_gt1152) + 76  [0x104891298]  symmetric.c:51
+        + !   16 _platform_memset  (in libsystem_platform.dylib) + 140,152,...  [0x18565917c,0x185659188,...]
+        + !   1 DYLD-STUB$$bzero  (in spin_gt1152) + 4  [0x10489a724]
+        + !   1 __bzero  (in libsystem_platform.dylib) + 0  [0x185659090]
+        + 1642 crypto_kem_enc  (in spin_gt1152) + 212  [0x104890de0]  kem.c:243
+        + ! 1493 shake256_prefixed  (in spin_gt1152) + 264  [0x1048913e4]  fips202.c:439
+        + ! : 1493 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt1152) + 1080,456,...  [0x104897240,0x104896fd0,...]
+        + ! 121 shake256_prefixed  (in spin_gt1152) + 740  [0x1048915c0]  fips202.c:465
+        + ! : 121 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt1152) + 1080,124,...  [0x104897240,0x104896e84,...]
+        + ! 4 shake256_prefixed  (in spin_gt1152) + 236,232,...  [0x1048913c8,0x1048913c4,...]  fips202.c:0
+        + ! 4 shake256_prefixed  (in spin_gt1152) + 296,372  [0x104891404,0x104891450]  fips202.c:432
+        + ! 4 shake256_prefixed  (in spin_gt1152) + 220,204,...  [0x1048913b8,0x1048913a8,...]  fips202.c:436
+        + ! 3 shake256_prefixed  (in spin_gt1152) + 788  [0x1048915f0]  fips202.c:472
+        + ! 2 shake256_prefixed  (in spin_gt1152) + 96  [0x10489133c]  fips202.c:425
+        + ! 2 shake256_prefixed  (in spin_gt1152) + 264  [0x1048913e4]  fips202.c:440
+        + ! 2 shake256_prefixed  (in spin_gt1152) + 660,664  [0x104891570,0x104891574]  fips202.c:459
+        + ! 2 shake256_prefixed  (in spin_gt1152) + 1040,1068  [0x1048916ec,0x104891708]  fips202.c:480
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 556  [0x104891508]  fips202.c:0
+        + ! : 1 _platform_memmove  (in libsystem_platform.dylib) + 204  [0x18565948c]
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 24  [0x1048912f4]  fips202.c:417
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 280  [0x1048913f4]  fips202.c:429
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 496  [0x1048914cc]  fips202.c:444
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 708  [0x1048915a0]  fips202.c:475
+        + 483 crypto_kem_enc  (in spin_gt1152) + 236  [0x104890df8]  kem.c:243
+        + ! 345 shake256_prefixed  (in spin_gt1152) + 740  [0x1048915c0]  fips202.c:465
+        + ! : 345 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt1152) + 768,456,...  [0x104897108,0x104896fd0,...]
+        + ! 118 shake256_prefixed  (in spin_gt1152) + 264  [0x1048913e4]  fips202.c:439
+        + ! : 118 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt1152) + 768,124,...  [0x104897108,0x104896e84,...]
+        + ! 4 shake256_prefixed  (in spin_gt1152) + 296,332,...  [0x104891404,0x104891428,...]  fips202.c:432
+        + ! 3 shake256_prefixed  (in spin_gt1152) + 556  [0x104891508]  fips202.c:0
+        + ! : 3 _platform_memmove  (in libsystem_platform.dylib) + 428,452,...  [0x18565956c,0x185659584,...]
+        + ! 3 shake256_prefixed  (in spin_gt1152) + 764  [0x1048915d8]  fips202.c:470
+        + ! 2 shake256_prefixed  (in spin_gt1152) + 84  [0x104891330]  fips202.c:425
+        + ! 2 shake256_prefixed  (in spin_gt1152) + 264  [0x1048913e4]  fips202.c:440
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 248  [0x1048913d4]  fips202.c:0
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 60  [0x104891318]  fips202.c:417
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 576  [0x10489151c]  fips202.c:459
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 680  [0x104891584]  fips202.c:462
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 772  [0x1048915e0]  fips202.c:469
+        + ! 1 shake256_prefixed  (in spin_gt1152) + 708  [0x1048915a0]  fips202.c:475
+        + 267 crypto_kem_enc  (in spin_gt1152) + 308  [0x104890e40]  kem.c:243
+        + ! 267 poly_ntt  (in spin_gt1152) + 40  [0x104896868]  api_glue.c:26
+        + !   46 ntt_asm  (in spin_gt1152) + 56  [0x104897f70]
+        + !   : 46 .Ltop_split_loop  (in spin_gt1152) + 16,148,...  [0x1048986a8,0x10489872c,...]
+        + !   40 ntt9_asm  (in spin_gt1152) + 148  [0x104898924]
+        + !   : 37 .Lntt_one_bank  (in spin_gt1152) + 1372,960,...  [0x104899110,0x104898f74,...]
+        + !   : 3 ntt9_asm  (in spin_gt1152) + 212,180  [0x104898964,0x104898944]
+        + !   33 ntt9_asm  (in spin_gt1152) + 436  [0x104898a44]
+        + !   : 33 .Lntt_one_bank  (in spin_gt1152) + 760,592,...  [0x104898eac,0x104898e04,...]
+        + !   27 ntt9_asm  (in spin_gt1152) + 628  [0x104898b04]
+        + !   : 26 .Lntt_one_bank  (in spin_gt1152) + 812,1344,...  [0x104898ee0,0x1048990f4,...]
+        + !   : 1 ntt9_asm  (in spin_gt1152) + 696  [0x104898b48]
+        + !   26 ntt9_asm  (in spin_gt1152) + 244  [0x104898984]
+        + !   : 23 .Lntt_one_bank  (in spin_gt1152) + 416,1760,...  [0x104898d54,0x104899294,...]
+        + !   : 3 ntt9_asm  (in spin_gt1152) + 304,276  [0x1048989c0,0x1048989a4]
+        + !   26 ntt9_asm  (in spin_gt1152) + 724  [0x104898b64]
+        + !   : 26 .Lntt_one_bank  (in spin_gt1152) + 1548,1592,...  [0x1048991c0,0x1048991ec,...]
+        + !   24 ntt9_asm  (in spin_gt1152) + 532  [0x104898aa4]
+        + !   : 24 .Lntt_one_bank  (in spin_gt1152) + 212,660,...  [0x104898c88,0x104898e48,...]
+        + !   23 ntt9_asm  (in spin_gt1152) + 340  [0x1048989e4]
+        + !   : 23 .Lntt_one_bank  (in spin_gt1152) + 668,1404,...  [0x104898e50,0x104899130,...]
+        + !   20 ntt9_asm  (in spin_gt1152) + 52  [0x1048988c4]
+        + !   : 20 .Lntt_one_bank  (in spin_gt1152) + 440,1220,...  [0x104898d6c,0x104899078,...]
+        + !   1 ntt_asm  (in spin_gt1152) + 68  [0x104897f7c]
+        + !   : 1 ntt_tail_asm  (in spin_gt1152) + 272  [0x104898850]
+        + !   1 ntt_asm  (in spin_gt1152) + 52  [0x104897f6c]
+        + 236 crypto_kem_enc  (in spin_gt1152) + 264  [0x104890e14]  kem.c:243
+        + ! 236 poly_ntt  (in spin_gt1152) + 40  [0x104896868]  api_glue.c:26
+        + !   35 ntt_asm  (in spin_gt1152) + 56  [0x104897f70]
+        + !   : 35 .Ltop_split_loop  (in spin_gt1152) + 16,148,...  [0x1048986a8,0x10489872c,...]
+        + !   32 ntt9_asm  (in spin_gt1152) + 436  [0x104898a44]
+        + !   : 30 .Lntt_one_bank  (in spin_gt1152) + 328,312,...  [0x104898cfc,0x104898cec,...]
+        + !   : 2 ntt9_asm  (in spin_gt1152) + 468,504  [0x104898a64,0x104898a88]
+        + !   30 ntt9_asm  (in spin_gt1152) + 340  [0x1048989e4]
+        + !   : 27 .Lntt_one_bank  (in spin_gt1152) + 1244,440,...  [0x104899090,0x104898d6c,...]
+        + !   : 3 ntt9_asm  (in spin_gt1152) + 408  [0x104898a28]
+        + !   28 ntt9_asm  (in spin_gt1152) + 628  [0x104898b04]
+        + !   : 26 .Lntt_one_bank  (in spin_gt1152) + 584,300,...  [0x104898dfc,0x104898ce0,...]
+        + !   : 2 ntt9_asm  (in spin_gt1152) + 696  [0x104898b48]
+        + !   26 ntt9_asm  (in spin_gt1152) + 148  [0x104898924]
+        + !   : 26 .Lntt_one_bank  (in spin_gt1152) + 100,1088,...  [0x104898c18,0x104898ff4,...]
+        + !   26 ntt9_asm  (in spin_gt1152) + 532  [0x104898aa4]
+        + !   : 26 .Lntt_one_bank  (in spin_gt1152) + 1452,560,...  [0x104899160,0x104898de4,...]
+        + !   22 ntt9_asm  (in spin_gt1152) + 724  [0x104898b64]
+        + !   : 22 .Lntt_one_bank  (in spin_gt1152) + 164,236,...  [0x104898c58,0x104898ca0,...]
+        + !   16 ntt9_asm  (in spin_gt1152) + 52  [0x1048988c4]
+        + !   : 16 .Lntt_one_bank  (in spin_gt1152) + 1592,1568,...  [0x1048991ec,0x1048991d4,...]
+        + !   16 ntt9_asm  (in spin_gt1152) + 244  [0x104898984]
+        + !   : 16 .Lntt_one_bank  (in spin_gt1152) + 352,1592,...  [0x104898d14,0x1048991ec,...]
+        + !   3 ntt_asm  (in spin_gt1152) + 68  [0x104897f7c]
+        + !   : 3 ntt_tail_asm  (in spin_gt1152) + 48,144,...  [0x104898770,0x1048987d0,...]
+        + !   2 ntt_asm  (in spin_gt1152) + 12  [0x104897f44]
+        + 157 crypto_kem_enc  (in spin_gt1152) + 336  [0x104890e5c]  kem.c:243
+        + ! 73 basemul_add_asm  (in spin_gt1152) + 228,180,...  [0x1048936bc,0x10489368c,...]  base.c:190
+        + ! 18 basemul_add_asm  (in spin_gt1152) + 360,348,...  [0x104893740,0x104893734,...]  base.c:196
+        + ! 17 basemul_add_asm  (in spin_gt1152) + 440  [0x104893790]  base.c:179
+        + ! 12 basemul_add_asm  (in spin_gt1152) + 364,380,...  [0x104893744,0x104893754,...]  base.c:197
+        + ! 9 basemul_add_asm  (in spin_gt1152) + 400,388,...  [0x104893768,0x10489375c,...]  base.c:198
+        + ! 8 basemul_add_asm  (in spin_gt1152) + 84  [0x10489362c]  base.c:188
+        + ! 8 basemul_add_asm  (in spin_gt1152) + 420,404,...  [0x10489377c,0x10489376c,...]  base.c:199
+        + ! 5 basemul_add_asm  (in spin_gt1152) + 316,340,...  [0x104893714,0x10489372c,...]  base.c:195
+        + ! 3 basemul_add_asm  (in spin_gt1152) + 272,256  [0x1048936e8,0x1048936d8]  base.c:193
+        + ! 3 basemul_add_asm  (in spin_gt1152) + 284,344  [0x1048936f4,0x104893730]  base.c:194
+        + ! 1 basemul_add_asm  (in spin_gt1152) + 232  [0x1048936c0]  base.c:192
+        + 78 crypto_kem_enc  (in spin_gt1152) + 108  [0x104890d78]  kem.c:243
+        + ! 45 frombytes_asm  (in spin_gt1152) + 348,292,...  [0x104896350,0x104896318,...]  pack.c:251
+        + ! 17 frombytes_asm  (in spin_gt1152) + 432,444  [0x1048963a4,0x1048963b0]  pack.c:250
+        + ! 9 frombytes_asm  (in spin_gt1152) + 396,368,...  [0x104896380,0x104896364,...]  pack.c:0
+        + ! 3 frombytes_asm  (in spin_gt1152) + 412  [0x104896390]  pack.c:255
+        + ! 2 frombytes_asm  (in spin_gt1152) + 408  [0x10489638c]  pack.c:254
+        + ! 1 frombytes_asm  (in spin_gt1152) + 416  [0x104896394]  pack.c:256
+        + ! 1 frombytes_asm  (in spin_gt1152) + 632  [0x10489646c]  pack.c:258
+        + 74 crypto_kem_enc  (in spin_gt1152) + 296  [0x104890e34]  kem.c:243
+        + ! 62 poly_sotp_encode  (in spin_gt1152) + 176,180,...  [0x10489656c,0x104896570,...]  support.c:65
+        + ! 8 poly_sotp_encode  (in spin_gt1152) + 224,236,...  [0x10489659c,0x1048965a8,...]  support.c:0
+        + ! 4 poly_sotp_encode  (in spin_gt1152) + 60,40,...  [0x1048964f8,0x1048964e4,...]  support.c:57
+        + 68 crypto_kem_enc  (in spin_gt1152) + 352  [0x104890e6c]  kem.c:243
+        + ! 37 tobytes  (in spin_gt1152) + 932,1248,...  [0x104894164,0x1048942a0,...]  pack.c:170
+        + ! 31 tobytes  (in spin_gt1152) + 3000,216,...  [0x104894978,0x104893e98,...]  pack.c:168
+        + 59 crypto_kem_enc  (in spin_gt1152) + 252  [0x104890e08]  kem.c:243
+        + ! 50 poly_cbd1  (in spin_gt1152) + 40  [0x1048964a4]  support.c:44
+        + ! 4 poly_cbd1  (in spin_gt1152) + 44,52  [0x1048964a8,0x1048964b0]  support.c:41
+        + ! 4 poly_cbd1  (in spin_gt1152) + 60  [0x1048964b8]  support.c:48
+        + ! 1 poly_cbd1  (in spin_gt1152) + 16  [0x10489648c]  support.c:42
+        + 15 crypto_kem_enc  (in spin_gt1152) + 92  [0x104890d68]  kem.c:242
+        + ! 6 randombytes  (in spin_gt1152) + 100  [0x1048909fc]  rb.c:13
+        + ! 5 randombytes  (in spin_gt1152) + 164,124  [0x104890a3c,0x104890a14]  rb.c:14
+        + ! 4 randombytes  (in spin_gt1152) + 56,64  [0x1048909d0,0x1048909d8]  rb.c:15
+        + 15 crypto_kem_enc  (in spin_gt1152) + 484  [0x104890ef0]  kem.c:243
+        + ! 15 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+        + 12 crypto_kem_enc  (in spin_gt1152) + 496  [0x104890efc]  kem.c:243
+        + ! 12 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+        + 5 crypto_kem_enc  (in spin_gt1152) + 40  [0x104890d34]  kem.c:239
+        + ! 5 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52,36  [0x18564ac54,0x18564ac44]
+        + 4 crypto_kem_enc  (in spin_gt1152) + 460,428,...  [0x104890ed8,0x104890eb8,...]  kem.c:243
+        + 2 poly_ntt  (in spin_gt1152) + 72  [0x104896888]  api_glue.c:27
+        + 1 shake256_prefixed  (in spin_gt1152) + 1108  [0x104891730]  fips202.c:481
+        1 crypto_kem_enc  (in spin_gt1152) + 596  [0x104890f60]  kem.c:245
+
+Total number in stack (recursive counted multiple, when >=5):
+        16       .Lntt_one_bank  (in spin_gt1152) + 0  [0x104898bb4]
+        6       ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt1152) + 0  [0x104896e08]
+        6       ntt9_asm  (in spin_gt1152) + 0  [0x104898890]
+
+Sort by top of stack, same collapsed (when >= 5):
+        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt1152)        3915
+        .Lntt_one_bank  (in spin_gt1152)        401
+        tobytes  (in spin_gt1152)        168
+        basemul_add_asm  (in spin_gt1152)        157
+        .Ltop_split_loop  (in spin_gt1152)        81
+        frombytes_asm  (in spin_gt1152)        78
+        poly_sotp_encode  (in spin_gt1152)        74
+        shake256_prefixed  (in spin_gt1152)        74
+        poly_cbd1  (in spin_gt1152)        59
+        _platform_memset  (in libsystem_platform.dylib)        43
+        randombytes  (in spin_gt1152)        15
+        ntt9_asm  (in spin_gt1152)        14
+        ___chkstk_darwin  (in libsystem_pthread.dylib)        5
+        _platform_memmove  (in libsystem_platform.dylib)        5
+        crypto_kem_enc  (in spin_gt1152)        5
+
+Binary Images:
+       0x104890000 -        0x10489cb27 +spin_gt1152 (0) <B1EEB1E6-8167-3CF7-9F56-6C9F72D9F710> /tmp/*/spin_gt1152
+       0x1851ec000 -        0x18523eb4b  libobjc.A.dylib (951.7) <2E858E25-1FF6-3DA6-84F6-911630620512> /usr/lib/libobjc.A.dylib
+       0x18523f000 -        0x185273b34  libdyld.dylib (1376.6) <2C3C5F75-3686-39A1-9202-BD4D2133379D> /usr/lib/system/libdyld.dylib
+       0x185274000 -        0x185319ec7  dyld (1.0.0 - 1376.6) <9F682DCF-340C-3BFA-BCDD-DD702F30313E> /usr/lib/dyld
+       0x18531a000 -        0x18531d228  libsystem_blocks.dylib (96) <2EA73169-CF76-3DD1-9869-F23C8B338022> /usr/lib/system/libsystem_blocks.dylib
+       0x18531e000 -        0x18537251f  libxpc.dylib (3102.100.102) <618039C8-9965-3782-A7D2-90FD4C3DD66F> /usr/lib/system/libxpc.dylib
+       0x185373000 -        0x1853939bf  libsystem_trace.dylib (1861.100.19) <08629650-54FC-3AA6-910E-EACA563804D0> /usr/lib/system/libsystem_trace.dylib
+       0x185394000 -        0x185441daf  libcorecrypto.dylib (1922.101.2) <D1EC203E-9B2E-391B-8DE3-7C58F0589437> /usr/lib/system/libcorecrypto.dylib
+       0x185442000 -        0x1854921d7  libsystem_malloc.dylib (812.100.31) <2AD21BE3-FFDB-31D5-A3D7-2F7F672D6E92> /usr/lib/system/libsystem_malloc.dylib
+       0x185493000 -        0x1854da23f  libdispatch.dylib (1542.100.32) <E17AA23F-DB2A-3302-B14C-F6B08C540FCF> /usr/lib/system/libdispatch.dylib
+       0x1854db000 -        0x1854ddffb  libsystem_featureflags.dylib (103) <0DE01F76-4B36-35A2-98F9-43DD147EDD95> /usr/lib/system/libsystem_featureflags.dylib
+       0x1854de000 -        0x18555eef7  libsystem_c.dylib (1752.100.10) <66EBD321-6899-3863-BA24-5CFC3076A0CB> /usr/lib/system/libsystem_c.dylib
+       0x18555f000 -        0x1855efae7  libc++.1.dylib (2100.43) <1E9541EC-C564-38CB-BED6-46F708E8D863> /usr/lib/libc++.1.dylib
+       0x1855f0000 -        0x18560a75f  libc++abi.dylib (2100.43) <E8D325ED-3B97-325E-B494-B1B0FF93D133> /usr/lib/libc++abi.dylib
+       0x18560b000 -        0x18564828f  libsystem_kernel.dylib (12377.101.15) <51565B39-F595-3E96-A217-FEF29815057A> /usr/lib/system/libsystem_kernel.dylib
+       0x185649000 -        0x185655b3b  libsystem_pthread.dylib (539.100.4) <E7A73008-0C09-31E3-9DD9-0C61652F0E85> /usr/lib/system/libsystem_pthread.dylib
+       0x185656000 -        0x18565e8f3  libsystem_platform.dylib (375.100.10) <D93EC420-F465-3A3A-916D-A04AF9B023EB> /usr/lib/system/libsystem_platform.dylib
+       0x18565f000 -        0x18568e6eb  libsystem_info.dylib (600) <201FD67C-3DF6-3788-B132-A69CAA2AA3D7> /usr/lib/system/libsystem_info.dylib
+       0x189624000 -        0x18962de5f  libsystem_darwin.dylib (1752.100.10) <D5BA0CAB-F283-3620-AAA9-1EEB718E1BA8> /usr/lib/system/libsystem_darwin.dylib
+       0x189a8f000 -        0x189aa0f5b  libsystem_notify.dylib (348.100.7) <9F46F30B-B7C0-3DD7-AC38-57B78C7971FF> /usr/lib/system/libsystem_notify.dylib
+       0x18bd59000 -        0x18bd73f5b  libsystem_networkextension.dylib (2226.101.1) <85169C7B-48DD-3542-AD38-F1B88EA2A95A> /usr/lib/system/libsystem_networkextension.dylib
+       0x18bdf6000 -        0x18be0dfdf  libsystem_asl.dylib (406) <6427D987-7938-3278-8C14-10FB9C06BBD5> /usr/lib/system/libsystem_asl.dylib
+       0x18d9b1000 -        0x18d9b9387  libsystem_symptoms.dylib (2169.100.30) <28B6E34E-9C7D-3437-A3F1-A3C979DE579A> /usr/lib/system/libsystem_symptoms.dylib
+       0x191c4c000 -        0x191c8425f  libsystem_containermanager.dylib (725.100.37) <14750F95-BB3A-3654-8610-A05A454643A8> /usr/lib/system/libsystem_containermanager.dylib
+       0x19305c000 -        0x1930605d7  libsystem_configuration.dylib (1405.100.8) <634F597D-F8BD-3C00-B967-86047FC15D14> /usr/lib/system/libsystem_configuration.dylib
+       0x193061000 -        0x1930678cf  libsystem_sandbox.dylib (2680.100.174) <AF76231D-EADC-3399-9414-6AD90FB4EA89> /usr/lib/system/libsystem_sandbox.dylib
+       0x1946a7000 -        0x1946aa1fb  libquarantine.dylib (196.100.8) <268FEB6E-A237-3050-BFFF-AE3A66B7EAD4> /usr/lib/system/libquarantine.dylib
+       0x194e46000 -        0x194e4cd03  libsystem_coreservices.dylib (191.4.5) <7129349D-04F9-3C3C-BF37-3082C1468654> /usr/lib/system/libsystem_coreservices.dylib
+       0x1953cb000 -        0x195408a77  libsystem_m.dylib (3312.100.1) <83B173CD-7F32-3901-8E67-C0B2676BE015> /usr/lib/system/libsystem_m.dylib
+       0x19540a000 -        0x19540d527  libmacho.dylib (1376.6) <9729ECEA-0A08-32E3-8BDB-B42FC15FF258> /usr/lib/system/libmacho.dylib
+       0x195427000 -        0x1954343a7  libcommonCrypto.dylib (600035) <710EC5FA-F77C-3646-A9E3-C037C42E1539> /usr/lib/system/libcommonCrypto.dylib
+       0x195435000 -        0x19543eca3  libunwind.dylib (2100.2) <FB0518B9-DF0F-3A03-A74B-AF1B21C26F8B> /usr/lib/system/libunwind.dylib
+       0x195447000 -        0x1954517ff  libcopyfile.dylib (240) <0B7FF027-5579-3CBF-A12B-68A4FD36641C> /usr/lib/system/libcopyfile.dylib
+       0x195452000 -        0x195455987  libcompiler_rt.dylib (103.3) <65E29E6E-7042-3F73-A1D2-F2C4EBCD7524> /usr/lib/system/libcompiler_rt.dylib
+       0x195456000 -        0x19545a78b  libsystem_collections.dylib (1752.100.10) <B81193DE-3BEC-3340-86D0-DB7F3683D135> /usr/lib/system/libsystem_collections.dylib
+       0x19545b000 -        0x19545e4cf  libsystem_secinit.dylib (168.100.7) <A6B77B36-195D-33F8-8058-FE0B5BFA9D37> /usr/lib/system/libsystem_secinit.dylib
+       0x19545f000 -        0x195461bf7  libremovefile.dylib (85.100.6) <BD89B1A3-0D06-3881-B5E1-EFC6CFBDFCC1> /usr/lib/system/libremovefile.dylib
+       0x195462000 -        0x195462f27  libkeymgr.dylib (31) <DE8F8219-0072-35C2-8932-C065491ED15D> /usr/lib/system/libkeymgr.dylib
+       0x195463000 -        0x19546be3f  libsystem_dnssd.dylib (2881.100.56.0.1) <DEC8BDD2-366C-3BF9-A123-35744DB06354> /usr/lib/system/libsystem_dnssd.dylib
+       0x19546c000 -        0x19547109b  libcache.dylib (95) <4D6833A3-C910-3A76-AA8A-303F698B36BF> /usr/lib/system/libcache.dylib
+       0x195472000 -        0x195473ce3  libSystem.B.dylib (1356) <E05F5341-06B7-365E-8014-E9CD64C352FE> /usr/lib/libSystem.B.dylib
+       0x287d55000 -        0x287d5c349  libRosetta.dylib (367.5) <2FC1EF06-04C4-35FC-8DC3-BEA1E9FBD63F> /usr/lib/libRosetta.dylib
+       0x289a32000 -        0x289a35a4b  libsystem_darwindirectory.dylib (122) <CCAA2170-32DD-34BD-A927-32DF30893969> /usr/lib/system/libsystem_darwindirectory.dylib
+       0x289a36000 -        0x289a3f5a7  libsystem_eligibility.dylib (319.101.1) <2D19994A-87BB-34B8-A343-CB8DD47FF110> /usr/lib/system/libsystem_eligibility.dylib
+       0x289a40000 -        0x289a478db  libsystem_sanitizers.dylib (26) <FCB93D2F-4437-3089-A43F-A19BC23DD65B> /usr/lib/system/libsystem_sanitizers.dylib
+       0x289a48000 -        0x289a48bb7  libsystem_trial.dylib (474.2.18) <5BB81430-4E33-3160-94D2-1FFB2B614DB2> /usr/lib/system/libsystem_trial.dylib

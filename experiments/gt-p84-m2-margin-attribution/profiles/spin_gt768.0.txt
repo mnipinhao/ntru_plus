@@ -1,16 +1,16 @@
-Analysis of sampling spin_gt768 (pid 43062) every 1 millisecond
-Process:         spin_gt768 [43062]
+Analysis of sampling spin_gt768 (pid 49480) every 1 millisecond
+Process:         spin_gt768 [49480]
 Path:            /private/tmp/*/spin_gt768
-Load Address:    0x100210000
+Load Address:    0x102ee4000
 Identifier:      spin_gt768
 Version:         0
 Code Type:       ARM64
 Platform:        macOS
-Parent Process:  zsh [42976]
+Parent Process:  zsh [49470]
 Target Type:     live task
 
-Date/Time:       2026-09-21 18:07:05.830 +0800
-Launch Time:     2026-09-21 18:07:01.790 +0800
+Date/Time:       2026-09-21 21:15:24.264 +0800
+Launch Time:     2026-09-21 21:15:18.221 +0800
 OS Version:      macOS 26.4.1 (25E253)
 Report Version:  7
 Analysis Tool:   /usr/bin/sample
@@ -21,248 +21,250 @@ Idle exit:                  untracked
 ----
 
 Call graph:
-    5065 Thread_23912577   DispatchQueue_1: com.apple.main-thread  (serial)
-      5065 main  (in spin_gt768) + 436  [0x1002107b4]  spin.c:21
-        1554 shake256_prefixed  (in spin_gt768) + 260  [0x1002110c0]  fips202.c:429
-        + 1554 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768) + 264,332,...  [0x100223258,0x10022329c,...]
-        768 shake256_squeezeblocks  (in spin_gt768) + 48  [0x1002119d4]  fips202.c:715
-        + 768 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768) + 264,328,...  [0x100223258,0x100223298,...]
-        500 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 52  [0x100211bf4]  keygen.c:104
-        + 500 module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop  (in spin_gt768) + 160,104,...  [0x10021e6a4,0x10021e66c,...]
-        268 gt_keygen_baseinv_hier_k8  (in spin_gt768) + 804  [0x10021ecf4]
-        + 241 gt_keygen_baseinv_hier_k8  (in spin_gt768) + 1008,1520,...  [0x10021edc0,0x10021efc0,...]
-        + 24 gt_fqinv15_asm  (in spin_gt768) + 428,84,...  [0x10021f54c,0x10021f3f4,...]
-        + 3 module_keygen_baseinv_tree_Lbpq_tree_return  (in spin_gt768) + 8,16  [0x10021f2b4,0x10021f2bc]
-        265 crypto_kem_keypair_internal  (in spin_gt768) + 176  [0x100210988]  kem.c:180
-        + 168 module_ntt_.Lgt_shared_core_cq_suffix  (in spin_gt768) + 9140,1440,...  [0x100217728,0x100215914,...]
-        + 97 module_ntt_.Lgt_shared_core_entry  (in spin_gt768) + 1028,1120,...  [0x100212220,0x10021227c,...]
-        248 crypto_kem_keypair_internal  (in spin_gt768) + 280  [0x1002109f0]  kem.c:187
-        + 157 module_ntt_.Lgt_shared_core_cq_suffix  (in spin_gt768) + 2996,376,...  [0x100215f28,0x1002154ec,...]
-        + 89 module_ntt_.Lgt_shared_core_entry  (in spin_gt768) + 652,4184,...  [0x1002120a8,0x100212e74,...]
-        + 2 module_ntt_.Lntt_endpoint_suffix  (in spin_gt768) + 0  [0x100213288]
-        188 shake256_prefixed  (in spin_gt768) + 736  [0x10021129c]  fips202.c:455
-        + 188 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768) + 160,264,...  [0x1002231f0,0x100223258,...]
-        177 crypto_kem_keypair_internal  (in spin_gt768) + 316  [0x100210a14]  kem.c:192
-        + 34 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 320,156,...  [0x100211dc0,0x100211d1c,...]  keygen.c:148
-        + 27 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 312,308,...  [0x100211db8,0x100211db4,...]  keygen.c:153
-        + 24 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 232,200,...  [0x100211d68,0x100211d48,...]  keygen.c:145
-        + 23 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 208,216,...  [0x100211d50,0x100211d58,...]  keygen.c:151
-        + 21 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 164,180,...  [0x100211d24,0x100211d34,...]  keygen.c:150
-        + 17 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 372,376  [0x100211df4,0x100211df8]  keygen.c:128
-        + 12 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 84,152,...  [0x100211cd4,0x100211d18,...]  keygen.c:144
-        + 11 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 140,124,...  [0x100211d0c,0x100211cfc,...]  keygen.c:147
-        + 7 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 364  [0x100211dec]  keygen.c:155
-        + 1 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 368  [0x100211df0]  keygen.c:157
-        173 crypto_kem_keypair_internal  (in spin_gt768) + 372  [0x100210a4c]  kem.c:192
-        + 34 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 328,312,...  [0x100211dc8,0x100211db8,...]  keygen.c:153
-        + 31 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 208,276,...  [0x100211d50,0x100211d94,...]  keygen.c:151
-        + 27 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 164,168,...  [0x100211d24,0x100211d28,...]  keygen.c:150
-        + 22 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 148,160,...  [0x100211d14,0x100211d20,...]  keygen.c:148
-        + 17 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 228,200,...  [0x100211d64,0x100211d48,...]  keygen.c:145
-        + 15 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 372,380  [0x100211df4,0x100211dfc]  keygen.c:128
-        + 13 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 84,68,...  [0x100211cd4,0x100211cc4,...]  keygen.c:144
-        + 12 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 140,112,...  [0x100211d0c,0x100211cf0,...]  keygen.c:147
-        + 2 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 368  [0x100211df0]  keygen.c:157
-        144 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 100  [0x100211c24]  keygen.c:113
-        + 144 module_keygen_baseinv_finish_Lbpq_finish_cq_loop  (in spin_gt768) + 88,136,...  [0x10021f340,0x10021f370,...]
-        48 crypto_kem_keypair_internal  (in spin_gt768) + 124  [0x100210954]  kem.c:180
-        + 48 loop_cbd  (in spin_gt768) + 304,276,...  [0x1002227b0,0x100222794,...]
-        46 crypto_kem_keypair_internal  (in spin_gt768) + 256  [0x1002109d8]  kem.c:187
-        + 46 loop_cbd  (in spin_gt768) + 312,304,...  [0x1002227b8,0x1002227b0,...]
-        43 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 120  [0x100211c38]  keygen.c:115
-        + 40 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 40 _platform_memset  (in libsystem_platform.dylib) + 140,28,...  [0x18565917c,0x18565910c,...]
-        + 2 memset_s  (in libsystem_c.dylib) + 8,20  [0x1854df25c,0x1854df268]
-        + 1 DYLD-STUB$$memset_s  (in spin_gt768) + 0  [0x10022346c]
-        40 shake256_absorb  (in spin_gt768) + 584,528,...  [0x1002118f0,0x1002118b8,...]  fips202.c:699
-        30 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 60  [0x100211bfc]  keygen.c:108
-        + 30 gt_keygen_baseinv_hier_k8  (in spin_gt768) + 132,616,...  [0x10021ea54,0x10021ec38,...]
-        28 crypto_kem_keypair_internal  (in spin_gt768) + 424  [0x100210a80]  kem.c:192
-        + 27 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 26 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
-        + ! 1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-        + 1 memset_s  (in libsystem_c.dylib) + 20  [0x1854df268]
-        25 poly_tobytes_keygen_cq  (in spin_gt768) + 816  [0x100221d10]
-        + 22 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 116,124,...  [0x1002221e4,0x1002221ec,...]
-        + 3 poly_tobytes_keygen_cq  (in spin_gt768) + 900,940,...  [0x100221d64,0x100221d8c,...]
-        24 poly_tobytes_keygen_cq  (in spin_gt768) + 192  [0x100221aa0]
-        + 15 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 240,84,...  [0x100222260,0x1002221c4,...]
-        + 9 poly_tobytes_keygen_cq  (in spin_gt768) + 224,308,...  [0x100221ac0,0x100221b14,...]
-        24 poly_tobytes_keygen_cq  (in spin_gt768) + 504  [0x100221bd8]
-        + 19 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 240,144,...  [0x100222260,0x100222200,...]
-        + 5 poly_tobytes_keygen_cq  (in spin_gt768) + 648,600,...  [0x100221c68,0x100221c38,...]
-        24 poly_tobytes_keygen_cq  (in spin_gt768) + 972  [0x100221dac]
-        + 19 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 240,0,...  [0x100222260,0x100222170,...]
-        + 5 poly_tobytes_keygen_cq  (in spin_gt768) + 1004,1056,...  [0x100221dcc,0x100221e00,...]
-        23 poly_tobytes_keygen_cq  (in spin_gt768) + 1752  [0x1002220b8]
-        + 19 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 240,172,...  [0x100222260,0x10022221c,...]
-        + 4 poly_tobytes_keygen_cq  (in spin_gt768) + 1828,1784,...  [0x100222104,0x1002220d8,...]
-        22 crypto_kem_keypair_internal  (in spin_gt768) + 268  [0x1002109e4]  kem.c:187
-        + 22 support_loop_triple  (in spin_gt768) + 84,8,...  [0x100222cc4,0x100222c78,...]
-        22 crypto_kem_keypair_internal  (in spin_gt768) + 496  [0x100210ac8]  kem.c:195
+    5086 Thread_24011684   DispatchQueue_1: com.apple.main-thread  (serial)
+      5086 main  (in spin_gt768) + 844  [0x102ee494c]  spin.c:32
+        1622 shake256_prefixed  (in spin_gt768) + 260  [0x102ee5258]  fips202.c:429
+        + 1622 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768) + 264,344,...  [0x102ef73f8,0x102ef7448,...]
+        733 shake256_squeezeblocks  (in spin_gt768) + 48  [0x102ee5b6c]  fips202.c:715
+        + 733 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768) + 264,344,...  [0x102ef73f8,0x102ef7448,...]
+        497 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 52  [0x102ee5d8c]  keygen.c:104
+        + 495 module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop  (in spin_gt768) + 460,160,...  [0x102ef2970,0x102ef2844,...]
+        + 2 gt_keygen_baseinv_cq_prepare  (in spin_gt768) + 20  [0x102ef2794]
+        262 gt_keygen_baseinv_hier_k8  (in spin_gt768) + 804  [0x102ef2e94]
+        + 234 gt_keygen_baseinv_hier_k8  (in spin_gt768) + 1288,1328,...  [0x102ef3078,0x102ef30a0,...]
+        + 26 gt_fqinv15_asm  (in spin_gt768) + 144,272,...  [0x102ef35d0,0x102ef3650,...]
+        + 2 module_keygen_baseinv_tree_Lbpq_tree_return  (in spin_gt768) + 8,16  [0x102ef3454,0x102ef345c]
+        232 crypto_kem_keypair_internal  (in spin_gt768) + 176  [0x102ee4b20]  kem.c:180
+        + 140 module_ntt_.Lgt_shared_core_cq_suffix  (in spin_gt768) + 1052,768,...  [0x102ee9920,0x102ee9804,...]
+        + 92 module_ntt_.Lgt_shared_core_entry  (in spin_gt768) + 396,1236,...  [0x102ee6138,0x102ee6480,...]
+        227 crypto_kem_keypair_internal  (in spin_gt768) + 280  [0x102ee4b88]  kem.c:187
+        + 136 module_ntt_.Lgt_shared_core_cq_suffix  (in spin_gt768) + 152,696,...  [0x102ee959c,0x102ee97bc,...]
+        + 88 module_ntt_.Lgt_shared_core_entry  (in spin_gt768) + 444,3412,...  [0x102ee6168,0x102ee6d00,...]
+        + 2 module_ntt_.Lgt_shared_core_epilogue  (in spin_gt768) + 4,24  [0x102eeba94,0x102eebaa8]
+        + 1 module_ntt_.Lntt_endpoint_suffix  (in spin_gt768) + 0  [0x102ee7418]
+        190 crypto_kem_keypair_internal  (in spin_gt768) + 316  [0x102ee4bac]  kem.c:192
+        + 39 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 220,280,...  [0x102ee5ef4,0x102ee5f30,...]  keygen.c:151
+        + 35 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 316,336,...  [0x102ee5f54,0x102ee5f68,...]  keygen.c:153
+        + 26 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 372,376  [0x102ee5f8c,0x102ee5f90]  keygen.c:128
+        + 25 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 252,236,...  [0x102ee5f14,0x102ee5f04,...]  keygen.c:148
+        + 16 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 84,64,...  [0x102ee5e6c,0x102ee5e58,...]  keygen.c:144
+        + 16 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 192,168,...  [0x102ee5ed8,0x102ee5ec0,...]  keygen.c:150
+        + 14 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 140,124,...  [0x102ee5ea4,0x102ee5e94,...]  keygen.c:147
+        + 12 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 200,176,...  [0x102ee5ee0,0x102ee5ec8,...]  keygen.c:145
+        + 4 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 364  [0x102ee5f84]  keygen.c:155
+        + 2 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 368  [0x102ee5f88]  keygen.c:157
+        + 1 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 48  [0x102ee5e48]  keygen.c:135
+        178 crypto_kem_keypair_internal  (in spin_gt768) + 372  [0x102ee4be4]  kem.c:192
+        + 37 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 276,292,...  [0x102ee5f2c,0x102ee5f3c,...]  keygen.c:151
+        + 35 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 300,332,...  [0x102ee5f44,0x102ee5f64,...]  keygen.c:153
+        + 22 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 272,144,...  [0x102ee5f28,0x102ee5ea8,...]  keygen.c:148
+        + 21 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 372,380  [0x102ee5f8c,0x102ee5f94]  keygen.c:128
+        + 20 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 184,168,...  [0x102ee5ed0,0x102ee5ec0,...]  keygen.c:150
+        + 17 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 248,228,...  [0x102ee5f10,0x102ee5efc,...]  keygen.c:145
+        + 16 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 84,68,...  [0x102ee5e6c,0x102ee5e5c,...]  keygen.c:144
+        + 5 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 124,140,...  [0x102ee5e94,0x102ee5ea4,...]  keygen.c:147
+        + 5 poly_basemul_keygen_cq_scaled_r  (in spin_gt768) + 368  [0x102ee5f88]  keygen.c:157
+        176 shake256_prefixed  (in spin_gt768) + 736  [0x102ee5434]  fips202.c:455
+        + 176 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768) + 236,332,...  [0x102ef73dc,0x102ef743c,...]
+        147 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 100  [0x102ee5dbc]  keygen.c:113
+        + 147 module_keygen_baseinv_finish_Lbpq_finish_cq_loop  (in spin_gt768) + 88,116,...  [0x102ef34e0,0x102ef34fc,...]
+        49 crypto_kem_keypair_internal  (in spin_gt768) + 124  [0x102ee4aec]  kem.c:180
+        + 49 loop_cbd  (in spin_gt768) + 316,140,...  [0x102ef695c,0x102ef68ac,...]
+        49 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 60  [0x102ee5d94]  keygen.c:108
+        + 49 gt_keygen_baseinv_hier_k8  (in spin_gt768) + 540,792,...  [0x102ef2d8c,0x102ef2e88,...]
+        44 shake256_absorb  (in spin_gt768) + 584,688,...  [0x102ee5a88,0x102ee5af0,...]  fips202.c:699
+        41 crypto_kem_keypair_internal  (in spin_gt768) + 256  [0x102ee4b70]  kem.c:187
+        + 41 loop_cbd  (in spin_gt768) + 304,316,...  [0x102ef6950,0x102ef695c,...]
+        33 poly_tobytes_keygen_cq  (in spin_gt768) + 660  [0x102ef5e14]
+        + 31 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 152,240,...  [0x102ef63a8,0x102ef6400,...]
+        + 2 poly_tobytes_keygen_cq  (in spin_gt768) + 740,772  [0x102ef5e64,0x102ef5e84]
+        32 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 120  [0x102ee5dd0]  keygen.c:115
+        + 28 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 24 _platform_memset  (in libsystem_platform.dylib) + 140,156  [0x18565917c,0x18565918c]
+        + ! 4 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        + 3 memset_s  (in libsystem_c.dylib) + 68,8  [0x1854df298,0x1854df25c]
+        + 1 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x102ef7628]
+        32 poly_tobytes_keygen_cq  (in spin_gt768) + 504  [0x102ef5d78]
+        + 26 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 224,240,...  [0x102ef63f0,0x102ef6400,...]
+        + 6 poly_tobytes_keygen_cq  (in spin_gt768) + 600,648,...  [0x102ef5dd8,0x102ef5e08,...]
+        32 poly_tobytes_keygen_cq  (in spin_gt768) + 1284  [0x102ef6084]
+        + 25 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 240,116,...  [0x102ef6400,0x102ef6384,...]
+        + 7 poly_tobytes_keygen_cq  (in spin_gt768) + 1316,1364,...  [0x102ef60a4,0x102ef60d4,...]
+        27 poly_tobytes_keygen_cq  (in spin_gt768) + 1128  [0x102ef5fe8]
+        + 22 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 116,240,...  [0x102ef6384,0x102ef6400,...]
+        + 5 poly_tobytes_keygen_cq  (in spin_gt768) + 1204,1224,...  [0x102ef6034,0x102ef6048,...]
+        26 crypto_kem_keypair_internal  (in spin_gt768) + 516  [0x102ee4c74]  kem.c:196
+        + 23 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 23 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
+        + 3 memset_s  (in libsystem_c.dylib) + 8,52,...  [0x1854df25c,0x1854df288,...]
+        26 poly_tobytes_keygen_cq  (in spin_gt768) + 348  [0x102ef5cdc]
+        + 22 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 28,172,...  [0x102ef632c,0x102ef63bc,...]
+        + 4 poly_tobytes_keygen_cq  (in spin_gt768) + 432,464,...  [0x102ef5d30,0x102ef5d50,...]
+        26 poly_tobytes_keygen_cq  (in spin_gt768) + 1752  [0x102ef6258]
+        + 22 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 240,88,...  [0x102ef6400,0x102ef6368,...]
+        + 4 poly_tobytes_keygen_cq  (in spin_gt768) + 1784,1836,...  [0x102ef6278,0x102ef62ac,...]
+        24 poly_tobytes_keygen_cq  (in spin_gt768) + 192  [0x102ef5c40]
+        + 21 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 96,152,...  [0x102ef6370,0x102ef63a8,...]
+        + 3 poly_tobytes_keygen_cq  (in spin_gt768) + 276,308  [0x102ef5c94,0x102ef5cb4]
+        23 poly_tobytes_keygen_cq  (in spin_gt768) + 1440  [0x102ef6120]
+        + 20 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 172,116,...  [0x102ef63bc,0x102ef6384,...]
+        + 3 poly_tobytes_keygen_cq  (in spin_gt768) + 1472,1536  [0x102ef6140,0x102ef6180]
+        22 crypto_kem_keypair_internal  (in spin_gt768) + 268  [0x102ee4b7c]  kem.c:187
+        + 22 support_loop_triple  (in spin_gt768) + 84,64,...  [0x102ef6e64,0x102ef6e50,...]
+        22 poly_tobytes_keygen_cq  (in spin_gt768) + 972  [0x102ef5f4c]
+        + 19 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 144,240,...  [0x102ef63a0,0x102ef6400,...]
+        + 3 poly_tobytes_keygen_cq  (in spin_gt768) + 1116  [0x102ef5fdc]
+        21 crypto_kem_keypair_internal  (in spin_gt768) + 144  [0x102ee4b00]  kem.c:180
+        + 21 support_loop_triple  (in spin_gt768) + 84,8,...  [0x102ef6e64,0x102ef6e18,...]
+        21 crypto_kem_keypair_internal  (in spin_gt768) + 556  [0x102ee4c9c]  kem.c:198
+        + 19 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 19 _platform_memset  (in libsystem_platform.dylib) + 140,156  [0x18565917c,0x18565918c]
+        + 2 memset_s  (in libsystem_c.dylib) + 52,68  [0x1854df288,0x1854df298]
+        20 crypto_kem_keypair_internal  (in spin_gt768) + 424  [0x102ee4c18]  kem.c:192
         + 17 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 15 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
-        + ! 2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-        + 4 memset_s  (in libsystem_c.dylib) + 8,68  [0x1854df25c,0x1854df298]
-        + 1 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x100223470]
-        22 crypto_kem_keypair_internal  (in spin_gt768) + 516  [0x100210adc]  kem.c:196
-        + 21 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 21 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
-        + 1 memset_s  (in libsystem_c.dylib) + 52  [0x1854df288]
-        22 crypto_kem_keypair_internal  (in spin_gt768) + 556  [0x100210b04]  kem.c:198
-        + 20 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 20 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
-        + 2 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        22 poly_tobytes_keygen_cq  (in spin_gt768) + 1284  [0x100221ee4]
-        + 17 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 172,0,...  [0x10022221c,0x100222170,...]
-        + 5 poly_tobytes_keygen_cq  (in spin_gt768) + 1316,1428,...  [0x100221f04,0x100221f74,...]
-        22 poly_tobytes_keygen_cq  (in spin_gt768) + 1440  [0x100221f80]
-        + 17 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 0,116,...  [0x100222170,0x1002221e4,...]
-        + 5 poly_tobytes_keygen_cq  (in spin_gt768) + 1520,1472,...  [0x100221fd0,0x100221fa0,...]
-        21 poly_tobytes_keygen_cq  (in spin_gt768) + 660  [0x100221c74]
-        + 15 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 172,124,...  [0x10022221c,0x1002221ec,...]
-        + 6 poly_tobytes_keygen_cq  (in spin_gt768) + 692,784,...  [0x100221c94,0x100221cf0,...]
-        20 poly_tobytes_keygen_cq  (in spin_gt768) + 1596  [0x10022201c]
-        + 19 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 116,56,...  [0x1002221e4,0x1002221a8,...]
-        + 1 poly_tobytes_keygen_cq  (in spin_gt768) + 1628  [0x10022203c]
-        19 poly_tobytes_keygen_cq  (in spin_gt768) + 1908  [0x100222154]
-        + 19 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 144,240,...  [0x100222200,0x100222260,...]
-        18 crypto_kem_keypair_internal  (in spin_gt768) + 144  [0x100210968]  kem.c:180
-        + 18 support_loop_triple  (in spin_gt768) + 84,60,...  [0x100222cc4,0x100222cac,...]
-        18 poly_tobytes_keygen_cq  (in spin_gt768) + 348  [0x100221b3c]
-        + 14 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 88,236,...  [0x1002221c8,0x10022225c,...]
-        + 4 poly_tobytes_keygen_cq  (in spin_gt768) + 380,424,...  [0x100221b5c,0x100221b88,...]
-        17 crypto_kem_keypair_internal  (in spin_gt768) + 536  [0x100210af0]  kem.c:197
-        + 17 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        +   17 _platform_memset  (in libsystem_platform.dylib) + 140,28  [0x18565917c,0x18565910c]
-        15 memset_s  (in libsystem_c.dylib) + 92  [0x1854df2b0]
-        14 poly_tobytes_keygen_cq  (in spin_gt768) + 1128  [0x100221e48]
-        + 9 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 28,56,...  [0x10022218c,0x1002221a8,...]
-        + 5 poly_tobytes_keygen_cq  (in spin_gt768) + 1160,1208,...  [0x100221e68,0x100221e98,...]
-        14 shake256  (in spin_gt768) + 176  [0x100211b7c]  fips202.c:756
-        + 12 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 10 _platform_memset  (in libsystem_platform.dylib) + 28,12,...  [0x18565910c,0x1856590fc,...]
-        + ! 2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-        + 2 memset_s  (in libsystem_c.dylib) + 8,52  [0x1854df25c,0x1854df288]
-        12 crypto_kem_keypair_internal  (in spin_gt768) + 28  [0x1002108f4]  kem.c:171
-        + 12 crypto_kem_keypair_internal  (in spin_gt768) + 28  [0x1002108f4]  kem.c:171
-        +   12 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52  [0x18564ac54]
-        10 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 140  [0x100211c4c]  keygen.c:116
-        + 8 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 6 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
-        + ! 2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        + ! 17 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
         + 2 memset_s  (in libsystem_c.dylib) + 20,68  [0x1854df268,0x1854df298]
-        10 shake256_absorb  (in spin_gt768) + 712  [0x100211970]  fips202.c:699
-        + 6 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 5 _platform_memset  (in libsystem_platform.dylib) + 140,160,...  [0x18565917c,0x185659190,...]
-        + ! 1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-        + 4 memset_s  (in libsystem_c.dylib) + 8,20,...  [0x1854df25c,0x1854df268,...]
-        8 crypto_kem_keypair_internal  (in spin_gt768) + 212  [0x1002109ac]  kem.c:186
-        + 4 randombytes  (in spin_gt768) + 164  [0x1002108a0]  rb.c:14
-        + 2 randombytes  (in spin_gt768) + 100  [0x100210860]  rb.c:13
-        + 1 randombytes  (in spin_gt768) + 212  [0x1002108d0]  rb.c:11
-        + 1 randombytes  (in spin_gt768) + 56  [0x100210834]  rb.c:15
-        8 shake256_squeezeblocks  (in spin_gt768) + 180,160,...  [0x100211a58,0x100211a44,...]  fips202.c:715
-        7 crypto_kem_keypair_internal  (in spin_gt768) + 76  [0x100210924]  kem.c:179
-        + 5 randombytes  (in spin_gt768) + 100  [0x100210860]  rb.c:13
-        + 1 randombytes  (in spin_gt768) + 212  [0x1002108d0]  rb.c:11
-        + 1 randombytes  (in spin_gt768) + 56  [0x100210834]  rb.c:15
-        6 crypto_kem_keypair_internal  (in spin_gt768) + 388  [0x100210a5c]  kem.c:192
-        + 6 poly_tobytes_keygen_cq  (in spin_gt768) + 16,1924,...  [0x1002219f0,0x100222164,...]
-        6 shake256  (in spin_gt768) + 156  [0x100211b68]  fips202.c:755
-        + 4 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + 1 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x102ef7628]
+        19 crypto_kem_keypair_internal  (in spin_gt768) + 496  [0x102ee4c60]  kem.c:195
+        + 19 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        +   19 _platform_memset  (in libsystem_platform.dylib) + 140,12,...  [0x18565917c,0x1856590fc,...]
+        19 crypto_kem_keypair_internal  (in spin_gt768) + 536  [0x102ee4c88]  kem.c:197
+        + 19 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        +   19 _platform_memset  (in libsystem_platform.dylib) + 140,156,...  [0x18565917c,0x18565918c,...]
+        19 shake256  (in spin_gt768) + 176  [0x102ee5d14]  fips202.c:756
+        + 17 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 15 _platform_memset  (in libsystem_platform.dylib) + 28,12,...  [0x18565910c,0x1856590fc,...]
         + ! 2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-        + ! 2 _platform_memset  (in libsystem_platform.dylib) + 12,148  [0x1856590fc,0x185659184]
-        + 2 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        6 shake256_prefixed  (in spin_gt768) + 1012  [0x1002113b0]  fips202.c:469
-        + 4 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 3 _platform_memset  (in libsystem_platform.dylib) + 140,12  [0x18565917c,0x1856590fc]
+        + 1 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x102ef7628]
+        + 1 memset_s  (in libsystem_c.dylib) + 8  [0x1854df25c]
+        17 poly_tobytes_keygen_cq  (in spin_gt768) + 816  [0x102ef5eb0]
+        + 14 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 240,196,...  [0x102ef6400,0x102ef63d4,...]
+        + 3 poly_tobytes_keygen_cq  (in spin_gt768) + 912,932,...  [0x102ef5f10,0x102ef5f24,...]
+        15 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 140  [0x102ee5de4]  keygen.c:116
+        + 14 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 11 _platform_memset  (in libsystem_platform.dylib) + 140,160  [0x18565917c,0x185659190]
+        + ! 3 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        + 1 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        15 shake256_squeezeblocks  (in spin_gt768) + 180,48,...  [0x102ee5bf0,0x102ee5b6c,...]  fips202.c:715
+        14 poly_tobytes_keygen_cq  (in spin_gt768) + 1596  [0x102ef61bc]
+        + 14 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 28,68,...  [0x102ef632c,0x102ef6354,...]
+        14 poly_tobytes_keygen_cq  (in spin_gt768) + 1908  [0x102ef62f4]
+        + 14 module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 172,56,...  [0x102ef63bc,0x102ef6348,...]
+        10 shake256  (in spin_gt768) + 136  [0x102ee5cec]  fips202.c:752
+        + 9 _platform_memmove  (in libsystem_platform.dylib) + 428,0,...  [0x18565956c,0x1856593c0,...]
+        + 1 DYLD-STUB$$memcpy  (in spin_gt768) + 4  [0x102ef761c]
+        9 crypto_kem_keypair_internal  (in spin_gt768) + 212  [0x102ee4b44]  kem.c:186
+        + 5 randombytes  (in spin_gt768) + 100  [0x102ee49f8]  rb.c:13
+        + 2 randombytes  (in spin_gt768) + 164  [0x102ee4a38]  rb.c:14
+        + 2 randombytes  (in spin_gt768) + 56  [0x102ee49cc]  rb.c:15
+        9 shake256  (in spin_gt768) + 156  [0x102ee5d00]  fips202.c:755
+        + 6 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 5 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        + ! 1 _platform_memset  (in libsystem_platform.dylib) + 28  [0x18565910c]
+        + 2 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x102ef7628]
+        + 1 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        7 shake256_absorb  (in spin_gt768) + 712  [0x102ee5b08]  fips202.c:699
+        + 5 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 5 _platform_memset  (in libsystem_platform.dylib) + 160,28,...  [0x185659190,0x18565910c,...]
+        + 2 memset_s  (in libsystem_c.dylib) + 0,68  [0x1854df254,0x1854df298]
+        6 crypto_kem_keypair  (in spin_gt768) + 48  [0x102ef6d14]
+        6 crypto_kem_keypair_internal  (in spin_gt768) + 76  [0x102ee4abc]  kem.c:179
+        + 4 randombytes  (in spin_gt768) + 100  [0x102ee49f8]  rb.c:13
+        + 1 randombytes  (in spin_gt768) + 212  [0x102ee4a68]  rb.c:11
+        + 1 randombytes  (in spin_gt768) + 164  [0x102ee4a38]  rb.c:14
+        6 crypto_kem_keypair_internal  (in spin_gt768) + 448  [0x102ee4c30]  kem.c:193
+        + 3 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 2 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
         + ! 1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
-        + 1 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x100223470]
-        + 1 memset_s  (in libsystem_c.dylib) + 20  [0x1854df268]
-        5 shake256_prefixed  (in spin_gt768) + 552  [0x1002111e4]  fips202.c:0
-        + 2 DYLD-STUB$$mkdtempat_np  (in libsystem_c.dylib) + 8  [0x185557ab0]
-        + 1 DYLD-STUB$$__memcpy_chk  (in spin_gt768) + 4  [0x10022341c]
-        + 1 __memcpy_chk  (in libsystem_c.dylib) + 0  [0x1854e3b64]
-        + 1 _platform_memmove  (in libsystem_platform.dylib) + 0  [0x1856593c0]
-        5 shake256_prefixed  (in spin_gt768) + 156,160,...  [0x100211058,0x10021105c,...]  fips202.c:426
-        4 shake256_prefixed  (in spin_gt768) + 292,328  [0x1002110e0,0x100211104]  fips202.c:422
-        4 shake256_prefixed  (in spin_gt768) + 588,612,...  [0x100211208,0x100211220,...]  fips202.c:449
-        3 crypto_kem_keypair_internal  (in spin_gt768) + 332  [0x100210a24]  kem.c:192
-        + 3 poly_tobytes_keygen_cq  (in spin_gt768) + 132,160,...  [0x100221a64,0x100221a80,...]
-        3 shake256_prefixed  (in spin_gt768) + 92  [0x100211018]  fips202.c:415
-        3 shake256_prefixed  (in spin_gt768) + 276  [0x1002110d0]  fips202.c:419
-        3 shake256_prefixed  (in spin_gt768) + 472  [0x100211194]  fips202.c:434
-        2 crypto_kem_keypair  (in spin_gt768) + 48  [0x100222b74]
-        2 crypto_kem_keypair_internal  (in spin_gt768) + 400  [0x100210a68]  kem.c:192
-        + 2 shake256_prefixed  (in spin_gt768) + 24  [0x100210fd4]  fips202.c:407
-        2 crypto_kem_keypair_internal  (in spin_gt768) + 448  [0x100210a98]  kem.c:193
+        + 2 memset_s  (in libsystem_c.dylib) + 20,68  [0x1854df268,0x1854df298]
+        + 1 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x102ef7628]
+        6 shake256_prefixed  (in spin_gt768) + 552  [0x102ee537c]  fips202.c:0
+        + 3 _platform_memmove  (in libsystem_platform.dylib) + 0,168,...  [0x1856593c0,0x185659468,...]
+        + 2 __memcpy_chk  (in libsystem_c.dylib) + 8  [0x1854e3b6c]
+        + 1 DYLD-STUB$$mkdtempat_np  (in libsystem_c.dylib) + 8  [0x185557ab0]
+        5 crypto_kem_keypair_internal  (in spin_gt768) + 388  [0x102ee4bf4]  kem.c:192
+        + 5 poly_tobytes_keygen_cq  (in spin_gt768) + 180,52,...  [0x102ef5c34,0x102ef5bb4,...]
+        5 shake256_prefixed  (in spin_gt768) + 292,336,...  [0x102ee5278,0x102ee52a4,...]  fips202.c:422
+        5 shake256_prefixed  (in spin_gt768) + 200,136,...  [0x102ee521c,0x102ee51dc,...]  fips202.c:426
+        4 shake256_prefixed  (in spin_gt768) + 1032  [0x102ee555c]  fips202.c:470
+        + 2 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 2 _platform_memset  (in libsystem_platform.dylib) + 124,160  [0x18565916c,0x185659190]
+        + 1 DYLD-STUB$$memset_s  (in spin_gt768) + 4  [0x102ef7628]
         + 1 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        + ! 1 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
-        + 1 memset_s  (in libsystem_c.dylib) + 88  [0x1854df2ac]
-        2 crypto_kem_keypair_internal  (in spin_gt768) + 472  [0x100210ab0]  kem.c:194
-        + 2 memset_s  (in libsystem_c.dylib) + 8  [0x1854df25c]
-        2 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 64  [0x100211c00]  keygen.c:110
-        2 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 180  [0x100211c74]  keygen.c:117
-        2 shake256_prefixed  (in spin_gt768) + 500  [0x1002111b0]  fips202.c:443
-        2 shake256_prefixed  (in spin_gt768) + 676  [0x100211260]  fips202.c:452
-        2 shake256_prefixed  (in spin_gt768) + 760  [0x1002112b4]  fips202.c:460
-        1 crypto_kem_keypair  (in spin_gt768) + 32  [0x100222b64]
-        + 1 crypto_kem_keypair_internal  (in spin_gt768) + 20  [0x1002108ec]  kem.c:171
-        1 crypto_kem_keypair_internal  (in spin_gt768) + 152  [0x100210970]  kem.c:180
-        1 crypto_kem_keypair_internal  (in spin_gt768) + 348  [0x100210a34]  kem.c:192
-        + 1 poly_tobytes_keygen_cq  (in spin_gt768) + 148  [0x100221a74]
-        1 crypto_kem_keypair_internal  (in spin_gt768) + 568  [0x100210b10]  kem.c:198
-        1 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 60  [0x100211bfc]  keygen.c:108
-        1 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 152  [0x100211c58]  keygen.c:116
-        1 shake256  (in spin_gt768) + 64  [0x100211b0c]  fips202.c:743
-        1 shake256  (in spin_gt768) + 88  [0x100211b24]  fips202.c:744
-        + 1 shake256_squeezeblocks  (in spin_gt768) + 0  [0x1002119a4]  fips202.c:715
-        1 shake256  (in spin_gt768) + 136  [0x100211b54]  fips202.c:752
-        + 1 _platform_memmove  (in libsystem_platform.dylib) + 428  [0x18565956c]
-        1 shake256  (in spin_gt768) + 188  [0x100211b88]  fips202.c:756
-        1 shake256  (in spin_gt768) + 208  [0x100211b9c]  fips202.c:757
-        1 shake256_absorb  (in spin_gt768) + 36  [0x1002116cc]  fips202.c:698
-        1 shake256_prefixed  (in spin_gt768) + 232  [0x1002110a4]  fips202.c:0
-        1 shake256_prefixed  (in spin_gt768) + 704  [0x10021127c]  fips202.c:465
-        1 shake256_prefixed  (in spin_gt768) + 1032  [0x1002113c4]  fips202.c:470
-        + 1 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        +   1 _platform_memset  (in libsystem_platform.dylib) + 28  [0x18565910c]
-        1 shake256_prefixed  (in spin_gt768) + 1076  [0x1002113f0]  fips202.c:471
+        3 crypto_kem_keypair_internal  (in spin_gt768) + 472  [0x102ee4c48]  kem.c:194
+        + 2 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        + ! 2 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        + 1 memset_s  (in libsystem_c.dylib) + 8  [0x1854df25c]
+        3 memset_s  (in libsystem_c.dylib) + 92  [0x1854df2b0]
+        3 shake256_prefixed  (in spin_gt768) + 472  [0x102ee532c]  fips202.c:434
+        3 shake256_prefixed  (in spin_gt768) + 760  [0x102ee544c]  fips202.c:460
+        3 shake256_prefixed  (in spin_gt768) + 704  [0x102ee5414]  fips202.c:465
+        2 crypto_kem_keypair  (in spin_gt768) + 32  [0x102ef6d04]
+        + 2 crypto_kem_keypair_internal  (in spin_gt768) + 20  [0x102ee4a84]  kem.c:171
+        2 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 60  [0x102ee5d94]  keygen.c:108
+        2 shake256  (in spin_gt768) + 120  [0x102ee5cdc]  fips202.c:750
+        + 2 shake256_squeezeblocks  (in spin_gt768) + 0  [0x102ee5b3c]  fips202.c:715
+        2 shake256_prefixed  (in spin_gt768) + 232,552  [0x102ee523c,0x102ee537c]  fips202.c:0
+        2 shake256_prefixed  (in spin_gt768) + 644  [0x102ee53d8]  fips202.c:447
+        2 shake256_prefixed  (in spin_gt768) + 588,672  [0x102ee53a0,0x102ee53f4]  fips202.c:449
+        2 shake256_prefixed  (in spin_gt768) + 1012  [0x102ee5548]  fips202.c:469
+        + 2 memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
+        +   1 DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 8  [0x185557ad0]
+        +   1 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+        1 crypto_kem_keypair_internal  (in spin_gt768) + 28  [0x102ee4a8c]  kem.c:171
+        + 1 crypto_kem_keypair_internal  (in spin_gt768) + 28  [0x102ee4a8c]  kem.c:171
+        +   1 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52  [0x18564ac54]
+        1 crypto_kem_keypair_internal  (in spin_gt768) + 56  [0x102ee4aa8]  kem.c:171
+        1 crypto_kem_keypair_internal  (in spin_gt768) + 332  [0x102ee4bbc]  kem.c:192
+        + 1 poly_tobytes_keygen_cq  (in spin_gt768) + 16  [0x102ef5b90]
+        1 crypto_kem_keypair_internal  (in spin_gt768) + 348  [0x102ee4bcc]  kem.c:192
+        + 1 poly_tobytes_keygen_cq  (in spin_gt768) + 108  [0x102ef5bec]
+        1 crypto_kem_keypair_internal  (in spin_gt768) + 448  [0x102ee4c30]  kem.c:194
+        1 crypto_kem_keypair_internal  (in spin_gt768) + 568  [0x102ee4ca8]  kem.c:198
+        1 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 152  [0x102ee5df0]  keygen.c:116
+        1 poly_baseinv_keygen_cq_scaled_r  (in spin_gt768) + 180  [0x102ee5e0c]  keygen.c:117
+        1 shake256_absorb  (in spin_gt768) + 36  [0x102ee5864]  fips202.c:698
+        1 shake256_prefixed  (in spin_gt768) + 84  [0x102ee51a8]  fips202.c:415
+        1 shake256_prefixed  (in spin_gt768) + 276  [0x102ee5268]  fips202.c:419
+        1 shake256_prefixed  (in spin_gt768) + 500  [0x102ee5348]  fips202.c:443
+        1 shake256_prefixed  (in spin_gt768) + 1076  [0x102ee5588]  fips202.c:471
 
 Total number in stack (recursive counted multiple, when >=5):
-        14       poly_tobytes_keygen_cq  (in spin_gt768) + 0  [0x1002219e0]
+        14       memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
         13       _platform_memset  (in libsystem_platform.dylib) + 0  [0x1856590f0]
-        13       memset_s  (in libsystem_c.dylib) + 0  [0x1854df254]
-        13       memset_s  (in libsystem_c.dylib) + 68  [0x1854df298]
-        12       module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 0  [0x100222170]
+        13       poly_tobytes_keygen_cq  (in spin_gt768) + 0  [0x102ef5b80]
+        12       memset_s  (in libsystem_c.dylib) + 0  [0x1854df254]
+        12       module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768) + 0  [0x102ef6310]
         7       DYLD-STUB$$mkostemps  (in libsystem_c.dylib) + 0  [0x185557ac8]
+        6       DYLD-STUB$$memset_s  (in spin_gt768) + 0  [0x102ef7624]
 
 Sort by top of stack, same collapsed (when >= 5):
-        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768)        2510
-        module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop  (in spin_gt768)        500
-        poly_basemul_keygen_cq_scaled_r  (in spin_gt768)        350
-        module_ntt_.Lgt_shared_core_cq_suffix  (in spin_gt768)        325
-        gt_keygen_baseinv_hier_k8  (in spin_gt768)        271
-        module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768)        204
-        module_ntt_.Lgt_shared_core_entry  (in spin_gt768)        186
-        _platform_memset  (in libsystem_platform.dylib)        167
-        module_keygen_baseinv_finish_Lbpq_finish_cq_loop  (in spin_gt768)        144
-        loop_cbd  (in spin_gt768)        94
-        poly_tobytes_keygen_cq  (in spin_gt768)        62
-        shake256_absorb  (in spin_gt768)        41
-        support_loop_triple  (in spin_gt768)        40
-        memset_s  (in libsystem_c.dylib)        39
-        shake256_prefixed  (in spin_gt768)        33
-        gt_fqinv15_asm  (in spin_gt768)        24
+        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt768)        2531
+        module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop  (in spin_gt768)        495
+        poly_basemul_keygen_cq_scaled_r  (in spin_gt768)        368
+        gt_keygen_baseinv_hier_k8  (in spin_gt768)        283
+        module_ntt_.Lgt_shared_core_cq_suffix  (in spin_gt768)        276
+        module_keygen_pack_.Lgt_keygen_shared_pack64_core  (in spin_gt768)        250
+        module_ntt_.Lgt_shared_core_entry  (in spin_gt768)        180
+        _platform_memset  (in libsystem_platform.dylib)        158
+        module_keygen_baseinv_finish_Lbpq_finish_cq_loop  (in spin_gt768)        147
+        loop_cbd  (in spin_gt768)        90
+        poly_tobytes_keygen_cq  (in spin_gt768)        47
+        shake256_absorb  (in spin_gt768)        45
+        support_loop_triple  (in spin_gt768)        43
+        shake256_prefixed  (in spin_gt768)        29
+        gt_fqinv15_asm  (in spin_gt768)        26
+        memset_s  (in libsystem_c.dylib)        22
+        DYLD-STUB$$mkostemps  (in libsystem_c.dylib)        18
+        shake256_squeezeblocks  (in spin_gt768)        17
         randombytes  (in spin_gt768)        15
-        ___chkstk_darwin  (in libsystem_pthread.dylib)        12
-        DYLD-STUB$$mkostemps  (in libsystem_c.dylib)        11
-        shake256_squeezeblocks  (in spin_gt768)        9
-        poly_baseinv_keygen_cq_scaled_r  (in spin_gt768)        6
+        _platform_memmove  (in libsystem_platform.dylib)        12
+        DYLD-STUB$$memset_s  (in spin_gt768)        7
+        crypto_kem_keypair  (in spin_gt768)        6
+        crypto_kem_keypair_internal  (in spin_gt768)        5
 
 Binary Images:
-       0x100210000 -        0x100223caf +spin_gt768 (0) <D601DDA1-E593-39B2-84BA-8DF5086A2B43> /tmp/*/spin_gt768
+       0x102ee4000 -        0x102ef7e77 +spin_gt768 (0) <27BE5349-CDB1-3D7A-A320-EC317E74D9B4> /tmp/*/spin_gt768
        0x1851ec000 -        0x18523eb4b  libobjc.A.dylib (951.7) <2E858E25-1FF6-3DA6-84F6-911630620512> /usr/lib/libobjc.A.dylib
        0x18523f000 -        0x185273b34  libdyld.dylib (1376.6) <2C3C5F75-3686-39A1-9202-BD4D2133379D> /usr/lib/system/libdyld.dylib
        0x185274000 -        0x185319ec7  dyld (1.0.0 - 1376.6) <9F682DCF-340C-3BFA-BCDD-DD702F30313E> /usr/lib/dyld

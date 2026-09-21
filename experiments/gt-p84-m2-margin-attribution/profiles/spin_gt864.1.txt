@@ -1,0 +1,377 @@
+Analysis of sampling spin_gt864 (pid 49579) every 1 millisecond
+Process:         spin_gt864 [49579]
+Path:            /private/tmp/*/spin_gt864
+Load Address:    0x102490000
+Identifier:      spin_gt864
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  zsh [49470]
+Target Type:     live task
+
+Date/Time:       2026-09-21 21:17:01.141 +0800
+Launch Time:     2026-09-21 21:16:55.083 +0800
+OS Version:      macOS 26.4.1 (25E253)
+Report Version:  7
+Analysis Tool:   /usr/bin/sample
+
+Physical footprint:         976K
+Physical footprint (peak):  992K
+Idle exit:                  untracked
+----
+
+Call graph:
+    5042 Thread_24014236   DispatchQueue_1: com.apple.main-thread  (serial)
+      5042 start  (in dyld) + 6992  [0x185293da4]
+        5040 main  (in spin_gt864) + 808  [0x102490918]  spin.c:33
+        + 1956 crypto_kem_enc  (in spin_gt864) + 268  [0x102495b50]  kem.c:239
+        + ! 1788 hash_g_fr0  (in spin_gt864) + 64  [0x102490aac]  symmetric.c:35
+        + ! : 1424 shake256_prefixed  (in spin_gt864) + 264  [0x102490c04]  fips202.c:438
+        + ! : | 1424 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 1080,456,...  [0x10249c50c,0x10249c29c,...]
+        + ! : 332 shake256_prefixed  (in spin_gt864) + 740  [0x102490de0]  fips202.c:464
+        + ! : | 332 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 456,768,...  [0x10249c29c,0x10249c3d4,...]
+        + ! : 9 shake256_prefixed  (in spin_gt864) + 764  [0x102490df8]  fips202.c:469
+        + ! : 8 shake256_prefixed  (in spin_gt864) + 248,432,...  [0x102490bf4,0x102490cac,...]  fips202.c:0
+        + ! : 4 shake256_prefixed  (in spin_gt864) + 136,160,...  [0x102490b84,0x102490b9c,...]  fips202.c:435
+        + ! : 2 shake256_prefixed  (in spin_gt864) + 76,96  [0x102490b48,0x102490b5c]  fips202.c:424
+        + ! : 2 shake256_prefixed  (in spin_gt864) + 264  [0x102490c04]  fips202.c:439
+        + ! : 1 shake256_prefixed  (in spin_gt864) + 556  [0x102490d28]  fips202.c:0
+        + ! : | 1 DYLD-STUB$$mkdtempat_np  (in libsystem_c.dylib) + 8  [0x185557ab0]
+        + ! : 1 shake256_prefixed  (in spin_gt864) + 280  [0x102490c14]  fips202.c:428
+        + ! : 1 shake256_prefixed  (in spin_gt864) + 296  [0x102490c24]  fips202.c:431
+        + ! : 1 shake256_prefixed  (in spin_gt864) + 496  [0x102490cec]  fips202.c:443
+        + ! : 1 shake256_prefixed  (in spin_gt864) + 628  [0x102490d70]  fips202.c:458
+        + ! : 1 shake256_prefixed  (in spin_gt864) + 772  [0x102490e00]  fips202.c:468
+        + ! : 1 shake256_prefixed  (in spin_gt864) + 1068  [0x102490f28]  fips202.c:479
+        + ! 149 hash_g_fr0  (in spin_gt864) + 52  [0x102490aa0]  symmetric.c:34
+        + ! : 75 tobytes_full_asm  (in spin_gt864) + 52  [0x102497574]
+        + ! : | 9 <deduplicated_symbol>  (in spin_gt864) + 296,60,...  [0x10249775c,0x102497670,...]
+        + ! : | 7 <deduplicated_symbol>  (in spin_gt864) + 164,68,...  [0x1024984b0,0x102498450,...]
+        + ! : | 6 <deduplicated_symbol>  (in spin_gt864) + 224,56,...  [0x102498170,0x1024980c8,...]
+        + ! : | 6 <deduplicated_symbol>  (in spin_gt864) + 76,24,...  [0x1024981e0,0x1024981ac,...]
+        + ! : | 6 <deduplicated_symbol>  (in spin_gt864) + 180,24,...  [0x10249859c,0x102498500,...]
+        + ! : | 5 <deduplicated_symbol>  (in spin_gt864) + 4,32,...  [0x102497830,0x10249784c,...]
+        + ! : | 5 <deduplicated_symbol>  (in spin_gt864) + 24,80,...  [0x102497b84,0x102497bbc,...]
+        + ! : | 5 <deduplicated_symbol>  (in spin_gt864) + 0,32,...  [0x10249832c,0x10249834c,...]
+        + ! : | 4 <deduplicated_symbol>  (in spin_gt864) + 64,80,...  [0x102497cac,0x102497cbc,...]
+        + ! : | 4 <deduplicated_symbol>  (in spin_gt864) + 24,88,...  [0x102497fe4,0x102498024,...]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 112,136  [0x1024977d0,0x1024977e8]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 56,148,...  [0x102497930,0x10249798c,...]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 56,84,...  [0x102497a10,0x102497a2c,...]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 120,180  [0x102497b2c,0x102497b68]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 80  [0x102497f2c]
+        + ! : | 2 <deduplicated_symbol>  (in spin_gt864) + 32,172  [0x102498280,0x10249830c]
+        + ! : | 1 <deduplicated_symbol>  (in spin_gt864) + 164  [0x102497de8]
+        + ! : 70 tobytes_full_asm  (in spin_gt864) + 40  [0x102497568]
+        + ! : | 9 <deduplicated_symbol>  (in spin_gt864) + 52,92,...  [0x102497f10,0x102497f38,...]
+        + ! : | 6 <deduplicated_symbol>  (in spin_gt864) + 172,220,...  [0x102497c18,0x102497c48,...]
+        + ! : | 6 <deduplicated_symbol>  (in spin_gt864) + 72,52  [0x102497e68,0x102497e54]
+        + ! : | 6 <deduplicated_symbol>  (in spin_gt864) + 56,196,...  [0x1024980c8,0x102498154,...]
+        + ! : | 6 <deduplicated_symbol>  (in spin_gt864) + 104,216,...  [0x102498474,0x1024984e4,...]
+        + ! : | 5 <deduplicated_symbol>  (in spin_gt864) + 180,8,...  [0x102497d20,0x102497c74,...]
+        + ! : | 4 <deduplicated_symbol>  (in spin_gt864) + 132,76,...  [0x102497dc8,0x102497d90,...]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 120,144  [0x1024977d8,0x1024977f0]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 32,136,...  [0x10249784c,0x1024978b4,...]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 216,156  [0x102497ab0,0x102497a74]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 40,68,...  [0x102497ff4,0x102498010,...]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 32,92,...  [0x102498280,0x1024982bc,...]
+        + ! : | 3 <deduplicated_symbol>  (in spin_gt864) + 60,136,...  [0x102498368,0x1024983b4,...]
+        + ! : | 2 <deduplicated_symbol>  (in spin_gt864) + 64,288  [0x102497674,0x102497754]
+        + ! : | 2 <deduplicated_symbol>  (in spin_gt864) + 124,192  [0x102497974,0x1024979b8]
+        + ! : | 2 <deduplicated_symbol>  (in spin_gt864) + 24,100  [0x102497acc,0x102497b18]
+        + ! : | 2 <deduplicated_symbol>  (in spin_gt864) + 36,144  [0x1024981b8,0x102498224]
+        + ! : | 2 <deduplicated_symbol>  (in spin_gt864) + 24  [0x102498500]
+        + ! : 4 tobytes_full_asm  (in spin_gt864) + 0,184,...  [0x102497540,0x1024975f8,...]
+        + ! 18 hash_g_fr0  (in spin_gt864) + 76  [0x102490ab8]  symmetric.c:36
+        + ! : 18 _platform_memset  (in libsystem_platform.dylib) + 140  [0x18565917c]
+        + ! 1 hash_g_fr0  (in spin_gt864) + 52  [0x102490aa0]  symmetric.c:35
+        + 1608 crypto_kem_enc  (in spin_gt864) + 204  [0x102495b10]  kem.c:239
+        + ! 1430 shake256_prefixed  (in spin_gt864) + 264  [0x102490c04]  fips202.c:438
+        + ! : 1430 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 456,1080,...  [0x10249c29c,0x10249c50c,...]
+        + ! 153 shake256_prefixed  (in spin_gt864) + 740  [0x102490de0]  fips202.c:464
+        + ! : 153 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 768,1152,...  [0x10249c3d4,0x10249c554,...]
+        + ! 6 shake256_prefixed  (in spin_gt864) + 196,160,...  [0x102490bc0,0x102490b9c,...]  fips202.c:435
+        + ! 4 shake256_prefixed  (in spin_gt864) + 264  [0x102490c04]  fips202.c:439
+        + ! 4 shake256_prefixed  (in spin_gt864) + 616,636,...  [0x102490d64,0x102490d78,...]  fips202.c:458
+        + ! 3 shake256_prefixed  (in spin_gt864) + 296,372,...  [0x102490c24,0x102490c70,...]  fips202.c:431
+        + ! 2 shake256_prefixed  (in spin_gt864) + 556  [0x102490d28]  fips202.c:0
+        + ! : 1 DYLD-STUB$$__memcpy_chk  (in spin_gt864) + 4  [0x10249c6c4]
+        + ! : 1 _platform_memmove  (in libsystem_platform.dylib) + 204  [0x18565948c]
+        + ! 2 shake256_prefixed  (in spin_gt864) + 236,556  [0x102490be8,0x102490d28]  fips202.c:0
+        + ! 1 shake256_prefixed  (in spin_gt864) + 24  [0x102490b14]  fips202.c:416
+        + ! 1 shake256_prefixed  (in spin_gt864) + 100  [0x102490b60]  fips202.c:427
+        + ! 1 shake256_prefixed  (in spin_gt864) + 476  [0x102490cd8]  fips202.c:443
+        + ! 1 shake256_prefixed  (in spin_gt864) + 1020  [0x102490ef8]  fips202.c:478
+        + 485 crypto_kem_enc  (in spin_gt864) + 228  [0x102495b28]  kem.c:239
+        + ! 292 shake256_prefixed  (in spin_gt864) + 740  [0x102490de0]  fips202.c:464
+        + ! : 292 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 124,768,...  [0x10249c150,0x10249c3d4,...]
+        + ! 161 shake256_prefixed  (in spin_gt864) + 264  [0x102490c04]  fips202.c:438
+        + ! : 161 ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 1080,124,...  [0x10249c50c,0x10249c150,...]
+        + ! 8 shake256_prefixed  (in spin_gt864) + 348,332,...  [0x102490c58,0x102490c48,...]  fips202.c:431
+        + ! 5 shake256_prefixed  (in spin_gt864) + 1068,1032,...  [0x102490f28,0x102490f04,...]  fips202.c:479
+        + ! 4 shake256_prefixed  (in spin_gt864) + 764  [0x102490df8]  fips202.c:469
+        + ! 3 shake256_prefixed  (in spin_gt864) + 556  [0x102490d28]  fips202.c:0
+        + ! : 3 _platform_memmove  (in libsystem_platform.dylib) + 452,12  [0x185659584,0x1856593cc]
+        + ! 3 shake256_prefixed  (in spin_gt864) + 108,232,...  [0x102490b68,0x102490be4,...]  fips202.c:0
+        + ! 3 shake256_prefixed  (in spin_gt864) + 84  [0x102490b50]  fips202.c:424
+        + ! 3 shake256_prefixed  (in spin_gt864) + 580,664,...  [0x102490d40,0x102490d94,...]  fips202.c:458
+        + ! 1 shake256_prefixed  (in spin_gt864) + 280  [0x102490c14]  fips202.c:428
+        + ! 1 shake256_prefixed  (in spin_gt864) + 648  [0x102490d84]  fips202.c:456
+        + ! 1 shake256_prefixed  (in spin_gt864) + 740  [0x102490de0]  fips202.c:468
+        + 262 crypto_kem_enc  (in spin_gt864) + 300  [0x102495b70]  kem.c:239
+        + ! 261 poly_ntt  (in spin_gt864) + 40  [0x102492c64]  ntt_api.c:14
+        + ! : 45 ntt9_asm  (in spin_gt864) + 52  [0x102493904]
+        + ! : | 45 .Lntt_one_bank  (in spin_gt864) + 448,2020,...  [0x102493cf4,0x102494318,...]
+        + ! : 42 ntt_asm  (in spin_gt864) + 56  [0x10249388c]
+        + ! : | 42 .Ltop_split_loop  (in spin_gt864) + 160,20,...  [0x102494b70,0x102494ae4,...]
+        + ! : 38 ntt9_asm  (in spin_gt864) + 244  [0x1024939c4]
+        + ! : | 37 .Lntt_one_bank  (in spin_gt864) + 284,1288,...  [0x102493c50,0x10249403c,...]
+        + ! : | 1 ntt9_asm  (in spin_gt864) + 312  [0x102493a08]
+        + ! : 35 ntt9_asm  (in spin_gt864) + 436  [0x102493a84]
+        + ! : | 34 .Lntt_one_bank  (in spin_gt864) + 432,732,...  [0x102493ce4,0x102493e10,...]
+        + ! : | 1 ntt9_asm  (in spin_gt864) + 468  [0x102493aa4]
+        + ! : 34 ntt9_asm  (in spin_gt864) + 340  [0x102493a24]
+        + ! : | 34 .Lntt_one_bank  (in spin_gt864) + 464,820,...  [0x102493d04,0x102493e68,...]
+        + ! : 32 ntt9_asm  (in spin_gt864) + 148  [0x102493964]
+        + ! : | 32 .Lntt_one_bank  (in spin_gt864) + 220,700,...  [0x102493c10,0x102493df0,...]
+        + ! : 32 ntt9_asm  (in spin_gt864) + 532  [0x102493ae4]
+        + ! : | 31 .Lntt_one_bank  (in spin_gt864) + 1928,1264,...  [0x1024942bc,0x102494024,...]
+        + ! : | 1 ntt9_asm  (in spin_gt864) + 564  [0x102493b04]
+        + ! : 3 ntt_asm  (in spin_gt864) + 68  [0x102493898]
+        + ! :   3 ntt_tail_asm  (in spin_gt864) + 236,276,...  [0x10249600c,0x102496034,...]
+        + ! 1 poly_ntt  (in spin_gt864) + 52  [0x102492c70]  ntt_api.c:0
+        + 235 crypto_kem_enc  (in spin_gt864) + 256  [0x102495b44]  kem.c:239
+        + ! 235 poly_ntt  (in spin_gt864) + 40  [0x102492c64]  ntt_api.c:14
+        + !   40 ntt_asm  (in spin_gt864) + 56  [0x10249388c]
+        + !   : 39 .Ltop_split_loop  (in spin_gt864) + 160,20,...  [0x102494b70,0x102494ae4,...]
+        + !   : 1 ntt_top_asm  (in spin_gt864) + 48  [0x102494ac0]
+        + !   38 ntt9_asm  (in spin_gt864) + 436  [0x102493a84]
+        + !   : 38 .Lntt_one_bank  (in spin_gt864) + 1524,432,...  [0x102494128,0x102493ce4,...]
+        + !   35 ntt9_asm  (in spin_gt864) + 148  [0x102493964]
+        + !   : 35 .Lntt_one_bank  (in spin_gt864) + 352,444,...  [0x102493c94,0x102493cf0,...]
+        + !   33 ntt9_asm  (in spin_gt864) + 340  [0x102493a24]
+        + !   : 33 .Lntt_one_bank  (in spin_gt864) + 1240,1428,...  [0x10249400c,0x1024940c8,...]
+        + !   30 ntt9_asm  (in spin_gt864) + 532  [0x102493ae4]
+        + !   : 30 .Lntt_one_bank  (in spin_gt864) + 428,1096,...  [0x102493ce0,0x102493f7c,...]
+        + !   29 ntt9_asm  (in spin_gt864) + 244  [0x1024939c4]
+        + !   : 28 .Lntt_one_bank  (in spin_gt864) + 0,2040,...  [0x102493b34,0x10249432c,...]
+        + !   : 1 ntt9_asm  (in spin_gt864) + 276  [0x1024939e4]
+        + !   27 ntt9_asm  (in spin_gt864) + 52  [0x102493904]
+        + !   : 27 .Lntt_one_bank  (in spin_gt864) + 192,572,...  [0x102493bf4,0x102493d70,...]
+        + !   2 ntt_asm  (in spin_gt864) + 68  [0x102493898]
+        + !   : 2 ntt_tail_asm  (in spin_gt864) + 64,300  [0x102495f60,0x10249604c]
+        + !   1 ntt_asm  (in spin_gt864) + 104  [0x1024938bc]
+        + 145 crypto_kem_enc  (in spin_gt864) + 324  [0x102495b88]  kem.c:239
+        + ! 49 basemul_add_asm  (in spin_gt864) + 172,188,...  [0x102492e70,0x102492e80,...]  base.c:135
+        + ! 22 basemul_add_asm  (in spin_gt864) + 272,252,...  [0x102492ed4,0x102492ec0,...]  base.c:140
+        + ! 19 basemul_add_asm  (in spin_gt864) + 324  [0x102492f08]  base.c:122
+        + ! 11 basemul_add_asm  (in spin_gt864) + 276,268,...  [0x102492ed8,0x102492ed0,...]  base.c:141
+        + ! 11 basemul_add_asm  (in spin_gt864) + 304,320,...  [0x102492ef4,0x102492f04,...]  base.c:142
+        + ! 10 basemul_add_asm  (in spin_gt864) + 204,224  [0x102492e90,0x102492ea4]  base.c:138
+        + ! 7 basemul_add_asm  (in spin_gt864) + 84  [0x102492e18]  base.c:132
+        + ! 7 basemul_add_asm  (in spin_gt864) + 180,192,...  [0x102492e78,0x102492e84,...]  base.c:137
+        + ! 6 basemul_add_asm  (in spin_gt864) + 228,232  [0x102492ea8,0x102492eac]  base.c:139
+        + ! 3 basemul_add_asm  (in spin_gt864) + 64  [0x102492e04]  base.c:124
+        + 123 crypto_kem_enc  (in spin_gt864) + 340  [0x102495b98]  kem.c:239
+        + ! 73 tobytes_small_asm  (in spin_gt864) + 40  [0x1024985e8]
+        + ! : 8 <deduplicated_symbol>  (in spin_gt864) + 160,248,...  [0x10249874c,0x1024987a4,...]
+        + ! : 6 <deduplicated_symbol>  (in spin_gt864) + 80,12,...  [0x102498f2c,0x102498ee8,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 44,156  [0x102498a4c,0x102498abc]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 124,24,...  [0x102498b6c,0x102498b08,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 104,48,...  [0x102498c04,0x102498bcc,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 16,72,...  [0x1024993d4,0x10249940c,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 124,28,...  [0x102498848,0x1024987e8,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 156,84,...  [0x1024989e8,0x1024989a0,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 60,16,...  [0x102498ccc,0x102498ca0,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 116,20,...  [0x1024990ec,0x10249908c,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 88,164,...  [0x1024994ec,0x102499538,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 204,72  [0x102498e28,0x102498da4]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 24,60,...  [0x102498e44,0x102498e68,...]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 44,136  [0x102498fec,0x102499048]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 92,120  [0x1024991cc,0x1024991e8]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 88,148,...  [0x102499348,0x102499384,...]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 32,84  [0x1024988ac,0x1024988e0]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 116,152  [0x1024992a4,0x1024992c8]
+        + ! 47 tobytes_small_asm  (in spin_gt864) + 52  [0x1024985f4]
+        + ! : 7 <deduplicated_symbol>  (in spin_gt864) + 104,140,...  [0x1024994fc,0x102499520,...]
+        + ! : 5 <deduplicated_symbol>  (in spin_gt864) + 72,44,...  [0x102498da4,0x102498d88,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 4,84,...  [0x102498890,0x1024988e0,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 76,12,...  [0x102498be8,0x102498ba8,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 44,144  [0x102498cbc,0x102498d20]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 188,72,...  [0x102499134,0x1024990c0,...]
+        + ! : 4 <deduplicated_symbol>  (in spin_gt864) + 180,88  [0x102499224,0x1024991c8]
+        + ! : 3 <deduplicated_symbol>  (in spin_gt864) + 52,184,...  [0x1024986e0,0x102498764,...]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 80  [0x10249881c]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 36,132  [0x102498a44,0x102498aa4]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 8,168  [0x102498ee4,0x102498f84]
+        + ! : 2 <deduplicated_symbol>  (in spin_gt864) + 88  [0x102499018]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 148  [0x1024989e0]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 84  [0x102499284]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 208  [0x1024993c0]
+        + ! : 1 <deduplicated_symbol>  (in spin_gt864) + 160  [0x102499464]
+        + ! 3 tobytes_small_asm  (in spin_gt864) + 120,180,...  [0x102498638,0x102498674,...]
+        + 77 crypto_kem_enc  (in spin_gt864) + 112  [0x102495ab4]  kem.c:239
+        + ! 41 frombytes_asm  (in spin_gt864) + 44  [0x102494bb0]  unpack.c:505
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 720  [0x102494ea0]  unpack.c:110
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 988  [0x102494fac]  unpack.c:152
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 128  [0x102494c50]  unpack.c:19
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1648  [0x102495240]  unpack.c:259
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 1784  [0x1024952c8]  unpack.c:276
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2104  [0x102495408]  unpack.c:336
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2296,2300  [0x1024954c8,0x1024954cc]  unpack.c:373
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2368  [0x102495510]  unpack.c:386
+        + ! : 2 transpose_top_checked  (in spin_gt864) + 2764  [0x10249569c]  unpack.c:468
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 636  [0x102494e4c]  unpack.c:104
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 668  [0x102494e6c]  unpack.c:106
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 820  [0x102494f04]  unpack.c:130
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 932  [0x102494f74]  unpack.c:141
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 960  [0x102494f90]  unpack.c:145
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1012  [0x102494fc4]  unpack.c:158
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1324  [0x1024950fc]  unpack.c:202
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1628  [0x10249522c]  unpack.c:254
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 160  [0x102494c70]  unpack.c:26
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1768  [0x1024952b8]  unpack.c:272
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1868  [0x10249531c]  unpack.c:300
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 1940  [0x102495364]  unpack.c:310
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2080  [0x1024953f0]  unpack.c:330
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2272  [0x1024954b0]  unpack.c:371
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2420  [0x102495544]  unpack.c:391
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2448  [0x102495560]  unpack.c:397
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2752  [0x102495690]  unpack.c:467
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2804  [0x1024956c4]  unpack.c:471
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2860  [0x1024956fc]  unpack.c:474
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 2948  [0x102495754]  unpack.c:485
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 3012  [0x102495794]  unpack.c:501
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 432  [0x102494d80]  unpack.c:73
+        + ! : 1 transpose_top_checked  (in spin_gt864) + 532  [0x102494de4]  unpack.c:81
+        + ! 36 frombytes_asm  (in spin_gt864) + 28  [0x102494ba0]  unpack.c:504
+        + !   2 transpose_top_checked  (in spin_gt864) + 300  [0x102494cfc]  unpack.c:48
+        + !   2 transpose_top_checked  (in spin_gt864) + 2892  [0x10249571c]  unpack.c:480
+        + !   1 transpose_top_checked  (in spin_gt864) + 632  [0x102494e48]  unpack.c:104
+        + !   1 transpose_top_checked  (in spin_gt864) + 668  [0x102494e6c]  unpack.c:106
+        + !   1 transpose_top_checked  (in spin_gt864) + 28  [0x102494bec]  unpack.c:11
+        + !   1 transpose_top_checked  (in spin_gt864) + 744  [0x102494eb8]  unpack.c:112
+        + !   1 transpose_top_checked  (in spin_gt864) + 772  [0x102494ed4]  unpack.c:127
+        + !   1 transpose_top_checked  (in spin_gt864) + 76  [0x102494c1c]  unpack.c:15
+        + !   1 transpose_top_checked  (in spin_gt864) + 988  [0x102494fac]  unpack.c:152
+        + !   1 transpose_top_checked  (in spin_gt864) + 1216  [0x102495090]  unpack.c:186
+        + !   1 transpose_top_checked  (in spin_gt864) + 1228  [0x10249509c]  unpack.c:190
+        + !   1 transpose_top_checked  (in spin_gt864) + 1272  [0x1024950c8]  unpack.c:199
+        + !   1 transpose_top_checked  (in spin_gt864) + 1532  [0x1024951cc]  unpack.c:234
+        + !   1 transpose_top_checked  (in spin_gt864) + 1560  [0x1024951e8]  unpack.c:236
+        + !   1 transpose_top_checked  (in spin_gt864) + 1636  [0x102495234]  unpack.c:257
+        + !   1 transpose_top_checked  (in spin_gt864) + 1840  [0x102495300]  unpack.c:297
+        + !   1 transpose_top_checked  (in spin_gt864) + 1868  [0x10249531c]  unpack.c:300
+        + !   1 transpose_top_checked  (in spin_gt864) + 1964  [0x10249537c]  unpack.c:312
+        + !   1 transpose_top_checked  (in spin_gt864) + 172  [0x102494c7c]  unpack.c:32
+        + !   1 transpose_top_checked  (in spin_gt864) + 2136  [0x102495428]  unpack.c:344
+        + !   1 transpose_top_checked  (in spin_gt864) + 2156  [0x10249543c]  unpack.c:346
+        + !   1 transpose_top_checked  (in spin_gt864) + 2188  [0x10249545c]  unpack.c:348
+        + !   1 transpose_top_checked  (in spin_gt864) + 2240  [0x102495490]  unpack.c:368
+        + !   1 transpose_top_checked  (in spin_gt864) + 2460  [0x10249556c]  unpack.c:399
+        + !   1 transpose_top_checked  (in spin_gt864) + 2508  [0x10249559c]  unpack.c:411
+        + !   1 transpose_top_checked  (in spin_gt864) + 2532  [0x1024955b4]  unpack.c:413
+        + !   1 transpose_top_checked  (in spin_gt864) + 2592  [0x1024955f0]  unpack.c:417
+        + !   1 transpose_top_checked  (in spin_gt864) + 224  [0x102494cb0]  unpack.c:42
+        + !   1 transpose_top_checked  (in spin_gt864) + 2876  [0x10249570c]  unpack.c:477
+        + !   1 transpose_top_checked  (in spin_gt864) + 2948  [0x102495754]  unpack.c:485
+        + !   1 transpose_top_checked  (in spin_gt864) + 3012  [0x102495794]  unpack.c:501
+        + !   1 transpose_top_checked  (in spin_gt864) + 432  [0x102494d80]  unpack.c:73
+        + !   1 transpose_top_checked  (in spin_gt864) + 460  [0x102494d9c]  unpack.c:75
+        + !   1 transpose_top_checked  (in spin_gt864) + 604  [0x102494e2c]  unpack.c:98
+        + 42 poly_cbd1  (in spin_gt864) + 24  [0x10249bb24]
+        + ! 33 loop_cbd  (in spin_gt864) + 304,316,...  [0x1024932b8,0x1024932c4,...]
+        + ! 9 raw_poly_cbd1  (in spin_gt864) + 260,316,...  [0x102493140,0x102493178,...]
+        + 31 poly_sotp_encode  (in spin_gt864) + 24  [0x10249bb54]
+        + ! 26 loop_sotp_encode  (in spin_gt864) + 216,328,...  [0x1024934fc,0x10249356c,...]
+        + ! 5 raw_poly_sotp_encode  (in spin_gt864) + 104,20,...  [0x102493338,0x1024932e4,...]
+        + 20 crypto_kem_enc  (in spin_gt864) + 100  [0x102495aa8]  kem.c:238
+        + ! 9 randombytes  (in spin_gt864) + 196,108,...  [0x102490a4c,0x1024909f4,...]  rb.c:14
+        + ! 6 randombytes  (in spin_gt864) + 100  [0x1024909ec]  rb.c:13
+        + ! 3 randombytes  (in spin_gt864) + 56  [0x1024909c0]  rb.c:15
+        + ! 2 randombytes  (in spin_gt864) + 0  [0x102490988]  rb.c:9
+        + 19 crypto_kem_enc  (in spin_gt864) + 452  [0x102495c08]  kem.c:239
+        + ! 19 _platform_memset  (in libsystem_platform.dylib) + 140,148,...  [0x18565917c,0x185659184,...]
+        + 18 crypto_kem_enc  (in spin_gt864) + 464  [0x102495c14]  kem.c:239
+        + ! 17 _platform_memset  (in libsystem_platform.dylib) + 140,156  [0x18565917c,0x18565918c]
+        + ! 1 __bzero  (in libsystem_platform.dylib) + 8  [0x185659098]
+        + 6 crypto_kem_enc  (in spin_gt864) + 40  [0x102495a6c]  kem.c:235
+        + ! 6 ___chkstk_darwin  (in libsystem_pthread.dylib) + 52  [0x18564ac54]
+        + 6 crypto_kem_enc  (in spin_gt864) + 288,364,...  [0x102495b64,0x102495bb0,...]  kem.c:239
+        + 2 crypto_kem_enc  (in spin_gt864) + 16  [0x102495a54]  kem.c:235
+        + 2 crypto_kem_enc  (in spin_gt864) + 244  [0x102495b38]  kem.c:239
+        + ! 2 poly_cbd1  (in spin_gt864) + 12  [0x10249bb18]
+        + 1 crypto_kem_enc  (in spin_gt864) + 520  [0x102495c4c]  kem.c:240
+        + 1 poly_sotp_encode  (in spin_gt864) + 40  [0x10249bb64]
+        + 1 shake256_prefixed  (in spin_gt864) + 1100  [0x102490f48]  fips202.c:480
+        2 main  (in spin_gt864) + 808  [0x102490918]  spin.c:33
+
+Total number in stack (recursive counted multiple, when >=5):
+        12       .Lntt_one_bank  (in spin_gt864) + 0  [0x102493b34]
+        6       ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864) + 0  [0x10249c0d4]
+
+Sort by top of stack, same collapsed (when >= 5):
+        ntruplus_keccak_f1600_x1_v84a_aarch64  (in spin_gt864)        3792
+        .Lntt_one_bank  (in spin_gt864)        404
+        <deduplicated_symbol>  (in spin_gt864)        265
+        basemul_add_asm  (in spin_gt864)        145
+        shake256_prefixed  (in spin_gt864)        84
+        .Ltop_split_loop  (in spin_gt864)        81
+        transpose_top_checked  (in spin_gt864)        77
+        _platform_memset  (in libsystem_platform.dylib)        54
+        loop_cbd  (in spin_gt864)        33
+        loop_sotp_encode  (in spin_gt864)        26
+        randombytes  (in spin_gt864)        20
+        crypto_kem_enc  (in spin_gt864)        9
+        raw_poly_cbd1  (in spin_gt864)        9
+        ___chkstk_darwin  (in libsystem_pthread.dylib)        6
+        ntt_tail_asm  (in spin_gt864)        5
+        raw_poly_sotp_encode  (in spin_gt864)        5
+
+Binary Images:
+       0x102490000 -        0x10249dbf7 +spin_gt864 (0) <FFCF3EC7-AE48-3A84-A3A0-D9F81F11A5DC> /tmp/*/spin_gt864
+       0x1851ec000 -        0x18523eb4b  libobjc.A.dylib (951.7) <2E858E25-1FF6-3DA6-84F6-911630620512> /usr/lib/libobjc.A.dylib
+       0x18523f000 -        0x185273b34  libdyld.dylib (1376.6) <2C3C5F75-3686-39A1-9202-BD4D2133379D> /usr/lib/system/libdyld.dylib
+       0x185274000 -        0x185319ec7  dyld (1.0.0 - 1376.6) <9F682DCF-340C-3BFA-BCDD-DD702F30313E> /usr/lib/dyld
+       0x18531a000 -        0x18531d228  libsystem_blocks.dylib (96) <2EA73169-CF76-3DD1-9869-F23C8B338022> /usr/lib/system/libsystem_blocks.dylib
+       0x18531e000 -        0x18537251f  libxpc.dylib (3102.100.102) <618039C8-9965-3782-A7D2-90FD4C3DD66F> /usr/lib/system/libxpc.dylib
+       0x185373000 -        0x1853939bf  libsystem_trace.dylib (1861.100.19) <08629650-54FC-3AA6-910E-EACA563804D0> /usr/lib/system/libsystem_trace.dylib
+       0x185394000 -        0x185441daf  libcorecrypto.dylib (1922.101.2) <D1EC203E-9B2E-391B-8DE3-7C58F0589437> /usr/lib/system/libcorecrypto.dylib
+       0x185442000 -        0x1854921d7  libsystem_malloc.dylib (812.100.31) <2AD21BE3-FFDB-31D5-A3D7-2F7F672D6E92> /usr/lib/system/libsystem_malloc.dylib
+       0x185493000 -        0x1854da23f  libdispatch.dylib (1542.100.32) <E17AA23F-DB2A-3302-B14C-F6B08C540FCF> /usr/lib/system/libdispatch.dylib
+       0x1854db000 -        0x1854ddffb  libsystem_featureflags.dylib (103) <0DE01F76-4B36-35A2-98F9-43DD147EDD95> /usr/lib/system/libsystem_featureflags.dylib
+       0x1854de000 -        0x18555eef7  libsystem_c.dylib (1752.100.10) <66EBD321-6899-3863-BA24-5CFC3076A0CB> /usr/lib/system/libsystem_c.dylib
+       0x18555f000 -        0x1855efae7  libc++.1.dylib (2100.43) <1E9541EC-C564-38CB-BED6-46F708E8D863> /usr/lib/libc++.1.dylib
+       0x1855f0000 -        0x18560a75f  libc++abi.dylib (2100.43) <E8D325ED-3B97-325E-B494-B1B0FF93D133> /usr/lib/libc++abi.dylib
+       0x18560b000 -        0x18564828f  libsystem_kernel.dylib (12377.101.15) <51565B39-F595-3E96-A217-FEF29815057A> /usr/lib/system/libsystem_kernel.dylib
+       0x185649000 -        0x185655b3b  libsystem_pthread.dylib (539.100.4) <E7A73008-0C09-31E3-9DD9-0C61652F0E85> /usr/lib/system/libsystem_pthread.dylib
+       0x185656000 -        0x18565e8f3  libsystem_platform.dylib (375.100.10) <D93EC420-F465-3A3A-916D-A04AF9B023EB> /usr/lib/system/libsystem_platform.dylib
+       0x18565f000 -        0x18568e6eb  libsystem_info.dylib (600) <201FD67C-3DF6-3788-B132-A69CAA2AA3D7> /usr/lib/system/libsystem_info.dylib
+       0x189624000 -        0x18962de5f  libsystem_darwin.dylib (1752.100.10) <D5BA0CAB-F283-3620-AAA9-1EEB718E1BA8> /usr/lib/system/libsystem_darwin.dylib
+       0x189a8f000 -        0x189aa0f5b  libsystem_notify.dylib (348.100.7) <9F46F30B-B7C0-3DD7-AC38-57B78C7971FF> /usr/lib/system/libsystem_notify.dylib
+       0x18bd59000 -        0x18bd73f5b  libsystem_networkextension.dylib (2226.101.1) <85169C7B-48DD-3542-AD38-F1B88EA2A95A> /usr/lib/system/libsystem_networkextension.dylib
+       0x18bdf6000 -        0x18be0dfdf  libsystem_asl.dylib (406) <6427D987-7938-3278-8C14-10FB9C06BBD5> /usr/lib/system/libsystem_asl.dylib
+       0x18d9b1000 -        0x18d9b9387  libsystem_symptoms.dylib (2169.100.30) <28B6E34E-9C7D-3437-A3F1-A3C979DE579A> /usr/lib/system/libsystem_symptoms.dylib
+       0x191c4c000 -        0x191c8425f  libsystem_containermanager.dylib (725.100.37) <14750F95-BB3A-3654-8610-A05A454643A8> /usr/lib/system/libsystem_containermanager.dylib
+       0x19305c000 -        0x1930605d7  libsystem_configuration.dylib (1405.100.8) <634F597D-F8BD-3C00-B967-86047FC15D14> /usr/lib/system/libsystem_configuration.dylib
+       0x193061000 -        0x1930678cf  libsystem_sandbox.dylib (2680.100.174) <AF76231D-EADC-3399-9414-6AD90FB4EA89> /usr/lib/system/libsystem_sandbox.dylib
+       0x1946a7000 -        0x1946aa1fb  libquarantine.dylib (196.100.8) <268FEB6E-A237-3050-BFFF-AE3A66B7EAD4> /usr/lib/system/libquarantine.dylib
+       0x194e46000 -        0x194e4cd03  libsystem_coreservices.dylib (191.4.5) <7129349D-04F9-3C3C-BF37-3082C1468654> /usr/lib/system/libsystem_coreservices.dylib
+       0x1953cb000 -        0x195408a77  libsystem_m.dylib (3312.100.1) <83B173CD-7F32-3901-8E67-C0B2676BE015> /usr/lib/system/libsystem_m.dylib
+       0x19540a000 -        0x19540d527  libmacho.dylib (1376.6) <9729ECEA-0A08-32E3-8BDB-B42FC15FF258> /usr/lib/system/libmacho.dylib
+       0x195427000 -        0x1954343a7  libcommonCrypto.dylib (600035) <710EC5FA-F77C-3646-A9E3-C037C42E1539> /usr/lib/system/libcommonCrypto.dylib
+       0x195435000 -        0x19543eca3  libunwind.dylib (2100.2) <FB0518B9-DF0F-3A03-A74B-AF1B21C26F8B> /usr/lib/system/libunwind.dylib
+       0x195447000 -        0x1954517ff  libcopyfile.dylib (240) <0B7FF027-5579-3CBF-A12B-68A4FD36641C> /usr/lib/system/libcopyfile.dylib
+       0x195452000 -        0x195455987  libcompiler_rt.dylib (103.3) <65E29E6E-7042-3F73-A1D2-F2C4EBCD7524> /usr/lib/system/libcompiler_rt.dylib
+       0x195456000 -        0x19545a78b  libsystem_collections.dylib (1752.100.10) <B81193DE-3BEC-3340-86D0-DB7F3683D135> /usr/lib/system/libsystem_collections.dylib
+       0x19545b000 -        0x19545e4cf  libsystem_secinit.dylib (168.100.7) <A6B77B36-195D-33F8-8058-FE0B5BFA9D37> /usr/lib/system/libsystem_secinit.dylib
+       0x19545f000 -        0x195461bf7  libremovefile.dylib (85.100.6) <BD89B1A3-0D06-3881-B5E1-EFC6CFBDFCC1> /usr/lib/system/libremovefile.dylib
+       0x195462000 -        0x195462f27  libkeymgr.dylib (31) <DE8F8219-0072-35C2-8932-C065491ED15D> /usr/lib/system/libkeymgr.dylib
+       0x195463000 -        0x19546be3f  libsystem_dnssd.dylib (2881.100.56.0.1) <DEC8BDD2-366C-3BF9-A123-35744DB06354> /usr/lib/system/libsystem_dnssd.dylib
+       0x19546c000 -        0x19547109b  libcache.dylib (95) <4D6833A3-C910-3A76-AA8A-303F698B36BF> /usr/lib/system/libcache.dylib
+       0x195472000 -        0x195473ce3  libSystem.B.dylib (1356) <E05F5341-06B7-365E-8014-E9CD64C352FE> /usr/lib/libSystem.B.dylib
+       0x287d55000 -        0x287d5c349  libRosetta.dylib (367.5) <2FC1EF06-04C4-35FC-8DC3-BEA1E9FBD63F> /usr/lib/libRosetta.dylib
+       0x289a32000 -        0x289a35a4b  libsystem_darwindirectory.dylib (122) <CCAA2170-32DD-34BD-A927-32DF30893969> /usr/lib/system/libsystem_darwindirectory.dylib
+       0x289a36000 -        0x289a3f5a7  libsystem_eligibility.dylib (319.101.1) <2D19994A-87BB-34B8-A343-CB8DD47FF110> /usr/lib/system/libsystem_eligibility.dylib
+       0x289a40000 -        0x289a478db  libsystem_sanitizers.dylib (26) <FCB93D2F-4437-3089-A43F-A19BC23DD65B> /usr/lib/system/libsystem_sanitizers.dylib
+       0x289a48000 -        0x289a48bb7  libsystem_trial.dylib (474.2.18) <5BB81430-4E33-3160-94D2-1FFB2B614DB2> /usr/lib/system/libsystem_trial.dylib

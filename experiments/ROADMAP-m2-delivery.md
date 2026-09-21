@@ -47,8 +47,27 @@ and key generation:
 | memory / clear | +14 | -38 | -68 |
 | **non-Keccak** | **+57** | **+53** | **+193** |
 
-Encapsulation has not been profiled; only its totals are known (-19 ns at 864,
-+34 at 1152).  That is item 0 below.
+and encapsulation:
+
+| role | 768 | 864 | 1152 |
+|---|---:|---:|---:|
+| pack / unpack | **+109** | **+116** | **+102** |
+| NTT | -42 | +34 | +9 |
+| basemul | +17 | -23 | -59 |
+| sotp / cbd / add | +6 | -8 | **+83** |
+| memory / clear | -78 | -86 | -88 |
+| **non-Keccak** | **+5** | **-5** | **+4** |
+
+All three are at parity in encapsulation once Keccak is aligned.  Serialization
+is about 110 ns behind in every one of them -- **768 included** -- and is
+cancelled by GT's cheaper zeroization and transform rather than by anything the
+encap lazy/loose contract does.
+
+**Attribution numbers come from a different regime than the promotion numbers.**
+The profiles run one operation back to back, which is not how P83 measures; each
+build reports its own ns/op from inside that loop, and the role shares are
+converted with it.  Use P83's round-robin harness for any promotion decision and
+the profiles only for where the time goes.
 
 ---
 
@@ -76,15 +95,23 @@ Encapsulation has not been profiled; only its totals are known (-19 ns at 864,
 
 ---
 
-## Item 0 — profile encapsulation  *(prerequisite, cheap)*
+## Item 0 — profile encapsulation  *(done, 2026-09-21)*
 
-Encapsulation is the only operation not yet attributed.  Sample
-`spin_{off,gt}{768,864,1152} 1` the way P84 did for ops 0 and 2, and fill in the
-role table.  Without it, item 5 is unpriced and there may be a deficit hiding
-there that outranks item 4.
+Result is in the tables above.  Two things came out of it.
 
-**Done when:** the encapsulation role table exists alongside the other two in
-`experiments/gt-p84-m2-margin-attribution/RESULTS.md`.
+**Serialization is behind in encapsulation for all three sets, 768 included,
+by about 110 ns.**  768's advantage is confined to decapsulation.  Whatever
+`poly_ntt_encap_small_lazy` and `poly_tobytes_encap_loose` buy, it is not a
+packing win, so item 5 should not be expected to deliver one either.
+
+**1152's `sotp/cbd/add` is +83 ns here**, against +149 in key generation and
++27 in decapsulation, confirming item 3 across all three operations.
+
+It also found and fixed a conversion fault: role shares had been multiplied by
+per-operation times from the round-robin harness, a different regime from the
+profiling loop.  `spin.c` now measures and prints its own ns/op and the shares
+are converted with that.  The corrected attribution is what the tables above
+carry.
 
 ---
 

@@ -1,0 +1,72 @@
+"""Refresh the SUPERCOP GT leaf from the package, for a fresh measurement.
+
+Three things the package's own build does that SUPERCOP's does not, and that
+this has to supply:
+
+  * SUPERCOP compiles every source in the directory with its own flags, so the
+    `NTRUPLUS1152_ASM_*` selectors that pick the scheduled kernels over the C
+    are prepended to `inverse.c` rather than passed on the command line.
+  * The leaf uses lowercase `.s`, which gcc assembles without the preprocessor,
+    so the `#ifdef __APPLE__` aliasing the package uses becomes the leaf's
+    existing convention of a second `.global` and a second label.
+  * Comments are stripped, matching every other file already in the leaf.
+"""
+import re, subprocess, sys
+from pathlib import Path
+
+PKG = Path(sys.argv[1] if len(sys.argv) > 1
+           else "/Users/chenpinhao/ntruplus/experiments/gt1152-p10-kem")
+HOST = "pi@100.99.191.9"
+LEAF = "/home/pi/supercop-20260831/crypto_kem/ntruplus1152/aarch64-gt1152"
+STAGE = Path("/tmp/leafstage")
+
+DEFINES = ["NTRUPLUS1152_ASM_BASEMUL_RINV",
+           "NTRUPLUS1152_ASM_BASEINV_NUM",
+           "NTRUPLUS1152_ASM_BASEINV_FINISH"]
+
+UPDATE_C = ["inverse.c", "support.c"]
+UPDATE_H = ["inverse16_tables.h"]
+NEW_ASM = ["basemul_rinv.S", "baseinv_num.S", "baseinv_finish.S", "inverse16_tail.S"]
+REMOVE = ["inverse16_tail.c", "tail_map.h"]
+
+
+def to_leaf_asm(text):
+    """package .S -> leaf .s: drop cpp aliasing, add the dual global and label."""
+    out = []
+    for line in text.splitlines():
+        s = line.split("//")[0].rstrip()
+        s = re.sub(r"/\*.*?\*/", "", s).rstrip()
+        if not s.strip():
+            continue
+        if re.match(r"\s*#\s*(ifdef|define|endif)\b", s):
+            continue
+        out.append(s)
+        m = re.match(r"\s*\.global\s+(\w+)\s*$", s)
+        if m:
+            out.append(f".global _{m.group(1)}")
+            continue
+        m = re.match(r"^(\w+):\s*$", s)
+        if m:
+            out.append(f"_{m.group(1)}:")
+    return "\n".join(out) + "\n"
+
+
+STAGE.mkdir(exist_ok=True)
+for f in STAGE.glob("*"):
+    f.unlink()
+
+for n in UPDATE_C + UPDATE_H:
+    t = (PKG / n).read_text()
+    if n == "inverse.c":
+        t = "".join(f"#define {d} 1\n" for d in DEFINES) + t
+    (STAGE / n).write_text(t)
+
+for n in NEW_ASM:
+    (STAGE / (Path(n).stem + ".s")).write_text(to_leaf_asm((PKG / n).read_text()))
+
+subprocess.run(["rsync", "-a", *[str(p) for p in sorted(STAGE.glob("*"))],
+                f"{HOST}:{LEAF}/"], check=True)
+subprocess.run(["ssh", "-o", "BatchMode=yes", HOST,
+                f"cd {LEAF} && rm -f {' '.join(REMOVE)} && ls | tr '\\n' ' '"], check=True)
+print("\nstaged:", ", ".join(sorted(p.name for p in STAGE.glob("*"))))
+print("removed:", ", ".join(REMOVE))

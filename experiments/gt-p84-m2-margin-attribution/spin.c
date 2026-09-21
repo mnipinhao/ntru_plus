@@ -18,6 +18,17 @@ int main(int argc,char**argv){
      ||memcmp(ss,got,CRYPTO_BYTES)){fputs("selftest failed\n",stderr);return 1;}
   uint64_t t0=nsec(); while(nsec()-t0 < 3000000000ull){
     crypto_kem_keypair(pk,sk); crypto_kem_enc(ct,ss,pk); crypto_kem_dec(got,ct,sk); sink+=got[0]; }
+  /* Report this loop's own ns/op.  Converting sample fractions with a time
+   * measured by a different harness is wrong: the spin loop runs one operation
+   * back to back and is faster than the round-robin one, by a factor that is
+   * not the same for every build and operation. */
+  { uint64_t best=~0ull;
+    for(int r=0;r<25;r++){ uint64_t a=nsec();
+      for(int k=0;k<300;k++){ if(op==0){crypto_kem_keypair(pk,sk);sink+=sk[0];}
+        else if(op==1){crypto_kem_enc(ct,ss,pk);sink+=ct[0];}
+        else {crypto_kem_dec(got,ct,sk);sink+=got[0];} }
+      uint64_t d=nsec()-a; if(d<best) best=d; }
+    fprintf(stderr,"NSOP %.1f\n",(double)best/300.0); fflush(stderr); }
   for(;;){ if(op==0){crypto_kem_keypair(pk,sk);sink+=sk[0];}
            else if(op==1){crypto_kem_enc(ct,ss,pk);sink+=ct[0];}
            else {crypto_kem_dec(got,ct,sk);sink+=got[0];} }
