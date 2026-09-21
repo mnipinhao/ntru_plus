@@ -145,6 +145,8 @@ PK 仍先 decode/validate，`Q24_DECODE_REG` 的 `vpmaxuw` validation 累積
 每個 packet 都測了最後一個 coefficient 無效。invalid-PK 的 ct 歸零、ss
 清除及提前 return 順序不變，沒有 validation-only pass。靜態 ingress routing
 從 144 個 transpose op 變成 48 個 `vpermq`（−96）。
+Decoder load 按原 Q24 descriptor 的 48 組 low/high offset 展開；最後 packet
+的 safe 12-byte load 仍是 `vmovq`＋`vpinsrd`，不被計成一般 16-byte load。
 
 `r(W)` 在 hash_g、SOTP、第二次 Forward 期間 materialized 且不被 pack 修改，
 直到 MulAdd 才 last-read。`m(W)` 直到 MulAdd 存活。原 `c` scratch 先供

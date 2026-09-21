@@ -169,6 +169,8 @@ def packet_map() -> tuple[list[dict], list[dict]]:
                                  owners[s]["physical_q"], owners[s]["branch"])
                                  for s in wire[::4]],
                             decode_mask=old["mask_label"],
+                            decode_load_offsets=[old["low_load_offset"],
+                                                 old["high_load_offset"]],
                             decode_safe_loads=[old["low_load_safe12"], old["high_load_safe12"]]))
     assert len(packets) == 48 and sorted(aos) == sorted(soa) == list(range(768))
     assert sorted(x["source_aos_vector"] for x in packets) == list(range(48))
@@ -219,13 +221,23 @@ def decode_schedule(packets: list[dict]) -> dict:
     # Validation ordering mirrors Q24_DECODE_REG: decode, mask, vpmaxuw,
     # then W deposit. The new W deposit is a qword permutation + store.
     steps = []
+    packet_peaks = []
     for p in packets:
         i = p["packet"]
-        steps.extend([
-            op("Q24_LOAD12_low", [], [f"lo{i}"], kind="data-load",
-               memory=f"pk+{24*i}"),
-            op("Q24_LOAD12_high", [], [f"hi{i}"], kind="data-load",
-               memory=f"pk+{24*i+12}"),
+        local_steps = []
+        for side in range(2):
+            value = f"{'lo' if side == 0 else 'hi'}{i}"
+            offset = p["decode_load_offsets"][side]
+            if p["decode_safe_loads"][side]:
+                local_steps += [op("vmovq", [], [value+"low8"], kind="data-load",
+                                   memory=f"pk+{offset}:8"),
+                                op("vpinsrd", [value+"low8"], [value],
+                                   kind="data-load", memory=f"pk+{offset+8}:4")]
+            else:
+                assert offset+16 <= 1152
+                local_steps.append(op("vmovdqu_xmm", [], [value],
+                                      kind="data-load", memory=f"pk+{offset}:16"))
+        local_steps.extend([
             op("vinserti128", [f"lo{i}", f"hi{i}"], [f"raw{i}"], kind="routing"),
             op("vpshufb", [f"raw{i}"], [f"sh{i}"], kind="routing"),
             op("vpsrlw", [f"sh{i}"], [f"shift{i}"], kind="arithmetic"),
@@ -236,12 +248,14 @@ def decode_schedule(packets: list[dict]) -> dict:
             op("vmovdqu", [f"wire{i}"], [], kind="data-store",
                memory=f"hW+{32*i}"),
         ])
+        packet_peaks.append(replay(local_steps)["peak_ymm"]+5)
+        steps.extend(local_steps)
     # Register accumulators and low12 mask are retained in physical ymm8:12;
     # virtual peak below is packet-local and excludes these five fixed regs.
-    local = replay(steps[:10])
-    assert local["peak_ymm"] + 5 <= 16
-    return dict(steps=steps, packet_peak_with_validation=local["peak_ymm"]+5,
-                physical_packet_allocation=allocate_ymm(steps[:10], reserved=(8,9,10,11,12)),
+    assert max(packet_peaks) <= 16
+    first = steps[:10]
+    return dict(steps=steps, packet_peak_with_validation=max(packet_peaks),
+                physical_first_packet_allocation=allocate_ymm(first, reserved=(8,9,10,11,12)),
                 validation_accumulators=4, low12_mask=1,
                 implementation_geometry="48 unrolled packet deposits, matching clean decode validation order",
                 finish="unchanged Q24_DECODE_FINISH before caller proceeds",

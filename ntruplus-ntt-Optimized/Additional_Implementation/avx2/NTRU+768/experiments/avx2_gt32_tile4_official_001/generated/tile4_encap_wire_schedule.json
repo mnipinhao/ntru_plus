@@ -16725,7 +16725,7 @@
       "generated/tile4_encap_range_refined.json": "d48daa345653b98b75402dbbeb751e9c62074210b4a0b385d0d14272bf4da228",
       "generated/tile4_q24_codec.json": "789222562cff17fbcb3ab4a0befaac300b2bdc3dae5218db4a6788c69146017f",
       "tools/generate_encap_packet_abi_gate.py": "b10757d8d44534ccc64e0513f213dfe2b39dee4ef038c4401e6dad5011d3bc11",
-      "tools/generate_encap_wire_schedule.py": "952fe4151d79efad2ffa207f6149e8ff666baad9ead6c45f5720139839c9ad15",
+      "tools/generate_encap_wire_schedule.py": "0ad9e592e36a9089a087dbaab00162e146962cf375905c985d2e3945f3d48b51",
       "tools/generate_tile4.py": "f64aaf091fdfaf03d14c6f4f280b88047e2a1c5face6ab60d6ad1238a8a0cbcb"
     }
   },
@@ -16733,13 +16733,14 @@
     "finish": "unchanged Q24_DECODE_FINISH before caller proceeds",
     "implementation_geometry": "48 unrolled packet deposits, matching clean decode validation order",
     "instruction_counts": {
-      "Q24_LOAD12_high": 48,
-      "Q24_LOAD12_low": 48,
       "vinserti128": 48,
       "vmovdqu": 48,
+      "vmovdqu_xmm": 95,
+      "vmovq": 1,
       "vpand": 48,
       "vpblendw": 48,
       "vpermq": 48,
+      "vpinsrd": 1,
       "vpmaxuw": 48,
       "vpshufb": 48,
       "vpsrlw": 48
@@ -16747,11 +16748,11 @@
     "invalid_pk": "same return/ct zeroization/ss clear before hash_f or CBD",
     "low12_mask": 1,
     "packet_peak_with_validation": 8,
-    "physical_packet_allocation": {
+    "physical_first_packet_allocation": {
       "assignments": [
         {
           "index": 0,
-          "op": "Q24_LOAD12_low",
+          "op": "vmovdqu_xmm",
           "reads": {},
           "writes": {
             "lo0": 0
@@ -16759,7 +16760,7 @@
         },
         {
           "index": 1,
-          "op": "Q24_LOAD12_high",
+          "op": "vmovdqu_xmm",
           "reads": {},
           "writes": {
             "hi0": 1
@@ -16861,8 +16862,8 @@
     "steps": [
       {
         "kind": "data-load",
-        "memory": "pk+0",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+0:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo0"
@@ -16870,8 +16871,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+12",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+12:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi0"
@@ -16967,8 +16968,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+24",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+36:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo1"
@@ -16976,8 +16977,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+36",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+24:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi1"
@@ -17073,8 +17074,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+48",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+60:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo2"
@@ -17082,8 +17083,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+60",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+48:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi2"
@@ -17179,8 +17180,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+72",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+84:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo3"
@@ -17188,8 +17189,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+84",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+72:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi3"
@@ -17285,8 +17286,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+96",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+96:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo4"
@@ -17294,8 +17295,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+108",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+108:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi4"
@@ -17391,8 +17392,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+120",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+132:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo5"
@@ -17400,8 +17401,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+132",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+120:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi5"
@@ -17497,8 +17498,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+144",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+156:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo6"
@@ -17506,8 +17507,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+156",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+144:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi6"
@@ -17603,8 +17604,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+168",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+180:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo7"
@@ -17612,8 +17613,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+180",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+168:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi7"
@@ -17709,8 +17710,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+192",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+192:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo8"
@@ -17718,8 +17719,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+204",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+204:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi8"
@@ -17815,8 +17816,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+216",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+216:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo9"
@@ -17824,8 +17825,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+228",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+228:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi9"
@@ -17921,8 +17922,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+240",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+240:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo10"
@@ -17930,8 +17931,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+252",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+252:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi10"
@@ -18027,8 +18028,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+264",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+264:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo11"
@@ -18036,8 +18037,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+276",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+276:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi11"
@@ -18133,8 +18134,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+288",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+288:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo12"
@@ -18142,8 +18143,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+300",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+300:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi12"
@@ -18239,8 +18240,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+312",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+312:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo13"
@@ -18248,8 +18249,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+324",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+324:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi13"
@@ -18345,8 +18346,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+336",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+336:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo14"
@@ -18354,8 +18355,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+348",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+348:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi14"
@@ -18451,8 +18452,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+360",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+372:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo15"
@@ -18460,8 +18461,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+372",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+360:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi15"
@@ -18557,8 +18558,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+384",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+396:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo16"
@@ -18566,8 +18567,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+396",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+384:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi16"
@@ -18663,8 +18664,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+408",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+408:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo17"
@@ -18672,8 +18673,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+420",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+420:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi17"
@@ -18769,8 +18770,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+432",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+444:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo18"
@@ -18778,8 +18779,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+444",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+432:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi18"
@@ -18875,8 +18876,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+456",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+456:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo19"
@@ -18884,8 +18885,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+468",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+468:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi19"
@@ -18981,8 +18982,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+480",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+492:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo20"
@@ -18990,8 +18991,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+492",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+480:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi20"
@@ -19087,8 +19088,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+504",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+504:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo21"
@@ -19096,8 +19097,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+516",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+516:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi21"
@@ -19193,8 +19194,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+528",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+540:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo22"
@@ -19202,8 +19203,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+540",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+528:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi22"
@@ -19299,8 +19300,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+552",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+552:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo23"
@@ -19308,8 +19309,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+564",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+564:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi23"
@@ -19405,8 +19406,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+576",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+588:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo24"
@@ -19414,8 +19415,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+588",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+576:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi24"
@@ -19511,8 +19512,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+600",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+612:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo25"
@@ -19520,8 +19521,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+612",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+600:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi25"
@@ -19617,8 +19618,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+624",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+636:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo26"
@@ -19626,8 +19627,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+636",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+624:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi26"
@@ -19723,8 +19724,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+648",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+648:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo27"
@@ -19732,8 +19733,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+660",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+660:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi27"
@@ -19829,8 +19830,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+672",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+684:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo28"
@@ -19838,8 +19839,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+684",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+672:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi28"
@@ -19935,8 +19936,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+696",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+696:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo29"
@@ -19944,8 +19945,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+708",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+708:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi29"
@@ -20041,8 +20042,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+720",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+732:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo30"
@@ -20050,8 +20051,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+732",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+720:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi30"
@@ -20147,8 +20148,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+744",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+744:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo31"
@@ -20156,8 +20157,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+756",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+756:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi31"
@@ -20253,8 +20254,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+768",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+768:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo32"
@@ -20262,8 +20263,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+780",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+780:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi32"
@@ -20359,8 +20360,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+792",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+804:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo33"
@@ -20368,8 +20369,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+804",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+792:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi33"
@@ -20465,8 +20466,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+816",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+828:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo34"
@@ -20474,8 +20475,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+828",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+816:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi34"
@@ -20571,8 +20572,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+840",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+852:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo35"
@@ -20580,8 +20581,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+852",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+840:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi35"
@@ -20677,8 +20678,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+864",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+864:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo36"
@@ -20686,8 +20687,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+876",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+876:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi36"
@@ -20783,8 +20784,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+888",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+900:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo37"
@@ -20792,8 +20793,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+900",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+888:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi37"
@@ -20889,8 +20890,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+912",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+924:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo38"
@@ -20898,8 +20899,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+924",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+912:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi38"
@@ -20995,8 +20996,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+936",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+948:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo39"
@@ -21004,8 +21005,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+948",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+936:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi39"
@@ -21101,8 +21102,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+960",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+960:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo40"
@@ -21110,8 +21111,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+972",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+972:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi40"
@@ -21207,8 +21208,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+984",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+984:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo41"
@@ -21216,8 +21217,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+996",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+996:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi41"
@@ -21313,8 +21314,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1008",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+1008:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo42"
@@ -21322,8 +21323,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1020",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+1020:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi42"
@@ -21419,8 +21420,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1032",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+1032:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo43"
@@ -21428,8 +21429,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1044",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+1044:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi43"
@@ -21525,8 +21526,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1056",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+1056:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo44"
@@ -21534,8 +21535,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1068",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+1068:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi44"
@@ -21631,8 +21632,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1080",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+1080:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo45"
@@ -21640,8 +21641,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1092",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+1092:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi45"
@@ -21737,8 +21738,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1104",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+1104:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "lo46"
@@ -21746,8 +21747,8 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1116",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+1116:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi46"
@@ -21843,17 +21844,28 @@
       },
       {
         "kind": "data-load",
-        "memory": "pk+1128",
-        "op": "Q24_LOAD12_low",
+        "memory": "pk+1140:8",
+        "op": "vmovq",
         "reads": [],
+        "writes": [
+          "lo47low8"
+        ]
+      },
+      {
+        "kind": "data-load",
+        "memory": "pk+1148:4",
+        "op": "vpinsrd",
+        "reads": [
+          "lo47low8"
+        ],
         "writes": [
           "lo47"
         ]
       },
       {
         "kind": "data-load",
-        "memory": "pk+1140",
-        "op": "Q24_LOAD12_high",
+        "memory": "pk+1128:16",
+        "op": "vmovdqu_xmm",
         "reads": [],
         "writes": [
           "hi47"
@@ -22110,6 +22122,10 @@
         0,
         24
       ],
+      "decode_load_offsets": [
+        0,
+        12
+      ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
         false,
@@ -22157,6 +22173,10 @@
       "byte_interval": [
         24,
         48
+      ],
+      "decode_load_offsets": [
+        36,
+        24
       ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
@@ -22206,6 +22226,10 @@
         48,
         72
       ],
+      "decode_load_offsets": [
+        60,
+        48
+      ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
         false,
@@ -22253,6 +22277,10 @@
       "byte_interval": [
         72,
         96
+      ],
+      "decode_load_offsets": [
+        84,
+        72
       ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
@@ -22302,6 +22330,10 @@
         96,
         120
       ],
+      "decode_load_offsets": [
+        96,
+        108
+      ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
         false,
@@ -22349,6 +22381,10 @@
       "byte_interval": [
         120,
         144
+      ],
+      "decode_load_offsets": [
+        132,
+        120
       ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
@@ -22398,6 +22434,10 @@
         144,
         168
       ],
+      "decode_load_offsets": [
+        156,
+        144
+      ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
         false,
@@ -22445,6 +22485,10 @@
       "byte_interval": [
         168,
         192
+      ],
+      "decode_load_offsets": [
+        180,
+        168
       ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
@@ -22494,6 +22538,10 @@
         192,
         216
       ],
+      "decode_load_offsets": [
+        192,
+        204
+      ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
         false,
@@ -22541,6 +22589,10 @@
       "byte_interval": [
         216,
         240
+      ],
+      "decode_load_offsets": [
+        216,
+        228
       ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
@@ -22590,6 +22642,10 @@
         240,
         264
       ],
+      "decode_load_offsets": [
+        240,
+        252
+      ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
         false,
@@ -22637,6 +22693,10 @@
       "byte_interval": [
         264,
         288
+      ],
+      "decode_load_offsets": [
+        264,
+        276
       ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
@@ -22686,6 +22746,10 @@
         288,
         312
       ],
+      "decode_load_offsets": [
+        288,
+        300
+      ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
         false,
@@ -22733,6 +22797,10 @@
       "byte_interval": [
         312,
         336
+      ],
+      "decode_load_offsets": [
+        312,
+        324
       ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
@@ -22782,6 +22850,10 @@
         336,
         360
       ],
+      "decode_load_offsets": [
+        336,
+        348
+      ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
         false,
@@ -22829,6 +22901,10 @@
       "byte_interval": [
         360,
         384
+      ],
+      "decode_load_offsets": [
+        372,
+        360
       ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
@@ -22878,6 +22954,10 @@
         384,
         408
       ],
+      "decode_load_offsets": [
+        396,
+        384
+      ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
         false,
@@ -22925,6 +23005,10 @@
       "byte_interval": [
         408,
         432
+      ],
+      "decode_load_offsets": [
+        408,
+        420
       ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
@@ -22974,6 +23058,10 @@
         432,
         456
       ],
+      "decode_load_offsets": [
+        444,
+        432
+      ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
         false,
@@ -23021,6 +23109,10 @@
       "byte_interval": [
         456,
         480
+      ],
+      "decode_load_offsets": [
+        456,
+        468
       ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
@@ -23070,6 +23162,10 @@
         480,
         504
       ],
+      "decode_load_offsets": [
+        492,
+        480
+      ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
         false,
@@ -23117,6 +23213,10 @@
       "byte_interval": [
         504,
         528
+      ],
+      "decode_load_offsets": [
+        504,
+        516
       ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
@@ -23166,6 +23266,10 @@
         528,
         552
       ],
+      "decode_load_offsets": [
+        540,
+        528
+      ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
         false,
@@ -23213,6 +23317,10 @@
       "byte_interval": [
         552,
         576
+      ],
+      "decode_load_offsets": [
+        552,
+        564
       ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
@@ -23262,6 +23370,10 @@
         576,
         600
       ],
+      "decode_load_offsets": [
+        588,
+        576
+      ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
         false,
@@ -23309,6 +23421,10 @@
       "byte_interval": [
         600,
         624
+      ],
+      "decode_load_offsets": [
+        612,
+        600
       ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
@@ -23358,6 +23474,10 @@
         624,
         648
       ],
+      "decode_load_offsets": [
+        636,
+        624
+      ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
         false,
@@ -23405,6 +23525,10 @@
       "byte_interval": [
         648,
         672
+      ],
+      "decode_load_offsets": [
+        648,
+        660
       ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
@@ -23454,6 +23578,10 @@
         672,
         696
       ],
+      "decode_load_offsets": [
+        684,
+        672
+      ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
         false,
@@ -23501,6 +23629,10 @@
       "byte_interval": [
         696,
         720
+      ],
+      "decode_load_offsets": [
+        696,
+        708
       ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
@@ -23550,6 +23682,10 @@
         720,
         744
       ],
+      "decode_load_offsets": [
+        732,
+        720
+      ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
         false,
@@ -23597,6 +23733,10 @@
       "byte_interval": [
         744,
         768
+      ],
+      "decode_load_offsets": [
+        744,
+        756
       ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
@@ -23646,6 +23786,10 @@
         768,
         792
       ],
+      "decode_load_offsets": [
+        768,
+        780
+      ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
         false,
@@ -23693,6 +23837,10 @@
       "byte_interval": [
         792,
         816
+      ],
+      "decode_load_offsets": [
+        804,
+        792
       ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
@@ -23742,6 +23890,10 @@
         816,
         840
       ],
+      "decode_load_offsets": [
+        828,
+        816
+      ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
         false,
@@ -23789,6 +23941,10 @@
       "byte_interval": [
         840,
         864
+      ],
+      "decode_load_offsets": [
+        852,
+        840
       ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
@@ -23838,6 +23994,10 @@
         864,
         888
       ],
+      "decode_load_offsets": [
+        864,
+        876
+      ],
       "decode_mask": ".Lq24_decode_mask_1032",
       "decode_safe_loads": [
         false,
@@ -23885,6 +24045,10 @@
       "byte_interval": [
         888,
         912
+      ],
+      "decode_load_offsets": [
+        900,
+        888
       ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
@@ -23934,6 +24098,10 @@
         912,
         936
       ],
+      "decode_load_offsets": [
+        924,
+        912
+      ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
         false,
@@ -23981,6 +24149,10 @@
       "byte_interval": [
         936,
         960
+      ],
+      "decode_load_offsets": [
+        948,
+        936
       ],
       "decode_mask": ".Lq24_decode_mask_3201",
       "decode_safe_loads": [
@@ -24030,6 +24202,10 @@
         960,
         984
       ],
+      "decode_load_offsets": [
+        960,
+        972
+      ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
         false,
@@ -24077,6 +24253,10 @@
       "byte_interval": [
         984,
         1008
+      ],
+      "decode_load_offsets": [
+        984,
+        996
       ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
@@ -24126,6 +24306,10 @@
         1008,
         1032
       ],
+      "decode_load_offsets": [
+        1008,
+        1020
+      ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
         false,
@@ -24173,6 +24357,10 @@
       "byte_interval": [
         1032,
         1056
+      ],
+      "decode_load_offsets": [
+        1032,
+        1044
       ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
@@ -24222,6 +24410,10 @@
         1056,
         1080
       ],
+      "decode_load_offsets": [
+        1056,
+        1068
+      ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
         false,
@@ -24269,6 +24461,10 @@
       "byte_interval": [
         1080,
         1104
+      ],
+      "decode_load_offsets": [
+        1080,
+        1092
       ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
@@ -24318,6 +24514,10 @@
         1104,
         1128
       ],
+      "decode_load_offsets": [
+        1104,
+        1116
+      ],
       "decode_mask": ".Lq24_decode_mask_0123",
       "decode_safe_loads": [
         false,
@@ -24365,6 +24565,10 @@
       "byte_interval": [
         1128,
         1152
+      ],
+      "decode_load_offsets": [
+        1140,
+        1128
       ],
       "decode_mask": ".Lq24_decode_mask_2310",
       "decode_safe_loads": [
