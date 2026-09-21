@@ -527,3 +527,49 @@ Residues and final Decap bytes agree with Official. This is a **research
 prototype**, not a Native SUPERCOP candidate or clean-production change.
 The direct inverse C harness also passed ASan/UBSan with host-restricted
 LeakSanitizer disabled; ASan cannot prove the assembly's memory accesses.
+
+## Round 8: CT inverse same-ELF short pricing
+
+This gate priced the Round-7 realization without changing its ASM. The
+SUPERCOP-derived diagnostic links Official and namespaced CT into **one
+ELF**, uses SUPERCOP `cpucycles()` and the common O3GC recipe, and runs on
+P-core CPU 1 with the performance governor and turbo disabled. Normal
+placement and ASLR-on were fixed before measurement. Three fresh processes
+each produced eight balanced Official/CT blocks, 64 observations per block.
+For the inverse cutpoints, each operation begins with a separately reset
+BaseMulScale output from canonical inputs; reset is outside timing. Complete
+Decap starts from the same deterministic valid CT/SK banks. Untimed preflight
+checks inverse residues, crepmod3 bytes and final Decap bytes.
+
+| Same-ELF StQ2 cycles | Official | CT | CT − Official | Favorable launches |
+|---|---:|---:|---:|---:|
+| Inverse only | 969.66 | 989.20 | +19.53 | 0/3 |
+| Inverse + crepmod3 | 1,157.00 | 1,180.79 | +23.79 | 0/3 |
+| Complete Decap | 19,394.67 | 19,445.89 | +51.22 | 0/3 |
+
+An independent second three-process campaign, with the exact ELF saved,
+confirmed the direction: CT − Official was +18.39 inverse, +22.28
+inverse+crepmod3 and +65.93 complete Decap cycles, again 0/3 favorable
+launches in every region. Its raw samples, ELF, compiler identity and SMT
+siblings are in
+[`officialopt-inverse-ct-short-confirm-20260921`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/results/officialopt-inverse-ct-short-confirm-20260921/summary.json).
+
+Raw observations, launch deltas, source/ELF hashes, cpucycles identity and
+host controls are preserved in
+[`officialopt-inverse-ct-short-20260921`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/results/officialopt-inverse-ct-short-20260921/summary.json).
+The three inverse-only launch deltas are +18.38, +20.58 and +19.45 cycles;
+complete Decap deltas are +51.12, +40.82 and +60.62. These observations
+do not isolate instruction-cache or code-placement causality, and the caller
+delta need not equal the isolated inverse delta. The structural audit shows
+the candidate trades 24 Barrett vectors for six net Montgomery chains and
+10,752 B of constants; that trade is a plausible explanation, not a measured
+per-instruction cost attribution.
+
+**Decision:** stop this partial-CT realization. It failed the short
+inverse and full-caller gates, so no nine-launch serious campaign, disposable
+Native candidate, or clean promotion follows. The result does not rule out
+a different CT design that propagates the gauge through radix-3/level-0 and
+avoids the 48-vector normalization, but that would be a new mathematical,
+range and schedule candidate requiring its own proof and pricing. It must not
+inherit a claimed cycle benefit from this failed prototype. The existing
+caller-lazy Forward qualification export remains separate and unchanged.

@@ -182,3 +182,31 @@ round7_inverse_ct:
   native_timing: not_run
   clean_production: unchanged
   assessment: reduction_credit_real_but_gauge_and_constant_cost_unpriced
+round8_inverse_ct_short:
+  date: 2026-09-21
+  class: supercop_derived_same_elf_short_not_native
+  campaign: results/officialopt-inverse-ct-short-20260921
+  cpu: 1
+  governor: performance
+  turbo: disabled
+  placement: normal_aslr_on
+  fresh_processes: 3
+  blocks_per_process: 8
+  observations_per_variant_region_process: 512
+  ct_minus_official_stq2_cycles:
+    inverse: 19.53
+    inverse_plus_crepmod3: 23.79
+    full_decap: 51.22
+  favorable_launches:
+    inverse: 0/3
+    inverse_plus_crepmod3: 0/3
+    full_decap: 0/3
+  decision: partial_CT_with_final_gauge_normalization_rejected_for_performance
+  independent_confirmation: results/officialopt-inverse-ct-short-confirm-20260921
+  confirmation_ct_minus_official_stq2_cycles:
+    inverse: 18.39
+    inverse_plus_crepmod3: 22.28
+    full_decap: 65.93
+  confirmation_favorable_launches_each_region: 0/3
+  serious_and_native: not_run
+  clean_production: unchanged
