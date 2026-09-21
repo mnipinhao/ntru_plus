@@ -10,6 +10,12 @@ void poly_basemul(polynomial *, const polynomial *, const polynomial *);
 void poly_add(polynomial *, const polynomial *, const polynomial *);
 void ntruplus768_officialopt_basemul_add(polynomial *, const polynomial *,
     const polynomial *, const polynomial *);
+void ntruplus768_officialopt_dup_basemul(polynomial *, const polynomial *,
+    const polynomial *);
+void ntruplus768_officialopt_shared_basemul(polynomial *, const polynomial *,
+    const polynomial *);
+void ntruplus768_officialopt_shared_add(polynomial *, const polynomial *,
+    const polynomial *, const polynomial *);
 
 static uint64_t state = UINT64_C(0x7680ff1c1a10ab3d);
 static uint32_t random32(void) {
@@ -20,7 +26,7 @@ static uint32_t random32(void) {
 }
 
 int main(void) {
-    polynomial h, r, m, h_copy, r_copy, m_copy, control;
+    polynomial h, r, m, h_copy, r_copy, m_copy, control, plain, dup;
     struct { uint64_t before; polynomial fused; uint64_t after; } guarded;
     for (unsigned trial = 0; trial < 10003; trial++) {
         guarded.before = UINT64_C(0x4c4a9d2b75cc801e);
@@ -43,6 +49,13 @@ int main(void) {
         memcpy(&r_copy, &r, sizeof r);
         memcpy(&m_copy, &m, sizeof m);
         poly_basemul(&control, &h, &r);
+        ntruplus768_officialopt_shared_basemul(&plain, &h, &r);
+        ntruplus768_officialopt_dup_basemul(&dup, &h, &r);
+        if (memcmp(&plain, &control, sizeof plain) ||
+            memcmp(&dup, &control, sizeof dup)) {
+            fprintf(stderr, "shared/duplicated plain BaseMul mismatch at %u\n", trial);
+            return 1;
+        }
         poly_add(&control, &control, &m);
         ntruplus768_officialopt_basemul_add(&guarded.fused, &h, &r, &m);
         if (memcmp(&control, &guarded.fused, sizeof control) ||
@@ -52,6 +65,13 @@ int main(void) {
             guarded.before != UINT64_C(0x4c4a9d2b75cc801e) ||
             guarded.after != UINT64_C(0x721aa09943f8702d)) {
             fprintf(stderr, "fused BaseMul raw differential failed at %u\n", trial);
+            return 1;
+        }
+        ntruplus768_officialopt_shared_add(&guarded.fused, &h, &r, &m);
+        if (memcmp(&control, &guarded.fused, sizeof control) ||
+            guarded.before != UINT64_C(0x4c4a9d2b75cc801e) ||
+            guarded.after != UINT64_C(0x721aa09943f8702d)) {
+            fprintf(stderr, "shared fused BaseMul mismatch at %u\n", trial);
             return 1;
         }
     }

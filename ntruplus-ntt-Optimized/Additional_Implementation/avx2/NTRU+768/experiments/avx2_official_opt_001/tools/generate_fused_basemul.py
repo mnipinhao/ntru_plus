@@ -40,12 +40,6 @@ def generate() -> str:
             ".size " + name + ",.-" + name + "\n")
 
 
-def deterministic_entry(name: str) -> str:
-    return ("\nint " + name + "(uint8_t *ct, uint8_t *ss, const uint8_t *pk, "
-            "const uint8_t *coins) {\n"
-            "    return crypto_kem_enc_derand(ct, ss, pk, coins);\n}\n")
-
-
 def generate_kem() -> str:
     source = KEM_SOURCE.read_text()
     old = "    poly_basemul(&c, &h, &r);\n    poly_add(&c, &c, &m);"
@@ -58,7 +52,7 @@ def generate_kem() -> str:
     if source.count(anchor) != 1:
         raise ValueError("Official declaration site changed")
     source = source.replace(anchor, declaration + "\n" + anchor, 1)
-    return source.replace(old, new) + deterministic_entry("officialopt_fused_enc_derand")
+    return source.replace(old, new)
 
 
 if __name__ == "__main__":
@@ -66,5 +60,4 @@ if __name__ == "__main__":
     TARGET.write_text(generate())
     KEM_TARGET.parent.mkdir(parents=True, exist_ok=True)
     KEM_TARGET.write_text(generate_kem())
-    KEM_REFERENCE.write_text(KEM_SOURCE.read_text() +
-                             deterministic_entry("officialopt_ref_enc_derand"))
+    KEM_REFERENCE.write_text(KEM_SOURCE.read_text())

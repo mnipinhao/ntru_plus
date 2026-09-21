@@ -10,6 +10,8 @@
 #include "fips202.h"
 #include "randombytes.h"
 
+void ntruplus768_officialopt_dup_basemul(poly *, const poly *, const poly *);
+
 #ifdef SUPERCOP
 #include "crypto_declassify.h"
 #define ntruplus_declassify crypto_declassify
@@ -124,10 +126,10 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
 {
     poly h;
 
-    poly_basemul(&h, g, finv);
+    ntruplus768_officialopt_dup_basemul(&h, g, finv);
     poly_tobytes(pk, &h);
 
-    poly_basemul(&h, f, ginv);
+    ntruplus768_officialopt_dup_basemul(&h, f, ginv);
     poly_tobytes(sk, f);
     poly_tobytes(sk + NTRUPLUS_POLYBYTES, &h);
     hash_f(sk + 2 * NTRUPLUS_POLYBYTES, pk);
@@ -231,7 +233,7 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     poly_sotp_encode(&m, msg, ct);
     poly_ntt(&m);
     
-    poly_basemul(&c, &h, &r);
+    ntruplus768_officialopt_dup_basemul(&c, &h, &r);
     poly_add(&c, &c, &m);
     poly_tobytes(ct, &c);
 
@@ -321,7 +323,7 @@ int crypto_kem_dec(unsigned char *ss,
 	f = m;
 	poly_ntt(&f);
 	poly_sub(&c, &c, &f);
-	poly_basemul(&f, &c, &hinv);
+	ntruplus768_officialopt_dup_basemul(&f, &c, &hinv);
 	poly_tobytes(buf1, &f);
 	
 	hash_g(buf2, buf1);

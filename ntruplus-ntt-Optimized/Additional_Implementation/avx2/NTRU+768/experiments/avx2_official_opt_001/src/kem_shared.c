@@ -10,6 +10,8 @@
 #include "fips202.h"
 #include "randombytes.h"
 
+void ntruplus768_officialopt_shared_add(poly *, const poly *, const poly *, const poly *);
+
 #ifdef SUPERCOP
 #include "crypto_declassify.h"
 #define ntruplus_declassify crypto_declassify
@@ -231,8 +233,7 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
     poly_sotp_encode(&m, msg, ct);
     poly_ntt(&m);
     
-    poly_basemul(&c, &h, &r);
-    poly_add(&c, &c, &m);
+    ntruplus768_officialopt_shared_add(&c, &h, &r, &m);
     poly_tobytes(ct, &c);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
