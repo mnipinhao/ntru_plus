@@ -1,0 +1,35 @@
+{
+  "label": "supercop-derived diagnostic, not Native KEM",
+  "source_sha256": {
+    "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe",
+    "upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "asm/ntruplus768_officialopt_basemul_add.s": "32ea0842c928e1b6d71d69bdc34b0a31d7eee58110cb2852e34018875e06898c",
+    "src/kem_fused.c": "cf076c5c53ae3b4d44c16099de2a54e448edf3083380a092a17baeafac48231c",
+    "src/kem_reference.c": "d1e0025fdf39ef509d4481ff57df2582894797ae2ab7539e18bae81433c277a3",
+    "bench/bench_fused.c": "f19a6695cba65bbf614d0a9131070015dad06cf9fa536f069d2a2cea0998b390"
+  },
+  "elf_sha256": "39ecd27ad7a32ad7144c617ae5bdd90f0ad74d56b1e8507fb21172f4e06ccc83",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "cpu": 1,
+  "cpucycles_identity": [
+    [
+      "cpucycles=default-perfevent persecond=1400000000"
+    ],
+    [
+      "cpucycles=default-perfevent persecond=1400000000"
+    ],
+    [
+      "cpucycles=default-perfevent persecond=1400000000"
+    ]
+  ],
+  "command": [
+    "taskset",
+    "-c",
+    "1",
+    "/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/build/bench_fused"
+  ]
+}
