@@ -1,0 +1,148 @@
+{
+  "schema": "ntruplus768-next-priorities/v1",
+  "date": "2026-09-20",
+  "parameter": 768,
+  "supercop_version": "20260831",
+  "machine": {
+    "cpu": 1,
+    "governor": "performance",
+    "turbo": "disabled"
+  },
+  "gate1_encap_residual": {
+    "conclusion": "not a stable 238-cycle arithmetic or caller-stage debt; current fixed-common-compiler result is placement/ASLR sensitive",
+    "current_gt_minus_official_fixed_elf": {
+      "normal_aslr_off": {
+        "mean_cycles": -2.7955729166656056,
+        "ci95": [-64.45182291666606, 52.05078125000159],
+        "favorable_blocks": 6,
+        "blocks": 16
+      },
+      "normal_aslr_on": {
+        "mean_cycles": 18.338541666666515,
+        "ci95": [-109.62109374999955, 120.85807291666652],
+        "favorable_blocks": 5,
+        "blocks": 16
+      },
+      "reversed_aslr_off": {
+        "mean_cycles": -6.36588541666697,
+        "ci95": [-43.40624999999977, 31.815104166665606],
+        "favorable_blocks": 10,
+        "blocks": 16
+      },
+      "reversed_aslr_on": {
+        "mean_cycles": 74.5091145833328,
+        "ci95": [17.583333333332575, 138.19921874999886],
+        "favorable_blocks": 4,
+        "blocks": 16
+      }
+    },
+    "supporting_prior_attribution": {
+      "polynomial_island_gt_minus_official_cycles": {
+        "normal": -57.270,
+        "reversed": -64.041
+      },
+      "shared_prework_middle_tail": "physically identical; no stable local glue debt",
+      "remaining_cause_class": "whole-image executable delivery and relative code geometry"
+    },
+    "artifacts": [
+      "paired-current/summary.json",
+      "paired-current/summary.csv"
+    ]
+  },
+  "gate2_serializer_codesign": {
+    "candidate": "avx2-gt32-serializer-unify-exp003-sc20260831",
+    "change": "Decap recovered-r uses the existing lazy M-to-wire encoder; the centered-only encoder emission is physically removed",
+    "correctness": {
+      "kat_cases": 100,
+      "kat_byte_exact": true,
+      "asan_ubsan": true,
+      "api_semantics_trials": 32,
+      "invalid_pk_ct_and_zeroization": true
+    },
+    "linked_audit": {
+      "current_text_bytes": 64407,
+      "candidate_text_bytes": 60567,
+      "text_delta_bytes": -3840,
+      "rodata_delta_bytes": 32,
+      "centered_symbol_present": false,
+      "native_measure_elf_sha256": "a85216e704ab100e4761b38f79ad973734e72068f7e08c03f1bd08daaefcb500"
+    },
+    "native_directional_stq2": {
+      "official_historical_same_day": {
+        "keypair_cycles": 21585.11574074074,
+        "enc_cycles": 28279.75,
+        "dec_cycles": 19451.189814814814
+      },
+      "current_gt_historical_same_day": {
+        "keypair_cycles": 21259.685185185186,
+        "enc_cycles": 28309.01388888889,
+        "dec_cycles": 19256.62037037037
+      },
+      "candidate": {
+        "keypair_cycles": 21207.569444444445,
+        "enc_cycles": 28179.88888888889,
+        "dec_cycles": 19200.212962962964
+      },
+      "warning": "separate campaigns; directional only, not a promotion claim"
+    },
+    "candidate_minus_current_fixed_elf": {
+      "normal_aslr_off": {
+        "keypair_cycles": 48.35026041666583,
+        "enc_cycles": 214.0468750000009,
+        "dec_cycles": 150.79817708333348
+      },
+      "normal_aslr_on": {
+        "keypair_cycles": 23.054687499999773,
+        "enc_cycles": 193.5104166666663,
+        "dec_cycles": 209.5130208333344
+      },
+      "reversed_aslr_off": {
+        "keypair_cycles": 49.88932291666697,
+        "enc_cycles": 216.98307291666652,
+        "dec_cycles": 233.7291666666672
+      },
+      "reversed_aslr_on": {
+        "keypair_cycles": 5.013020833333712,
+        "enc_cycles": 131.8463541666672,
+        "dec_cycles": 256.50260416666674
+      }
+    },
+    "decision": "reject; smaller text and a shared representation do not compensate for slower lazy recovered-r encoding and changed whole-image placement",
+    "artifacts": [
+      "serializer-unify-source-resolved/kat.json",
+      "serializer-unify-source-resolved/kat-sanitize.json",
+      "serializer-unify-source-resolved/api-semantics.json",
+      "serializer-unify-source-resolved/native/stq-summary.json",
+      "paired-serializer-unify-vs-current/summary.json",
+      "paired-serializer-unify-vs-current/summary.csv"
+    ]
+  },
+  "gate3_decap_ingress": {
+    "current_contract": "one Q24 init and three compact decoder-body calls materialize c, f, and hinv before validation and BaseMulScale",
+    "measured_decoder_cost_core_cycles": 184.915,
+    "validation_cost_core_cycles": 18.431,
+    "streaming_candidate": {
+      "removed_vector_stores": 96,
+      "removed_vector_reloads": 96,
+      "removed_materialization_bytes": 6144,
+      "minimum_dynamic_instruction_saving": 146,
+      "normal_delta_cycles": 65.8065,
+      "reversed_delta_cycles": 64.269,
+      "negative_launch_medians": "0/16 in both placements"
+    },
+    "mixed_tmvp_candidate": {
+      "complete_edge_instruction_delta": 96,
+      "assembly_emitted": false
+    },
+    "decision": "retain current materialized ingress; both available AVX2 fusion mechanisms are closed",
+    "reopen_only_if": [
+      "a compact streaming form preserves the current decoder loop throughput",
+      "a consumer contract removes the private-M transpose or accepts D01 directly",
+      "a wider ISA provides full-width byte permutation"
+    ]
+  },
+  "production": {
+    "clean_source_changed": false,
+    "candidate_promoted": false
+  }
+}

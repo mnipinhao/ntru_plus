@@ -1,0 +1,65 @@
+{
+  "baseline_adjusted_per_operation": {
+    "forward_small_native_inplace": {
+      "cycles:u": 1311.213134765625,
+      "instructions:u": 3540.025390625,
+      "ipc": 2.6998092810119445,
+      "mem_inst_retired.all_loads:u": 399.005859375,
+      "mem_inst_retired.all_stores:u": 289.000732421875
+    },
+    "forward_small_preserve_input": {
+      "cycles:u": 1220.238037109375,
+      "instructions:u": 3578.515625,
+      "ipc": 2.9326373348245682,
+      "mem_inst_retired.all_loads:u": 408.00439453125,
+      "mem_inst_retired.all_stores:u": 293.00048828125
+    }
+  },
+  "baseline_contract": "mode parsed once; identical switch/loop geometry; baseline executes a compiler memory barrier",
+  "binary": "/home/nuc/src/ntru_plus/results/gt-avx2-reassess-20260920/gate-a/1152-official-poly-v2/measure",
+  "component_validity": {
+    "forward_small_native_inplace": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "forward_small_preserve_input": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    }
+  },
+  "cpu": 1,
+  "created_at": "2026-09-20T06:58:36.692830+00:00",
+  "events": [
+    "cycles:u",
+    "instructions:u",
+    "mem_inst_retired.all_loads:u",
+    "mem_inst_retired.all_stores:u"
+  ],
+  "fresh_processes": 3,
+  "operations_per_process": 4096,
+  "raw_medians": {
+    "baseline": {
+      "cycles:u": 7617363,
+      "instructions:u": 868749,
+      "mem_inst_retired.all_loads:u": 195339,
+      "mem_inst_retired.all_stores:u": 91086
+    },
+    "forward_small_native_inplace": {
+      "cycles:u": 12988092,
+      "instructions:u": 15368693,
+      "mem_inst_retired.all_loads:u": 1829667,
+      "mem_inst_retired.all_stores:u": 1274833
+    },
+    "forward_small_preserve_input": {
+      "cycles:u": 12615458,
+      "instructions:u": 15526349,
+      "mem_inst_retired.all_loads:u": 1866525,
+      "mem_inst_retired.all_stores:u": 1291216
+    }
+  },
+  "role": "diagnostic-only-not-promotion-headline",
+  "schema": "ntruplus-component-pmu/v2",
+  "unavailable": []
+}

@@ -1,0 +1,83 @@
+{
+  "baseline_adjusted_per_operation": {
+    "forward_small_native_inplace": {
+      "cycles:u": 738.04150390625,
+      "instructions:u": 2165.021484375,
+      "ipc": 2.933468474220134,
+      "mem_inst_retired.all_loads:u": 267.00537109375,
+      "mem_inst_retired.all_stores:u": 193.000732421875
+    },
+    "forward_small_preserve_input": {
+      "cycles:u": 1185.481201171875,
+      "instructions:u": 2345.889404296875,
+      "ipc": 1.97884994041062,
+      "mem_inst_retired.all_loads:u": 321.379150390625,
+      "mem_inst_retired.all_stores:u": 243.00048828125
+    },
+    "poly_add": {
+      "cycles:u": 54.9169921875,
+      "instructions:u": 195.114013671875,
+      "ipc": 3.5528896594647463,
+      "mem_inst_retired.all_loads:u": 100.022216796875,
+      "mem_inst_retired.all_stores:u": 49.003662109375
+    }
+  },
+  "baseline_contract": "mode parsed once; identical switch/loop geometry; baseline executes a compiler memory barrier",
+  "binary": "/home/nuc/src/ntru_plus/results/gt-avx2-reassess-20260920/gate-a/768-official-poly-v3/measure",
+  "component_validity": {
+    "forward_small_native_inplace": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "forward_small_preserve_input": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "poly_add": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    }
+  },
+  "cpu": 1,
+  "created_at": "2026-09-20T07:00:04.449984+00:00",
+  "events": [
+    "cycles:u",
+    "instructions:u",
+    "mem_inst_retired.all_loads:u",
+    "mem_inst_retired.all_stores:u"
+  ],
+  "fresh_processes": 3,
+  "operations_per_process": 4096,
+  "raw_medians": {
+    "baseline": {
+      "cycles:u": 3175970,
+      "instructions:u": 2025188,
+      "mem_inst_retired.all_loads:u": 565056,
+      "mem_inst_retired.all_stores:u": 471067
+    },
+    "forward_small_native_inplace": {
+      "cycles:u": 6198988,
+      "instructions:u": 10893116,
+      "mem_inst_retired.all_loads:u": 1658710,
+      "mem_inst_retired.all_stores:u": 1261598
+    },
+    "forward_small_preserve_input": {
+      "cycles:u": 8031701,
+      "instructions:u": 11633951,
+      "mem_inst_retired.all_loads:u": 1881425,
+      "mem_inst_retired.all_stores:u": 1466397
+    },
+    "poly_add": {
+      "cycles:u": 3400910,
+      "instructions:u": 2824375,
+      "mem_inst_retired.all_loads:u": 974747,
+      "mem_inst_retired.all_stores:u": 671786
+    }
+  },
+  "role": "diagnostic-only-not-promotion-headline",
+  "schema": "ntruplus-component-pmu/v2",
+  "unavailable": []
+}

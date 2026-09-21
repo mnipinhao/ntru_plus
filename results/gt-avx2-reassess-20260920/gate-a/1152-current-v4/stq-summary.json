@@ -1,0 +1,64 @@
+{
+  "estimator": "SUPERCOP-20260831-stabilized-quartiles",
+  "fresh_process_launches": 1,
+  "measure_identity": {
+    "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-ffunction-sections_-fdata-sections_-Wl,--gc-sections_-gdwarf-4_-Wall 15.2.0",
+    "cpucycles_implementation": "default-perfevent",
+    "cpucycles_persecond": "1400000000",
+    "cpuid": "unknown_CPU_ID_",
+    "implementation": "crypto_kem/ntruplus1152/avx2-gt9x16-wire-h3-pairunpack-serializer-v2-exp017-sc20260831 -"
+  },
+  "measure_loops": 3,
+  "observations_per_operation_per_launch": 96,
+  "operations": {
+    "gt_forward_full_cycles": {
+      "observations": 96,
+      "stq1": 1483.8333333333333,
+      "stq2": 1495.7916666666667,
+      "stq3": 1504.8333333333333
+    },
+    "gt_tail_decode_ma2_egress_cycles": {
+      "observations": 96,
+      "stq1": 1976.25,
+      "stq2": 1987.7083333333333,
+      "stq3": 2003.125
+    },
+    "official_forward_native_inplace_cycles": {
+      "observations": 96,
+      "stq1": 1384.125,
+      "stq2": 1395.4583333333333,
+      "stq3": 1409.4583333333333
+    },
+    "official_forward_preserve_input_cycles": {
+      "observations": 96,
+      "stq1": 1473.25,
+      "stq2": 1495.0833333333333,
+      "stq3": 1543.5833333333333
+    },
+    "official_tail_cycles": {
+      "observations": 96,
+      "stq1": 1627.7083333333333,
+      "stq2": 1634.0,
+      "stq3": 1642.9166666666667
+    },
+    "serializer_v2_cycles": {
+      "observations": 96,
+      "stq1": 685.0,
+      "stq2": 693.1666666666666,
+      "stq3": 704.75
+    },
+    "serializer_v2_hash_g_cycles": {
+      "observations": 96,
+      "stq1": 18243.5,
+      "stq2": 18447.916666666668,
+      "stq3": 18552.291666666668
+    },
+    "top_split_cycles": {
+      "observations": 96,
+      "stq1": 306.75,
+      "stq2": 311.8333333333333,
+      "stq3": 326.6666666666667
+    }
+  },
+  "timings_per_loop": 32
+}

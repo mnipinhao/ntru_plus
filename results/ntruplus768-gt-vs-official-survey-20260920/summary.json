@@ -1,0 +1,153 @@
+{
+  "schema": "ntruplus768-gt-vs-official-survey-v1",
+  "status": "diagnostic-complete-no-promotion",
+  "provenance": {
+    "supercop_version": "20260831",
+    "official_implementation": "crypto_kem/ntruplus768/avx2",
+    "official_tree_sha256": "8db00172e705b67e231b63708295781d65681fef2c7422d717fe91ab48d576e7",
+    "gt_implementation": "crypto_kem/ntruplus768/avx2-gt32-clean",
+    "gt_source_manifest_sha256": "ad2e77ca349cb3454641a5bbce2acbdeb7f1f9586e11c4b735cbedd9e9a089a6",
+    "official_measure_elf_sha256": "0c8f80685dba3a4838f5352c92b2f174fa322dceb0c57cadb4f246882c5c37bc",
+    "gt_measure_elf_sha256": "93fe30861439ecd96eea8c28881d7ddcf507bdc01bd606655cc1dc2ec2a2da18",
+    "cpu": "Intel(R) Core(TM) Ultra 7 155H",
+    "cpu_id": 1,
+    "thread_siblings_list": "1-2",
+    "governor": "performance",
+    "intel_no_turbo": 1,
+    "interference_guard": "All benchmark processes were pinned to CPU 1. SMT sibling CPU 2 was recorded but not offlined; no contemporaneous scheduler trace was captured. Fresh-process dispersion and placement controls are retained instead of claiming an interference-free host."
+  },
+  "native_supercop": {
+    "fresh_processes": 9,
+    "observations_per_operation": 864,
+    "official_stq2": {
+      "keypair_cycles": 21612.541666666668,
+      "enc_cycles": 28083.78240740741,
+      "dec_cycles": 19436.27314814815
+    },
+    "gt_stq2": {
+      "keypair_cycles": 21278.939814814814,
+      "enc_cycles": 28321.412037037036,
+      "dec_cycles": 19239.777777777777
+    },
+    "gt_minus_official_stq2": {
+      "keypair_cycles": -333.601851851854,
+      "enc_cycles": 237.629629629624,
+      "dec_cycles": -196.495370370372
+    },
+    "gt_minus_official_percent": {
+      "keypair_cycles": -1.543543857816,
+      "enc_cycles": 0.846147509397,
+      "dec_cycles": -1.010979673771
+    },
+    "descriptive_launch_direction": {
+      "keypair_gt_faster": "9/9",
+      "enc_gt_faster": "0/9",
+      "dec_gt_faster": "9/9",
+      "guard": "Official and GT were separate fresh-process campaigns; this is not a fixed-ELF ABBA paired claim."
+    }
+  },
+  "matched_region_pmu": {
+    "fresh_processes": 3,
+    "iterations_per_process": 4096,
+    "two_forwards_gt_minus_official": {
+      "cycles": -195.7799,
+      "instructions": -1030.0013,
+      "loads": 251.9996,
+      "stores": -290.0006
+    },
+    "general_basemul_gt_minus_official": {
+      "cycles": -17.2164,
+      "instructions": -169.9974,
+      "loads": 104.9999,
+      "stores": -12.0
+    },
+    "recovered_r_serializer_gt_minus_official": {
+      "cycles": 22.7087,
+      "instructions": 59.9936,
+      "loads": 95.9991,
+      "stores": 60.9989
+    },
+    "ciphertext_serializer_gt_minus_official": {
+      "cycles": 21.1222,
+      "instructions": 60.9995,
+      "loads": 95.9996,
+      "stores": 60.9997
+    },
+    "guard": "Isolated regions explain mechanisms and must not be summed as a Native KEM prediction."
+  },
+  "same_elf_tsc": {
+    "normal": {
+      "two_forwards_delta": -292.402,
+      "general_basemul_delta": -31.9275,
+      "recovered_r_serializer_delta": 29.336,
+      "ciphertext_serializer_delta": 35.2215,
+      "full_encap_delta": 90.075
+    },
+    "reversed": {
+      "two_forwards_delta": -292.6685,
+      "general_basemul_delta": -30.668,
+      "recovered_r_serializer_delta": 29.224,
+      "ciphertext_serializer_delta": 36.5025,
+      "full_encap_delta": -102.652
+    },
+    "interpretation": "Component directions are stable; full-caller delta is placement-sensitive and is not a promotion result."
+  },
+  "gt_component_stq2": {
+    "forward_frontend_cycles": 458.7638888888889,
+    "forward_m_terminal_cycles": 648.1527777777778,
+    "forward_p_terminal_cycles": 655.7638888888889,
+    "forward_m_full_cycles": 890.7083333333334,
+    "forward_p_full_cycles": 908.5972222222222,
+    "baseinv_j1_cycles": 1195.4166666666667,
+    "basemul_f0_j1_cycles": 622.375,
+    "basemul_general_m_cycles": 725.8888888888889,
+    "basemul_scale_m_cycles": 638.0138888888889,
+    "inverse_m_core_cycles": 632.6805555555555,
+    "inverse_m_tail_cycles": 589.0833333333334,
+    "inverse_m_full_cycles": 973.4305555555555,
+    "q24_unpack_m_cycles": 395.875,
+    "q24_pack_m_centered_cycles": 438.2361111111111,
+    "q24_pack_m_lazy_cycles": 485.7638888888889,
+    "q24_pack_m_highrange_cycles": 487.0,
+    "q24_pack_p_cycles": 456.2083333333333,
+    "q24_equal_m_cycles": 345.1111111111111,
+    "guard": "These are standalone SUPERCOP-derived GT components, not additive caller costs and not Official-vs-GT comparisons."
+  },
+  "evidence_files": {
+    "kat_official": "kat-official.json",
+    "kat_gt": "kat-gt32.json",
+    "api_official": "api-official.json",
+    "api_gt": "api-gt32.json",
+    "perf_sampling_status": "perf-sampling-unavailable.json",
+    "native_official": "native-official/stq-summary.json",
+    "native_gt": "native-gt32/stq-summary.json",
+    "linked_forward_audit": "forward-linked-audit-v3.json",
+    "gt_components": "component-gt32/stq-summary.json",
+    "same_elf_attribution": "../../ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/ntruplus768-gt-vs-official-survey-20260920/keygen-encap-attribution.json",
+    "region_pmu": "../../ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/ntruplus768-gt-vs-official-survey-20260920/region-pmu/summary.json",
+    "decap_cumulative": "../../ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/ntruplus768-gt-vs-official-survey-20260920/decap-cumulative.json",
+    "encap_waterfall_aslr_on": "../../ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/ntruplus768-gt-vs-official-survey-20260920/encap-waterfall-aslr-on.json",
+    "encap_waterfall_aslr_off": "../../ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/ntruplus768-gt-vs-official-survey-20260920/encap-waterfall-aslr-off.json"
+  },
+  "correctness": {
+    "deterministic_kat_cases": 100,
+    "official_gt_request_sha256_equal": true,
+    "official_gt_response_sha256_equal": true,
+    "gt_sanitizers": "address,undefined",
+    "api_semantics_trials_per_implementation": 32,
+    "checks": [
+      "valid roundtrip",
+      "tampered ciphertext rejection and zeroization",
+      "invalid public-key rejection and zeroization",
+      "input immutability",
+      "output canaries"
+    ]
+  },
+  "conclusions": {
+    "forward": "The current GT Forward realization is a measured machine-level win for the valid caller domains, mainly through fewer retired instructions and stores, not through fewer loads.",
+    "keypair": "GT is faster in current Native SUPERCOP, but the exact clean-candidate caller-level source of the full win still needs a clean-specific matched keygen harness.",
+    "encapsulation": "GT transform and BaseMul wins do not survive the full Native caller. Serializer traffic and placement-sensitive caller integration are proven costs; a residual remains.",
+    "decapsulation": "GT is faster in current Native SUPERCOP. Cumulative attribution shows early decode/product debt and later recovered-r advantages, with placement-sensitive reencryption/cleanup interactions.",
+    "promotion": "No full production winner: Native encapsulation regresses."
+  }
+}

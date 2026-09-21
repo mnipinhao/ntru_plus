@@ -1,0 +1,119 @@
+{
+  "baseline_adjusted_per_operation": {
+    "gt_forward": {
+      "cycles:u": 1250.31201171875,
+      "instructions:u": 3195.031494140625,
+      "ipc": 2.5553873466740136,
+      "mem_inst_retired.all_loads:u": 838.006591796875,
+      "mem_inst_retired.all_stores:u": 218.0009765625
+    },
+    "gt_tail_decode_ma2_egress": {
+      "cycles:u": 1792.2763671875,
+      "instructions:u": 4771.04541015625,
+      "ipc": 2.6620031918643963,
+      "mem_inst_retired.all_loads:u": 1699.01220703125,
+      "mem_inst_retired.all_stores:u": 128.001708984375
+    },
+    "official_forward_native_inplace": {
+      "cycles:u": 1314.388671875,
+      "instructions:u": 3526.01904296875,
+      "ipc": 2.6826304261575977,
+      "mem_inst_retired.all_loads:u": 399.0048828125,
+      "mem_inst_retired.all_stores:u": 289.000732421875
+    },
+    "official_forward_preserve_input": {
+      "cycles:u": 1251.10888671875,
+      "instructions:u": 3574.009033203125,
+      "ipc": 2.8566730451228617,
+      "mem_inst_retired.all_loads:u": 408.00390625,
+      "mem_inst_retired.all_stores:u": 293.00048828125
+    },
+    "official_tail": {
+      "cycles:u": 1428.81298828125,
+      "instructions:u": 4857.070068359375,
+      "ipc": 3.399374241552808,
+      "mem_inst_retired.all_loads:u": 667.015625,
+      "mem_inst_retired.all_stores:u": 356.002197265625
+    }
+  },
+  "baseline_contract": "mode parsed once; identical switch/loop geometry; baseline executes a compiler memory barrier",
+  "binary": "/home/nuc/src/ntru_plus/results/gt-avx2-reassess-20260920/gate-a/1152-current-v3/measure",
+  "component_validity": {
+    "gt_forward": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "gt_tail_decode_ma2_egress": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "official_forward_native_inplace": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "official_forward_preserve_input": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "official_tail": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    }
+  },
+  "cpu": 1,
+  "created_at": "2026-09-20T06:58:37.657935+00:00",
+  "events": [
+    "cycles:u",
+    "instructions:u",
+    "mem_inst_retired.all_loads:u",
+    "mem_inst_retired.all_stores:u"
+  ],
+  "fresh_processes": 3,
+  "operations_per_process": 4096,
+  "raw_medians": {
+    "baseline": {
+      "cycles:u": 6300570,
+      "instructions:u": 11171216,
+      "mem_inst_retired.all_loads:u": 237200,
+      "mem_inst_retired.all_stores:u": 396439
+    },
+    "gt_forward": {
+      "cycles:u": 11421848,
+      "instructions:u": 24258065,
+      "mem_inst_retired.all_loads:u": 3669675,
+      "mem_inst_retired.all_stores:u": 1289371
+    },
+    "gt_tail_decode_ma2_egress": {
+      "cycles:u": 13641734,
+      "instructions:u": 30713418,
+      "mem_inst_retired.all_loads:u": 7196354,
+      "mem_inst_retired.all_stores:u": 920734
+    },
+    "official_forward_native_inplace": {
+      "cycles:u": 11684306,
+      "instructions:u": 25613790,
+      "mem_inst_retired.all_loads:u": 1871524,
+      "mem_inst_retired.all_stores:u": 1580186
+    },
+    "official_forward_preserve_input": {
+      "cycles:u": 11425112,
+      "instructions:u": 25810357,
+      "mem_inst_retired.all_loads:u": 1908384,
+      "mem_inst_retired.all_stores:u": 1596569
+    },
+    "official_tail": {
+      "cycles:u": 12152988,
+      "instructions:u": 31065775,
+      "mem_inst_retired.all_loads:u": 2969296,
+      "mem_inst_retired.all_stores:u": 1854624
+    }
+  },
+  "role": "diagnostic-only-not-promotion-headline",
+  "schema": "ntruplus-component-pmu/v2",
+  "unavailable": []
+}

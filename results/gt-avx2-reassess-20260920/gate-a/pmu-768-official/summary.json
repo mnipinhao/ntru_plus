@@ -1,0 +1,101 @@
+{
+  "baseline_adjusted_per_operation": {
+    "forward_small_native_inplace": {
+      "cycles:u": 726.923095703125,
+      "instructions:u": 2165.027587890625,
+      "ipc": 2.97834475295695,
+      "mem_inst_retired.all_loads:u": 267.005615234375,
+      "mem_inst_retired.all_stores:u": 193.000732421875
+    },
+    "forward_small_preserve_input": {
+      "cycles:u": 754.792724609375,
+      "instructions:u": 2344.518798828125,
+      "ipc": 3.10617567232312,
+      "mem_inst_retired.all_loads:u": 321.003662109375,
+      "mem_inst_retired.all_stores:u": 243.00048828125
+    },
+    "poly_add": {
+      "cycles:u": 60.33447265625,
+      "instructions:u": 195.1181640625,
+      "ipc": 3.233941650143649,
+      "mem_inst_retired.all_loads:u": 100.022705078125,
+      "mem_inst_retired.all_stores:u": 49.003662109375
+    },
+    "poly_sub": {
+      "cycles:u": 56.61962890625,
+      "instructions:u": 194.127197265625,
+      "ipc": 3.4286200919306293,
+      "mem_inst_retired.all_loads:u": 100.0234375,
+      "mem_inst_retired.all_stores:u": 49.00390625
+    }
+  },
+  "baseline_contract": "mode parsed once; identical switch/loop geometry; baseline executes a compiler memory barrier",
+  "binary": "/home/nuc/src/ntru_plus/results/gt-avx2-reassess-20260920/gate-a/768-official-poly-v2/measure",
+  "component_validity": {
+    "forward_small_native_inplace": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "forward_small_preserve_input": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "poly_add": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    },
+    "poly_sub": {
+      "negative_events": [],
+      "note": "matched dispatch baseline subtraction passed",
+      "valid": true
+    }
+  },
+  "cpu": 1,
+  "created_at": "2026-09-20T06:58:34.535373+00:00",
+  "events": [
+    "cycles:u",
+    "instructions:u",
+    "mem_inst_retired.all_loads:u",
+    "mem_inst_retired.all_stores:u"
+  ],
+  "fresh_processes": 3,
+  "operations_per_process": 4096,
+  "raw_medians": {
+    "baseline": {
+      "cycles:u": 3171336,
+      "instructions:u": 2024868,
+      "mem_inst_retired.all_loads:u": 564995,
+      "mem_inst_retired.all_stores:u": 471025
+    },
+    "forward_small_native_inplace": {
+      "cycles:u": 6148813,
+      "instructions:u": 10892821,
+      "mem_inst_retired.all_loads:u": 1658650,
+      "mem_inst_retired.all_stores:u": 1261556
+    },
+    "forward_small_preserve_input": {
+      "cycles:u": 6262967,
+      "instructions:u": 11628017,
+      "mem_inst_retired.all_loads:u": 1879826,
+      "mem_inst_retired.all_stores:u": 1466355
+    },
+    "poly_add": {
+      "cycles:u": 3418466,
+      "instructions:u": 2824072,
+      "mem_inst_retired.all_loads:u": 974688,
+      "mem_inst_retired.all_stores:u": 671744
+    },
+    "poly_sub": {
+      "cycles:u": 3403250,
+      "instructions:u": 2820013,
+      "mem_inst_retired.all_loads:u": 974691,
+      "mem_inst_retired.all_stores:u": 671745
+    }
+  },
+  "role": "diagnostic-only-not-promotion-headline",
+  "schema": "ntruplus-component-pmu/v2",
+  "unavailable": []
+}
