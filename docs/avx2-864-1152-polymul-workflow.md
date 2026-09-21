@@ -19,7 +19,7 @@ but no experimental result becomes production merely because one kernel wins.
 
 ## Branch and commit sequence
 
-Work on `avx2-gt-ntt-864-1152`, based on commit
+Work on `avx2-gt-ntt` (renamed from `avx2-gt-ntt-864-1152` on 2026-09-21), based on commit
 `20c7116`. Keep benchmark infrastructure, shared algebra, parameter work, and
 promotion in reviewable commits:
 

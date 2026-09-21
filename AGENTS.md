@@ -1,13 +1,13 @@
 # NTRU+768 / 864 / 1152 AVX2 optimization instructions
 
-These instructions apply to the `avx2-gt-ntt-864-1152` branch.
+These instructions apply to the `avx2-gt-ntt` branch.
 
 ## Required startup
 
 Before modifying files:
 
 1. Run `git branch --show-current` and `git status --short`.
-2. Confirm the branch is `avx2-gt-ntt-864-1152`.
+2. Confirm the branch is `avx2-gt-ntt`.
 3. Read `WORKFLOW.md` and
    `docs/avx2-864-1152-polymul-workflow.md` completely.
 
