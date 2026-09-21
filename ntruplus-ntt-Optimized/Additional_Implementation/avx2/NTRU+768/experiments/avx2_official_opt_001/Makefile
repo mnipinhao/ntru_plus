@@ -13,7 +13,7 @@ KEM_INCLUDES := -Itests/support -I$(OFFICIAL) -I$(SUPERCOP_ROOT)/bench/$(SUPERCO
 VARIANT_ASM := asm/ntruplus768_officialopt_basemul_add.s asm/ntruplus768_officialopt_dup_basemul.s asm/ntruplus768_officialopt_shared_diag.s asm/ntruplus768_officialopt_ntt_early_const.s
 VARIANT_OBJS := $(BUILD)/kem_ref.o $(BUILD)/kem_dup.o $(BUILD)/kem_fused.o $(BUILD)/kem_shared.o $(BUILD)/kem_forward.o
 
-.PHONY: generate check check-inverse-ct
+.PHONY: generate check check-inverse-ct check-inverse-ct-r3 check-inverse-ct-full check-inverse-ct-cohort
 generate:
 	python3 tools/generate_fused_basemul.py
 	python3 tools/generate_shared_basemul.py
@@ -36,11 +36,38 @@ $(BUILD)/test_forward_caller_lazy: tests/test_forward_caller_lazy.c asm/ntruplus
 $(BUILD)/test_inverse_ct: tests/test_inverse_ct.c asm/ntruplus768_officialopt_invntt_ct.s $(OFFICIAL)/invntt.s $(OFFICIAL)/basemul.s $(OFFICIAL)/crepmod3.s $(OFFICIAL)/consts.c | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -o $@ $^
 
+$(BUILD)/test_inverse_ct_r3: tests/test_inverse_ct.c asm/ntruplus768_officialopt_invntt_ct_r3.s $(OFFICIAL)/invntt.s $(OFFICIAL)/basemul.s $(OFFICIAL)/crepmod3.s $(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_r3 -o $@ $^
+
+$(BUILD)/test_inverse_ct_full: tests/test_inverse_ct.c asm/ntruplus768_officialopt_invntt_ct_full.s $(OFFICIAL)/invntt.s $(OFFICIAL)/basemul.s $(OFFICIAL)/crepmod3.s $(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_full -o $@ $^
+
+$(BUILD)/test_inverse_ct_cohort: tests/test_inverse_ct.c asm/ntruplus768_officialopt_invntt_ct_cohort.s $(OFFICIAL)/invntt.s $(OFFICIAL)/basemul.s $(OFFICIAL)/crepmod3.s $(OFFICIAL)/consts.c | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_cohort -o $@ $^
+
 $(BUILD)/kem_ct.o: tests/kem_ct_diag.c src/kem_ct.c | $(BUILD)
 	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dcrypto_kem_keypair=official_ct_keypair -Dcrypto_kem_enc=official_ct_enc -Dcrypto_kem_dec=official_ct_dec -c -o $@ $<
 
+$(BUILD)/kem_ct_r3.o: tests/kem_ct_diag.c src/kem_ct.c | $(BUILD)
+	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_r3 -Dcrypto_kem_keypair=official_ct_r3_keypair -Dcrypto_kem_enc=official_ct_r3_enc -Dcrypto_kem_dec=official_ct_r3_dec -c -o $@ $<
+
+$(BUILD)/kem_ct_full.o: tests/kem_ct_diag.c src/kem_ct.c | $(BUILD)
+	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_full -Dcrypto_kem_keypair=official_ct_full_keypair -Dcrypto_kem_enc=official_ct_full_enc -Dcrypto_kem_dec=official_ct_full_dec -c -o $@ $<
+
+$(BUILD)/kem_ct_cohort.o: tests/kem_ct_diag.c src/kem_ct.c | $(BUILD)
+	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_cohort -Dcrypto_kem_keypair=official_ct_cohort_keypair -Dcrypto_kem_enc=official_ct_cohort_enc -Dcrypto_kem_dec=official_ct_cohort_dec -c -o $@ $<
+
 $(BUILD)/test_kem_ct: tests/test_kem_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct.o asm/ntruplus768_officialopt_invntt_ct.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -o $@ $^
+
+$(BUILD)/test_kem_ct_r3: tests/test_kem_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct_r3.o asm/ntruplus768_officialopt_invntt_ct_r3.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -Dofficial_ct_dec=official_ct_r3_dec -o $@ $^
+
+$(BUILD)/test_kem_ct_full: tests/test_kem_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct_full.o asm/ntruplus768_officialopt_invntt_ct_full.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -Dofficial_ct_dec=official_ct_full_dec -o $@ $^
+
+$(BUILD)/test_kem_ct_cohort: tests/test_kem_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct_cohort.o asm/ntruplus768_officialopt_invntt_ct_cohort.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) $(KEM_INCLUDES) -Dofficial_ct_dec=official_ct_cohort_dec -o $@ $^
 
 $(BUILD)/kem_lazy.o: tests/kem_lazy_diag.c src/kem_lazy.c | $(BUILD)
 	$(CC) $(CFLAGS) $(KEM_INCLUDES) -Dcrypto_kem_keypair=official_lazy_keypair -Dcrypto_kem_enc=official_lazy_enc -Dcrypto_kem_dec=official_lazy_dec -c -o $@ $<
@@ -83,6 +110,21 @@ check-inverse-ct: $(BUILD)/test_inverse_ct $(BUILD)/test_kem_ct
 	$(BUILD)/test_inverse_ct
 	$(BUILD)/test_kem_ct
 
+check-inverse-ct-r3: $(BUILD)/test_inverse_ct_r3 $(BUILD)/test_kem_ct_r3
+	python3 tools/prove_inverse_ct_r3_range.py
+	$(BUILD)/test_inverse_ct_r3
+	$(BUILD)/test_kem_ct_r3
+
+check-inverse-ct-full: $(BUILD)/test_inverse_ct_full $(BUILD)/test_kem_ct_full
+	python3 tools/prove_inverse_ct_full_range.py
+	$(BUILD)/test_inverse_ct_full
+	$(BUILD)/test_kem_ct_full
+
+check-inverse-ct-cohort: $(BUILD)/test_inverse_ct_cohort $(BUILD)/test_kem_ct_cohort
+	python3 tools/prove_inverse_ct_full_range.py
+	$(BUILD)/test_inverse_ct_cohort
+	$(BUILD)/test_kem_ct_cohort
+
 $(BUILD)/bench_fused: bench/bench_fused.c tests/support/crypto_declassify.c $(VARIANT_OBJS) $(VARIANT_ASM) $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
 
@@ -100,3 +142,21 @@ $(BUILD)/bench_caller_lazy: bench/bench_caller_lazy.c tests/support/crypto_decla
 
 $(BUILD)/bench_inverse_ct: bench/bench_inverse_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct.o asm/ntruplus768_officialopt_invntt_ct.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_inverse_ct_r3: bench/bench_inverse_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct_r3.o asm/ntruplus768_officialopt_invntt_ct_r3.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_r3 -Dofficial_ct_dec=official_ct_r3_dec -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_inverse_ct_r3_compare: bench/bench_inverse_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct.o $(BUILD)/kem_ct_r3.o asm/ntruplus768_officialopt_invntt_ct.s asm/ntruplus768_officialopt_invntt_ct_r3.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -DCT_R3_COMPARE -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_inverse_ct_full: bench/bench_inverse_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct_full.o asm/ntruplus768_officialopt_invntt_ct_full.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_full -Dofficial_ct_dec=official_ct_full_dec -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_inverse_ct_full_compare: bench/bench_inverse_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct.o $(BUILD)/kem_ct_full.o asm/ntruplus768_officialopt_invntt_ct.s asm/ntruplus768_officialopt_invntt_ct_full.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -DCT_R3_COMPARE -Dntruplus768_officialopt_invntt_ct_r3=ntruplus768_officialopt_invntt_ct_full -Dofficial_ct_r3_dec=official_ct_full_dec -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_inverse_ct_cohort: bench/bench_inverse_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct_cohort.o asm/ntruplus768_officialopt_invntt_ct_cohort.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -Dntruplus768_officialopt_invntt_ct=ntruplus768_officialopt_invntt_ct_cohort -Dofficial_ct_dec=official_ct_cohort_dec -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_inverse_ct_cohort_compare: bench/bench_inverse_ct.c tests/support/crypto_declassify.c $(BUILD)/kem_ref.o $(BUILD)/kem_ct.o $(BUILD)/kem_ct_cohort.o asm/ntruplus768_officialopt_invntt_ct.s asm/ntruplus768_officialopt_invntt_ct_cohort.s $(COMMON_C) $(COMMON_ASM) $(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(CFLAGS) -I$(OFFICIAL) -I$(KAT) -I$(CPU_INCLUDE) $(KEM_INCLUDES) -DCT_R3_COMPARE -Dntruplus768_officialopt_invntt_ct_r3=ntruplus768_officialopt_invntt_ct_cohort -Dofficial_ct_r3_dec=official_ct_cohort_dec -o $@ $^ $(CPU_LIB)

@@ -12,6 +12,10 @@ int official_ref_enc(unsigned char *, unsigned char *, const unsigned char *);
 int official_ref_dec(unsigned char *, const unsigned char *, const unsigned char *);
 int official_ct_dec(unsigned char *, const unsigned char *, const unsigned char *);
 void ntruplus768_officialopt_invntt_ct(poly *);
+#ifdef CT_R3_COMPARE
+int official_ct_r3_dec(unsigned char *, const unsigned char *, const unsigned char *);
+void ntruplus768_officialopt_invntt_ct_r3(poly *);
+#endif
 
 enum { BANKS = 16, OBS = 64, BLOCKS = 8, REGIONS = 3 };
 static poly inverse_input[BANKS], inverse_output[BANKS];
@@ -56,21 +60,37 @@ static void fixture(void) {
 }
 
 typedef void (*operation)(unsigned);
+#ifdef CT_R3_COMPARE
+static void inverse_official(unsigned b) { ntruplus768_officialopt_invntt_ct(&inverse_output[b]); }
+#else
 static void inverse_official(unsigned b) { poly_invntt_scale(&inverse_output[b]); }
+#endif
+#ifdef CT_R3_COMPARE
+static void inverse_ct(unsigned b) { ntruplus768_officialopt_invntt_ct_r3(&inverse_output[b]); }
+#else
 static void inverse_ct(unsigned b) { ntruplus768_officialopt_invntt_ct(&inverse_output[b]); }
+#endif
 static void inverse_crep_official(unsigned b) {
-    poly_invntt_scale(&inverse_output[b]);
+    inverse_official(b);
     poly_crepmod3(&inverse_output[b]);
 }
 static void inverse_crep_ct(unsigned b) {
-    ntruplus768_officialopt_invntt_ct(&inverse_output[b]);
+    inverse_ct(b);
     poly_crepmod3(&inverse_output[b]);
 }
 static void decap_official(unsigned b) {
+#ifdef CT_R3_COMPARE
+    status_sink = official_ct_dec(ss_out[b], ct[b], sk[b]);
+#else
     status_sink = official_ref_dec(ss_out[b], ct[b], sk[b]);
+#endif
 }
 static void decap_ct(unsigned b) {
+#ifdef CT_R3_COMPARE
+    status_sink = official_ct_r3_dec(ss_out[b], ct[b], sk[b]);
+#else
     status_sink = official_ct_dec(ss_out[b], ct[b], sk[b]);
+#endif
 }
 static operation ops[REGIONS][2] = {
     {inverse_official, inverse_ct},
