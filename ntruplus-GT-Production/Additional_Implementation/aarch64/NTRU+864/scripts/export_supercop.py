@@ -20,7 +20,7 @@ ASM_SOURCES = (
     "baseinv_prefix.S", "baseinv_inverse.S", "baseinv_recover.S",
     "baseinv_finish.S", "basemul_rinv.S", "inverse.S", "inverse9.S",
     "inverse16.S", "inverse16_tail.S",
-    "pack_compare.S", "keccakf1600.S",
+    "keccakf1600.S",
 )
 
 ASM_NOTICE_MARKERS = {

@@ -56,7 +56,6 @@ KEM_OBJECTS := \
 	$(BUILD_DIR)/unpack_api.o \
 	$(BUILD_DIR)/kem.o \
 	$(BUILD_DIR)/ntt_tail.o \
-	$(BUILD_DIR)/pack_compare.o \
 	$(BUILD_DIR)/pack.o \
 	$(BUILD_DIR)/inverse_api.o \
 	$(BUILD_DIR)/inverse.o \

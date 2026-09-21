@@ -131,4 +131,3 @@ ABI_SENTINEL abi_gt_inverse_ternary, poly_invntt_ternary
 ABI_SENTINEL abi_gt_frombytes_checked, poly_frombytes
 ABI_SENTINEL abi_gt_tobytes_full, poly_tobytes
 ABI_SENTINEL abi_gt_tobytes_small, poly_tobytes_small
-ABI_SENTINEL abi_gt_tobytes_compare, poly_tobytes_compare

@@ -9,7 +9,7 @@ typedef uint64_t (*sentinel)(void *, void *, void *, void *);
 DECL(abi_crypto_kem_keypair); DECL(abi_crypto_kem_enc); DECL(abi_crypto_kem_dec);
 DECL(abi_gt_forward); DECL(abi_gt_baseinv); DECL(abi_gt_basemul_inverse);
 DECL(abi_gt_inverse_ternary); DECL(abi_gt_frombytes_checked);
-DECL(abi_gt_tobytes_full); DECL(abi_gt_tobytes_small); DECL(abi_gt_tobytes_compare);
+DECL(abi_gt_tobytes_full); DECL(abi_gt_tobytes_small);
 
 int main(void)
 {
@@ -29,7 +29,6 @@ int main(void)
         {"frombytes", abi_gt_frombytes_checked, &a, bytes, 0, 0},
         {"tobytes-full", abi_gt_tobytes_full, bytes, &a, 0, 0},
         {"tobytes-small", abi_gt_tobytes_small, bytes, &a, 0, 0},
-        {"tobytes-compare", abi_gt_tobytes_compare, bytes, &a, 0, 0},
     };
     uint64_t failed = 0;
     for (size_t i = 0; i < sizeof cases / sizeof cases[0]; i++) {
