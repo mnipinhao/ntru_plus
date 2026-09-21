@@ -468,3 +468,62 @@ claim follows automatically. The remaining explicit coverage gap is an
 actual *f*-inversion retry. Before promotion, a final package review should
 also rerun fixed-ELF placement controls on the exact release packaging if its
 source layout or link order changes.
+
+## Round 7: inverse radix-2 CT research prototype (2026-09-21)
+
+The Yang NTT paper motivated testing CT on Official's inverse, but its NEON
+instruction/range conclusions are not AVX2 performance evidence. Official's
+five radix-2 inverse stages (levels 6–2) use GS butterflies
+`(a+b, z(a-b))`. This experiment replaces only those stages with twisted CT
+butterflies `(A+tB, A-tB)`, while preserving Official's physical routing,
+radix-3 stage, level-0 tail, and external scale. For each physical lane the
+generator tracks `actual = gauge × stored (mod 3457)`, sets
+`t = gauge_b/gauge_a`, and propagates output gauges
+`(gauge_a, z×gauge_a)`. It then pays an explicit Montgomery normalization of
+all 48 YMM vectors before the unchanged radix-3 stage. This is **not** a
+fully gauge-propagated all-CT inverse, and no speed claim follows from the
+word “CT” alone.
+
+The namespaced candidate is
+[`ntruplus768_officialopt_invntt_ct.s`](/home/nuc/src/ntru_plus-official-opt/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001/asm/ntruplus768_officialopt_invntt_ct.s).
+Pinned-source SHA checks, gauge derivation, range replay, and linked audit
+are reproducible with `tools/{generate_inverse_ct,probe_inverse_ct_gauge,prove_inverse_ct_range,audit_inverse_ct}.py`.
+The test-only `src/kem_ct.c` changes precisely the Decap inverse call;
+Keygen and Encap remain Official. No clean source, frozen package, imported
+upstream, or pristine SUPERCOP tree changed.
+
+| Dynamic vector operations per inverse | Official GS | CT prototype |
+|---|---:|---:|
+| Standalone Barrett reductions, including unchanged radix-3 | 64 | 40 |
+| Radix-2 twiddle Montgomery chains | 120 | 78 |
+| Gauge-restoration Montgomery chains | 0 | 48 |
+| Radix-2 plus gauge Montgomery chains | 120 | 126 |
+
+The CT candidate therefore removes 24 standalone Barrett vectors but adds
+6 net Montgomery chains and 10,752 bytes of constant tables. Its linked
+function occupies 2,245 bytes, is 32-byte aligned, and contains no stack
+reference, call, or `vzeroupper`; these facts do **not** establish cycle
+improvement. The new constants and changed dependency pattern could outweigh
+the reductions. The 16 radix-3 Barrett vectors and all Montgomery-internal
+`#reduce` operations remain.
+
+For the Decap caller, valid CT/SK parsing yields canonical `[0,3456]`
+BaseMulScale inputs. A conservative scalar-product bound of 1,911 and at
+most four product terms gives the proposed `±7,644` inverse-input contract.
+The repaired CT schedule uses 12 vector Barrett reductions before stage 4
+and 12 before stage 3; a uniform symmetric interval replay bounds stage
+outputs by 15,288, 30,576, 32,476, 21,198, and 23,442, respectively.
+After gauge normalization, the bound is 2,336. The unchanged radix-3/level-0
+pre-operation upper bounds are 7,008 and 4,008. These are conservative
+signed-i16 checks, not an exhaustive bit-vector proof of the complete
+BaseMulScale machine object. The full caller-bound proof and independent
+machine-level timing remain open.
+
+`make check-inverse-ct` passes 5,003 direct inverse cases (including
+impulses and random values within `±7,644`), 1,003 canonical-input
+BaseMulScale→inverse/crepmod3 cases, and 100 deterministic KEM Decap
+comparisons each for valid ciphertext, tampered ciphertext, and invalid SK.
+Residues and final Decap bytes agree with Official. This is a **research
+prototype**, not a Native SUPERCOP candidate or clean-production change.
+The direct inverse C harness also passed ASan/UBSan with host-restricted
+LeakSanitizer disabled; ASan cannot prove the assembly's memory accesses.
