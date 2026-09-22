@@ -265,10 +265,26 @@ int frombytes_asm(int16_t out[NTRUPLUS1152_N],
         unfold4(&v[2], &v[6], &v[3], &v[7], vreinterpretq_u16_s16(g[3]),
                 vreinterpretq_u16_s16(g[4]), vreinterpretq_u16_s16(g[5]));
 
-        /* one running maximum rather than a compare per lane: some coefficient
-         * is out of range exactly when the maximum is */
-        for (int i = 0; i < 8; i++)
-            hi = vmaxq_u16(hi, vreinterpretq_u16_s16(v[i]));
+        /* One running maximum rather than a compare per lane: some coefficient
+         * is out of range exactly when the maximum is.  Written as an explicit
+         * tree rather than a loop: as a loop, gcc below -O3 keeps v[] as a
+         * stack array, spills all eight vectors and reloads them one at a time
+         * to fold them, so every coefficient makes three trips through memory
+         * instead of one.  That is 1,156 cycles a call at -O2 against 876 here
+         * on Cortex-A76, and it also removes a 256-byte stack frame.  At the
+         * -O3 this Makefile uses it is worth 10 cycles; SUPERCOP builds with
+         * whatever flags it likes. */
+        {
+            uint16x8_t m0 = vmaxq_u16(vreinterpretq_u16_s16(v[0]),
+                                      vreinterpretq_u16_s16(v[1]));
+            uint16x8_t m1 = vmaxq_u16(vreinterpretq_u16_s16(v[2]),
+                                      vreinterpretq_u16_s16(v[3]));
+            uint16x8_t m2 = vmaxq_u16(vreinterpretq_u16_s16(v[4]),
+                                      vreinterpretq_u16_s16(v[5]));
+            uint16x8_t m3 = vmaxq_u16(vreinterpretq_u16_s16(v[6]),
+                                      vreinterpretq_u16_s16(v[7]));
+            hi = vmaxq_u16(hi, vmaxq_u16(vmaxq_u16(m0, m1), vmaxq_u16(m2, m3)));
+        }
 
         vst1q_s16(a,      v[0]); vst1q_s16(a +  8, v[4]);
         vst1q_s16(a + 16, v[1]); vst1q_s16(a + 24, v[5]);
