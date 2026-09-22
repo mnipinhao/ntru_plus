@@ -19,8 +19,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **15,258** | **14,808** | **14,268** |
 | | | **-17.0%** | **-22.8%** | **-15.7%** |
 | 1152 | Official | 28,094 | 24,571 | 21,804 |
-| | **GT** | **23,994** | **19,350** | **18,043** |
-| | | **-14.6%** | **-21.2%** | **-17.2%** |
+| | **GT** | **24,337** | **19,360** | **18,198** |
+| | | **-13.4%** | **-21.2%** | **-16.5%** |
 
 **M2 Pro (CryptoExtension), ns per operation**
 
@@ -33,8 +33,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **4,340** | **4,987** | **4,055** |
 | | | **-4.7%** | **-5.1%** | **-2.1%** |
 | 1152 | Official + CE | 7,123 | 6,967 | 5,494 |
-| | **GT** | **6,798** | **6,543** | **5,280** |
-| | | **-4.6%** | **-6.1%** | **-3.9%** |
+| | **GT** | **6,958** | **6,541** | **5,241** |
+| | | **-2.3%** | **-6.1%** | **-4.6%** |
 
 ## Why the two machines differ, and where the ceiling is  (P91)
 
@@ -74,6 +74,7 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 | **P86** | 1152's serializer folded the way Official folds: `sli`/`ushr` on the pre-transpose lanes instead of a transpose and per-lane `tbl`.  `tobytes_full` 129.2 -> 98.0, `tobytes_small` 92.9 -> 65.4, `frombytes` 79.8 -> 70.9. |
 | **P87** | 864's serializer in six-vector groups, nine bytes a run, six coefficients folded into five halfwords.  `tobytes_full` 123.7 -> 97.2, `tobytes_small` 114.1 -> 69.7.  **564 KB of assembly deleted.** |
 | **P88** | 864 re-encrypts into `buf3`'s tail and verifies instead of the fused compare.  **244 KB more assembly deleted.**  Not adopted at 1152: A76 regresses 86 ns there. |
+| **P88 at 1152** | The fused `poly_tobytes_compare` becomes a re-encrypt into `buf3`'s tail plus `verify`, the arrangement 864 already had.  Decapsulation **-51 ns on M2 (-0.96%)**, +93 on A76 (+0.51%).  Blocked by the old criterion at -40/+79, landed under rule 2.  `gt864-p101-p29-landed` has the rule. |
 | **P29** | 864's inverse: three paired main calls, a direct tail and a full-vector `ST3.4h` route folding the ternary reduction in.  Store µops 972 -> 224, retired instructions 5,362 -> 4,320.  Decapsulation **-38 ns on M2 (-0.93%)**, +118 on A76 (+0.83%); 864's thinnest margin goes -1.1% -> **-2.1%**.  First change under rule 2, and the campaign's first assembly change.  `gt864-p101-p29-landed`. |
 | **P90** | 1152's `cbd1` bit-sliced, `sub` and `triple` unrolled twelve a turn.  78.1 -> 48.5 (beating Official's 51.0), 55.0 -> 32.4, 49.8 -> 27.5. |
 
@@ -131,19 +132,18 @@ these; what mattered was the algorithm and the unroll factor.
 
 Per-role deficits as they stand, GT minus Official, ns, Keccak aligned.
 
-### 1. NTRU+1152 decapsulation, pack/unpack: **+157**
+### 1. NTRU+1152 decapsulation, pack/unpack: **swap landed, remainder unmeasured**
 
-The last serialization deficit anywhere.  Key generation is -7 and
-encapsulation +27; decapsulation carries it all, because it is the one place
-that still runs the fused `poly_tobytes_compare`.  P88 measured the swap to
-pack-and-verify at -40 ns on M2 and **+79 on A76**, where the scattered narrow
-loads of the expected bytes are nearly free, so the swap is blocked.
+The fused compare is gone; `ecb6d5e1` took **51 ns off M2 decapsulation**.  What
+the profiler called +157 has never been checked by direct timing, and P100 found
+the profiler wrong by 2x on the item it did check, so **re-measure before doing
+anything else here**: build `bench_decap_kernels.c` against 1152 with Official's
+`crypto_kem/ntruplus1152/aarch64` renamed, the way
+`gt864-p99-vs-official-two-machines/` does it for 864.
 
-What is left is to make the compare itself cheaper.  P86 already folded its
-encoding; the residue is the `load12` of the expected run.  A masked sixteen-byte
-load was tried at 864 and was worse.  An untried shape: fold a pair into a
+The untried shape, if the remainder survives measurement: fold a pair into a
 96-byte scratch and compare that contiguously, six wide loads against sixteen
-narrow ones.
+narrow ones.  A masked sixteen-byte load was tried at 864 and was worse.
 
 ### 2. NTRU+768 encapsulation, pack/unpack: **+109**, key generation **+69**
 
