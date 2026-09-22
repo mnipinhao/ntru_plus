@@ -16,8 +16,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **13,124** | **12,257** | **11,549** |
 | | | **-18.0%** | **-23.6%** | **-17.1%** |
 | 864 | Official | 18,387 | 19,171 | 16,925 |
-| | **GT** | **15,255** | **14,812** | **14,248** |
-| | | **-17.0%** | **-22.7%** | **-15.8%** |
+| | **GT** | **15,262** | **14,812** | **14,211** |
+| | | **-17.0%** | **-22.7%** | **-16.0%** |
 | 1152 | Official | 28,094 | 24,571 | 21,804 |
 | | **GT** | **23,990** | **19,346** | **18,141** |
 | | | **-14.6%** | **-21.3%** | **-16.8%** |
@@ -30,8 +30,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **3,796** | **4,075** | **3,137** |
 | | | **-8.8%** | **-14.3%** | **-15.1%** |
 | 864 | Official + CE | 4,554 | 5,257 | 4,143 |
-| | **GT** | **4,338** | **4,986** | **4,045** |
-| | | **-4.7%** | **-5.2%** | **-2.4%** |
+| | **GT** | **4,337** | **4,987** | **4,041** |
+| | | **-4.8%** | **-5.1%** | **-2.5%** |
 | 1152 | Official + CE | 7,123 | 6,967 | 5,494 |
 | | **GT** | **6,793** | **6,534** | **5,237** |
 | | | **-4.6%** | **-6.2%** | **-4.7%** |
@@ -75,6 +75,7 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 | **P87** | 864's serializer in six-vector groups, nine bytes a run, six coefficients folded into five halfwords.  `tobytes_full` 123.7 -> 97.2, `tobytes_small` 114.1 -> 69.7.  **564 KB of assembly deleted.** |
 | **P88** | 864 re-encrypts into `buf3`'s tail and verifies instead of the fused compare.  **244 KB more assembly deleted.**  Not adopted at 1152: A76 regresses 86 ns there. |
 | **P88 at 1152** | The fused `poly_tobytes_compare` becomes a re-encrypt into `buf3`'s tail plus `verify`, the arrangement 864 already had.  Decapsulation **-48 ns on M2 (-0.91%)**, +86 on A76 (+0.48%).  Blocked by the old criterion at -40/+79, landed under rule 2.  `gt864-p101-p29-landed` has the rule. |
+| **P107** | 864's inverse tail normalises **six values a vector, not three**: `j = 8` gives one `(t, side)` only its three components, so the six-instruction normalisation ran on three of eight lanes -- 32 calls for 96 values, 2.00 instructions per value against `crepmod3`'s 0.75.  One `MOV V.d[1], V.d[0]` packs the high side into lanes 4..6 and one normalisation covers both; the store path is unchanged.  850 instructions become 738, A76 502 cycles become 430 and M2 139 become 119.  Decapsulation **-31 ns on A76 and -7 on M2**, so it lands under rule 1.  `gt864-p107-tail-packed`. |
 | **P106** | 864's inverse route stores one `ST3.8H` a group instead of two `ST3.4H`: the eight-lane components are `c0 = (A.lo\|D.lo)`, `c1 = (A.hi\|D.hi)`, `c2 = C`, so two `ZIP .2D` replace three `EXT`.  Substituting plain stores prices the interleave at **136 cycles on A76 and 33 on M2** -- A76 charges four times what M2 does.  Decapsulation **-18 ns on A76 and -5 on M2**, both machines.  `gt864-p106-p29-a76`. |
 | **P29** | 864's inverse: three paired main calls, a direct tail and a full-vector `ST3.4h` route folding the ternary reduction in.  Store µops 972 -> 224, retired instructions 5,362 -> 4,320.  Decapsulation **-38 ns on M2 (-0.93%)**, +118 on A76 (+0.83%); 864's thinnest margin goes -1.1% -> **-2.1%**.  First change under rule 2, and the campaign's first assembly change.  `gt864-p101-p29-landed`. |
 | **P90** | 1152's `cbd1` bit-sliced, `sub` and `triple` unrolled twelve a turn.  78.1 -> 48.5 (beating Official's 51.0), 55.0 -> 32.4, 49.8 -> 27.5. |
@@ -229,24 +230,23 @@ in 37% fewer instructions, not a stall.  The GPR parking P28 uses to avoid
 spilling was tested and is not the cause either -- replacing it with stack
 spills changes A76 by 4 cycles and backend stalls not at all.
 
-The route's half is fixed and landed (`b9a3c7f5`).  **What is left is the tail**,
-and its generator says exactly what is wrong: it calls a six-instruction
-`normalization()` once per `(t, side)` -- **32 times, 192 instructions, for 96
-values, three values a vector.**  Not the six-of-eight the constant tables
-suggest: `j = 8` gives one `(t, side)` only its three components.
+Both halves are now fixed and landed.
 
-| | instructions per value | lanes used |
-|---|---:|---:|
-| `crepmod3` | 0.75 | 8 of 8 |
-| P29's tail | **2.00** | **3 of 8** |
+| 864 decapsulation | pre-P29 | P29 | + route (P106) | + tail (P107) |
+|---|---:|---:|---:|---:|
+| M2 Pro | 4,093 | 4,055 | 4,045 | **4,041 (-1.27%)** |
+| Cortex-A76 | 14,149 | 14,266 | 14,248 | **14,211 (+0.44%)** |
 
-Its store path is already better than the old tail's (128 against 192); the
-whole +258 is this.  Packing the 32 results into twelve full vectors before
-normalising takes 192 to 72, minus what the packing costs: optimistically
-**-53 cycles on A76 and -15 on M2**, or **-22 ns and -4 ns** on decapsulation.
-It needs `gt864-p29-direct-st3/generate.py` changed and the kernel re-run
-through Slothy -- the normalisation is interleaved with the transform that feeds
-it, so it cannot be edited in the allocated assembly.
+P29's A76 cost is down from +117 ns to **+62** and its M2 gain up from -38 to
+**-52**.  Per component on A76 the paired main is **-34**, the route **+95** and
+the tail **+108**.
+
+What remains is not a defect in either: the route's +95 is the `ST3` premium A76
+charges over plain stores (80 cycles, measured by substitution), and the tail's
++108 is that the old tail did not normalise at all -- 738 instructions against
+592 for the same 96 values, now at `crepmod3`'s density.  **Both are the price
+of producing natural order directly instead of scattering with 768 `STRH` and
+sweeping afterwards, and on M2 that price is negative.**
 
 ### 4. NTRU+864 forward transform: **+26** every operation -- examined, closed
 
