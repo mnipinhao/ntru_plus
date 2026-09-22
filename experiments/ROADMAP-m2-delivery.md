@@ -181,10 +181,33 @@ the store count fixed buys 4 ns; cutting stores 128 -> 32 buys 73.
 **What survives is widening the output store, which needs the output layout
 free.**  Unconstrained, `invntt16` dumps sixteen whole vectors per call and
 drops the 32 EXT that exist only to feed the UMOV: **-86.8 ns on M2, -77.2 ns on
-A76, `packed_i9` untouched.**  That is 82% of the +106 gap, and it is the
-question the ASCII-diagram framing was really asking.  It is now the top open
-item on 864: can `crepmod3_ternary_asm` and the serializer behind it absorb the
-permutation for free?
+A76, `packed_i9` untouched.**  That is 82% of the +106 gap.
+
+P97 priced it.  `crepmod3_ternary_asm` is a streaming elementwise loop and
+absorbs any permutation free; the serializer is not in this path at all
+(`poly_tobytes` runs on `f`, never on `m`).  The real consumers are
+`poly_ntt(&f, &m)` -- GT's own, and roughly neutral, since its `ld3` de-interleaves
+the `c` axis a free layout never interleaved -- and **`poly_sotp_decode`, which
+bit-packs coefficient `i` into bit `i` and so pins natural order.**
+
+A dedicated repack pass is the cheapest materialisation: `ZIP .2D` + `ST3`,
+because `27g + 3j + c` *is* ST3's interleave.  M2 33.0 ns, A76 93.7.
+
+| | M2 Pro | Cortex-A76 |
+|---|---:|---:|
+| free layout + repack pass | **-53.8 ns** | **+16.5 ns** |
+
+A76 fails: its floor -- loads, zips and plain stores with no interleave at all
+-- is already 69.3 of the 77.2 saved.  The stores P96 removes are free on A76
+because they hide in the multiply-port shadow; a separate movement pass has
+nothing to hide behind.
+
+**The one shape that can clear 兩台都不得退步 is never materialising natural
+order:** `poly_ntt` reads the free layout directly, and `poly_sotp_decode` does
+the three-way interleave in registers feeding its existing `sqxtn` and bit-pack.
+A76 bound on that work is 24.4 ns against 77.2 saved.  It is a rewrite of
+`cbd.S`'s decode and `ntt_top.S`'s front end.  See
+`experiments/gt864-p97-inverse-layout-consumers/`.
 
 **The alternative remains 864 doing what 768 does and keeping Official's
 inverse.**  768's `poly_invntt_decap_scale` is Official's kernel to within one
