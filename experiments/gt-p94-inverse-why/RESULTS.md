@@ -93,3 +93,54 @@ different calls.
 That is the question worth answering next: **can 864's invntt16 be restructured
 so that a call produces contiguous components, without needing eight calls
 instead of six?**  94 ns says it is worth an answer.
+
+---
+
+# Answering it: no, and for two independent reasons
+
+## 1.  The lane swap needs four components and 864 has three
+
+P89's finding, unchanged.  1152's inner four lanes become its four components
+exactly.  At 864 three lanes of four would be used, a call would cover one `s`
+value instead of four, and eight calls would be needed where six suffice.  The
+extra calls cost more than the stores save.
+
+## 2.  Fusing the three component calls does not fit in the register file
+
+The idea that would work in principle: run the three components together so a
+group's three outputs are in three registers at once, and store them with one
+`st3 {v0.h, v1.h, v2.h}[lane]` -- three contiguous halfwords, exactly the layout
+the output wants, four per group instead of twelve `umov` and twelve `strh`.
+
+It does not fit.  `inverse16.S` **peaks at 27 of 32 live vector registers**, and
+the transform cannot produce one group's output without completing the whole
+16-point network over all 32 groups, so three components co-resident means three
+working sets.  Eighty-one live values against thirty-two.
+
+Only **three** registers feed all 128 `umov`, so the outputs themselves roll
+through a tiny window -- but the *state that produces them* does not.
+
+## What is actually reachable
+
+| route | instructions saved | inverse | note |
+|---|---:|---:|---|
+| post-indexed `st1 {v.h}[l], [xT], #6` | ~670 | 404 -> ~373 ns | serialises stores Slothy interleaved |
+| store the 32 output registers contiguously, then a second pass gathering three components with `st3` | ~900 | 404 -> ~358 ns | adds 3 KB of memory traffic and a pass |
+
+Both are well short of the 94 ns the 1152 comparison suggested, because that
+figure assumed 864 could reach 1152's 5.76 instructions per coefficient and both
+routes to it are closed.  **Call it 30-45 ns, against a +106 ns gap.**
+
+## What this means for the campaign
+
+864's inverse is the one place where the Good-Thomas decomposition is a clear
+regression on M2 -- 1.36x Official -- and it cannot be repaired to better than
+about 1.25x within its current structure.  The decomposition's 12% multiply
+saving is real and wins on A76 by 2%; it does not survive a machine with four
+multiply pipes.
+
+The honest options are to take the 30-45 ns, or to do at 864 what 768 already
+does: **keep Official's inverse**.  768's `poly_invntt_decap_scale` is Official's
+kernel to within one instruction, and 768 has the best decapsulation of all nine
+numbers.  Whether 864's layout admits that is a separate question, and it is the
+larger one.

@@ -139,17 +139,35 @@ and keygen paths simply never got it.  P86's fold is the obvious thing to try;
 768's `pack.S` is hand-written assembly, which after P87 is not an argument for
 leaving it alone.
 
-### 3. NTRU+864 decapsulation, inverse transform: **+98**
+### 3. NTRU+864 decapsulation, inverse transform: **+106**
 
-Studied in P89 and mostly **not addressable**.  The two trees run identical
-arithmetic; the difference is 1,728 of 6,784 dynamic instructions spent on
-`umov` + `strh`.  1152's lane swap collapses those because it has four
-components filling four inner lanes; 864 has three, and swapping costs eight
-calls where six suffice.  Mechanically available: `str s` in the tail, worth
-**6 ns**, and post-indexed `st1` in the main kernel, worth **36 ns** against a
-real risk of serialising stores Slothy interleaved.  Reordering the tail ahead
-of the main calls is *legal* -- they read disjoint scratch and write disjoint
-halfwords, and neither reads the output -- which lifts the tail's share to 10 ns.
+Measured directly against `poly_invntt_scale` + `poly_crepmod3`, 404.1 ns
+against 298.  P92 reported +87 by letting the official side pay a copy it does
+not pay in situ.
+
+P94 answered why.  GT's Good-Thomas inverse needs **2.02 multiply-class
+instructions per coefficient against Official's 2.27** -- the decomposition
+delivers its 12% -- and **7.89 total against 4.52**, the excess being data
+movement, of which 2.13 per coefficient is `umov` + `strh`.  On A76's single
+multiply pipe that trade wins by 2%; on M2's four pipes it loses by 36%.
+
+1152 is the control: 5.89 instructions per coefficient and only **1.04x**
+Official, because P67/P68's lane basis took its `umov`/`strh` from 2.13 to 0.13.
+Extra instructions are nearly free on M2 when they are vector work.
+
+**Both routes to 864 reaching that are closed.**  The lane swap needs four
+components filling four inner lanes and 864 has three (P89).  Fusing the three
+component calls so `st3` can write contiguous components needs three working
+sets co-resident, and `inverse16.S` already peaks at **27 of 32 live vector
+registers** (P94).
+
+What remains is 30-45 ns: post-indexed `st1` at about 31, or storing the output
+registers contiguously and gathering in a second pass at about 46 with 3 KB of
+extra traffic.  Both risk or cost something.
+
+**The larger question is whether 864 can do what 768 does and keep Official's
+inverse.**  768's `poly_invntt_decap_scale` is Official's kernel to within one
+instruction, and 768 has the best decapsulation of all nine numbers.
 
 ### 4. NTRU+864 forward transform: **+61** keygen, +32 encaps, +25 decaps
 
