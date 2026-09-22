@@ -77,3 +77,41 @@ P87 deleted 564 KB of assembly at 864 and P88 another 244 KB; 768's 73 KB
 Porting the codec would, at 1152's rate, take `frombytes_encap` 233 -> 166 and
 `tobytes_keygen_cq` 245 -> 153: **-67 cycles on encapsulation and -276 on key
 generation**, which would put key generation past parity with Official.
+
+## 768's permutation, derived, and what a C codec would have to do
+
+Encoding coefficient `i` as the value `i` with Official's serializer and reading
+it back with both readers gives the permutation directly (`perm768b.c`).  Two
+facts fall out:
+
+- **`poly_frombytes_decap` returns natural order.**  768's decapsulation path
+  uses Official's layout, which is why those two kernels time at exactly 1.00.
+- `poly_frombytes_encap`'s permutation is completely regular: **every 4-lane
+  half of every output vector is one element position taken from four
+  consecutive 12-byte blocks**, and all 24x8 (quad, element) pairs are used
+  exactly once.
+
+Four consecutive blocks are **48 contiguous bytes**, which is the structural
+advantage 1152 does not have -- its eight wires are scattered, so it must load
+eight vectors and do a full 8x8 `transpose8`.  Here `LD3` de-interleaves the 48
+bytes on the load unit: `val[j]` lane `2b` is `h_j` of block `b` and lane `2b+1`
+is `h_{j+3}`, so six `UZP` and two `unfold4` produce all eight rows.  About 25
+instructions per 32 coefficients against the shipped assembly's 1,107 for 768.
+
+**What blocks it is the pairing.**  The two halves of an output vector come from
+different quads -- `0/96` share one -- and the pairing graph has **two connected
+components of twelve quads each**.  One component is 96 four-lane rows, 24
+q-registers, so a single pass cannot hold a component and emit whole vectors.
+The choices are 192 narrow `STR D` (against the 96 sixteen-byte µops the data
+needs) or a second pass over a scratch buffer, and P97 measured what a separate
+movement pass costs.
+
+Estimated at 192 narrow stores: about 888 instructions against 1,107, with the
+store count unchanged, so roughly **-33 cycles** on `frombytes_encap` -- not the
+-67 that 1152's rate suggested.  The store budget, not the instruction count, is
+again what decides.
+
+`poly_tobytes_keygen_cq` is the larger half of item 2 (+177 cycles across its
+three key-generation calls, 545 instructions, 210 transpose-class) and has not
+been analysed.  `poly_tobytes_encap` (427 instructions) is **dead code**: the
+encapsulation path calls `encap_basemul_add_tobytes` instead.
