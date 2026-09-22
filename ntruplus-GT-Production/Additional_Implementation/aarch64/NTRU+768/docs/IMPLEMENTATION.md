@@ -38,8 +38,7 @@ encapsulation:
 
 decapsulation:
   packed ct/f checked first product with R^-1 retained; decode hinv
-      -> Decap paired inverse absorbs R^-1
-      -> centered mod-3 representative
+      -> Good-Thomas inverse absorbs R^-1, fused with the centered mod-3 map
       -> Decap forward -> subtraction -> D1 verification product -> bytes
       -> hash/SOTP/CBD -> second Decap forward -> bytes -> verification
 ```
@@ -91,7 +90,7 @@ qsoa_frombytes
 
 These helpers remain validation roots, not the selected kem.c sequence.
 The active Decap path uses `poly_frombytes_basemul_decap_scale`,
-`poly_invntt_decap_scale`, `poly_ntt_decap`, `poly_basemul_decap`, and
+`poly_invntt_ternary_decap`, `poly_ntt_decap`, `poly_basemul_decap`, and
 `poly_tobytes_decap`. Its ordering must not be confused with Encap block-major.
 
 ## 4. Forward-Transform Endpoints
@@ -157,10 +156,27 @@ the call structure and linked text size; row arithmetic, input order, and
 output representation are unchanged.
 
 The active Decap first-product pair instead is
-`poly_frombytes_basemul_decap_scale -> poly_invntt_decap_scale`; its one-pointer
-inverse and first-product scaling must remain paired. D1 `poly_basemul_decap`
-is a later normal-domain verification product, not a replacement for that
-scaled first product.
+`poly_frombytes_basemul_decap_scale -> poly_invntt_ternary_decap`. The two
+must remain paired:
+
+- the product retains one R^-1 factor, which the inverse's final constants
+  absorb;
+- the product is stored with `st4`, each 8-element group as eight 4-coefficient
+  elements (element l of group g at byte 64g + 8l); the inverse's stage123 loads
+  encode the Good-Thomas permutation of that layout;
+- the product is bounded by (4*3456^2 + 32768*q) / 2^16 = 2458 for canonical
+  inputs, and the inverse is overflow-free for every input within that bound
+  (interval proof over its disassembly,
+  `experiments/gt768-p117-frontend-barrett-loads/range_interp.py`).
+
+`poly_invntt_ternary_decap` also performs `poly_crepmod3`: its last Barrett is
+exactly centered for the bounded merge sums, so only the mod-3 step remains, and
+its output is the canonical ternary representative. Its 2,048-byte working area
+is caller-owned; `crypto_kem_dec_internal` places it in the `buf1/buf2` union of
+its scratch object, which is dead at that point and cleared on return.
+
+D1 `poly_basemul_decap` is a later normal-domain verification product, not a
+replacement for that scaled first product.
 
 ### 6.1 Encapsulation exact-alias contract
 

@@ -61,6 +61,7 @@ MEM = {}                     # halfword address -> V
 IN, OUT, SP = 0x1000000, 0x1000000, 0x2000000      # in place
 for i in range(768): MEM[IN + 2*i] = V(-B_IN, B_IN)
 X.update(x0=OUT, x1=IN, sp=SP, x30=0xdead)
+if "--scratch-x1" in sys.argv: X["x1"] = 0x3000000   # production ABI: in place on x0, scratch at x1
 maxes = {}; errors = []
 
 def rd_mem(a):
@@ -123,6 +124,8 @@ while True:
         X[xr(args[0])] = int(args[1].lstrip('#'), 0) if args[1].startswith('#') else xval(args[1])
     elif op == 'adr':
         X[xr(args[0])] = int(args[1].split()[0], 0)
+    elif op == 'str' and args[0][0] == 'x':
+        b, off, _ = addr(args[1]); MEM[('x', X[b] + off)] = X.get(xr(args[0]), 0)
     elif op == 'ldr' and args[0][0] == 'x':
         b, off, _ = addr(args[1]); X[xr(args[0])] = MEM.get(('x', X[b] + off), 0)
     elif op == 'bl':
