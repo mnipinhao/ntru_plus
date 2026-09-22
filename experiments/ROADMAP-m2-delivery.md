@@ -5,30 +5,67 @@ Living document.  Started 2026-09-21 from P83 (corrected M2 baseline) and P84
 
 ## Where things stand
 
-Against Official + CE at the **SUPERCOP revision**, on M2 Pro, all six binaries
-built in one session:
+Both machines, all binaries per machine built in one session, RNG reseeded
+before every timed batch, clock-gated harness:
 
-| set | keygen | encaps | decaps |
-|---|---:|---:|---:|
-| **768** | **-8.9%** | **-14.4%** | **-15.3%** |
-| **864** | **-5.0%** | **-5.2%** | **-1.2%** |
-| **1152** | **-3.5%** | **-6.1%** | **-4.0%** |
+**Cortex-A76 (Raspberry Pi 5, no CryptoExtension), ns per operation**
 
-At the start of this work the same table read -8.8 / -14.3 / -15.3, -2.2 / -4.2 /
-**+0.2**, and -1.2 / -4.5 / -2.3.  A76 improved on every number that moved.
+| set | | keygen | encap | decap |
+|---|---|---:|---:|---:|
+| 768 | Official | 16,003 | 16,044 | 13,939 |
+| | **GT** | **13,124** | **12,257** | **11,549** |
+| | | **-18.0%** | **-23.6%** | **-17.1%** |
+| 864 | Official | 18,387 | 19,171 | 16,925 |
+| | **GT** | **15,246** | **14,800** | **14,144** |
+| | | **-17.1%** | **-22.8%** | **-16.4%** |
+| 1152 | Official | 28,094 | 24,571 | 21,804 |
+| | **GT** | **23,994** | **19,350** | **18,043** |
+| | | **-14.6%** | **-21.2%** | **-17.2%** |
 
-**The arithmetic now wins on its own.**  With Keccak aligned -- Official's
-arithmetic relinked against GT's `keccakf1600_v84a` -- the non-Keccak totals are:
+**M2 Pro (CryptoExtension), ns per operation**
 
-| | keygen | encaps | decaps |
-|---|---:|---:|---:|
-| 768 | +3 | +5 | **-68** |
-| 864 | **-47** | **-104** | **-10** |
-| 1152 | **-228** | **-123** | **-25** |
+| set | | keygen | encap | decap |
+|---|---|---:|---:|---:|
+| 768 | Official + CE | 4,164 | 4,755 | 3,697 |
+| | **GT** | **3,796** | **4,075** | **3,137** |
+| | | **-8.8%** | **-14.3%** | **-15.1%** |
+| 864 | Official + CE | 4,554 | 5,257 | 4,143 |
+| | **GT** | **4,326** | **4,988** | **4,096** |
+| | | **-5.0%** | **-5.1%** | **-1.1%** |
+| 1152 | Official + CE | 7,123 | 6,967 | 5,494 |
+| | **GT** | **6,798** | **6,543** | **5,280** |
+| | | **-4.6%** | **-6.1%** | **-3.9%** |
 
-P84 concluded the whole M2 margin was the permutation backend and that 864/1152
-were behind outside it, in five of six numbers.  That is no longer true of any
-of them.
+## Why the two machines differ, and where the ceiling is  (P91)
+
+**The Keccak permutation is issued the same number of times by both sides** --
+768: 13/21/12, 864: 14/24/14, 1152: 21.4/32/19 -- and it is **the same speed on
+M2**: 158.2 ns for upstream's `CE/f1600.S` against 158.4 for GT's
+`keccakf1600_v84a.S`.  On A76, where neither has FEAT_SHA3, Official has
+portable C at 493.1 ns and GT hand-written scalar assembly at 386.7, **1.27x**.
+
+That 27%, applied to the 48-73% of every operation the permutation occupies, is
+worth 13-20% of the total on A76 and **exactly nothing on M2**.  It is the whole
+reason the A76 margins are three to fifteen times the M2 ones, and none of it is
+Good-Thomas work.
+
+What is left to compete over on M2, and how much of it each set takes:
+
+| set/op | perm share | Official rest | GT rest | GT ahead | margin | ceiling | realised |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 768 keygen | 49% | 2106 | 1738 | 17% | -8.8% | -51% | 17% |
+| 768 encap | 70% | 1431 | 751 | **48%** | -14.3% | -30% | 48% |
+| 768 decap | 51% | 1797 | 1237 | 31% | -15.1% | -49% | 31% |
+| 864 keygen | 49% | 2338 | 2110 | 10% | -5.0% | -51% | 10% |
+| 864 encap | 72% | 1458 | 1189 | 18% | -5.1% | -28% | 18% |
+| **864 decap** | 53% | 1927 | 1880 | **2%** | -1.1% | -47% | **2%** |
+| 1152 keygen | 48% | 3735 | 3410 | 9% | -4.6% | -52% | 9% |
+| 1152 encap | 73% | 1901 | 1477 | 22% | -6.1% | -27% | 22% |
+| 1152 decap | 55% | 2486 | 2272 | 9% | -3.9% | -45% | 9% |
+
+Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
+**864's decapsulation is the outlier**: 2% ahead on its contestable part where
+768 manages 31%.
 
 ## What landed
 
@@ -51,6 +88,14 @@ these; what mattered was the algorithm and the unroll factor.
 - **Promotion criterion: neither machine may regress.**  Cortex-A76 (Pi5,
   `pi@100.99.191.9`) and M2 Pro, both measured, before anything lands.  P88 was
   adopted at 864 and rejected at 1152 on exactly this.
+- **Reseed the RNG before every timed batch.**  Key generation rejects and
+  retries, and the spread between the cheapest and dearest single key generation
+  on one stream is 11x.  Without reseeding, two builds do not measure the same
+  work.  `experiments/gt-p91-m2-margin-ceiling/rb2.c`.
+- **Check the profiler attributed everything.**  `sample` emits `???` rows for
+  assembly without `.size`; that was 46-71% of the samples, and all of the
+  permutation, in any profile of a build linking upstream `CE/f1600.S`.
+  `roles2.py` now refuses to return below 98% attribution.
 - **M2 measurements use `experiments/gt-p83-m2-supercop-baseline/perop3.c`.**  It
   warms up for three seconds, carries a clock witness and gates on it.  A fresh
   thread on this part sits in the E-cluster band for tens of milliseconds.
