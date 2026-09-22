@@ -222,18 +222,10 @@ C(invntt_ternary_asm):
     mov x23, x4
     mov x24, x5
     mov x25, x6                 // scratch, 1792 bytes, CALLER-OWNED
-    // Only tail padding requires initialization, not the entire main buffer.
-    // Exact 256-byte padding clear, eight full-vector stores.
-    movi v0.16b, #0
-    add x9, sp, #1536
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
-    stp q0, q0, [x9], #32
+    // No initialization: the padding lanes never reach an output.  What stood
+    // here cleared 256 bytes at sp + 1536, which is the caller's frame -- the
+    // scratch has been caller-owned in x25 since P80.  Both the old and the
+    // new consumer were measured insensitive to the padding's contents.
     // Fully unrolled i9 dispatch.  The loop bounds are fixed, so all twelve
     // address quadruples are compile-time constants; the madd chains and the
     // loop control disappear.
@@ -297,37 +289,42 @@ C(invntt_ternary_asm):
     add x2, x20, #944
     add x3, x21, #864
     bl C(packed_i9)
-    // Fully unrolled main-I16 dispatch; x3/x4 are loop-invariant.
+    /* Three paired main calls.  Each takes the two P8 blocks holding the same
+     * j-half of two components -- or component 2's two j-halves -- and
+     * rewrites them in place as eight-channel banks.  The route below reads
+     * Q-bases (0,16,64) for top0 and (32,48,80) for top1, which are exactly
+     * these six 256-byte blocks. */
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    mov x0, x19
-    mov x1, x25
-    bl C(invntt16_asm)
-    add x0, x19, #24
-    add x1, x25, #256
-    bl C(invntt16_asm)
-    add x0, x19, #2
+    mov x0, x25
     add x1, x25, #512
-    bl C(invntt16_asm)
-    add x0, x19, #26
+    bl C(invntt16_paired_asm)
+    mov x2, #0
+    mov x3, x22
+    mov x4, x23
+    add x0, x25, #256
     add x1, x25, #768
-    bl C(invntt16_asm)
-    add x0, x19, #4
-    add x1, x25, #1024
-    bl C(invntt16_asm)
-    add x0, x19, #28
+    bl C(invntt16_paired_asm)
+    mov x2, #0
+    mov x3, x22
+    mov x4, x23
+    add x0, x25, #1024
     add x1, x25, #1280
-    bl C(invntt16_asm)
-    add x0, x19, #48
+    bl C(invntt16_paired_asm)
+    /* j = 8 writes its exact six bytes per group straight to the natural
+     * address: one STR W plus one STRH, no lane ST3. */
+    mov x0, x19
     add x1, x25, #1536
     mov x2, #0
     mov x3, x22
     mov x4, x24
-    bl C(invntt16_tail_asm)
-    // One raw-to-ternary pass; constants stay resident.
+    bl C(invntt_tail_direct_asm)
+    /* Rows 0..7 leave as full-vector ST3.4h in natural component-interleaved
+     * order with the raw-to-ternary reduction folded in, so no separate
+     * crepmod3 pass follows. */
     mov x0, x19
-    bl C(crepmod3_ternary_asm)
-    // Exact 1792-byte wipe, 128 bytes per fixed iteration.
+    mov x1, x25
+    bl C(invntt_route_asm)
     RESTORE_PUBLIC
 #endif

@@ -19,7 +19,7 @@ ASM_SOURCES = (
     "ntt.S", "ntt_top.S", "ntt_tail.S", "ntt9.S", "baseinv_num.S",
     "baseinv_prefix.S", "baseinv_inverse.S", "baseinv_recover.S",
     "baseinv_finish.S", "basemul_rinv.S", "inverse.S", "inverse9.S",
-    "inverse16.S", "inverse16_tail.S",
+    "inverse16_paired.S", "inverse_tail_direct.S", "inverse_route.S",
     "keccakf1600.S",
 )
 

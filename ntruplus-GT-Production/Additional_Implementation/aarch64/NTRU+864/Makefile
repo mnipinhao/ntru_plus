@@ -64,8 +64,9 @@ KEM_OBJECTS := \
 	$(BUILD_DIR)/baseinv_inverse.o \
 	$(BUILD_DIR)/baseinv_recover.o \
 	$(BUILD_DIR)/baseinv_finish.o \
-	$(BUILD_DIR)/inverse16.o \
-	$(BUILD_DIR)/inverse16_tail.o \
+	$(BUILD_DIR)/inverse16_paired.o \
+	$(BUILD_DIR)/inverse_tail_direct.o \
+	$(BUILD_DIR)/inverse_route.o \
 	$(BUILD_DIR)/crepmod3_raw.o \
 	$(BUILD_DIR)/basemul_rinv.o \
 	$(BUILD_DIR)/inverse9.o \
