@@ -158,13 +158,39 @@ M2**.
 Removing the transpose means not needing the permutation, which is the same open
 question the inverse leaves.  See `experiments/gt1152-p103-frombytes/`.
 
-### 2. NTRU+768 encapsulation, pack/unpack: **+109**, key generation **+69**
+### 2. NTRU+768: **+53 key generation, +18 encapsulation** -- measured, and it is `tobytes_keygen_cq`
 
-768 was not touched in this round and is now the worst packer in encapsulation.
-Its decapsulation is -81, so the machinery exists in the same tree -- the encap
-and keygen paths simply never got it.  P86's fold is the obvious thing to try;
-768's `pack.S` is hand-written assembly, which after P87 is not an argument for
-leaving it alone.
+P104 timed it directly.  The profiler's +109 on encapsulation was a **fusion
+accounting error**: `tobytes_encap_loose` is 1.89x Official because it absorbs
+the reduction `poly_ntt_encap_small_lazy` skips, and that NTT wins 107 cycles a
+call **twice**.  Counting both sides, the trade is a net win of 48 cycles and
+encapsulation's whole kernel deficit is **+63 cycles (+18 ns)**, not +109.
+
+| operation | GT | Official | difference |
+|---|---:|---:|---:|
+| key generation | 864 | 679 | **+185 (+52.8 ns)** |
+| encapsulation | 1,801 | 1,738 | +63 (+18.1 ns) |
+| decapsulation | 1,909 | 1,924 | -15 (-4.3 ns) |
+
+**Key generation is the larger half now**, and it is one kernel:
+`poly_tobytes_keygen_cq`, 1.32x, called three times, +177 of the +185.  It has
+545 instructions and 210 transpose-class, and it has not been analysed.
+
+`frombytes_encap` is 1.79x and worth +103 on encapsulation.  P104 derived its
+permutation: every 4-lane half is one element position from **four consecutive
+12-byte blocks**, i.e. 48 contiguous bytes, which `LD3` de-interleaves on the
+load unit -- 1152 cannot do this because its eight wires are scattered.  But the
+two halves of an output vector always come from **different** quads (0 of 96
+share one) and the pairing graph is two components of twelve quads, so a single
+pass cannot hold a component.  That forces 192 narrow `STR D` where the data
+needs 96, and the estimate falls to about **-33 cycles**, not the -67 that
+1152's rate suggested.  **The store budget decides again.**
+
+`poly_tobytes_encap`, 427 instructions, is dead code -- encapsulation calls
+`encap_basemul_add_tobytes`.  768 is the last set whose codec is hand-written
+assembly (`pack.S`, 73 KB, 2,232 instructions); 864's and 1152's were replaced
+by C intrinsics in P87/P86 and the C won.  See
+`experiments/gt768-p104-item2-measured/`.
 
 ### 3. NTRU+864 decapsulation, inverse transform: **landed, +68 remains**
 
