@@ -23,11 +23,38 @@ M2 Pro 3.504 GHz, Cortex-A76 2.400 GHz.  Cycles per call.
 | verify | 1 | 168 | 168 | 1.00 | 75 | 75 | 1.00 |
 | **total** | | **20,135** | **22,025** | **0.914** | **5,985** | **5,729** | **1.045** |
 
-**The sign flips.  GT's decapsulation arithmetic is 8.6% faster than Official's
-on A76 and 4.5% slower on M2.**
-
 Official has no `tobytes_small`; that row compares GT's specialised path against
-Official's general one on both sides.
+Official's general one on both sides.  The `verify` row compares one C function
+with itself.
+
+## Correction: two rows made Official pay a copy it does not pay
+
+`kem.c` calls both transforms **in place** on both sides -- GT
+`poly_invntt_ternary(&m,&m)` and `poly_ntt(&f,&f)`, Official
+`poly_invntt_scale(&m)` and `poly_ntt(&f)`.  The harness gave GT its
+out-of-place form and wrote `c = m;` before the official one, so the official
+side carried a 1,728-byte `poly` copy in the `invntt` and `ntt` rows.  That copy
+costs **70 cycles on M2 and 119 on A76** (`bench_fwd.c`).  P92 caught it for the
+inverse and the same fault stood in `ntt`.
+
+In place against in place (`bench_fwd.c`):
+
+| `poly_ntt`, one call | M2 Pro | Cortex-A76 |
+|---|---:|---:|
+| GT | 850 | 3,376 |
+| Official | **804** | 3,740 |
+| ratio | **1.058** | **0.903** |
+
+| corrected totals | M2 Pro | Cortex-A76 |
+|---|---:|---:|
+| GT | 5,985 | 20,135 |
+| Official | 5,451 | 21,678 |
+| **ratio** | **1.098** | **0.929** |
+
+**The sign flips.  GT's decapsulation arithmetic is 7.1% faster than Official's
+on A76 and 9.8% slower on M2.**  The correction widens the M2 deficit and
+narrows the A76 win, because the forward transform flips sign too: GT wins it by
+364 cycles a call on A76 and loses it by 46 on M2.
 
 ## Why: the two machines extract different amounts of width
 
