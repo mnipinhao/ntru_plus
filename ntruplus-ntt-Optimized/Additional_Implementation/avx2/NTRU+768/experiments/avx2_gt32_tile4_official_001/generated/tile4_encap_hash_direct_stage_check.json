@@ -1,0 +1,100 @@
+{
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "results": {
+    "normal": {
+      "checks": {
+        "actual_ternary_forward_cases": 100,
+        "alignment_offsets": 32,
+        "canary": true,
+        "cases": 10391,
+        "full_kem_kat": false,
+        "guard_page": true,
+        "r_immutable": true,
+        "stage_wiped": true,
+        "timing": false,
+        "wire_and_hash_exact": true
+      },
+      "command": [
+        "cc",
+        "-O3",
+        "-g",
+        "-mavx2",
+        "-fwrapv",
+        "-fno-strict-aliasing",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-Wl,--gc-sections",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tests/test_encap_hash_direct_stage.c",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/symmetric.c",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/fips202.c",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/KeccakP-1600-AVX2.s",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt.s",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt_m.s",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/consts.c",
+        "-o",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/build/encap-consumer-edges-research/normal"
+      ],
+      "elf_sha256": "259549e8dede401dda911b3304159d33305b47299793cfae781bdaf5085ff781"
+    },
+    "sanitized": {
+      "checks": {
+        "actual_ternary_forward_cases": 100,
+        "alignment_offsets": 32,
+        "canary": true,
+        "cases": 10391,
+        "full_kem_kat": false,
+        "guard_page": true,
+        "r_immutable": true,
+        "stage_wiped": true,
+        "timing": false,
+        "wire_and_hash_exact": true
+      },
+      "command": [
+        "cc",
+        "-O1",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-g",
+        "-mavx2",
+        "-fwrapv",
+        "-fno-strict-aliasing",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-Wl,--gc-sections",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tests/test_encap_hash_direct_stage.c",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/symmetric.c",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/fips202.c",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/KeccakP-1600-AVX2.s",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt.s",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt_m.s",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/consts.c",
+        "-o",
+        "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/build/encap-consumer-edges-research/sanitized"
+      ],
+      "elf_sha256": "e1d16c0177cbee6d1ee670b9f5f97ec42c1da4dae4bd060c724c6dfe40b0adbc"
+    }
+  },
+  "sanitizer_scope": "C harness; ASM extent separately checked by guard page and canaries",
+  "scope": "test-only direct hash stage; no production change or timing",
+  "sources": {
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/KeccakP-1600-AVX2.s": "7837759dcc2ddcf407b6f95264ed7a98b200fc55fefc5ab96a4ccfae42e83c4e",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/fips202.c": "8b4059e2702f51e98c34c656132443b2ed3144afa1b295a588cb5a8d41aaf5a1",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt.s": "97d383e28568cf300a14f8e008e8fe8b7cbdaf209aaf0c55ab1825272c517d83",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt_m.s": "b53b5b91997297c0e6b5a4a58ca146de56dc6098f84beef1eb10d2e61a093fbe",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s": "0ce9f0b846cc9bdb27458bbee29df9055bc1f02805059b09d9fa48747f966618",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/symmetric.c": "49e7faa9501e3ced6bf6c8da519782adcb32371295ce4f351ebdbf63399f9e0c",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tests/test_encap_hash_direct_stage.c": "7e649e16d8abeaccaee65a718c82721852a8088c07a9120afeca67eca782ace3",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/check_encap_hash_direct_stage.py": "8f0b5baf9f7c8802a7a402762272d348d869b006bd19c49748c38749f3fe6bf9"
+  }
+}
