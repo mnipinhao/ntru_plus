@@ -1,5 +1,11 @@
 # NTRU+ Bench Suite
 
+New AVX2 research diagnostics use the
+[mlkem-native-inspired batch cycle method](mlkem-batch.md) by default:
+50 warm-ups, 300 operations per measured batch, 20 batches, then independent
+fresh processes. This is separate from the historical `bench_impls.py` flow
+below and from unmodified Native SUPERCOP KEM benchmarking.
+
 `bench/` is the unified entry point for comparing two implementation directories:
 
 1. KAT-based correctness validation

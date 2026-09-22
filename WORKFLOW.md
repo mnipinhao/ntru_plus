@@ -106,6 +106,14 @@ different hosts or counter backends as if they were equivalent.
 
 ## Results and generated files
 
+For new local AVX2 optimization diagnostics, follow
+[`bench/mlkem-batch.md`](bench/mlkem-batch.md): batched counter measurements,
+raw 20-test results, fresh-process replication and placement controls. Keep
+the operation's copy/reset and residency contract explicit. Native KEM claims
+against Official still require unmodified SUPERCOP measurement and remain a
+separate evidence class; do not combine their cycle estimates with the batch
+diagnostic series.
+
 Portable comparison output is written under:
 
 ```text

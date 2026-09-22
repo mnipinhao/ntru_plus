@@ -25,7 +25,7 @@ COMPARE_ARGS = --impl-a "$(IMPL_A)" --impl-b "$(IMPL_B)" --run-tag "$(RUN_TAG)" 
 	$(if $(LABEL_B),--label-b "$(LABEL_B)")
 
 .PHONY: all setup validate compare-kat cycles-compare compare impl-compare impl-compare-kat \
-	clean clean-results help run
+	clean clean-results help run test-mlkem-batch
 
 all: validate
 
@@ -41,6 +41,12 @@ cycles-compare compare impl-compare: setup
 	@python3 $(BENCH_DRIVER) compare $(COMPARE_ARGS)
 
 run: compare
+
+$(BUILD_DIR)/test_mlkem_batch: mlkem_batch.c mlkem_batch.h test_mlkem_batch.c | setup
+	$(CC) -O2 -std=c11 -Wall -Wextra -Werror -o $@ mlkem_batch.c test_mlkem_batch.c
+
+test-mlkem-batch: $(BUILD_DIR)/test_mlkem_batch
+	./$(BUILD_DIR)/test_mlkem_batch
 
 clean:
 	rm -rf $(BUILD_DIR)/*
