@@ -178,8 +178,26 @@ encapsulation's whole kernel deficit is **+63 cycles (+18 ns)**, not +109.
 | decapsulation | 1,909 | 1,924 | -15 (-4.3 ns) |
 
 **Key generation is the larger half now**, and it is one kernel:
-`poly_tobytes_keygen_cq`, 1.32x, called three times, +177 of the +185.  It has
-545 instructions and 210 transpose-class, and it has not been analysed.
+`poly_tobytes_keygen_cq`, 1.32x, called three times, +177 of the +185.  P104
+opened it.
+
+| per call | instructions |
+|---|---:|
+| GT `tobytes_keygen_cq` | **1,220** |
+| Official `poly_tobytes` | 808 |
+| GT `tobytes_decap` | 809 (= Official's shape) |
+
+**GT's fold-and-store core is better than Official's** -- 675 instructions
+against 808, 56 per 64 coefficients against 67.  The whole +412 is the
+permutation wrapper: 192 data loads, 24 index loads, 96 two-source `TBL`, 96
+`UZP`, 48 `MOV`.  Index reuse is already optimal (24 loads for 96 `TBL`), and
+two-source `TBL` is the right choice -- P97 measured three-source at +21% on A76.
+
+What is reachable is the **96 duplicate data loads** (`TBL` pairs are `(g,g+4)`
+so each vector's second use falls in a different pack-core call) and the 48
+`MOV`: about **18 ns of the 51**.  The other 33 ns is the 96 `TBL` and 96 `UZP`,
+which is the permutation itself -- the same answer 1152's unpack and 864's
+inverse gave.
 
 `frombytes_encap` is 1.79x and worth +103 on encapsulation.  P104 derived its
 permutation: every 4-lane half is one element position from **four consecutive
