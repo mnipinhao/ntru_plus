@@ -25,74 +25,25 @@
  * eight consecutive output coefficients of byte i, with no interleave at all.
  */
 
-/*
- * Bit-sliced CBD-1, the shape NTRU+864's cbd.S uses.
- *
- * The previous version expanded one byte at a time -- `vdupq_n_u16(buf[i])`
- * through a general-purpose register, twice per eight coefficients.  This one
- * takes sixteen bytes of each half at once and never leaves the vector unit.
- *
- * Stage 1 separates the even and odd bit positions with a shift and an 0x55
- * mask, biases by one so the difference cannot borrow, and subtracts, leaving
- * four two-bit fields per byte each holding a - b + 1 in {0,1,2}.  Stages 2 and
- * 3 peel those fields out two at a time and remove the bias, giving eight byte
- * streams of signed differences.  A three-level trn network interleaves them
- * back into coefficient order and the widening completes it.
- *
- * 1152 needs no tail: N/8 is 144 bytes a half, exactly nine sixteen-byte
- * blocks, where 864's 108 forced a prologue.  Measured 78.1 -> 48.5 ns
- * against the official kernel's 51.0.
- */
-#define T1B(a,b)  vtrn1q_u8(a,b)
-#define T2B(a,b)  vtrn2q_u8(a,b)
-#define T1H(a,b)  vreinterpretq_u8_u16(vtrn1q_u16(vreinterpretq_u16_u8(a), vreinterpretq_u16_u8(b)))
-#define T2H(a,b)  vreinterpretq_u8_u16(vtrn2q_u16(vreinterpretq_u16_u8(a), vreinterpretq_u16_u8(b)))
-#define T1S(a,b)  vreinterpretq_u8_u32(vtrn1q_u32(vreinterpretq_u32_u8(a), vreinterpretq_u32_u8(b)))
-#define T2S(a,b)  vreinterpretq_u8_u32(vtrn2q_u32(vreinterpretq_u32_u8(a), vreinterpretq_u32_u8(b)))
+static const uint16_t bitmask[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+
+/* One byte's eight bits, as eight 0/1 lanes in output order. */
+static inline uint16x8_t bits_of(uint8_t b, uint16x8_t mask, uint16x8_t one)
+{
+    return vandq_u16(vtstq_u16(vdupq_n_u16(b), mask), one);
+}
 
 void poly_cbd1(poly *r, const uint8_t buf[NTRUPLUS_N / 4])
 {
-    const uint8x16_t m55 = vdupq_n_u8(0x55);
-    const uint8x16_t m03 = vdupq_n_u8(0x03);
-    const uint8x16_t m01 = vdupq_n_u8(0x01);
-    int16_t *out = r->coeffs;
+    const uint16x8_t mask = vld1q_u16(bitmask);
+    const uint16x8_t one = vdupq_n_u16(1);
 
-    for (int i = 0; i < NTRUPLUS_N / 8; i += 16) {
-        uint8x16_t a = vld1q_u8(buf + i);
-        uint8x16_t b = vld1q_u8(buf + NTRUPLUS_N / 8 + i);
-
-        uint8x16_t a1 = vshrq_n_u8(a, 1), b1 = vshrq_n_u8(b, 1);
-        uint8x16_t e = vsubq_u8(vaddq_u8(vandq_u8(a,  m55), m55), vandq_u8(b,  m55));
-        uint8x16_t o = vsubq_u8(vaddq_u8(vandq_u8(a1, m55), m55), vandq_u8(b1, m55));
-
-        uint8x16_t e2 = vshrq_n_u8(e, 2), o2 = vshrq_n_u8(o, 2);
-        uint8x16_t d0 = vsubq_u8(vandq_u8(e,  m03), m01);
-        uint8x16_t d1 = vsubq_u8(vandq_u8(o,  m03), m01);
-        uint8x16_t d2 = vsubq_u8(vandq_u8(e2, m03), m01);
-        uint8x16_t d3 = vsubq_u8(vandq_u8(o2, m03), m01);
-
-        uint8x16_t e4 = vshrq_n_u8(e, 4), o4 = vshrq_n_u8(o, 4);
-        uint8x16_t e6 = vshrq_n_u8(e2, 4), o6 = vshrq_n_u8(o2, 4);
-        uint8x16_t d4 = vsubq_u8(vandq_u8(e4, m03), m01);
-        uint8x16_t d5 = vsubq_u8(vandq_u8(o4, m03), m01);
-        uint8x16_t d6 = vsubq_u8(vandq_u8(e6, m03), m01);
-        uint8x16_t d7 = vsubq_u8(vandq_u8(o6, m03), m01);
-
-        uint8x16_t p0 = T1B(d0,d1), p1 = T1B(d2,d3), p2 = T1B(d4,d5), p3 = T1B(d6,d7);
-        uint8x16_t p4 = T2B(d0,d1), p5 = T2B(d2,d3), p6 = T2B(d4,d5), p7 = T2B(d6,d7);
-
-        uint8x16_t q0 = T1H(p0,p1), q1 = T1H(p2,p3), q2 = T1H(p4,p5), q3 = T1H(p6,p7);
-        uint8x16_t q4 = T2H(p0,p1), q5 = T2H(p2,p3), q6 = T2H(p4,p5), q7 = T2H(p6,p7);
-
-        uint8x16_t s[8];
-        s[0] = T1S(q0,q1); s[1] = T1S(q2,q3); s[2] = T1S(q4,q5); s[3] = T1S(q6,q7);
-        s[4] = T2S(q0,q1); s[5] = T2S(q2,q3); s[6] = T2S(q4,q5); s[7] = T2S(q6,q7);
-
-        for (int k = 0; k < 8; k++)
-            vst1q_s16(out + 8*k, vmovl_s8(vget_low_s8(vreinterpretq_s8_u8(s[k]))));
-        for (int k = 0; k < 8; k++)
-            vst1q_s16(out + 64 + 8*k, vmovl_high_s8(vreinterpretq_s8_u8(s[k])));
-        out += 128;
+    for (int i = 0; i < NTRUPLUS_N / 8; i++) {
+        uint16x8_t s1 = bits_of(buf[i], mask, one);
+        uint16x8_t s2 = bits_of(buf[i + NTRUPLUS_N / 8], mask, one);
+        vst1q_s16(r->coeffs + 8 * i,
+                  vsubq_s16(vreinterpretq_s16_u16(s1),
+                            vreinterpretq_s16_u16(s2)));
     }
 }
 
@@ -212,31 +163,15 @@ int poly_sotp_decode(uint8_t msg[NTRUPLUS_N / 8], const poly *pa,
     return (int)r;
 }
 
-/*
- * Twelve vectors a turn, the way NTRU+864's add.S is written: the loads of a
- * group are hoisted above its arithmetic so the stores overlap the next group's
- * loads.  The straightforward `i += 8` loop left both of these at roughly
- * 1.7x the official kernel; this puts them at parity, 55.0 -> 32.4 ns for the
- * subtraction and 49.8 -> 27.5 for the tripling.
- */
 void poly_sub(poly *r, const poly *a, const poly *b)
 {
-    const int16_t *pa = a->coeffs, *pb = b->coeffs;
-    int16_t *pr = r->coeffs;
-    for (int i = 0; i < NTRUPLUS_N; i += 96) {
-        int16x8_t x[12], y[12];
-        for (int k = 0; k < 12; k++) x[k] = vld1q_s16(pa + i + 8*k);
-        for (int k = 0; k < 12; k++) y[k] = vld1q_s16(pb + i + 8*k);
-        for (int k = 0; k < 12; k++) vst1q_s16(pr + i + 8*k, vsubq_s16(x[k], y[k]));
-    }
+    for (int i = 0; i < NTRUPLUS_N; i += 8)
+        vst1q_s16(r->coeffs + i, vsubq_s16(vld1q_s16(a->coeffs + i),
+                                           vld1q_s16(b->coeffs + i)));
 }
+
 void poly_triple(poly *r, const poly *a)
 {
-    const int16_t *pa = a->coeffs;
-    int16_t *pr = r->coeffs;
-    for (int i = 0; i < NTRUPLUS_N; i += 96) {
-        int16x8_t x[12];
-        for (int k = 0; k < 12; k++) x[k] = vld1q_s16(pa + i + 8*k);
-        for (int k = 0; k < 12; k++) vst1q_s16(pr + i + 8*k, vmulq_n_s16(x[k], 3));
-    }
+    for (int i = 0; i < NTRUPLUS_N; i += 8)
+        vst1q_s16(r->coeffs + i, vmulq_n_s16(vld1q_s16(a->coeffs + i), 3));
 }
