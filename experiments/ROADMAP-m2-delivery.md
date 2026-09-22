@@ -5,36 +5,50 @@ Living document.  Started 2026-09-21 from P83 (corrected M2 baseline) and P84
 
 ## Where things stand
 
-Both machines, all binaries per machine built in one session, RNG reseeded
-before every timed batch, clock-gated harness:
+Rebuilt in one session, every binary of a table with the same compiler, each GT
+tree carrying **its own Makefile `CFLAGS`**; RNG reseeded before every timed
+batch; min of 401 x 300 under the clock gate.  P108.
 
-**Cortex-A76 (Raspberry Pi 5, no CryptoExtension), ns per operation**
-
-| set | | keygen | encap | decap |
-|---|---|---:|---:|---:|
-| 768 | Official | 16,003 | 16,044 | 13,939 |
-| | **GT** | **13,124** | **12,257** | **11,549** |
-| | | **-18.0%** | **-23.6%** | **-17.1%** |
-| 864 | Official | 18,387 | 19,171 | 16,925 |
-| | **GT** | **15,262** | **14,812** | **14,211** |
-| | | **-17.0%** | **-22.7%** | **-16.0%** |
-| 1152 | Official | 28,094 | 24,571 | 21,804 |
-| | **GT** | **23,990** | **19,346** | **18,141** |
-| | | **-14.6%** | **-21.3%** | **-16.8%** |
-
-**M2 Pro (CryptoExtension), ns per operation**
+**Cortex-A76 (Raspberry Pi 5), ns per operation.  Neither side has FEAT_SHA3.**
 
 | set | | keygen | encap | decap |
 |---|---|---:|---:|---:|
-| 768 | Official + CE | 4,164 | 4,755 | 3,697 |
-| | **GT** | **3,796** | **4,075** | **3,137** |
-| | | **-8.8%** | **-14.3%** | **-15.1%** |
-| 864 | Official + CE | 4,554 | 5,257 | 4,143 |
-| | **GT** | **4,337** | **4,987** | **4,041** |
-| | | **-4.8%** | **-5.1%** | **-2.5%** |
-| 1152 | Official + CE | 7,123 | 6,967 | 5,494 |
-| | **GT** | **6,793** | **6,534** | **5,237** |
-| | | **-4.6%** | **-6.2%** | **-4.7%** |
+| 768 | Official | 16,025 | 16,066 | 13,950 |
+| | **GT** | **13,149** | **12,260** | **11,554** |
+| | | **-17.9%** | **-23.7%** | **-17.2%** |
+| 864 | Official | 18,384 | 19,191 | 16,926 |
+| | **GT** | **15,205** | **14,811** | **14,201** |
+| | | **-17.3%** | **-22.8%** | **-16.1%** |
+| 1152 | Official | 28,100 | 24,578 | 21,813 |
+| | **GT** | **23,990** | **19,339** | **18,128** |
+| | | **-14.6%** | **-21.3%** | **-16.9%** |
+
+**M2 Pro, against Official + CryptoExtension.**
+
+| set | | keygen | encap | decap |
+|---|---|---:|---:|---:|
+| 768 | Official + CE | 4,156 | 4,754 | 3,703 |
+| | **GT** | **3,789** | **4,079** | **3,138** |
+| | | **-8.8%** | **-14.2%** | **-15.3%** |
+| 864 | Official + CE | 4,547 | 5,253 | 4,150 |
+| | **GT** | **4,340** | **4,981** | **4,045** |
+| | | **-4.6%** | **-5.2%** | **-2.5%** |
+| 1152 | Official + CE | 7,114 | 6,954 | 5,489 |
+| | **GT** | **6,797** | **6,535** | **5,230** |
+| | | **-4.5%** | **-6.0%** | **-4.7%** |
+
+**M2 Pro, against Official exactly as SUPERCOP has it** (portable Keccak, which
+is what the submission contains):
+
+| set | keygen | encap | decap |
+|---|---:|---:|---:|
+| 768 | **-15.5%** | **-20.8%** | **-18.8%** |
+| 864 | **-11.6%** | **-16.8%** | **-12.1%** |
+| 1152 | **-11.5%** | **-16.6%** | **-13.2%** |
+
+The gap between the last two tables is the Keccak backend, and it is most of
+what a naive M2 comparison reports.  Both are true; which to quote depends on
+whether the comparison is to the submission or to what the submission could be.
 
 ## Why the two machines differ, and where the ceiling is  (P91)
 
