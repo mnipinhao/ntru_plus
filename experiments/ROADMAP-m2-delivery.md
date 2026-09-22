@@ -155,17 +155,38 @@ multiply pipe that trade wins by 2%; on M2's four pipes it loses by 36%.
 Official, because P67/P68's lane basis took its `umov`/`strh` from 2.13 to 0.13.
 Extra instructions are nearly free on M2 when they are vector work.
 
-**Both routes to 864 reaching that are closed.**  The lane swap needs four
-components filling four inner lanes and 864 has three (P89).  Fusing the three
-component calls so `st3` can write contiguous components needs three working
-sets co-resident, and `inverse16.S` already peaks at **27 of 32 live vector
-registers** (P94).
+**P95 found a third route and P96 measured it dead.**  P89 ruled out making the
+inner four lanes the *components*; it did not rule out their holding four
+consecutive output positions `p = 3j + c`, mixing the axes.  Six calls still
+cover `p = 0..23`, the tables are blind to the inner lanes, and `invntt16` drops
+from 660 instructions to 439 with a group's four outputs leaving as one
+`STR D`.  It was built and proved bit-exact (`gt864-p96-inverse-store-budget`).
 
-What remains is 30-45 ns: post-indexed `st1` at about 31, or storing the output
-registers contiguously and gathering in a second pass at about 46 with 3 KB of
-extra traffic.  Both risk or cost something.
+It is still a loss, because **the inverse is bound by store count, not by
+instructions, and P95 conserves the store count**: 768 + 192 before, 192 + 768
+after.  The transpose it takes out of `invntt16` reappears in `packed_i9`, whose
+call owns one `c` and so can no longer store four lanes at a time.
 
-**The larger question is whether 864 can do what 768 does and keep Official's
+| | M2 Pro | Cortex-A76 |
+|---|---:|---:|
+| `invntt16` saves | -73.4 ns | -58.7 ns |
+| `packed_i9` pays | +87.4 ns | +332.1 ns |
+| **net** | **+14.0** | **+273.4** |
+
+The 30-45 ns of post-indexed `ST1` this roadmap used to list is also gone:
+`ST1 {v.H}[lane]` needs no repacking but is **+22.3% on A76** -- two µops, and
+it blocks the store pipe -- against -2.0% on M2.  Removing 570 instructions with
+the store count fixed buys 4 ns; cutting stores 128 -> 32 buys 73.
+
+**What survives is widening the output store, which needs the output layout
+free.**  Unconstrained, `invntt16` dumps sixteen whole vectors per call and
+drops the 32 EXT that exist only to feed the UMOV: **-86.8 ns on M2, -77.2 ns on
+A76, `packed_i9` untouched.**  That is 82% of the +106 gap, and it is the
+question the ASCII-diagram framing was really asking.  It is now the top open
+item on 864: can `crepmod3_ternary_asm` and the serializer behind it absorb the
+permutation for free?
+
+**The alternative remains 864 doing what 768 does and keeping Official's
 inverse.**  768's `poly_invntt_decap_scale` is Official's kernel to within one
 instruction, and 768 has the best decapsulation of all nine numbers.
 
@@ -194,7 +215,9 @@ Keygen is +21 and encapsulation -25, so this is decapsulation-specific.
   `experiments/`, contrary to what P85 first said; the schedule was always the
   binding obstacle.
 - **Porting 1152's lane basis to 864's inverse.**  P89: it depends on four
-  components filling four lanes and 864 has three.
+  components filling four lanes and 864 has three.  P95's mixed-axis variant
+  gets around that and P96 still kills it: it relocates stores rather than
+  removing them.  See `experiments/gt864-p96-inverse-store-budget/`.
 - **Specialising `tobytes` on its `full` parameter.**  6 ns for +61% object text.
 - **The single 16-byte store in 1152's `store12`.**  Corrupts 71 of 144 blocks
   in pair order; address order needs eight pairs live.
