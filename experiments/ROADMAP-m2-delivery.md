@@ -65,11 +65,32 @@ because SUPERCOP's copy dropped the SHA3 path that upstream builds by default:
 | | **GT** | **6,519** | **6,130** | **4,986** |
 | | | **-15.1%** | **-21.8%** | **-17.2%** |
 
-The gap between the last two tables is the Keccak backend.  Both are true, but
-they are not equally quotable: the first compares against what upstream's
-`make` produces, the second against what SUPERCOP's maintainers chose to carry.
-**Quote the first.**  The second is worth keeping only as the figure a reviewer
-downloading SUPERCOP would reproduce.
+**M2 Pro, with the Keccak held byte-identical** -- Official's own `CE/fips202.c`
+sponge linked against GT's permutation.  The strictest of the three, P114.
+
+| set | | key generation | encapsulation | decapsulation |
+|---|---|---:|---:|---:|
+| 768 | Official + GT's Keccak | 4,025 | 4,520 | 3,580 |
+| | **GT** | **3,796** | **4,080** | **3,139** |
+| | | **-5.7%** | **-9.7%** | **-12.3%** |
+| 864 | Official + GT's Keccak | 4,399 | 4,997 | 4,004 |
+| | **GT** | **4,148** | **4,675** | **3,866** |
+| | | **-5.7%** | **-6.4%** | **-3.4%** |
+| 1152 | Official + GT's Keccak | 6,887 | 6,591 | 5,276 |
+| | **GT** | **6,514** | **6,140** | **4,991** |
+| | | **-5.4%** | **-6.8%** | **-5.4%** |
+
+GT wins all nine with the symmetric primitive removed from the question.  The
+thinnest cell is 864 decapsulation at -3.4% -- the same cell P111 found carrying
+the worst inverse.  Of each total margin over SUPERCOP's Official, 22-61% is
+SHA3 instructions, a uniform 20-22% is our Keccak kernel being 7.3% faster than
+upstream's, and 19-60% is the arithmetic.
+
+The gap between the second and third tables is the Keccak backend.  All are true, but
+they answer different questions.  **For a claim about Good-Thomas, quote the
+third.**  For the implementation against upstream's default build, the first.
+The SUPERCOP one only as the figure a reviewer downloading the tarball would
+reproduce.
 
 ## Why 768 led on M2: it had a different Keccak  (P109, P110)
 
