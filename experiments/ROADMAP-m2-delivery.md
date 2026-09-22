@@ -229,14 +229,24 @@ in 37% fewer instructions, not a stall.  The GPR parking P28 uses to avoid
 spilling was tested and is not the cause either -- replacing it with stack
 spills changes A76 by 4 cycles and backend stalls not at all.
 
-The route's half is fixed and landed (`b9a3c7f5`).  **What is left is the tail.**
-P29's tail already stores less than the old one (64 against 96); its +258
-instructions are the ternary reduction it performs itself, at **2.48
-instructions per value against `crepmod3`'s 1.13**.  The cause is on record: the
-tail runs on **six of eight lanes**, because `j = 8` has exactly six independent
-problems.  At `crepmod3`'s density those 96 values would cost 109 instructions
-rather than 238 -- about **-71 cycles on A76**, which would take P29's cost there
-to roughly +0.3% against a -1.2% gain on M2.
+The route's half is fixed and landed (`b9a3c7f5`).  **What is left is the tail**,
+and its generator says exactly what is wrong: it calls a six-instruction
+`normalization()` once per `(t, side)` -- **32 times, 192 instructions, for 96
+values, three values a vector.**  Not the six-of-eight the constant tables
+suggest: `j = 8` gives one `(t, side)` only its three components.
+
+| | instructions per value | lanes used |
+|---|---:|---:|
+| `crepmod3` | 0.75 | 8 of 8 |
+| P29's tail | **2.00** | **3 of 8** |
+
+Its store path is already better than the old tail's (128 against 192); the
+whole +258 is this.  Packing the 32 results into twelve full vectors before
+normalising takes 192 to 72, minus what the packing costs: optimistically
+**-53 cycles on A76 and -15 on M2**, or **-22 ns and -4 ns** on decapsulation.
+It needs `gt864-p29-direct-st3/generate.py` changed and the kernel re-run
+through Slothy -- the normalisation is interleaved with the transform that feeds
+it, so it cannot be edited in the allocated assembly.
 
 ### 4. NTRU+864 forward transform: **+26** every operation -- examined, closed
 
