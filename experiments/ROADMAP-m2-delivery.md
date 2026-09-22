@@ -236,13 +236,47 @@ whole 16-byte µop to move two bytes.  Counted that way the inverse writes the
 (+932 µops, +466 cycles) is larger than the inverse's entire +375-cycle gap.
 See `experiments/gt864-p100-forward-and-store-uops/`.
 
-### 5. NTRU+1152 decapsulation, forward transform: **+47**
+### 5. NTRU+1152 forward transform: **decapsulation is a GT win** -- closed
 
-Keygen is +21 and encapsulation -25, so this is decapsulation-specific.
+| operation | M2 | A76 |
+|---|---:|---:|
+| key generation | +23.4 ns | **-361 ns** |
+| encapsulation | +23.4 ns | **-361 ns** |
+| **decapsulation** | **-9.7 ns** | **-425 ns** |
 
-### 6. NTRU+864 key generation, baseinv: **+33**
+The roadmap said +21 / -25 / +47.  Decapsulation is a **win of 10 ns**, for the
+reason item 4 had: Official pays a `poly` copy there (`f = m;`) that GT's
+out-of-place form avoids.  What is real is +23 on key generation and
+encapsulation, the same generic in-place forward gap 864 shows, which P100 found
+has no concentrated lever.  P105.
 
-1152's is -50.
+### 6. NTRU+864 key generation, baseinv: **a GT win** -- closed
+
+| `poly_baseinv`, one call | GT | Official | ratio |
+|---|---:|---:|---:|
+| M2 Pro | 1,334 | 1,349 | **0.99** |
+| Cortex-A76 | 3,979 | 4,157 | **0.96** |
+
+Key generation calls it twice: **-8.6 ns on M2 and -148 on A76**, not the +33
+the roadmap carried.  P105.
+
+### The profiler's record, now complete
+
+| item | profiler | measured | |
+|---|---:|---:|---|
+| 1. 1152 unpack | +157 | +54 | 3x over |
+| 2. 768 encapsulation | +109 | +18 | 6x over, fusion accounting |
+| 2. 768 key generation | +69 | +53 | |
+| 4. 864 forward | +61 / +32 / +25 | +26 uniform | wrong shape |
+| 5. 1152 forward | +21 / -25 / +47 | +23 / +23 / -10 | two signs wrong |
+| 6. 864 baseinv | +33 | **-8.6** | sign wrong |
+| 3. 864 inverse | +106 | **+106** | correct, and the only one timed directly |
+
+**Six of seven were wrong, and the one that was right was never sampled.**  Two
+faults compounded: the sampler's own 5% disagreement on a 2,000 ns bucket
+(P91), and harnesses that gave one side a `poly` copy the real code does not pay
+-- or removed one it does.  Nothing goes on this list again without a direct
+timing, and every comparison is checked against `kem.c`'s aliasing first.
 
 ---
 
