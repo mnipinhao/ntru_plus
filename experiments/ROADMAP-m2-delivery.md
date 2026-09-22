@@ -19,8 +19,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **15,258** | **14,808** | **14,268** |
 | | | **-17.0%** | **-22.8%** | **-15.7%** |
 | 1152 | Official | 28,094 | 24,571 | 21,804 |
-| | **GT** | **24,337** | **19,360** | **18,198** |
-| | | **-13.4%** | **-21.2%** | **-16.5%** |
+| | **GT** | **23,990** | **19,346** | **18,141** |
+| | | **-14.6%** | **-21.3%** | **-16.8%** |
 
 **M2 Pro (CryptoExtension), ns per operation**
 
@@ -33,8 +33,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **4,340** | **4,987** | **4,055** |
 | | | **-4.7%** | **-5.1%** | **-2.1%** |
 | 1152 | Official + CE | 7,123 | 6,967 | 5,494 |
-| | **GT** | **6,958** | **6,541** | **5,241** |
-| | | **-2.3%** | **-6.1%** | **-4.6%** |
+| | **GT** | **6,793** | **6,534** | **5,237** |
+| | | **-4.6%** | **-6.2%** | **-4.7%** |
 
 ## Why the two machines differ, and where the ceiling is  (P91)
 
@@ -74,7 +74,7 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 | **P86** | 1152's serializer folded the way Official folds: `sli`/`ushr` on the pre-transpose lanes instead of a transpose and per-lane `tbl`.  `tobytes_full` 129.2 -> 98.0, `tobytes_small` 92.9 -> 65.4, `frombytes` 79.8 -> 70.9. |
 | **P87** | 864's serializer in six-vector groups, nine bytes a run, six coefficients folded into five halfwords.  `tobytes_full` 123.7 -> 97.2, `tobytes_small` 114.1 -> 69.7.  **564 KB of assembly deleted.** |
 | **P88** | 864 re-encrypts into `buf3`'s tail and verifies instead of the fused compare.  **244 KB more assembly deleted.**  Not adopted at 1152: A76 regresses 86 ns there. |
-| **P88 at 1152** | The fused `poly_tobytes_compare` becomes a re-encrypt into `buf3`'s tail plus `verify`, the arrangement 864 already had.  Decapsulation **-51 ns on M2 (-0.96%)**, +93 on A76 (+0.51%).  Blocked by the old criterion at -40/+79, landed under rule 2.  `gt864-p101-p29-landed` has the rule. |
+| **P88 at 1152** | The fused `poly_tobytes_compare` becomes a re-encrypt into `buf3`'s tail plus `verify`, the arrangement 864 already had.  Decapsulation **-48 ns on M2 (-0.91%)**, +86 on A76 (+0.48%).  Blocked by the old criterion at -40/+79, landed under rule 2.  `gt864-p101-p29-landed` has the rule. |
 | **P29** | 864's inverse: three paired main calls, a direct tail and a full-vector `ST3.4h` route folding the ternary reduction in.  Store µops 972 -> 224, retired instructions 5,362 -> 4,320.  Decapsulation **-38 ns on M2 (-0.93%)**, +118 on A76 (+0.83%); 864's thinnest margin goes -1.1% -> **-2.1%**.  First change under rule 2, and the campaign's first assembly change.  `gt864-p101-p29-landed`. |
 | **P90** | 1152's `cbd1` bit-sliced, `sub` and `triple` unrolled twelve a turn.  78.1 -> 48.5 (beating Official's 51.0), 55.0 -> 32.4, 49.8 -> 27.5. |
 
@@ -114,8 +114,13 @@ these; what mattered was the algorithm and the unroll factor.
 - **M2 measurements use `experiments/gt-p83-m2-supercop-baseline/perop3.c`.**  It
   warms up for three seconds, carries a clock witness and gates on it.  A fresh
   thread on this part sits in the E-cluster band for tens of milliseconds.
-- **Both sides of a KEM-level comparison must be built in the same session with
-  the same flags.**  Rebuilding unchanged source moved 1152 keygen by 66 ns on
+- **A KEM-level comparison must use the Makefile's own `CFLAGS`, and both sides
+  must be built in the same session.**  1152's are
+  `-O3 -std=c11 -D_DEFAULT_SOURCE -DNTRUPLUS1152_ASM_{BASEMUL_RINV,BASEINV_NUM,BASEINV_FINISH}`;
+  a hand-written `cc -O3` drops the three `-D` and silently selects the C
+  fallbacks in `inverse.c`, which inflated key generation by 165 ns and
+  decapsulation by 47 on M2.  The A/B delta survived, the absolute numbers did
+  not.  Rebuilding unchanged source moved 1152 keygen by 66 ns on
   its own; a delta under about 70 ns is layout noise until it survives a rebuild.
 - **The Official baseline is SUPERCOP's**, from the Pi5 at
   `~/supercop-20260831/crypto_kem/ntruplus*/aarch64`, not the vendored tree.
