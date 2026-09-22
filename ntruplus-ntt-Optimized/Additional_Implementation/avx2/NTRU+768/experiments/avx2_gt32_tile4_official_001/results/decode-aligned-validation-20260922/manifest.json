@@ -1,0 +1,72 @@
+{
+  "commands": [
+    [
+      "python3",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/generate_decode_aligned.py",
+      "--check"
+    ],
+    [
+      "cc",
+      "-O3",
+      "-mavx2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tests/test_decode_aligned.c",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/decode_aligned.S",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s",
+      "-o",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/decode-aligned-validation-20260922/test-normal"
+    ],
+    [
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/decode-aligned-validation-20260922/test-normal"
+    ],
+    [
+      "python3",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/audit_decode_aligned.py",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/decode-aligned-validation-20260922/test-normal",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/decode-aligned-validation-20260922/normal"
+    ],
+    [
+      "cc",
+      "-O3",
+      "-mavx2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated",
+      "-O1",
+      "-g",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tests/test_decode_aligned.c",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/decode_aligned.S",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s",
+      "-o",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/decode-aligned-validation-20260922/test-sanitize"
+    ],
+    [
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/decode-aligned-validation-20260922/test-sanitize"
+    ],
+    [
+      "python3",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/audit_decode_aligned.py",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/decode-aligned-validation-20260922/test-sanitize",
+      "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/results/decode-aligned-validation-20260922/sanitize"
+    ]
+  ],
+  "source_sha256": {
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tests/test_decode_aligned.c": "8412c45d3b8584701c7df8b00c639655c9e543d24f76f70211c4173c1c2a60a7",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/decode_aligned.S": "0bea300d19b6ecf513e0fb0fc1f8851c38084482e32f87d06f8e6b8e3d4123ba",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/decode_aligned_mapping.h": "d711d88a57138bb9ab89163e4d2979dd533051bbb15817f34ea140a81bab6255",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/generate_decode_aligned.py": "5cc6746db861a74c362b2647f936b982dedbc48469645143e629ebdd59aa4281",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/tools/audit_decode_aligned.py": "146a43c196eb12c8d5f60f8af235a94c28dcab67d44c2f4a1415bb85c08d3787",
+    "/home/nuc/src/ntru_plus/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s": "0ce9f0b846cc9bdb27458bbee29df9055bc1f02805059b09d9fa48747f966618"
+  },
+  "test_elf_sha256": {
+    "normal": "d24e704ee6c2f80af9adf432a19d60120f893b5a4350d77b2a2f8f60e02397ba",
+    "sanitize": "150d564d8bb652d1d717225360338e9cc83aa4b37f72cfb718fc45821fe2816b"
+  },
+  "all_pass": true
+}
