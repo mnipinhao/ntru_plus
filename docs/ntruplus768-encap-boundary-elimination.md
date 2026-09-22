@@ -121,8 +121,19 @@ used pinned SUPERCOP `cpucycles()`, the common O3GC recipe, CPU 1 with
 
 | Campaign | B3+add+pack StQ2 delta | Full polynomial island StQ2 delta | Full-island favorable launches |
 | --- | ---: | ---: | ---: |
-| `encap-live-b3-q24-short-20260922-a` | +16.46 cycles | −8.10 cycles | 2/3 |
-| `encap-live-b3-q24-short-20260922-b` | +10.63 cycles | +0.08 cycles | 1/3 |
+| `encap-live-b3-q24-short-20260922-a` | +10.67 cycles | −3.15 cycles | 2/3 |
+| `encap-live-b3-q24-short-20260922-b` | +8.04 cycles | −0.29 cycles | 1/3 |
+
+Correction (2026-09-22, function-level research): the former runner averaged
+disjoint quarter slices, not SUPERCOP stabilized quartiles. The table now uses
+the pinned `stq.h` estimator; `summary-corrected-stq.json` supersedes the
+retained historical `summary.json` in each campaign. Raw observations are
+unchanged and their SHA-256 values are recorded. The Python replacement passes
+240 comparisons against the actual pinned C implementation, including odd
+sample counts. The counter is `default-perfevent`, not RDPMC. The historical
+harness also includes timed region/variant dispatch and a sink; correcting its
+estimator does not repair that scope. Do not use these samples for new causal
+component attribution.
 
 The full-island cutpoint starts at PK bytes and r/m coefficients and ends at
 r hash-input bytes and ciphertext bytes; it does not execute `hash_g` or

@@ -5,6 +5,10 @@
 #include "internal.h"
 #include "kat/rng.h"
 
+#ifndef CANDIDATE_LABEL
+#define CANDIDATE_LABEL "live B3→Q24"
+#endif
+
 int ntruplus768_exp001_enc_derand_live_b3_pack(uint8_t *, uint8_t *,
                                                  const uint8_t *, const uint8_t *);
 
@@ -53,6 +57,6 @@ int main(void) {
             return 1;
         }
     }
-    puts("live B3→Q24 KEM: 100 deterministic vectors, invalid PK/CT pass");
+    puts(CANDIDATE_LABEL " KEM: 100 deterministic vectors, invalid PK/CT pass");
     return 0;
 }

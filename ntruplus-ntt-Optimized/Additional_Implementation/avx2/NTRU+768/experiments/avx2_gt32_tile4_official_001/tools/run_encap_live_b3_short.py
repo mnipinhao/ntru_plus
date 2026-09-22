@@ -28,11 +28,12 @@ def command(args: list[str]) -> subprocess.CompletedProcess[str]:
 
 
 def stq(values: list[int]) -> list[float]:
-    sorted_values = sorted(values)
+    """Pinned SUPERCOP 20260831 include/stq.h, including non-multiple-of-4 n."""
+    if not values:
+        raise ValueError("stabilized quartiles require observations")
+    sorted_values = sorted(x for value in values for x in [value] * 8)
     n = len(values)
-    assert n % 4 == 0
-    k = n // 4
-    return [sum(sorted_values[i*k:(i+1)*k])/k for i in (0, 1, 2)]
+    return [sum(sorted_values[i*n:(i+2)*n])/(2*n) for i in (1, 3, 5)]
 
 
 def main() -> None:
