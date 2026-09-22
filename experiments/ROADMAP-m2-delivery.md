@@ -240,10 +240,28 @@ interleaves in registers) remains open behind it.
 inverse.**  768's `poly_invntt_decap_scale` is Official's kernel to within one
 instruction, and 768 has the best decapsulation of all nine numbers.
 
-### 4. NTRU+864 forward transform: **+61** keygen, +32 encaps, +25 decaps
+### 4. NTRU+864 forward transform: **+26** every operation -- examined, closed
 
-Never examined.  1152's is -25 to +47 and 768's is -45 to -5, so 864's forward
-is the outlier.  Cheapest next unknown.
+P100 measured it.  Both sides call `poly_ntt` exactly twice in every operation
+and neither specialises it at 864, so three different figures for one function
+was the tell: they came from the sampling profiler.  In place against in place,
+GT is **850 cycles a call against Official's 804 on M2 and 3,376 against 3,740
+on A76** -- +26.4 ns an operation on M2, a 304 ns cushion on A76.
+
+**There is no lever.**  GT's forward is within 17% of Official on store µops
+(257 against 220, where one full output pass is 108), already has better IPC
+than Official on *both* machines (M2 4.77 against 4.34, A76 1.20 against 0.93),
+and its 563 extra instructions are spread across four classes with no dominant
+term.  Smallest item on this list, not the cheapest.
+
+P100 also fixed the unit: **a store costs per 16 bytes, not per instruction.**
+The same 1,024 bytes written as 64 `STR Q`, 32 `ST1 {2}`, 21 `ST1 {3}` or 16
+`ST1 {4}` all take 31.8 cycles on M2.  Merging stores into wider forms buys
+nothing; `invntt16`'s 128 `STRH` per call are expensive because each occupies a
+whole 16-byte µop to move two bytes.  Counted that way the inverse writes the
+864 coefficients **10.7 times over against Official's 2.0**, and that excess
+(+932 µops, +466 cycles) is larger than the inverse's entire +375-cycle gap.
+See `experiments/gt864-p100-forward-and-store-uops/`.
 
 ### 5. NTRU+1152 decapsulation, forward transform: **+47**
 
