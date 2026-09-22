@@ -16,8 +16,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **13,124** | **12,257** | **11,549** |
 | | | **-18.0%** | **-23.6%** | **-17.1%** |
 | 864 | Official | 18,387 | 19,171 | 16,925 |
-| | **GT** | **15,246** | **14,800** | **14,144** |
-| | | **-17.1%** | **-22.8%** | **-16.4%** |
+| | **GT** | **15,258** | **14,808** | **14,268** |
+| | | **-17.0%** | **-22.8%** | **-15.7%** |
 | 1152 | Official | 28,094 | 24,571 | 21,804 |
 | | **GT** | **23,994** | **19,350** | **18,043** |
 | | | **-14.6%** | **-21.2%** | **-17.2%** |
@@ -30,8 +30,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **3,796** | **4,075** | **3,137** |
 | | | **-8.8%** | **-14.3%** | **-15.1%** |
 | 864 | Official + CE | 4,554 | 5,257 | 4,143 |
-| | **GT** | **4,326** | **4,988** | **4,096** |
-| | | **-5.0%** | **-5.1%** | **-1.1%** |
+| | **GT** | **4,340** | **4,987** | **4,055** |
+| | | **-4.7%** | **-5.1%** | **-2.1%** |
 | 1152 | Official + CE | 7,123 | 6,967 | 5,494 |
 | | **GT** | **6,798** | **6,543** | **5,280** |
 | | | **-4.6%** | **-6.1%** | **-3.9%** |
@@ -74,6 +74,7 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 | **P86** | 1152's serializer folded the way Official folds: `sli`/`ushr` on the pre-transpose lanes instead of a transpose and per-lane `tbl`.  `tobytes_full` 129.2 -> 98.0, `tobytes_small` 92.9 -> 65.4, `frombytes` 79.8 -> 70.9. |
 | **P87** | 864's serializer in six-vector groups, nine bytes a run, six coefficients folded into five halfwords.  `tobytes_full` 123.7 -> 97.2, `tobytes_small` 114.1 -> 69.7.  **564 KB of assembly deleted.** |
 | **P88** | 864 re-encrypts into `buf3`'s tail and verifies instead of the fused compare.  **244 KB more assembly deleted.**  Not adopted at 1152: A76 regresses 86 ns there. |
+| **P29** | 864's inverse: three paired main calls, a direct tail and a full-vector `ST3.4h` route folding the ternary reduction in.  Store µops 972 -> 224, retired instructions 5,362 -> 4,320.  Decapsulation **-38 ns on M2 (-0.93%)**, +118 on A76 (+0.83%); 864's thinnest margin goes -1.1% -> **-2.1%**.  First change under rule 2, and the campaign's first assembly change.  `gt864-p101-p29-landed`. |
 | **P90** | 1152's `cbd1` bit-sliced, `sub` and `triple` unrolled twelve a turn.  78.1 -> 48.5 (beating Official's 51.0), 55.0 -> 32.4, 49.8 -> 27.5. |
 
 **None of it is assembly.**  Three rounds of C intrinsics matching or beating
@@ -152,137 +153,21 @@ and keygen paths simply never got it.  P86's fold is the obvious thing to try;
 768's `pack.S` is hand-written assembly, which after P87 is not an argument for
 leaving it alone.
 
-### 3. NTRU+864 decapsulation, inverse transform: **+106**
+### 3. NTRU+864 decapsulation, inverse transform: **landed, +68 remains**
 
-Measured directly against `poly_invntt_scale` + `poly_crepmod3`, 404.1 ns
-against 298.  P92 reported +87 by letting the official side pay a copy it does
-not pay in situ.
+P29 took the +106 gap against Official down by 38 ns on M2.  What is left is
+**+68 ns**, and it is no longer a store problem: the region now issues 224 store
+µops against Official's 220.
 
-P94 answered why.  GT's Good-Thomas inverse needs **2.02 multiply-class
-instructions per coefficient against Official's 2.27** -- the decomposition
-delivers its 12% -- and **7.89 total against 4.52**, the excess being data
-movement, of which 2.13 per coefficient is `umov` + `strh`.  On A76's single
-multiply pipe that trade wins by 2%; on M2's four pipes it loses by 36%.
-
-1152 is the control: 5.89 instructions per coefficient and only **1.04x**
-Official, because P67/P68's lane basis took its `umov`/`strh` from 2.13 to 0.13.
-Extra instructions are nearly free on M2 when they are vector work.
-
-**P95 found a third route and P96 measured it dead.**  P89 ruled out making the
-inner four lanes the *components*; it did not rule out their holding four
-consecutive output positions `p = 3j + c`, mixing the axes.  Six calls still
-cover `p = 0..23`, the tables are blind to the inner lanes, and `invntt16` drops
-from 660 instructions to 439 with a group's four outputs leaving as one
-`STR D`.  It was built and proved bit-exact (`gt864-p96-inverse-store-budget`).
-
-It is still a loss, because **the inverse is bound by store count, not by
-instructions, and P95 conserves the store count**: 768 + 192 before, 192 + 768
-after.  The transpose it takes out of `invntt16` reappears in `packed_i9`, whose
-call owns one `c` and so can no longer store four lanes at a time.
-
-| | M2 Pro | Cortex-A76 |
-|---|---:|---:|
-| `invntt16` saves | -73.4 ns | -58.7 ns |
-| `packed_i9` pays | +87.4 ns | +332.1 ns |
-| **net** | **+14.0** | **+273.4** |
-
-The 30-45 ns of post-indexed `ST1` this roadmap used to list is also gone:
-`ST1 {v.H}[lane]` needs no repacking but is **+22.3% on A76** -- two µops, and
-it blocks the store pipe -- against -2.0% on M2.  Removing 570 instructions with
-the store count fixed buys 4 ns; cutting stores 128 -> 32 buys 73.
-
-**What survives is widening the output store, which needs the output layout
-free.**  Unconstrained, `invntt16` dumps sixteen whole vectors per call and
-drops the 32 EXT that exist only to feed the UMOV: **-86.8 ns on M2, -77.2 ns on
-A76, `packed_i9` untouched.**  That is 82% of the +106 gap.
-
-P97 priced it.  `crepmod3_ternary_asm` is a streaming elementwise loop and
-absorbs any permutation free; the serializer is not in this path at all
-(`poly_tobytes` runs on `f`, never on `m`).  The real consumers are
-`poly_ntt(&f, &m)` -- GT's own, and roughly neutral, since its `ld3` de-interleaves
-the `c` axis a free layout never interleaved -- and **`poly_sotp_decode`, which
-bit-packs coefficient `i` into bit `i` and so pins natural order.**
-
-A dedicated repack pass is the cheapest materialisation: `ZIP .2D` + `ST3`,
-because `27g + 3j + c` *is* ST3's interleave.  M2 33.0 ns, A76 93.7.
-
-| | M2 Pro | Cortex-A76 |
-|---|---:|---:|
-| free layout + repack pass | **-53.8 ns** | **+16.5 ns** |
-
-A76 fails: its floor -- loads, zips and plain stores with no interleave at all
--- is already 69.3 of the 77.2 saved.  The stores P96 removes are free on A76
-because they hide in the multiply-port shadow; a separate movement pass has
-nothing to hide behind.
-
-P98 then closed both P97 candidates and reopened a better one.
-
-- **Slothy makes the repack worse**, on both machines: four regions, all
-  OPTIMAL, 63 cycles each at **IPC 1.57**.  M2 32.5 -> 43.1, A76 107.2 -> 116.1.
-  The pass is store-issue bound; scheduling does not change µop counts.
-- **P97's `16 STR Q` pricing was invalid.**  Every group's final register
-  carries its four outputs in *both* halves (measured 32/32): the last step is
-  the symmetric reduction `ADD v, v, EXT(v)`.  The honest P97 net is **-40 ns on
-  M2, +35 on A76**.  Merging two groups with `ZIP1 .2D` would fix it but cannot
-  be retrofitted -- only 1 of 16 pairings is feasible in the allocated kernel.
-
-**`gt864-p28-paired-i16` and `gt864-p29-direct-st3` already built it**: paired
-main, direct natural-order output through full-vector `ST3.4h`, full Slothy,
-oracle and KAT gated.  Rejected 14 and 7 days ago on A76.  P29 retires 1,042
-fewer instructions and **748 fewer stores** (972 -> 224) for the same work:
-
-| main+tail+ternary | M2 Pro | Cortex-A76 |
-|---|---:|---:|
-| production | 274.9 ns | 1,157.0 ns |
-| **P29** | **236.3 (-14.1%)** | 1,289.3 (+11.4%) |
-
-**-38.6 ns on M2, 36% of the whole +106 inverse deficit, from a finished
-design.**  The blind spot with a number on it.
-
-P29 still fails 兩台都不得退步: its IPC falls from 1.7056 to 1.3872, so A76 loses
-more to the dependency shape than the retired instructions win back.  The
-problem is now sharply posed and is not about store addressing: **keep P29's
-store shape without its issue-width collapse.**  Both symbolic sources are on
-disk.  See `experiments/gt864-p98-p29-on-m2/` and
-`experiments/gt864-p97-inverse-layout-consumers/`.
-
-The never-materialise route (`poly_ntt` reads the free layout, `poly_sotp_decode`
-interleaves in registers) remains open behind it.
-
-#### Two smaller things inside the inverse, both measured, neither large
-
-**The tail runs on six of eight lanes.**  `invntt16_tail_constants` is
-`[A,A,A,B,B,B,0,0]` in **64 of 64** rows and `invntt16_tail_scale` in 32 of 32;
-the kernel extracts lanes `[0] [1] [2]` only, 32 times each.  The waste is
-structural, not a table-layout accident: `j = 8` has exactly **six** independent
-problems (3 components x 2 halves) and six cannot fill eight lanes without
-restructuring the transform.  Ceiling if it could: 25% of the tail's 592
-instructions, no change to its 96 stores.  The tail's real waste is the same as
-the main kernel's -- 96 `STRH`, each burning a 16-byte µop to move two bytes.
-P29's tail already fixes that with one `STR W` plus one `STRH` per group, 64
-µops instead of 96.
-
-**Three quarters of the inverse's loads are twiddles, not data.**
-
-| load µops | data | tables |
-|---|---:|---:|
-| `inverse9` x12 | 108 | 216 |
-| `inverse16` x6 | 96 | **384** |
-| `inverse16_tail` | 16 | 70 |
-| total | 220 | **706** |
-
-Official's whole inverse issues 228 loads.  The concentration is `inverse16`
-reading all 64 rows of `invntt16_main_constants` on every one of its six calls:
-6,144 bytes carrying **128 distinct halfwords**, because every row is
-`[A,A,A,A,B,B,B,B]`.  The 4x redundancy is real but hard to spend: an indexed
-multiply (`MUL Vd.8H, Vn.8H, Vm.H[i]`) broadcasts one lane and cannot produce
-two values in one operation, and the A/B split is the `h` axis, so exploiting it
-means separating the halves into different registers -- a restructure of the
-same kind P29 already represents.
-
-**The alternative remains 864 doing what 768 does and keeping Official's
-inverse.**  768's `poly_invntt_decap_scale` is Official's kernel to within one
-instruction, and 768 has the best decapsulation of all nine numbers.
+The one thing left on this kernel is P29's own next gate.  Its IPC on A76 is
+**1.41 against the old path's 1.93**, which is why it costs 300 cycles there
+while retiring 1,042 fewer instructions.  Break-even needs **1.56, 11% more**;
+at production's issue width those 4,320 instructions would take 2,234 cycles and
+beat the old path on *both* machines, turning the +0.83% A76 cost into a gain.
+That is a producer/consumer dependency question -- do not reschedule P29 or
+optimise only its stores -- and both symbolic sources are on disk in
+`gt864-p28-paired-i16/candidate-main.sym.S` and
+`gt864-p29-direct-st3/candidate-main-route.sym.S`.
 
 ### 4. NTRU+864 forward transform: **+26** every operation -- examined, closed
 
