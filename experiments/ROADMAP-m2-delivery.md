@@ -236,6 +236,37 @@ disk.  See `experiments/gt864-p98-p29-on-m2/` and
 The never-materialise route (`poly_ntt` reads the free layout, `poly_sotp_decode`
 interleaves in registers) remains open behind it.
 
+#### Two smaller things inside the inverse, both measured, neither large
+
+**The tail runs on six of eight lanes.**  `invntt16_tail_constants` is
+`[A,A,A,B,B,B,0,0]` in **64 of 64** rows and `invntt16_tail_scale` in 32 of 32;
+the kernel extracts lanes `[0] [1] [2]` only, 32 times each.  The waste is
+structural, not a table-layout accident: `j = 8` has exactly **six** independent
+problems (3 components x 2 halves) and six cannot fill eight lanes without
+restructuring the transform.  Ceiling if it could: 25% of the tail's 592
+instructions, no change to its 96 stores.  The tail's real waste is the same as
+the main kernel's -- 96 `STRH`, each burning a 16-byte µop to move two bytes.
+P29's tail already fixes that with one `STR W` plus one `STRH` per group, 64
+µops instead of 96.
+
+**Three quarters of the inverse's loads are twiddles, not data.**
+
+| load µops | data | tables |
+|---|---:|---:|
+| `inverse9` x12 | 108 | 216 |
+| `inverse16` x6 | 96 | **384** |
+| `inverse16_tail` | 16 | 70 |
+| total | 220 | **706** |
+
+Official's whole inverse issues 228 loads.  The concentration is `inverse16`
+reading all 64 rows of `invntt16_main_constants` on every one of its six calls:
+6,144 bytes carrying **128 distinct halfwords**, because every row is
+`[A,A,A,A,B,B,B,B]`.  The 4x redundancy is real but hard to spend: an indexed
+multiply (`MUL Vd.8H, Vn.8H, Vm.H[i]`) broadcasts one lane and cannot produce
+two values in one operation, and the A/B split is the `h` axis, so exploiting it
+means separating the halves into different registers -- a restructure of the
+same kind P29 already represents.
+
 **The alternative remains 864 doing what 768 does and keeping Official's
 inverse.**  768's `poly_invntt_decap_scale` is Official's kernel to within one
 instruction, and 768 has the best decapsulation of all nine numbers.
