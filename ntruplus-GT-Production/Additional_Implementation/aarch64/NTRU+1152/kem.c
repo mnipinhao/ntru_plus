@@ -302,7 +302,23 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
     poly_cbd1(&f, buf3 + NTRUPLUS_SSBYTES);
     poly_ntt(&f, &f);
-    fail |= poly_tobytes_compare(buf1, &f);
+
+    /*
+     * Re-encrypt and compare, the arrangement NTRU+864 already uses.  The
+     * serialized ciphertext goes into the tail of buf3, which is exactly
+     * NTRUPLUS_POLYBYTES long once the shared-secret prefix is excluded, and
+     * whose seed bytes poly_cbd1 has just consumed.  The leading
+     * NTRUPLUS_SSBYTES are untouched, so ss can still be read from them below,
+     * and buf3 is cleared on the way out either way.
+     *
+     * P88 measured the fused compare at 167.2 ns against 119.3 for this on M2
+     * and rejected the swap on Cortex-A76's +79 ns, where the scattered narrow
+     * loads of the expected bytes are nearly free.  It lands now under the
+     * amended promotion criterion: the A76 cost is 0.44% of decapsulation and
+     * the M2 gain is 0.76%.
+     */
+    poly_tobytes(buf3 + NTRUPLUS_SSBYTES, &f);
+    fail |= verify(buf1, buf3 + NTRUPLUS_SSBYTES, NTRUPLUS_POLYBYTES);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = buf3[i] & ~(-fail);
