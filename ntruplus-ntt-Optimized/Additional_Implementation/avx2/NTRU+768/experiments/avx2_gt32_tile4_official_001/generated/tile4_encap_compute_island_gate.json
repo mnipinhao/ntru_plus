@@ -1,0 +1,118 @@
+{
+  "A_live_B3_to_ciphertext": {
+    "decision": "current-schedule-hard-stop",
+    "finalizer_output_store_instruction_indices": [
+      127,
+      128,
+      129,
+      130
+    ],
+    "first_three_output_store_instruction_indices": [
+      39,
+      63,
+      87
+    ],
+    "needed_new_mechanism": "exact reallocation/interleave or explicitly priced h/r operand reload; then a compact block Q24 consumer",
+    "not_proved": "an alternative B3 schedule is impossible or slower",
+    "question": "can raw partial results and final c be consumed without the existing materializations?",
+    "retain_results_with_identical_instruction_schedule": [
+      {
+        "counterfactual_peak": 17,
+        "fit_without_rescheduling": false,
+        "original_peak_in_interval": 16,
+        "results_retained": 1
+      },
+      {
+        "counterfactual_peak": 18,
+        "fit_without_rescheduling": false,
+        "original_peak_in_interval": 16,
+        "results_retained": 2
+      },
+      {
+        "counterfactual_peak": 16,
+        "fit_without_rescheduling": true,
+        "original_peak_in_interval": 13,
+        "results_retained": 3
+      }
+    ],
+    "source_loop_peak_YMM": 16
+  },
+  "B_live_m_terminal_to_MulAdd": {
+    "M_blocks_per_iteration": 2,
+    "decision": "direct-unchanged-helper-link-not-allocated",
+    "first_block_store_instruction_indices": [
+      149,
+      150,
+      151,
+      152
+    ],
+    "forward_loop_iterations": 6,
+    "needed_new_mechanism": "consume m planes one at a time or reload h/r on a bounded block schedule; protect unread frontend scratch before writing c",
+    "not_proved": "a bounded alternative allocation is impossible or slower",
+    "planes_per_block": 4,
+    "question": "can m's single-consumer planes flow directly into h*r+m?",
+    "second_block_store_instruction_indices": [
+      183,
+      184,
+      185,
+      186
+    ],
+    "source_basemul_peak_YMM": 16,
+    "source_loop_peak_YMM": 14
+  },
+  "C_asymmetric_ingress": {
+    "decision": "mapping-only until a new consumer schedule removes a full pass",
+    "h": "decoder-natural packet only qualifies if quartic arithmetic consumes it without recreating full M",
+    "prior_D01": "routing moved to consumer; no new mechanism in unchanged schedule",
+    "r": "M remains materialized because both hash and arithmetic use it"
+  },
+  "control": {
+    "c": "B3 raw results, late R^2 finalizer, add-m, Q24 serializer",
+    "h": "early PK decode/validate to materialized M",
+    "m": "materialized M; one arithmetic consumer",
+    "per_encap": {
+      "B3_late_finalizer_reloads": 36,
+      "B3_partial_raw_stores": 36,
+      "c_final_stores": 48,
+      "c_serializer_reloads": 48,
+      "m_basemul_reloads": 48,
+      "m_terminal_stores": 48,
+      "separate_add_c_reloads": 48,
+      "separate_add_c_stores": 48
+    },
+    "r": "materialized M; two consumers: hash packing and BaseMul"
+  },
+  "evidence_level": "expanded reachable source and historical benchmark; not linked allocation or new timing",
+  "historical_controls": {
+    "serializer_side_sum_m": {
+      "correctness": "100 complete Encap vectors, byte exact",
+      "decision": "placement-sensitive rejection; not a new prototype",
+      "mechanism": "add m inside existing Q24 serializer",
+      "normal_full_encap_tsc_delta": -52.246,
+      "removed_c_loads_and_stores_each": 48,
+      "reversed_full_encap_tsc_delta": 14.2585
+    },
+    "wire_packet_montgomery": {
+      "complete_island_cycle_delta_single_packet": 345.67,
+      "decision": "reject old realization; aggregated-lambda model is separate and unpriced"
+    }
+  },
+  "prototype_decision": "zero authorized: A/B require exact 16-YMM machine schedules; C has no distinct mechanism yet",
+  "range_contract": {
+    "applies_to": "unchanged arithmetic and representatives only; rescheduling requires pre-operation replay",
+    "input": "CBD1 r and SOTP m are ternary; validated h is [0,3456]",
+    "refined_forward_abs_bound": 15592,
+    "refined_post_add_abs_bound": 17448,
+    "serializer_signed_domain_checked": 65536
+  },
+  "schema": "gt768-encap-compute-islands-source-gate-v1",
+  "source_sha256": {
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/basemul.s": "90cf6cc1950ecdc736681ae022646461abff4b0e09dc20035d5c334ddd1437a0",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/encap.c": "c6707654ec50808b07d73662fa25da56551219d9b14926eb8daa750a541fa8b9",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/ntt_m.s": "b53b5b91997297c0e6b5a4a58ca146de56dc6098f84beef1eb10d2e61a093fbe",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/clean/avx2-gt32-clean/pack.s": "0ce9f0b846cc9bdb27458bbee29df9055bc1f02805059b09d9fa48747f966618",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_encap_range_refined.json": "d48daa345653b98b75402dbbeb751e9c62074210b4a0b385d0d14272bf4da228",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/generated/tile4_gt_vector_mapping.json": "0e8bdcfa76daa1862b291e22065b55ffb7992848562399fbbb87e37f85ba25cb",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_gt32_tile4_official_001/src/tile4_q24_codec_asm.S": "1d1efdb04218820f38d6a1d8136c7c82c5caacca0826202073741570a168c299"
+  }
+}
