@@ -16,8 +16,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **13,124** | **12,257** | **11,549** |
 | | | **-18.0%** | **-23.6%** | **-17.1%** |
 | 864 | Official | 18,387 | 19,171 | 16,925 |
-| | **GT** | **15,258** | **14,808** | **14,268** |
-| | | **-17.0%** | **-22.8%** | **-15.7%** |
+| | **GT** | **15,255** | **14,812** | **14,248** |
+| | | **-17.0%** | **-22.7%** | **-15.8%** |
 | 1152 | Official | 28,094 | 24,571 | 21,804 |
 | | **GT** | **23,990** | **19,346** | **18,141** |
 | | | **-14.6%** | **-21.3%** | **-16.8%** |
@@ -30,8 +30,8 @@ before every timed batch, clock-gated harness:
 | | **GT** | **3,796** | **4,075** | **3,137** |
 | | | **-8.8%** | **-14.3%** | **-15.1%** |
 | 864 | Official + CE | 4,554 | 5,257 | 4,143 |
-| | **GT** | **4,340** | **4,987** | **4,055** |
-| | | **-4.7%** | **-5.1%** | **-2.1%** |
+| | **GT** | **4,338** | **4,986** | **4,045** |
+| | | **-4.7%** | **-5.2%** | **-2.4%** |
 | 1152 | Official + CE | 7,123 | 6,967 | 5,494 |
 | | **GT** | **6,793** | **6,534** | **5,237** |
 | | | **-4.6%** | **-6.2%** | **-4.7%** |
@@ -75,6 +75,7 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 | **P87** | 864's serializer in six-vector groups, nine bytes a run, six coefficients folded into five halfwords.  `tobytes_full` 123.7 -> 97.2, `tobytes_small` 114.1 -> 69.7.  **564 KB of assembly deleted.** |
 | **P88** | 864 re-encrypts into `buf3`'s tail and verifies instead of the fused compare.  **244 KB more assembly deleted.**  Not adopted at 1152: A76 regresses 86 ns there. |
 | **P88 at 1152** | The fused `poly_tobytes_compare` becomes a re-encrypt into `buf3`'s tail plus `verify`, the arrangement 864 already had.  Decapsulation **-48 ns on M2 (-0.91%)**, +86 on A76 (+0.48%).  Blocked by the old criterion at -40/+79, landed under rule 2.  `gt864-p101-p29-landed` has the rule. |
+| **P106** | 864's inverse route stores one `ST3.8H` a group instead of two `ST3.4H`: the eight-lane components are `c0 = (A.lo\|D.lo)`, `c1 = (A.hi\|D.hi)`, `c2 = C`, so two `ZIP .2D` replace three `EXT`.  Substituting plain stores prices the interleave at **136 cycles on A76 and 33 on M2** -- A76 charges four times what M2 does.  Decapsulation **-18 ns on A76 and -5 on M2**, both machines.  `gt864-p106-p29-a76`. |
 | **P29** | 864's inverse: three paired main calls, a direct tail and a full-vector `ST3.4h` route folding the ternary reduction in.  Store µops 972 -> 224, retired instructions 5,362 -> 4,320.  Decapsulation **-38 ns on M2 (-0.93%)**, +118 on A76 (+0.83%); 864's thinnest margin goes -1.1% -> **-2.1%**.  First change under rule 2, and the campaign's first assembly change.  `gt864-p101-p29-landed`. |
 | **P90** | 1152's `cbd1` bit-sliced, `sub` and `triple` unrolled twelve a turn.  78.1 -> 48.5 (beating Official's 51.0), 55.0 -> 32.4, 49.8 -> 27.5. |
 
@@ -221,15 +222,21 @@ P29 took the +106 gap against Official down by 38 ns on M2.  What is left is
 **+68 ns**, and it is no longer a store problem: the region now issues 224 store
 µops against Official's 220.
 
-The one thing left on this kernel is P29's own next gate.  Its IPC on A76 is
-**1.41 against the old path's 1.93**, which is why it costs 300 cycles there
-while retiring 1,042 fewer instructions.  Break-even needs **1.56, 11% more**;
-at production's issue width those 4,320 instructions would take 2,234 cycles and
-beat the old path on *both* machines, turning the +0.83% A76 cost into a gain.
-That is a producer/consumer dependency question -- do not reschedule P29 or
-optimise only its stores -- and both symbolic sources are on disk in
-`gt864-p28-paired-i16/candidate-main.sym.S` and
-`gt864-p29-direct-st3/candidate-main-route.sym.S`.
+P106 took P29's A76 cost apart and the IPC story was wrong.  Per component:
+**the paired kernel is a 34-cycle win**; the regression is **+180 in the tail and
++148 in the route**.  Its low IPC is a consequence of doing the same arithmetic
+in 37% fewer instructions, not a stall.  The GPR parking P28 uses to avoid
+spilling was tested and is not the cause either -- replacing it with stack
+spills changes A76 by 4 cycles and backend stalls not at all.
+
+The route's half is fixed and landed (`b9a3c7f5`).  **What is left is the tail.**
+P29's tail already stores less than the old one (64 against 96); its +258
+instructions are the ternary reduction it performs itself, at **2.48
+instructions per value against `crepmod3`'s 1.13**.  The cause is on record: the
+tail runs on **six of eight lanes**, because `j = 8` has exactly six independent
+problems.  At `crepmod3`'s density those 96 values would cost 109 instructions
+rather than 238 -- about **-71 cycles on A76**, which would take P29's cost there
+to roughly +0.3% against a -1.2% gain on M2.
 
 ### 4. NTRU+864 forward transform: **+26** every operation -- examined, closed
 
