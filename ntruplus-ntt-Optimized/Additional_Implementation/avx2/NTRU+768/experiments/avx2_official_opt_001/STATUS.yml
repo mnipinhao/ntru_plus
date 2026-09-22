@@ -267,6 +267,27 @@ round10_inverse_ct_level0_scale:
     complete_decap: 1/3
   serious_and_native: not_run_failed_short_gate
   clean_production: unchanged
+round12_serialize_compare:
+  date: 2026-09-22
+  control: frozen_caller_lazy_qual001
+  implementation: avx2-officialopt-lazy-serialize-compare-exp004
+  source_generator: tools/generate_serialize_compare.py
+  correctness: 10003_primitive_cases_100_KEM_invalid_PK_CT_SK_guard_page_immutability_ASan_UBSan
+  retry: genuine_controlled_g_zero_and_injected_f_failure_pass_natural_f_failure_not_covered
+  linked: 692_bytes_aligned32_peak14_YMM_no_stack_spill_calls_or_vector_stores
+  serious_delta_cycles:
+    serialize_verify: -27.60
+    complete_decap: -49.09
+  serious_favorable_each: 9/9
+  native_delta_vs_caller_lazy:
+    keypair: 44.39
+    enc: -133.88
+    dec: -44.13
+  paired_primary_decap_CI95: [-32.19, 71.54]
+  paired_reversed_aslr_off_enc_CI95: [52.13, 111.43]
+  decision: local_gain_but_not_qualified_stop_realization_no_clean_change
+  second_ASM_slot: unused_BaseInv_complete_schedule_pending
+  GS_and_Yang_proof: pending_not_completed_by_this_gate
 round11_inverse_ct_cohort_mechanism_controls:
   date: 2026-09-21
   class: namespaced_research_ASM_same_elf_diagnostic_not_native
@@ -293,3 +314,216 @@ round11_inverse_ct_cohort_mechanism_controls:
   pmu: results/officialopt-inverse-ct-controls-pmu-20260921.json
   wresident_retired_load_delta_vs_cohort_per_inverse_approx: -29.05
   native_and_clean_production: not_run_no_Official_inverse_win
+round13_yang_tail_proof:
+  date: 2026-09-22
+  class: conditional_executable_model_no_new_ASM_no_timing
+  tool: tools/prove_yang_tail.py
+  result: results/yang-tail-proof-20260922.json
+  mechanism: delay_radix3_alpha_compose_trinomial_shear_and_final_scale
+  full_inverse_montgomery: {wresident: 238, direct_matrix: 222, factored: 222}
+  barrett_vectors: 40
+  local_cases: 18048
+  existing_linked_control_anchor_cases: 784
+  consumer_exhaustive_words: 8577
+  range: conditional_on_inherited_prefix_input_abs_7644
+  direct_matrix_preoperation_bound: 27893
+  factored_preoperation_bound: 31802
+  caller_BaseMulScale_input_closure: pending
+  full_new_tail_allocation: pending_only_matrix_microkernel_allocated
+  constant_cost: increases_not_free_lunch
+  next: close_caller_range_and_full_tail_lowering_before_ASM
+  clean_production: unchanged
+round14_yang_caller_schedule_closure:
+  class: source_instruction_range_and_executable_schedule_no_new_ASM_no_timing
+  tool: tools/close_yang_contract.py
+  artifact: results/yang-closure-schedule-20260923.json
+  actual_BaseMulScale_inputs: canonical_decoded_c_f_0_to_3456
+  BaseMulScale_output_abs_bound: 7644
+  coverage: all_accepted_decoder_inputs_including_canonical_invalid_CT_SK
+  source_instruction_arithmetic_rows: 1152
+  machine_raw_and_quartic_oracle_cases: 1003
+  decoder_values: 4096
+  decoder_single_position_boundaries: 2304
+  tail_cases_each: 160
+  tail_peak_YMM_each: 10
+  compact_loop_register_and_address_replay: pass_all_8_iterations_each_loop
+  matrix_add_sub_bound: 27891
+  factored_add_sub_bound: 31798
+  full_inverse_montgomery_each: 222
+  full_inverse_Barrett_each: 40
+  new_repair_or_scratch: none
+  recommended_next_ASM: factored_alpha_level0_final_scale
+  linked_new_candidate_and_performance: not_verified
+  production: unchanged
+round15_yang_factored_ASM_short:
+  class: namespaced_ASM_and_SUPERCOP_derived_short_not_Native
+  generator: tools/generate_yang_factored.py
+  source: asm/ntruplus768_officialopt_invntt_yang_factored.s
+  audit: results/yang-factored-linked.json
+  correctness: 5003_direct_1003_BaseMulScale_160_raw_model_128_guard_100_valid_100_tampered_CT_100_invalid_SK
+  sanitizer: ASan_UBSan_pass_LSan_disabled
+  text_bytes: 2300
+  private_constant_bytes: 13536
+  tail_peak_YMM: 10
+  total_inverse_Montgomery: 222
+  Barrett_vectors: 40
+  caller_policy: frozen_caller_lazy_both_arms_only_inverse_substituted
+  counter: default_perfevent_not_RDPMC
+  Official_GS_delta_cycles: {inverse: 17.80, inverse_crepmod3: 13.69, complete_decap: 52.25}
+  Official_favorable_each: 0/3
+  wresident_delta_cycles: {inverse: 11.58, inverse_crepmod3: 3.41, complete_decap: 12.48}
+  wresident_favorable: {inverse: 0/3, inverse_crepmod3: 0/3, complete_decap: 1/3}
+  decision: stop_realization_no_serious_Native_or_clean_change
+round16_yang_222_schedule_reduction_audit:
+  class: executable_model_range_allocation_no_new_ASM_no_timing
+  tool: tools/audit_yang_followup.py
+  artifact: results/yang-222-schedule-reduction-audit.json
+  scheduling_only:
+    inverse_Montgomery: 222
+    Barrett: 40
+    tail_peak_YMM: 11
+    tail_loop_iterations: 28
+    loop_control_instruction_delta: -48
+    constant_operand_delta: 0
+    raw_exact_model_fixtures: 160
+  reduction_only:
+    inverse_Montgomery: 222
+    Barrett: 32
+    remove: upper_radix3_S0_eight_vectors
+    retain: prefix_24_and_lower_radix3_S0_eight
+    max_signed_add_sub_abs: 32189
+    final_abs_bound: 2547
+    residue_model_fixtures: 160
+    other_removals: interval_insufficient_not_proven_necessary_or_reachable_overflow
+  finalizer_vectors: 96_distinct_of_96_no_simple_dedup_credit
+  next: separate_schedule_only_and_reduction_only_machine_candidates
+  linked_new_candidate_and_performance: not_verified
+  production: unchanged
+round17_yang_pair32_combined_ASM:
+  authorization: user_requested_stacked_schedule_and_reduction
+  generator: tools/generate_yang_pair32.py
+  source: asm/ntruplus768_officialopt_invntt_yang_pair32.s
+  audit: results/yang-pair32-linked.json
+  validation: results/yang-pair32-validation.json
+  full_inverse_Montgomery: 222
+  Barrett_vectors: 32
+  tail_peak_YMM: 11
+  tail_loop_iterations: 28
+  text_bytes: 2692
+  text_delta_vs_factored: 392
+  private_constant_bytes: 13536
+  new_stack_spill_scratch: none
+  max_signed_add_sub_abs: 32189
+  final_abs_bound: 2547
+  correctness: 5003_direct_1003_BaseMulScale_160_raw_machine_tail_128_guard_100_valid_100_tampered_CT_100_invalid_SK
+  sanitizer: C_harness_ASan_UBSan_pass_LSan_disabled
+  regeneration: identical_ASM_and_lowering_JSON
+  performance: not_measured
+  next: matched_combined_vs_factored_and_Official_GS_cycle_counter_diagnostic
+  production: unchanged
+round18_yang_pair32_short:
+  class: SUPERCOP_derived_cycle_counter_diagnostic_not_Native
+  runner: tools/run_yang_short.py
+  candidate_option: pair32
+  host: CPU1_performance_turbo_disabled_normal_ASLR_on
+  counter: default_perfevent_1400000000_not_RDPMC
+  launches_per_comparison: 3
+  caller: both_frozen_caller_lazy_only_inverse_differs
+  factored_delta: {inverse: -10.39, inverse_crepmod3: -5.29, complete_decap: -10.39}
+  factored_favorable: {inverse: 3/3, inverse_crepmod3: 3/3, complete_decap: 2/3}
+  Official_GS_delta: {inverse: 8.63, inverse_crepmod3: 3.70, complete_decap: 29.36}
+  Official_GS_favorable_each: 0/3
+  campaigns:
+    - results/yang-pair32-vs-factored-short-20260923
+    - results/yang-pair32-vs-official-short-20260923
+  code_footprint_conclusion: combined_local_gain_survives_but_392B_isolated_cost_not_measured
+  decision: local_improvement_only_no_serious_Native_clean_promotion
+round19_yang_constant_reuse_research:
+  class: source_and_executable_model_no_new_ASM_no_timing
+  tool: tools/research_yang_constant_reuse.py
+  artifact: results/yang-constant-reuse-research.json
+  stage5_same_packet_reuse: 12_constant_vector_loads_per_inverse_candidate
+  stage5_proof: byte_identical_constants_and_unclobbered_ymm15_ymm2
+  prefix_table: {allocated_bytes: 7680, distinct_factor_pairs: 11, simple_deduplicated_bytes: 704}
+  prefix_dedup_runtime_load_delta: 0_without_new_schedule
+  shared_finalizer:
+    identity: lower_constant_equals_twice_upper_mod_q
+    final_constant_vectors: 96_to_48
+    tail_constant_operands: 186_to_138
+    explicit_vector_loads_delta: 48
+    vector_adds_delta: 24
+    modeled_tail_instruction_rows: 986_to_1058
+    peak_YMM: 11_to_15
+    full_inverse_Montgomery: 222_unchanged
+    full_inverse_Barrett: 32_unchanged
+    max_signed_add_sub_abs: 32189
+    final_abs_bound: 3586
+    residue_fixtures: 160
+  fixed_radix3_whole_vector_gauge_minimum: 56_chains_per_inverse
+  gauge_minimum_scope: restricted_anchor_family_not_global_lower_bound
+  next: stage5_constant_reload_elimination_linked_prototype_before_cycle_claim
+  production: unchanged
+round20_yang_stage5reuse_ASM_short:
+  class: namespaced_ASM_linked_audit_and_SUPERCOP_derived_short_not_Native
+  generator: tools/generate_yang_stage5reuse.py
+  source: asm/ntruplus768_officialopt_invntt_yang_stage5reuse.s
+  linked_audit: results/yang-stage5reuse-linked.json
+  removed_constant_loads_per_inverse: 12
+  arithmetic_range_layout_scale: unchanged_from_pair32
+  symbol_text_bytes: {pair32: 2692, stage5reuse: 2692}
+  alignment: entry_and_constant_tables_32B
+  raw_differential: 5003_pair32_cases_bit_exact
+  Official_differential: 5003_direct_1003_BaseMulScale_100_valid_Decap_100_tampered_CT_100_invalid_SK
+  guard_page: 128_signed_corner_cases
+  sanitizer: C_harness_ASan_UBSan_pass_LSan_disabled
+  counter: default_perfevent_1400000000_not_RDPMC
+  short_delta_cycles_candidate_minus_pair32:
+    normal_A: {inverse: 0.64, inverse_crepmod3: -0.74, complete_decap: -54.02}
+    normal_confirmation: {inverse: -0.97, inverse_crepmod3: -1.55, complete_decap: -74.14}
+    reversed: {inverse: -2.18, inverse_crepmod3: -1.42, complete_decap: 98.10}
+  placement_control_scope: link_order_also_changes_other_symbol_placement
+  campaigns:
+    - results/yang-stage5reuse-vs-pair32-short-20260923
+    - results/yang-stage5reuse-vs-pair32-confirm-20260923
+    - results/yang-stage5reuse-vs-pair32-reversed-20260923
+  decision: local_structural_win_no_robust_caller_cycle_gain_no_serious_Native_or_clean_promotion
+round21_mlkem_native_style_batch_harness:
+  class: reusable_batch_counter_method_and_three_process_pilot_not_Native
+  shared_engine: ../../../../../../bench/mlkem_batch.c
+  method: 50_warmup_300_consecutive_operations_20_tests_upper_median_batch_total_divided_by_300
+  counter: pinned_SUPERCOP_cpucycles_default_perfevent_not_exact_mlkem_get_cyclecounter
+  order: AB_BA_balanced_by_test
+  regions: copy_plus_inverse_includes_1536B_copy_and_complete_decap
+  validation: self_test_and_untimed_pair32_stage5reuse_preflight_pass
+  normal_median_launch_delta_cycles: {copy_plus_inverse: -2.28, complete_decap: -110.94}
+  normal_favorable: {copy_plus_inverse: 2/3, complete_decap: 3/3}
+  reversed_median_launch_delta_cycles: {copy_plus_inverse: 0.57, complete_decap: -35.24}
+  reversed_favorable: {copy_plus_inverse: 1/3, complete_decap: 2/3}
+  campaigns:
+    - results/yang-stage5reuse-mlkem-batch-20260923
+    - results/yang-stage5reuse-mlkem-batch-reversed-20260923
+  policy: future_local_diagnostics_use_batch_method_Native_SUPERCOP_remains_separate
+  production: unchanged
+round22_yang_same_size_fixed_layout_AB:
+  class: SUPERCOP_derived_batch_cycle_counter_diagnostic_not_Native
+  sources: [asm/yang_fixed_control.s, asm/yang_fixed_candidate.s]
+  generator: tools/generate_yang_fixed_layout.py
+  linked_audit: tools/audit_yang_fixed_layout.py
+  runner: tools/run_yang_fixed_layout.py
+  inverse_symbol: ntruplus768_officialopt_invntt_yang_fixed
+  inverse_address_and_size: {address_hex: 0xe700, bytes: 2692, same_both_images: true}
+  layout: {all_sized_symbol_addresses_equal: true, text_outside_inverse_bit_exact: true, rodata_bit_exact: true}
+  counter: pinned_SUPERCOP_cpucycles_default_perfevent
+  method: 50_warmup_300_iterations_20_batch_tests_10_ABBA_BAAB_blocks_20_fresh_processes_per_arm
+  aslr_on_median_block_delta_cycles: {copy_plus_inverse: -0.56, complete_decap: -7.66}
+  aslr_on_favorable_blocks: {copy_plus_inverse: 6/10, complete_decap: 6/10}
+  aslr_off_median_block_delta_cycles: {copy_plus_inverse: 0.60, complete_decap: 5.11}
+  aslr_off_favorable_blocks: {copy_plus_inverse: 3/10, complete_decap: 4/10}
+  campaigns:
+    - results/yang-fixed-layout-upper-20260923
+    - results/yang-fixed-layout-upper-aslr-off-20260923
+  pilot_superseded_due_to_outer_median_taxonomy:
+    - results/yang-fixed-layout-20260923
+    - results/yang-fixed-layout-aslr-off-20260923
+  decision: twelve_constant_loads_removed_but_no_robust_local_or_Decap_cycle_win
+  native_and_clean_promotion: no

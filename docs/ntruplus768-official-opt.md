@@ -1,5 +1,50 @@
 # NTRU+768 Official AVX2 optimization
 
+Latest stage-5 constant-reuse prototype removes 12 linked constant-vector
+loads per inverse, passes raw inverse/Decap differential and sanitizer, but
+isolated inverse short timing is only about ±2 cycles and complete-Decap
+direction reverses under link-order control. It is **not** a confirmed caller
+win; no serious, Native or production gate. See
+[stage-5 ASM and pricing](ntruplus768-yang-gauge-proof.md#stage-5-constant-residency-asm-and-short-pricing).
+
+Latest pair32 pricing: inverse improves −10.39 cycles versus factored (3/3),
+but remains +8.63 versus Official GS (0/3); complete caller-lazy Decap is
++29.36 versus the GS control (0/3). The extra 392 B did not erase all local
+gain, but its isolated cost is unmeasured. No serious/Native/production gate.
+See [combined short pricing](ntruplus768-yang-gauge-proof.md#combined-pair32-short-pricing).
+
+Latest: the authorized stacked `yang_pair32` ASM passes range, differential,
+Decap, guard-page, sanitizer and linked gates: 222 chains / 32 Barrett,
+11-YMM tail, `.text` 2692 B (+392 B). Constants unchanged. No timing or
+production claim. See [combined ASM](ntruplus768-yang-gauge-proof.md#combined-two-pair--32-barrett-asm).
+
+Latest model follow-up: a 222-chain two-pair tail schedule passes allocation
+(11 YMM); a separate reduction-only model safely omits eight radix-3 S0
+Barrett vectors (40→32), with final bound ±2547. Neither has new ASM/timing
+evidence. See [schedule/reduction audit](ntruplus768-yang-gauge-proof.md#222-chain-scheduling-and-reduction-audit).
+
+Latest Yang machine gate: factored tail ASM is correct and matches its closed
+schedule, but short tests lose to Official inverse by +17.80 cycles (0/3) and
+caller-lazy complete Decap by +52.25 (0/3). It also loses to wresident inverse
+by +11.58 (0/3). Stop this realization; no serious/Native or clean changes.
+See [factored ASM and pricing](ntruplus768-yang-gauge-proof.md#factored-asm-and-short-pricing).
+
+Yang follow-up (2026-09-22): [gauge / inverse-tail proof](ntruplus768-yang-gauge-proof.md)
+establishes two conditional tail realizations with 238→222 complete inverse
+Montgomery chains. Constant costs increase; full caller range and complete
+new schedule lowering remain open. No new ASM or timing in this proof gate.
+
+Follow-up closure: actual canonical-input BaseMulScale bounds cover the
+7644 prefix contract, and both new tails now pass complete executable
+loop/register/range models (tail peak 10 YMM). See the follow-up section in
+the Yang report. Candidate linked ASM and performance remain unverified.
+
+Latest (2026-09-22): [Roadmap first gate: serialize-and-compare](ntruplus768-official-opt-serialize-compare.md).
+The namespaced Decap helper passes correctness and shows local/serious gains,
+but primary placement confirmation is inconclusive and another setting has
+an Encap regression: no qualification or clean promotion. Caller-lazy remains
+the research control. BaseInv schedule and GS/Yang proof work remain open.
+
 Branch: `avx2-official-opt`, forked from `84da0b5`. This branch asks how much
 Keygen, Encap and Decap improve while retaining the Official 20260831 AVX2
 decomposition, stage order, physical layout and Montgomery scale. The pinned
