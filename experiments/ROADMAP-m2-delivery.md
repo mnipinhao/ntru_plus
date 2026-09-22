@@ -30,12 +30,12 @@ batch; min of 401 x 300 under the clock gate.  P108.
 | 768 | Official + CE | 4,156 | 4,754 | 3,703 |
 | | **GT** | **3,789** | **4,079** | **3,138** |
 | | | **-8.8%** | **-14.2%** | **-15.3%** |
-| 864 | Official + CE | 4,547 | 5,253 | 4,150 |
-| | **GT** | **4,340** | **4,981** | **4,045** |
-| | | **-4.6%** | **-5.2%** | **-2.5%** |
-| 1152 | Official + CE | 7,114 | 6,954 | 5,489 |
-| | **GT** | **6,797** | **6,535** | **5,230** |
-| | | **-4.5%** | **-6.0%** | **-4.7%** |
+| 864 | Official + CE | 4,547 | 5,255 | 4,147 |
+| | **GT** | **4,147** | **4,682** | **3,866** |
+| | | **-8.8%** | **-10.9%** | **-6.8%** |
+| 1152 | Official + CE | 7,116 | 6,956 | 5,486 |
+| | **GT** | **6,524** | **6,133** | **4,982** |
+| | | **-8.3%** | **-11.8%** | **-9.2%** |
 
 **M2 Pro, against Official exactly as SUPERCOP has it** (portable Keccak, which
 is what the submission contains):
@@ -50,47 +50,35 @@ The gap between the last two tables is the Keccak backend, and it is most of
 what a naive M2 comparison reports.  Both are true; which to quote depends on
 whether the comparison is to the submission or to what the submission could be.
 
-## Why 768 leads on M2, and it is not the transform  (P109)
+## Why 768 led on M2: it had a different Keccak  (P109, P110)
 
-Permutation counts are **identical** between GT and Official for every set and
-operation, and the permutation costs the same on both sides (upstream's CE
-`f1600` 158.33 ns, GT's `keccakf1600_v84a` 158.33).  Keccak is 48-73% of each
-operation and **almost the same share for all three sets**, so dilution is not
-what separates them.  The contestable remainder is:
+Permutation **counts** are identical between GT and Official for every set and
+operation, and Keccak is 48-73% of each -- almost the same share for all three
+sets, so dilution was never it.  The contestable remainder was 2-6x better at
+768, and it traced to the hashing: GT 768 spent **152.8 ns a permutation against
+864's 164.8 and 1152's 164.1**, in one process with every symbol renamed, so not
+layout.
 
-| set | keygen | encap | decap |
-|---|---:|---:|---:|
-| **768** | **-17%** | **-47%** | **-31%** |
-| 864 | -9% | -19% | -5% |
-| 1152 | -9% | -22% | -10% |
+`shake256_prefixed` is character-identical in the three trees.  What differed was
+the permutation itself:
 
-And that remainder is **the SHAKE wrapper**.  `hash_f`/`hash_g`/`hash_h` timed
-directly, both sides in one binary with the CE permutation, outputs verified
-byte-identical, per-hash permutation counts identical:
+| | instructions | M2 Pro |
+|---|---:|---:|
+| **GT 768** (mlkem-native's hybrid routine) | **122** | **147.30 ns** |
+| GT 864 / GT 1152 (written for them) | 146 | 158.33 |
+| upstream CE `f1600` | — | 158.32 |
 
-| GT / Official | hash_f | hash_g | hash_h |
-|---|---:|---:|---:|
-| 768 | **0.86** | **0.86** | **0.55** |
-| 864 | 0.93 | 0.93 | 0.98 |
-| 1152 | 0.92 | 0.92 | 0.89 |
+All byte-identical on the same state.  Recomputed against 147.3, the three
+wrappers cost +4.9, +6.5 and +5.8 ns a permutation -- **equally good; the whole
+difference was the permutation.**
 
-| set | hashing saves, encap | the operation's margin | hashing, decap | operation |
-|---|---:|---:|---:|---:|
-| 768 | **732** | 675 | **505** | 565 |
-| 864 | **278** | 272 | **150** | 105 |
-| 1152 | **456** | 419 | **281** | 259 |
-
-**The hash accounts for the entire operation-level advantage in all six cases**,
-and slightly more, because the arithmetic gives some back -- GT's kernels are
-*slower* than Official's in five of six (P102, P104).
-
-**If 864 and 1152 reached 768's hash ratio they would gain about 290 ns on
-encapsulation and 170 on decapsulation.**  For 864's decapsulation that is -2.5%
-becoming roughly **-6.7%**, against the -1.1% to -2.5% that P29, the route and
-the tail delivered together.  `shake256_prefixed` is character-identical in the
-three trees and `-fomit-frame-pointer` makes no difference, so what 768 does
-better is not yet identified -- **and it is now the largest single item on this
-list.**  See `experiments/gt-p109-why-768-leads/`.
+Copied into both trees (`97ef2d6b`), gates including 864's `test_keccak_v84a`
+(100,003 states, `d8-d15` preserved).  **Every M2 margin for 864 and 1152 roughly
+doubled**; Cortex-A76 has no FEAT_SHA3, the file compiles away there and is
+unchanged.  For scale: the transform work of this session -- a paired inverse, an
+`ST3` widening and a packed tail, three landings with Slothy runs and full gate
+suites -- moved 864's decapsulation from -1.1% to -2.5%.  The file copy moved it
+to -6.8%.  See `experiments/gt-p110-keccak-swap/`.
 
 ## Why the two machines differ, and where the ceiling is  (P91)
 
