@@ -2,6 +2,11 @@
 
 日期：2026-09-22。Branch：`avx2-gt-ntt`。
 
+後續決策：依使用者要求，direct prefixed-buffer hash staging **只保留為
+experiment，暫停 Native qualification 與整合**。下列既有量測不刪除，
+但不納入新的 GT 設計。最新研究見
+[GT vector mapping co-design](ntruplus768-gt-vector-mapping-codesign.md)。
+
 本輪找到兩個不同尺度的新機制：
 
 1. 保留 M layout，讓既有 serializer 直接寫入 `hash_g` 的帶 prefix buffer，
@@ -138,7 +143,8 @@ Confirmation StQ1/2/3：
 保留 ELF hash；不能把 full-caller 比 stage 多出的 credit 精確歸因為 copy
 本身。完整 image／call geometry 尚需 placement controls。
 
-判斷：可進 disposable Native qualification。尚未安裝 Native candidate、
+歷史判斷：曾列為可進 disposable Native qualification；目前依使用者要求暫停。
+尚未安裝 Native candidate、
 未宣稱能勝 Official-opt，也沒有直接改 clean。
 
 ## 4. 較大的新機制：W 的 λ correction 聚合

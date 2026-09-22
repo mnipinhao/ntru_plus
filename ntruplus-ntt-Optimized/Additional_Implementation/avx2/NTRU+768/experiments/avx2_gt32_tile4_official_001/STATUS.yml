@@ -3,6 +3,46 @@ status: q24-gt-unpack-and-both-centered-and-lazy10788-gt-pack-boundaries-product
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+gt_vector_mapping_codesign_20260922:
+  checkpoint: GT768-VECTOR-MAPPING-CODESIGN
+  status: C1-executable-model-pass-C2-semantic-screen-only
+  document: docs/ntruplus768-gt-vector-mapping-codesign.md
+  artifact: generated/tile4_gt_vector_mapping.json
+  hwang_revision: 3eb881fb4aa83a9c424a121acefb1b8d35cf6f93
+  early_report: unavailable-HTTP-401-do-not-claim-independent-version-comparison
+  C0: frozen-current-M-source-expanded-ledger
+  C1:
+    name: W-aggregated-lambda
+    raw_forward_projection: pass-1536-signed-impulses-plus-36-small-boundary-polynomials
+    Montgomery_chains: 288
+    current_M_chains: 276
+    MulAdd_peak_live_YMM: 9
+    final_signed_bound: 17481
+    decoder_boundary_cases: 2304
+    serializer_signed_word_cases: 65536
+    base_packet_cases: 13171
+    additional_full_wire_polynomials: 32
+    source_model_per_encap_delta:
+      routing: 48
+      data_load_instructions: -84
+      data_store_instructions: -84
+      constant_memory_operands: 550
+    memory_credit_attribution:
+      add_m_fusion_loads_and_stores_each: 48
+      M_late_R2_materialization_loads_and_stores_each: 36
+  C2:
+    stage_cuts: [0, 3, 4, 5]
+    modular_basis_per_cut: 192
+    explicit_normalization_range: conservative-word-DAG-pass
+    selected_schedule: null
+    reason: no-new-conversion-or-pass-elimination-established
+    blanket_stage_order_rejection: false
+  hash_prefixed_buffer: parked-experiment-no-integration-no-new-work
+  new_ASM: false
+  benchmark_run: false
+  clean_modified: false
+  linked_candidate_proof: not-obtained
+  next: at-most-C1-single-packet-ASM-after-independent-machine-review-not-promotion
 encap_consumer_edges_reentry_20260922:
   checkpoint: GT32-ENCAP-CONSUMER-EDGES-REENTRY-001
   status: direct-hash-stage-caller-signal-and-aggregated-W-model-pass
@@ -37,7 +77,7 @@ encap_consumer_edges_reentry_20260922:
     favorable_launches: {hash: 9, encap: 9}
     Native: not-run
     placement_controls: not-run
-    next: disposable-Native-qualification-before-promotion
+    next: parked-by-user-retain-existing-evidence-no-integration-or-Native-work
   aggregated_W_montgomery:
     mechanism: cyclic-sum-plus-lambda-minus-one-times-wrapped-sum
     output_exponent: 0

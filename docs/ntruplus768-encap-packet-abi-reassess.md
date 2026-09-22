@@ -1,5 +1,20 @@
 # 768-ENCAP-PACKET-ABI-REASSESS：ownership gate
 
+## 最新 follow-up：GT vector mapping co-design（2026-09-22）
+
+新結果見 [Hwang／current GT 對照與完整模型](ntruplus768-gt-vector-mapping-codesign.md)。
+本輪沒有新 ASM 或 benchmark。C1 聚合 λ 的 W 模型已重驗 Forward、codec、
+MulAdd range 與 physical def/use；C2 的三種 stage-order family 語義成立，
+但未選出有新 mechanism 的完整 allocation，不宣稱 C2 schedule pass。
+
+必須修正 codec-only accounting：W decode／兩次 pack 少 480 routes，但
+aggregated W arithmetic 有 528 routes，完整路徑淨 +48。資料 load/store 各少
+84，其中48來自 add-m fusion，另36來自 M late R² finalizer 的中間存取。
+Constant-memory operands 淨 +550；這些不是 cycle 預測。
+Prefixed-buffer hash 實驗保留但暫停，不整合、不列為本輪 GT 收益。
+
+以下保留歷史 checkpoint，當中的未完成／授權狀態以各節當時範圍解讀。
+
 本輪完成 semantic ownership 與歷史候選去重；**未完成 instruction schedule，
 未授權 ASM，沒有 benchmark 或 performance claim**。Clean 保持不動。
 
