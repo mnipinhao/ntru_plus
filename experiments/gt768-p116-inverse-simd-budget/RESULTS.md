@@ -1,5 +1,10 @@
 # P116 — 768's GT inverse is SIMD-bound, and two tail rewrites put it ahead of Official on both machines
 
+> **Warning (P117):** E3 below is **not correct for every input**.  Its stage45
+> overflows int16 for products with |x| > 1,846, and Official's product reaches
+> 2,458.  Use E4 (`../gt768-p117-frontend-barrett-loads/`), which is proven safe
+> for the full range and faster.
+
 P115 planned E1 (stage45 + post fusion) and E2 (paired `str q` outputs), both
 aimed at stores.  Before writing them, knockout probes on M2 showed they could
 not pay off.  This gate finds what the kernel is actually bound by and rewrites
