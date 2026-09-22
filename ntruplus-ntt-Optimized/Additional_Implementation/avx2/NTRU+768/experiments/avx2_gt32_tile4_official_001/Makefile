@@ -3775,6 +3775,18 @@ shifted-dft3-two-chain-generate:
 	$(PYTHON) tools/generate_gt32_shifted_dft3_two_chain_gate.py
 
 .PHONY: encap-wire-generate encap-wire-short
+.PHONY: encap-compute-islands-generate encap-compute-islands-check
+encap-compute-islands-generate:
+	$(PYTHON) tools/gate_encap_compute_islands.py
+
+encap-compute-islands-check:
+	$(PYTHON) tools/gate_encap_compute_islands.py --check
+	$(PYTHON) -m unittest discover -s tests -p test_encap_compute_islands.py
+
+.PHONY: encap-live-b3-generate encap-live-b3-check
+encap-live-b3-generate:
+	$(PYTHON) tools/generate_encap_live_b3_pack.py
+
 encap-wire-generate:
 	$(PYTHON) tools/generate_encap_wire_schedule.py
 	$(PYTHON) tools/generate_encap_wire_asm.py
@@ -3786,6 +3798,43 @@ WIRE_CLEAN := ../../clean/avx2-gt32-clean
 WIRE_KEM_C := keygen.c encap.c decap.c poly.c symmetric.c fips202.c baseinv.c consts.c
 WIRE_KEM_ASM := KeccakP-1600-AVX2.s cbd.s crepmod3.s add.s ntt.s ntt_m.s ntt_p.s invntt.s basemul.s batch_inverse.s pack.s
 WIRE_KEM_SOURCES := $(addprefix $(WIRE_CLEAN)/,$(WIRE_KEM_C) $(WIRE_KEM_ASM))
+
+$(BUILD)/test_encap_live_b3_pack: tests/test_encap_live_b3_pack.c \
+		generated/encap_live_b3_pack.S $(WIRE_CLEAN)/ntt.s \
+		$(WIRE_CLEAN)/ntt_m.s $(WIRE_CLEAN)/basemul.s \
+		$(WIRE_CLEAN)/pack.s $(WIRE_CLEAN)/consts.c \
+		$(WIRE_CLEAN)/baseinv.c $(WIRE_CLEAN)/batch_inverse.s | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -o $@ $^
+
+encap-live-b3-check: $(BUILD)/test_encap_live_b3_pack
+	$(PYTHON) tools/generate_encap_live_b3_pack.py --check
+	$(BUILD)/test_encap_live_b3_pack
+
+$(BUILD)/test_encap_live_b3_pack_kem: tests/test_encap_live_b3_pack_kem.c \
+		src/encap_live_b3_pack_research.c generated/encap_live_b3_pack.S \
+		$(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) \
+		-o $@ $^
+
+.PHONY: encap-live-b3-kem-check
+encap-live-b3-kem-check: $(BUILD)/test_encap_live_b3_pack_kem
+	$(BUILD)/test_encap_live_b3_pack_kem
+
+$(BUILD)/test_encap_live_b3_pack_kem_san: tests/test_encap_live_b3_pack_kem.c \
+		src/encap_live_b3_pack_research.c generated/encap_live_b3_pack.S \
+		$(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -O1 -g -fsanitize=address,undefined \
+		-fno-omit-frame-pointer -fwrapv -fno-strict-aliasing \
+		-I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+
+.PHONY: encap-live-b3-sanitize
+encap-live-b3-sanitize: $(BUILD)/test_encap_live_b3_pack_kem_san
+	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_encap_live_b3_pack_kem_san
+
+.PHONY: encap-live-b3-short
+encap-live-b3-short:
+	$(PYTHON) tools/run_encap_live_b3_short.py --supercop-root "$(SUPERCOP_ROOT)" \
+		--cpu "$(or $(BENCH_CPU),1)" --tag "$(RESULT_TAG)"
 
 $(BUILD)/test_encap_wire_kem: tests/test_encap_wire_kem.c src/encap_wire_research.c \
 		generated/encap_wire_forward.S generated/encap_wire_codec.S \
