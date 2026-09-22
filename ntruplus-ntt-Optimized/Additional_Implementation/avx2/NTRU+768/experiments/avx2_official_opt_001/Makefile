@@ -14,6 +14,7 @@ KEM_INCLUDES := -Itests/support -I$(OFFICIAL) -I$(SUPERCOP_ROOT)/bench/$(SUPERCO
 VARIANT_ASM := asm/ntruplus768_officialopt_basemul_add.s asm/ntruplus768_officialopt_dup_basemul.s asm/ntruplus768_officialopt_shared_diag.s asm/ntruplus768_officialopt_ntt_early_const.s
 VARIANT_OBJS := $(BUILD)/kem_ref.o $(BUILD)/kem_dup.o $(BUILD)/kem_fused.o $(BUILD)/kem_shared.o $(BUILD)/kem_forward.o
 include serialize_compare.mk
+include yang.mk
 
 .PHONY: generate check check-inverse-ct check-inverse-ct-r3 check-inverse-ct-full check-inverse-ct-cohort check-inverse-ct-controls
 generate:

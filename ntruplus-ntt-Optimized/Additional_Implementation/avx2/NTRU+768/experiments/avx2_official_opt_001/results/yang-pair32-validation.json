@@ -1,0 +1,60 @@
+{
+  "class": "correctness_and_reproducibility_not_benchmark",
+  "commands": [
+    {
+      "argv": [
+        "make",
+        "check-yang-pair32"
+      ],
+      "returncode": 0,
+      "stdout": "build/test_inverse_yang_pair32\nOfficial vs CT inverse: 5003 direct and 1003 BaseMulScale residue/crepmod3 cases passed\nbuild/test_kem_yang_pair32\nOfficial vs CT inverse Decap: 100 valid, 100 tampered ciphertext, and 100 invalid secret-key cases byte-exact\nbuild/test_yang_pair32_guard\n128 guard-page/canary signed-corner cases pass\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "make",
+        "BUILD=build_yang_pair32_san",
+        "CFLAGS=-O1 -g -mavx2 -fsanitize=address,undefined -fno-omit-frame-pointer -fwrapv",
+        "check-yang-pair32"
+      ],
+      "returncode": 0,
+      "stdout": "build_yang_pair32_san/test_inverse_yang_pair32\nOfficial vs CT inverse: 5003 direct and 1003 BaseMulScale residue/crepmod3 cases passed\nbuild_yang_pair32_san/test_kem_yang_pair32\nOfficial vs CT inverse Decap: 100 valid, 100 tampered ciphertext, and 100 invalid secret-key cases byte-exact\nbuild_yang_pair32_san/test_yang_pair32_guard\n128 guard-page/canary signed-corner cases pass\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "tools/audit_yang_pair32.py"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"class\": \"linked audit and raw machine/model differential, no timing\",\n  \"symbol_text_bytes\": 2692,\n  \"entry_alignment\": 32,\n  \"all_loops_aligned_32\": true,\n  \"full_inverse_Montgomery\": 222,\n  \"Barrett_vectors\": 32,\n  \"dynamic_vector_opcodes\": {\n    \"vmovdqa\": 548,\n    \"vpaddw\": 192,\n    \"vpsubw\": 486,\n    \"vpsllq\": 48,\n    \"vpblendw\": 48,\n    \"vpsrlq\": 48,\n    \"vpmullw\": 254,\n    \"vpmulhw\": 444,\n    \"vpblendd\": 48,\n    \"vpmulhrsw\": 32,\n    \"vpunpcklqdq\": 24,\n    \"vpunpckhqdq\": 24,\n    \"vperm2i128\": 48,\n    \"vpbroadcastd\": 4\n  },\n  \"public_loops\": [\n    {\n      \"address\": 8281,\n      \"target\": 7360,\n      \"trip_count\": 6\n    },\n    {\n      \"address\": 8612,\n      \"target\": 8320,\n      \"trip_count\": 6\n    },\n    {\n      \"address\": 8842,\n      \"target\": 8704,\n      \"trip_count\": 8\n    },\n    {\n      \"address\": 9073,\n      \"target\": 8896,\n      \"trip_count\": 8\n    },\n    {\n      \"address\": 9333,\n      \"target\": 9120,\n      \"trip_count\": 4\n    },\n    {\n      \"address\": 9661,\n      \"target\": 9408,\n      \"trip_count\": 4\n    },\n    {\n      \"address\": 9981,\n      \"target\": 9728,\n      \"trip_count\": 4\n    }\n  ],\n  \"tail_peak_YMM\": 11,\n  \"tail_raw_exact_cases\": 160,\n  \"all_tail_vector_operands_and_constant_bytes_match\": true,\n  \"private_constant_bytes\": 13536,\n  \"tail_constant_bytes\": 5856,\n  \"no_stack_spill_call_vzeroupper_callee_saved_clobber\": true,\n  \"elf_sha256\": \"d7f3b2d396d4a3ca17437777c83e51ccaaa43e0c4a2c03672d3d2c85133de261\",\n  \"asm_sha256\": \"c3994ef64da493936fc6f1f49bd73b87d3dc42ab50214a4b2fe4d8797ff9a249\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "ASAN_OPTIONS": "detect_leaks=0",
+  "sanitizer_scope": "C harness; ASM memory covered separately by guard-page/canary and linked audit",
+  "generator_reproducible": true,
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "source_sha256": {
+    "tools/generate_yang_pair32.py": "46503525d25af32f955c4bf6b239120690f82d8e0547f73f3ca13d5e49625a62",
+    "tools/audit_yang_pair32.py": "cab0fb25b1fc7b7dfae606cb7f509486e4a975acb01cb52a46dde135abb036a9",
+    "tools/validate_yang_pair32.py": "ed26c5471dd672d39735f8e20bf497053dfde2915d72a5515d0a9d25f9821fcb",
+    "tools/audit_yang_followup.py": "abddce53d6d40a1e5e8ab780e6424dec88330a20792e4a8c6e709029cc899080",
+    "tools/close_yang_contract.py": "8dcb5ca6c6324fbefecd6637638292f2905fa5753757987e1eced767199325f3",
+    "tests/test_inverse_ct.c": "386173cba5d5ac88c4ddaa2d748ef8747565e7a38a47636bfcb783b51443d4f0",
+    "tests/test_kem_ct.c": "ef27acccd7436186ab9aa50b5bd9f2d48448c90fd73aac0bee9a4de0fe4fdd8e",
+    "tests/test_yang_guard.c": "350b4363e40ba98122bf5db773aa7659fc609ddd4fca00270b4a2053969247b1",
+    "tests/kem_yang_diag.c": "45961729886a702cb6494cbd921a460c485b2514385b3e532e0cc6206fddea67",
+    "yang.mk": "39877c70f64402ca5553fd56b8b4e0d3b23d6e3c3c371aa65f759d83cb5ef082",
+    "src/kem_lazy.c": "ffd9165c36466c2ecc57e4a157a2a847dc9f19d1fc249ebbc9c1c46baa22fd7d",
+    "asm/ntruplus768_officialopt_invntt_yang_pair32.s": "c3994ef64da493936fc6f1f49bd73b87d3dc42ab50214a4b2fe4d8797ff9a249"
+  },
+  "elf_sha256": {
+    "build/test_inverse_yang_pair32": "d7f3b2d396d4a3ca17437777c83e51ccaaa43e0c4a2c03672d3d2c85133de261",
+    "build/test_kem_yang_pair32": "766249bfe357ca66bc7035f6a71ddae4b7242fda611905da2b79457dddabb673",
+    "build/test_yang_pair32_guard": "73eb7cff940be296a8078dafe2f0f875eced3f938729cbb15cbb29a5c16ab24d",
+    "build_yang_pair32_san/test_inverse_yang_pair32": "b2ba66e98e785f84dc58def3daffe5d9becead3d05c2213ad67615f48b92a050",
+    "build_yang_pair32_san/test_kem_yang_pair32": "a8c088f12d3f072c9323514fb80d2df99d1911b1d947009e9ab45d0329900e33",
+    "build_yang_pair32_san/test_yang_pair32_guard": "e4a09607e1452f757a276a61819e248c81a1c38ef6cae3430d687f7a6c7f416a"
+  }
+}
