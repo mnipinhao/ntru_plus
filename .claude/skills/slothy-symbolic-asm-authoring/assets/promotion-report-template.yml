@@ -1,0 +1,32 @@
+promotion:
+  candidate_id: CANDIDATE_ID
+  status: promote
+  date: YYYY-MM-DD
+  mode: existing_region_replacement
+
+artifacts:
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  candidate_contract: candidate-contract.yml
+  symbolic_source: candidates/CANDIDATE_ID.sym.S
+  slothy_output: candidates/CANDIDATE_ID.opt.S
+  candidate_score: candidate-score.yml
+
+gates:
+  contract_preserved: false
+  approved_contract_changes: false
+  static_checks_passed: false
+  slothy_result_passed: false
+  oracle_correctness_passed: false
+  full_path_benchmark_passed: false
+
+metrics:
+  baseline_expected_cycles:
+  candidate_expected_cycles:
+  baseline_full_path:
+  candidate_full_path:
+  benchmark_metric: cycles
+
+decision:
+  reason: TODO
+  follow_up: TODO

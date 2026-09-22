@@ -1,0 +1,56 @@
+mode: existing_region_replacement
+baseline_status: extracted
+
+baseline:
+  id: BASELINE_ID
+  source: path/to/source.S
+  extracted_region: baseline-region.S
+  function: FUNCTION_NAME
+  start_label: BASELINE_START_LABEL
+  end_label: BASELINE_END_LABEL
+  source_commit: TODO
+
+region:
+  instruction_count: 0
+  live_in: []
+  live_out: []
+  clobbers: []
+
+abi:
+  inputs: []
+  outputs: []
+  concrete_gprs_allowed: []
+  fixed_vector_registers: []
+  reserved_registers: []
+
+memory_contract:
+  loads: []
+  stores: []
+  aliasing: TODO
+  alignment: TODO
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants: []
+  modulus: TODO
+  representation: TODO
+  reduction_method: TODO
+
+range_contract:
+  input_ranges: []
+  intermediate_ranges: []
+  output_ranges: []
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs: []
+  public_inputs: []
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+baseline_cost:
+  static_instruction_count: 0
+  slothy_expected_cycles:
+  full_path_benchmark:
+  benchmark_command: TODO

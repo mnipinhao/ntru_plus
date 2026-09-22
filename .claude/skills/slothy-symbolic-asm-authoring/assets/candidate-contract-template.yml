@@ -1,0 +1,56 @@
+candidate:
+  id: CANDIDATE_ID
+  status: investigate
+  kernel_contract: kernel-contract.yml
+  baseline_contract: baseline-contract.yml
+  symbolic_source: candidates/CANDIDATE_ID.sym.S
+  slothy_driver: optimize.py
+  slothy_log:
+  generated_output:
+
+contract_preservation:
+  baseline_compared: false
+  preserved: false
+  approved_changes: false
+  approved_by:
+  changed_fields: []
+
+region:
+  start_label: CANDIDATE_ID_slothy_start
+  end_label: CANDIDATE_ID_slothy_end
+  live_in: []
+  live_out: []
+
+abi:
+  inputs: []
+  outputs: []
+  clobbers: []
+  concrete_gprs_allowed: []
+  fixed_vector_registers: []
+  reserved_registers: []
+
+memory_contract:
+  loads: []
+  stores: []
+  aliasing: TODO
+  alignment: TODO
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants: []
+  modulus: TODO
+  representation: TODO
+  reduction_method: TODO
+
+range_contract:
+  input_ranges: []
+  intermediate_ranges: []
+  output_ranges: []
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs: []
+  public_inputs: []
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true

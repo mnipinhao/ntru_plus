@@ -1,0 +1,101 @@
+mode: new_symbolic_kernel
+candidate_status: investigate
+
+kernel:
+  id: KERNEL_ID
+  name: KERNEL_NAME
+  source: candidates/KERNEL_ID.sym.S
+  scheme: SCHEME_NAME
+  operation: OPERATION_NAME
+
+target:
+  arch: aarch64_neon
+  microarchitecture: cortex_a55
+  slothy_arch_module: slothy.targets.aarch64.aarch64_neon
+  slothy_target_module: slothy.targets.aarch64.cortex_a55
+
+slothy:
+  workflow: allocate-and-optimize
+  driver: optimize.py
+  expected_outputs: []
+  allow_spills: false
+
+region:
+  start_label: KERNEL_ID_slothy_start
+  end_label: KERNEL_ID_slothy_end
+  expected_instruction_count: 0
+  live_in: []
+  live_out: []
+
+abi:
+  inputs: []
+  outputs: []
+  clobbers: []
+  concrete_gprs_allowed:
+    - x0
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+    - x6
+    - x7
+    - sp
+  fixed_vector_registers: []
+  reserved_registers:
+    - x18
+    - x19
+    - x20
+    - x21
+    - x22
+    - x23
+    - x24
+    - x25
+    - x26
+    - x27
+    - x28
+    - x29
+    - x30
+
+instruction_dag:
+  file: instruction-dag.yml
+  summary: TODO
+
+layout:
+  input_representation: TODO
+  output_representation: TODO
+  vector_lanes: TODO
+  packing: TODO
+
+memory_contract:
+  loads: []
+  stores: []
+  aliasing: TODO
+  alignment: TODO
+  public_offsets_only: true
+  pointer_updates: []
+
+constant_contract:
+  constants: []
+  modulus: TODO
+  representation: TODO
+  reduction_method: TODO
+
+range_contract:
+  input_ranges: []
+  intermediate_ranges: []
+  output_ranges: []
+  narrowing_points: []
+
+constant_time_contract:
+  secret_inputs: []
+  public_inputs: []
+  no_secret_dependent_branches: true
+  no_secret_dependent_memory_access: true
+
+validation:
+  oracle_command: TODO
+  test_command: TODO
+  full_path_benchmark_command: TODO
+  benchmark_metric: cycles
+  lower_is_better: true
