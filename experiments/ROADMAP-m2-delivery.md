@@ -202,12 +202,39 @@ A76 fails: its floor -- loads, zips and plain stores with no interleave at all
 because they hide in the multiply-port shadow; a separate movement pass has
 nothing to hide behind.
 
-**The one shape that can clear 兩台都不得退步 is never materialising natural
-order:** `poly_ntt` reads the free layout directly, and `poly_sotp_decode` does
-the three-way interleave in registers feeding its existing `sqxtn` and bit-pack.
-A76 bound on that work is 24.4 ns against 77.2 saved.  It is a rewrite of
-`cbd.S`'s decode and `ntt_top.S`'s front end.  See
+P98 then closed both P97 candidates and reopened a better one.
+
+- **Slothy makes the repack worse**, on both machines: four regions, all
+  OPTIMAL, 63 cycles each at **IPC 1.57**.  M2 32.5 -> 43.1, A76 107.2 -> 116.1.
+  The pass is store-issue bound; scheduling does not change µop counts.
+- **P97's `16 STR Q` pricing was invalid.**  Every group's final register
+  carries its four outputs in *both* halves (measured 32/32): the last step is
+  the symmetric reduction `ADD v, v, EXT(v)`.  The honest P97 net is **-40 ns on
+  M2, +35 on A76**.  Merging two groups with `ZIP1 .2D` would fix it but cannot
+  be retrofitted -- only 1 of 16 pairings is feasible in the allocated kernel.
+
+**`gt864-p28-paired-i16` and `gt864-p29-direct-st3` already built it**: paired
+main, direct natural-order output through full-vector `ST3.4h`, full Slothy,
+oracle and KAT gated.  Rejected 14 and 7 days ago on A76.  P29 retires 1,042
+fewer instructions and **748 fewer stores** (972 -> 224) for the same work:
+
+| main+tail+ternary | M2 Pro | Cortex-A76 |
+|---|---:|---:|
+| production | 274.9 ns | 1,157.0 ns |
+| **P29** | **236.3 (-14.1%)** | 1,289.3 (+11.4%) |
+
+**-38.6 ns on M2, 36% of the whole +106 inverse deficit, from a finished
+design.**  The blind spot with a number on it.
+
+P29 still fails 兩台都不得退步: its IPC falls from 1.7056 to 1.3872, so A76 loses
+more to the dependency shape than the retired instructions win back.  The
+problem is now sharply posed and is not about store addressing: **keep P29's
+store shape without its issue-width collapse.**  Both symbolic sources are on
+disk.  See `experiments/gt864-p98-p29-on-m2/` and
 `experiments/gt864-p97-inverse-layout-consumers/`.
+
+The never-materialise route (`poly_ntt` reads the free layout, `poly_sotp_decode`
+interleaves in registers) remains open behind it.
 
 **The alternative remains 864 doing what 768 does and keeping Official's
 inverse.**  768's `poly_invntt_decap_scale` is Official's kernel to within one
