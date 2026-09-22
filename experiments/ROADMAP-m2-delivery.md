@@ -12,6 +12,11 @@ three sets pass their full gate suite at these revisions.  P108.
 
 **Cortex-A76 (Raspberry Pi 5), ns per operation.  Neither side has FEAT_SHA3.**
 
+Symmetric about SHA3, *not* about assembly: GT compiles `keccakf1600.S`, 230
+hand-written instructions, while Official has only its 621-line portable C --
+upstream wrote no non-SHA3 assembly Keccak.  A real result, but not a
+Good-Thomas one, and its size inside these margins is unmeasured (P112).
+
 | set | | key generation | encapsulation | decapsulation |
 |---|---|---:|---:|---:|
 | 768 | Official | 16,025 | 16,068 | 13,942 |
@@ -26,9 +31,12 @@ three sets pass their full gate suite at these revisions.  P108.
 
 **M2 Pro, against Official + CryptoExtension.**
 
-The strict baseline: the submission ships no SHA3 path, but upstream does, so
-crediting GT with a Keccak backend Official could have is not a result.  The
-measurement copy of `CE/f1600.S` carries the AAPCS64 save/restore upstream omits.
+**This is upstream's default build, not a baseline we constructed** (P112).
+`ntruplus/ntruplus` `main` sets `HAS_SHAKE256_ASM := 1` and compiles
+`CE/f1600.S` with `-march=armv8.2-a+sha3`; 864 and 1152 symlink to 768's copy.
+SUPERCOP's tarball is the stripped variant -- no `f1600.S`, and
+`SUPPORTS_SHAKE256_ASM` never defined.  So this table is the honest headline.
+The measurement copy of `CE/f1600.S` carries the AAPCS64 save/restore upstream omits.
 
 | set | | key generation | encapsulation | decapsulation |
 |---|---|---:|---:|---:|
@@ -42,9 +50,8 @@ measurement copy of `CE/f1600.S` carries the AAPCS64 save/restore upstream omits
 | | **GT** | **6,519** | **6,130** | **4,986** |
 | | | **-8.4%** | **-11.8%** | **-9.1%** |
 
-**M2 Pro, against Official exactly as SUPERCOP has it** (portable Keccak, which is what the submission contains):
-
-Portable Keccak, which is what the submission contains:
+**M2 Pro, against Official exactly as SUPERCOP has it** -- portable Keccak,
+because SUPERCOP's copy dropped the SHA3 path that upstream builds by default:
 
 | set | | key generation | encapsulation | decapsulation |
 |---|---|---:|---:|---:|
@@ -58,9 +65,11 @@ Portable Keccak, which is what the submission contains:
 | | **GT** | **6,519** | **6,130** | **4,986** |
 | | | **-15.1%** | **-21.8%** | **-17.2%** |
 
-The gap between the last two tables is the Keccak backend.  Both are true;
-which to quote depends on whether the comparison is to the submission or to
-what the submission could be.
+The gap between the last two tables is the Keccak backend.  Both are true, but
+they are not equally quotable: the first compares against what upstream's
+`make` produces, the second against what SUPERCOP's maintainers chose to carry.
+**Quote the first.**  The second is worth keeping only as the figure a reviewer
+downloading SUPERCOP would reproduce.
 
 ## Why 768 led on M2: it had a different Keccak  (P109, P110)
 
