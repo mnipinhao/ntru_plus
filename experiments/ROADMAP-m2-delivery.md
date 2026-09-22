@@ -50,6 +50,48 @@ The gap between the last two tables is the Keccak backend, and it is most of
 what a naive M2 comparison reports.  Both are true; which to quote depends on
 whether the comparison is to the submission or to what the submission could be.
 
+## Why 768 leads on M2, and it is not the transform  (P109)
+
+Permutation counts are **identical** between GT and Official for every set and
+operation, and the permutation costs the same on both sides (upstream's CE
+`f1600` 158.33 ns, GT's `keccakf1600_v84a` 158.33).  Keccak is 48-73% of each
+operation and **almost the same share for all three sets**, so dilution is not
+what separates them.  The contestable remainder is:
+
+| set | keygen | encap | decap |
+|---|---:|---:|---:|
+| **768** | **-17%** | **-47%** | **-31%** |
+| 864 | -9% | -19% | -5% |
+| 1152 | -9% | -22% | -10% |
+
+And that remainder is **the SHAKE wrapper**.  `hash_f`/`hash_g`/`hash_h` timed
+directly, both sides in one binary with the CE permutation, outputs verified
+byte-identical, per-hash permutation counts identical:
+
+| GT / Official | hash_f | hash_g | hash_h |
+|---|---:|---:|---:|
+| 768 | **0.86** | **0.86** | **0.55** |
+| 864 | 0.93 | 0.93 | 0.98 |
+| 1152 | 0.92 | 0.92 | 0.89 |
+
+| set | hashing saves, encap | the operation's margin | hashing, decap | operation |
+|---|---:|---:|---:|---:|
+| 768 | **732** | 675 | **505** | 565 |
+| 864 | **278** | 272 | **150** | 105 |
+| 1152 | **456** | 419 | **281** | 259 |
+
+**The hash accounts for the entire operation-level advantage in all six cases**,
+and slightly more, because the arithmetic gives some back -- GT's kernels are
+*slower* than Official's in five of six (P102, P104).
+
+**If 864 and 1152 reached 768's hash ratio they would gain about 290 ns on
+encapsulation and 170 on decapsulation.**  For 864's decapsulation that is -2.5%
+becoming roughly **-6.7%**, against the -1.1% to -2.5% that P29, the route and
+the tail delivered together.  `shake256_prefixed` is character-identical in the
+three trees and `-fomit-frame-pointer` makes no difference, so what 768 does
+better is not yet identified -- **and it is now the largest single item on this
+list.**  See `experiments/gt-p109-why-768-leads/`.
+
 ## Why the two machines differ, and where the ceiling is  (P91)
 
 **The Keccak permutation is issued the same number of times by both sides** --
