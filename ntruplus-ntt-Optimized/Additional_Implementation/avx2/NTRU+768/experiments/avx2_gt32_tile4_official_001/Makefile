@@ -3893,5 +3893,21 @@ $(BUILD)/test_encap_wire_kem: tests/test_encap_wire_kem.c src/encap_wire_researc
 encap-wire-kem-check: $(BUILD)/test_encap_wire_kem
 	$(BUILD)/test_encap_wire_kem
 
+.PHONY: pack-maskstore-check
+$(BUILD)/test_pack_maskstore: tests/test_pack_maskstore.c tests/test_pack_identity14.c generated/pack_triad.S $(WIRE_CLEAN)/pack.s | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -o $@ tests/test_pack_maskstore.c generated/pack_triad.S $(WIRE_CLEAN)/pack.s
+
+$(BUILD)/test_pack_maskstore_kem: tests/test_pack_maskstore_kem.c src/encap_pack_maskstore_research.c generated/pack_triad.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+
+$(BUILD)/test_pack_maskstore_kem_san: tests/test_pack_maskstore_kem.c src/encap_pack_maskstore_research.c generated/pack_triad.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+
+pack-maskstore-check: $(BUILD)/test_pack_maskstore $(BUILD)/test_pack_maskstore_kem $(BUILD)/test_pack_maskstore_kem_san
+	$(PYTHON) tools/generate_pack_triad.py --check
+	$(BUILD)/test_pack_maskstore
+	$(BUILD)/test_pack_maskstore_kem
+	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_pack_maskstore_kem_san
+
 clean:
 	$(RM) -r $(BUILD) __pycache__ tools/__pycache__

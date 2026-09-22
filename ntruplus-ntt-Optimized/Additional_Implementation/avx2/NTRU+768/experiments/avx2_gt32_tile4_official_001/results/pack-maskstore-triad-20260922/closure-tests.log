@@ -1,0 +1,8 @@
+python3 tools/generate_pack_triad.py --check
+build/test_pack_maskstore
+PASS identity14: 65536 shifted signed-i16 sweeps + 10003 random vectors; scalar wire oracle, immutability, canary, guard ends
+PASS mask/store ASM: inherited exhaustive test plus 1536 signed impulses, zero and alternating boundary
+build/test_pack_maskstore_kem
+mask/store serializer only KEM: 100 deterministic vectors, invalid PK/CT pass
+ASAN_OPTIONS=detect_leaks=0 build/test_pack_maskstore_kem_san
+mask/store serializer only KEM: 100 deterministic vectors, invalid PK/CT pass
