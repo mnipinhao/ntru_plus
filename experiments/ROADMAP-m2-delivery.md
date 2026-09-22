@@ -132,35 +132,31 @@ these; what mattered was the algorithm and the unroll factor.
 
 Per-role deficits as they stand, GT minus Official, ns, Keccak aligned.
 
-### 1. NTRU+1152 unpack: **+48 ns on M2 and +166 on A76**, and it is `frombytes`
+### 1. NTRU+1152 unpack: **measured, structural, closed**
 
-Re-measured by direct timing (P102).  The profiler's +157 was wrong and the
-compare it blamed is already gone (`ecb6d5e1`).  1152's whole serialization
-deficit in decapsulation is **+189 cycles on M2 (+54 ns)** and **+175 on A76
-(+73 ns)**, and almost all of it is one kernel:
+The profiler's +157 was wrong; the compare it blamed is gone (`ecb6d5e1`), and
+what remained was one kernel, `poly_frombytes`, at 1.29 on M2 and 1.27 on A76
+(P102).  P103 found the work: **432 of its 473 excess instructions are one
+`transpose8` per pair over eighteen pairs -- 91%.**  Everything else in the call
+accounts for 41.
 
-| 1152 decapsulation | M2 | A76 |
-|---|---:|---:|
-| **`frombytes` x3** | **+168 cyc** | **+399 cyc** |
-| `tobytes` full x1 | +68 | +220 |
-| `tobytes_small` x1 | -47 | -444 |
+The transpose is not reducible.  Six of its eight output rows are used but the
+last stage still needs all eight intermediates, so a six-row variant saves 2 of
+24; and it cannot move to the store side because it feeds `unfold4`, not memory
+-- transposing is what makes the 3-halfword-to-4-coefficient unfold
+lane-parallel across eight wires.  **This is the Good-Thomas permutation in the
+unpack direction, 0.375 instructions per coefficient, the same price the inverse
+pays in stores.**
 
-`poly_frombytes` is **1.29 on M2 and 1.27 on A76** -- the ratios are the same,
-which nothing else in this campaign manages.  A ratio that does not flip is a
-work difference, not a microarchitectural one, so **this is the first item on
-the list that should pay on both machines.**
+What was available landed (`8cc42ff8`): the range check is a tree rather than a
+loop, because below `-O3` gcc spilled all eight vectors and reloaded them to
+fold them -- 1,156 cycles a call at `-O2` against 876, and a 256-byte stack
+frame.  At this Makefile's `-O3` it is 10 cycles; the value is insurance for
+SUPERCOP's own flags.  A full unroll of the pair loop was tried and is **+70% on
+M2**.
 
-PMU: **3,098 retired instructions against Official's 885, a factor of 3.5.**
-`pack.c` shows why -- an **8x8 `transpose8` per 64 coefficients** to place bytes
-in Good-Thomas order.  It is the index permutation again, in the unpack
-direction, and it is the one place the permutation is paid that nobody has
-looked at.  `tobytes_small` wins by the same margin in the other direction
-(0.83/0.61), so P86's serializer rewrite landed; the *reader* was never done.
-
-First thing to try: the transpose is being done in registers after eight plain
-`vld1q_u8`.  `LD4`/`LD2` de-interleave on the load unit at the same µop cost as
-the loads already being issued, so part of the 8x8 may be obtainable for free.
-864's `frombytes` is 1.04/0.97, so this is specific to 1152's codec.
+Removing the transpose means not needing the permutation, which is the same open
+question the inverse leaves.  See `experiments/gt1152-p103-frombytes/`.
 
 ### 2. NTRU+768 encapsulation, pack/unpack: **+109**, key generation **+69**
 
