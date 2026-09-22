@@ -115,3 +115,55 @@ again what decides.
 three key-generation calls, 545 instructions, 210 transpose-class) and has not
 been analysed.  `poly_tobytes_encap` (427 instructions) is **dead code**: the
 encapsulation path calls `encap_basemul_add_tobytes` instead.
+
+## `poly_tobytes_keygen_cq`, the larger half, opened
+
+PMU retired instructions, `-O3 -fomit-frame-pointer` as its Makefile has it,
+20,000 iterations, empty-mode baseline subtracted:
+
+| per call | instructions |
+|---|---:|
+| GT `poly_tobytes_keygen_cq` | **1,220** |
+| Official `poly_tobytes` | 808 |
+| GT `poly_tobytes_decap` | **809** |
+
+`tobytes_decap` matching Official to one instruction confirms what the timing
+said: 768's decapsulation serializers are Official's shape.
+
+The 1,220 splits cleanly:
+
+| | instructions |
+|---|---:|
+| the permutation wrapper in `pack.S` | 545 |
+| the shared pack core, x12 | 675 |
+| Official's fold and store | 808 |
+
+**GT's fold-and-store core is better than Official's** -- 675 against 808, 56
+instructions per 64 coefficients against 67, which is P86/P87's fold work
+arriving here.  The whole +412 is the permutation wrapper.
+
+| wrapper | count | reachable? |
+|---|---:|---|
+| data loads | **192** | **96 vectors, each loaded twice** |
+| index loads | 24 | already optimal |
+| `TBL` (two-source) | 96 | the permutation itself |
+| `UZP1`/`UZP2` | 96 | the permutation itself |
+| `MOV` | 48 | probably |
+
+The index reuse is already there: all 96 `TBL` read `v13`, reloaded once per
+four, so 24 loads rather than 96.  The permutation was derived empirically
+(`cq768.c`): each natural output vector gathers from **four CQ vectors at stride
+four**, 80 of 96 taking two lanes from each, and the 96 `TBL` need only **24
+distinct index vectors**.  Two-source `TBL` is also the right choice -- P97
+measured three-source `TBL` at +21% on A76.
+
+What is left is the duplicate data loads.  `TBL` pairs are `(g, g+4)`, so vector
+`g`'s other use is the pair `(g-4, g)`, which lands in a **different pack-core
+call**; sharing it means holding vectors across calls, and each call already
+loads sixteen.
+
+At the measured 0.143 cycles per instruction here, removing the 96 duplicate
+loads and the 48 `MOV` is about **21 cycles a call, 18 ns across key
+generation's three**, against the item's +51.  **The remaining 33 ns is the 96
+`TBL` and 96 `UZP` -- the permutation itself**, and that is the same answer
+1152's unpack and 864's inverse gave.
