@@ -3,6 +3,221 @@ status: q24-gt-unpack-and-both-centered-and-lazy10788-gt-pack-boundaries-product
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+three_caller_profiler_v2_20260922:
+  document: docs/ntruplus768-three-caller-profiler-v2.md
+  campaign: results/caller-profiler-v2-windowed-20260922
+  sanitizer: results/caller-profiler-v2-window-sanitize-20260922
+  scope: diagnostic-only-no-ASM-no-Native-no-promotion
+  variants: [Official-SUPERCOP-20260831, frozen-clean-P-J1-M, Encap-Mask-store]
+  counter: default-perfevent
+  launches: 9
+  observations_per_cut_variant: 864
+  source_derived_cutpoints_complete_output_vectors: 100
+  linked_counter_entries_audited: 123
+  natural_failed_retries_observed: 0
+  retry_limit: loops-preserved-but-failed-retry-cost-not-measured
+  shared_helpers: identical-hash-SHAKE-Keccak-body-in-diagnostic-image
+  placement: normal-ASLR-on-preselected
+  Keygen_full_GT_minus_Official: -365.189815
+  Encap_full_GT_minus_Official: 22.425926
+  Encap_full_Mask_minus_GT: -7.208333
+  Encap_full_decision: inconclusive-CI-crosses-zero
+  Decap_full_GT_minus_Official: -311.518519
+  Decap_decode_through_inverse_GT_minus_Official: 102.842593
+  Encap_r_forward_pack_Mask_minus_GT: -20.865741
+  Decap_late_forward_equality_GT_minus_Official: -246.287037
+  negative_full_prefix_increments: preserved-invalid-as-physical-cost-use-local-windows
+  Native_comparison: previous-campaign-only-residual-not-forced-to-zero
+  clean_unchanged: true
+maskstore_native_qualification_20260922:
+  document: docs/ntruplus768-maskstore-native-qualification.md
+  campaign: results/maskstore-native-qualification-20260922
+  implementation: avx2-gt32-maskstore-exp-sc20260831
+  decision: qualification-not-passed-no-clean-promotion
+  changed_caller: Encap-lazy-and-highrange-only
+  Decap_centered_serializer: unchanged
+  Keygen_P_serializer: unchanged
+  installed_distinct_key_vectors: 100
+  installed_transcripts_sanitizer_linked_audit: pass
+  leak_detection: unavailable-under-ptrace-disabled
+  Native_fresh_processes_per_impl: 9
+  Native_Encap_vs_current: -97.375
+  Native_Encap_vs_Official: 30.208333
+  paired_settings: 4
+  paired_blocks_per_setting: 16
+  paired_launches_per_setting: 64
+  paired_control: frozen-current-GT-not-pinned-Official
+  primary_Encap: {delta: -95.376302, CI95: [-154.345052, -44.322917], favorable_blocks: 14}
+  primary_Keygen: {delta: 64.631510, CI95: [18.384115, 116.738281], favorable_blocks: 3}
+  ASLR_off_Encap: confidence-intervals-cross-zero
+  clean_modified: false
+  pristine_modified: false
+  eager_and_prefixed_buffer: not-integrated
+maskstore_triad_20260922:
+  document: docs/ntruplus768-maskstore-triad.md
+  campaign: results/pack-maskstore-triad-20260922
+  semantic_correctness: pass
+  linked_feasibility: pass
+  decision: ready-for-serious-pricing-not-production
+  variants: [current-M, identity14, maskstore]
+  benchmark: three-fresh-process-common-O3GC-same-ELF-cyclic-six-orders
+  counter: default-perfevent
+  input_addresses: identical-within-launch
+  setting: normal-ASLR-on
+  full_island_pooled_StQ2: {current: 2798.444444, identity14: 2791.083333, maskstore: 2764.361111}
+  full_island_deltas: {identity_minus_current: -7.361111, mask_minus_identity: -26.722222, mask_minus_current: -34.083333}
+  mask_minus_current_launches: [-35.5, -31.75, -34.458333]
+  mask_minus_identity_launches: [-29.291667, -22.583333, -28.916667]
+  instructions: [773, 759, 725]
+  routing: [288, 274, 240]
+  transpose_unpacks: [144, 144, 144]
+  peak_YMM: 7
+  new_mask_bytes: 96
+  eager: parked-not-stacked
+  prefixed_hash_buffer: not-integrated
+  serious: not-run
+  native: not-run
+  clean_changed: false
+maskstore_triad_serious_20260922:
+  document: docs/ntruplus768-maskstore-triad.md
+  campaign: results/pack-maskstore-triad-serious-20260922
+  decision: serious-polynomial-island-pass-Native-qualification-not-run
+  fresh_processes: 9
+  observations_per_variant_cutpoint: 864
+  setting: normal-ASLR-on-preselected
+  counter: default-perfevent
+  source_and_clean_unchanged: true
+  allocated_ELF_sections_identical_to_short: true
+  ELF_difference_vs_short: non-allocated-strtab-only
+  correctness_sanitizer_linked_audit: pass
+  raw_recomputation: pass
+  full_island_StQ2: {current: 2801.606481, identity14: 2791.370370, maskstore: 2765.490741}
+  full_island_deltas: {identity_minus_current: -10.236111, mask_minus_identity: -25.879630, mask_minus_current: -36.115741}
+  full_island_favorable_launches: {identity_minus_current: 9, mask_minus_identity: 9, mask_minus_current: 9}
+  mask_minus_current_launches: [-38.166667, -31.25, -38.208333, -38.625, -32.583333, -34.958333, -37.875, -33.5, -36.666667]
+  eager: parked-not-stacked
+  prefixed_hash_buffer: not-integrated
+  Native: not-run
+  placement_confirmation: not-run
+  clean_changed: false
+eager_qualification_codec_followup_20260922:
+  document: docs/ntruplus768-eager-qualification-codec-followup.md
+  status: qualification-complete-no-clean-promotion
+  clean_modified: false
+  pristine_modified: false
+  prefixed_hash_buffer: parked-not-integrated
+  eager:
+    serious_campaign: results/encap-eager-serious-20260922
+    BaseMul_cycles_delta: -27.83
+    full_island_cycles_delta: -47.23
+    favorable_launches: 9-of-9
+    encap_only_packaging: results/eager-qualification-20260922
+    encap_only_decision: rejected-promotion-primary-CI-crosses-zero-Decap-regression
+    intermediate_shared_packaging: results/eager-shared-qualification-20260922
+    intermediate_status: superseded-installer-introduced-unintended-text-section
+    final_packaging: original-text-section-shared-General-M-emission-no-body-duplication
+    final_campaign: results/eager-shared-inplace-qualification-20260922
+    implementation: avx2-gt32-shared-eager-inplace-exp-sc20260831
+    changed_callers: [Encap, Decap]
+    Keygen_arithmetic: unchanged
+    distinct_key_KEM_vectors: 100
+    invalid_PK_and_noncanonical_and_canonical_invalid_CT: exact
+    sanitizer: pass
+    linked_general_M_bytes: {control: 684, candidate: 655}
+    linked_entry_address_matched_with_control: true
+    native_Encap_vs_current_cycles: 137.50
+    native_Encap_vs_Official_cycles: 69.98
+    paired_primary_Encap: {delta: -20.24, CI95: [-44.84, 6.92], favorable_blocks: 10}
+    paired_primary_Keygen: {delta: 59.42, CI95: [35.57, 84.52], favorable_blocks: 1}
+    paired_protocol: four-settings-16-blocks-64-launches-each-common-O3GC
+    paired_control: frozen-current-GT-not-Official
+    promotion: false
+    reason: Native-Encap-not-winning-primary-paired-CI-crosses-zero-Keygen-regression
+  identity14:
+    candidate: ntruplus768_exp001_pack_identity14
+    campaign: results/pack-identity14-exact-short-20260922
+    superseded_campaign: results/pack-identity14-short-20260922
+    superseded_reason: missing-original-highrange-tail-jump-corrected-before-headline
+    eager_stacked: false
+    deleted_per_pack: 14
+    function_cage_bytes: 5120
+    highrange_tail_jump: retained
+    full_signed_i16_shifted_vector_sweep: 65536
+    random_vector_cases: 10003
+    linked_other_instructions_and_constant_operand_bytes: exact
+    primitive_KEM_invalid_sanitizer_guardpage_immutability: pass
+    r_pack_cycles_delta: -6.65
+    c_pack_cycles_delta: -8.85
+    full_island_cycles_delta: -17.56
+    full_island_launch_deltas: [-19.04, -14.92, -20.13]
+    status: ready-for-serious-not-production
+  fixed_M_network:
+    artifact: generated/pack_mask_network.json
+    stage: executable-ownership-and-instruction-model-only
+    new_ASM: false
+    benchmarked: false
+    mechanism: fold-pair-preserving-permutation-into-existing-byte-mask-and-store-source
+    vpermq: {current: 48, identity14: 34, model: 0}
+    transpose_unpacks: unchanged-144-no-global-minimality-claim
+    routing: {current: 288, identity14: 274, model: 240}
+    data_loads_stores: unchanged-48-and-97
+    constant_operands: unchanged-98
+    masks_bytes_delta: 96
+    peak_YMM: 7
+    owner_labels: 768
+    signed_i16_reducer_exhaustive: 65536
+    polynomial_model_cases: 1666
+    exact_wire_bytes_and_store_overlap: pass
+    new_dependency: 23-packets-extract-before-first-store
+    historical_TF1: 11-symmetric-swaps-already-known-additional-mechanism-covers-23-cross-half-cases
+    next: isolated-fixed-M-mask-store-ASM-vs-original-and-identity14-controls
+encap_function_research_20260922:
+  checkpoint: GT768-ENCAP-FUNCTION-RESEARCH
+  status: historical-short-gate-followed-by-qualification-failure-see-followup
+  document: docs/ntruplus768-encap-function-research.md
+  generated: generated/encap_fn_eager.json
+  campaign: results/encap-fn-eager-short-20260922
+  scope: independent-functions-materialized-M-boundaries-no-cross-function-fusion
+  frozen_control: clean/avx2-gt32-clean
+  pinned_Official: SUPERCOP-20260831
+  prototype:
+    symbol: ntruplus768_exp001_basemul_eager_m
+    mechanism: same-R2-finalizer-immediately-after-each-quartic-output
+    raw_expression_DAG: identical
+    arithmetic_Montgomery_chains: unchanged-276
+    routing_and_constant_operands: unchanged
+    stores_delta: -36
+    loads_delta: -36
+    peak_YMM: 16
+    stack_spills: 0
+    linked_bytes: {control: 684, candidate: 655}
+    add_m_fusion_credit: 0
+  correctness:
+    primitive_cases: 10003
+    raw_exact_and_independent_quartic_oracle: pass
+    mapping_owners_and_lambda: 768-owners-192-leaves-verified
+    alias_canary_immutability_guardpage: pass
+    deterministic_Encap_vectors: 100
+    KEM_key_coverage: one-generated-key-many-coins
+    invalid_PK_CT: pass
+    C_wrapper_ASan_UBSan: pass
+    inherited_Hwang_GT_mapping_codec_models: rerun-check-pass
+  cycle_counter:
+    backend: default-perfevent
+    estimator: pinned-stq.h-C-cross-checked-240-datasets
+    fresh_processes: 3
+    setting: normal-ASLR-on-CPU1-performance-turbo-off
+    BaseMul_delta_cycles: -27.53
+    BaseMul_plus_separate_add_delta_cycles: -32.01
+    full_polynomial_island_delta_cycles: -47.57
+    full_island_launch_deltas: [-49.375, -54.0, -46.0]
+    full_island_vs_Official_cycles: -58.90
+  second_ASM_slot: unused
+  W_aggregate_lambda: model-valid-but-no-new-machine-pricing-this-round
+  current_Encap_Forward_standalone_Barrett_vectors: 0
+  prefixed_hash_buffer: parked-not-integrated
+  Native_serious_and_clean_promotion: not-run
+  next: serious-pricing-of-independent-eager-BaseMul-before-any-Native-claim
 encap_compute_island_gate_20260922:
   checkpoint: GT768-ENCAP-COMPUTE-ISLAND-001
   status: bounded-source-gate-no-new-ASM
@@ -57,8 +272,10 @@ encap_live_b3_q24_20260922:
   short_campaigns:
     - results/encap-live-b3-q24-short-20260922-a
     - results/encap-live-b3-q24-short-20260922-b
-  B3_add_pack_candidate_minus_current_stq2_cycles: [16.46, 10.63]
-  full_polynomial_island_candidate_minus_current_stq2_cycles: [-8.10, 0.08]
+  estimator_correction: summary-corrected-stq.json-supersedes-legacy-summary.json
+  historical_harness_limit: timed-dispatch-and-sink-not-new-causal-evidence
+  B3_add_pack_candidate_minus_current_stq2_cycles: [10.67, 8.04]
+  full_polynomial_island_candidate_minus_current_stq2_cycles: [-3.15, -0.29]
   full_island_favorable_launches: [2, 1]
   decision: stop-before-serious-and-Native
   B_m_terminal_to_MulAdd: exact_schedule_not_yet_built
@@ -9643,3 +9860,124 @@ gt32_encap_wire_aos_mont_asm_price_20260921:
     retain_M_fused_add_as_separate_local_result: true
     reason: W_packet_arithmetic_and_constant_cost_exceeds_representation_credit
   artifact: results/encap-wire-mont-short-20260921-closed/
+
+codec_boundary_audit_20260922:
+  gate: GT768-CODEC-BOUNDARY-AUDIT
+  scope: diagnostic_only_no_new_optimization_asm
+  semantic_model: pass
+  model_artifact: generated/codec_boundary_audit.json
+  tests:
+    owners: 768
+    decoder_boundary_position_cases: 2304
+    random_decode_pack_roundtrips: 128
+    reducer_signed_i16_domain: 65536
+    deterministic_caller_vectors: 100
+    invalid_PK_CT: pass
+    sanitizer: pass
+    regenerated_model_exact: true
+  cycle_evidence:
+    artifact: results/codec-boundary-ingress-20260922/
+    counter: default-perfevent
+    label: supercop-derived-poly
+    fresh_processes: 9
+    setting: normal_aslr_on
+    linked_counter_entries: 128
+    current_minus_official_StQ2:
+      encap_internal_decode_validate: 32.134259259259295
+      decap_internal_decode_validate: 89.87962962962968
+    slower_launches: {encap: 9, decap: 9}
+  interpretation:
+    ingress_debt_persists_without_caller_entry: true
+    exact_cycles_by_instruction_class: not_identified
+    r_hash_requires_transformed_wire_bytes: true
+    transpose_144_is_lower_bound: not_proven
+  next_hypothesis: same_M_block_wide_decoder_load_unpack_codesign
+  native_remeasured: false
+  clean_modified: false
+  report: docs/ntruplus768-codec-boundary-audit.md
+
+codec_wide_decoder_schedule_20260922:
+  gate: GT768-M-ABI-BLOCK-WIDE-DECODER-SCHEDULE
+  scope: executable_model_and_register_allocation_only
+  M_ABI: unchanged
+  forward: unchanged
+  fusion: none
+  clean_modified: false
+  asm_written: false
+  timing: not_run
+  block: {wire_bytes: 96, coefficients: 64, blocks_per_polynomial: 12}
+  candidates:
+    packet_gather: {semantic: pass, peak_YMM: 11, mask_bytes: 768}
+    aligned_packet: {semantic: pass, peak_YMM: 11, mask_bytes: 128}
+    direct_M_gather: {semantic: pass, peak_YMM: 10, mask_bytes: 3392}
+  preferred_next_asm: aligned_packet
+  aligned_packet_per_polynomial:
+    data_loads: 36
+    data_stores: 48
+    vperm2i128: 61
+    vpalignr: 48
+    vpshufb: 48
+    transpose_unpacks: 144
+    normalized_instruction_delta_vs_current: 0
+    scratch_bytes: 0
+  tests_per_candidate:
+    unique_owners: 768
+    single_position_boundaries: 3840
+    random_12bit_polynomials: 64
+    physical_YMM_allocation: pass
+    reproducibility: pass
+  limitations:
+    - no_linked_or_performance_evidence
+    - routing_cost_replaces_load_cost_not_proven_cycle_credit
+    - direct_M_gather_is_not_a_global_network_lower_bound
+  artifact: generated/decode_wide_schedule.json
+  report: docs/ntruplus768-wide-decoder-schedule.md
+
+codec_aligned_decoder_asm_short_20260922:
+  gate: GT768-ALIGNED-PACKET-DECODER-ASM-PRICE
+  source: generated/decode_aligned.S
+  semantic_correctness: pass
+  linked_feasibility: pass
+  clean_modified: false
+  forward_M_ABI_validation_order: unchanged
+  tests:
+    primitive_random: 10003
+    position_boundaries: 3840
+    triple_invalid_positions: all_three_polynomials
+    guard_page_canary_immutability: pass
+    primitive_sanitizer: pass
+    full_caller_vectors: 100
+    invalid_PK_CT: pass
+    full_caller_sanitizer: pass
+    natural_retry_observed: false
+  linked:
+    model_operands_and_constant_bytes_exact: true
+    body_peak_YMM: 11
+    body_spills: 0
+    body_stack_bytes: 0
+    body_calls: 0
+    body_vzeroupper: 0
+    wrapper_stack_bytes: 8
+    entry_alignment_bytes: 32
+    body_text_bytes: 3396
+    control_body_text_bytes: 3470
+    triple_extra_constant_loads: 2
+    audited_counter_entries: 147
+  short:
+    artifact: results/decode-aligned-caller-short-20260922/
+    label: supercop-derived-poly
+    counter: default-perfevent
+    fresh_processes: 3
+    setting: normal_aslr_on
+    candidate_minus_current_StQ2:
+      encap_decode: 13.944444444444457
+      decap_decode: 67.33333333333337
+      encap_complete: 44.097222222222626
+      decap_complete: 52.41666666666788
+    favorable_launches_each_region: 0-of-3
+  decision: rejected_for_further_qualification_this_realization
+  serious: not_run
+  native: not_run
+  production: not_qualified
+  causal_breakdown: not_identified
+  report: docs/ntruplus768-wide-decoder-schedule.md
