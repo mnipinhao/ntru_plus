@@ -3808,6 +3808,22 @@ $(BUILD)/test_eager_shared_kem_san: tests/test_eager_shared_kem.c src/encap_fn_e
 eager-shared-check: $(BUILD)/test_eager_shared_kem $(BUILD)/test_eager_shared_kem_san
 	$(BUILD)/test_eager_shared_kem
 	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_eager_shared_kem_san
+.PHONY: pack-identity14-check
+$(BUILD)/test_pack_identity14: tests/test_pack_identity14.c generated/pack_identity14.S $(WIRE_CLEAN)/pack.s | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -o $@ $^
+
+$(BUILD)/test_pack_identity14_kem: tests/test_pack_identity14_kem.c src/encap_pack_identity14_research.c generated/pack_identity14.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+
+$(BUILD)/test_pack_identity14_kem_san: tests/test_pack_identity14_kem.c src/encap_pack_identity14_research.c generated/pack_identity14.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+
+pack-identity14-check: $(BUILD)/test_pack_identity14 $(BUILD)/test_pack_identity14_kem $(BUILD)/test_pack_identity14_kem_san
+	$(PYTHON) tools/generate_pack_identity14.py --check
+	$(BUILD)/test_pack_identity14
+	$(BUILD)/test_pack_identity14_kem
+	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_pack_identity14_kem_san
+
 $(BUILD)/test_encap_fn_eager: tests/test_encap_fn_eager.c generated/encap_fn_eager.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
 	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
 

@@ -1,0 +1,8 @@
+python3 tools/generate_pack_identity14.py --check
+PASS exact 14 identity deletions; all other instruction operands unchanged
+build/test_pack_identity14
+PASS identity14: 65536 shifted signed-i16 sweeps + 10003 random vectors; scalar wire oracle, immutability, canary, guard ends
+build/test_pack_identity14_kem
+identity14 serializer only KEM: 100 deterministic vectors, invalid PK/CT pass
+ASAN_OPTIONS=detect_leaks=0 build/test_pack_identity14_kem_san
+identity14 serializer only KEM: 100 deterministic vectors, invalid PK/CT pass
