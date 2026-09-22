@@ -4,6 +4,22 @@
 
 #include "params.h"
 #include "kat/rng.h"
+#include "poly.h"
+
+#ifdef TEST_F_RETRY
+static int force_f_failure;
+static unsigned injected_f_failures;
+int __real_poly_baseinv(poly *, const poly *);
+int __wrap_poly_baseinv(poly *out, const poly *in) {
+    if (force_f_failure) {
+        force_f_failure = 0;
+        injected_f_failures++;
+        memset(out, 0xa5, sizeof *out); /* failure output must not be consumed */
+        return 1;
+    }
+    return __real_poly_baseinv(out, in);
+}
+#endif
 
 int official_ref_keypair(unsigned char *, unsigned char *);
 int official_ref_enc(unsigned char *, unsigned char *, const unsigned char *);
@@ -87,6 +103,15 @@ int main(void) {
             fprintf(stderr, "lazy invalid-CT mismatch trial=%u\n", trial);
             return 1;
         }
+        /* Noncanonical first SK coefficient, preserving matching failure and
+         * zeroization semantics. Restore for the next independent fixture. */
+        unsigned char sk0=sk_o[0], sk1=sk_o[1];
+        sk_o[0]=sk_l[0]=0xff;
+        sk_o[1]=sk_l[1]=(unsigned char)(sk1|0x0f);
+        status_o=official_ref_dec(dec_o,ct_o,sk_o);
+        status_l=official_lazy_dec(dec_l,ct_l,sk_l);
+        if(status_o!=status_l || memcmp(dec_o,dec_l,sizeof dec_o)) return 1;
+        sk_o[0]=sk_l[0]=sk0; sk_o[1]=sk_l[1]=sk1;
     }
 
     /* Force one genuine g=0 BaseInv failure via test-only CBD1 input.
@@ -125,6 +150,23 @@ int main(void) {
     }
     puts("Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)");
 
+#ifdef TEST_F_RETRY
+    /* Control-flow injection, NOT a naturally noninvertible f. No reseeding
+     * between Keygen and Encap: the subsequent RNG stream is checked too. */
+    seed_rng(300001); random_calls = 0; force_f_failure = 1;
+    if (official_ref_keypair(pk_o, sk_o) || random_calls != 3) return 1;
+    if (official_ref_enc(ct_o, ss_o, pk_o)) return 1;
+    unsigned long long calls_after_o = random_calls;
+    seed_rng(300001); random_calls = 0; force_f_failure = 1;
+    if (official_lazy_keypair(pk_l, sk_l) || random_calls != 3) return 1;
+    if (official_lazy_enc(ct_l, ss_l, pk_l)) return 1;
+    if (injected_f_failures != 2 || random_calls != calls_after_o ||
+        memcmp(pk_o,pk_l,sizeof pk_o) || memcmp(sk_o,sk_l,sizeof sk_o) ||
+        memcmp(ct_o,ct_l,sizeof ct_o) || memcmp(ss_o,ss_l,sizeof ss_o) ||
+        official_ref_dec(dec_o,ct_o,sk_o) || official_lazy_dec(dec_l,ct_l,sk_l) ||
+        memcmp(dec_o,dec_l,sizeof dec_o) || memcmp(dec_o,ss_o,sizeof dec_o)) return 1;
+    puts("f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact; natural f failure NOT covered");
+#endif
     pk_o[0] = (unsigned char)NTRUPLUS_Q;
     pk_o[1] = (unsigned char)((pk_o[1] & 0xf0U) | (NTRUPLUS_Q >> 8));
     memset(ct_o, 0xa5, sizeof ct_o);

@@ -11,13 +11,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--campaign-root", required=True, type=Path)
     parser.add_argument("--candidate", default="avx2-officialopt-fused-exp001")
+    parser.add_argument("--baseline", default="avx2")
     args = parser.parse_args()
     root = args.campaign_root.resolve()
     marker = root / ".ntruplus-campaign.json"
     if not marker.is_file() or json.loads(marker.read_text()).get("kind") != "disposable-supercop-campaign":
         raise SystemExit("requires a disposable SUPERCOP campaign")
     impl = root / "crypto_kem/ntruplus768"
-    for name in ("avx2", args.candidate):
+    for name in (args.baseline, args.candidate):
         source = impl / name
         target = impl / (name + "-reversed")
         if target.exists():

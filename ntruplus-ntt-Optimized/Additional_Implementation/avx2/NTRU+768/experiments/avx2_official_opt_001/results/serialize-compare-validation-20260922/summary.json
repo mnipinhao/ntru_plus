@@ -1,0 +1,29 @@
+{
+  "commands": [
+    [
+      "python3",
+      "tools/generate_serialize_compare.py"
+    ],
+    [
+      "make",
+      "check-serialize-compare"
+    ],
+    [
+      "make",
+      "BUILD=build_compare_san",
+      "CFLAGS=-O1 -g -mavx2 -march=native -fsanitize=address,undefined -fno-omit-frame-pointer -fwrapv",
+      "check-serialize-compare"
+    ],
+    [
+      "python3",
+      "tools/audit_serialize_compare.py"
+    ]
+  ],
+  "repeatable_source_sha256": {
+    "asm/ntruplus768_officialopt_serialize_compare.s": "ff6aeef3b6019f6fc4e0158771abfaedbac282e6ee56cb70b009e46be28b12ce",
+    "src/kem_serialize_compare.c": "383ef262885155c746518d6f336cdd1bcd9ada0d3c575a3d78a4ed2bdb56cbae"
+  },
+  "all_passed": true,
+  "f_retry": "injection only, natural failure not covered",
+  "sanitizer": "ASan/UBSan C; LSan disabled for ptrace; ASM additionally uses guard-page and immutability tests"
+}

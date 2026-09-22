@@ -14,6 +14,10 @@ sys.path.insert(0, str(REPO / "scripts"))
 from supercop_workflow import read_lock, sha256_file, sha256_tree  # noqa: E402
 
 VARIANTS = {
+    "SC": ("avx2-officialopt-lazy-serialize-compare-exp004",
+          {"kem.c": "src/kem_serialize_compare.c",
+           "ntt_caller_lazy.s": "asm/ntruplus768_officialopt_ntt_caller_lazy.s",
+           "serialize_compare.s": "asm/ntruplus768_officialopt_serialize_compare.s"}),
     "D": ("avx2-officialopt-duplicate-control-exp002",
           {"kem.c": "src/kem_dup.c",
            "basemul_dup.s": "asm/ntruplus768_officialopt_dup_basemul.s"}),

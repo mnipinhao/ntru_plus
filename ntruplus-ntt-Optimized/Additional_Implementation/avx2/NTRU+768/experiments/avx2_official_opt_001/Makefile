@@ -1,4 +1,5 @@
 CC ?= cc
+.DEFAULT_GOAL := generate
 CFLAGS ?= -O3 -mavx2 -march=native -mtune=native -fPIE -ffunction-sections -fdata-sections -Wl,--gc-sections -Wall -Wextra -Werror
 OFFICIAL := upstream/supercop-avx2
 BUILD := build
@@ -12,6 +13,7 @@ COMMON_ASM := $(OFFICIAL)/KeccakP-1600-AVX2.s $(OFFICIAL)/ntt.s $(OFFICIAL)/base
 KEM_INCLUDES := -Itests/support -I$(OFFICIAL) -I$(SUPERCOP_ROOT)/bench/$(SUPERCOP_MACHINE)/include/amd64 -I$(SUPERCOP_ROOT)/include
 VARIANT_ASM := asm/ntruplus768_officialopt_basemul_add.s asm/ntruplus768_officialopt_dup_basemul.s asm/ntruplus768_officialopt_shared_diag.s asm/ntruplus768_officialopt_ntt_early_const.s
 VARIANT_OBJS := $(BUILD)/kem_ref.o $(BUILD)/kem_dup.o $(BUILD)/kem_fused.o $(BUILD)/kem_shared.o $(BUILD)/kem_forward.o
+include serialize_compare.mk
 
 .PHONY: generate check check-inverse-ct check-inverse-ct-r3 check-inverse-ct-full check-inverse-ct-cohort check-inverse-ct-controls
 generate:
