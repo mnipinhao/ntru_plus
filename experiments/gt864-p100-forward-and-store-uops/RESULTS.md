@@ -1,5 +1,14 @@
 # P100 — roadmap item 4, and what a store actually costs
 
+> **Superseded in part by P102.**  The section below argues that three
+> different figures for one function meant the profiler was wrong.  It was
+> not: Official's `kem.c` really does write `f = m;` before decapsulation's
+> first `poly_ntt`, because it has no out-of-place form and `m` is still
+> needed by `poly_sotp_decode`.  So the forward transform is **1.06 in key
+> generation and encapsulation and 0.94 in decapsulation** on M2, and the
+> split the profiler reported was real.  The store-µop findings in the second
+> half stand unchanged.  See `experiments/gt-p102-kernels-two-machines/`.
+
 Item 4 said NTRU+864's forward transform was **+61 ns on key generation, +32 on
 encapsulation, +25 on decapsulation**, never examined, the cheapest unknown
 left.  Two of those three claims are wrong.

@@ -132,18 +132,35 @@ these; what mattered was the algorithm and the unroll factor.
 
 Per-role deficits as they stand, GT minus Official, ns, Keccak aligned.
 
-### 1. NTRU+1152 decapsulation, pack/unpack: **swap landed, remainder unmeasured**
+### 1. NTRU+1152 unpack: **+48 ns on M2 and +166 on A76**, and it is `frombytes`
 
-The fused compare is gone; `ecb6d5e1` took **51 ns off M2 decapsulation**.  What
-the profiler called +157 has never been checked by direct timing, and P100 found
-the profiler wrong by 2x on the item it did check, so **re-measure before doing
-anything else here**: build `bench_decap_kernels.c` against 1152 with Official's
-`crypto_kem/ntruplus1152/aarch64` renamed, the way
-`gt864-p99-vs-official-two-machines/` does it for 864.
+Re-measured by direct timing (P102).  The profiler's +157 was wrong and the
+compare it blamed is already gone (`ecb6d5e1`).  1152's whole serialization
+deficit in decapsulation is **+189 cycles on M2 (+54 ns)** and **+175 on A76
+(+73 ns)**, and almost all of it is one kernel:
 
-The untried shape, if the remainder survives measurement: fold a pair into a
-96-byte scratch and compare that contiguously, six wide loads against sixteen
-narrow ones.  A masked sixteen-byte load was tried at 864 and was worse.
+| 1152 decapsulation | M2 | A76 |
+|---|---:|---:|
+| **`frombytes` x3** | **+168 cyc** | **+399 cyc** |
+| `tobytes` full x1 | +68 | +220 |
+| `tobytes_small` x1 | -47 | -444 |
+
+`poly_frombytes` is **1.29 on M2 and 1.27 on A76** -- the ratios are the same,
+which nothing else in this campaign manages.  A ratio that does not flip is a
+work difference, not a microarchitectural one, so **this is the first item on
+the list that should pay on both machines.**
+
+PMU: **3,098 retired instructions against Official's 885, a factor of 3.5.**
+`pack.c` shows why -- an **8x8 `transpose8` per 64 coefficients** to place bytes
+in Good-Thomas order.  It is the index permutation again, in the unpack
+direction, and it is the one place the permutation is paid that nobody has
+looked at.  `tobytes_small` wins by the same margin in the other direction
+(0.83/0.61), so P86's serializer rewrite landed; the *reader* was never done.
+
+First thing to try: the transpose is being done in registers after eight plain
+`vld1q_u8`.  `LD4`/`LD2` de-interleave on the load unit at the same µop cost as
+the loads already being issued, so part of the 8x8 may be obtainable for free.
+864's `frombytes` is 1.04/0.97, so this is specific to 1152's codec.
 
 ### 2. NTRU+768 encapsulation, pack/unpack: **+109**, key generation **+69**
 

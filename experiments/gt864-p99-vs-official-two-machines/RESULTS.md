@@ -27,6 +27,16 @@ Official has no `tobytes_small`; that row compares GT's specialised path against
 Official's general one on both sides.  The `verify` row compares one C function
 with itself.
 
+## Correction, itself corrected by P102
+
+> Only **one** of the two rows was an artifact.  Official's `invntt_scale` is
+> called in place, so the copy there was the harness's; but its first
+> decapsulation `poly_ntt` really is preceded by `f = m;`, so that copy is
+> real and GT's out-of-place form genuinely saves it.  The corrected M2
+> figure for 864's decapsulation arithmetic before P29 is **+7.2%**, not the
+> +4.5% first reported nor the +9.8% below.  P102 has the kem.c-faithful
+> harness and both sets on both machines.
+
 ## Correction: two rows made Official pay a copy it does not pay
 
 `kem.c` calls both transforms **in place** on both sides -- GT
