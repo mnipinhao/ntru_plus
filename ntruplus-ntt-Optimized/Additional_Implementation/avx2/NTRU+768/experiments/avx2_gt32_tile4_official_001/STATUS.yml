@@ -3,6 +3,66 @@ status: q24-gt-unpack-and-both-centered-and-lazy10788-gt-pack-boundaries-product
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+encap_compute_island_gate_20260922:
+  checkpoint: GT768-ENCAP-COMPUTE-ISLAND-001
+  status: bounded-source-gate-no-new-ASM
+  document: docs/ntruplus768-encap-boundary-elimination.md
+  artifact: generated/tile4_encap_compute_island_gate.json
+  range:
+    refined_small_forward_abs: 15592
+    conservative_post_add_abs: 17448
+    serializer_signed_domain_checked: 65536
+  A_B3_to_ciphertext:
+    historical_sum_m: placement-sensitive-full-caller-rejection
+    current_B3_peak_YMM: 16
+    retain_first_raw_output_unchanged_body_peak: 17
+    retain_first_two_raw_outputs_unchanged_body_peak: 18
+    decision: exact-new-allocation-needed-before-ASM
+  B_m_terminal_to_MulAdd:
+    forward_loop_iterations: 6
+    M_blocks_per_iteration: 2
+    planes_per_block: 4
+    decision: exact-block-consumer-and-scratch-last-use-schedule-needed-before-ASM
+  C_asymmetric_ingress:
+    decision: no-new-full-pass-elimination-mechanism-over-old-D01-or-W-Mont
+  new_ASM: false
+  benchmark_run: false
+  clean_modified: false
+  next: prove-A-reload-and-live-Q24-block-schedule-then-consider-one-namespaced-ASM
+encap_live_b3_q24_20260922:
+  checkpoint: GT768-ENCAP-COMPUTE-ISLAND-A-LIVE-B3-Q24
+  status: linked-correct-but-no-repeatable-full-island-win
+  clean_modified: false
+  pristine_supercop_modified: false
+  source_gate: generated/tile4_encap_compute_island_gate.json
+  generated_asm: generated/encap_live_b3_pack.S
+  research_caller: src/encap_live_b3_pack_research.c
+  linked_audit: results/encap-live-b3-q24-short-20260922-b/linked-audit.json
+  boundary_removed_per_encap:
+    early_raw_stores: 36
+    late_raw_reloads: 36
+    completed_c_stores: 48
+    serializer_c_reloads: 48
+  new_costs:
+    h_high_word_memory_operands: 144
+    packet_store_instructions_vs_overlapping_serializer: 47
+    linked_function_bytes: 5585
+    packet_dispatch: public_block_index
+  correctness:
+    primitive_differential_and_canary_cases: 1003
+    deterministic_KEM_vectors: 100
+    invalid_PK_CT: pass
+    ASan_UBSan_C_wrapper: pass
+    linked_stack_frame_spill: none
+  short_campaigns:
+    - results/encap-live-b3-q24-short-20260922-a
+    - results/encap-live-b3-q24-short-20260922-b
+  B3_add_pack_candidate_minus_current_stq2_cycles: [16.46, 10.63]
+  full_polynomial_island_candidate_minus_current_stq2_cycles: [-8.10, 0.08]
+  full_island_favorable_launches: [2, 1]
+  decision: stop-before-serious-and-Native
+  B_m_terminal_to_MulAdd: exact_schedule_not_yet_built
+  C_asymmetric_ingress: no_new_full_pass_elimination_mechanism
 gt_vector_mapping_codesign_20260922:
   checkpoint: GT768-VECTOR-MAPPING-CODESIGN
   status: C1-executable-model-pass-C2-semantic-screen-only
