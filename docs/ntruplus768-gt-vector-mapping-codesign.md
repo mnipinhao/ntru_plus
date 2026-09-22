@@ -2,6 +2,12 @@
 
 Date: 2026-09-22. Branch: `avx2-gt-ntt`.
 
+Follow-up: [逐函式研究與 eager BaseMul](ntruplus768-encap-function-research.md)
+keeps the materialized M ABI and implements one function-internal same-DAG
+prototype. Its three-process complete polynomial-island delta is −47.57 cycles.
+This supersedes the priority recommendation below, not its historical model
+evidence. W aggregate-λ remains unpriced; no Native or clean promotion occurred.
+
 ## Result and evidence boundary
 
 This checkpoint performed **source inspection, executable word/ownership models,

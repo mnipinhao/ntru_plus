@@ -3799,6 +3799,33 @@ WIRE_KEM_C := keygen.c encap.c decap.c poly.c symmetric.c fips202.c baseinv.c co
 WIRE_KEM_ASM := KeccakP-1600-AVX2.s cbd.s crepmod3.s add.s ntt.s ntt_m.s ntt_p.s invntt.s basemul.s batch_inverse.s pack.s
 WIRE_KEM_SOURCES := $(addprefix $(WIRE_CLEAN)/,$(WIRE_KEM_C) $(WIRE_KEM_ASM))
 
+.PHONY: encap-fn-eager-check encap-fn-eager-sanitize
+.PHONY: eager-shared-check
+$(BUILD)/test_eager_shared_kem: tests/test_eager_shared_kem.c src/encap_fn_eager_research.c src/decap_fn_eager_research.c generated/encap_fn_eager.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+$(BUILD)/test_eager_shared_kem_san: tests/test_eager_shared_kem.c src/encap_fn_eager_research.c src/decap_fn_eager_research.c generated/encap_fn_eager.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+eager-shared-check: $(BUILD)/test_eager_shared_kem $(BUILD)/test_eager_shared_kem_san
+	$(BUILD)/test_eager_shared_kem
+	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_eager_shared_kem_san
+$(BUILD)/test_encap_fn_eager: tests/test_encap_fn_eager.c generated/encap_fn_eager.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+
+$(BUILD)/test_encap_fn_eager_kem: tests/test_encap_fn_eager_kem.c src/encap_fn_eager_research.c generated/encap_fn_eager.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+
+encap-fn-eager-check: $(BUILD)/test_encap_fn_eager $(BUILD)/test_encap_fn_eager_kem
+	$(PYTHON) tools/generate_encap_fn_eager.py --check
+	$(PYTHON) tests/test_encap_fn_model.py
+	$(BUILD)/test_encap_fn_eager
+	$(BUILD)/test_encap_fn_eager_kem
+
+$(BUILD)/test_encap_fn_eager_kem_san: tests/test_encap_fn_eager_kem.c src/encap_fn_eager_research.c generated/encap_fn_eager.S $(WIRE_KEM_SOURCES) $(OFFICIAL)/kat/aes.c $(OFFICIAL)/kat/rng.c | $(BUILD)
+	$(CC) $(KEM_CFLAGS) -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fwrapv -fno-strict-aliasing -I$(WIRE_CLEAN) -I$(OFFICIAL) -o $@ $^
+
+encap-fn-eager-sanitize: $(BUILD)/test_encap_fn_eager_kem_san
+	ASAN_OPTIONS=detect_leaks=0 $(BUILD)/test_encap_fn_eager_kem_san
+
 $(BUILD)/test_encap_live_b3_pack: tests/test_encap_live_b3_pack.c \
 		generated/encap_live_b3_pack.S $(WIRE_CLEAN)/ntt.s \
 		$(WIRE_CLEAN)/ntt_m.s $(WIRE_CLEAN)/basemul.s \
