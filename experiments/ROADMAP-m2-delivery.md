@@ -85,9 +85,22 @@ these; what mattered was the algorithm and the unroll factor.
 
 ## Rules that apply to every item
 
-- **Promotion criterion: neither machine may regress.**  Cortex-A76 (Pi5,
-  `pi@100.99.191.9`) and M2 Pro, both measured, before anything lands.  P88 was
-  adopted at 864 and rejected at 1152 on exactly this.
+- **Promotion criterion**, as amended 2026-09-22.  Both machines measured
+  before anything lands -- Cortex-A76 (Pi5, `pi@100.99.191.9`) and M2 Pro.  A
+  change may land when **either**:
+  1. neither machine regresses at the operation level, **or**
+  2. the regression is **at most 1%** on one machine *and* the other machine's
+     gain, in percent of that operation, is **strictly larger** than it.
+
+  Rule 2 exists because the two machines value the same work differently by a
+  factor of six (P96: on A76 adding a store costs 5.9x what removing one saves,
+  because the removed ones hide in the multiply-port shadow).  Holding to rule 1
+  alone rejects every store-path redesign on the machine where stores are free,
+  which is what happened to P28 and P29 (P98).  It is an explicit exception with
+  a measured bound, not a case-by-case judgement: a change that regresses A76 by
+  more than 1%, or by more than it gains on M2, still does not land.
+
+  P88 was adopted at 864 and rejected at 1152 under rule 1 and stays that way.
 - **Reseed the RNG before every timed batch.**  Key generation rejects and
   retries, and the spread between the cheapest and dearest single key generation
   on one stream is 11x.  Without reseeding, two builds do not measure the same
