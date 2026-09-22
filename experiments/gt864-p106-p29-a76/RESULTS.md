@@ -83,3 +83,37 @@ values would cost 109 instructions rather than 238: about **-129 instructions,
 
 Rule 2 holds with more margin than at landing.  The tail is the last named item
 on this kernel.
+
+## The tail's ternary normalises three values at a time
+
+`gt864-p29-direct-st3/generate.py` shows why.  The tail loops over sixteen `t`
+and two sides, and calls `normalization()` -- six instructions, the same
+`CMGT`/`CMGT`/`ADD`/`SUB`/`SQRDMULH`/`MLS` sequence `crepmod3` uses -- once per
+`(t, side)`:
+
+```python
+for t, state in enumerate(p28.REGS):          # 16
+    for side in ("low", "high"):              # 2
+        ...
+        normalization(lines, value, f"tail_{t}_{side}")
+```
+
+That is **32 normalisations of six instructions, 192 in all, for 96 values --
+three values per vector.**
+
+| | instructions per value | lanes used |
+|---|---:|---:|
+| `crepmod3` | **0.75** (6 per 8 values) | 8 of 8 |
+| P29's tail | **2.00** (6 per 3 values) | **3 of 8** |
+
+Not the six-of-eight the tables suggested: `j = 8` gives one `(t, side)` only its
+three components, so the vector is three-eighths full.  The measured store path
+is already better than the old tail's (32 `UMOV` + 32 `LSR` + 32 `STR W` + 32
+`STRH` = 128, against 96 `UMOV` + 96 `STRH` = 192); the whole +258 is this.
+
+Packing the 32 results into twelve full vectors before normalising takes the 192
+to 72, and the packing costs something back.  Optimistically **-96 instructions,
+-53 cycles on A76 and -15 on M2**, which is **-22 ns and -4 ns** on
+decapsulation.  It needs `generate.py` changed and the kernel re-run through
+Slothy, not an edit to the allocated assembly -- the normalisation is
+interleaved with the transform that feeds it.
