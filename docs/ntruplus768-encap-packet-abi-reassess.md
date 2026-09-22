@@ -284,3 +284,15 @@ python3 tools/run_encap_wire_short.py --supercop-root <pinned-root> --cpu 1 --ta
 Raw observations、source／ELF hash、compiler command、sanitizer output、
 linked audit 與 summary 保存於
 `results/encap-wire-mont-short-20260921-closed/`。
+
+## Consumer-edge research re-entry（2026-09-22）
+
+新研究保留上述 W-Mont 的 reject 結果。新增的可執行 word model 改以
+`cyclic sum + (λ−1) × wrapped sum` 聚合 correction，總 chains 為 288
+（舊 W 為 384、M 為 276），model peak 9 YMM、逐操作 range 與 scalar
+oracle 通過；尚無此算術的 ASM/timing。
+
+獨立的 C hash-staging 改動沿用 current M，讓 serializer 直接寫 prefix
+buffer，刪掉 `hash_g` 的 1152-byte copy。九-process same-ELF confirmation
+完整 deterministic Encap −108.74 cycles，9/9 同方向；尚未進 Native。
+兩項證據不可相加。詳見 [consumer-edge report](ntruplus768-gt-encap-consumer-edges.md)。

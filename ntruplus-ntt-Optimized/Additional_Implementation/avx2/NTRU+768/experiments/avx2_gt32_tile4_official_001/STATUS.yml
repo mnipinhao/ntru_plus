@@ -3,6 +3,66 @@ status: q24-gt-unpack-and-both-centered-and-lazy10788-gt-pack-boundaries-product
 primary_candidate: GT32-TILE4
 frozen_parent: experiments/gt_ntt
 layout: "tile=2*k3+branch; vector=Q/4; lane=4*(Q%4)+c"
+encap_consumer_edges_reentry_20260922:
+  checkpoint: GT32-ENCAP-CONSUMER-EDGES-REENTRY-001
+  status: direct-hash-stage-caller-signal-and-aggregated-W-model-pass
+  document: docs/ntruplus768-gt-encap-consumer-edges.md
+  clean_modified: false
+  baseline: avx2-gt32-clean
+  direct_hash_stage:
+    change: existing-M-pack-writes-directly-to-0x01-prefixed-hash-buffer
+    removed_copy_bytes: 1152
+    logical_read_write_bytes_removed: 2304
+    decomposition_specific: false
+    stage_cases: 10391
+    actual_ternary_forward_cases: 100
+    output_alignment_offsets: 32
+    r_immutable: true
+    buffer_wipe_canary_guard_page: pass
+    deterministic_encap_cases: 100
+    distinct_keys: 16
+    tampered_ct_cases: 100
+    invalid_pk_packet_positions: 48
+    sanitizer: ASan-UBSan-pass-LSan-disabled-host
+    linked_helper_stack_adjust_bytes: {current_hash_g: 1176, candidate: 1176}
+    linked_memcpy_removed: true
+    polynomial_ASM_changed: false
+    short_campaign: results/encap-consumer-hash-stage-short-20260922-a1
+    confirmation_campaign: results/encap-consumer-hash-stage-confirm-20260922
+    measurement: supercop-derived-same-ELF-common-O3GC-not-Native
+    fresh_processes_confirmation: 9
+    normal_ASLR_on_candidate_minus_current_StQ2:
+      retained_r_to_hash_output: -65.15885416666606
+      full_deterministic_encap: -108.73611111111313
+    favorable_launches: {hash: 9, encap: 9}
+    Native: not-run
+    placement_controls: not-run
+    next: disposable-Native-qualification-before-promotion
+  aggregated_W_montgomery:
+    mechanism: cyclic-sum-plus-lambda-minus-one-times-wrapped-sum
+    output_exponent: 0
+    input_domain: h-canonical-r-m-abs15592
+    old_W_chains: 384
+    proposed_W_chains: 288
+    current_M_chains: 276
+    proposed_body_instructions_per_packet: 47
+    old_body_instructions_per_packet: 58
+    proposed_constant_operands_per_packet: 16
+    old_constant_operands_per_packet: 20
+    physical_model_peak_YMM: 9
+    signed_word_post_add_abs_bound: 17481
+    packet_tests: 13171
+    quartic_tests: 52684
+    leaves: 192
+    raw_different_cells_vs_old_W: 792
+    residue_and_wire_bytes: pass
+    new_reductions: 0
+    new_scratch: 0
+    full_M_reconstruction: false
+    new_ASM: false
+    linked_or_cycle_evidence: none
+    artifact: generated/tile4_encap_consumer_edges_research.json
+    next: bounded-single-packet-ASM-and-complete-island-pricing-with-M-fused-control
 encap_wire_aos_schedule_002:
   status: instruction-model-and-range-pass-no-ASM-no-benchmark
   branch: avx2-gt-ntt
