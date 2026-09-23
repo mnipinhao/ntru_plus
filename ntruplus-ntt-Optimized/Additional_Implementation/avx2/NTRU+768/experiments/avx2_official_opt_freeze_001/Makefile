@@ -8,3 +8,5 @@ PARAM := 768
 LAZY_REFERENCE := ../avx2_official_opt_001/asm/ntruplus768_officialopt_ntt_caller_lazy.s
 include ../../../common/official_opt_lazy/lazy.mk
 include ../../../common/official_opt_lazy/freeze2op.mk
+# SCRATCH direct-codec decision-gate measurement (no candidate): see codec8_scratch.mk.
+include ../../../common/official_opt_lazy/codec8_scratch.mk
