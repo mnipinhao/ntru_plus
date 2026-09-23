@@ -1,8 +1,8 @@
 experiment: avx2_gt9x16_official_001
 parameter: 1152
-state: checkpoint-encap-h4-m2e-linked-packed24-schedule-complete
+state: paused-2026-09-23-production-official-first
 upstream: pinned-supercop
-candidate: avx2-gt9x16-exp001
+candidate: avx2-gt9x16-wire-h3-pairunpack-serializer-v2-exp017-sc20260831
 promotion: not-qualified
 gates:
   generator: passed
@@ -15,7 +15,7 @@ gates:
   ntt9_reference: passed-two-radix3-layers
   component_index_oracle: passed-all-branches-rows-lanes-and-terminal-positions
   differential: passed-full-forward-canonicalized-vs-pinned-official-avx2
-  kat: pending
+  kat: passed-100-byte-exact-frozen-exp017-20260920
   range: passed-bit-exact-permutation
   sanitizer: passed-asan-ubsan
   abi: passed-no-vector-spills-callee-saved-gpr-only
@@ -1033,3 +1033,22 @@ shortlisted_candidates:
   - g0-f3-terminal-basis-consumer-fused-shortlist
   - g0-f4-encapsulation-terminal-stream-shortlist
   - g0-f5-inverse-feed-hybrid-shortlist
+pause_decision_20260923:
+  decision: pause-gt-avx2-1152-for-production
+  goal: production-speed
+  rationale:
+    - exp017 Native SUPERCOP 20260831 enc +884.53 (+2.06%, 0/9 faster); keypair +308.00; dec +29.92
+    - fixed-ELF paired enc +886.68, 95% CI [+846.94, +926.69], positive in all four placement/ASLR settings
+    - every earlier Native encap candidate also regressed (+672 to +1499)
+    - hash_f plus hash_g are about 78% of Official Encap cycles; NTT plus BaseMul about 9%, so a transform-only win is bounded near 2% of KEM
+    - Official shares one code structure across 768/864/1152, so a qualified 768 Official-opt technique ports at lower cost than a per-parameter GT design
+  best_result:
+    implementation: avx2-gt9x16-wire-h3-pairunpack-serializer-v2-exp017-sc20260831
+    source: candidates/avx2-gt9x16-wire-h3-pairunpack-serializer-v2-exp017-sc20260831
+    evidence: docs/ntruplus-avx2-768-864-1152-benchmark-202609.md
+    gates_passed: [kat-100-byte-exact, asan-ubsan-kat, public-api]
+  plan: qualify a Native win on NTRU+768 avx2-official-opt first, then port that technique to NTRU+1152 Official
+  reopen_gt_when:
+    - an executable NTT16-first or blocked schedule within 16 YMM registers exists
+    - or a materially different NTT9 DAG removes the tail and serializer boundary cost
+  keep_official: [keypair, enc, dec]
