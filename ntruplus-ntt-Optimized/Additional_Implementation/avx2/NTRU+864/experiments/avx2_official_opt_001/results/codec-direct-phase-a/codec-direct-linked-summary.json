@@ -1,0 +1,818 @@
+{
+  "class": "linked ELF audit (exp002 codec Phase A, correctness only; no timing)",
+  "parameter": "NTRU+864",
+  "elf": "build/test_kem_lazy_codec_direct",
+  "elf_sha256": "9fc13f6978bf7b29a3ee2931e6bb9e018944d38ea32dd0f47edff8df3acf2cbb",
+  "asm_sha256": {
+    "asm/ntruplus864_officialopt_codec_direct.s": "feba151f06fa018ae71ead15c9d642cd7f39e6785f530fe44246903efe5a2a1c",
+    "asm/ntruplus864_officialopt_codec_fused_min.s": "637d5f5c7385dd0edf80f1affdf1d4f49476e1b8ec6188dd5928ed974fd5b625",
+    "asm/ntruplus864_officialopt_codec_fused.s": "dcaa2ed5d09b576a1683957b1f8097755745d7642652296598dd0a240ce326e1"
+  },
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "functions": {
+    "ntruplus864_officialopt_tobytes_direct": {
+      "elf": "build/test_kem_lazy_codec_direct",
+      "address_mod_32": 0,
+      "size_bytes": 1354,
+      "instruction_rows": 239,
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0,
+      "dynamic_per_call": {
+        "alu": 162,
+        "blendd": 18,
+        "constant_memory_operands": 57,
+        "cross_lane_permute": 1,
+        "in_lane_shuffle": 180,
+        "load": 57,
+        "multiply": 162,
+        "scalar": 18,
+        "store": 109,
+        "total": 707
+      },
+      "port_classes_per_call": {
+        "constant_memory_operands": 57,
+        "load": 57,
+        "p01": 162,
+        "p015": 180,
+        "p15_shuffle": 180,
+        "p5": 1,
+        "scalar": 18,
+        "store": 109,
+        "total": 707
+      },
+      "opcode_counts": {
+        "add": 2,
+        "cmp": 1,
+        "jb": 1,
+        "lea": 1,
+        "ret": 1,
+        "vextracti128": 18,
+        "vmovdqa": 21,
+        "vmovdqu": 18,
+        "vmovq": 1,
+        "vpaddw": 18,
+        "vpblendd": 6,
+        "vpextrd": 1,
+        "vpmaddwd": 18,
+        "vpminuw": 18,
+        "vpmulhrsw": 18,
+        "vpmullw": 18,
+        "vpshufb": 18,
+        "vpsubw": 18,
+        "vpunpckhdq": 6,
+        "vpunpckhqdq": 6,
+        "vpunpckhwd": 9,
+        "vpunpckldq": 6,
+        "vpunpcklqdq": 6,
+        "vpunpcklwd": 9
+      }
+    },
+    "ntruplus864_officialopt_frombytes_direct": {
+      "elf": "build/test_kem_lazy_codec_direct",
+      "address_mod_32": 0,
+      "size_bytes": 1117,
+      "instruction_rows": 187,
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0,
+      "dynamic_per_call": {
+        "alu": 111,
+        "blendd": 18,
+        "constant_memory_operands": 56,
+        "in_lane_shuffle": 180,
+        "insert_from_memory": 54,
+        "load": 55,
+        "scalar": 21,
+        "shift": 54,
+        "store": 54,
+        "total": 547
+      },
+      "port_classes_per_call": {
+        "constant_memory_operands": 56,
+        "load": 55,
+        "load+p015": 54,
+        "p01": 54,
+        "p015": 129,
+        "p15_shuffle": 180,
+        "scalar": 21,
+        "store": 54,
+        "total": 547
+      },
+      "opcode_counts": {
+        "add": 2,
+        "cmp": 1,
+        "jb": 1,
+        "lea": 1,
+        "movzbl": 1,
+        "ret": 1,
+        "setne": 1,
+        "test": 1,
+        "vinserti128": 18,
+        "vmovdqa": 19,
+        "vmovdqu": 18,
+        "vpackusdw": 18,
+        "vpand": 18,
+        "vpblendd": 6,
+        "vpcmpgtw": 1,
+        "vpmaxuw": 18,
+        "vpmovmskb": 1,
+        "vpshufb": 18,
+        "vpsrld": 18,
+        "vpunpckhdq": 6,
+        "vpunpckhqdq": 6,
+        "vpunpckldq": 6,
+        "vpunpcklqdq": 6,
+        "vpxor": 1
+      }
+    },
+    "ntruplus864_officialopt_tobytes_fused_min": {
+      "elf": "build/test_codec_fused_min",
+      "address_mod_32": 0,
+      "size_bytes": 2495,
+      "instruction_rows": 454,
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0,
+      "dynamic_per_call": {
+        "alu": 204,
+        "blendd": 166,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 52,
+        "in_lane_shuffle": 290,
+        "load": 56,
+        "multiply": 108,
+        "scalar": 18,
+        "shift": 346,
+        "store": 81,
+        "total": 1321
+      },
+      "port_classes_per_call": {
+        "constant_memory_operands": 2,
+        "load": 56,
+        "p01": 454,
+        "p015": 370,
+        "p15_shuffle": 290,
+        "p5": 52,
+        "scalar": 18,
+        "store": 81,
+        "total": 1321
+      },
+      "opcode_counts": {
+        "add": 2,
+        "cmp": 1,
+        "jb": 1,
+        "lea": 1,
+        "ret": 1,
+        "vextracti128": 15,
+        "vinserti128": 4,
+        "vmovdqa": 20,
+        "vmovdqu": 12,
+        "vpaddw": 18,
+        "vpblendd": 58,
+        "vpblendw": 53,
+        "vperm2i128": 12,
+        "vpminuw": 18,
+        "vpmulhrsw": 18,
+        "vpmullw": 18,
+        "vpslld": 14,
+        "vpsllq": 34,
+        "vpsllw": 15,
+        "vpsrld": 14,
+        "vpsrlq": 34,
+        "vpsrlw": 10,
+        "vpsubw": 18,
+        "vpunpckhqdq": 24,
+        "vpunpcklqdq": 24,
+        "vpxor": 15
+      }
+    },
+    "ntruplus864_officialopt_tobytes_fused": {
+      "elf": "build/test_kem_lazy_codec",
+      "address_mod_32": 0,
+      "size_bytes": 2587,
+      "instruction_rows": 472,
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0,
+      "dynamic_per_call": {
+        "alu": 204,
+        "blendd": 166,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 52,
+        "in_lane_shuffle": 290,
+        "load": 56,
+        "multiply": 108,
+        "scalar": 18,
+        "shift": 400,
+        "store": 81,
+        "total": 1375
+      },
+      "port_classes_per_call": {
+        "constant_memory_operands": 2,
+        "load": 56,
+        "p01": 508,
+        "p015": 370,
+        "p15_shuffle": 290,
+        "p5": 52,
+        "scalar": 18,
+        "store": 81,
+        "total": 1375
+      },
+      "opcode_counts": {
+        "add": 2,
+        "cmp": 1,
+        "jb": 1,
+        "lea": 1,
+        "ret": 1,
+        "vextracti128": 15,
+        "vinserti128": 4,
+        "vmovdqa": 20,
+        "vmovdqu": 12,
+        "vpaddw": 18,
+        "vpand": 18,
+        "vpblendd": 58,
+        "vpblendw": 53,
+        "vperm2i128": 12,
+        "vpmulhrsw": 18,
+        "vpmullw": 18,
+        "vpslld": 14,
+        "vpsllq": 34,
+        "vpsllw": 15,
+        "vpsraw": 18,
+        "vpsrld": 14,
+        "vpsrlq": 34,
+        "vpsrlw": 10,
+        "vpsubw": 18,
+        "vpunpckhqdq": 24,
+        "vpunpcklqdq": 24,
+        "vpxor": 15
+      }
+    },
+    "ntruplus864_officialopt_frombytes_fused": {
+      "elf": "build/test_kem_lazy_codec",
+      "address_mod_32": 0,
+      "size_bytes": 2283,
+      "instruction_rows": 411,
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0,
+      "dynamic_per_call": {
+        "alu": 143,
+        "blendd": 180,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 54,
+        "in_lane_shuffle": 290,
+        "insert_from_memory": 39,
+        "load": 43,
+        "scalar": 21,
+        "shift": 346,
+        "store": 54,
+        "total": 1170
+      },
+      "port_classes_per_call": {
+        "constant_memory_operands": 2,
+        "load": 43,
+        "load+p015": 39,
+        "p01": 346,
+        "p015": 323,
+        "p15_shuffle": 290,
+        "p5": 54,
+        "scalar": 21,
+        "store": 54,
+        "total": 1170
+      },
+      "opcode_counts": {
+        "add": 2,
+        "cmp": 1,
+        "jb": 1,
+        "lea": 1,
+        "movzbl": 1,
+        "ret": 1,
+        "setne": 1,
+        "test": 1,
+        "vinserti128": 16,
+        "vmovdqa": 19,
+        "vmovdqu": 15,
+        "vpand": 20,
+        "vpblendd": 63,
+        "vpblendw": 53,
+        "vpcmpgtw": 1,
+        "vperm2i128": 14,
+        "vpmaxuw": 20,
+        "vpmovmskb": 1,
+        "vpshufd": 5,
+        "vpslld": 15,
+        "vpsllq": 33,
+        "vpsllw": 10,
+        "vpsrld": 15,
+        "vpsrlq": 33,
+        "vpsrlw": 15,
+        "vpunpckhqdq": 19,
+        "vpunpcklqdq": 24,
+        "vpxor": 11
+      }
+    }
+  },
+  "text_relocations": false,
+  "dynamic_relocations_mentioning_direct": 0,
+  "dynamic_comparison": {
+    "tobytes": {
+      "dynamic_per_call": {
+        "alu": {
+          "official": 204,
+          "ntruplus864_officialopt_tobytes_fused": 204,
+          "ntruplus864_officialopt_tobytes_fused_min": 204,
+          "ntruplus864_officialopt_tobytes_direct": 162
+        },
+        "blendd": {
+          "official": 166,
+          "ntruplus864_officialopt_tobytes_fused": 166,
+          "ntruplus864_officialopt_tobytes_fused_min": 166,
+          "ntruplus864_officialopt_tobytes_direct": 18
+        },
+        "constant_memory_operands": {
+          "official": 2,
+          "ntruplus864_officialopt_tobytes_fused": 2,
+          "ntruplus864_officialopt_tobytes_fused_min": 2,
+          "ntruplus864_officialopt_tobytes_direct": 57
+        },
+        "cross_lane_permute": {
+          "official": 145,
+          "ntruplus864_officialopt_tobytes_fused": 52,
+          "ntruplus864_officialopt_tobytes_fused_min": 52,
+          "ntruplus864_officialopt_tobytes_direct": 1
+        },
+        "in_lane_shuffle": {
+          "official": 290,
+          "ntruplus864_officialopt_tobytes_fused": 290,
+          "ntruplus864_officialopt_tobytes_fused_min": 290,
+          "ntruplus864_officialopt_tobytes_direct": 180
+        },
+        "load": {
+          "official": 112,
+          "ntruplus864_officialopt_tobytes_fused": 56,
+          "ntruplus864_officialopt_tobytes_fused_min": 56,
+          "ntruplus864_officialopt_tobytes_direct": 57
+        },
+        "multiply": {
+          "official": 108,
+          "ntruplus864_officialopt_tobytes_fused": 108,
+          "ntruplus864_officialopt_tobytes_fused_min": 108,
+          "ntruplus864_officialopt_tobytes_direct": 162
+        },
+        "scalar": {
+          "official": 92,
+          "ntruplus864_officialopt_tobytes_fused": 18,
+          "ntruplus864_officialopt_tobytes_fused_min": 18,
+          "ntruplus864_officialopt_tobytes_direct": 18
+        },
+        "shift": {
+          "official": 400,
+          "ntruplus864_officialopt_tobytes_fused": 400,
+          "ntruplus864_officialopt_tobytes_fused_min": 346,
+          "ntruplus864_officialopt_tobytes_direct": 0
+        },
+        "store": {
+          "official": 96,
+          "ntruplus864_officialopt_tobytes_fused": 81,
+          "ntruplus864_officialopt_tobytes_fused_min": 81,
+          "ntruplus864_officialopt_tobytes_direct": 109
+        },
+        "total": {
+          "official": 1613,
+          "ntruplus864_officialopt_tobytes_fused": 1375,
+          "ntruplus864_officialopt_tobytes_fused_min": 1321,
+          "ntruplus864_officialopt_tobytes_direct": 707
+        }
+      },
+      "dynamic_per_96_coefficients": {
+        "alu": {
+          "official": 22.7,
+          "ntruplus864_officialopt_tobytes_fused": 22.7,
+          "ntruplus864_officialopt_tobytes_fused_min": 22.7,
+          "ntruplus864_officialopt_tobytes_direct": 18.0
+        },
+        "blendd": {
+          "official": 18.4,
+          "ntruplus864_officialopt_tobytes_fused": 18.4,
+          "ntruplus864_officialopt_tobytes_fused_min": 18.4,
+          "ntruplus864_officialopt_tobytes_direct": 2.0
+        },
+        "constant_memory_operands": {
+          "official": 0.2,
+          "ntruplus864_officialopt_tobytes_fused": 0.2,
+          "ntruplus864_officialopt_tobytes_fused_min": 0.2,
+          "ntruplus864_officialopt_tobytes_direct": 6.3
+        },
+        "cross_lane_permute": {
+          "official": 16.1,
+          "ntruplus864_officialopt_tobytes_fused": 5.8,
+          "ntruplus864_officialopt_tobytes_fused_min": 5.8,
+          "ntruplus864_officialopt_tobytes_direct": 0.1
+        },
+        "in_lane_shuffle": {
+          "official": 32.2,
+          "ntruplus864_officialopt_tobytes_fused": 32.2,
+          "ntruplus864_officialopt_tobytes_fused_min": 32.2,
+          "ntruplus864_officialopt_tobytes_direct": 20.0
+        },
+        "load": {
+          "official": 12.4,
+          "ntruplus864_officialopt_tobytes_fused": 6.2,
+          "ntruplus864_officialopt_tobytes_fused_min": 6.2,
+          "ntruplus864_officialopt_tobytes_direct": 6.3
+        },
+        "multiply": {
+          "official": 12.0,
+          "ntruplus864_officialopt_tobytes_fused": 12.0,
+          "ntruplus864_officialopt_tobytes_fused_min": 12.0,
+          "ntruplus864_officialopt_tobytes_direct": 18.0
+        },
+        "scalar": {
+          "official": 10.2,
+          "ntruplus864_officialopt_tobytes_fused": 2.0,
+          "ntruplus864_officialopt_tobytes_fused_min": 2.0,
+          "ntruplus864_officialopt_tobytes_direct": 2.0
+        },
+        "shift": {
+          "official": 44.4,
+          "ntruplus864_officialopt_tobytes_fused": 44.4,
+          "ntruplus864_officialopt_tobytes_fused_min": 38.4,
+          "ntruplus864_officialopt_tobytes_direct": 0.0
+        },
+        "store": {
+          "official": 10.7,
+          "ntruplus864_officialopt_tobytes_fused": 9.0,
+          "ntruplus864_officialopt_tobytes_fused_min": 9.0,
+          "ntruplus864_officialopt_tobytes_direct": 12.1
+        },
+        "total": {
+          "official": 179.2,
+          "ntruplus864_officialopt_tobytes_fused": 152.8,
+          "ntruplus864_officialopt_tobytes_fused_min": 146.8,
+          "ntruplus864_officialopt_tobytes_direct": 78.6
+        }
+      },
+      "port_classes_per_call": {
+        "constant_memory_operands": {
+          "official": 2,
+          "ntruplus864_officialopt_tobytes_fused": 2,
+          "ntruplus864_officialopt_tobytes_fused_min": 2,
+          "ntruplus864_officialopt_tobytes_direct": 57
+        },
+        "load": {
+          "official": 112,
+          "ntruplus864_officialopt_tobytes_fused": 56,
+          "ntruplus864_officialopt_tobytes_fused_min": 56,
+          "ntruplus864_officialopt_tobytes_direct": 57
+        },
+        "p01": {
+          "official": 508,
+          "ntruplus864_officialopt_tobytes_fused": 508,
+          "ntruplus864_officialopt_tobytes_fused_min": 454,
+          "ntruplus864_officialopt_tobytes_direct": 162
+        },
+        "p015": {
+          "official": 370,
+          "ntruplus864_officialopt_tobytes_fused": 370,
+          "ntruplus864_officialopt_tobytes_fused_min": 370,
+          "ntruplus864_officialopt_tobytes_direct": 180
+        },
+        "p15_shuffle": {
+          "official": 290,
+          "ntruplus864_officialopt_tobytes_fused": 290,
+          "ntruplus864_officialopt_tobytes_fused_min": 290,
+          "ntruplus864_officialopt_tobytes_direct": 180
+        },
+        "p5": {
+          "official": 145,
+          "ntruplus864_officialopt_tobytes_fused": 52,
+          "ntruplus864_officialopt_tobytes_fused_min": 52,
+          "ntruplus864_officialopt_tobytes_direct": 1
+        },
+        "scalar": {
+          "official": 92,
+          "ntruplus864_officialopt_tobytes_fused": 18,
+          "ntruplus864_officialopt_tobytes_fused_min": 18,
+          "ntruplus864_officialopt_tobytes_direct": 18
+        },
+        "store": {
+          "official": 96,
+          "ntruplus864_officialopt_tobytes_fused": 81,
+          "ntruplus864_officialopt_tobytes_fused_min": 81,
+          "ntruplus864_officialopt_tobytes_direct": 109
+        },
+        "total": {
+          "official": 1613,
+          "ntruplus864_officialopt_tobytes_fused": 1375,
+          "ntruplus864_officialopt_tobytes_fused_min": 1321,
+          "ntruplus864_officialopt_tobytes_direct": 707
+        }
+      },
+      "port_classes_per_96_coefficients": {
+        "constant_memory_operands": {
+          "official": 0.2,
+          "ntruplus864_officialopt_tobytes_fused": 0.2,
+          "ntruplus864_officialopt_tobytes_fused_min": 0.2,
+          "ntruplus864_officialopt_tobytes_direct": 6.3
+        },
+        "load": {
+          "official": 12.4,
+          "ntruplus864_officialopt_tobytes_fused": 6.2,
+          "ntruplus864_officialopt_tobytes_fused_min": 6.2,
+          "ntruplus864_officialopt_tobytes_direct": 6.3
+        },
+        "p01": {
+          "official": 56.4,
+          "ntruplus864_officialopt_tobytes_fused": 56.4,
+          "ntruplus864_officialopt_tobytes_fused_min": 50.4,
+          "ntruplus864_officialopt_tobytes_direct": 18.0
+        },
+        "p015": {
+          "official": 41.1,
+          "ntruplus864_officialopt_tobytes_fused": 41.1,
+          "ntruplus864_officialopt_tobytes_fused_min": 41.1,
+          "ntruplus864_officialopt_tobytes_direct": 20.0
+        },
+        "p15_shuffle": {
+          "official": 32.2,
+          "ntruplus864_officialopt_tobytes_fused": 32.2,
+          "ntruplus864_officialopt_tobytes_fused_min": 32.2,
+          "ntruplus864_officialopt_tobytes_direct": 20.0
+        },
+        "p5": {
+          "official": 16.1,
+          "ntruplus864_officialopt_tobytes_fused": 5.8,
+          "ntruplus864_officialopt_tobytes_fused_min": 5.8,
+          "ntruplus864_officialopt_tobytes_direct": 0.1
+        },
+        "scalar": {
+          "official": 10.2,
+          "ntruplus864_officialopt_tobytes_fused": 2.0,
+          "ntruplus864_officialopt_tobytes_fused_min": 2.0,
+          "ntruplus864_officialopt_tobytes_direct": 2.0
+        },
+        "store": {
+          "official": 10.7,
+          "ntruplus864_officialopt_tobytes_fused": 9.0,
+          "ntruplus864_officialopt_tobytes_fused_min": 9.0,
+          "ntruplus864_officialopt_tobytes_direct": 12.1
+        },
+        "total": {
+          "official": 179.2,
+          "ntruplus864_officialopt_tobytes_fused": 152.8,
+          "ntruplus864_officialopt_tobytes_fused_min": 146.8,
+          "ntruplus864_officialopt_tobytes_direct": 78.6
+        }
+      }
+    },
+    "frombytes": {
+      "dynamic_per_call": {
+        "alu": {
+          "official": 168,
+          "ntruplus864_officialopt_frombytes_fused": 143,
+          "ntruplus864_officialopt_frombytes_direct": 111
+        },
+        "blendd": {
+          "official": 180,
+          "ntruplus864_officialopt_frombytes_fused": 180,
+          "ntruplus864_officialopt_frombytes_direct": 18
+        },
+        "constant_memory_operands": {
+          "official": 15,
+          "ntruplus864_officialopt_frombytes_fused": 2,
+          "ntruplus864_officialopt_frombytes_direct": 56
+        },
+        "cross_lane_permute": {
+          "official": 145,
+          "ntruplus864_officialopt_frombytes_fused": 54,
+          "ntruplus864_officialopt_frombytes_direct": 0
+        },
+        "in_lane_shuffle": {
+          "official": 290,
+          "ntruplus864_officialopt_frombytes_fused": 290,
+          "ntruplus864_officialopt_frombytes_direct": 180
+        },
+        "insert_from_memory": {
+          "official": 0,
+          "ntruplus864_officialopt_frombytes_fused": 39,
+          "ntruplus864_officialopt_frombytes_direct": 54
+        },
+        "load": {
+          "official": 97,
+          "ntruplus864_officialopt_frombytes_fused": 43,
+          "ntruplus864_officialopt_frombytes_direct": 55
+        },
+        "scalar": {
+          "official": 96,
+          "ntruplus864_officialopt_frombytes_fused": 21,
+          "ntruplus864_officialopt_frombytes_direct": 21
+        },
+        "shift": {
+          "official": 346,
+          "ntruplus864_officialopt_frombytes_fused": 346,
+          "ntruplus864_officialopt_frombytes_direct": 54
+        },
+        "store": {
+          "official": 110,
+          "ntruplus864_officialopt_frombytes_fused": 54,
+          "ntruplus864_officialopt_frombytes_direct": 54
+        },
+        "total": {
+          "official": 1432,
+          "ntruplus864_officialopt_frombytes_fused": 1170,
+          "ntruplus864_officialopt_frombytes_direct": 547
+        }
+      },
+      "dynamic_per_96_coefficients": {
+        "alu": {
+          "official": 18.7,
+          "ntruplus864_officialopt_frombytes_fused": 15.9,
+          "ntruplus864_officialopt_frombytes_direct": 12.3
+        },
+        "blendd": {
+          "official": 20.0,
+          "ntruplus864_officialopt_frombytes_fused": 20.0,
+          "ntruplus864_officialopt_frombytes_direct": 2.0
+        },
+        "constant_memory_operands": {
+          "official": 1.7,
+          "ntruplus864_officialopt_frombytes_fused": 0.2,
+          "ntruplus864_officialopt_frombytes_direct": 6.2
+        },
+        "cross_lane_permute": {
+          "official": 16.1,
+          "ntruplus864_officialopt_frombytes_fused": 6.0,
+          "ntruplus864_officialopt_frombytes_direct": 0.0
+        },
+        "in_lane_shuffle": {
+          "official": 32.2,
+          "ntruplus864_officialopt_frombytes_fused": 32.2,
+          "ntruplus864_officialopt_frombytes_direct": 20.0
+        },
+        "insert_from_memory": {
+          "official": 0.0,
+          "ntruplus864_officialopt_frombytes_fused": 4.3,
+          "ntruplus864_officialopt_frombytes_direct": 6.0
+        },
+        "load": {
+          "official": 10.8,
+          "ntruplus864_officialopt_frombytes_fused": 4.8,
+          "ntruplus864_officialopt_frombytes_direct": 6.1
+        },
+        "scalar": {
+          "official": 10.7,
+          "ntruplus864_officialopt_frombytes_fused": 2.3,
+          "ntruplus864_officialopt_frombytes_direct": 2.3
+        },
+        "shift": {
+          "official": 38.4,
+          "ntruplus864_officialopt_frombytes_fused": 38.4,
+          "ntruplus864_officialopt_frombytes_direct": 6.0
+        },
+        "store": {
+          "official": 12.2,
+          "ntruplus864_officialopt_frombytes_fused": 6.0,
+          "ntruplus864_officialopt_frombytes_direct": 6.0
+        },
+        "total": {
+          "official": 159.1,
+          "ntruplus864_officialopt_frombytes_fused": 130.0,
+          "ntruplus864_officialopt_frombytes_direct": 60.8
+        }
+      },
+      "port_classes_per_call": {
+        "constant_memory_operands": {
+          "official": 15,
+          "ntruplus864_officialopt_frombytes_fused": 2,
+          "ntruplus864_officialopt_frombytes_direct": 56
+        },
+        "load": {
+          "official": 97,
+          "ntruplus864_officialopt_frombytes_fused": 43,
+          "ntruplus864_officialopt_frombytes_direct": 55
+        },
+        "load+p015": {
+          "official": 0,
+          "ntruplus864_officialopt_frombytes_fused": 39,
+          "ntruplus864_officialopt_frombytes_direct": 54
+        },
+        "p01": {
+          "official": 346,
+          "ntruplus864_officialopt_frombytes_fused": 346,
+          "ntruplus864_officialopt_frombytes_direct": 54
+        },
+        "p015": {
+          "official": 348,
+          "ntruplus864_officialopt_frombytes_fused": 323,
+          "ntruplus864_officialopt_frombytes_direct": 129
+        },
+        "p15_shuffle": {
+          "official": 290,
+          "ntruplus864_officialopt_frombytes_fused": 290,
+          "ntruplus864_officialopt_frombytes_direct": 180
+        },
+        "p5": {
+          "official": 145,
+          "ntruplus864_officialopt_frombytes_fused": 54,
+          "ntruplus864_officialopt_frombytes_direct": 0
+        },
+        "scalar": {
+          "official": 96,
+          "ntruplus864_officialopt_frombytes_fused": 21,
+          "ntruplus864_officialopt_frombytes_direct": 21
+        },
+        "store": {
+          "official": 110,
+          "ntruplus864_officialopt_frombytes_fused": 54,
+          "ntruplus864_officialopt_frombytes_direct": 54
+        },
+        "total": {
+          "official": 1432,
+          "ntruplus864_officialopt_frombytes_fused": 1170,
+          "ntruplus864_officialopt_frombytes_direct": 547
+        }
+      },
+      "port_classes_per_96_coefficients": {
+        "constant_memory_operands": {
+          "official": 1.7,
+          "ntruplus864_officialopt_frombytes_fused": 0.2,
+          "ntruplus864_officialopt_frombytes_direct": 6.2
+        },
+        "load": {
+          "official": 10.8,
+          "ntruplus864_officialopt_frombytes_fused": 4.8,
+          "ntruplus864_officialopt_frombytes_direct": 6.1
+        },
+        "load+p015": {
+          "official": 0.0,
+          "ntruplus864_officialopt_frombytes_fused": 4.3,
+          "ntruplus864_officialopt_frombytes_direct": 6.0
+        },
+        "p01": {
+          "official": 38.4,
+          "ntruplus864_officialopt_frombytes_fused": 38.4,
+          "ntruplus864_officialopt_frombytes_direct": 6.0
+        },
+        "p015": {
+          "official": 38.7,
+          "ntruplus864_officialopt_frombytes_fused": 35.9,
+          "ntruplus864_officialopt_frombytes_direct": 14.3
+        },
+        "p15_shuffle": {
+          "official": 32.2,
+          "ntruplus864_officialopt_frombytes_fused": 32.2,
+          "ntruplus864_officialopt_frombytes_direct": 20.0
+        },
+        "p5": {
+          "official": 16.1,
+          "ntruplus864_officialopt_frombytes_fused": 6.0,
+          "ntruplus864_officialopt_frombytes_direct": 0.0
+        },
+        "scalar": {
+          "official": 10.7,
+          "ntruplus864_officialopt_frombytes_fused": 2.3,
+          "ntruplus864_officialopt_frombytes_direct": 2.3
+        },
+        "store": {
+          "official": 12.2,
+          "ntruplus864_officialopt_frombytes_fused": 6.0,
+          "ntruplus864_officialopt_frombytes_direct": 6.0
+        },
+        "total": {
+          "official": 159.1,
+          "ntruplus864_officialopt_frombytes_fused": 130.0,
+          "ntruplus864_officialopt_frombytes_direct": 60.8
+        }
+      }
+    }
+  },
+  "port_model_note": "p01 = vector multiply/shift, p015 = vector add/logic/min/blendd, p15_shuffle = in-lane shuffles (unpck/pshufb/pshufd/blendw/packusdw; p5 only on Skylake-class), p5 = cross-lane; loads/stores on their own ports",
+  "kem_call_relocations": {
+    "kem_lazy_codec_direct.o->ntruplus864_officialopt_tobytes_direct": 7,
+    "kem_lazy_codec_direct.o->ntruplus864_officialopt_frombytes_direct": 4,
+    "kem_lazy_codec_direct.o->poly_tobytes": 0,
+    "kem_lazy_codec_direct.o->poly_frombytes": 0,
+    "kem_lazy_codec_direct.o->poly_ntt": 0,
+    "kem_lazy_codec_direct.o->ntruplus864_officialopt_ntt_caller_lazy": 6,
+    "kem_lazy_codec_direct.o->ntruplus864_officialopt_tobytes_fused": 0,
+    "kem_lazy_codec_direct.o->ntruplus864_officialopt_frombytes_fused": 0,
+    "kem_codec_direct.o->ntruplus864_officialopt_tobytes_direct": 7,
+    "kem_codec_direct.o->ntruplus864_officialopt_frombytes_direct": 4,
+    "kem_codec_direct.o->poly_tobytes": 0,
+    "kem_codec_direct.o->poly_frombytes": 0,
+    "kem_codec_direct.o->poly_ntt": 6,
+    "kem_codec_direct.o->ntruplus864_officialopt_ntt_caller_lazy": 0,
+    "kem_codec_direct.o->ntruplus864_officialopt_tobytes_fused": 0,
+    "kem_codec_direct.o->ntruplus864_officialopt_frombytes_fused": 0,
+    "kem_ref.o->ntruplus864_officialopt_tobytes_direct": 0,
+    "kem_ref.o->ntruplus864_officialopt_frombytes_direct": 0,
+    "kem_ref.o->poly_tobytes": 7,
+    "kem_ref.o->poly_frombytes": 4,
+    "kem_ref.o->poly_ntt": 6,
+    "kem_ref.o->ntruplus864_officialopt_ntt_caller_lazy": 0,
+    "kem_ref.o->ntruplus864_officialopt_tobytes_fused": 0,
+    "kem_ref.o->ntruplus864_officialopt_frombytes_fused": 0
+  }
+}

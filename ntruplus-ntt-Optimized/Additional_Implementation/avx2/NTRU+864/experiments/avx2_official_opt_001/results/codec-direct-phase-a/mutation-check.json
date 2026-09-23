@@ -1,0 +1,132 @@
+{
+  "class": "mutation check of tests/test_codec_direct.c against hand-mutated exp002 asm",
+  "mutants": 20,
+  "caught": 19,
+  "survived_equivalent": [
+    "frombytes pack: vpackusdw -> vpackssdw"
+  ],
+  "survived_unexplained": [],
+  "results": [
+    {
+      "mutation": "tobytes freeze: vpminuw -> vpminsw (signed min)",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 3 (official 0a fused 89)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "tobytes freeze: drop vpaddw q (min(b, b))",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 3 (official 0a fused 89)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "madd constant 4096 -> 2048",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 1 (official a7 fused 57)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "tobytes pshufb mask tb1: swap two bytes",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 12 (official 0a fused a7)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "tobytes pshufb mask tb2 lane 1 only",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 107 (official 70 fused a7)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "tobytes interleave blend 0xCC -> 0xC0",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 12 (official 19 fused 9f)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "tobytes group store offset +1",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 12 (official 0a fused 00)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "tobytes store order: group 0 stored after group 1",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 12 (official 0a fused 00)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "tobytes last group: vpextrd $2 -> $1",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 1292 (official 70 fused a7)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "tobytes last group: vmovq offset 132 -> 128",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 1280 (official 70 fused 0a)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes pshufb mask fb0: wrong byte",
+      "caught": true,
+      "first_error": "frombytes coeff mismatch at 1 (1204 vs 1124)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes last group: fb2last -> fb2 (no 4-byte shift)",
+      "caught": true,
+      "first_error": "frombytes return mismatch 0 vs 1",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes low12 mask 0xfff -> 0x7ff",
+      "caught": true,
+      "first_error": "frombytes coeff mismatch at 32 (2145 vs 97)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes odd shift vpsrld 12 -> 11",
+      "caught": true,
+      "first_error": "frombytes return mismatch 0 vs 1",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes inverse blend 0xCC -> 0x0C",
+      "caught": true,
+      "first_error": "frombytes coeff mismatch at 42 (913 vs 1475)",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes load offset +1",
+      "caught": true,
+      "first_error": "frombytes return mismatch 0 vs 1",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes canonical: drop one vpmaxuw",
+      "caught": true,
+      "first_error": "frombytes return mismatch 1 vs 0",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes canonical: threshold q-1 -> q",
+      "caught": true,
+      "first_error": "frombytes return mismatch 1 vs 0",
+      "declared_equivalent": null
+    },
+    {
+      "mutation": "frombytes pack: vpackusdw -> vpackssdw",
+      "caught": false,
+      "first_error": "",
+      "declared_equivalent": "equivalent: packed values are <= 4095, so signed and unsigned saturation agree"
+    },
+    {
+      "mutation": "loop bound: 1536 -> 1152 (tobytes)",
+      "caught": true,
+      "first_error": "tobytes mismatch at byte 1008 (official 0a fused 5a)",
+      "declared_equivalent": null
+    }
+  ],
+  "pass": true
+}
