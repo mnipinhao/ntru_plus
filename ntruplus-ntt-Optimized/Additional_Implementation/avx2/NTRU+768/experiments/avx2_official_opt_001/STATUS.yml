@@ -674,3 +674,22 @@ round26_correlated_range_butterfly:
   linked_inverse_ASM_or_Decap_cycles: not_run
   decision: research_selective_repair_or_cheaper_butterfly_before_full_inverse_ASM
   native_and_clean_promotion: no
+round27_twiddle_half_absorption:
+  class: executable_mixed_gauge_scalar_and_768_cell_interval_schedule
+  report: docs/ntruplus768-twiddle-half-absorption.md
+  tool: tools/research_twiddle_half_absorption.py
+  artifact: results/yang-true-y-twist-twiddle-half-absorption-20260923.json
+  input: actual_BaseMulScale_output_and_proved_768_cell_intervals
+  actual_cases: 101
+  cohort_degree_checks: 2424
+  output_residue: eight_times_fully_normalized_CT_inverse
+  radix2_signed_i16_bound_max: 30576
+  per_polynomial:
+    modular_half_butterflies: 480
+    uniform_four_stage_comparator: 1536
+    new_identity_path_Montgomery_chains: 192
+    changed_existing_twiddles: 384
+  distinct_fixed_factor_residues: {original: 16, candidate: 20}
+  full_inverse_tail_scale_constants_allocation_and_cycles: open
+  decision: partial_twiddle_absorption_proven_no_AVX2_or_Decap_winner_yet
+  native_and_clean_promotion: no

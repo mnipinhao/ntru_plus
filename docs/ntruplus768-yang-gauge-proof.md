@@ -1186,3 +1186,10 @@ an executable arithmetic proof and a local AVX2 probe, but not a complete
 inverse-tail schedule or Decap performance result. Four of five CT levels
 must be halved in the tested uniform-stage, no-other-repair family. This is
 not a lower bound for every CT or twisted-tower implementation.
+
+The subsequent [mixed-gauge twiddle experiment](ntruplus768-twiddle-half-absorption.md)
+demonstrates a partial absorption: pre-halved upper child values allow the
+lower child to use modified `w/2` twiddles, eliminating modular-half work at
+those merges. Identity twiddles become actual new multiplications, and the
+remaining modular-half butterflies still need parity correction. This is a
+radix-2 arithmetic/range result, not a linked inverse or cycle win.

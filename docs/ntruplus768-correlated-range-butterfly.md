@@ -31,6 +31,12 @@ An exhaustive 32-subset search over the five uniform CT levels, using the 768 pr
 
 The next useful gate is therefore **selective repair versus modular-half co-design**, not immediate full inverse ASM. It should search cell/stage-specific repair and one- or two-level redesigned butterfly schedules, close the top radix-3/trinomial tail and its scale, then replay def/use and constants within 16 YMM. Only a complete schedule with a concrete cost mechanism warrants a namespaced inverse implementation and Decap timing. Keygen and Encap remain on the existing caller-lazy control in this gate; no new Native or production claim follows.
 
+The later [twiddle-half absorption experiment](ntruplus768-twiddle-half-absorption.md)
+constructs one such mixed-gauge schedule. It absorbs the lower-child half-scale
+into existing nonidentity twiddles at two levels, while explicitly paying for
+identity-path multiplications. This reduces local modular-half butterflies,
+but its linked AVX2 and full-tail costs remain open.
+
 ## Reproduce
 
 From `ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_001`:

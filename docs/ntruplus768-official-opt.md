@@ -1,5 +1,12 @@
 # NTRU+768 Official AVX2 optimization
 
+Latest follow-up: a [mixed-gauge twiddle schedule](ntruplus768-twiddle-half-absorption.md)
+really does fold the lower-child `1/2` into existing CT constants. In its
+restricted radix-2 model, modular-half butterflies fall from 1536 to 480
+per polynomial, at the cost of 192 new identity-path Montgomery chains and
+changed constants. Exact residue and i16 interval checks pass, but full-tail
+allocation, constant traffic and Decap cycles remain open.
+
 Latest true-twist range follow-up: the prior no-repair CT interval failure is
 now a [reproducible arithmetic overflow](ntruplus768-correlated-range-butterfly.md)
 on canonical decoded Decap inputs. A modular-half AVX2 butterfly passes local
