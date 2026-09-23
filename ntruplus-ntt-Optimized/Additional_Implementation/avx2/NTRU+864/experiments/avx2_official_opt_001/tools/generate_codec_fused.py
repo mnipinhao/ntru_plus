@@ -5,14 +5,18 @@ Fuses the Official layout permutations into the byte codec:
   tobytes_fused   == poly_ntt_pack (freeze + 6-way -> natural) + poly_tobytes_raw
   frombytes_fused == poly_frombytes_raw (+ canonical check) + poly_ntt_unpack
 without the 1728-byte stack/in-place round trip.  Every arithmetic and
-in-128-bit-lane shuffle instruction is copied, in order and with the same
-immediates, from the pinned upstream pack.s (line ranges cited below); only
-three things change:
-  1. The two cross-lane vperm2i128 stages that meet at the natural-order
-     memory image (pack's output perm + tobytes_raw's input perm; frombytes'
-     output perm + unpack's input perm) are composed into ONE vperm2i128 (or
-     vinserti128 for a lo|lo pair) per output register.  Per 192 coefficients
-     the kernels therefore run 12 instead of 24 cross-lane permutes.
+in-128-bit-lane shuffle instruction is copied, with the same immediates and
+the same data dependences, from the pinned upstream pack.s (line ranges cited
+below); only the following change:
+  1. Cross-lane data movement.  The two vperm2i128 stages that meet at the
+     natural-order memory image (pack's output perm + tobytes_raw's input
+     perm; frombytes_raw's output perm + unpack's input perm) are composed
+     into ONE vperm2i128 (vinserti128 for a lo|lo pair) per register, i.e.
+     12 instead of 24 per 192 coefficients.  The byte-side permutes are
+     folded into memory access: tobytes stores the six 16-byte halves that
+     pack.s:66-72 would permute (vmovdqu xmm / vextracti128 to memory), and
+     frombytes forms pack.s:154-156's half-pairs with 16-byte loads and
+     vinserti128 from memory.
   2. The 64-coefficient codec blocks and 96-coefficient layout blocks are
      interleaved in 192-coefficient super-iterations (2 layout blocks = 3
      codec blocks, 4 iterations) plus one 96-coefficient final part (one
@@ -20,7 +24,11 @@ three things change:
      tail runs the ymm body on the pack registers whose upper lanes hold the
      tail coefficients and stores those upper lanes (vextracti128 to memory);
      the frombytes tail is Official's xmm tail.
-  3. frombytes accumulates the per-block vpmaxuw into one register and does
+  3. Instruction order: each straight-line block is list-scheduled on its
+     data-dependence graph (critical path first, register-pressure capped;
+     see Kernel.schedule).  Without it the fused chains starved the ports
+     (measured: tobytes ~570 vs Official ~495 cycles in a tight loop).
+  4. frombytes accumulates the per-block vpmaxuw into one register and does
      the single vpcmpgtw/vpmovmskb at the end: max_i a_i > q-1 iff some
      a_i > q-1, so the return value is identical to Official's OR of
      per-block masks (both normalised by setne).
@@ -66,7 +74,68 @@ class Kernel:
     def store(self, mnem, src, mem, x=False, imm=None):
         self.ins.append(("store", mnem, x, src, mem, imm))
 
+    def schedule(self, limit):
+        """Deterministic greedy list scheduling of the straight-line block.
+        Ready instructions are ordered by the latency-weighted longest path to
+        the end of the block (ties: original order), subject to at most
+        `limit` simultaneously live non-pinned values; if no ready instruction
+        fits, the one that grows pressure least is taken.  Only true data
+        dependences constrain the order: loads read only the input array and
+        stores write only the output array (the codec's no-overlap contract),
+        and the pinned accumulator is chained through its successive writes."""
+        ins = self.ins
+        n = len(ins)
+        defs, deps = {}, []
+        for i, x in enumerate(ins):
+            deps.append(sorted({defs[u] for u in uses_of(x) if u in defs}))
+            if def_of(x) is not None:
+                defs[def_of(x)] = i
+        users = [[] for _ in range(n)]
+        for i, d in enumerate(deps):
+            for j in d:
+                users[j].append(i)
+        prio = [0] * n
+        for i in reversed(range(n)):
+            prio[i] = latency(ins[i]) + max((prio[j] for j in users[i]), default=0)
+        remaining = {}
+        for x in ins:
+            for u in uses_of(x):
+                remaining[u] = remaining.get(u, 0) + 1
+        live, order = set(), []
+        waiting = [len(d) for d in deps]
+        ready = [i for i in range(n) if waiting[i] == 0]
+        while ready:
+            best = None
+            for i in ready:
+                x = ins[i]
+                u = uses_of(x)
+                kills = sum(1 for r in set(u) if r not in self.pinned and remaining[r] == u.count(r))
+                d = def_of(x)
+                grow = (d is not None and d not in self.pinned) - kills
+                key = (True, prio[i], -i) if len(live) + grow <= limit else (False, -grow, -i)
+                if best is None or key > best[0]:
+                    best = (key, i)
+            i = best[1]
+            ready.remove(i)
+            x = ins[i]
+            for r in uses_of(x):
+                remaining[r] -= 1
+                if remaining[r] == 0:
+                    live.discard(r)
+            d = def_of(x)
+            if d is not None and d not in self.pinned and remaining.get(d, 0):
+                live.add(d)
+            order.append(i)
+            for j in users[i]:
+                waiting[j] -= 1
+                if waiting[j] == 0:
+                    ready.append(j)
+        if len(order) != n:
+            raise ValueError("scheduling left instructions behind")
+        self.ins = [ins[i] for i in order]
+
     def emit(self):
+        self.schedule(N_REGS - len(self.pinned))
         # last-use index per virtual register
         last = {}
         for i, ins in enumerate(self.ins):
@@ -103,6 +172,14 @@ class Kernel:
         return out
 
 
+LATENCY = {"vpmulhrsw": 5, "vpmullw": 5, "vperm2i128": 3, "vinserti128": 3, "load": 6}
+
+
+def latency(ins):
+    """Scheduling weights (approximate Golden/Redwood Cove latencies)."""
+    return LATENCY.get("load" if ins[0] == "load" else ins[1], 1)
+
+
 def uses_of(ins):
     kind = ins[0]
     if kind == "op":
@@ -133,8 +210,8 @@ def render(ins, phys):
     if kind == "op":
         _, mnem, imm, x, dst, srcs = ins
         ops = [operand(phys, s, x) for s in reversed(srcs)]
-        if mnem == "vinserti128":   # vinserti128 $1, %xmm_src2, %ymm_src1, %ymm_dst
-            ops = [reg(phys, srcs[1], True), reg(phys, srcs[0], False)]
+        if mnem == "vinserti128":   # vinserti128 $1, %xmm_src2|m128, %ymm_src1, %ymm_dst
+            ops = [operand(phys, srcs[1], True), reg(phys, srcs[0], False)]
         parts = ([f"${imm}"] if imm is not None else []) + ops + [reg(phys, dst, x)]
         return f"{mnem} " + ", ".join(parts)
     if kind == "load":
@@ -254,15 +331,15 @@ def tobytes_body(k, t, out_off, tail=False):
     z3 = k.op("vpunpcklqdq", k.v(), y0, y1)
     z4 = k.op("vpblendd", k.v(), y2, y0, imm="0xCC")
     z5 = k.op("vpunpckhqdq", k.v(), y1, y2)
-    if tail:
+    # pack.s:66-72 stores [z3.lo|z4.lo] [z5.lo|z3.hi] [z4.hi|z5.hi]: the same
+    # six 16-byte halves are stored directly (no vperm2i128); the tail
+    # (pack.s:133-135) stores only the upper halves.
+    if not tail:
         for i, z in enumerate((z3, z4, z5)):
-            k.store("vextracti128", z, f"{out_off + 16 * i}(%rdi)", imm=1)
-        return
-    o0 = k.op("vperm2i128", k.v(), z3, z4, imm="0x20")
-    o1 = k.op("vperm2i128", k.v(), z5, z3, imm="0x30")
-    o2 = k.op("vperm2i128", k.v(), z4, z5, imm="0x31")
-    for i, o in enumerate((o0, o1, o2)):
-        k.store("vmovdqu", o, f"{out_off + 32 * i}(%rdi)")
+            k.store("vmovdqu", z, f"{out_off + 16 * i}(%rdi)", x=True)
+        out_off += 48
+    for i, z in enumerate((z3, z4, z5)):
+        k.store("vextracti128", z, f"{out_off + 16 * i}(%rdi)", imm=1)
 
 
 def tobytes_iteration():
@@ -300,13 +377,14 @@ def tobytes_final():
 def frombytes_body(k, off, acc):
     """pack.s:150-210 on 96 bytes at off(%rsi): returns
     ([G0|G4],[G1|G5],[G2|G6],[G3|G7]) and the updated vpmaxuw accumulator."""
-    l4 = k.load("vmovdqu", k.v("l"), f"{off}(%rsi)")
-    l5 = k.load("vmovdqu", k.v("l"), f"{off + 32}(%rsi)")
-    l6 = k.load("vmovdqu", k.v("l"), f"{off + 64}(%rsi)")
-    a0 = k.op("vperm2i128", k.v(), l4, l5, imm="0x30")
-    a1 = k.op("vperm2i128", k.v(), l6, l4, imm="0x03")
-    a2 = k.op("vperm2i128", k.v(), l5, l6, imm="0x30")
-    return frombytes_inlane(k, a0, a1, a2, acc)
+    # pack.s:150-156 load 32-byte L4 L5 L6 and permute to a0=[c0|c3],
+    # a1=[c1|c4], a2=[c2|c5] (c = 16-byte chunks); the same registers are
+    # formed directly from 16-byte loads (no vperm2i128).
+    a = []
+    for c in range(3):
+        lo = k.load("vmovdqu", k.v("l"), f"{off + 16 * c}(%rsi)", x=True)
+        a.append(k.op("vinserti128", k.v(), lo, f"{off + 48 + 16 * c}(%rsi)", imm=1))
+    return frombytes_inlane(k, a[0], a[1], a[2], acc)
 
 
 def frombytes_inlane(k, a0, a1, a2, acc, x=False):
@@ -437,6 +515,8 @@ def generate(pack_sha):
     w("# composed into one per register, and no stack or intermediate buffer is used.")
     w("# Pointer contract = Official: poly (a for tobytes, r for frombytes) 32-byte")
     w("# aligned (vmovdqa); byte arrays unaligned (vmovdqu).  No vzeroupper (as pack.s).")
+    w("# The byte array and the poly must not overlap (no KEM call site overlaps them;")
+    w("# Official poly_tobytes tolerates overlap through its stack copy, the fused one does not).")
     w("")
     w(".text")
     w(".p2align 5")
