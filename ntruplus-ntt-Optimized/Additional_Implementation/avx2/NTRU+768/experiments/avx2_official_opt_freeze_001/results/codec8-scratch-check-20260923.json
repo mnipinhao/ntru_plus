@@ -1,0 +1,32 @@
+{
+  "class": "scratch kernel differential vs Official (decision-gate support, not a candidate gate set)",
+  "command": "make codec8-scratch-check",
+  "release_O3": {
+    "param": 768,
+    "tobytes_cases": 216608,
+    "tobytes_impls": 3,
+    "frombytes_cases": 3189824,
+    "frombytes_rejected_by_official": 511391,
+    "failures": 0
+  },
+  "asan_ubsan_lsan_O1": {
+    "param": 768,
+    "tobytes_cases": 216608,
+    "tobytes_impls": 3,
+    "frombytes_cases": 3189824,
+    "frombytes_rejected_by_official": 511391,
+    "failures": 0
+  },
+  "coverage": {
+    "tobytes": "every int16 at every position (a[i]=base+K*i, 65536 bases, K=0,1,40503) + 20000 random; freeze2op, scratch pack and scratch madd each byte-compared with Official poly_tobytes incl. 64-byte canaries on both sides of the wire; input immutability",
+    "frombytes": "every 12-bit value at every position over a valid background, 4096 all-equal patterns, 20000 random valid + 20000 random byte strings; output poly + return value vs Official, 64-byte canary after the poly, input immutability",
+    "not_run": "guard-page test, mutation check, KEM tests (no candidate was built: decision gate stopped)"
+  },
+  "source_sha256": {
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/bench/scratch_codec8.c": "43fa8c2a71a4812c0de4b826e7fbfd567ffa0fce0698e3415fa2a3724a5867b7",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/bench/bench_codec8_scratch.c": "c3167ebd40280974088810a8f8d417606d6e01b3934b957765f01e158a07b183",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/codec8_scratch.mk": "c833ff0b05617e41b633286eb4aebf487706f7dcc1a71104f289da058b591752",
+    "upstream/supercop-avx2/pack.s": "dd1d2b9690de0780d68cd6ab0902190c559b1e661aca9735312eaeb845a1a3c6",
+    "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080"
+  }
+}
