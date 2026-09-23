@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Range/consumer proof for the generated caller-lazy Forward (NTRU+864/1152).
+"""Range/consumer proof for the generated caller-lazy Forward (NTRU+768/864/1152).
 
 Driver for the ported Phase-0 reduction audit tools (avx2emu.py, difftest.py,
 ledger.py).  Steps, all fatal on failure:
@@ -31,14 +31,30 @@ import ledger  # noqa: E402
 
 # Bounds proven by the Phase-0 read-only audit (identical for 864 and 1152
 # except the poly_add envelope, which depends on the BaseMul output range).
-EXPECTED_LAZY = {
+EXPECTED_LAZY_864_1152 = {
     "asm_contract[-3,4]": [-17961, 17957],
     "keygen_f": [-17193, 17194],
     "keygen_g": [-17193, 17193],
     "decap_msg[-2,2]": [-16382, 16385],
     "encap_r/m,reenc[-1,1]": [-15580, 15580],
 }
+# NTRU+768 (different zetas, one level fewer): the keygen/encap/decap maxima
+# equal the independent NTRU+768 avx2_official_opt_001 round-4 lane proof
+# (pre_barrett_max_abs 15252 / 15251 / 13636 / 14449, ciphertext_minus_message
+# 17905); the asm_contract[-3,4] envelope is this tool's own result.
+EXPECTED_LAZY = {
+    768: {
+        "asm_contract[-3,4]": [-16058, 16035],
+        "keygen_f": [-15251, 15252],
+        "keygen_g": [-15251, 15251],
+        "decap_msg[-2,2]": [-14449, 14449],
+        "encap_r/m,reenc[-1,1]": [-13636, 13636],
+    },
+    864: EXPECTED_LAZY_864_1152,
+    1152: EXPECTED_LAZY_864_1152,
+}
 EXPECTED_CONSUMERS = {
+    768: {"encap poly_add(c,m_hat)": [-15483, 15483], "decap poly_sub(c,f_hat)": [-14449, 17905]},
     864: {"encap poly_add(c,m_hat)": [-17404, 17404], "decap poly_sub(c,f_hat)": [-16385, 19838]},
     1152: {"encap poly_add(c,m_hat)": [-17436, 17436], "decap poly_sub(c,f_hat)": [-16385, 19838]},
 }
@@ -50,7 +66,7 @@ def fail(msg):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--param", type=int, choices=(864, 1152), required=True)
+    ap.add_argument("--param", type=int, choices=(768, 864, 1152), required=True)
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--build", type=Path, required=True)
     ap.add_argument("--output", type=Path, required=True)
@@ -80,7 +96,7 @@ def main():
             fail(f"generated lazy ASM replay differs from skip-replay in {dom}")
         if r["lazy_generated_asm"]["barrett_lines_executed"]:
             fail(f"generated lazy ASM still executes Barrett in {dom}")
-        if r["lazy_generated_asm"]["output_range"] != EXPECTED_LAZY[dom]:
+        if r["lazy_generated_asm"]["output_range"] != EXPECTED_LAZY[n][dom]:
             fail(f"lazy bound drift in {dom}: {r['lazy_generated_asm']['output_range']}")
         print(f"[{n}] {dom:24s} official={r['official']['output_range']} "
               f"lazy={r['lazy_generated_asm']['output_range']}")
@@ -119,8 +135,8 @@ def main():
             "official": contract["official_levels"], "lazy": contract["lazy_levels"]},
         "forward_census_asm_contract": {
             "official": contract["official_census"], "lazy": contract["lazy_census"]},
-        "lazy_output_envelope": [min(v[0] for v in EXPECTED_LAZY.values()),
-                                 max(v[1] for v in EXPECTED_LAZY.values())],
+        "lazy_output_envelope": [min(v[0] for v in EXPECTED_LAZY[n].values()),
+                                 max(v[1] for v in EXPECTED_LAZY[n].values())],
         "consumers_lazy": cons_l,
         "consumers_official": cons_o,
         "crepmod3": crep,

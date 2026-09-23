@@ -1,12 +1,13 @@
 # Shared Phase-A (correctness only) rules for the caller-bounded lazy Forward
-# candidates of Official NTRU+864 / NTRU+1152 AVX2.  Included by
-# NTRU+{864,1152}/experiments/avx2_official_opt_001/Makefile after PARAM is set.
+# candidates of Official NTRU+768 / 864 / 1152 AVX2.  Included by
+# NTRU+{864,1152}/experiments/avx2_official_opt_001/Makefile and
+# NTRU+768/experiments/avx2_official_opt_freeze_001/Makefile after PARAM is set.
 # Phase B adds only the same-ELF diagnostic bench build (`make bench`); the
 # timing itself is run by tools/run_forward_caller_lazy_short.py.  No
 # host-control rule lives here.
 
 ifndef PARAM
-$(error PARAM must be 864 or 1152)
+$(error PARAM must be 768, 864 or 1152)
 endif
 
 CC ?= cc

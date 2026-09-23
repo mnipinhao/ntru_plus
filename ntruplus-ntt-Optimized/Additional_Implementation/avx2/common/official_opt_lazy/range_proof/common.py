@@ -1,4 +1,4 @@
-"""Shared loaders for the lazy-Forward range proof (NTRU+864/1152).
+"""Shared loaders for the lazy-Forward range proof (NTRU+768/864/1152).
 
 Ported from the Phase-0 read-only reduction audit.  Instead of the pristine
 SUPERCOP tree it reads the experiment's imported upstream copy and the

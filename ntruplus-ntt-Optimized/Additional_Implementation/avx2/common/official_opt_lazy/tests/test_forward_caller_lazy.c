@@ -1,5 +1,5 @@
 /*
- * Caller-bounded lazy Forward differential for Official NTRU+864/1152 AVX2.
+ * Caller-bounded lazy Forward differential for Official NTRU+768/864/1152 AVX2.
  * Adapted from NTRU+768 avx2_official_opt_001/tests/test_forward_caller_lazy.c.
  *
  * For every case, on the Official caller domains:
@@ -52,11 +52,19 @@ struct domain {
     int out_lo, out_hi;  /* proven lazy output interval */
 };
 static const struct domain domains[] = {
+#if NTRUPLUS_N == 768 /* NTRU+768 ledger (range_proof/prove_forward_lazy.py EXPECTED_LAZY[768]) */
+    {"asm_contract[-3,4]", -3, 4, 1, 0, -16058, 16035},
+    {"keygen_f", -3, 3, 3, 1, -15251, 15252},
+    {"keygen_g", -3, 3, 3, 0, -15251, 15251},
+    {"decap_msg[-2,2]", -2, 2, 1, 0, -14449, 14449},
+    {"encap_r_m_reenc[-1,1]", -1, 1, 1, 0, -13636, 13636},
+#else
     {"asm_contract[-3,4]", -3, 4, 1, 0, -17961, 17957},
     {"keygen_f", -3, 3, 3, 1, -17193, 17194},
     {"keygen_g", -3, 3, 3, 0, -17193, 17193},
     {"decap_msg[-2,2]", -2, 2, 1, 0, -16382, 16385},
     {"encap_r_m_reenc[-1,1]", -1, 1, 1, 0, -15580, 15580},
+#endif
 };
 enum { NDOMAINS = sizeof domains / sizeof domains[0], RANDOM = 1000, EXTREME = 1000 };
 

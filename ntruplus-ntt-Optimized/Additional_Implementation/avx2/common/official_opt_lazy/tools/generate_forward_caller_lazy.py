@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Derive a caller-bounded Forward entry from pinned Official ntt.s (864/1152).
+"""Derive a caller-bounded Forward entry from pinned Official ntt.s (768/864/1152).
 
 Port of NTRU+768 avx2_official_opt_001/tools/generate_forward_caller_lazy.py.
 The only arithmetic deletion is the single terminal Barrett block
@@ -21,19 +21,27 @@ from pathlib import Path
 # Per-parameter pins.  Hashes are of the imported (never edited) upstream copy
 # of SUPERCOP 20260831 crypto_kem/ntruplus{N}/avx2.
 PARAMS = {
+    # 768: same terminal block as 1152 (8 registers, 256-byte stride) but a
+    # 6-iteration terminal loop; output is instruction-stream identical to the
+    # NTRU+768 qual001 lazy Forward (see freeze2op tools/check_lazy_stream_equal.py).
+    768: {
+        "ntt_sha256": "992b613701be5988e83798a4a8f56a798c7e47e4616db70e65eee7feb75332f4",
+        "kem_sha256": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+        "regs": 8, "stride": 256, "iterations": 6,
+    },
     864: {
         "ntt_sha256": "980cad5ef69a78f9ed1f2f45fc5dcaa0a04cc07693cf65ea108acc41c547db92",
         "kem_sha256": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
         # registers per iteration in the terminal block, loop stride (bytes)
-        "regs": 6, "stride": 192,
+        "regs": 6, "stride": 192, "iterations": 9,
     },
     1152: {
         "ntt_sha256": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
         "kem_sha256": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
-        "regs": 8, "stride": 256,
+        "regs": 8, "stride": 256, "iterations": 9,
     },
 }
-ITERATIONS = 9  # terminal loop trip count for both parameters (asserted below)
+# terminal loop trip count per parameter ("iterations", asserted below)
 
 
 def sha256(data: bytes) -> str:
@@ -57,8 +65,11 @@ def generate_asm(n: int, upstream: Path):
     body = body.replace(entry, f".text\n.p2align 5\n.global {name}\n"
                         f".type {name},@function\n{name}:", 1)
     labels = set(re.findall(r"\b(_looptop_[A-Za-z0-9_]+):", body))
-    if labels != {"_looptop_j_0", "_looptop_start_1", "_looptop_j_1",
-                  "_looptop_start_2", "_looptop_j_2", "_looptop_start_3456"}:
+    expected = {"_looptop_j_0", "_looptop_start_1", "_looptop_j_1",
+                "_looptop_start_2", "_looptop_start_3456"}
+    if n != 768:  # 864/1152 have an inner level-2 loop; 768 does not
+        expected.add("_looptop_j_2")
+    if labels != expected:
         raise ValueError(f"unexpected Official local labels {sorted(labels)}")
     body = re.sub(r"\b(_looptop_[A-Za-z0-9_]+)\b",
                   rf"ntruplus{n}_officialopt_lazy\1", body)
@@ -113,7 +124,7 @@ def generate_asm(n: int, upstream: Path):
     bounds = re.findall(r"lea\s+(\d+)\(%rdi\),\s*%r8", head[0])
     if not bounds or int(bounds[-1]) != 2 * n:
         raise ValueError("terminal loop bound changed")
-    if f"add ${p['stride']}, %rdi" not in suffix or 2 * n // p["stride"] != ITERATIONS:
+    if f"add ${p['stride']}, %rdi" not in suffix or 2 * n // p["stride"] != p["iterations"]:
         raise ValueError("terminal loop stride/trip count changed")
     stores = re.findall(r"vmovdqa %ymm(\d+),\s*\d*\(%rdi\)", suffix)
     if sorted(f"%ymm{r}" for r in stores) != sorted(reduced):
@@ -123,8 +134,8 @@ def generate_asm(n: int, upstream: Path):
     if body.count(marker) != 1:
         raise ValueError("unexpected Official NTT footer")
     body = body.replace(marker, f".size {name},.-{name}\n\n{marker}", 1)
-    meta = {"removed_per_iteration": counts, "iterations": ITERATIONS,
-            "removed_vectors_per_forward": regs * ITERATIONS,
+    meta = {"removed_per_iteration": counts, "iterations": p["iterations"],
+            "removed_vectors_per_forward": regs * p["iterations"],
             "removed_constant_loads": 1}
     return body, meta
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Linked-ELF audit of the caller-lazy Forward (NTRU+864/1152), not its source.
+"""Linked-ELF audit of the caller-lazy Forward (NTRU+768/864/1152), not its source.
 
 Port of NTRU+768 avx2_official_opt_001/tools/audit_forward_caller_lazy.py,
 extended to diff the linked candidate against the linked Official poly_ntt of
@@ -23,8 +23,8 @@ import subprocess
 from collections import Counter
 from pathlib import Path
 
-REGS = {864: 6, 1152: 8}
-ITERATIONS = 9
+REGS = {768: 8, 864: 6, 1152: 8}
+ITERATIONS = {768: 6, 864: 9, 1152: 9}
 PAD = ("nop", "nopw", "nopl", "data16", "cs", "xchg")
 
 
@@ -178,8 +178,8 @@ def main():
         "official_poly_ntt_rows": len([r for r in offi if r[1] not in PAD]),
         "opcode_counts": dict(sorted(Counter(r[1] for r in cand if r[1] not in PAD).items())),
         "static_delta_official_minus_candidate": delta,
-        "dynamic_delta_per_forward": {"vpmulhrsw": regs * ITERATIONS, "vpmullw": regs * ITERATIONS,
-                                      "vpsubw": regs * ITERATIONS, "terminal_constant_load": 1},
+        "dynamic_delta_per_forward": {"vpmulhrsw": regs * ITERATIONS[n], "vpmullw": regs * ITERATIONS[n],
+                                      "vpsubw": regs * ITERATIONS[n], "terminal_constant_load": 1},
         "rows_identical_to_official_except_removed": True,
         "stack_references": 0, "calls": 0, "vzeroupper": 0,
         "official_vzeroupper": Counter(r[1] for r in offi)["vzeroupper"],

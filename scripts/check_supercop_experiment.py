@@ -13,7 +13,7 @@ from supercop_workflow import read_lock, sha256_tree
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--experiment", type=Path, required=True)
-    parser.add_argument("--parameter", choices=("864", "1152"), required=True)
+    parser.add_argument("--parameter", choices=("768", "864", "1152"), required=True)
     args = parser.parse_args()
     lock = read_lock()
     upstream = args.experiment / "upstream"
