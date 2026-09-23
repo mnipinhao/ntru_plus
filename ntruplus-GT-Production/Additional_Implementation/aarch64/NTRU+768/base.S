@@ -608,7 +608,18 @@ C_SYM(gt_keygen_baseinv_hier_k8):
 	uzp2 \d3\().8h, v22.8h, v23.8h
 .endm
 
-/* x0=CQ output, x1=CQ numerator scratch, x2=inverted denominators. */
+/*************************************************
+* Name:        gt_keygen_baseinv_cq_finish
+*
+* Description: Completes the keygen base inversion: multiplies each CQ
+*              numerator by the inverse of its denominator.
+*
+* Arguments:   - x0 = int16_t out_cq[24][32]: base inverses, CQ layout
+*              - x1 = const int16_t numerator[24][32]
+*              - x2 = const int16_t den[24][8]: inverted denominators
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(gt_keygen_baseinv_cq_finish)
 #ifndef __APPLE__
 .type C_SYM(gt_keygen_baseinv_cq_finish), %function
@@ -880,6 +891,23 @@ C_SYM(gt_fqinv15_asm):
 #define C_SYM(sym) sym
 #endif
 #endif
+/*************************************************
+* Name:        poly_basemul_add_encap
+*
+* Description: Encapsulation product out = a * b + c in the block-major NTT
+*              domain, with a Q31 final reduction.
+*
+* Arguments:   - poly *out: output polynomial; may alias c exactly (the KEM
+*                passes out == c), no other overlap
+*              - const poly *a: decoded public key h, coefficients in [0,q)
+*              - const poly *b: output of poly_ntt_encap_small_lazy,
+*                |coefficient| <= 21050
+*              - const poly *c: output of poly_ntt_encap_small_lazy,
+*                |coefficient| <= 21050
+*
+* Returns:     none. Output coefficients lie in (-q,q), the input range of
+*              poly_tobytes_encap.
+**************************************************/
 .global C_SYM(poly_basemul_add_encap)
 C_SYM(poly_basemul_add_encap):
  sub sp, sp, #64
@@ -1634,7 +1662,7 @@ C_SYM(poly_frombytes_basemul_decap_scale):
 #ifdef __APPLE__
 .section __TEXT,__text,regular,pure_instructions
 #else
-.section .text.gt_decap_poly_basemul,"ax",%progbits
+.section .text.module_decap_base_body,"ax",%progbits
 #endif
 
 #ifndef C_SYM
@@ -1794,7 +1822,7 @@ C_SYM(poly_basemul_decap):
 #ifdef __APPLE__
 .section __TEXT,__text,regular,pure_instructions
 #else
-.section .rodata.gt_decap_base,"a",%progbits
+.section .rodata.module_decap_base,"a",%progbits
 #endif
 .align 4
 .Lmodule_decap_base_zetas_mul:

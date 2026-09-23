@@ -308,6 +308,17 @@ Lkeccak_live_loop_\@:
 .section .text.module_keccakf1600_body,"ax",%progbits
 #endif
 .balign 4
+/*************************************************
+* Name:        ntruplus_keccak_f1600_x1_aarch64
+*
+* Description: Keccak-f[1600] permutation of one state, scalar AArch64
+*              backend (used when __ARM_FEATURE_SHA3 is not defined).
+*
+* Arguments:   - uint64_t *state: 25-lane state, permuted in place
+*              - const uint64_t *rc: the 24 round constants
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(ntruplus_keccak_f1600_x1_aarch64)
 #ifndef __APPLE__
 .type ntruplus_keccak_f1600_x1_aarch64, %function

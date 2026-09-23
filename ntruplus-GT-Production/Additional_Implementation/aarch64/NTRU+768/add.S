@@ -13,6 +13,18 @@
 .section .text.poly_sub,"ax",%progbits
 #endif
 
+/*************************************************
+* Name:        poly_sub
+*
+* Description: Coefficient-wise subtraction out = a - b, without reduction.
+*              Saves no SIMD callee-saved registers because it uses none.
+*
+* Arguments:   - poly *out: output polynomial; may alias a or b exactly
+*              - const poly *a: minuend
+*              - const poly *b: subtrahend
+*
+* Returns:     none. Coefficients are the int16 differences.
+**************************************************/
 .global C_SYM(poly_sub)
 C_SYM(poly_sub):
     dst       .req x0
@@ -65,6 +77,16 @@ C_SYM(poly_sub):
 
 .text
 .align 2
+/*************************************************
+* Name:        poly_triple
+*
+* Description: Coefficient-wise multiplication by 3, without reduction.
+*
+* Arguments:   - poly *out: output polynomial; may alias in exactly
+*              - const poly *in: input polynomial
+*
+* Returns:     none. Coefficients are 3 * in (int16).
+**************************************************/
 .global C_SYM(poly_triple)
 C_SYM(poly_triple):
  movi v0.8h, #3

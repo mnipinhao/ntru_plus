@@ -220,8 +220,8 @@ static inline int crypto_kem_enc_derand(uint8_t *ct, uint8_t *ss,
                                         const uint8_t *pk,
                                         const uint8_t *coins)
 {
-	uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
-	uint8_t buf1[NTRUPLUS_SYMBYTES + NTRUPLUS_N / 4];
+    uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
+    uint8_t buf1[NTRUPLUS_SYMBYTES + NTRUPLUS_N / 4];
 
     poly h, r, m;
 

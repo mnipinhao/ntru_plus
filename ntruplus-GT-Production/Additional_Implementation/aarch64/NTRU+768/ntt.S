@@ -30,6 +30,18 @@
 .align 4
 .equ module_ntt_STACK_LOC_0, 0
 
+/*************************************************
+* Name:        poly_ntt_loose
+*
+* Description: Validation entry of the shared forward core (mode 0); the KEM
+*              does not call it.
+*
+* Arguments:   - poly *out: output polynomial, block-major, coefficients in
+*                [-27548,27548]
+*              - const poly *in: input polynomial in coefficient order
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(poly_ntt_loose)
 #ifndef __APPLE__
 .type poly_ntt_loose, %function
@@ -38,6 +50,17 @@ C_SYM(poly_ntt_loose):
     mov w2, #0
     b .Lmodule_ntt_gt_shared_core_entry
 
+/*************************************************
+* Name:        poly_ntt_keygen_cq
+*
+* Description: Key-generation forward NTT (mode 1) writing the CQ layout
+*              consumed by poly_baseinv_keygen_cq_scaled_r.
+*
+* Arguments:   - gt_cq_poly *out: output, key-generation CQ layout
+*              - const poly *in: 3f+1 or 3g in coefficient order
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(poly_ntt_keygen_cq)
 #ifndef __APPLE__
 .type poly_ntt_keygen_cq, %function
@@ -6658,6 +6681,18 @@ C_SYM(poly_ntt_keygen_cq):
  * and the block-major loose output contract are identical to generic NTT.
  * Mode 2 is saved before x2 is reused as a table pointer above.
  */
+/*************************************************
+* Name:        poly_ntt_encap_small
+*
+* Description: Validation entry (mode 2): small-input forward NTT bit-exact
+*              to poly_ntt_loose; the KEM uses poly_ntt_encap_small_lazy.
+*
+* Arguments:   - poly *out: output polynomial, block-major; may alias in
+*                exactly
+*              - const poly *in: signed coefficients in [-2,2]
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(poly_ntt_encap_small)
 #ifndef __APPLE__
 .type poly_ntt_encap_small, %function
@@ -7891,6 +7926,17 @@ C_SYM(poly_ntt_encap_small):
 .section .text.module_ntt_body,"ax",%progbits
 #endif
 .p2align 4
+/*************************************************
+* Name:        poly_ntt_encap_small_lazy
+*
+* Description: Encapsulation forward NTT (mode 3) for r and m.
+*
+* Arguments:   - poly *out: output polynomial, block-major, coefficients in
+*                [-21050,21050]; may alias in exactly
+*              - const poly *in: signed coefficients in [-2,2]
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(poly_ntt_encap_small_lazy)
 /* Small-input modular endpoint. Mode 3 shares the frontend and late stages;
  * only Stage12 stripe1..7 omit their range-reset pairs. Input [-2,2],

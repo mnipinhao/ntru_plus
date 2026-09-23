@@ -151,6 +151,18 @@ Lntruplus_keccak_f1600_x1_v84a_loop_\@:
 .section .text.module_keccakf1600_v84a_body,"ax",%progbits
 #endif
 .balign 4
+/*************************************************
+* Name:        ntruplus_keccak_f1600_x1_v84a_aarch64
+*
+* Description: Keccak-f[1600] permutation of one state using the Armv8.4-A
+*              SHA3 instructions; assembled only when __ARM_FEATURE_SHA3 is
+*              defined. Saves and restores d8-d15.
+*
+* Arguments:   - uint64_t *state: 25-lane state, permuted in place
+*              - const uint64_t *rc: the 24 round constants
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(ntruplus_keccak_f1600_x1_v84a_aarch64)
 #ifndef __APPLE__
 .type ntruplus_keccak_f1600_x1_v84a_aarch64, %function

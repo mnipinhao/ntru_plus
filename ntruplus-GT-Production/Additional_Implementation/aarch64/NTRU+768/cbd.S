@@ -7,6 +7,17 @@
 #endif
 #endif
 
+/*************************************************
+* Name:        poly_cbd1
+*
+* Description: Samples a polynomial from the centered binomial distribution
+*              with parameter eta = 1.
+*
+* Arguments:   - poly *out: output polynomial
+*              - const uint8_t *buf: NTRUPLUS_N/4 input bytes
+*
+* Returns:     none. Output coefficients lie in {-1,0,1}.
+**************************************************/
 .global C_SYM(poly_cbd1)
 C_SYM(poly_cbd1):
     dst       .req x0
@@ -136,6 +147,18 @@ C_SYM(poly_cbd1):
 
     ret
 
+/*************************************************
+* Name:        poly_sotp_encode
+*
+* Description: Encodes a message using a one-time pad and centered binomial
+*              sampling with parameter eta = 1.
+*
+* Arguments:   - poly *out: output polynomial
+*              - const uint8_t *msg: NTRUPLUS_N/8 message bytes
+*              - const uint8_t *buf: NTRUPLUS_N/4 pad bytes
+*
+* Returns:     none. Output coefficients lie in {-1,0,1}.
+**************************************************/
 .global C_SYM(poly_sotp_encode)
 C_SYM(poly_sotp_encode):
     dst       .req x0
@@ -273,6 +296,18 @@ C_SYM(poly_sotp_encode):
     ret
 
 
+/*************************************************
+* Name:        poly_sotp_decode
+*
+* Description: Decodes a message using the inverse one-time-pad operation and
+*              checks that every recovered coefficient is valid.
+*
+* Arguments:   - uint8_t *msg: NTRUPLUS_N/8 output bytes
+*              - const poly *a: input polynomial
+*              - const uint8_t *buf: NTRUPLUS_N/4 pad bytes
+*
+* Returns:     0 on success and 1 on failure.
+**************************************************/
 .global C_SYM(poly_sotp_decode)
 C_SYM(poly_sotp_decode):
     dst       .req x0

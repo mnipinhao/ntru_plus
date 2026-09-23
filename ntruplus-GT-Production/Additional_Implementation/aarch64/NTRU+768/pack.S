@@ -18,6 +18,20 @@
 .section .text.module_pack_body,"ax",%progbits
 #endif
 .p2align 4
+/*************************************************
+* Name:        poly_tobytes_encap / poly_tobytes_encap_loose
+*
+* Description: Canonical 12-bit encoding of a block-major (Encap) polynomial,
+*              applying the Good-Thomas permutation. poly_tobytes_encap
+*              expects reduced coefficients; poly_tobytes_encap_loose first
+*              Barrett-reduces arbitrary int16 representatives.
+*
+* Arguments:   - uint8_t *out: NTRUPLUS_POLYBYTES output bytes
+*              - const poly *a: block-major polynomial; coefficients in
+*                (-q,q) for poly_tobytes_encap, any int16 for the loose entry
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(poly_tobytes_encap)
 #ifndef __APPLE__
 .type poly_tobytes_encap, %function
@@ -497,6 +511,19 @@ C_SYM(poly_tobytes_encap):
 .section .text.module_unpack_body,"ax",%progbits
 #endif
 .p2align 4
+/*************************************************
+* Name:        poly_frombytes_encap
+*
+* Description: Checked decoding of canonical 12-bit bytes into the block-
+*              major (Encap) layout.
+*
+* Arguments:   - poly *out: output polynomial, block-major
+*              - const uint8_t *in: NTRUPLUS_POLYBYTES input bytes
+*
+* Returns:     0 on success, 1 if any coefficient is >= q. Output
+*              coefficients lie in [0,4095] and are complete on either
+*              return.
+**************************************************/
 .global C_SYM(poly_frombytes_encap)
 C_SYM(poly_frombytes_encap):
     sub sp, sp, #64
@@ -1650,6 +1677,16 @@ C_SYM(poly_frombytes_encap):
 .section .text.module_keygen_pack_body,"ax",%progbits
 #endif
 .p2align 4
+/*************************************************
+* Name:        poly_tobytes_keygen_cq
+*
+* Description: Canonical 12-bit encoding of a key-generation CQ polynomial.
+*
+* Arguments:   - uint8_t *out: NTRUPLUS_POLYBYTES output bytes
+*              - const gt_cq_poly *in: CQ polynomial, coefficients in (-q,q)
+*
+* Returns:     none.
+**************************************************/
 .global C_SYM(poly_tobytes_keygen_cq)
 C_SYM(poly_tobytes_keygen_cq):
     sub sp, sp, #80
