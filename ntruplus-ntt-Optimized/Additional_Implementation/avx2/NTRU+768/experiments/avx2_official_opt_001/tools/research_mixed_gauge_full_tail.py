@@ -22,6 +22,7 @@ from research_full_twisted_pairings import children, invert_matrix
 from research_twiddle_half_absorption import evaluate, WITNESS_C, WITNESS_F
 from research_yang_true_twist import ZETA32, reconstruct
 from research_true_twist_repair_v2 import FACTORS, INPUT, TOWER, verified
+from research_mixed_gauge_vector_schedule import ownership, stage_values
 
 FACTOR = ROOT / 'results/yang-full-twisted-tower-factor-20260923.json'
 RESULT = ROOT / 'results/yang-true-y-twist-mixed-gauge-full-tail-20260923.json'
@@ -137,6 +138,27 @@ def main():
     owner = {(row['leaf'], row['degree']): row['cell'] for row in owners}
     assert set(cohort_by_alpha) == set(alphas) and len(owner) == 768
     bounds = closure['BaseMulScale']['output_lane_bounds']
+    physical_owners, _, physical_modes = ownership()
+    physical_bounds = [[max(map(abs, bounds[16 * v + lane]))
+                        for lane in range(16)] for v in range(48)]
+    physical_stage_bounds = []
+    for stage in (6, 5, 4, 3, 2):
+        physical_bounds = stage_values(physical_bounds, stage,
+                                       physical_modes, formal=True)
+        physical_stage_bounds.append({'stage': stage,
+                                      'max_abs': max(map(max, physical_bounds))})
+    physical_untwist_bounds = [[mont_bound(value,
+        pow(physical_owners[v][lane].xi, -physical_owners[v][lane].k, Q))
+        for lane, value in enumerate(vector)]
+        for v, vector in enumerate(physical_bounds)]
+    physical_tail_pre = physical_final_bound = 0
+    for i in range(8):
+        for lane in range(16):
+            six = [physical_untwist_bounds[i + 8 * group][lane]
+                   for group in range(6)]
+            outputs, pre = bound_tail(six, alpha_table, omega, phi, nscale)
+            physical_tail_pre = max(physical_tail_pre, pre)
+            physical_final_bound = max(physical_final_bound, *outputs)
     max_untwist_input = max_untwist_output = max_top_pre = max_top_output = 0
     formal_untwist = {}
     formal_final = {}
@@ -172,6 +194,7 @@ def main():
                       [rng.randrange(Q) for _ in range(768)]))
     observed_max_pre = observed_max_out = 0
     consumer_cases = 0
+    physical_consumer_cases = 0
     sources = [ROOT / 'upstream/supercop-avx2/invntt.s',
                ROOT / 'upstream/supercop-avx2/crepmod3.s',
                ROOT / 'upstream/supercop-avx2/consts.c']
@@ -229,6 +252,37 @@ def main():
             crepmod3(pointer)
             assert list(words) == control_consumer
             consumer_cases += 1
+        for output, _ in machine_base_mul_scale(cases):
+            cells = [output[16 * v:16 * v + 16] for v in range(48)]
+            for stage in (6, 5, 4, 3, 2):
+                cells = stage_values(cells, stage, physical_modes)
+            candidate = [0] * 768
+            for i in range(8):
+                six_vectors = []
+                for group in range(6):
+                    v = i + 8 * group
+                    six_vectors.append([mont_factor(value,
+                        pow(physical_owners[v][lane].xi,
+                            -physical_owners[v][lane].k, Q))
+                        for lane, value in enumerate(cells[v])])
+                for lane in range(16):
+                    out, _ = word_tail([v[lane] for v in six_vectors],
+                                       alpha_table, omega, phi, nscale)
+                    for p, value in enumerate(out):
+                        candidate[16 * (i + 8 * p) + lane] = value
+            words[:] = output
+            inverse(pointer)
+            control = list(words)
+            mismatch = [(j, a, b) for j, (a, b) in enumerate(zip(candidate, control))
+                        if (a - b) % Q]
+            assert not mismatch, (physical_consumer_cases, mismatch[:8])
+            words[:] = control
+            crepmod3(pointer)
+            consumer = list(words)
+            words[:] = candidate
+            crepmod3(pointer)
+            assert list(words) == consumer
+            physical_consumer_cases += 1
     result = {
         'evidence_class': 'full_scalar_machine_word_tail_and_768_cell_interval_not_AVX2_schedule',
         'physical_y32_roots': alphas,
@@ -250,11 +304,19 @@ def main():
                             'max_final_output': observed_max_out},
         'machine_BaseMulScale_and_linked_Official_inverse_crepmod3_cases': consumer_cases,
         'all_cases_modq_and_crepmod3_byte_exact': True,
+        'physical_AVX2_route_stage_bounds': physical_stage_bounds,
+        'physical_AVX2_route_max_after_y32_untwist': max(map(max, physical_untwist_bounds)),
+        'physical_AVX2_route_max_top_preoperation': physical_tail_pre,
+        'physical_AVX2_route_max_final_output': physical_final_bound,
+        'physical_AVX2_route_consumer_cases': physical_consumer_cases,
+        'physical_AVX2_route_modq_and_crepmod3_byte_exact': True,
         'source_sha256': {str(path.relative_to(ROOT)):
                           hashlib.sha256(path.read_bytes()).hexdigest()
                           for path in [Path(__file__), INPUT, FACTOR, TOWER,
                                        ROOT / 'tools/research_twiddle_half_absorption.py',
                                        ROOT / 'tools/research_correlated_ct_butterfly.py',
+                                       ROOT / 'tools/research_mixed_gauge_vector_schedule.py',
+                                       ROOT / 'tools/research_physical_true_twist_replay.py',
                                        ROOT / 'tools/prove_inverse_ct_range.py']
                           + sources},
         'open': ['complete 16-YMM AVX2 def/use and output routing',

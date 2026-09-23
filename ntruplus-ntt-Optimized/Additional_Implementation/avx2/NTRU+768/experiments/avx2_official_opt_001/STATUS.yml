@@ -726,3 +726,44 @@ round28_mixed_gauge_decision:
   centered_constant_word_model: corrected_and_old_exploratory_results_regenerated
   decision: no_full_inverse_ASM_until_valid_control_and_whole_kernel_schedule
   native_and_clean_promotion: no
+  superseded_by: round29_true_twist_physical_two_schedule
+round29_true_twist_physical_two_schedule:
+  class: exact_physical_root_replay_and_complete_conservative_macro_schedule_not_linked_AVX2_or_cycles
+  report: docs/ntruplus768-true-twist-physical-schedule.md
+  tools:
+    - tools/research_physical_true_twist_replay.py
+    - tools/research_mixed_gauge_vector_schedule.py
+    - tools/research_mixed_gauge_full_tail.py
+    - tools/research_true_twist_selective_repair.py
+    - tools/research_true_twist_schedule_comparison.py
+  artifacts:
+    - results/yang-true-y-twist-selective-repair-20260923.json
+    - results/yang-true-y-twist-mixed-gauge-full-tail-20260923.json
+    - results/yang-true-y-twist-mixed-gauge-vector-schedule-20260923.json
+    - results/yang-true-y-twist-two-schedules-20260923.json
+  old_mismatch_cause: numeric_minimum_root_instead_of_physical_upper_child_xi
+  physical_root_rule: xi_upper_child_and_zeta_xi_lower_over_xi_upper
+  stage5_mixed_distinct_factor_vectors: {old_incorrect: 10, corrected: 2}
+  compiled_BaseMulScale_inverse_crepmod3_cases_per_candidate: 101
+  selective_repair:
+    prefix_Montgomery_vectors: 78
+    prefix_Barrett_vectors: 24
+    full_modeled_Montgomery_vectors: 246
+    full_modeled_Barrett_vectors: 40
+    max_top_preoperation: 6907
+    crepmod3_byte_exact: true
+  mixed_gauge:
+    prefix_Montgomery_vectors: 96
+    prefix_Barrett_vectors: 0
+    qhalf_vector_pairs: {full: 24, mixed_lane: 24}
+    full_modeled_Montgomery_vectors: 264
+    full_modeled_Barrett_vectors: 16
+    max_top_preoperation: 6703
+    crepmod3_byte_exact: true
+  common_conservative_schedule:
+    materialized_data_loads_per_inverse: 384
+    materialized_data_stores_per_inverse: 384
+    radix2_route_vector_pairs: 96
+    macro_YMM_peak_cap: 12_assumed_not_linked_def_use_proof
+  decision: selective_repair_first_for_future_compact_packet_ASM_not_a_cycle_winner_yet
+  linked_full_inverse_Decap_cycles_Native_and_clean_promotion: not_run

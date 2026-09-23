@@ -9,92 +9,82 @@ import json
 from pathlib import Path
 
 from probe_inverse_ct_gauge import Q, ROOT, route
-from research_full_twisted_pairings import children
+from prove_inverse_ct_range import mont_bound
+from research_correlated_ct_butterfly import mont_factor, qhalf
+from research_physical_true_twist_replay import build as physical_build, assign_kinds
 from research_twiddle_half_absorption import RECIPE
-from research_yang_true_twist import ZETA32
-from research_true_twist_repair_v2 import FACTORS, verified
+from research_true_twist_repair_v2 import FACTORS
 
 RESULT = ROOT / 'results/yang-true-y-twist-mixed-gauge-vector-schedule-20260923.json'
 
 
 def ownership():
-    factor = verified(FACTORS)
-    owners = factor['physical_owners']
-    mem = [[(frozenset((row['leaf'],)), row['degree'], 0)
-            for row in owners[16 * vector:16 * vector + 16]]
-           for vector in range(48)]
-    roots = sorted({row['leaf'] for row in owners})
-    cohorts = [group for _, top in children(roots, 192)
-               for _, group in children(top, 96)]
-    subtree_kinds = {}
-
-    def assign(kind, xi, zeta):
-        if kind == 'U1':
-            return
-        n = int(kind[1:])
-        members = frozenset(xi * pow(zeta, j, Q) % Q for j in range(n))
-        prior = subtree_kinds.setdefault(members, (kind, zeta))
-        assert prior == (kind, zeta)
-        upper, lower, _, _ = RECIPE[kind]
-        assign(upper, xi, zeta * zeta % Q)
-        assign(lower, xi * zeta % Q, zeta * zeta % Q)
-
-    for group in cohorts:
-        assign('H32', min(group), ZETA32)
-    route_ops = {6: 0, 5: 0, 4: 0, 3: 0, 2: 0}
+    mem, physical_stages, tree = physical_build()
+    kinds = assign_kinds(mem, tree)
+    route_ops = {6: 24, 5: 24, 4: 24, 3: 24, 2: 0}
     vector_modes = {str(stage): [] for stage in (6, 5, 4, 3, 2)}
-    for stage in (6, 5, 4, 3, 2):
-        n = 1 << (7 - stage)
-        new = [None] * 48
-        for packet in range(6):
-            base = packet * 8
-            upper, lower = [], []
-            for pair in range(4):
-                out_a, out_b = [], []
-                lane_modes = []
-                original_factors, candidate_factors = [], []
-                for a, b in zip(mem[base + pair], mem[base + pair + 4]):
-                    leaves_a, degree_a, k_a = a
-                    leaves_b, degree_b, k_b = b
-                    assert degree_a == degree_b and k_a == k_b
-                    assert leaves_a.isdisjoint(leaves_b)
-                    union = leaves_a | leaves_b
-                    assert len(union) == n
-                    kind, zeta = subtree_kinds[union]
-                    lane_modes.append(kind)
-                    original = pow(zeta, -k_a, Q)
-                    upper_kind, lower_kind, _, _ = RECIPE[kind]
-                    scale = lambda child: 0 if child == 'U1' else RECIPE[child][3]
-                    combined = original * pow(2,
-                        scale(lower_kind) - scale(upper_kind), Q) % Q
-                    original_factors.append(original)
-                    candidate_factors.append(combined)
-                    out_a.append((union, degree_a, k_a))
-                    out_b.append((union, degree_a, k_a + n // 2))
-                upper.append(out_a)
-                lower.append(out_b)
-                vector_modes[str(stage)].append({'packet': packet,
-                                                   'pair': pair,
-                                                   'lane_kinds': lane_modes,
-                                                   'original_factors': original_factors,
-                                                   'candidate_factors': candidate_factors,
-                                                   'original_has_vector_multiply':
-                                                   any(x != 1 for x in original_factors),
-                                                   'candidate_has_vector_multiply':
-                                                   any(x != 1 for x in candidate_factors),
-                                                   'homogeneous':
-                                                   len(set(lane_modes)) == 1})
-            outputs = upper + lower
-            if stage == 2:
-                new[base:base + 8] = outputs
-            else:
-                for pair in range(4):
-                    lo, hi = route(stage, outputs[2 * pair],
-                                   outputs[2 * pair + 1])
-                    new[base + pair], new[base + pair + 4] = lo, hi
-                    route_ops[stage] += 1
-        mem = new
+    for stage, physical_rows in zip((6, 5, 4, 3, 2), physical_stages):
+        for index, row in enumerate(physical_rows):
+            lane_modes = [kinds[lane['leaves']] for lane in row]
+            original_factors = [lane['twiddle'] for lane in row]
+            candidate_factors = []
+            for lane, kind in zip(row, lane_modes):
+                upper_kind, lower_kind, _, _ = RECIPE[kind]
+                scale = lambda child: 0 if child == 'U1' else RECIPE[child][3]
+                candidate_factors.append(lane['twiddle'] * pow(2,
+                    scale(lower_kind) - scale(upper_kind), Q) % Q)
+            vector_modes[str(stage)].append({
+                'packet': index // 4, 'pair': index % 4,
+                'lane_kinds': lane_modes,
+                'original_factors': original_factors,
+                'candidate_factors': candidate_factors,
+                'original_has_vector_multiply': any(x != 1 for x in original_factors),
+                'candidate_has_vector_multiply': any(x != 1 for x in candidate_factors),
+                'homogeneous': len(set(lane_modes)) == 1,
+            })
     return mem, route_ops, vector_modes
+
+
+def stage_values(mem, stage, modes, formal=False):
+    """Apply the physical mixed-gauge butterflies and the inherited routes."""
+    new = [None] * 48
+    for packet in range(6):
+        upper, lower = [], []
+        for pair in range(4):
+            a = mem[8 * packet + pair]
+            b = mem[8 * packet + pair + 4]
+            mode = modes[str(stage)][packet * 4 + pair]
+            hi, lo = [], []
+            for aa, bb, factor, kind in zip(a, b,
+                                             mode['candidate_factors'],
+                                             mode['lane_kinds']):
+                merge = RECIPE[kind][2]
+                twiddled = (bb if factor == 1 else
+                            mont_bound(bb, factor) if formal else
+                            mont_factor(bb, factor))
+                if formal:
+                    value = (max(aa, twiddled) + 1728 if merge == 'half'
+                             else aa + twiddled)
+                    assert value <= 32767, (stage, packet, pair, kind, value)
+                    first = second = value
+                elif merge == 'half':
+                    first, second = qhalf(aa, twiddled), qhalf(aa, -twiddled)
+                else:
+                    first, second = aa + twiddled, aa - twiddled
+                    assert -32768 <= first <= 32767
+                    assert -32768 <= second <= 32767
+                hi.append(first)
+                lo.append(second)
+            upper.append(hi)
+            lower.append(lo)
+        outputs = upper + lower
+        if stage == 2:
+            new[8 * packet:8 * packet + 8] = outputs
+        else:
+            for pair in range(4):
+                a, b = route(stage, outputs[2 * pair], outputs[2 * pair + 1])
+                new[8 * packet + pair], new[8 * packet + pair + 4] = a, b
+    return new
 
 
 def main():
@@ -104,10 +94,9 @@ def main():
         vectors = [mem[i + 8 * group] for group in range(6)]
         for lane in range(16):
             row = [v[lane] for v in vectors]
-            key = (row[0][1], row[0][2])
-            assert all((x[1], x[2]) == key for x in row)
-            assert len({next(iter({pow(lam, 32, Q) for lam in x[0]}))
-                        for x in row}) == 6
+            key = (row[0].degree, row[0].k)
+            assert all((x.degree, x.k) == key for x in row)
+            assert len({pow(x.xi, 32, Q) for x in row}) == 6
             grouped[i, lane] = key
     assert set(grouped.values()) == {(degree, k)
                                      for degree in range(4) for k in range(32)}
@@ -174,6 +163,7 @@ def main():
                           hashlib.sha256(path.read_bytes()).hexdigest()
                           for path in (Path(__file__), FACTORS,
                                        ROOT / 'tools/probe_inverse_ct_gauge.py',
+                                       ROOT / 'tools/research_physical_true_twist_replay.py',
                                        ROOT / 'tools/research_twiddle_half_absorption.py')},
     }
     RESULT.write_text(json.dumps(result, indent=2) + '\n')
