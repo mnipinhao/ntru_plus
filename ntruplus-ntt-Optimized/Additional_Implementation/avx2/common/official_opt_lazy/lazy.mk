@@ -47,7 +47,7 @@ KAT_CFLAGS := -O2 -maes
 KAT_SANFLAGS := -O1 -g -maes -fno-omit-frame-pointer -fsanitize=address,undefined
 
 .DEFAULT_GOAL := check
-.PHONY: bench generate check-generate check-upstream check sanitize audit range-proof phase-a record clean
+.PHONY: bench bench-keypair generate check-generate check-upstream check sanitize audit range-proof phase-a record clean
 
 generate:
 	$(PYTHON) $(COMMON)/tools/generate_forward_caller_lazy.py --param $(PARAM) --experiment .
@@ -163,6 +163,21 @@ $(BUILD)/bench_caller_lazy: $(COMMON)/bench/bench_caller_lazy.c $(COMMON)/tests/
 	$(CC) $(BENCH_CFLAGS) -maes -I$(KAT) -I$(CPU_INCLUDE) $(INCLUDES) -DLAZY_NTT=$(LAZY) -o $@ $^ $(CPU_LIB)
 
 bench: $(BUILD)/bench_caller_lazy
+
+# Phase-B follow-up seed-matched paired Keypair harness (supercop-derived
+# diagnostic).  Same O3GC recipe and namespaced KEM objects as the same-ELF
+# bench; its own randombytes() replaces the KAT DRBG.  The _swapped ELF links
+# the two KEM objects in the opposite order (placement control).
+KP_SRC := $(COMMON)/bench/bench_keypair_seedmatched.c $(COMMON)/tests/support/crypto_declassify.c
+KP_DEPS := $(LAZY_ASM) $(COMMON_C) $(COMMON_ASM)
+
+$(BUILD)/bench_keypair_seedmatched: $(KP_SRC) $(BUILD)/bench_kem_ref.o $(BUILD)/bench_kem_lazy.o $(KP_DEPS) | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
+
+$(BUILD)/bench_keypair_seedmatched_swapped: $(KP_SRC) $(BUILD)/bench_kem_lazy.o $(BUILD)/bench_kem_ref.o $(KP_DEPS) | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
+
+bench-keypair: $(BUILD)/bench_keypair_seedmatched $(BUILD)/bench_keypair_seedmatched_swapped
 
 clean:
 	rm -rf $(BUILD) $(BUILD_SAN)
