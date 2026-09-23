@@ -40,6 +40,37 @@ def per_launch(result: Path):
                  for p in launches] for op in OPS}
 
 
+def pool(results: Path, compilers, tags) -> int:
+    """Derived: pooled StQ over all fresh launches of several runs of the same ELFs."""
+    out = {"schema": "ntruplus-caller-lazy-native-fixedcc-pooled/v1", "tags": tags,
+           "class": "derived pooling of controlled-compiler Native runs (same ELFs, verified by hash)",
+           "compilers": {}}
+    for cc in compilers:
+        entry = {}
+        elf = {}
+        obs = {"official": {op: [] for op in OPS}, "candidate": {op: [] for op in OPS}}
+        for role in obs:
+            for tag in tags:
+                d = results / f"native-fixedcc-{cc}-{role}-{tag}"
+                elf.setdefault(role, set()).add(json.loads((d / "metadata.json").read_text())["measure_elf_sha256"])
+                for p in sorted((d / "fresh-launches").glob("launch-*.out")):
+                    text = p.read_text(errors="replace")
+                    for op in OPS:
+                        obs[role][op].extend(decode_observations(text, op))
+        if any(len(v) != 1 for v in elf.values()):
+            raise SystemExit(f"{cc}: pooled runs used different ELFs: {elf}")
+        for op in OPS:
+            o = stabilized_quartiles(obs["official"][op])
+            c = stabilized_quartiles(obs["candidate"][op])
+            entry[op] = {"observations": [len(obs["official"][op]), len(obs["candidate"][op])],
+                         **{q: {"official": o[i], "candidate": c[i], "delta": c[i] - o[i]}
+                            for i, q in enumerate(("stq1", "stq2", "stq3"))}}
+            print(f"{cc} {op:15s} " + " ".join(f"{entry[op][q]['delta']:+8.2f}" for q in ("stq1", "stq2", "stq3")))
+        out["compilers"][cc] = {"elf_sha256": {r: next(iter(v)) for r, v in elf.items()}, "operations": entry}
+    (results / "native-fixedcc-summary-pooled.json").write_text(json.dumps(out, indent=2, sort_keys=True) + "\n")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -48,8 +79,13 @@ def main() -> int:
     parser.add_argument("--compilers", nargs="+", default=["O3", "O2"])
     parser.add_argument("--tag", default="20260923")
     parser.add_argument("--phase-b-tag", default="20260923")
+    parser.add_argument("--pool", nargs="+", metavar="TAG",
+                        help="instead: pool the raw launches of these tags (derived) and write "
+                             "native-fixedcc-summary-pooled.json")
     args = parser.parse_args()
     results = args.experiment.resolve() / "results"
+    if args.pool:
+        return pool(results, args.compilers, args.pool)
     paired = json.loads((results / f"fixed-lazy-paired-{args.phase_b_tag}/summary.json").read_text())
     rows = {(r["setting"], r["operation"]): r for r in paired["rows"]}
     phase_b = json.loads((results / f"phase-b-summary-{args.phase_b_tag}.json").read_text())
