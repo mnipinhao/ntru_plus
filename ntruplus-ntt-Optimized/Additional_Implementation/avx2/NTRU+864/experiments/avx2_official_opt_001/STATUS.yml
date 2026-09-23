@@ -21,7 +21,7 @@ scope:
   general_poly_ntt: unchanged_and_linked
   removed_per_forward: {vpmulhrsw: 54, vpmullw: 54, vpsubw: 54, terminal_constant_load: 1}
   input_contract: caller_domains_only  # [-3,4] asm contract; no general-input claim
-phase: A_correctness_only
+phase: B_native_measured  # Phase A correctness unchanged; Phase B 2026-09-23
 gates:
   generator:
     result: pass
@@ -89,9 +89,60 @@ gates:
     signed_word_failures: 0
     consumers: {baseinv_1: no_overflow_and_zero_check_exact (den_absmax 8225), basemul_keygen: [-1838, 1838], basemul_encap: [-1824, 1824], basemul_decap: [-1824, 1838], poly_add: [-17404, 17404], poly_sub: [-16385, 19838], tobytes: canonical_all_int16}
     evidence: results/phase-a/range-proof-summary.json
-performance: not-measured  # Phase B (Native SUPERCOP) not started
-native: not_run
-supercop_campaign: not_run
+performance:
+  label: supercop-native-kem + fixed-elf-paired + same-elf diagnostic
+  campaign: /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001  # disposable, from supercop-pristine-20260831 via scripts/prepare_supercop.py
+  host: {cpu: 1, governor: performance, intel_no_turbo: 1, smt: on (siblings 1-2), aslr_sysctl: 2, controls_changed: false}
+  qualification_export:
+    path: qualification/avx2-officialopt-caller-lazy-qual001  # + .json manifest, 26 source hashes
+    tree_sha256: 1d46cc7b96a0145083a79270edf67e5d68c34379b15a5df692043232d2797e2e
+    official_tree_sha256: 13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006
+  native:  # 9 fresh launches each, unmodified crypto_kem/measure.c, native compiler selection, StQ2 cycles
+    official_compiler: "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0"
+    official_measure_elf_sha256: f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03
+    candidate_compiler: "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0"
+    candidate_measure_elf_sha256: b6654906e560c8b137ab7528e2808aa38e9898f81ebd2dfd16c2e1868ec5cf85
+    keypair: {official: 23751.68, candidate: 23661.26, delta: -90.42, delta_percent: -0.38}
+    enc: {official: 32891.92, candidate: 32832.47, delta: -59.45, delta_percent: -0.18}
+    dec: {official: 23650.72, candidate: 23668.47, delta: +17.75, delta_percent: +0.08}
+    evidence: results/native-lazy-qual-{official,candidate}-20260923/
+  paired:  # O3GC fixed ELFs, 16 ABBA/BAAB blocks, 64 fresh launches per setting; mean delta [block-bootstrap 95% CI] favourable/16
+    keypair:
+      normal-aslr-off: {mean: -220.06, ci95: [-268.63, -187.18], favourable: 16}
+      normal-aslr-on: {mean: -194.71, ci95: [-241.94, -149.70], favourable: 16}
+      reversed-aslr-off: {mean: -145.91, ci95: [-161.43, -133.03], favourable: 16}
+      reversed-aslr-on: {mean: -128.46, ci95: [-154.89, -103.90], favourable: 16}
+    enc:
+      normal-aslr-off: {mean: -260.88, ci95: [-406.75, -162.62], favourable: 16}
+      normal-aslr-on: {mean: -220.89, ci95: [-290.99, -158.07], favourable: 15}
+      reversed-aslr-off: {mean: -247.46, ci95: [-290.60, -198.34], favourable: 15}
+      reversed-aslr-on: {mean: -238.41, ci95: [-327.06, -154.13], favourable: 15}
+    dec:
+      normal-aslr-off: {mean: -214.24, ci95: [-311.60, -142.31], favourable: 16}
+      normal-aslr-on: {mean: -187.18, ci95: [-217.91, -150.97], favourable: 15}
+      reversed-aslr-off: {mean: -206.65, ci95: [-234.33, -176.07], favourable: 16}
+      reversed-aslr-on: {mean: -202.69, ci95: [-246.51, -156.71], favourable: 15}
+    evidence: results/fixed-lazy-paired-20260923/summary.json
+  same_elf_diagnostic:  # not Native; O3GC, 9 launches, StQ2 candidate-official, favourable launches/9
+    forward_r: {delta: -92.93, favourable: 9}
+    forward_keygen_f: {delta: -94.41, favourable: 9}
+    keypair: {delta: -170.58, favourable: 9}
+    encap: {delta: -106.57, favourable: 8}
+    decap: {delta: -223.29, favourable: 9}
+    evidence: results/officialopt-forward-caller-lazy-serious-20260923/summary.json
+  host_hygiene: all batches clean on attempt 0 (pre-batch loadavg1 <= 0.5, no sustained foreign CPU, no foreign benchmark); records in each metadata.json/manifest.json host_hygiene; batches shorter than the 5 s in-batch sampling window (fixed-ELF paired 2.5-3.0 s, same-ELF 0.8-0.9 s) are covered only by the 3 s before/after snapshots
+  decision_rule: robust research win iff Native pooled delta < 0 AND all four paired 95% CIs below zero
+  decision:
+    keypair: robust-research-win  # native_negative=true, paired_ci_below_zero=4/4
+    enc: robust-research-win  # native_negative=true, paired_ci_below_zero=4/4
+    dec: not-robust  # native_negative=false, paired_ci_below_zero=4/4
+  notes:
+    - "dec: all 4 paired CIs below zero (-187..-214) and same-ELF -223 (9/9), but the independent Native pool is +17.75 (+0.08%); Native selected O3 for Official and O2 for the candidate, so the pooled Native sign is not a paired estimate. Fails the rule as written."
+    - "keypair/enc Native deltas (-90/-59) are much smaller than the paired O3GC deltas (-128..-261); magnitudes are machine/compiler specific."
+  summary: results/phase-b-summary-20260923.json
+native: measured  # see performance.native
+supercop_campaign: /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001
 host_controls: unchanged
-promotion: none
+promotion: none  # research evidence only; not a clean-production promotion
 reproduce: make phase-a  # (from this directory); make record rewrites results/phase-a/
+reproduce_phase_b: docs/ntruplus864-1152-official-opt.md#phase-b-native-supercop-performance
