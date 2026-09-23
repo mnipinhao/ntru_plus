@@ -185,17 +185,35 @@ static inline uint8x16_t load12(const uint8_t *in)
 
 /* ---- public entry points ---- */
 
+/* A block takes one 16-byte store when the four extra bytes land in the next
+ * block and that block is written later (pair_store, P131; NTRU+864's P130
+ * scheme).  Only forward stores: the backward kind (a store ending at the
+ * block, garbage in the previous one) cost M2 more than it saved.  The loops
+ * are fully unrolled over constant tables, so each store's kind is resolved
+ * at compile time. */
+static inline void store_block(uint8_t *out, uint8x16_t b, int kind)
+{
+    if (kind == 1)
+        vst1q_u8(out, b);                        /* garbage in the next block's head */
+    else
+        store12(out, b);
+}
+
 static inline void tobytes(uint8_t *out, const int16_t *in, int full)
 {
 #pragma GCC unroll 18
-    for (int p = 0; p < CODEC_PAIRS; p++) {
+    for (int q = 0; q < CODEC_PAIRS; q++) {
+        const int p = pair_order[q];
         const unsigned short *w = pair_wire[p];
         int16x8_t v[8], g[8];
 
         load_pair(v, in, p, full);
         fold_pair(g, v);
-        for (int k = 0; k < 8; k++)
-            store12(out + w[k], vreinterpretq_u8_s16(g[k]));
+#pragma GCC unroll 8
+        for (int kk = 0; kk < 8; kk++) {
+            const int k = pair_lane[p][kk];
+            store_block(out + w[k], vreinterpretq_u8_s16(g[k]), pair_store[p][k]);
+        }
     }
 }
 

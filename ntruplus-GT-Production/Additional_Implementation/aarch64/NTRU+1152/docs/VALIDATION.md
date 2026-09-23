@@ -30,6 +30,19 @@ buffer on the scratch.  It was retired with the rebase itself (P126):
 `packed_i9` now reads `basemul_rinv`'s output and writes the scratch, which do
 not overlap.
 
+## tobytes with 16-byte stores where safe (P131, 2026-09-23)
+
+NTRU+864's P130 scheme on 1152's twelve-byte blocks: a block takes one
+16-byte store when its four extra bytes land in the next block and that block
+is written later; the pair order, lane order and store kinds are generated and
+byte-simulated by `experiments/gt1152-p131-codec/gen_store_order.py
+--demote-backward`.  66 of 144 blocks take one store.  Stores ending at a
+block (garbage in the previous one) and the forward-maximal order (99 blocks)
+were both measured and both cost M2 about 9 ns of decapsulation, so neither is
+used.  Result: A76 key generation -241 cycles (-0.44%), encapsulation -160
+(-0.34%), decapsulation -171 (-0.39%); M2 unchanged (decapsulation 4,976.8 ->
+4,976.6 ns over eight rounds).
+
 ## Batch inversion's fqmul (P128, 2026-09-23)
 
 `baseinv`'s prefix, inversion and recovery chains are serial, so they are

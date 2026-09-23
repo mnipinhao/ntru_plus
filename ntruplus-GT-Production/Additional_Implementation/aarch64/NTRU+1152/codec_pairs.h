@@ -31,4 +31,52 @@ static const unsigned short pair_wire[CODEC_PAIRS][8] = {
     {1236, 1524, 1044, 1332, 1620, 1140, 1428, 1716},
 };
 
+/* P130/P131 (gen_store_order.py): group processing order, lane order within
+ * each group, and the store for each lane's 12-byte run -- 0: split stores,
+ * 1: one 16-byte store at the run (garbage in the next run, written later),
+ * 2: one 16-byte store ending at the run (garbage in the previous run, written
+ * later).  66 of the 144 runs take one store; the final bytes
+ * are verified by simulating every write. */
+static const unsigned char pair_order[CODEC_PAIRS] = {0, 1, 16, 8, 9, 17, 4, 6, 12, 13, 5, 14, 10, 15, 3, 2, 7, 11};
+static const unsigned char pair_lane[CODEC_PAIRS][8] = {
+    {5, 3, 7, 1, 2, 0, 6, 4},
+    {7, 1, 4, 2, 3, 5, 0, 6},
+    {0, 2, 1, 4, 3, 6, 5, 7},
+    {4, 2, 7, 0, 5, 1, 6, 3},
+    {1, 2, 7, 0, 4, 3, 5, 6},
+    {5, 2, 6, 3, 4, 7, 1, 0},
+    {0, 1, 2, 4, 3, 7, 5, 6},
+    {4, 5, 2, 7, 6, 0, 3, 1},
+    {4, 7, 1, 0, 5, 2, 6, 3},
+    {7, 6, 2, 4, 0, 3, 5, 1},
+    {4, 5, 2, 0, 7, 6, 3, 1},
+    {0, 1, 2, 7, 5, 6, 3, 4},
+    {3, 7, 1, 2, 5, 6, 4, 0},
+    {6, 2, 7, 4, 0, 3, 1, 5},
+    {1, 4, 2, 6, 0, 5, 7, 3},
+    {5, 7, 6, 4, 3, 1, 0, 2},
+    {2, 7, 6, 4, 1, 3, 0, 5},
+    {4, 5, 1, 3, 0, 6, 7, 2},
+};
+static const unsigned char pair_store[CODEC_PAIRS][8] = {
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {0, 0, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 0, 0, 0, 0},
+    {0, 0, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {0, 0, 0, 0, 1, 1, 1, 1},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 1, 1, 1, 1},
+    {1, 1, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {0, 0, 0, 0, 1, 0, 0, 0},
+};
+
 #endif
