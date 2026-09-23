@@ -1,0 +1,47 @@
+{
+  "evidence_class": "isolated_linked_stage6_mixed_butterfly_not_full_inverse_allocation_or_cycles",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "flags": [
+    "-O3",
+    "-mavx2",
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "test_output": "mixed AVX2 butterfly: 100025 vectors passed",
+  "test_vectors": 100025,
+  "symbol_size_bytes": 134,
+  "instruction_rows_excluding_ret": 30,
+  "opcode_counts": {
+    "endbr64": 1,
+    "mov": 1,
+    "ret": 1,
+    "vmovd": 1,
+    "vmovdqa": 3,
+    "vpaddw": 3,
+    "vpand": 2,
+    "vpavgw": 2,
+    "vpblendvb": 2,
+    "vpbroadcastd": 1,
+    "vpcmpgtb": 1,
+    "vpsllw": 1,
+    "vpsrlw": 1,
+    "vpsubw": 3,
+    "vpxor": 8
+  },
+  "register_names_used": [
+    "%ymm0",
+    "%ymm1",
+    "%ymm2",
+    "%ymm3",
+    "%ymm4",
+    "%ymm5",
+    "%ymm6",
+    "%ymm7",
+    "%ymm8"
+  ],
+  "no_spill_call_or_vzeroupper": true,
+  "source_sha256": "04c14fc6411221410591bb9bf685e8c0af4875cbc7f75e3d65ea7ef787b131b8",
+  "elf_sha256": "9ee31566fd0806e741e87de6abacfd2e45b47c74e3041d741b59f31f11e0e353",
+  "scope_limit": "one stage-6 vector pair; twiddle constants, stage routing and full inverse liveness not included"
+}

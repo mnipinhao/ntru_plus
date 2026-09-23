@@ -17,7 +17,7 @@ from pathlib import Path
 from close_yang_contract import scaled_body
 from probe_inverse_ct_gauge import Q, R, ROOT
 from prove_forward_lanes import mont_word, signed16
-from prove_inverse_ct_range import mont_worst_bound
+from prove_inverse_ct_range import mont_bound, mont_worst_bound
 from research_full_twisted_pairings import children
 from research_yang_true_twist import ZETA32, cyclic_inverse
 from research_true_twist_repair_v2 import INPUT, FACTORS, TOWER, verified
@@ -28,9 +28,11 @@ WITNESS_F = 3349
 
 
 def mont_factor(x, factor):
-    word = signed16(factor * R % Q)
+    residue = factor * R % Q
+    word = residue - Q if residue > Q // 2 else residue
     output = mont_word(x, word)
     assert -32768 <= output <= 32767
+    assert abs(output) <= mont_bound(abs(x), factor)
     assert output % Q == x * factor % Q
     return output
 

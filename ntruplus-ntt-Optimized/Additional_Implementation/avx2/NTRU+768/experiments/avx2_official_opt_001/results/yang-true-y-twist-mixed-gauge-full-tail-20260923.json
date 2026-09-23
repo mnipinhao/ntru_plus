@@ -1,0 +1,59 @@
+{
+  "evidence_class": "full_scalar_machine_word_tail_and_768_cell_interval_not_AVX2_schedule",
+  "physical_y32_roots": [
+    1886,
+    1937,
+    3091,
+    2333,
+    257,
+    867
+  ],
+  "six_by_six_factored_vs_independent_CRT_basis": 6,
+  "factored_matches_direct_CRT": true,
+  "radix3_alpha": [
+    [
+      1,
+      867,
+      1520
+    ],
+    [
+      1,
+      3091,
+      2590
+    ]
+  ],
+  "omega": 2734,
+  "phi": 1634,
+  "final_scale_semantic": 213,
+  "final_scale_montgomery_word": 3259,
+  "mandatory_y32_untwist_montgomery_including_identity_lanes": true,
+  "formal_bounds": {
+    "max_radix2_output_before_y32_untwist": 29708,
+    "max_after_y32_untwist": 2507,
+    "max_top_preoperation": 6703,
+    "max_final_output": 1747
+  },
+  "observed_bounds": {
+    "max_top_preoperation": 5125,
+    "max_final_output": 1738
+  },
+  "machine_BaseMulScale_and_linked_Official_inverse_crepmod3_cases": 101,
+  "all_cases_modq_and_crepmod3_byte_exact": true,
+  "source_sha256": {
+    "tools/research_mixed_gauge_full_tail.py": "2f414216fb69460136f4de237a76974df263ee6b3127bff500faeba56b51e43f",
+    "results/yang-closure-schedule-20260923.json": "30beb533db05d4ca02caf314da0b3b78a3d8700aa1639e4e3ecfcfd7d1984c10",
+    "results/yang-full-twisted-tower-factor-20260923.json": "8f9a78efebd839afe8b4fa3ec7abb9ec9093e1f6363de31a806c09b09654cf17",
+    "results/yang-true-y-twist-pairings-20260923.json": "0b8748efa43be6c786f4dcf73a0c5ce126e7f35f8f8e2c0ed81d61e462edcb96",
+    "tools/research_twiddle_half_absorption.py": "095ff5034696f1061412b7ceddf6dbf10d315fe23084c0a49184937fccd02a3f",
+    "tools/research_correlated_ct_butterfly.py": "7b1de9a2bfccb2cab71849403069e7e768fd5117ced825886746ad246517fb6d",
+    "tools/prove_inverse_ct_range.py": "86398549c8733fb3196c3cd5d8f9781200614af42c99597dff06475aa9d7cf16",
+    "upstream/supercop-avx2/invntt.s": "991f13a75de92a1e33c5141aa81849f9619073606989a49b9c4627ea3d852b70",
+    "upstream/supercop-avx2/crepmod3.s": "87334090de02e4e451d36162870c357646d7bba095470fbc6ff106f29b5f5cd1",
+    "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080"
+  },
+  "open": [
+    "complete 16-YMM AVX2 def/use and output routing",
+    "linked constant traffic and dependency",
+    "cycle pricing against Official GS"
+  ]
+}
