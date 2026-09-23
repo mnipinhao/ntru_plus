@@ -278,3 +278,42 @@ freeze2op:  # 2026-09-23; docs/ntruplus768-1152-freeze2op.md.  Lazy-only candida
   native: not_run
   promotion: none
   reproduce: docs/ntruplus768-1152-freeze2op.md#reproduce
+direct_codec:  # 2026-09-23; NTRU+864 exp002 idea evaluated for NTRU+1152; docs/ntruplus768-1152-direct-codec.md
+  question: "does the NTRU+864 exp002 direct 12-bit codec (vpunpck + vpmaddwd(1,4096) + in-lane interleave + vpshufb, 16-byte stores) pay off for Official poly_tobytes/poly_frombytes?"
+  decision: stopped_at_gate  # estimated and measured saving < ~50 cycles per call for both functions; no candidate built
+  phase: analysis_plus_scratch_measurement  # no generator, no KEM binding, no SUPERCOP campaign, no Native
+  layout: "8-way SoA per 128 coefficients: block b, register r, word l <-> wire coefficient 128b+8l+r (verified); wire pair (8l+2s, 8l+2s+1) = (R_2s[l], R_2s+1[l]) is in-lane; Official pack.s already packs directly from this layout in one pass (no natural-order transpose, no stack buffer)"
+  kem_calls: {tobytes: {keypair: 3, encap: 2, decap: 2}, frombytes: {keypair: 0, encap: 1, decap: 3}}
+  official_per_iteration:  # 128 coefficients; 9 iterations per call
+    tobytes: {total: 118, freeze2op_total: 110, loads: 8, freeze: "48 (freeze2op 40)", bitpack: 16, inlane_transpose: 30, cross_lane: 6, stores_32B: 6, loop: 4, vector_uops_p01_p015_inlane_cross: "46/36/12/6 (freeze2op 38/36/12/6)"}
+    frombytes: {total: 86, loads: 6, cross_lane: 6, inlane_transpose: 30, extract12: 22, canonical: 10, stores: 8, loop: 4, vector_uops_p01_p015_inlane_cross: "30/18/12/6 (+1 movmsk)"}
+  official_per_call: {tobytes: 1066, tobytes_freeze2op: 994, frombytes: 781}
+  designs:
+    tobytes_madd: "exp002 literal: unpck wd + vpmaddwd -> 4x4 dword transpose -> vpshufb; 40 vector ops after freeze, 32 shuffles; 80 vector uops/iteration"
+    tobytes_pack: "Official dense shift pack (16) -> 3 unpck wd pairs (6) -> 7-op in-lane dword interleave per half (14), no vpshufb; 76 vector uops/iteration (freeze2op 92); 16 x 16-byte stores ascending, last group 8+4 B"
+    frombytes_word_route: "16-byte loads at 12*group (xmm + vinserti128; last group from -4 with shifted mask) -> vpshufb raw words -> 8x8 word transpose (24) -> and 0xfff / srlw 4 -> vpmaxuw accumulator; 56 vector uops/iteration (Official 67)"
+    cross_lane_needed: false
+  estimate_per_call: {rate: "0.33 cycles per removed vector uop (freeze2op empirical)", tobytes_pack_vs_freeze2op: -48, frombytes_vs_official: -33}
+  scratch:
+    kernels: common/official_opt_lazy/bench/scratch_codec8.c  # intrinsics, O3GC; exploratory, not a candidate
+    tooling: [common/official_opt_lazy/codec8_scratch.mk, common/official_opt_lazy/bench/bench_codec8_scratch.c, common/official_opt_lazy/bench/count_codec8_scratch.c, common/official_opt_lazy/tools/run_codec8_scratch.py]
+    differential: {result: pass, tobytes_polys: 216608, tobytes_impls: [freeze2op, pack, madd], frombytes_inputs: "4762688 (756767 rejected by Official)", builds: [release_O3, asan_ubsan_lsan], evidence: results/codec8-scratch-check-20260923.json, not_run: [guard_page, mutation, kem, linked_audit]}
+    instructions_per_call_perf: {tobytes_official: 1073, tobytes_freeze2op: 1001, tobytes_pack: 972, tobytes_madd: 1023, frombytes_official: 791, frombytes_word_route: 713}  # incl. ~7/~10 harness dispatch; results/codec8-scratch-instructions-20260923.json
+    timing:  # same ELF, CPU 1, ASLR on, 31 launches x 384 obs/variant, pooled StQ2 delta (favourable/31); supercop-derived, not Native
+      host: {cpu: 1, governor: performance, intel_no_turbo: 1, aslr_sysctl: 2, controls_changed: false}
+      tobytes_official_absolute: 538.1  # includes ~220 cycles perf-event cpucycles overhead
+      freeze2op_minus_official: {normal: -25.6, reversed: -20.7, favourable: 31}
+      pack_minus_freeze2op: {normal: -42.0, reversed: -34.6, favourable: 31}
+      madd_minus_freeze2op: {normal: {delta: -1.7, favourable: 25}, reversed: {delta: -14.5, favourable: 31}}
+      pack_minus_official: {normal: -67.6, reversed: -55.3, favourable: 31}
+      frombytes_official_absolute: 437.3
+      frombytes_word_route_minus_official: {normal: -21.9, reversed: -14.4, favourable: 31}
+      mean_of_orders: {tobytes_pack_vs_freeze2op: -38.3, frombytes_vs_official: -18.2}
+      host_hygiene: both batches clean on attempt 0 (phase_b_batch.py)
+      evidence: results/codec8-scratch-{normal,reversed}-20260923/summary.json
+    projected_kem_on_lazy_freeze2op: {keypair: -115, encap: -95, decap: -131}  # 0.12 / 0.22 / 0.44 % of the lazy+freeze2op op
+  assessment: "Official 1152 pack.s is already a single-pass direct codec from the 8-way layout, so exp002's win (removing a natural-order transpose and a stack round trip) does not exist here. The best designs reach parity with 864 exp002 per coefficient but save only -38.3 (tobytes) / -18.2 (frombytes) cycles per call; exp002 transcribed literally (madd) does not beat freeze2op. KEM effect <= 0.45 %, the size of same-ELF placement effects."
+  reopen_if: "folded into a qualification that is happening anyway; or hand scheduling shows >= ~50/call; or a frombytes design needs clearly fewer than ~50 vector uops/iteration"
+  native: not_run
+  promotion: none
+  reproduce: docs/ntruplus768-1152-direct-codec.md#reproduce
