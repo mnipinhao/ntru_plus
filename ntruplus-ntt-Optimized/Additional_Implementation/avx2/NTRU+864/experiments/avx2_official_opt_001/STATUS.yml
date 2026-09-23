@@ -313,3 +313,127 @@ codec_candidate:
     - "Option B/C (direct 12-bit packing without the SoA transposes, e.g. vpmaddwd + vpshufb on natural order): not implemented; see docs"
   promotion: none
   reproduce: "make codec-phase-a (gates); make codec-bench codec-bench-keypair; then the phase_b_batch.py commands in the doc section"
+codec_candidate_exp002:
+  candidate: avx2-officialopt-lazy-codec-864-exp002
+  composition: caller-lazy Forward (asm/ntruplus864_officialopt_ntt_caller_lazy.s + src/kem_lazy.c, unchanged) + direct 12-bit poly_tobytes/poly_frombytes
+  supersedes_for_research: codec_candidate (exp001); exp001 and the lazy-only candidate are unchanged and still pass (make codec-check, make check)
+  controls: {direct_codec_only: "Official Forward + direct codec (src/kem_codec_direct.c)", fused_min: "exp001 tobytes + 2-op freeze only (asm/ntruplus864_officialopt_codec_fused_min.s)"}
+  phase: A_correctness_plus_same_elf_diagnostic  # no SUPERCOP campaign, Native not measured
+  docs: docs/ntruplus864-1152-official-opt.md#ntru864-direct-12-bit-codec-exp002-2026-09-23
+  sources:
+    generator: tools/generate_codec_direct.py  # sha256 6a829b996075f84e82726c17bddccc91b7f696c1a1b9dfcb509093fbd3ab7301; reuses the exp001 Kernel scheduler (+ ordered-store chain)
+    asm: asm/ntruplus864_officialopt_codec_direct.s  # GENERATED; sha256 feba151f06fa018ae71ead15c9d642cd7f39e6785f530fe44246903efe5a2a1c
+    asm_control: asm/ntruplus864_officialopt_codec_fused_min.s  # GENERATED; sha256 637d5f5c7385dd0edf80f1affdf1d4f49476e1b8ec6188dd5928ed974fd5b625
+    derived_from: upstream/supercop-avx2/pack.s  # sha256 a39a6fff06928467c559b817f5b21d983fec5783d16a6b5bac0ee08eea6bce62 (never edited); Barrett constants from consts.c
+    kem: src/kem_lazy_codec_direct.c  # overlay of src/kem_lazy.c; sha256 5f403bb6ce60879e3c3c5f26ce5e38c5199bf6ec8c2f7d90138690360e23bb68
+    control_kem: src/kem_codec_direct.c  # overlay of upstream kem.c; sha256 47e4cf3148fbaa0de7e33af1ab511b54c01898703d607ee208dceea1a07de7ed
+    rules: codec_direct.mk  # included by ./Makefile after lazy.mk and codec.mk; sha256 9f887084caeb8c02975cef4bcf9df9757887251bad8f61089fc56beeff166dc1
+  symbols:
+    ntruplus864_officialopt_tobytes_direct: "== poly_tobytes (poly_ntt_pack + poly_tobytes_raw)"
+    ntruplus864_officialopt_frombytes_direct: "== poly_frombytes (poly_frombytes_raw + poly_ntt_unpack), same return value"
+    ntruplus864_officialopt_tobytes_fused_min: "== poly_tobytes (diagnostic control, exp001 + 2-op freeze)"
+  contract: as exp001 -- poly 32-byte aligned, byte array unaligned, byte array and poly must not overlap (true at every KEM call site); tobytes writes exactly bytes 0..1295 (16-byte stores in ascending order, last group 8+4 bytes); frombytes reads exactly bytes 0..1295 (last group loaded from byte 1280 with a lane-shifted mask)
+  design:
+    freeze: "Official Barrett (vpmulhrsw _16xv, vpmullw _16xq, vpsubw) + 2-op canonicalisation vpaddw q / vpminuw (replaces vpsraw 15 / vpand q / vpaddw)"
+    tobytes: "per 96 coefficients: freeze 6x5, vpunpck{l,h}wd (R_2s, R_2s+1) 6, vpmaddwd (1,4096) 6 -> 24-bit wire pairs in dwords, 5-op in-lane dword interleave per triple (unpckldq, unpckhdq, unpcklqdq, blendd 0xCC, unpckhqdq) x2, vpshufb 6 (order + drop 4th byte) -> one 12-byte wire group per 128-bit lane, 12 x 16-byte stores (vmovdqu xmm / vextracti128 m128); no cross-lane permute"
+    frombytes: "mirror: 16-byte loads at 12*group (vmovdqu xmm + vinserti128 m128), vpshufb expand to [b0 b1 b2 0] dwords, inverse 5-op interleave, vpand 0xfff / vpsrld 12, vpackusdw -> 6-way layout; vpmaxuw accumulator + one vpcmpgtw q-1 at the end"
+    option_b_vs_natural: "direct from the 6-way SoA chosen: 20 shuffle-class ops per 96 (6 unpckwd + 8 unpck dq/qdq + 6 pshufb) + 2 blendd vs 30 (pack's pair16/pair32/pairq) + 6 pshufb for the natural-order route; the 3-way dword interleave costs 5 ops per triple, not the 8 (2 pshufd + 6 blendd) first estimated"
+    scheduling: "exp001 list scheduler (critical path first, register-pressure capped) plus an ordering chain for overlapping stores; pinning the pshufb masks in registers does not fit 16 ymm (allocator runs out), so masks stay RIP-relative memory operands"
+    stack: none
+    dynamic_per_call:  # linked-ELF counts (results/codec-direct-phase-a/codec-direct-linked-summary.json); Official = pack.s kernels only
+      tobytes: {official: 1613, exp001: 1375, fused_min: 1321, exp002: 707}
+      frombytes: {official: 1432, exp001: 1170, exp002: 547}
+      per_96_coefficients: {tobytes: {official: 179.2, exp001: 152.8, fused_min: 146.8, exp002: 78.6}, frombytes: {official: 159.1, exp001: 130.0, exp002: 60.8}}
+      tobytes_port_classes: {official: {p01: 508, p015: 370, shuffle_p15: 290, cross_lane_p5: 145, load: 112, store: 96}, exp001: {p01: 508, p015: 370, shuffle_p15: 290, cross_lane_p5: 52, load: 56, store: 81}, exp002: {p01: 162, p015: 180, shuffle_p15: 180, cross_lane_p5: 1, load: 57, store: 109}}
+      frombytes_port_classes: {official: {p01: 346, p015: 348, shuffle_p15: 290, cross_lane_p5: 145, load: 97, store: 110}, exp001: {p01: 346, p015: 323, shuffle_p15: 290, cross_lane_p5: 54, load: 43, load_p015: 39, store: 54}, exp002: {p01: 54, p015: 129, shuffle_p15: 180, cross_lane_p5: 0, load: 55, load_p015: 54, store: 54}}
+      size_bytes: {tobytes_direct: 1354, frombytes_direct: 1117, tobytes_fused_min: 2495}
+  gates:
+    freeze_2op_proof:
+      result: pass
+      tool: tools/prove_freeze_2op.py  # bit-exact AVX2 word model over all 65536 int16; checks every freeze site in pack.s instruction by instruction
+      c_twin: tests/test_freeze_2op.c  # real instructions (intrinsics) with the linked _16xv/_16xq
+      barrett_output_range: [-3291, 3291]  # inside (-q, q), q = 3457, V = 9
+      two_op_equals_three_op: bitwise, all 65536 inputs; both == x mod q
+      portability: "NTRU+768 and NTRU+1152 poly_tobytes (pristine pack.s:20-70, 8 freeze sites each, same q = 3457 and V = 9) use the identical 3-op freeze; the same record passes for them, so the change ports (not applied there)"
+      evidence: results/codec-direct-phase-a/freeze-2op-proof.json
+    codec_differential:
+      result: pass
+      binaries: [build/test_codec_direct, build/test_codec_fused_min]  # tests/test_codec_fused.c unchanged, bound by overlay
+      tobytes_cases: 287072  # every int16 in every position, 36000 lazy/caller envelopes, 120000 random int16
+      frombytes_cases: 3763050  # 662739 rejected by Official; every 12-bit value at each of the 864 positions, boundaries, random valid, random bytes
+      checks: [byte-exact vs Official, output poly and return value equal, scalar wire model, 256-byte canaries, input immutability, 32 byte-array misalignments, 20000 round trips]
+      mutation_check: "20 hand mutations of the direct asm (freeze min signedness / missing add, madd constant, pshufb masks incl. lane-1-only and fb2last, blend immediates, store/load offsets, store order, last-group vmovq/vpextrd, low12 mask, shift count, dropped vpmaxuw, q vs q-1, loop bound): 19 caught; vpackusdw->vpackssdw is an equivalent mutant (values <= 4095)"
+      evidence: [results/codec-direct-phase-a/closure-tests.log, results/codec-direct-phase-a/mutation-check.json]
+    kem:
+      result: pass
+      binaries: [test_kem_lazy_codec_direct, test_kem_lazy_codec_direct_fretry, test_kem_codec_direct, test_kem_codec_direct_fretry]  # common tests/test_kem_lazy.c unchanged
+      deterministic_vectors: 100  # pk/sk/ct/ss byte-exact vs Official
+      invalid_pk: matched
+      invalid_ct_bitflip: matched
+      noncanonical_ct: matched
+      noncanonical_sk: matched
+      forced_g_retry: pass
+      forced_f_retry: pass
+      evidence: results/codec-direct-phase-a/closure-tests.log
+    sanitizer:
+      result: pass
+      config: ASan + UBSan (-fno-sanitize-recover=all) + LeakSanitizer (detect_leaks=1)
+      binaries: [test_freeze_2op, test_codec_direct, test_codec_fused_min, test_kem_lazy_codec_direct, test_kem_lazy_codec_direct_fretry, test_kem_codec_direct, test_kem_codec_direct_fretry]
+      evidence: make direct-sanitize; results/codec-direct-phase-a/closure-tests.log
+    linked_audit:
+      result: pass
+      elf: build/test_kem_lazy_codec_direct
+      symbols_aligned_32: true
+      stack_references: 0
+      calls: 0
+      vzeroupper: 0
+      text_relocations: none  # constants are RIP-relative .rodata (local labels)
+      kem_call_relocations: {kem_lazy_codec_direct_to_direct: {tobytes: 7, frombytes: 4}, kem_lazy_codec_direct_to_lazy_forward: 6, kem_lazy_codec_direct_to_poly_tobytes_frombytes_ntt_or_exp001: 0, kem_codec_direct_to_direct: {tobytes: 7, frombytes: 4}, kem_codec_direct_to_poly_ntt: 6}
+      evidence: results/codec-direct-phase-a/codec-direct-linked-summary.json
+    regression: "make check codec-check pass (lazy-only and exp001 unchanged); results/codec-direct-phase-a/closure-tests.log"
+  performance:
+    label: supercop-derived same-ELF diagnostic (not Native SUPERCOP)
+    native: not measured
+    host: {cpu: 1, governor: performance, intel_no_turbo: 1, aslr: "on (randomize_va_space=2)", controls_changed: false}
+    cpucycles: default-perfevent from the disposable campaign /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001 (read only)
+    same_elf:  # 15 fresh launches, 12 blocks x 32 = 384 obs/variant/launch, rotated order; pooled StQ2 delta [launch-level favourable]; normal / reversed link order
+      elf_text_sha256: {normal: 6eb19d0f90c9869ee87f94fe04d6fa7fabfd8ae66ee1d4cafa5812be5dddc6ca, reversed: da018729e5513dce60c9bcc40adfd106e452c7d77094e2906fe962b506964fdf}
+      official_stq2: {tobytes: [701.3, 701.4], frombytes: [672.4, 671.2], keypair: [65960.0, 65973.2], encap: [32921.1, 32910.0], decap: [23826.3, 23741.6]}
+      tobytes:
+        exp002-official: {normal: [-265.3, 15/15], reversed: [-273.1, 15/15]}
+        exp002-exp001: {normal: [-251.8, 15/15], reversed: [-256.9, 15/15]}
+        fused_min-exp001: {normal: [-14.4, 15/15], reversed: [-16.4, 15/15]}  # 2-op freeze in isolation
+        exp001-official: {normal: [-13.5, 15/15], reversed: [-16.2, 15/15]}
+      frombytes:
+        exp002-official: {normal: [-276.6, 15/15], reversed: [-265.1, 15/15]}
+        exp002-exp001: {normal: [-192.6, 15/15], reversed: [-180.5, 15/15]}
+        exp001-official: {normal: [-84.0, 15/15], reversed: [-84.6, 15/15]}
+      encap:
+        exp002-official: {normal: [-986.9, 15/15], reversed: [-1003.1, 15/15]}
+        exp002-exp001: {normal: [-666.9, 15/15], reversed: [-617.3, 15/15]}
+        exp002-lazy: {normal: [-834.8, 15/15], reversed: [-874.1, 15/15]}
+        exp001-official: {normal: [-320.0, 15/15], reversed: [-385.8, 15/15]}
+        lazy-official: {normal: [-152.1, 15/15], reversed: [-129.0, 15/15]}
+      decap:
+        exp002-official: {normal: [-1573.6, 15/15], reversed: [-1507.3, 15/15]}
+        exp002-exp001: {normal: [-1074.9, 15/15], reversed: [-1082.5, 15/15]}
+        exp002-lazy: {normal: [-1379.9, 15/15], reversed: [-1359.8, 15/15]}
+        exp001-official: {normal: [-498.7, 15/15], reversed: [-424.8, 15/15]}
+        lazy-official: {normal: [-193.7, 15/15], reversed: [-147.5, 15/15]}
+      keypair:  # KAT DRBG inside the region (~66k cycles); see seed-matched below
+        exp002-official: {normal: [-895.5, 15/15], reversed: [-872.9, 15/15]}
+        exp002-exp001: {normal: [-725.9, 15/15], reversed: [-704.3, 15/15]}
+      evidence: results/codec-direct-diag-20260923/, results/codec-direct-diag-swapped-20260923/
+    keypair_seed_matched:  # shared bench_keypair_seedmatched.c, byte-identical coins, ABBA/BAAB, 9 launches x 1000 iterations per pairing; d = B - A
+      exp002_vs_official: {median: -915.0, mean: -941.3, mean_ci95: [-987.9, -903.9], favourable_launches: 9/9}
+      exp002_vs_exp001: {median: -711.0, mean: -718.6, mean_ci95: [-758.4, -681.6], favourable_launches: 9/9}
+      exp002_vs_lazy: {median: -736.5, mean: -741.1, mean_ci95: [-775.0, -712.5], favourable_launches: 9/9}
+      keypair_retries: 0
+      evidence: results/codec-direct-keypair-seedmatched-20260923/
+    host_hygiene: 3 batches clean on attempt 0 (pre-batch loadavg1 <= 0.45); same-ELF 2.9 s each, seed-matched 16.3 s
+    expected_vs_observed: "component exp002-exp001 (tobytes ~-254, frombytes ~-187) predicts keypair ~-762 (3 tobytes), encap ~-695 (2+1), decap ~-1069 (2+3); observed seed-matched keypair -711 (median), encap -667/-617, decap -1075/-1083"
+  not_done:
+    - "Native SUPERCOP measurement (needs a qualification export and campaign; out of scope)"
+    - "2-op freeze not applied to NTRU+768/1152 (portability recorded only); direct 12-bit codec not ported (768/1152 poly_tobytes/frombytes have their own coefficient layout and packing code, which was not analysed here)"
+  promotion: none
+  reproduce: "make direct-phase-a (gates); make direct-record; python3 tools/mutate_codec_direct.py --experiment . --output ...; make direct-bench direct-bench-keypair; then the phase_b_batch.py commands in the doc section"
