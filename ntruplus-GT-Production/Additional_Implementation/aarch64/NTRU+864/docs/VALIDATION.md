@@ -1,5 +1,9 @@
 # K1 production integration evidence
 
+`experiments/...` paths below refer to the development branch (`gt864-1152-cleanup`
+and its ancestors), where the evidence and scripts live; this release tree does
+not carry them.
+
 ## P130 codec and first-product overheads — 2026-09-23
 
 Three M2-driven fixes to overheads around unchanged arithmetic:

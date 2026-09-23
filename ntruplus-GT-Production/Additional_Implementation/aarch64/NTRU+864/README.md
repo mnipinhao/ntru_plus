@@ -43,7 +43,8 @@ comparison, and deterministic SUPERCOP export.
 ## Performance
 
 Against SUPERCOP 20260831's `ntruplus864/aarch64` (2026-09-23; details in
-`experiments/ROADMAP-m2-delivery.md` of the repository):
+`experiments/ROADMAP-m2-delivery.md` on the development branch
+`gt864-1152-cleanup`):
 
 | | key generation | encapsulation | decapsulation |
 |---|---:|---:|---:|
