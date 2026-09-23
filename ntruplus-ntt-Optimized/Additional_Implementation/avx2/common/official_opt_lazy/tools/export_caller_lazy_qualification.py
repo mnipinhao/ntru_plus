@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a flat Official-derived caller-lazy qualification source (864/1152).
+"""Create a flat Official-derived caller-lazy qualification source (768/864/1152).
 
 Port of NTRU+768 avx2_official_opt_001/tools/export_caller_lazy_qualification.py.
 The export is the pinned imported Official tree plus a fixed set of overlays.
@@ -17,6 +17,11 @@ Variants:
                       `#include "kem_lazy.c"` line is replaced by the verbatim
                       src/kem_lazy.c, so SUPERCOP (which compiles every .c file)
                       sees one translation unit with the same preprocessed text.
+  lazy-freeze         avx2-officialopt-lazy-freeze-qual001 (NTRU+768 / NTRU+1152,
+                      candidate avx2-officialopt-lazy-freeze-<N>-exp001): `kem.c`
+                      (src/kem_lazy_freeze2op.c flattened the same way) +
+                      `ntt_caller_lazy.s` + `tobytes_freeze2op.s`
+                      (asm/ntruplus<N>_officialopt_tobytes_freeze2op.s).
 
 Usage (from the experiment directory):
   export_caller_lazy_qualification.py --param 864 --experiment . \
@@ -35,7 +40,9 @@ sys.path.insert(0, str(REPO / "scripts"))
 from supercop_workflow import read_lock, sha256_file, sha256_tree  # noqa: E402
 
 NAMES = {"lazy": "avx2-officialopt-caller-lazy-qual001",
-         "lazy-codec-direct": "avx2-officialopt-lazy-codec-qual002"}
+         "lazy-codec-direct": "avx2-officialopt-lazy-codec-qual002",
+         "lazy-freeze": "avx2-officialopt-lazy-freeze-qual001"}
+PARAMS = {"lazy": (864, 1152), "lazy-codec-direct": (864,), "lazy-freeze": (768, 1152)}
 INCLUDE_LINE = '#include "kem_lazy.c"\n'
 
 
@@ -47,6 +54,9 @@ def overlays(param: int, variant: str) -> dict:
     if variant == "lazy-codec-direct":
         lays["kem.c"] = "src/kem_lazy_codec_direct.c"
         lays["codec_direct.s"] = f"asm/ntruplus{param}_officialopt_codec_direct.s"
+    if variant == "lazy-freeze":
+        lays["kem.c"] = "src/kem_lazy_freeze2op.c"
+        lays["tobytes_freeze2op.s"] = f"asm/ntruplus{param}_officialopt_tobytes_freeze2op.s"
     return lays
 
 
@@ -62,13 +72,13 @@ def flat_kem(root: Path, variant: str, lays: dict) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--param", type=int, choices=(864, 1152), required=True)
+    parser.add_argument("--param", type=int, choices=(768, 864, 1152), required=True)
     parser.add_argument("--experiment", type=Path, required=True)
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--variant", choices=tuple(NAMES), default="lazy")
     args = parser.parse_args()
-    if args.variant == "lazy-codec-direct" and args.param != 864:
-        raise SystemExit("the direct 12-bit codec exists only for NTRU+864")
+    if args.param not in PARAMS[args.variant]:
+        raise SystemExit(f"variant {args.variant} exists only for NTRU+{PARAMS[args.variant]}")
     NAME = NAMES[args.variant]
     root = args.experiment.resolve()
     output_root = args.output_root.resolve()
@@ -96,6 +106,11 @@ def main() -> None:
             codec = f"ntruplus{args.param}_officialopt_{op}_direct"
             if f"#define poly_{op} {codec}\n" not in kem or f".global {codec}" not in asm:
                 raise SystemExit(f"overlay does not bind poly_{op} to {codec}")
+    if args.variant == "lazy-freeze":
+        freeze = f"ntruplus{args.param}_officialopt_tobytes_freeze2op"
+        if (f"#define poly_tobytes {freeze}\n" not in kem or
+                f".global {freeze}" not in (root / lays["tobytes_freeze2op.s"]).read_text()):
+            raise SystemExit(f"overlay does not bind poly_tobytes to {freeze}")
 
     output_root.mkdir(parents=True, exist_ok=True)
     shutil.copytree(source, target, symlinks=False)

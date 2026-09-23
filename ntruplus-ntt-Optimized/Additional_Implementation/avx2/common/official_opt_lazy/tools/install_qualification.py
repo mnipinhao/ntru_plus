@@ -2,7 +2,7 @@
 """Install a verified flat qualification export into a disposable campaign.
 
 Port of NTRU+768 avx2_official_opt_001/tools/install_qualification.py for
-864/1152.  Only a campaign carrying the `.ntruplus-campaign.json` marker of
+768/864/1152.  Only a campaign carrying the `.ntruplus-campaign.json` marker of
 scripts/prepare_supercop.py is accepted; nothing is overwritten.
 """
 
@@ -20,7 +20,7 @@ from supercop_workflow import read_lock, sha256_file, sha256_tree  # noqa: E402
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--param", type=int, choices=(864, 1152), required=True)
+    parser.add_argument("--param", type=int, choices=(768, 864, 1152), required=True)
     parser.add_argument("--campaign-root", required=True, type=Path)
     parser.add_argument("--export-root", required=True, type=Path)
     args = parser.parse_args()
