@@ -2,7 +2,7 @@
 
 Living document.  Started 2026-09-21 from P83 (corrected M2 baseline) and P84
 (attribution); rewritten 2026-09-22 after P86 through P90 landed; tables and
-the item list brought up to date 2026-09-23 after P123-P129.
+the item list brought up to date 2026-09-23 after P123-P131.
 
 ## Where things stand
 
@@ -11,7 +11,8 @@ tree carrying **its own Makefile `CFLAGS`**; RNG reseeded before every timed
 batch; min of 401 x 300 under the clock gate, median of three sessions.  All
 three sets pass their full gate suite at these revisions.  864 and 1152 rows
 are P129 (2026-09-23, GT at cf397cc4, every build output-checked); 768 rows
-are P108.
+are P108.  P130 and P131 landed after these tables; their effect on the 864
+decapsulation cell is in the note under the Keccak-equal M2 table.
 
 **Cortex-A76 (Raspberry Pi 5), ns per operation.  Neither side has FEAT_SHA3.**
 
@@ -98,7 +99,10 @@ sponge linked against GT's permutation.  The strictest of the three, P114.
 GT wins all nine with the symmetric primitive removed from the question.  The
 thinnest cell is 864 decapsulation at -2.9% -- the same cell P111 found carrying
 the worst inverse; P127 found GT's 864 decapsulation *arithmetic* ~60 ns behind
-Official's on M2, the lead coming from the rest.
+Official's on M2, the lead coming from the rest.  **P130 moved that cell to
+-4.2%** (and 864 decapsulation against Official + CE to -7.8%, A76
+Keccak-equal to -9.4%), re-measured in P129's harness against the same
+Official builds.
 
 **Output check (P129).**  Upstream's `CE/fips202.c` calls `f1600` only under
 `__ARM_FEATURE_CRYPTO` and otherwise has an *empty* permutation body.
@@ -180,6 +184,8 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 
 | | |
 |---|---|
+| **P131** | 1152 `tobytes`: P130's store scheme on twelve-byte blocks.  On M2 backward stores and the forward-maximal order both cost ~9 ns of decapsulation, so the shipped order has 66 of 144 blocks in one store: A76 keygen / encaps / decaps **-0.44 / -0.34 / -0.39%**, M2 unchanged.  1152 `frombytes` already had the 16-byte load. |
+| **P130** | 864 overheads around unchanged arithmetic: `frombytes` one 16-byte load per 12-byte group (was 8-byte + scalar + lane insert; the group at byte 636 loads the 16 bytes ending at its last byte, ASan-checked); the first product's 36 tiles in one call (constants set once); `tobytes` one 16-byte store for 113 of 144 nine-byte runs where the extra bytes land in a neighbour written later (order generated and byte-simulated), 288 stores -> 175.  M2 keygen / encaps / decaps **-0.55 / -0.45 / -1.28%**, A76 **-0.87 / -0.83 / -1.29%**. |
 | **P128** | 1152 `baseinv`'s C chains: `fqmul` takes the Montgomery quotient from `mul`, as Official's does, not from `uzp1` of the widened product -- one permute fewer on each step of a ~40-step serial chain.  `baseinv` M2 550 -> 517 ns (Official 532).  Key generation **-90 ns on M2 (-1.44%)**, +195 cycles on A76 (+0.36%): rule 2. |
 | **P126** | 1152's `p65_rebase` folded into `basemul_rinv`: two halves per iteration, `trn2` replaces the narrowing `uzp2`, `zip` finishes the transpose.  Decapsulation **-18.5 ns on M2 (-0.37%)**, A76 unchanged: the A76 splits permutes over both vector pipes at dispatch even when V0 is saturated (16 `smull` + 16 `zip` = 23 cycles, not 16), so the saved pass is paid back in basemul.  `check-inplace` and `rebase.S` gone. |
 | **P124** | 864/1152 pass SUPERCOP TIMECOP (`-O`..`-Os`, `TIMECOP=256`); Official fails on `poly_fqinv_batch`.  Decaps key-decode status and keygen's retry declassified; 864 baseinv branch-free, 1152 keeps a declassified early exit (29% of its candidates are non-invertible).  Inverse scratch KEM-owned and cleared.  Timing neutral. |
