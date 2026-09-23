@@ -317,3 +317,73 @@ direct_codec:  # 2026-09-23; NTRU+864 exp002 idea evaluated for NTRU+1152; docs/
   native: not_run
   promotion: none
   reproduce: docs/ntruplus768-1152-direct-codec.md#reproduce
+
+keccak_candidate:  # 2026-09-23, Phase A + same-ELF diagnostic; docs/ntruplus-avx2-keccak-mlkem-native.md
+  candidate: avx2-officialopt-lazy-freeze-keccak-1152-exp001  # base candidate + every SHAKE256 on mlkem-native x1 C Keccak
+  base: avx2-officialopt-lazy-freeze-1152-exp001  # src/kem_lazy_freeze2op.c, unchanged
+  control: keccak_only  # src/kem_keccak.c = pinned Official kem.c + mlkem-native Keccak (diagnostic)
+  phase: A_complete_plus_same_elf_diagnostic  # no SUPERCOP campaign, no Native timing
+  backend:
+    upstream: https://github.com/pq-code-package/mlkem-native.git
+    commit: b3ba7b32773e657dd37f6f87bce82528459ad8a4
+    license: Apache-2.0 OR ISC OR MIT  # SPDX of every vendored file; upstream LICENSE vendored
+    vendored: third_party/mlkem-native-fips202-b3ba7b32  # x1 fips202.c/keccakf1600.c + 5 headers, byte-identical, per-file sha256 in its README
+    config: common/official_opt_keccak/config/mlkem_native_config.h  # PARAMETER_SET 768 (unused by FIPS202), prefix ntruplus_mlkfips202, no native backend (x86_64 native FIPS202 is x4-only)
+  adapter:
+    fips202_header: common/official_opt_keccak/src/fips202_mlkem.h  # claims Official FIPS202_H guard; shake256 -> mlk_shake256 (one-shot, no incremental API)
+    hash_wrappers: common/official_opt_keccak/src/symmetric_keccak.c  # the pinned Official symmetric.c compiled on that header, hash_f/g/h -> ntruplus1152_keccak_hash_{f,g,h} (keccak_names.h)
+    kem_overlays: {src/kem_lazy_freeze2op_keccak.c: 2c11774dc3899f23b510d432089aa3ddb7735f711dad2a614e73999b5a0e527c, src/kem_keccak.c: fabdf21bb98bbb5d05d808a2fcd0b7b48c3b4668f538e6d1061f03dd679df56e}  # generate_keccak_overlays.py
+    call_shapes: {keypair_genf_geng: "32 -> 288", hash_f: "1729 -> 32", hash_g: "1729 -> 288", hash_h: "177 -> 320"}  # SHAKE256 inlen -> outlen incl. domain byte
+    rebound_call_sites: {shake256: 2, hash_f: 2, hash_g: 2, hash_h: 2}
+  gates:
+    generator: pass  # check-keccak-generate + base generators --check (check-generate check-freeze-generate) unchanged
+    shake256_differential: pass  # 43626 grid SHAKE cases (inlen 0..700 x 41 outlens incl. rate boundaries; outlen 0..600 x 20 inlens; k*136+-2 to 1770; random to 6000/1200) + 12001 permutations + 33000 call-shape/wrapper cases (in-place hash_g, domain bytes; 76626 SHAKE-level cases total) + 76/76 NIST CAVP SHAKE256 vectors (tests/vectors/shake256_cavp_subset.txt)
+    kem: pass  # shared test_kem_lazy.c (+CANDIDATE_SHAKE256 wrap): 100 vectors byte-exact vs Official, invalid PK/CT/noncanonical CT/SK, forced g retry, forced f retry; candidate and keccak-only
+    sanitizer: pass  # ASan + UBSan + LSan (detect_leaks=1), all 5 binaries
+    mutation: pass  # 8/8 one-line Keccak / wrapper mutants rejected, unmutated control passes
+    linked_audit: pass  # KEM closure 51 functions, 0 KeccakP1600_*/fips202avx_*/Official hash_* reached, no indirect calls; hash-path libc ['__explicit_bzero_chk', '__stack_chk_fail', 'memcpy'] (memcpy/explicit_bzero from the Official wrapper code), mlk path only __stack_chk_fail
+    stack_bytes_worst: {hash_f: 2360, hash_g: 2360, hash_h: 808, official_c_part_excluding_asm: 2104}  # all frames static
+    constant_time: pass  # 0 variable-latency insns; permute_c 1 loop branch, no indexed access; all 43 branches on lengths/loop counters/pointer alignment/stack protector; ptrace (rip, address) traces identical over 12 secret inputs for 6 targets (68828 steps for hash_g); negative control differs
+    config_equivalence: pass  # vendored files == clean checkout; x1 instruction streams == Codex's native-backend build except permute tail-jump
+    evidence: results/keccak-phase-a/{closure-tests.log,keccak-generation.json,keccak-linked-summary.json,keccak-ct-summary.json,keccak-mutation-check.json,keccak-config-equivalence.json}
+  supercop_flat:  # scratch emulation of do-part (read-only campaign + pristine); not installed
+    result: pass
+    base_tree: qualification/avx2-officialopt-lazy-freeze-qual001
+    edits: "drop fips202.c/KeccakP-1600-AVX2.s/KeccakP-1600-SnP.h, fips202.h := fips202_mlkem.h, mlk_* flat copies with #include lines rewritten, local mlkem_native_config.h; kem.c/symmetric.c unchanged"
+    compilers: ['-O3', '-Os', '-O2', '-O']  # okc-amd64 lines, gcc -march=native -mtune=native -fwrapv -fPIC -fPIE -gdwarf-4 -Wall
+    trees_pass: {'avx2-officialopt-lazy-freeze-keccak-1152-exp001': True, 'avx2-officialopt-lazy-freeze-qual001': True, 'avx2': True}  # compile (0 warnings), try-small + try checksums == pinned checksumsmall/big
+    evidence: results/keccak-supercop-flat-20260923/summary.json
+  same_elf:  # CPU 1, ASLR on, 31 fresh launches per link order, 12 blocks x 32 obs/variant/launch; pooled StQ2 delta [favourable launches]; supercop-derived
+    elf_text_sha256: {normal: 814f4c8cff9322f84c0fc28888741103fdcf5666bb4a1ec30a8e04085b7413a2, reversed: 695481fa04cc74646bc530d8e3d6caf2f0032ec3208f5492f3d3174c93c33084}
+    official_stq2_normal_reversed: {permute: [1334.1, 1337.0], hash_f: [15712.4, 15730.3], hash_g: [18115.4, 18128.6], hash_h: [4991.3, 4999.6], keypair: [94350.2, 94759.4], encap: [43045.6, 42852.5], decap: [30582.1, 30598.6]}
+    permute_mlkem_o3-official: {normal: [-164.5, 31/31], reversed: [-163.2, 31/31]}
+    hash_f_mlkem_o3-official: {normal: [-2772.7, 31/31], reversed: [-2746.9, 31/31]}
+    hash_g_mlkem_o3-official: {normal: [-3253.3, 31/31], reversed: [-3226.8, 31/31]}
+    hash_h_mlkem_o3-official: {normal: [-765.7, 31/31], reversed: [-749.8, 31/31]}
+    keypair:  # seed-matched (KAT DRBG reseeded per observation)
+      base_keccak-official: {normal: [-7397.7, 31/31], reversed: [-7497.2, 31/31]}
+      base_keccak-base: {normal: [-6896.2, 31/31], reversed: [-6882.6, 31/31]}
+      keccak_only-official: {normal: [-7010.3, 31/31], reversed: [-6738.4, 31/31]}
+      base-official: {normal: [-501.5, 30/31], reversed: [-614.6, 28/31]}
+    encap:
+      base_keccak-official: {normal: [-11945.9, 31/31], reversed: [-11751.9, 31/31]}
+      base_keccak-base: {normal: [-11588.4, 31/31], reversed: [-11557.8, 31/31]}
+      keccak_only-official: {normal: [-11634.8, 31/31], reversed: [-11417.6, 31/31]}
+      base-official: {normal: [-357.5, 31/31], reversed: [-194.2, 31/31]}
+    decap:
+      base_keccak-official: {normal: [-6838.1, 31/31], reversed: [-6905.9, 31/31]}
+      base_keccak-base: {normal: [-6523.0, 31/31], reversed: [-6554.8, 31/31]}
+      keccak_only-official: {normal: [-6562.4, 31/31], reversed: [-6571.9, 31/31]}
+      base-official: {normal: [-315.1, 31/31], reversed: [-351.0, 31/31]}
+    o2_vs_o3:  # second copy of the mlk sources + wrapper at -O2 in the same ELF
+      hash_g_mlkem_o2-mlkem_o3: {normal: [+2167.5, 0/31], reversed: [+2061.2, 0/31]}
+      hash_g_mlkem_o2-official: {normal: [-1085.8, 31/31], reversed: [-1165.6, 31/31]}
+      permute_mlkem_o2-mlkem_o3: {normal: [-8.2, 28/31], reversed: [-4.5, 23/31]}
+      cause: "gcc 15 -O2 leaves keccakf1600_xor_bytes/extract_bytes as byte loops (16/15 insns, no vector); -O3 vectorises them; the C permutation is insensitive"
+    observation: "KEM-level keccak deltas exceed the sum of the isolated hash_f/g/h deltas (see doc); component numbers understate the KEM effect in this harness"
+    evidence: results/keccak-diag-{normal,reversed}-20260923/, ../../../../../../results/keccak-mlkem-native-20260923/ (repo root)
+  not_done:
+    - "no Native SUPERCOP timing (Phase B); flat trees exist only in scratch (tools/export_keccak_flat.py regenerates them)"
+    - "no production promotion; x4 C fallback of keccakf1600.c is linked but unused"
+  promotion: none
+  reproduce: "make keccak-record MLK_ROOT=<clean mlkem-native checkout at b3ba7b32>; make keccak-flat FLAT_OUT=<scratch>; make keccak-bench; phase_b_batch.py ... run_keccak_diag.py --param 1152 --launches 31 [--binary build/bench_keccak_diag_swapped]"
