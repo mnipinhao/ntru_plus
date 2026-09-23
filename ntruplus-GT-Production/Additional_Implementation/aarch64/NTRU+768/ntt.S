@@ -8434,7 +8434,8 @@ module_ntt_.Lencap_small_front:
 .endm
 
 .macro module_decap_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW1_BODY
-    /* k3=1 physical bytes: 256,280,...,760 then 16,40,...,232 */
+    /* Row k3=1: each pair of offsets is one stage123 input vector, the
+     * branch-0 and branch-1 elements of the st4 product (64g + 8l). */
     module_decap_invntt_DIRECT_STAGE123_CONSTS
     module_decap_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 0, 592, 1064, 528, 1128, 600, 1120, 536, 1056, 584, 1080, 520, 1144, 512, 1136, 576, 1072
     module_decap_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 624, 1048, 560, 1112, 632, 1104, 568, 1040, 616, 1088, 552, 1024, 544, 1096, 608, 1032
@@ -8448,7 +8449,8 @@ module_ntt_.Lencap_small_front:
 .endm
 
 .macro module_decap_invntt_DIRECT_STAGE123_STRIPE_SCRATCH_ROW2_BODY
-    /* k3=2 physical bytes: 512,536,...,752 then 8,32,...,488 */
+    /* Row k3=2: each pair of offsets is one stage123 input vector, the
+     * branch-0 and branch-1 elements of the st4 product (64g + 8l). */
     module_decap_invntt_DIRECT_STAGE123_CONSTS
     module_decap_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 0, 504, 976, 440, 912, 432, 984, 496, 920, 416, 968, 480, 904, 424, 896, 488, 960
     module_decap_invntt_DIRECT_STAGE123_BLOCK_TO_SCRATCH 1, 384, 1008, 448, 944, 392, 1016, 456, 952, 400, 1000, 464, 936, 408, 928, 472, 992
@@ -8728,11 +8730,11 @@ module_ntt_.Lencap_small_front:
      *     b0 * F0^k * ZMINUSZ5INV / 96
      *   - b1 * F1^k * ZMINUSZ5INV / 96
      *
-     * That folds untwist, branch merge, and final scaling into two fqmul
-     * operations plus cross-half adds.  The unreduced branchfold form changes
-     * representatives and is not safe for poly_crepmod3.  Production therefore
-     * performs final Barrett reductions here; this matches the exact C-reference
-     * output for forward-produced GT inputs.
+     * That folds untwist, branch merge and final scaling into two fqmul.  The
+     * branch lanes are interleaved, so one pairwise add merges both products
+     * into [out_low | out_high], and one Barrett reduces the result exactly to
+     * the centered representative in [-1728,1728] (|sum| <= 6789 for every
+     * int16 input), from which the mod-3 step follows directly.
      */
     module_decap_invntt_LOAD_BRANCHFOLD_CONSTS
 
@@ -8779,10 +8781,10 @@ module_ntt_.Lencap_small_front:
     mls      v6.8h, v5.8h, v0.h[0]
 
     /*
-     * Production branchfold path skips the three immediate post-DFT3 Barrett
-     * reductions and relies on the branchfold final-output reductions below.
-     * This is only valid because the full KEM path has been checked for the
-     * signed representative convention consumed by poly_crepmod3.
+     * No reduction after the DFT3: the branchfold fqmul accepts any int16
+     * input and ends in an exactly centered Barrett, so representatives here
+     * do not affect the output.  The sums stay inside int16 for every product
+     * with |x| <= 2458 (interval proof over this kernel).
      */
     add      v7.8h, v1.8h, v2.8h
     add      v7.8h, v7.8h, v3.8h
@@ -8889,11 +8891,8 @@ _poly_invntt_ternary_decap:
      * live-out: row2 natural-order stage45 output at [x2].
      */
     bl module_decap_invntt_.Linvntt32_stage45_scratch_row_helper
-    b module_decap_invntt_L_invntt_post_tail
 
 	module_decap_invntt_L_invntt_post_tail:
-    adr x3, module_decap_invntt_inv_consts
-    ldr q15, [x3, #16]
     mov w9, #10923
     dup v25.8h, w9
     movi v26.8h, #3
@@ -8958,10 +8957,10 @@ module_decap_invntt_invntt32_stage45_consts:
 
 .align 4
 module_decap_invntt_inv_branchfold_vecs:
-/* Generated branchfold constants for inverse NTT inputs with an extra R^-1 factor.
- * Normal multipliers are the production branchfold constants multiplied
- * by R=2^16 mod q, so the final post stage returns normal R^0 output.
- * Order must match module_decap_invntt_POST_STORE_PTR calls.
+/* Branchfold constants (untwist, branch merge, 1/96 or 1/192 scaling), each
+ * multiplied by R = 2^16 mod q to absorb the product's R^-1 factor, with lanes
+ * interleaved by branch.  Four vectors per output vector (low normal, low
+ * precompute, high normal, high precompute), in post-loop store order.
  */
     // k=0: low/high branch-fold constants for R^-1 input
     .hword    332, 1503, 332, 1503, 332, 1503, 332, 1503
