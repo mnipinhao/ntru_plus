@@ -1,0 +1,368 @@
+{
+  "bootstrap_seed": 20260923,
+  "call_index_pairing": "impossible: measure links fastrandombytes (per-process kernel-seeded ChaCha20 key), so coins differ per launch",
+  "evidence_class": "derived re-analysis of existing supercop-native-kem and fixed-elf-paired raw observations; no new timing",
+  "native": {
+    "composition": {
+      "candidate": {
+        "mean_retries_per_keypair": 0.8009259259259259,
+        "per_launch_r0_fraction": [
+          0.53125,
+          0.4479166666666667,
+          0.5208333333333334,
+          0.4895833333333333,
+          0.4375,
+          0.4895833333333333,
+          0.4895833333333333,
+          0.59375,
+          0.46875
+        ],
+        "pooled": {
+          "0": 429,
+          "1": 269,
+          "2": 105,
+          "3+": 61
+        },
+        "pooled_r0_fraction": 0.4965277777777778
+      },
+      "official": {
+        "mean_retries_per_keypair": 0.7731481481481481,
+        "per_launch_r0_fraction": [
+          0.5104166666666666,
+          0.4375,
+          0.5,
+          0.59375,
+          0.4791666666666667,
+          0.5625,
+          0.5104166666666666,
+          0.5416666666666666,
+          0.5625
+        ],
+        "pooled": {
+          "0": 451,
+          "1": 254,
+          "2": 102,
+          "3+": 57
+        },
+        "pooled_r0_fraction": 0.5219907407407407
+      }
+    },
+    "launches": {
+      "candidate": 9,
+      "official": 9
+    },
+    "pooled": {
+      "candidate": {
+        "median": 36490.5,
+        "stq2": 34560.96296296296,
+        "stq2_window_composition": {
+          "0": 100,
+          "1": 116
+        }
+      },
+      "delta_stq2": 164.47222222222626,
+      "official": {
+        "median": 33063.5,
+        "stq2": 34396.49074074074,
+        "stq2_window_composition": {
+          "0": 120,
+          "1": 96
+        }
+      }
+    },
+    "strata": {
+      "0": {
+        "median": {
+          "candidate": 31080,
+          "ci95": [
+            -533.0,
+            -223.0
+          ],
+          "delta": -381,
+          "official": 31461,
+          "resamples": 2000
+        },
+        "n": [
+          451,
+          429
+        ],
+        "stq2": {
+          "candidate": 31083.70979020979,
+          "ci95": [
+            -524.2938005641772,
+            -211.36014322182746
+          ],
+          "delta": -376.2469725396586,
+          "official": 31459.956762749447,
+          "resamples": 2000
+        }
+      },
+      "1": {
+        "median": {
+          "candidate": 36909,
+          "ci95": [
+            -708.0,
+            -394.0
+          ],
+          "delta": -538.5,
+          "official": 37447.5,
+          "resamples": 2000
+        },
+        "n": [
+          254,
+          269
+        ],
+        "stq2": {
+          "candidate": 36916.83828996283,
+          "ci95": [
+            -709.8870025556753,
+            -373.4411764705874
+          ],
+          "delta": -539.6577730292993,
+          "official": 37456.496062992126,
+          "resamples": 2000
+        }
+      },
+      "2": {
+        "median": {
+          "candidate": 42690,
+          "ci95": [
+            -873.5,
+            -490.0
+          ],
+          "delta": -691.5,
+          "official": 43381.5,
+          "resamples": 2000
+        },
+        "n": [
+          102,
+          105
+        ],
+        "stq2": {
+          "candidate": 42690.71428571428,
+          "ci95": [
+            -879.0802315963592,
+            -481.5828391734103
+          ],
+          "delta": -681.34453781513,
+          "official": 43372.05882352941,
+          "resamples": 2000
+        }
+      },
+      "3+": {
+        "median": {
+          "candidate": 49122,
+          "ci95": [
+            -4205,
+            3263.5
+          ],
+          "delta": -1407,
+          "official": 50529,
+          "resamples": 2000
+        },
+        "n": [
+          57,
+          61
+        ],
+        "stq2": {
+          "candidate": 49522.688524590165,
+          "ci95": [
+            -3266.394366197186,
+            1964.7189952904228
+          ],
+          "delta": -975.8027034800107,
+          "official": 50498.491228070176,
+          "resamples": 2000
+        }
+      }
+    }
+  },
+  "paired": {
+    "normal-aslr-off": {
+      "blocks": 16,
+      "strata": {
+        "0": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -280.5625,
+            -219.375
+          ],
+          "favourable_blocks": 16,
+          "mean": -250.40625,
+          "median": -256.0
+        },
+        "1": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -467.0625,
+            -342.9375
+          ],
+          "favourable_blocks": 16,
+          "mean": -403.46875,
+          "median": -402.0
+        },
+        "2": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -620.8125,
+            -443.03125
+          ],
+          "favourable_blocks": 16,
+          "mean": -534.75,
+          "median": -563.5
+        },
+        "3+": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -2486.46875,
+            -704.59375
+          ],
+          "favourable_blocks": 15,
+          "mean": -1586.1875,
+          "median": -1506.5
+        }
+      }
+    },
+    "normal-aslr-on": {
+      "blocks": 16,
+      "strata": {
+        "0": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -295.15625,
+            -61.65625
+          ],
+          "favourable_blocks": 15,
+          "mean": -203.84375,
+          "median": -264.0
+        },
+        "1": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -461.4375,
+            -212.21875
+          ],
+          "favourable_blocks": 15,
+          "mean": -365.1875,
+          "median": -404.25
+        },
+        "2": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -638.875,
+            -338.59375
+          ],
+          "favourable_blocks": 15,
+          "mean": -514.6875,
+          "median": -595.5
+        },
+        "3+": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -1287.3125,
+            1716.90625
+          ],
+          "favourable_blocks": 9,
+          "mean": 216.15625,
+          "median": -154.25
+        }
+      }
+    },
+    "reversed-aslr-off": {
+      "blocks": 16,
+      "strata": {
+        "0": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -339.53125,
+            -297.03125
+          ],
+          "favourable_blocks": 16,
+          "mean": -319.53125,
+          "median": -333.0
+        },
+        "1": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -505.34375,
+            -459.53125
+          ],
+          "favourable_blocks": 16,
+          "mean": -482.5625,
+          "median": -481.25
+        },
+        "2": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -658.21875,
+            -588.15625
+          ],
+          "favourable_blocks": 16,
+          "mean": -625.375,
+          "median": -652.0
+        },
+        "3+": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -2611.46875,
+            1226.71875
+          ],
+          "favourable_blocks": 11,
+          "mean": -616.96875,
+          "median": -635.75
+        }
+      }
+    },
+    "reversed-aslr-on": {
+      "blocks": 16,
+      "strata": {
+        "0": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -369.96875,
+            -109.71875
+          ],
+          "favourable_blocks": 15,
+          "mean": -263.6875,
+          "median": -292.25
+        },
+        "1": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -517.375,
+            -414.875
+          ],
+          "favourable_blocks": 16,
+          "mean": -466.9375,
+          "median": -456.0
+        },
+        "2": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -663.03125,
+            -281.09375
+          ],
+          "favourable_blocks": 14,
+          "mean": -506.375,
+          "median": -646.75
+        },
+        "3+": {
+          "blocks_used": 16,
+          "ci95_mean": [
+            -1327.09375,
+            873.65625
+          ],
+          "favourable_blocks": 10,
+          "mean": -261.0,
+          "median": -605.0
+        }
+      }
+    }
+  },
+  "retry_derivation": "retries = keypair_randomcalls - 2 (one randombytes(coins,32) per f/g attempt)",
+  "schema": "ntruplus-caller-lazy-keypair-retry-strata/v1",
+  "sequence_check": {
+    "distinct_retry_sequences": 274,
+    "launch_files": 274
+  }
+}

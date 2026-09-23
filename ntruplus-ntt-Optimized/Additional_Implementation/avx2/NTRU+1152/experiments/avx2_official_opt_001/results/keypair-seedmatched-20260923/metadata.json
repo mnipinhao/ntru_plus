@@ -1,0 +1,196 @@
+{
+  "aslr": "enabled (default, per process)",
+  "bootstrap": {
+    "method": "two-stage (launches, then iterations)",
+    "resamples": 1000,
+    "seed": 20260923000
+  },
+  "class": "supercop-derived diagnostic; not Native SUPERCOP",
+  "compiler_recipe": "lazy.mk BENCH_CFLAGS (common O3GC)",
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "cpu": 1,
+  "cpucycles_identity": [
+    "cpucycles=default-perfevent persecond=1400000000"
+  ],
+  "elf_sha256": {
+    "bench_keypair_seedmatched": "4ab31a4149dcaa41fca0532e2f55a65514f81a2a709aace3d6c9e2661e48fd00",
+    "bench_keypair_seedmatched_swapped": "9d0298c68320f9db6fcf8faf9ddcaf92da6bb3b0f08c7d0c0d0f7affc87a10a4"
+  },
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "host_hygiene": {
+    "after": {
+      "loadavg": [
+        0.19,
+        0.16,
+        0.17
+      ],
+      "time": "2026-09-23T03:44:16.206378+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "claude",
+          "cpu_percent": 2.3,
+          "last_cpu": 1,
+          "pid": 1058899
+        },
+        {
+          "comm": "systemd",
+          "cpu_percent": 0.3,
+          "last_cpu": 1,
+          "pid": 1
+        },
+        {
+          "comm": "localsearch-3",
+          "cpu_percent": 0.3,
+          "last_cpu": 6,
+          "pid": 9607
+        },
+        {
+          "comm": "MainThread",
+          "cpu_percent": 0.3,
+          "last_cpu": 1,
+          "pid": 1057334
+        },
+        {
+          "comm": "kthreadd",
+          "cpu_percent": 0.0,
+          "last_cpu": 5,
+          "pid": 2
+        }
+      ],
+      "uptime": "11:44:13 up 16 days, 43 min,  6 users,  load average: 0.19, 0.16, 0.17"
+    },
+    "attempt": 0,
+    "before": {
+      "loadavg": [
+        0.12,
+        0.15,
+        0.16
+      ],
+      "time": "2026-09-23T03:44:07.417654+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "claude",
+          "cpu_percent": 1.3,
+          "last_cpu": 3,
+          "pid": 1058899
+        },
+        {
+          "comm": "dbus-daemon",
+          "cpu_percent": 0.3,
+          "last_cpu": 3,
+          "pid": 5459
+        },
+        {
+          "comm": "tailscaled",
+          "cpu_percent": 0.3,
+          "last_cpu": 6,
+          "pid": 5713
+        },
+        {
+          "comm": "systemd",
+          "cpu_percent": 0.3,
+          "last_cpu": 6,
+          "pid": 8750
+        },
+        {
+          "comm": "MainThread",
+          "cpu_percent": 0.3,
+          "last_cpu": 1,
+          "pid": 1057334
+        }
+      ],
+      "uptime": "11:44:04 up 16 days, 43 min,  6 users,  load average: 0.13, 0.15, 0.16"
+    },
+    "contaminated": false,
+    "contamination_reasons": [],
+    "duration_s": 5.7,
+    "during_heavy_windows": 0,
+    "during_max_loadavg1_including_batch": 0.19,
+    "during_offenders": {},
+    "earlier_contaminated_attempts": [],
+    "host_controls_changed": false,
+    "load_threshold": 0.5,
+    "proc_threshold_percent": 25.0,
+    "waited_for_quiet_s": 0.0
+  },
+  "iterations_per_launch": 5000,
+  "launches": [
+    {
+      "elf": "bench_keypair_seedmatched",
+      "launch": 0,
+      "seed": 20260923000
+    },
+    {
+      "elf": "bench_keypair_seedmatched_swapped",
+      "launch": 1,
+      "seed": 20260923001
+    },
+    {
+      "elf": "bench_keypair_seedmatched",
+      "launch": 2,
+      "seed": 20260923002
+    },
+    {
+      "elf": "bench_keypair_seedmatched_swapped",
+      "launch": 3,
+      "seed": 20260923003
+    },
+    {
+      "elf": "bench_keypair_seedmatched",
+      "launch": 4,
+      "seed": 20260923004
+    },
+    {
+      "elf": "bench_keypair_seedmatched_swapped",
+      "launch": 5,
+      "seed": 20260923005
+    },
+    {
+      "elf": "bench_keypair_seedmatched",
+      "launch": 6,
+      "seed": 20260923006
+    },
+    {
+      "elf": "bench_keypair_seedmatched_swapped",
+      "launch": 7,
+      "seed": 20260923007
+    },
+    {
+      "elf": "bench_keypair_seedmatched",
+      "launch": 8,
+      "seed": 20260923008
+    },
+    {
+      "elf": "bench_keypair_seedmatched_swapped",
+      "launch": 9,
+      "seed": 20260923009
+    },
+    {
+      "elf": "bench_keypair_seedmatched",
+      "launch": 10,
+      "seed": 20260923010
+    },
+    {
+      "elf": "bench_keypair_seedmatched_swapped",
+      "launch": 11,
+      "seed": 20260923011
+    }
+  ],
+  "order": "ABBA on even iterations, BAAB on odd",
+  "parameter": "1152",
+  "rng": "per-iteration SHAKE256(seed_le64 || iteration_le64) coin stream, served by memcpy",
+  "source_sha256": {
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/asm/ntruplus1152_officialopt_ntt_caller_lazy.s": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/kem_lazy.c": "0bd8c009ef362948fd51d7b1c642904b7f5e5d1095f11cf6401dcbf408d2caa7",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/upstream/supercop-avx2/ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/bench/bench_keypair_seedmatched.c": "590496dd8f3b4d9c2ee7a353e5a6915a0de1176200bfe57225ee9444dc49da2f",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/bench/kem_diag.c": "1431453b5983538028dba2c0f12518032d3ac3acc4469fb86e14654f9cf0087c",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/lazy.mk": "e7020eac0a9b15aea83b384e2c0a56843b511dd856e82f0b75b3f8058cbaf88b",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/tools/run_keypair_seedmatched.py": "784851d90800fa07eba331e7097fb2952386c87537b1dfb783dabefb97f0cf6d"
+  },
+  "warmup_per_launch": 32
+}
