@@ -461,6 +461,7 @@ module_keygen_baseinv_prepare_Lgt_keygen_baseinv_prepare_constants:
 #endif
 C_SYM(gt_keygen_baseinv_hier_k8):
 	stp x30, x19, [sp, #-16]!
+	stp x20, xzr, [sp, #-16]!
 	stp d8, d9, [sp, #-16]!
 	stp d10, d11, [sp, #-16]!
 	stp d12, d13, [sp, #-16]!
@@ -486,9 +487,13 @@ C_SYM(gt_keygen_baseinv_hier_k8):
 	module_keygen_baseinv_tree_fqmul2 v12, v8, v9, v13, v10, v11
 	module_keygen_baseinv_tree_fqmul v0, v12, v13
 
+	/*
+	 * Invertibility is decided without branching (TIMECOP): the tree always
+	 * runs to completion, and a zero total product inverts to zero.  On
+	 * failure the caller discards the output and clears den, as before.
+	 */
 	uminv h2, v0.8h
-	umov w8, v2.h[0]
-	cbz w8, module_keygen_baseinv_tree_Lbpq_tree_failure
+	umov w20, v2.h[0]
 
 	bl C_SYM(gt_fqinv15_asm)
 	ldr q1, module_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts
@@ -512,19 +517,17 @@ C_SYM(gt_keygen_baseinv_hier_k8):
 	module_keygen_baseinv_tree_recover_group_pair 192, 64, v28, v29
 	module_keygen_baseinv_tree_recover_group_pair 288, 96, v30, v31
 
-	mov w0, wzr
-	b module_keygen_baseinv_tree_Lbpq_tree_return
+	/* 1 if some lane of the total product was zero (not invertible). */
+	cmp w20, #0
+	cset w0, eq
 
-module_keygen_baseinv_tree_Lbpq_tree_failure:
-	mov w0, #1
-
-module_keygen_baseinv_tree_Lbpq_tree_return:
 	ldp d14, d15, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 0)]
 	ldp d12, d13, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 16)]
 	ldp d10, d11, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 32)]
 	ldp d8, d9, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 48)]
-	ldp x30, x19, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 64)]
-	add sp, sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 80)
+	ldp x20, xzr, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 64)]
+	ldp x30, x19, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 80)]
+	add sp, sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 96)
 	ret
 #ifndef __APPLE__
 .size C_SYM(gt_keygen_baseinv_hier_k8), \
