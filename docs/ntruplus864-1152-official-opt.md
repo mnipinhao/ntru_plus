@@ -8,8 +8,10 @@ SUPERCOP campaign or host-control change. **Phase B** (Native SUPERCOP
 performance evidence, 2026-09-23) and its follow-up (fixed-compiler 864
 Native, 1152 Keypair retry control) are at the end of this document, followed
 by the extended Native / ASLR-on paired runs, which carry the current
-decision rule (ASLR on only; normal placement primary). No host control was
-changed in any phase.
+decision rule (ASLR on only; normal placement primary). A second, 864-only
+candidate (lazy Forward + layout-fused codec, Phase A and same-ELF diagnostic
+only) has its own section near the end. No host control was changed in any
+phase.
 
 ## Scope
 
@@ -824,6 +826,233 @@ for p in 1152 864; do   # strictly sequential; nothing else pinned to CPU 1
 done
 ```
 
+## NTRU+864 layout-fused codec (Option A, 2026-09-23)
+
+A second NTRU+864 candidate, `avx2-officialopt-lazy-codec-864-exp001`, stacks
+a layout-fused `poly_tobytes`/`poly_frombytes` on the caller-lazy Forward
+above. **This is Phase A plus a same-ELF diagnostic. There was no SUPERCOP
+campaign, Native was not measured, and no host control was changed.** The
+lazy-only candidate is unchanged and still builds and passes `make check`. The
+new rules live in the experiment's `codec.mk`, which only the NTRU+864
+Makefile includes, so `lazy.mk` and NTRU+1152 are untouched.
+
+| File (in `NTRU+864/experiments/avx2_official_opt_001/`) | Role |
+|---|---|
+| `tools/generate_codec_fused.py` | generator (with `--check`), derived from `upstream/supercop-avx2/pack.s` |
+| `asm/ntruplus864_officialopt_codec_fused.s` | generated kernels `ntruplus864_officialopt_{tobytes,frombytes}_fused` |
+| `src/kem_lazy_codec.c` | candidate KEM: preprocessor overlay of `src/kem_lazy.c` that binds `poly_tobytes`/`poly_frombytes` to the fused kernels |
+| `src/kem_codec.c` | control (codec only): the same overlay on the unmodified Official `kem.c` |
+| `tests/test_codec_fused.c` | codec differential |
+| `tools/audit_codec_fused.py` | linked-ELF audit |
+| `bench/bench_codec_fused.c`, `tools/run_codec_fused_diag.py`, `tools/run_codec_keypair_seedmatched.py` | diagnostics |
+
+### What Official does
+
+`poly_tobytes` calls `poly_ntt_pack`, which freezes each coefficient to `[0,q)`
+and converts the internal 6-way layout (per 96-coefficient block, register `r`
+lane `l` holds coefficient `6l+r`) to natural order. It writes the result to a
+1728-byte stack `tmp`. `poly_tobytes_raw` then reloads it and does a 4-way SoA
+transpose, 12-bit packing and byte arrangement: 13 blocks of 64 coefficients
+plus a 32-coefficient xmm tail. `poly_frombytes` does the reverse. The
+reversed path also writes `r` twice, since `poly_ntt_unpack` works in place.
+
+The two 128-bit-lane permutation stages that meet at the natural-order image
+compose into a single one. In pack's pre-permute registers
+`p_k = [H_k | H_{k+6}]` (with `H_i` = coefficients `8i..8i+7`), the input
+tobytes needs is `t_i = [G_i | G_{i+4}]`, and each `t_i` is one `vperm2i128`
+(or one `vinserti128`) of two `p_k` halves. The 96- and 64-coefficient blocks
+realign every 192 coefficients.
+
+### Design
+
+* **Arithmetic is unchanged.** The kernels keep Official's per-lane freeze
+  (`vpmulhrsw v, vpmullw q, vpsubw; vpsraw 15, vpand q, vpaddw`), 12-bit
+  pack/unpack and the q-1 canonical check. Every in-lane shuffle keeps the same
+  immediate.
+* **Cross-lane data movement:**
+  - The pack and tobytes permutes are composed. So are the frombytes and
+    unpack permutes. That gives 12 instead of 24 `vperm2i128` per 192
+    coefficients.
+  - The byte-side permutes are folded into memory access. tobytes stores the
+    six 16-byte halves that `pack.s:66-72` would permute
+    (`vmovdqu xmm` / `vextracti128 m128`). frombytes builds `pack.s:154-156`'s
+    half pairs from 16-byte loads and `vinserti128 m128`.
+* **Blocking:** four 192-coefficient super-iterations (2 layout blocks = 3
+  codec blocks), then a final 96 coefficients (one codec block and the
+  32-coefficient tail). The tobytes tail runs the ymm body on the pack
+  registers whose upper lanes hold the tail coefficients, then stores only
+  those upper lanes. The frombytes tail is Official's xmm tail.
+* **Canonical check:** `vpmaxuw` accumulates across all blocks, followed by a
+  single `vpcmpgtw q-1` / `vpmovmskb` at the end. `max > q-1` holds exactly
+  when some coefficient is above q-1, so the return value is identical.
+* **Stack:** none. Official's `poly_tobytes` has a 1760-byte frame, including
+  the 1728-byte tmp.
+* **Contract:** Official's pointer contract (32-byte aligned poly, unaligned
+  bytes). The byte array and the poly must not overlap. That holds at every
+  KEM call site. Official tobytes would tolerate overlap through its stack
+  copy.
+* **Scheduling is required.** The generator list-schedules each straight-line
+  block on its data-dependence graph: critical path first, with register
+  pressure capped at the free registers. Registers are then allocated by
+  linear scan.
+
+  The first, unscheduled fusion was *slower* than Official. In a scratch
+  `perf stat` tight loop on CPU 1, tobytes took ~570 cycles against ~495. The
+  cause: Official tobytes is port-bound (p0/p1/p5 about 90% busy), while the
+  fused version, although it issues fewer uops, was latency/scheduler-bound at
+  about 75%. Removing the memory round trip also removed the decoupling
+  between the long pack chain and the tobytes chain. After scheduling (plus
+  the split stores and half loads), the same loop measured tobytes ~483 vs
+  ~491 cycles and frombytes ~382 vs ~463.
+
+Dynamic instructions per call (linked ELF, `results/codec-phase-a/codec-linked-summary.json`;
+Official counts are the `pack.s` kernels only, without its C wrappers):
+
+| per call | tobytes Official | fused | frombytes Official | fused |
+|---|---:|---:|---:|---:|
+| total | 1613 | 1375 | 1432 | 1170 |
+| cross-lane permutes (p5) | 145 | 52 | 145 | 54 |
+| `vinserti128` from memory (load + p015) | 0 | 0 | 0 | 39 |
+| loads / stores | 112 / 96 | 56 / 81 | 97 / 110 | 43 / 54 |
+| vector ALU other than permutes | unchanged | | 168 alu → 143 (one final compare instead of 13+1) | |
+
+Per 96 coefficients, tobytes needs 10.3 fewer cross-lane permutes and 26.4
+fewer instructions in total; frombytes needs 10.1 and 29.1 fewer. The 1728-byte
+store and reload is gone in both directions, and frombytes also drops the
+second 1728-byte write of `r`.
+
+### Gates (all pass)
+
+1. **Codec differential** (`build/test_codec_fused`). The fused kernels are
+   checked against Official `poly_tobytes`/`poly_frombytes` in the same ELF,
+   plus an independent scalar wire model.
+   - **tobytes, 287,072 polys:**
+     - every int16 value in every position (65,536 constant polys plus a
+       65,536-poly Latin sweep);
+     - 36,000 polys drawn from the lazy-Forward caller envelopes (random and
+       extreme-only);
+     - 120,000 random int16 polys.
+   - **frombytes, 3,763,050 inputs, 662,739 of them rejected by Official:**
+     - 100,000 random valid encodings;
+     - boundary patterns;
+     - every 12-bit value 0..4095 at each of the 864 positions, over a valid
+       background, plus all-equal patterns;
+     - 100,000 random byte strings.
+   - Output poly **and** return value must be equal.
+   - Every call also checks 256-byte canaries, input immutability and 32
+     byte-array misalignments, and the run includes 20,000 fused round trips.
+   - Seven hand mutations were all caught. `vpsraw 15→14` is an equivalent
+     mutant, since post-Barrett `|x| < 2^14`.
+2. **KEM** (`test_kem_lazy_codec[_fretry]`, `test_kem_codec[_fretry]`; the
+   common `test_kem_lazy.c` is unchanged). For both lazy+codec and codec-only:
+   - 100 deterministic vectors, pk/sk/ct/ss byte-exact vs Official;
+   - invalid PK, bit-flipped CT, noncanonical CT and noncanonical SK all
+     matched;
+   - forced g-retry and f-retry injection pass.
+3. **Sanitizers.** ASan, UBSan (`-fno-sanitize-recover=all`) and LSan
+   (`detect_leaks=1`) on all five binaries.
+4. **Linked audit** (`build/test_kem_lazy_codec`):
+   - both symbols are 32-byte aligned (2,587 B and 2,283 B);
+   - no stack reference, no call, no `vzeroupper` (Official `pack.s` and its
+     wrappers also have none);
+   - all six Official codec functions coexist in the ELF;
+   - the candidate KEM has 7 tobytes and 4 frombytes relocations to the fused
+     symbols and 6 to the lazy Forward, and none to `poly_tobytes`,
+     `poly_frombytes` or `poly_ntt`.
+
+Evidence: `results/codec-phase-a/closure-tests.log`, `results/codec-phase-a/codec-linked-summary.json`.
+
+### Same-ELF diagnostic (`supercop-derived`, not Native)
+
+One ELF holds four KEM translation units (Official, lazy, codec, lazy+codec)
+plus both codec implementations. Build flags are the common O3GC recipe.
+cpucycles comes from the disposable campaign (read only). Runs were pinned to
+CPU 1 with ASLR on, 15 fresh launches, and 256 observations per variant per
+launch. Blocks rotate the variant order. The tables show the pooled StQ2
+delta, with launch-level favourable counts in brackets. The reversed column is
+the same sources linked in reverse object order. All three batches were clean
+on attempt 0.
+
+| region | Official StQ2 | fused − Official, normal | reversed |
+|---|---:|---:|---:|
+| tobytes | 697.6 | −16.1 (15/15) | −15.4 (15/15) |
+| frombytes | 666.3 | −82.0 (15/15) | −81.7 (15/15) |
+
+| KEM delta | Encap normal | reversed | Decap normal | reversed |
+|---|---:|---:|---:|---:|
+| lazy+codec − Official | −465.2 (15/15) | −303.1 (15/15) | −406.5 (15/15) | −361.9 (15/15) |
+| lazy+codec − lazy (codec on top of lazy) | −222.4 (15/15) | −171.2 (15/15) | −245.1 (15/15) | −218.3 (15/15) |
+| codec − Official | −153.2 (15/15) | −140.5 (14/15) | −269.5 (15/15) | −278.9 (15/15) |
+| lazy − Official | −242.8 (15/15) | −131.9 (14/15) | −161.4 (15/15) | −143.6 (15/15) |
+
+**Keypair is not resolved by this bench.** The region costs ~66k cycles here,
+because the KAT AES DRBG runs inside it. Results:
+- lazy+codec − Official: −146.4 (normal), −160.9 (reversed), 15/15;
+- lazy+codec − lazy: +8.6 (7/15) and −0.3 (9/15);
+- codec − Official: +5.4 (8/15) and +12.8 (6/15).
+
+A scratch ELF whose tobytes has the same speed as Official still showed a
+keypair offset of about +100, so per-ELF keypair offsets are larger than the
+effect being measured. The unchanged shared seed-matched harness
+(`bench_keypair_seedmatched.c`: byte-identical SHAKE coins, ABBA/BAAB, pk/sk
+equality traps) resolves it. With 9 launches × 1000 iterations per pairing,
+d = B − A:
+
+| pairing | median d | mean d [95% two-stage bootstrap CI] | launches favourable |
+|---|---:|---:|---:|
+| lazy+codec vs Official | −177.0 | −153.4 [−176.3, −123.3] | 9/9 |
+| lazy+codec vs lazy | −11.5 | −19.6 [−46.6, +5.2] | 9/9 |
+| codec-only vs Official | −32.5 | −35.7 [−72.7, +0.4] | 8/9 |
+
+From the component deltas, codec-only should move Encap by about −115 (2
+tobytes + 1 frombytes), Decap by about −279 (2 + 3) and Keypair by about −48 (3
+tobytes). Observed: Encap −153/−141, Decap −270/−279, and Keypair −33 in the
+seed-matched run. Evidence: `results/codec-fused-diag-20260923/`,
+`results/codec-fused-diag-swapped-20260923/` and
+`results/codec-keypair-seedmatched-20260923/`. Each has `summary.json` and
+`metadata.json` with source hashes, `elf_text_sha256` and the host-hygiene
+record. The whole-ELF sha256 changes on every rebuild because `.strtab` holds
+gcc's temporary object names, so `.text` is the stable identity.
+
+### Better designs (described, not implemented)
+
+* **2-op canonicalisation.** Replace `vpsraw/vpand/vpaddw` with
+  `t = x + q; x = vpminuw(x, t)`: one op less per register, and one less p01
+  shift. In the scratch tight loop this took tobytes from ~483 to ~463 cycles.
+  It changes the reduction sequence, so it needs its own identity and
+  exhaustive int16 record before use. The existing all-int16-per-position test
+  would be that record.
+* **Direct 12-bit packing (Option B/C).** Official's `tobytes_raw` spends 48
+  instructions per 64 coefficients on the SoA transpose, packing and byte
+  re-interleave. From natural order, one `vpmaddwd` with (1, 4096) forms
+  24-bit pair values, one `vpshufb` compacts each lane to 12 bytes, and the
+  lanes are stored as overlapping 16-byte halves (or put together with one
+  `vpermd`). That is 2–3 vector ops per 16 coefficients instead of 12. The last
+  group needs a narrower store so nothing lands beyond byte 1296. frombytes has
+  the mirror image (`vpshufb` expand, shift/mask). Going straight from the
+  6-way layout (Option B proper) packs 9 bytes per lane and would need
+  byte-granular cross-lane moves. The natural-order route keeps pack's in-lane
+  stages and looks simpler.
+
+### Reproduce
+
+```sh
+E=ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001
+T=ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/tools
+cd $E
+make codec-phase-a            # generator checks, codec + KEM differentials, sanitizers, linked audit
+make codec-record             # copies the audit into results/codec-phase-a/
+make check                    # lazy-only candidate, unchanged
+make codec-bench codec-bench-keypair
+python3 ../../../common/official_opt_lazy/tools/phase_b_batch.py --result-dir results/codec-fused-diag-TAG \
+  --metadata metadata.json -- python3 tools/run_codec_fused_diag.py --experiment . --launches 15 --skip-build --result-dir {RESULT}
+python3 ../../../common/official_opt_lazy/tools/phase_b_batch.py --result-dir results/codec-fused-diag-swapped-TAG \
+  --metadata metadata.json -- python3 tools/run_codec_fused_diag.py --experiment . --launches 15 --skip-build \
+  --binary build/bench_codec_fused_swapped --result-dir {RESULT}
+python3 ../../../common/official_opt_lazy/tools/phase_b_batch.py --result-dir results/codec-keypair-seedmatched-TAG \
+  --metadata metadata.json -- python3 tools/run_codec_keypair_seedmatched.py --experiment . --skip-build --result-dir {RESULT}
+```
+
 ## Still not done
 
 - No `clean/` change and no promotion.
@@ -834,3 +1063,6 @@ done
   why the O3-built 864 candidate loses its Decap gain in Native.
 - 864 reversed placement was not re-run at 48 blocks with ASLR on; the
   secondary check uses the Phase B 16-block run.
+- NTRU+864 lazy+codec candidate: no qualification export, no SUPERCOP
+  campaign and no Native measurement yet. Only Phase A and the same-ELF
+  diagnostic exist.
