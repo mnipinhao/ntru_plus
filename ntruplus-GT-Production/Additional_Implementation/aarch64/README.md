@@ -1,16 +1,23 @@
 # NTRU+ AArch64 GT-Optimized Release
 
-This directory is the source-only handoff package for the NTRU+768
-Good-Thomas Optimized (GT-Optimized) AArch64 implementation.
+This directory is the source-only handoff package for the NTRU+768, NTRU+864
+and NTRU+1152 Good-Thomas Optimized (GT-Optimized) AArch64 implementations.
 
 ```text
 aarch64/
-  NTRU+768/   implementation, tests, canonical KAT, and implementation contract
+  NTRU+768/    implementation, tests, canonical KAT, and implementation contract
+  NTRU+864/    implementation, tests, canonical KAT, validation record
+  NTRU+1152/   implementation, tests, canonical KAT, validation record
 ```
+
+Each set is self-contained and builds and validates on its own with
+`make check`.  The three share the same Keccak-f[1600] files.
 
 Start with:
 
-- [`NTRU+768/README.md`](NTRU+768/README.md) for build and validation.
+- [`NTRU+768/README.md`](NTRU+768/README.md), [`NTRU+864/README.md`](NTRU+864/README.md)
+  and [`NTRU+1152/README.md`](NTRU+1152/README.md) for build, validation and
+  performance.
 - [`../../../bench/aarch64/gt-production/reports/OPTIMIZATION-SUMMARY.md`](../../../bench/aarch64/gt-production/reports/OPTIMIZATION-SUMMARY.md)
   for the technical comparison with KPQC final.
 - [`../../../bench/aarch64/gt-production/README.md`](../../../bench/aarch64/gt-production/README.md)
@@ -23,11 +30,10 @@ The implementation supports Linux/AArch64 ELF and macOS/AArch64 Mach-O.
 Performance numbers in this release were measured on Linux/AArch64 using a
 Raspberry Pi 5 Cortex-A76.
 
-To verify the NTRU+768 production source closure:
+To verify the production source closures:
 
 ```sh
-cd NTRU+768
-make manifest-check
+for s in NTRU+768 NTRU+864 NTRU+1152; do make -C $s manifest-check; done
 ```
 
 The repository does not track a generated zip. From the repository root,
@@ -36,7 +42,7 @@ create a release artifact from the selected commit with:
 ```sh
 git archive --format=zip \
   --prefix=ntruplus-GT-Production/ \
-  --output=/tmp/ntruplus768-Optimized-aarch64.zip \
+  --output=/tmp/ntruplus-Optimized-aarch64.zip \
   HEAD:ntruplus-GT-Production
 ```
 
