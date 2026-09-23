@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+"""Create content-identical implementations with changed link member order.
+
+Port of NTRU+768 avx2_official_opt_001/tools/install_reversed_placement.py for
+864/1152, with the same renames.  SUPERCOP compiles every .s file of a flat
+implementation; renaming only basenames changes archive member order and thus
+hot-code placement while keeping exact source bytes and arithmetic.
+"""
+
+import argparse
+import json
+import shutil
+from pathlib import Path
+
+RENAMES = {"ntt.s": "aaa_ntt.s", "basemul.s": "zzz_basemul.s", "pack.s": "yyy_pack.s"}
+LAZY_RENAME = {"ntt_caller_lazy.s": "bbb_ntt_caller_lazy.s"}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--param", type=int, choices=(864, 1152), required=True)
+    parser.add_argument("--campaign-root", required=True, type=Path)
+    parser.add_argument("--candidate", required=True)
+    parser.add_argument("--baseline", default="avx2")
+    args = parser.parse_args()
+    root = args.campaign_root.resolve()
+    marker = root / ".ntruplus-campaign.json"
+    if not marker.is_file() or json.loads(marker.read_text()).get("kind") != "disposable-supercop-campaign":
+        raise SystemExit("requires a disposable SUPERCOP campaign")
+    impl = root / f"crypto_kem/ntruplus{args.param}"
+    for name in (args.baseline, args.candidate):
+        source = impl / name
+        target = impl / (name + "-reversed")
+        if target.exists():
+            raise SystemExit(f"refusing overwrite: {target}")
+        shutil.copytree(source, target, symlinks=False)
+        renames = dict(RENAMES)
+        if (source / "ntt_caller_lazy.s").exists():
+            renames.update(LAZY_RENAME)
+        for old, new in renames.items():
+            (target / old).rename(target / new)
+        (target / "PLACEMENT.json").write_text(json.dumps(
+            {"kind": "assembly-member-order-control", "source": name,
+             "renames": renames}, indent=2) + "\n")
+        print(target)
+
+
+if __name__ == "__main__":
+    main()
