@@ -1,0 +1,21 @@
+{
+  "boundary": "coefficient-domain small r/m plus valid PK bytes to exact ciphertext",
+  "cells": {
+    "C00": "scale4 current forward plus H3 plus direct H1",
+    "C01": "scale1 current forward plus H4-M3B",
+    "C10": "scale4 lazy forward plus H3 plus direct H1",
+    "C11": "scale1 lazy forward plus H4-M3B"
+  },
+  "excluded": "r hash fanout, hash_g, SOTP, native KEM",
+  "installed_sources": {
+    "c00_forward": "zz_factorial_12_c00_forward.S",
+    "c01_forward": "zz_factorial_14_c01_forward.S",
+    "c10_forward": "zz_factorial_13_c10_forward.S",
+    "c11_forward": "zz_factorial_15_c11_forward.S",
+    "h1": "zz_factorial_10_h1.S",
+    "h3": "zz_factorial_11_h3.S",
+    "h4": "zz_factorial_16_h4.S"
+  },
+  "placement": "normal",
+  "source_implementation": "avx2-gt9x16-prod3-h3-price-normal-exp005"
+}

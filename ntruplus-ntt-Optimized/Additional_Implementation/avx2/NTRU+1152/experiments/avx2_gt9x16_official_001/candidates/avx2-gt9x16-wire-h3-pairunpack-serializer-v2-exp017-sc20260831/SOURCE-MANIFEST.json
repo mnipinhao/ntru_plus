@@ -1,0 +1,266 @@
+{
+  "archive_sha256": "9a258febbfbbf6de0c09cee73f343d4014597c259415e78a598b7af4b1787208",
+  "created_at": "2026-08-28T04:15:02.052823+00:00",
+  "cumulative_native_rebase": {
+    "encap_call_graph": {
+      "direct_h1_calls": 2,
+      "ma2_calls": 1,
+      "old_recovery_bridge_calls": 0,
+      "producer_calls": 2
+    },
+    "hash_serializer": "direct H1 natural-Q",
+    "ma2": "natural-Q scale-4 coefficient planes consumed by direct H1",
+    "persistent_aos": true,
+    "producer": "t0-beta",
+    "qorder": "C1-natural-Q",
+    "source_implementation": "avx2-gt9x16-prod3-h1-exp001",
+    "t0_beta": true
+  },
+  "encap_h_ingress_ma2_h3_price": {
+    "added_sources": {
+      "encap_h_decode_natural_q_h1.S": "zz4_encap_h_decode_natural_q_h1.S",
+      "encap_h_ingress_ma2_h3.S": "zz5_encap_h_ingress_ma2_h3.S"
+    },
+    "boundary": "PK bytes to raw Natural-Q scale-4 MA2 output",
+    "omitted_obsolete_sources": [
+      "gt9x16_prod3_aos_full_price.S"
+    ],
+    "placement": "normal",
+    "source_implementation": "avx2-gt9x16-prod3-cumulative-exp002",
+    "variants": [
+      "current cumulative",
+      "H1 materialized",
+      "H3 streaming"
+    ]
+  },
+  "encap_lazy_h4_factorial_price": {
+    "boundary": "coefficient-domain small r/m plus valid PK bytes to exact ciphertext",
+    "cells": {
+      "C00": "scale4 current forward plus H3 plus direct H1",
+      "C01": "scale1 current forward plus H4-M3B",
+      "C10": "scale4 lazy forward plus H3 plus direct H1",
+      "C11": "scale1 lazy forward plus H4-M3B"
+    },
+    "excluded": "r hash fanout, hash_g, SOTP, native KEM",
+    "installed_sources": {
+      "c00_forward": "zz_factorial_12_c00_forward.S",
+      "c01_forward": "zz_factorial_14_c01_forward.S",
+      "c10_forward": "zz_factorial_13_c10_forward.S",
+      "c11_forward": "zz_factorial_15_c11_forward.S",
+      "h1": "zz_factorial_10_h1.S",
+      "h3": "zz_factorial_11_h3.S",
+      "h4": "zz_factorial_16_h4.S"
+    },
+    "placement": "normal",
+    "source_implementation": "avx2-gt9x16-prod3-h3-price-normal-exp005"
+  },
+  "exp017_serializer_v2_native": {
+    "caller_change": "replace direct wire serialization plus hash_g with the selected Serializer V2 direct hash_g stage",
+    "created_at": "2026-09-20T04:37:13.029795+00:00",
+    "installed_sources": {
+      "hash_stage": "zz_native_42_serializer_v2_hash_g.c",
+      "serializer": "zz_native_41_r_serializer_v2.S"
+    },
+    "rejected_not_integrated": "D1 pair-resident fusion",
+    "source_directory": "/home/nuc/src/supercop-campaign-1152-rebase-20260910-002/crypto_kem/ntruplus1152/avx2-gt9x16-wire-h3-pairunpack-exp009-sc20260831",
+    "source_tree_sha256": "35de67a53263164184a4306dd1bd0f0547394fdbdedcefb86e63390909349f2a"
+  },
+  "flattened_local_includes": {
+    "f0_ma0_adapter.S": [
+      "f0-ma0-adapter-constants.inc"
+    ],
+    "f0_ma1_asm0.S": [
+      "f0-ma1-asm0-constants.inc"
+    ],
+    "f0_ma1_asm1.S": [
+      "f0-ma1-asm1-constants.inc"
+    ],
+    "f0_ma2.S": [
+      "f0-ma2-constants.inc"
+    ],
+    "f0_ma3.S": [
+      "f0-ma3-constants.inc"
+    ],
+    "f0_official_to_f0.S": [
+      "f0-official-to-f0-constants.inc"
+    ],
+    "f0_prod1_p1h.S": [
+      "gt9x16_ntt9_paper.inc",
+      "gt9x16_ntt16_paper.inc",
+      "gt9x16-ntt16-constants.inc",
+      "gt9x16-paper-adjusted-ntt16-constants.inc",
+      "f0-prod1-constants.inc"
+    ],
+    "f0_prod2_ma2_p2b.S": [
+      "gt9x16_ntt9_paper.inc",
+      "gt9x16_ntt16_paper.inc",
+      "gt9x16-ntt16-constants.inc",
+      "gt9x16-paper-adjusted-ntt16-constants.inc",
+      "f0-prod1-constants.inc"
+    ],
+    "g1c_bmscale_inverse_d1.S": [
+      "g1c-bmscale-live-tail.inc",
+      "g1c-m3-inverse16.inc"
+    ],
+    "gt9x16_ntt16.S": [
+      "gt9x16_ntt16.inc",
+      "gt9x16_ntt16_c2.inc",
+      "gt9x16_ntt16_c4.inc",
+      "gt9x16_ntt9.inc",
+      "gt9x16_ntt9_paper.inc",
+      "gt9x16_ntt16_paper.inc",
+      "gt9x16-ntt16-constants.inc",
+      "gt9x16-paper-adjusted-ntt16-constants.inc"
+    ],
+    "gt9x16_prod3_aos_branch0.S": [
+      "gt9x16-ntt16-constants.inc",
+      "gt9x16-prod3-aos-branch0-constants.inc",
+      "gt9x16-prod3-aos-branch1-constants.inc"
+    ],
+    "gt9x16_prod3_aos_c1_tile.S": [
+      "gt9x16-prod3-aos-tile-constants.inc"
+    ],
+    "inverse_ntt9_b0.S": [
+      "g1c-inverse-ntt9-b0-constants.inc"
+    ],
+    "inverse_ntt9_b1.S": [
+      "g1c-inverse-ntt9-b0-constants.inc"
+    ],
+    "inverse_tail_d0.S": [
+      "g1c-m3-inverse16.inc",
+      "g1c-inverse-ntt9-b0-constants.inc"
+    ]
+  },
+  "h3_pairunpack_native": {
+    "caller": "unchanged cumulative scale-1 wire-monotone encapsulation",
+    "installed_source": "zz_native_52_h4_pairunpack.S",
+    "machine_change": "form both adjacent-p h planes with two word-unpacks and two half-selects; remove 216 H3 routing instructions",
+    "semantic_change": "none",
+    "source_implementation": "avx2-gt9x16-wire-native-normal-exp006-sc20260831"
+  },
+  "implementation": "avx2-gt9x16-wire-h3-pairunpack-serializer-v2-exp017-sc20260831",
+  "installed_overlays": {
+    "f0-ma0-adapter-constants.inc": "generated/f0-ma0-adapter-constants.inc",
+    "f0-ma0-adapter.h": "generated/f0-ma0-adapter.h",
+    "f0-ma1-asm0-constants.inc": "generated/f0-ma1-asm0-constants.inc",
+    "f0-ma1-asm0.h": "generated/f0-ma1-asm0.h",
+    "f0-ma1-asm1-constants.inc": "generated/f0-ma1-asm1-constants.inc",
+    "f0-ma1-asm1-oracle.h": "generated/f0-ma1-asm1-oracle.h",
+    "f0-ma1-asm1.h": "generated/f0-ma1-asm1.h",
+    "f0-ma2-asm.h": "generated/f0-ma2-asm.h",
+    "f0-ma2-constants.inc": "generated/f0-ma2-constants.inc",
+    "f0-ma3-asm.h": "generated/f0-ma3-asm.h",
+    "f0-ma3-constants.inc": "generated/f0-ma3-constants.inc",
+    "f0-official-to-f0-constants.inc": "generated/f0-official-to-f0-constants.inc",
+    "f0-official-to-f0.h": "generated/f0-official-to-f0.h",
+    "f0-prod0-ranges.h": "generated/f0-prod0-ranges.h",
+    "f0-prod1-constants.inc": "generated/f0-prod1-constants.inc",
+    "f0-prod2-ma2-asm.h": "generated/f0-prod2-ma2-asm.h",
+    "f0_forward_for_ma2.c": "src/f0_forward_for_ma2.c",
+    "f0_forward_for_ma2.h": "src/f0_forward_for_ma2.h",
+    "f0_generic_to_ma2_planes.S": "asm/f0_generic_to_ma2_planes.S",
+    "f0_generic_to_ma2_planes.h": "src/f0_generic_to_ma2_planes.h",
+    "f0_ma0_adapter.S": "asm/f0_ma0_adapter.S",
+    "f0_ma0_control.c": "src/f0_ma0_control.c",
+    "f0_ma0_control.h": "src/f0_ma0_control.h",
+    "f0_ma1_asm0.S": "asm/f0_ma1_asm0.S",
+    "f0_ma1_asm1.S": "asm/f0_ma1_asm1.S",
+    "f0_ma2.S": "asm/f0_ma2.S",
+    "f0_ma2_planes_to_generic.S": "asm/f0_ma2_planes_to_generic.S",
+    "f0_ma3.S": "asm/f0_ma3.S",
+    "f0_official_to_f0.S": "asm/f0_official_to_f0.S",
+    "f0_prod1_p1h.S": "asm/f0_prod1_p1h.S",
+    "f0_prod1_wrapper.c": "src/f0_prod1_wrapper.c",
+    "f0_prod2_ma2_p2b.S": "asm/f0_prod2_ma2_p2b.S",
+    "f0_prod2_ma2_wrapper.c": "src/f0_prod2_ma2_wrapper.c",
+    "f0_prod3_hash_bridge.c": "src/f0_prod3_hash_bridge.c",
+    "f0_prod3_hash_bridge.h": "src/f0_prod3_hash_bridge.h",
+    "g1c-adjusted-inverse-head.h": "generated/g1c-adjusted-inverse-head.h",
+    "g1c-adjusted-inverse-head.inc": "generated/g1c-adjusted-inverse-head.inc",
+    "g1c-bmscale-live-tail.h": "generated/g1c-bmscale-live-tail.h",
+    "g1c-bmscale-live-tail.inc": "generated/g1c-bmscale-live-tail.inc",
+    "g1c-inverse-ntt9-b0-constants.inc": "generated/g1c-inverse-ntt9-b0-constants.inc",
+    "g1c-inverse-tail-map.h": "generated/g1c-inverse-tail-map.h",
+    "g1c-m3-inverse16.h": "generated/g1c-m3-inverse16.h",
+    "g1c-m3-inverse16.inc": "generated/g1c-m3-inverse16.inc",
+    "g1c_bmscale_inverse_d1.S": "asm/g1c_bmscale_inverse_d1.S",
+    "g1c_bmscale_inverse_d1_asm.h": "src/g1c_bmscale_inverse_d1_asm.h",
+    "g1c_m3c3_reduction.S": "asm/g1c_m3c3_reduction.S",
+    "g1c_m3c3_reduction.h": "src/g1c_m3c3_reduction.h",
+    "gt9x16-full-forward-tables.h": "generated/gt9x16-full-forward-tables.h",
+    "gt9x16-ntt16-constants.inc": "generated/gt9x16-ntt16-constants.inc",
+    "gt9x16-ntt9-paper-range.h": "generated/gt9x16-ntt9-paper-range.h",
+    "gt9x16-paper-adjusted-ntt16-constants.inc": "generated/gt9x16-paper-adjusted-ntt16-constants.inc",
+    "gt9x16-prod3-aos-branch0-constants.inc": "generated/gt9x16-prod3-aos-branch0-constants.inc",
+    "gt9x16-prod3-aos-branch1-constants.inc": "generated/gt9x16-prod3-aos-branch1-constants.inc",
+    "gt9x16-prod3-aos-tile-constants.inc": "generated/gt9x16-prod3-aos-tile-constants.inc",
+    "gt9x16-prod3-ma2-hash-h1-map.h": "generated/gt9x16-prod3-ma2-hash-h1-map.h",
+    "gt9x16-prod3-ma2-hash-h1.h": "generated/gt9x16-prod3-ma2-hash-h1.h",
+    "gt9x16-shear.s": "generated/gt9x16-shear.s",
+    "gt9x16-stage8-tables.h": "generated/gt9x16-stage8-tables.h",
+    "gt9x16_forward.c": "src/gt9x16_forward.c",
+    "gt9x16_forward.h": "src/gt9x16_forward.h",
+    "gt9x16_ntt16.S": "asm/gt9x16_ntt16.S",
+    "gt9x16_ntt16.inc": "asm/gt9x16_ntt16.inc",
+    "gt9x16_ntt16_asm.h": "src/gt9x16_ntt16_asm.h",
+    "gt9x16_ntt16_c2.inc": "asm/gt9x16_ntt16_c2.inc",
+    "gt9x16_ntt16_c4.inc": "asm/gt9x16_ntt16_c4.inc",
+    "gt9x16_ntt16_paper.inc": "asm/gt9x16_ntt16_paper.inc",
+    "gt9x16_ntt9.inc": "asm/gt9x16_ntt9.inc",
+    "gt9x16_ntt9_paper.inc": "asm/gt9x16_ntt9_paper.inc",
+    "gt9x16_oracle.c": "ref/gt9x16_oracle.c",
+    "gt9x16_oracle.h": "ref/gt9x16_oracle.h",
+    "gt9x16_prod3_aos_branch0.S": "asm/gt9x16_prod3_aos_branch0.S",
+    "gt9x16_prod3_aos_branch0.h": "src/gt9x16_prod3_aos_branch0.h",
+    "gt9x16_prod3_aos_c1_tile.S": "asm/gt9x16_prod3_aos_c1_tile.S",
+    "gt9x16_prod3_aos_c1_tile.h": "src/gt9x16_prod3_aos_c1_tile.h",
+    "gt9x16_prod3_aos_full.h": "src/gt9x16_prod3_aos_full.h",
+    "gt9x16_prod3_aos_full_price.S": "asm/gt9x16_prod3_aos_full_price.S",
+    "gt9x16_prod3_aos_full_price.h": "src/gt9x16_prod3_aos_full_price.h",
+    "gt9x16_prod3_hash_fanout.c": "src/gt9x16_prod3_hash_fanout.c",
+    "gt9x16_prod3_hash_fanout.h": "src/gt9x16_prod3_hash_fanout.h",
+    "gt9x16_prod3_ma2_hash_h1.S": "asm/gt9x16_prod3_ma2_hash_h1.S",
+    "gt9x16_shear.c": "src/gt9x16_shear.c",
+    "gt9x16_shear.h": "src/gt9x16_shear.h",
+    "inverse_ntt9_b0.S": "asm/inverse_ntt9_b0.S",
+    "inverse_ntt9_b0_asm.h": "src/inverse_ntt9_b0_asm.h",
+    "inverse_ntt9_b1.S": "asm/inverse_ntt9_b1.S",
+    "inverse_ntt9_b1_asm.h": "src/inverse_ntt9_b1_asm.h",
+    "inverse_ntt9_reference.c": "ref/inverse_ntt9_reference.c",
+    "inverse_ntt9_reference.h": "ref/inverse_ntt9_reference.h",
+    "inverse_tail_d0.S": "asm/inverse_tail_d0.S",
+    "inverse_tail_d0_asm.h": "src/inverse_tail_d0_asm.h",
+    "kem.c": "src/kem.c",
+    "ntruplus_bench.c": "bench/supercop/ntruplus_bench.c",
+    "ntruplus_bench.h": "bench/supercop/ntruplus_bench.h",
+    "ntt9_reference.c": "ref/ntt9_reference.c",
+    "ntt9_reference.h": "ref/ntt9_reference.h",
+    "official-ntt-stage-partitions.s": "generated/official-ntt-stage-partitions.s",
+    "official_stage_partitions.h": "src/official_stage_partitions.h",
+    "top_split_adapter.c": "src/top_split_adapter.c"
+  },
+  "parameter": "1152",
+  "source_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "supercop_version": "20260831",
+  "wire_monotone_native_rebase2": {
+    "installed_sources": {
+      "forward": "zz_native_40_forward.S",
+      "h4_egress": "zz_native_52_h4_pairunpack.S",
+      "r_serializer": "zz_native_41_r_serializer_v2.S"
+    },
+    "kem": "wire-monotone scale-1 lazy forward + direct r serializer + H3/MA2 + H4 exact egress",
+    "keypair_and_decap": "unchanged pinned upstream paths",
+    "placement": "normal",
+    "source_implementation": "avx2-gt9x16-wire-shared-normal-exp004"
+  },
+  "wire_monotone_shared_abi": {
+    "boundary": "two forwards plus r exact-wire fanout plus PK ingress/MA2/ciphertext exact-wire egress",
+    "installed_sources": {
+      "natural_serializer": "zz_wire_21_natural_serializer.S",
+      "wire_forward": "zz_wire_20_wire_forward.S",
+      "wire_h4": "zz_wire_23_wire_h4.S",
+      "wire_serializer": "zz_wire_22_wire_serializer.S"
+    },
+    "placement": "normal"
+  }
+}

@@ -1,0 +1,12 @@
+#ifndef NTRUPLUS1152_EXP001_F0_GENERIC_TO_MA2_PLANES_H
+#define NTRUPLUS1152_EXP001_F0_GENERIC_TO_MA2_PLANES_H
+
+#include <stdint.h>
+
+#define NTRUPLUS1152_EXP001_F0_PLANE_WORDS 1152
+
+void ntruplus1152_exp001_f0_generic_to_ma2_planes(
+    int16_t output[NTRUPLUS1152_EXP001_F0_PLANE_WORDS],
+    const int16_t generic[NTRUPLUS1152_EXP001_F0_PLANE_WORDS]);
+
+#endif

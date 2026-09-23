@@ -1,0 +1,15 @@
+#ifndef NTRUPLUS1152_EXP001_GT9X16_PROD3_AOS_FULL_H
+#define NTRUPLUS1152_EXP001_GT9X16_PROD3_AOS_FULL_H
+
+#include <stdint.h>
+
+#define NTRUPLUS1152_EXP001_PROD3_AOS_FULL_WORDS 1152
+
+void ntruplus1152_exp001_gt9x16_prod3_aos_full(
+    int16_t backing[NTRUPLUS1152_EXP001_PROD3_AOS_FULL_WORDS]);
+void ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q(
+    int16_t backing[NTRUPLUS1152_EXP001_PROD3_AOS_FULL_WORDS]);
+void ntruplus1152_exp001_gt9x16_prod3_aos_full_natural_q_t0_beta(
+    int16_t backing[NTRUPLUS1152_EXP001_PROD3_AOS_FULL_WORDS]);
+
+#endif
