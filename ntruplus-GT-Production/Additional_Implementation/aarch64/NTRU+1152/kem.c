@@ -14,6 +14,13 @@
 #include "CE/fips202.h"
 #else
 #include "fips202.h"
+
+static int declassify_poly_frombytes(poly *r, const uint8_t a[NTRUPLUS_POLYBYTES])
+{
+    int result = poly_frombytes(r, a);
+    ntruplus_declassify(&result, sizeof result);
+    return result;
+}
 #endif
 
 /*************************************************
@@ -141,17 +148,22 @@ int crypto_kem_keypair(uint8_t *pk, uint8_t *sk)
     uint8_t coins[NTRUPLUS_SYMBYTES];
     /* Shared across retries, fully overwritten by SHAKE, erased on exit. */
     uint8_t buf[NTRUPLUS_N / 4];
+    int r;
 
     poly f, finv;
     poly g, ginv;
 
     do {
         randombytes(coins, sizeof coins);
-    } while (genf_derand(&f, &finv, buf, coins));
+        r = genf_derand(&f, &finv, buf, coins);
+        ntruplus_declassify(&r, sizeof r);
+    } while (r);
 
     do {
         randombytes(coins, sizeof coins);
-    } while (geng_derand(&g, &ginv, buf, coins));
+        r = geng_derand(&g, &ginv, buf, coins);
+        ntruplus_declassify(&r, sizeof r);
+    } while (r);
 
     crypto_kem_keypair_derand(pk, sk, &f, &finv, &g, &ginv);
     secure_clear(coins, sizeof coins);
@@ -264,27 +276,36 @@ int crypto_kem_enc(uint8_t *ct, uint8_t *ss, const uint8_t *pk)
 int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 {
 	uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
-	uint8_t buf1[NTRUPLUS_POLYBYTES];
 	uint8_t buf2[NTRUPLUS_N / 4];
-	uint8_t buf3[NTRUPLUS_POLYBYTES + NTRUPLUS_SYMBYTES];
+	/* buf1 and buf3 are first written after the inverse, so they also hold
+	 * its working area, which is cleared with them on exit. */
+	union {
+		struct {
+			uint8_t buf1[NTRUPLUS_POLYBYTES];
+			uint8_t buf3[NTRUPLUS_POLYBYTES + NTRUPLUS_SYMBYTES];
+		} b;
+		uint8_t invntt[POLY_INVNTT_TERNARY_SCRATCHBYTES];
+	} io __attribute__((aligned(16)));
+	_Static_assert(sizeof io.b >= sizeof io.invntt, "clearing buf1 and buf3 must clear the inverse scratch");
+	uint8_t *buf1 = io.b.buf1, *buf3 = io.b.buf3;
 
     int8_t fail=1;
 
     /* Four-slot lifetime ABI: c, reusable f/work, hinv, and natural m. */
     poly c, f, hinv, m;
 
-    /* Same rejection order as the selected Official. Secret-key validity is
-     * intentionally released as a status bit; do not claim this branch-free. */
+    /* Same rejection order as the selected Official.  Secret-key validity is
+     * released as a status bit, declassified as Official does. */
     if (poly_frombytes(&c,ct) ||
-        poly_frombytes(&f,sk) ||
-        poly_frombytes(&hinv,sk+NTRUPLUS_POLYBYTES)) {
+        declassify_poly_frombytes(&f,sk) ||
+        declassify_poly_frombytes(&hinv,sk+NTRUPLUS_POLYBYTES)) {
         secure_clear(ss,NTRUPLUS_SSBYTES);
         goto cleanup;
     }
 
     /* Only this product uses R^-1; the paired inverse restores natural R0. */
     poly_basemul_rinv(m.coeffs, c.coeffs, f.coeffs);
-    poly_invntt_ternary(&m, &m);
+    poly_invntt_ternary(&m, &m, io.invntt);
 
     /* f is dead after the decrypting BaseMul and becomes the work slot. */
     poly_ntt(&f, &m);
@@ -325,9 +346,8 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
 
 cleanup:
     secure_clear(msg,sizeof msg);
-    secure_clear(buf1,sizeof buf1);
+    secure_clear(&io,sizeof io);
     secure_clear(buf2,sizeof buf2);
-    secure_clear(buf3,sizeof buf3);
     secure_clear(&c,sizeof c);
     secure_clear(&f,sizeof f);
     secure_clear(&hinv,sizeof hinv);

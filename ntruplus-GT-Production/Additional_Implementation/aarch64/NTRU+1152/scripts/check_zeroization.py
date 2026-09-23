@@ -48,13 +48,19 @@ require("kem.c", (
 require("ntt.S", ("mov x21, x2",))
 require("api_glue.c", ("int16_t scratch[1152];",))
 require("symmetric.c", ("secure_clear(data, sizeof data);",))
+# The decapsulation inverse's scratch lives in kem.c's io union, which is
+# cleared as a whole; the static assert keeps the union covering the scratch.
+require("kem.c", ("poly_invntt_ternary(&m, &m, io.invntt);",
+                  "secure_clear(&io,sizeof io);",
+                  "sizeof io.b >= sizeof io.invntt"))
+# Released by design, as in Official: sk decode status and keygen's retry.
+require("kem.c", ("declassify_poly_frombytes(&f,sk)",
+                  "declassify_poly_frombytes(&hinv,sk+NTRUPLUS_POLYBYTES)",
+                  "ntruplus_declassify(&r, sizeof r);"))
+# baseinv branches on non-invertibility only after declassifying it.
+require("inverse.c", ("ntruplus_declassify(&invertible, sizeof invertible);",))
 require("fips202.c", ("secure_clear(s, sizeof s);", "secure_clear(tail, sizeof tail);"))
 
-# inverse_ntt.S is the only assembly leaf that owns secret-bearing scratch: the
-# Good-Thomas decomposition cannot run in place, so it allocates 2,304 bytes the
-# C caller cannot reach.  Both the memory wipe and the register wipe are pinned,
-# the latter as all thirty-two registers rather than a sample, because P68
-# removed exactly that block.
 # The register wipe stays: it costs one cycle and covers volatile SIMD state
 # that no later work overwrites, unlike a stack frame.  All thirty-two are
 # enumerated rather than sampled because P68 removed exactly this block.

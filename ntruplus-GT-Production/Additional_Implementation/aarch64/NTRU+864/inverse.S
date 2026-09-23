@@ -1,6 +1,7 @@
 /* Public AAPCS control wrappers. Arithmetic is in Slothy-allocated leaf cores.
  * Save d8-d15 once per public operation; x19-x28 hold state across core calls.
- * No scalar secret arithmetic except the fixed-length BaseInv failure scan.
+ * No scalar secret arithmetic except the fixed-length BaseInv failure scan,
+ * whose result is a return value, never a branch.
  */
 #ifdef __APPLE__
 #define C(name) _##name
@@ -125,7 +126,12 @@ C(baseinv_asm):
     cmp x25, #12
     b.ne .Lbinv_prefix
     // Prefix values lie inside (-q,q), so only integer zero represents zero.
-    // Scan all 24 lanes before the single failure branch; no early lane exit.
+    // Branch-free failure: if any of the 24 lanes is zero, all 24 running
+    // inverses are zeroed after the inversion, so every recovered denominator
+    // and every output coefficient becomes zero -- the cleared output the
+    // contract promises -- on the same instruction path.  The scan overlaps
+    // the inversion.  x20 (the input pointer) is dead from here and carries
+    // the flag.
     add x9, x23, #528
     ldp q0, q1, [x9]
     ldr q2, [x9, #32]
@@ -135,11 +141,18 @@ C(baseinv_asm):
     orr v0.16b, v0.16b, v1.16b
     orr v0.16b, v0.16b, v2.16b
     umaxv h0, v0.8h
-    umov w11, v0.h[0]
-    cbnz w11, .Lbinv_fail
+    umov w20, v0.h[0]           // 0xffff on failure, 0 on success
     mov x0, x24
     add x1, x23, #528
     bl C(binv_inverse3)
+    dup v3.8h, w20
+    ldp q0, q1, [x24]
+    ldr q2, [x24, #32]
+    bic v0.16b, v0.16b, v3.16b
+    bic v1.16b, v1.16b, v3.16b
+    bic v2.16b, v2.16b, v3.16b
+    stp q0, q1, [x24]
+    str q2, [x24, #32]
     mov x25, #11
 .Lbinv_recover:
     mov x8, #48
@@ -174,17 +187,7 @@ C(baseinv_asm):
     add x25, x25, #1
     cmp x25, #3
     b.ne .Lbinv_finish_chain
-    mov w0, #0
-    b .Lbinv_wipe
-.Lbinv_fail:
-    mov x9, x19
-    mov x10, #108
-.Lbinv_zero_output:
-    stp xzr, xzr, [x9], #16
-    subs x10, x10, #1
-    b.ne .Lbinv_zero_output
-    mov w0, #1
-.Lbinv_wipe:
+    and w0, w20, #1
     RESTORE_PUBLIC
 
 .p2align 4

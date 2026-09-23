@@ -14,6 +14,18 @@ require("secure_clear.h",("SECURE_CLEAR_AUDIT_HOOK",
 require("kem.c",("secure_clear(&f, sizeof f);","secure_clear(&ginv, sizeof ginv);",
                  "secure_clear(msg,sizeof msg);","secure_clear(&m,sizeof m);"))
 require("symmetric.c",("secure_clear(data, sizeof data);",))
+# The decapsulation inverse's scratch lives in kem.c's io union, which is
+# cleared as a whole; the static assert keeps the union covering the scratch.
+require("kem.c", ("poly_invntt_ternary(&m, &m, io.invntt);",
+                  "secure_clear(&io,sizeof io);",
+                  "sizeof io.b >= sizeof io.invntt"))
+# Released by design, as in Official: sk decode status and keygen's retry.
+require("kem.c", ("declassify_poly_frombytes(&f,sk)",
+                  "declassify_poly_frombytes(&hinv,sk+NTRUPLUS_POLYBYTES)",
+                  "ntruplus_declassify(&r, sizeof r);"))
+# baseinv's non-invertibility is a return value, not a branch.
+if ".Lbinv_fail" in (ROOT / "inverse.S").read_text():
+    raise SystemExit("inverse.S: baseinv failure branch is back")
 # Official-aligned cleanup, as NTRU+768 adopted: assembly working frames are
 # not wiped.  What is pinned is what survives that policy -- the leaves allocate
 # nothing the caller cannot name, and the volatile SIMD registers are still

@@ -1,4 +1,5 @@
 #include "inverse_asm.h"
+#include "secure_clear.h"
 #include "base_tables.h"
 
 #include <arm_neon.h>
@@ -222,6 +223,7 @@ int baseinv_asm(int16_t out[BASE_COEFFICIENTS],
 {
     int16x8_t den[36];
     int16x8_t prefix[36];
+    int invertible;
 
     /* ---- numerator: quartic adjugate into out, norm into den ---- */
 #ifdef NTRUPLUS1152_ASM_BASEINV_NUM
@@ -288,10 +290,17 @@ int baseinv_asm(int16_t out[BASE_COEFFICIENTS],
         /*
          * cpre[K-1] is the product of all 36, exactly what the single-chain
          * version inverted.  Prefix values lie inside (-q,q), so only integer
-         * zero represents zero; vminvq_u16 folds all eight lanes with no early
-         * exit and the branch depends on public non-invertibility.
+         * zero represents zero; vminvq_u16 folds all eight lanes.
+         *
+         * Non-invertibility is released by design -- keygen retries on it, as
+         * Official does -- so it is declassified here, one level below kem.c,
+         * and the failure exits early.  About 29% of 1152's f and g candidates
+         * fail; running the full inversion for them instead costs keygen 1.1%
+         * on A76 (P124).
          */
-        if (!vminvq_u16(vreinterpretq_u16_s16(cpre[K - 1]))) {
+        invertible = vminvq_u16(vreinterpretq_u16_s16(cpre[K - 1])) != 0;
+        ntruplus_declassify(&invertible, sizeof invertible);
+        if (!invertible) {
             for (int i = 0; i < BASE_COEFFICIENTS; i++)
                 out[i] = 0;
             return 1;

@@ -1,5 +1,30 @@
 # K1 production integration evidence
 
+## P124-P125 constant time, scratch ownership, range proof — 2026-09-23
+
+- **SUPERCOP TIMECOP passes** (20260831, valgrind 3.24.0 with `libc6-dbg`,
+  Pi 5, `TIMECOP=256`) at `-O`, `-O2`, `-O3` and `-Os`, with SUPERCOP's own
+  checksum `b0cdac76...`.  Before this change the leaf failed on two branches:
+  the secret-key decode status in Decaps and BaseInv's failure branch.
+  Official's 864 leaf fails too, on `poly_fqinv_batch`.
+- BaseInv is branch-free: a non-invertible input zeroes the 24 running
+  inverses after the inversion, so the output is cleared on the same path.
+  Keygen and the Decaps key decode declassify their status bits as Official
+  does.  `test_baseinv_fail` now gates all 288 leaves (rejects and clears,
+  aliased and not); removing the masking makes it fail.
+- The inverse's 1,792-byte scratch is part of `kem.c`'s `io` union, overlaid on
+  `buf1`/`buf3` and cleared with them on exit, at no extra cost.
+- Timing, min of blocks: keygen +0.1% A76 / +0.2% M2, Decaps unchanged.
+- **Range proof of the linked inverse** (interval interpreter over the
+  executable's disassembly, exact error of every constant pair,
+  `experiments/gt-p125-864-1152-range-proof`): for every input with
+  |x| <= 2497 no intermediate leaves int16 (peak 22,473 in `packed_i9`), the
+  output is in {-1,0,1}, and every q-centering input is at most 4,482, inside
+  the 5,185 up to which the single correction is exact.  The proof holds up to
+  |x| <= 3,640.  The 32 never-written scratch halfwords the transform reads
+  (scratch + 0x60c..0x6fe, the old tail padding) never reach an output, so the
+  padding needs no initialisation.
+
 ## P48 Encaps Full-ToBytes-to-SHAKE promotion — 2026-09-16
 
 Encaps now calls `hash_g_fr0`, which places the exact P46 canonical Full
@@ -432,7 +457,10 @@ than the former P0-B full-frame policy.
   non-Windows platform.
 - Assembly **working frames are not wiped.** The leaves take their scratch from
   the caller rather than allocating it, so nothing they touch is unreachable
-  from C, but the buffer itself is not erased.
+  from C, but the buffer itself is not erased.  The one exception costs
+  nothing: decapsulation's inverse takes its scratch from `kem.c`'s `io` union,
+  which overlays `buf1` and `buf3` (first written after the inverse) and is
+  cleared with them on exit.
 - **Volatile SIMD registers are still erased** at the inverse boundary. That is
   a deliberate exception: it costs one cycle, and unlike a stack frame, register
   state is not overwritten by whatever runs next.

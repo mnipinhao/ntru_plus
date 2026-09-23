@@ -45,4 +45,15 @@ static inline void secure_clear(void *v, size_t len)
 #endif
 }
 
+/* SUPERCOP's TIMECOP treats every secret-derived branch as a leak unless the
+ * value is declassified first.  Only values released by design are: a secret
+ * key that fails to decode, and the non-invertibility keygen retries on, both
+ * as in Official. */
+#ifdef SUPERCOP
+#include "crypto_declassify.h"
+#define ntruplus_declassify crypto_declassify
+#else
+#define ntruplus_declassify(x, xlen) ((void)(x), (void)(xlen))
+#endif
+
 #endif /* UTIL_H */

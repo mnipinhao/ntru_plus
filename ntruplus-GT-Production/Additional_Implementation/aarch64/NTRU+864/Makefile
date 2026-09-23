@@ -7,6 +7,7 @@ BUILD_DIR ?= $(BUILD_ROOT)/NTRU+864
 TEST_KEM := $(BUILD_DIR)/test_kem
 TEST_ABI := $(BUILD_DIR)/test_abi
 TEST_CANONICAL := $(BUILD_DIR)/test_canonical
+TEST_BASEINV_FAIL := $(BUILD_DIR)/test_baseinv_fail
 TEST_ZEROIZATION := $(BUILD_DIR)/test_zeroization
 TEST_KECCAK_V84A := $(BUILD_DIR)/test_keccak_v84a
 TEST_SHAKE_PREFIXED := $(BUILD_DIR)/test_shake_prefixed
@@ -100,6 +101,9 @@ $(TEST_KEM): test/test_kem.c randombytes.c $(KEM_OBJECTS) | $(BUILD_DIR)
 $(TEST_ABI): test/test_abi.c test/abi_sentinel.S randombytes.c $(KEM_OBJECTS) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
+$(TEST_BASEINV_FAIL): test/test_baseinv_fail.c randombytes.c $(KEM_OBJECTS) | $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
 $(TEST_CANONICAL): test/test_canonical.c randombytes.c $(KEM_OBJECTS) | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
@@ -127,9 +131,10 @@ check-release:
 manifest-check: check-release
 	shasum -a 256 -c SOURCE-MANIFEST.sha256
 
-test: check-release $(TEST_KEM) $(TEST_ABI)
+test: check-release $(TEST_KEM) $(TEST_ABI) $(TEST_BASEINV_FAIL)
 	$(TEST_KEM)
 	$(TEST_ABI)
+	$(TEST_BASEINV_FAIL)
 
 abi: check-release $(TEST_ABI)
 	$(TEST_ABI)

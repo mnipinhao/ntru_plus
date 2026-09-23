@@ -13,11 +13,8 @@
  * x0 out, x1 in, x2 invntt9_constants_lane, x3 invntt16, x4 main, x5 tail,
  * x6 scratch: 2304 bytes provided by the caller.  The leaf allocates no
  * memory of its own, so every secret it touches lies in a buffer the C caller
- * can name -- the arrangement mlkem-native's kernels use.  The buffer is not
- * wiped: under the Official-aligned policy NTRU+768 adopted, an assembly
- * working frame is not secret data with a lifetime.  Measured at the wipe's own
- * boundary the scratch does survive the call, but by the time decapsulation
- * returns the work that follows has overwritten it either way.
+ * can name -- the arrangement mlkem-native's kernels use.  The leaf does not
+ * wipe it; decapsulation overlays it on buffers it clears on exit.
  */
 #ifdef __APPLE__
 #define C(name) _##name

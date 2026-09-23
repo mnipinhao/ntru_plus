@@ -132,12 +132,14 @@ Actual production-built objects, not separately rebuilt experimental objects:
 
 ## Security review scope
 
-BaseInv scans all 24 terminal prefix lanes, then branches once on the aggregate
-noninvertibility result. This is intentionally NOT a blanket no-secret-branch
-claim: success/failure timing differs and Keygen retries on this result. The
-old implementation also had a failure branch. Retaining this Keygen contract
-does not establish a formal timing-leakage proof. No new lane-position early
-exit was added. Output is cleared on failure; scratch is wiped on both paths.
+BaseInv scans all 24 terminal prefix lanes and does not branch on the result:
+on failure it zeroes all 24 running inverses after the inversion, so every
+recovered denominator and every output coefficient comes out zero on the same
+instruction path.  (864's candidates practically never fail, so this costs
+nothing; NTRU+1152, where 29% fail, declassifies and exits early instead.)  The status is returned; Keygen declassifies it before its
+retry loop, as Official does, because a retry is observable by design.  The
+secret-key decode status in Decaps is declassified the same way.  The
+working scratch is not wiped (Official-aligned policy).
 
 BaseMul/Inverse loops and addresses depend on fixed public counters/pointers;
 their arithmetic cores contain no data-dependent branch. Exact alias is tested;

@@ -7,7 +7,7 @@ than printing a warning.
 |---|---|
 | `check-release` | the tree contains sources and nothing else: no build products, no result files, and no reference to a path outside it. Also pins the expected KAT hash |
 | `manifest-check` | every shipped file matches `SOURCE-MANIFEST.sha256` |
-| `zeroization-source-check` | the clears are present in source — the barrier in `secure_clear.h`, the C call sites, the 2,304-byte inverse scratch wipe, and all thirty-two SIMD register wipes, enumerated rather than sampled |
+| `zeroization-source-check` | the clears are present in source — the barrier in `secure_clear.h`, the C call sites including the decapsulation `io` union that holds the inverse scratch, the declassify sites, the absence of a baseinv failure branch, and all thirty-two SIMD register wipes, enumerated rather than sampled |
 | `check-inplace` | `packed_i9`'s nine data loads all retire before its first store, which is the precondition that lets `inverse_ntt.S` overlay the rebase buffer on the scratch |
 | `test_kem` | 64 round trips plus tampered-ciphertext rejection |
 | `test_canonical` | 13,824 boundary cases of the canonical decoder |
@@ -30,13 +30,35 @@ being *erased*. It pins the register wipes individually for that reason.
 algorithm. A future scheduling pass is free to interleave the loads and stores,
 and the result would be silent corruption; this fails the build instead.
 
+## Constant time and range proof (P124-P125, 2026-09-23)
+
+- **SUPERCOP TIMECOP passes** (20260831, valgrind 3.24.0 with `libc6-dbg`,
+  Pi 5, `TIMECOP=256`) at `-O`, `-O2`, `-O3` and `-Os`, with SUPERCOP's own
+  checksum `2275d102...`.  Before this change the leaf failed on the
+  secret-key decode status in Decaps and on BaseInv's failure branch.
+  Official's 1152 leaf fails too, on `poly_fqinv_batch`.
+- Both status bits are declassified, as Official does.  BaseInv keeps its early
+  exit, after declassifying: 29% of 1152's f and g candidates are
+  non-invertible (27% for g), and a branch-free failure path cost keygen 1.1%
+  on A76.  864, whose candidates practically never fail, is branch-free.
+- The inverse's 2,304-byte scratch is part of `kem.c`'s `io` union, overlaid on
+  `buf1`/`buf3` and cleared with them on exit, at no extra cost.
+- **Range proof of the linked inverse** (interval interpreter over the
+  executable's disassembly, `experiments/gt-p125-864-1152-range-proof`): for
+  every input with |x| <= 2458 (the canonical product bound) no intermediate
+  leaves int16 (peak 22,122 in `packed_i9`), the output is in {-1,0,1}, and
+  the largest input to `crepmod3`'s single q-correction is 5,178.  That
+  correction is exact up to 5,185, so the margin is 7; the proof holds up to
+  |x| <= 2,501, which covers the inherited 2,497 contract.  No never-written
+  scratch is read.
+
 ## Scratch ownership
 
 No assembly leaf in this tree allocates working memory the C caller cannot
 reach. `ntt.S` and `inverse_ntt.S` take their scratch as an argument, so the
 transform's intermediates live in a buffer `api_glue.c` declares and can clear —
-the arrangement mlkem-native's kernels use. `ntt.S`'s buffer is cleared in C;
-`inverse_ntt.S` clears its own, being the last thing to touch it.
+the arrangement mlkem-native's kernels use.  Neither leaf clears its buffer;
+decapsulation's inverse scratch is part of `kem.c`'s cleared `io` union.
 
 ## Cleanup policy
 
@@ -49,7 +71,10 @@ than the former P0-B full-frame policy.
   non-Windows platform.
 - Assembly **working frames are not wiped.** The leaves take their scratch from
   the caller rather than allocating it, so nothing they touch is unreachable
-  from C, but the buffer itself is not erased.
+  from C, but the buffer itself is not erased.  The one exception costs
+  nothing: decapsulation's inverse takes its scratch from `kem.c`'s `io` union,
+  which overlays `buf1` and `buf3` (first written after the inverse) and is
+  cleared with them on exit.
 - **Volatile SIMD registers are still erased** at the inverse boundary. That is
   a deliberate exception: it costs one cycle, and unlike a stack frame, register
   state is not overwritten by whatever runs next.

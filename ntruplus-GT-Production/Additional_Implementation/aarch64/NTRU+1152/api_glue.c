@@ -38,21 +38,19 @@ int poly_baseinv(poly *out, const poly *in)
 void poly_basemul_rinv(int16_t *out, const int16_t *a, const int16_t *b)
 { basemul_rinv_asm(out, a, b); }
 
-void poly_invntt_ternary(poly *out, const poly *in)
+void poly_invntt_ternary(poly *out, const poly *in,
+                         uint8_t scratch[POLY_INVNTT_TERNARY_SCRATCHBYTES])
 {
     /* The transform cannot run in place -- every invntt16 call scatters its
      * output across ranges the other calls still have to read (P72) -- so the
-     * scratch is structural.  It is declared here rather than inside the
-     * assembly so that the leaf allocates nothing the caller cannot name; the
-     * leaf still clears it, being the last thing to touch it. */
-    poly scratch;
-
+     * scratch is structural.  The leaf does not clear it; decapsulation passes
+     * a buffer it clears on exit. */
     invntt_ternary_asm(out->coeffs, in->coeffs,
                        &invntt9_constants_lane[0][0][0][0],
                        &invntt16_constants[0][0],
                        &invntt16_main_constants[0][0],
                        &invntt16_tail_constants[0][0],
-                       scratch.coeffs);
+                       (int16_t *)scratch);
 }
 
 void poly_tobytes(uint8_t r[NTRUPLUS_POLYBYTES], const poly *a)
