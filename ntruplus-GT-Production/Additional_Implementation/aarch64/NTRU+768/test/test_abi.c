@@ -3,7 +3,8 @@
 #include <string.h>
 
 #include "api.h"
-#include "decap_verify.h"
+#include "decap.h"
+#include "encap.h"
 #include "legacy/verify.h"
 #include "keygen.h"
 #include "poly.h"

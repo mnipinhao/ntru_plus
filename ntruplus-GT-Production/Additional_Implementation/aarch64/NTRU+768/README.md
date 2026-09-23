@@ -3,26 +3,26 @@
 **Good-Thomas Optimized (GT-Optimized)** is the fixed, publishable AArch64
 Neon implementation of NTRU+768 in this directory. The name refers to its
 Good-Thomas decomposition of each length-96 transform into `3 x 32`
-dimensions, which avoids cross-dimension twiddle factors. The directory name
-remains `ntruplus-GT-Production`, and its role mirrors
-`ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768`, while keeping
-all test and KAT dependencies local instead of using symlinks. It contains one
-production profile and no runtime or build-time profile selector.
+dimensions, which avoids cross-dimension twiddle factors. All test and KAT
+dependencies are local to this directory. It contains one production profile
+and no runtime or build-time profile selector.
 
 The public implementation surface follows the conventional file and symbol
 shape used by other NTRU+ implementations:
 
 | File | Public responsibility |
 |---|---|
-| `ntt.S` | Encap/Keygen/Decap Forward and the Decap Good-Thomas inverse (fused mod 3) |
+| `ntt.S` | Shared Good-Thomas forward core: keygen CQ, Encap, and validation entries |
+| `decap_ntt.S` | Decapsulation forward NTT |
+| `decap_invntt.S` | Decapsulation Good-Thomas inverse, fused centered mod 3 |
 | `base.S` | Pointwise multiplication, base inversion leaves, packed first product |
 | `pack.S` | Checked decode and canonical serialization for each layout |
 | `keygen.c` | CQ inversion orchestration and CQ pointwise products |
 | `cbd.S` | CBD and SOTP conversion |
 | `add.S` | ABI-safe subtraction and two-pointer triple |
-| `crepmod3.S` | Standalone centered mod 3; test oracle only, since decapsulation fuses mod 3 into `poly_invntt_ternary_decap` |
-| `keccakf1600.S` | Baseline AArch64 Keccak-f[1600] backend and fused fixed-size `hash_g` |
+| `keccakf1600.S` | Scalar AArch64 Keccak-f[1600] backend |
 | `keccakf1600_v84a.S` | FEAT_SHA3 x1 permutation selected at compile time when available |
+| `tables.c` | Keygen CQ and Encap basemul-add lambda tables |
 | `util.h` | Portable secure_clear, SUPERCOP declassify annotation, optional test audit hook |
 | `kem_api.S` | AAPCS64 boundary for the public KEM API |
 | `kem.c` | Key generation, encapsulation, and decapsulation |
@@ -32,8 +32,8 @@ constant tables, and small common macros have been flattened into their owning
 source files; the release does not require separate `.inc` fragments.
 
 The selected KEM also uses private specialized endpoints in this directory.
-Their declarations remain separate in `keygen.h`, `ntt.h`, and
-`decap_verify.h`. These are part of this one production build,
+Their declarations are in `keygen.h`, `encap.h`, and `decap.h` (`poly.h`
+holds the shared helpers). These are part of this one production build,
 not optional profiles:
 
 - A key-generation NTT with a direct vector-native output layout, hierarchical
@@ -44,23 +44,40 @@ not optional profiles:
 - The active Encap small-lazy Forward endpoint accepts signed [-2,2] and
   produces representatives in [-21050,21050]. The separate exact endpoint
   remains available as a differential oracle. Decap verification uses Q31 reduction.
-- The active packed ct/f first-product and D1 verification endpoints; older
-  QSoA helpers are isolated under test/legacy and linked only into ABI regression
-  tests, not the KEM library or SUPERCOP leaf.
-- A paired pointwise/inverse contract in which pointwise multiplication leaves
-  one Montgomery `R^-1` factor and the inverse transform absorbs it.
+- The packed ct/f first product (`poly_frombytes_basemul_decap_scale`) paired
+  with the Good-Thomas inverse `poly_invntt_ternary_decap`: the product keeps one
+  Montgomery `R^-1` factor and is stored element-major (`st4`); the inverse
+  absorbs the factor, fuses the centered mod-3 map, and works in a 2,048-byte
+  caller-owned scratch area.  Its overflow freedom for every canonical input is
+  proved over its disassembly.
+- The D1 verification product; older QSoA helpers are isolated under
+  test/legacy and linked only into ABI regression tests, not the KEM library or
+  SUPERCOP leaf.
 
 See [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md) for the transform, layout,
-and fixed build contracts. The repository-level
-[optimization summary](../../../../bench/aarch64/gt-production/reports/OPTIMIZATION-SUMMARY.md)
-provides a concise comparison with KPQC final.
+and fixed build contracts. The benchmark harness is under
+[`bench/aarch64/gt-production/`](../../../../bench/aarch64/gt-production/).
+
+## Performance
+
+SUPERCOP 20260831 on a Raspberry Pi 5 (Cortex-A76), medians of six rounds,
+cycles:
+
+| | GT | Official | |
+|---|---:|---:|---:|
+| keypair | 31,646 | 38,426.5 | -17.65% |
+| enc | 29,442.5 | 38,585 | -23.69% |
+| dec | 27,315 | 33,549 | -18.58% |
+
+With Official's hash layer linked into both, the margins are -5.6% / -3.8% /
+-5.6%: most of the lead comes from the Keccak and sponge code, the rest from the
+arithmetic.
 
 ## Build
 
-The public SHAKE implementation is unchanged. On AArch64, both its standalone
-permutation and the fixed-size register-resident `hash_g` are selected at
-compile time: FEAT_SHA3 builds use namespaced v8.4-A backends, while other
-builds retain the scalar AArch64 implementations.
+The public SHAKE interface is unchanged and its sponge is portable C. The
+Keccak-f[1600] permutation is selected at compile time: FEAT_SHA3 builds use
+`keccakf1600_v84a.S`, other builds the scalar `keccakf1600.S`.
 
 ```sh
 make
@@ -94,27 +111,26 @@ static source-coverage gate with a runtime audit hook for the portable C
 clears. `make kat-check` regenerates the NIST KAT and compares it byte-for-byte
 with the canonical vectors under `kat/expected/`.
 
-`make support-check` verifies the standalone `poly_crepmod3` oracle over its full
+`make support-check` verifies the standalone `poly_crepmod3` oracle
+(`test/reference/crepmod3.S`) over its full
 input contract [-3456,3456], including q-centering, in-place and out-of-place use.
 The KEM no longer calls it: decapsulation's inverse ends in an exactly centered
-Barrett and applies the mod-3 step itself, producing the same ternary output. `poly_sub` is the active Decap subtraction name; its arithmetic
-matches the previous poly_sub_decap and preserves AAPCS64 d8-d15.
+Barrett and applies the mod-3 step itself, producing the same ternary output.
 
-The Encap checked decoder stores directly from the pre-64-bit-transpose packets,
-removing 96 TRN operations while retaining complete output on success and failure.
-The loose pack reducer is unchanged after the two measured alternatives regressed.
+The Encap checked decoder writes its complete output on both success and
+failure.
 
-Cleanup now follows the Official-style lower-clear policy. Secret C buffers
-remain cleared, but extra full assembly-frame and caller-register wipes are
-not promised. See the explicit coverage and exceptions in section 10 of
-`docs/IMPLEMENTATION.md`; this is not the former P0-B policy.
+Cleanup follows the Official-style lower-clear policy: secret C buffers are
+cleared, but full assembly-frame and caller-register wipes are not promised.
+See section 10 of `docs/IMPLEMENTATION.md` for the coverage and exceptions.
 
 ## Scope
 
 - Parameter set: NTRU+768
 - ISA: AArch64 Armv8-A Advanced SIMD (Neon)
-- Selected layouts: Keygen CQ, Encap block-major GT, and Decap transposed
-  consumers. Equal storage size does not make these interchangeable.
+- Selected layouts: Keygen CQ, Encap block-major GT, Decap QSoA, and the
+  element-major decapsulation first product. Equal storage size does not make
+  these interchangeable.
 - External byte contract: canonical NTRU+ public key, secret key, and
   ciphertext encoding.
 
@@ -136,16 +152,8 @@ The leaf retains readable C and headers, preprocesses `.S` into Linux `.s`,
 and applies a private namespace to all implementation definitions. A small
 `adapter.c` uses SUPERCOP's `crypto_kem.h` namespace for the three public APIs.
 Neither the local randombytes implementation nor its header is exported.
-No KAT/test mains, generated objects, or `goal-*`
-claims are included. Export metadata is written beside the leaf, not inside it.
-The source package remains authoritative; do not maintain hand-edited `.s` copies.
-# Encap small-input entry contracts
-
-Encapsulation uses `poly_ntt_encap_small_lazy`: signed [-2,2] input,
-block-major output bounded by [-21050,21050], modulo-q equivalence to the
-generic transform, and in-place support. It shares the frontend, tables and
-late stages; only three Stage12 blocks are specialized.
-
-`poly_ntt_encap_small` remains the raw-bit-exact reference entry. Its tests
-remain enabled; separate lazy-entry tests check range, modulo-q, alias and
-serialized-byte equivalence. Keygen and Decap retain their own entry contracts.
+No KAT/test mains or generated objects are included. The leaf declares
+`goal-constbranch` and `goal-constindex`; it passes SUPERCOP's TIMECOP check
+(valgrind memcheck) at `-O`, `-O2`, `-O3` and `-Os`. Export metadata is written
+beside the leaf, not inside it. The source package remains authoritative; do not
+maintain hand-edited `.s` copies.

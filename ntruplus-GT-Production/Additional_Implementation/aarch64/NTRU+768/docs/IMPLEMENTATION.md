@@ -4,12 +4,8 @@ This document defines the fixed data-flow, layout, symbol-pairing, source, and
 ABI contracts of the GT-Optimized NTRU+768 release. It is an integration and
 maintenance reference, not a performance comparison.
 
-For the Good-Thomas decomposition, optimization rationale, KPQC-final
-comparison, and measured cycle reductions, see
-[`OPTIMIZATION-SUMMARY.md`](../../../../../bench/aarch64/gt-production/reports/OPTIMIZATION-SUMMARY.md).
-For the complete
-measurement method and raw component results, see
-[`BENCHMARKS.md`](../../../../../bench/aarch64/gt-production/reports/BENCHMARKS.md).
+Measured performance is summarised in `README.md`; the benchmark harness is
+under [`bench/aarch64/gt-production/`](../../../../../bench/aarch64/gt-production/).
 
 ## 1. Release Scope
 
@@ -50,13 +46,15 @@ intermediate runtime dispatch.
 
 ### 3.1 Block-major GT layout
 
-`poly_ntt_loose` and `poly_ntt_encap_small` write the block-major transform
-layout used by encapsulation. The following symbols consume this layout:
+`poly_ntt_encap_small_lazy` (production), `poly_ntt_encap_small` and
+`poly_ntt_loose` (validation) write the block-major transform layout used by
+encapsulation. In the KEM it is consumed by:
 
-- `poly_basemul`
 - `poly_basemul_add_encap`
-- `poly_invntt`, subject to the paired `R^-1` contract below
-- `poly_tobytes_encap`, when serializing a block-major transform result
+- `poly_tobytes_encap_loose` and `poly_tobytes_encap`
+
+The test-only `poly_basemul`/`poly_invntt` pair in `test/reference/` also uses
+it (section 6).
 
 Block-major order is not canonical byte order. `poly_frombytes_encap` and
 `poly_tobytes_encap` apply the fixed permutation required at the external boundary.
@@ -78,20 +76,22 @@ CQ is retained from the key-generation NTT through base inversion, both
 pointwise products, and canonical packing. It must not be passed to generic
 block-major polynomial entrypoints.
 
-### 3.3 QSoA verification layout
+### 3.3 Decap QSoA layout
 
-The retained older verification helpers use a private QSoA representation:
+Decapsulation stores polynomials in groups of eight base elements. Each group is
+four vectors, one per coefficient position: coefficient k of element l of group
+g is at halfword 32g + 8k + l. The decoded ciphertext, `hinv`, the output of
+`poly_ntt_decap`, and the inputs and output of `poly_basemul_decap` and
+`poly_tobytes_decap` use this layout. It must not be confused with Encap
+block-major.
 
-```text
-qsoa_frombytes
-    -> gt_decap_verify_pointwise
-    -> qsoa_tobytes
-```
+The one exception is the first product: `poly_frombytes_basemul_decap_scale`
+stores it element-major per group (section 6), because its only consumer is
+`poly_invntt_ternary_decap`.
 
-These helpers remain validation roots, not the selected kem.c sequence.
-The active Decap path uses `poly_frombytes_basemul_decap_scale`,
-`poly_invntt_ternary_decap`, `poly_ntt_decap`, `poly_basemul_decap`, and
-`poly_tobytes_decap`. Its ordering must not be confused with Encap block-major.
+The retained `test/legacy/` helpers (`qsoa_frombytes`,
+`gt_decap_verify_pointwise`, `qsoa_tobytes`) are validation roots, not part of
+the KEM.
 
 ## 4. Forward-Transform Endpoints
 
@@ -99,10 +99,11 @@ The maintained Forward endpoints have distinct caller contracts:
 
 | Symbol | Input | Output | Production consumer |
 |---|---|---|---|
-| `poly_ntt_loose` | generic coefficients | block-major loose GT | validation oracle; proved loose consumers |
-| `poly_ntt_encap_small` | signed [-2,2] | bit-exact generic loose GT | Encap r/m, supports exact in-place |
+| `poly_ntt_encap_small_lazy` | signed [-2,2] | block-major, [-21050,21050]; exact alias allowed | Encap r and m |
 | `poly_ntt_keygen_cq` | coefficient order | key-generation CQ | CQ base inversion |
-| `poly_ntt_decap` | Decap coefficient inputs | Decap consumer layout | Decap verification |
+| `poly_ntt_decap` | signed [-2,2] | Decap QSoA | Decap re-encryption |
+| `poly_ntt_loose` | generic coefficients | block-major, [-27548,27548] | validation only |
+| `poly_ntt_encap_small` | signed [-2,2] | bit-exact to `poly_ntt_loose` | validation only |
 
 The endpoints differ at the selected final store layout. A caller must choose
 the endpoint from the next kernel's expected representation; no generic
@@ -127,35 +128,11 @@ success, its output scaling and CQ layout are the input contract of
 `poly_tobytes_keygen_cq` is the only CQ-to-canonical boundary in the production
 key-generation path.
 
-## 6. Pointwise/Inverse Contract
+## 6. Pointwise/Inverse Contracts
 
-The test-only generic pointwise/inverse pair in `test/reference/` is:
+### 6.1 Decapsulation first product and inverse
 
-```text
-poly_basemul
-    -> block-major result with one Montgomery R^-1 factor retained
-poly_invntt
-    -> final constants absorb R^-1, inverse normalization,
-       untwist, branch merge, and final scaling
-```
-
-These two symbols form one representation contract. `poly_invntt` is not an
-independently normalized generic inverse for arbitrary transform-domain input,
-and the output of `poly_basemul` must not be interpreted as a separately
-normalized generic product. Their declarations live in
-`test/reference/poly_reference.h`; only the ABI test links these sources.
-Neither kernel is included in KEM_SOURCES or the SUPERCOP export.
-The shared `gt_rowbitrev_lambda` table remains in production because the
-Encap basemul-add also consumes it. `basemul_lambda.c` owns the sole C
-definition; assembly refers to the external symbol and the linker resolves it.
-No public or internal header declares the table because there is no C consumer.
-Forward NTT sources are unchanged.
-
-The three inverse Stage45 rows share one internal row helper. This changes only
-the call structure and linked text size; row arithmetic, input order, and
-output representation are unchanged.
-
-The active Decap first-product pair instead is
+The decapsulation first-product pair is
 `poly_frombytes_basemul_decap_scale -> poly_invntt_ternary_decap`. The two
 must remain paired:
 
@@ -179,7 +156,28 @@ its scratch object, which is dead at that point and cleared on return.
 D1 `poly_basemul_decap` is a later normal-domain verification product, not a
 replacement for that scaled first product.
 
-### 6.1 Encapsulation exact-alias contract
+### 6.2 Test-only reference pair
+
+The test-only generic pointwise/inverse pair in `test/reference/` is:
+
+```text
+poly_basemul
+    -> block-major result with one Montgomery R^-1 factor retained
+poly_invntt
+    -> final constants absorb R^-1, inverse normalization,
+       untwist, branch merge, and final scaling
+```
+
+These two symbols form one representation contract. `poly_invntt` is not an
+independently normalized generic inverse for arbitrary transform-domain input,
+and the output of `poly_basemul` must not be interpreted as a separately
+normalized generic product. Their declarations live in
+`test/reference/poly_reference.h`; only the ABI test links these sources.
+Neither kernel is included in KEM_SOURCES or the SUPERCOP export. The
+`gt_rowbitrev_lambda` table they use stays in production because the Encap
+basemul-add also consumes it.
+
+### 6.3 Encapsulation exact-alias contract
 
 The encapsulation-only `poly_basemul_add_encap` call passes the message polynomial as
 both its additive input and output.  The selected assembly processes one
@@ -209,11 +207,15 @@ QSoA storage.
 
 The exact release source list is defined by `Makefile`. All production C,
 assembly, and headers are in the package root. Private endpoint declarations
-remain separate in `keygen.h`, `ntt.h`, and `decap_verify.h`.
+are in `keygen.h`, `encap.h`, and `decap.h`; `poly.h` holds the shared
+helpers, and test-only declarations are in `test/reference/poly_reference.h`.
+`ntt.S` holds the shared forward core, `decap_ntt.S` and `decap_invntt.S` the
+decapsulation transforms, and `tables.c` the lambda tables.
 The endpoint naming and ntt/base/pack consolidation preserve parameters and
 layout contracts. Each original assembly owner has a private identifier
-namespace and a corresponding section boundary. Validation/reference endpoints
-remain; only the proved-unreferenced legacy Decap twist table was removed.
+namespace and a corresponding section boundary. The validation endpoints
+`poly_ntt_loose` and `poly_ntt_encap_small` share the forward core with the KEM
+entries and stay in `ntt.S`.
 
 Production sources are flattened: arithmetic bodies, constants, lambda tables,
 and assembly helper macros reside in the `.S` or `.c` file that owns them. No
@@ -264,8 +266,8 @@ ntruplus768/aarch64, rather than the former P0-B full-frame policy.
   numerator/denominator scratch are still cleared. Retry values are overwritten.
 - Encap reuses ciphertext as the pack-r/hash workspace; it clears secret
   coins, message, hash buffer, r and m, but not the public decoded h.
-- Decap clears its complete scratch union on every exit. Reducing the buf3
-  declaration does not shrink the union because a polynomial also occupies it.
+- Decap clears its complete scratch object on every exit, including the
+  inverse's 2,048-byte working area in its `io` union.
 - hash_f processes a public key and does not wipe its prefixed input copy.
   hash_g/hash_h still clear their prefixed inputs. NO_CE uses Official's inline
   SHAKE contexts with the same clear sites, routed through secure_clear so
@@ -286,17 +288,21 @@ noncanonical ciphertexts, and verification failures.
 
 ## 11. D1 and Encap-Small Endpoints
 
-Decap verification basemul uses the e03 staggered Q31 final reduction:
+Decap verification basemul uses a staggered Q31 final reduction:
 normal-domain int32 accumulator -> normal-domain int16, reciprocal 621199.
 The proved accumulator magnitude is at most 452984832 and residual magnitude
 at most 2001; serialization remains canonical and the wire contract is unchanged.
 This is not the scale-retaining pointwise/inverse endpoint described above.
 
-Encap's two Forward calls use gt_internal_poly_ntt_encap_small. Only inputs
-with signed coefficients in [-2,2] are valid. For these inputs,
-floor((-6844*b + 16384)/32768) = 0, so 48 top-split quotient instructions and
-48 corrections are unnecessary. Subsequent instructions and output bits are
-identical to generic Forward, including aliasing. The shared suffix reloads
-its saved public endpoint selector after x2 has been reused as a table pointer.
-Keygen and Decap keep their existing endpoints. make small tests 4096 fixtures;
-the new endpoint is also covered by the AAPCS64 sentinel.
+Encap's two Forward calls use `poly_ntt_encap_small_lazy`. Only inputs with
+signed coefficients in [-2,2] are valid. For these inputs,
+floor((-6844*b + 16384)/32768) = 0, so the 48 top-split quotient instructions
+and 48 corrections are unnecessary, and stage12 stripes 1-7 also omit their
+range-reset pairs. The output is congruent modulo q to the generic transform, in
+the same block-major layout, with every lane in [-21050,21050]; it is not
+bit-identical, and its consumers (`poly_tobytes_encap_loose`,
+`poly_basemul_add_encap`) are proved for that range. Exact aliasing is allowed.
+The shared suffix reloads its saved public endpoint selector after x2 has been
+reused as a table pointer. `poly_ntt_encap_small` is the bit-exact variant,
+kept for validation. `make small` tests 4096 fixtures of both; both are covered
+by the AAPCS64 sentinel.

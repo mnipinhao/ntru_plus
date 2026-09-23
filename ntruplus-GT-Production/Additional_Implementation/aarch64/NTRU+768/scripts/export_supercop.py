@@ -10,7 +10,7 @@ from pathlib import Path
 
 p=argparse.ArgumentParser()
 p.add_argument('destination',type=Path)
-p.add_argument('--prefix',default='gt768_e13_')
+p.add_argument('--prefix',default='ntruplus768_gt_')
 a=p.parse_args();root=Path(__file__).resolve().parents[1]
 assert platform.system()=='Linux' and platform.machine()=='aarch64', 'Requires Linux AArch64 GCC'
 assert re.fullmatch('[A-Za-z_][A-Za-z0-9_]*',a.prefix)
@@ -29,6 +29,7 @@ with tempfile.TemporaryDirectory(prefix='gt768-export-') as temp:
   defined.update(line.split()[-1] for line in nm.splitlines() if len(line.split())>=3)
 assert 'randombytes' not in defined
 assert not ({'poly_basemul', '_poly_basemul', 'poly_invntt', '_poly_invntt',
+             'poly_crepmod3', '_poly_crepmod3',
              'gt_block_major_poly_invntt', '_gt_block_major_poly_invntt'} & defined), 'Reference kernel in export'
 a.destination.mkdir(parents=True)
 ns=a.destination/'namespace.h'

@@ -1,11 +1,18 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /* Center modulo q then modulo 3; input [-3456,3456], output {-1,0,1}.
  * Two-pointer ABI, exact alias allowed. Constants/semantics follow Official. */
 .text
 .align 2
-.global poly_crepmod3
-.global _poly_crepmod3
-poly_crepmod3:
-_poly_crepmod3:
+.global C_SYM(poly_crepmod3)
+C_SYM(poly_crepmod3):
     mov w8, #1728
     dup v0.8h, w8
     neg v1.8h, v0.8h
