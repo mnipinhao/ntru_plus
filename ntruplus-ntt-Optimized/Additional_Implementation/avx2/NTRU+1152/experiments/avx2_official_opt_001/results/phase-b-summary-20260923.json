@@ -1,0 +1,204 @@
+{
+  "decision": {
+    "dec_cycles": {
+      "native_pooled_negative": true,
+      "paired_all_ci_above_zero": false,
+      "paired_all_ci_below_zero": false,
+      "paired_ci_above_zero_count": 0,
+      "paired_ci_below_zero_count": 3,
+      "robust_research_win": false,
+      "verdict": "not-robust"
+    },
+    "enc_cycles": {
+      "native_pooled_negative": true,
+      "paired_all_ci_above_zero": false,
+      "paired_all_ci_below_zero": true,
+      "paired_ci_above_zero_count": 0,
+      "paired_ci_below_zero_count": 4,
+      "robust_research_win": true,
+      "verdict": "robust-research-win"
+    },
+    "keypair_cycles": {
+      "native_pooled_negative": false,
+      "paired_all_ci_above_zero": false,
+      "paired_all_ci_below_zero": false,
+      "paired_ci_above_zero_count": 0,
+      "paired_ci_below_zero_count": 1,
+      "robust_research_win": false,
+      "verdict": "not-robust"
+    }
+  },
+  "native": {
+    "candidate": {
+      "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+      "fresh_process_launches": 9,
+      "host_hygiene_contaminated": false,
+      "implementation": "avx2-officialopt-caller-lazy-qual001",
+      "measure_elf_sha256": "0cfa12ab42bd258af1f4584670b5e7653e80c9d49b6dd6cd88b1444534f0f49c"
+    },
+    "dec_cycles": {
+      "candidate_launch_stq2_median": 29968.583333333332,
+      "candidate_launches_below_official_median": 9,
+      "candidate_stq2": 29956.09259259259,
+      "delta": -579.4537037037044,
+      "delta_percent": -1.897636603848765,
+      "official_launch_stq2_median": 30535.291666666668,
+      "official_stq2": 30535.546296296296
+    },
+    "enc_cycles": {
+      "candidate_launch_stq2_median": 42688.75,
+      "candidate_launches_below_official_median": 8,
+      "candidate_stq2": 42686.27777777778,
+      "delta": -399.54166666666424,
+      "delta_percent": -0.9273159285779391,
+      "official_launch_stq2_median": 43071.041666666664,
+      "official_stq2": 43085.819444444445
+    },
+    "keypair_cycles": {
+      "candidate_launch_stq2_median": 34713.125,
+      "candidate_launches_below_official_median": 4,
+      "candidate_stq2": 34560.96296296296,
+      "delta": 164.47222222222626,
+      "delta_percent": 0.47816570435023487,
+      "official_launch_stq2_median": 34518.125,
+      "official_stq2": 34396.49074074074
+    },
+    "official": {
+      "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+      "fresh_process_launches": 9,
+      "host_hygiene_contaminated": false,
+      "implementation": "avx2",
+      "measure_elf_sha256": "16cab433901e69adb2a7ac3db5ca87046d8b3dac628dc99aec43b7671f0c1fcb"
+    }
+  },
+  "paired": {
+    "dec_cycles": {
+      "normal-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -217.26562500000182,
+          -58.494791666667425
+        ],
+        "favorable_blocks": 14,
+        "mean": -147.56250000000045,
+        "median": -150.15625
+      },
+      "normal-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -290.2643229166663,
+          -191.6770833333328
+        ],
+        "favorable_blocks": 16,
+        "mean": -240.08984374999977,
+        "median": -225.88541666666606
+      },
+      "reversed-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -167.40494791666652,
+          49.363281249999545
+        ],
+        "favorable_blocks": 14,
+        "mean": -75.22656250000023,
+        "median": -141.51041666666788
+      },
+      "reversed-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -282.75,
+          -99.08723958333348
+        ],
+        "favorable_blocks": 14,
+        "mean": -200.7109375,
+        "median": -222.125
+      }
+    },
+    "enc_cycles": {
+      "normal-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -330.57942708333167,
+          -196.9505208333303
+        ],
+        "favorable_blocks": 15,
+        "mean": -267.1614583333321,
+        "median": -288.4375
+      },
+      "normal-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -645.7994791666647,
+          -222.69401041666652
+        ],
+        "favorable_blocks": 15,
+        "mean": -386.47265625000045,
+        "median": -307.89583333333576
+      },
+      "reversed-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -461.3684895833335,
+          -320.43229166666697
+        ],
+        "favorable_blocks": 16,
+        "mean": -390.19921875,
+        "median": -414.57291666666424
+      },
+      "reversed-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -433.96614583333576,
+          -221.54427083333485
+        ],
+        "favorable_blocks": 15,
+        "mean": -339.89453125000136,
+        "median": -412.3333333333394
+      }
+    },
+    "keypair_cycles": {
+      "normal-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -1084.6145833333337,
+          82.23177083333485
+        ],
+        "favorable_blocks": 10,
+        "mean": -504.6940104166663,
+        "median": -351.22916666666424
+      },
+      "normal-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -491.51432291666674,
+          322.9726562500018
+        ],
+        "favorable_blocks": 9,
+        "mean": -84.7161458333328,
+        "median": -27.593750000003638
+      },
+      "reversed-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -1144.2734375000005,
+          51.70442708333394
+        ],
+        "favorable_blocks": 9,
+        "mean": -522.3828125,
+        "median": -503.71875
+      },
+      "reversed-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -1202.8554687499995,
+          -304.2929687499991
+        ],
+        "favorable_blocks": 12,
+        "mean": -746.234375,
+        "median": -838.6979166666642
+      }
+    }
+  },
+  "parameter": "1152",
+  "schema": "ntruplus-caller-lazy-phase-b/v1"
+}
