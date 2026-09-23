@@ -11,12 +11,12 @@ PYTHON ?= python3
 CFLAGS ?= -O3 -std=c11 -D_DEFAULT_SOURCE -I. -DNTRUPLUS1152_ASM_BASEMUL_RINV -DNTRUPLUS1152_ASM_BASEINV_NUM -DNTRUPLUS1152_ASM_BASEINV_FINISH
 C_SRC := kem.c symmetric.c fips202.c hash_fixed.c base.c inverse.c \
          pack.c support.c api_glue.c
-ASM_SRC := rebase.S keccakf1600.S keccakf1600_v84a.S basemul_rinv.S baseinv_num.S baseinv_finish.S ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
+ASM_SRC := keccakf1600.S keccakf1600_v84a.S basemul_rinv.S baseinv_num.S baseinv_finish.S ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
            inverse_ntt.S inverse9.S inverse16.S crepmod3_raw.S
 
 TESTS := test_kem test_canonical test_abi test_baseinv_fail
 
-.PHONY: check kat kat-check tests clean shake-prefixed keccak-v84a check-inplace
+.PHONY: check kat kat-check tests clean shake-prefixed keccak-v84a
 .PHONY: zeroization-source-check check-release manifest-check export-check
 
 # Assembly clearing must be checked statically: the runtime hook in
@@ -32,12 +32,6 @@ export-check:
 
 zeroization-source-check:
 	$(PYTHON) scripts/check_zeroization.py
-
-# inverse_ntt.S overlays the rebase buffer on the scratch; that is only
-# safe while packed_i9's data loads all retire before its first store.
-check-inplace:
-	$(PYTHON) scripts/check_inplace.py inverse9.S
-
 
 test_kem: test/test_kem.c randombytes.c $(C_SRC) $(ASM_SRC)
 	$(CC) $(CFLAGS) $^ -o $@
@@ -65,7 +59,7 @@ test_baseinv_fail: test/test_baseinv_fail.c randombytes.c $(C_SRC) $(ASM_SRC)
 test_zeroization: test/test_zeroization.c randombytes.c $(C_SRC) $(ASM_SRC)
 	$(CC) $(CFLAGS) -DSECURE_CLEAR_AUDIT_HOOK=1 $^ -o $@
 
-tests: zeroization-source-check check-inplace $(TESTS) test_zeroization
+tests: zeroization-source-check $(TESTS) test_zeroization
 	@for t in $(TESTS) test_zeroization; do echo "--- $$t"; ./$$t || exit 1; done
 
 check: manifest-check tests kat-check export-check

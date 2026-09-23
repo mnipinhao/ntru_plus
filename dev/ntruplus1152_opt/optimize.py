@@ -24,6 +24,12 @@ TARGETS = {
 }
 
 HERE = Path(__file__).resolve().parent
+# Kernels whose prologue saves d8-d15, so SLOTHY may use v8-v15.
+STASHES_D8_D15 = {"basemul_rinv_lane"}
+# Counters live across the optimized loop (inner and outer).
+LOOP_COUNTERS = {"basemul_rinv_lane": ["x4"]}
+# Loop bodies too large to software-pipeline within the time limit (P126).
+NO_PIPELINE = {"basemul_rinv_lane"}
 CLEAN = HERE.parent / "ntruplus1152_clean" / "src"
 
 p = argparse.ArgumentParser()
@@ -31,6 +37,8 @@ p.add_argument("kernel")
 p.add_argument("target", choices=sorted(TARGETS))
 p.add_argument("--timeout", type=int, default=300)
 p.add_argument("--split-factor", type=int, default=8)
+p.add_argument("--no-pipeline", action="store_true",
+               help="timing pass without software pipelining (large loop bodies)")
 p.add_argument("--ra-only", action="store_true",
                help="stop after register allocation; its output is the testable clean tier")
 a = p.parse_args()
@@ -68,14 +76,18 @@ for stage in (("ra",) if a.ra_only else ("ra", "timing")):
     s.config.inputs_are_outputs = True
     s.config.reserved_regs = [f"x{i}" for i in range(18, 31)] + ["sp", "xzr"] \
                              + ["v0", "v1", "v2", "v3", "v4"] \
-                             + [f"v{i}" for i in range(8, 16)]
+                             + ([] if a.kernel in STASHES_D8_D15 else [f"v{i}" for i in range(8, 16)])
+    if a.kernel in LOOP_COUNTERS:
+        # SLOTHY excludes the loop's own subs/b.ne from the body and would
+        # otherwise hand the counters out as scratch.
+        s.config.reserved_regs += LOOP_COUNTERS[a.kernel]
     s.config.constraints.allow_spills = False
     s.config.constraints.functional_only = (stage == "ra")
     s.config.constraints.allow_reordering = (stage == "timing")
     s.config.constraints.allow_renaming = (stage == "ra")
     s.config.variable_size = True
     s.config.timeout = a.timeout
-    s.config.sw_pipelining.enabled = (stage == "timing")
+    s.config.sw_pipelining.enabled = (stage == "timing") and not (a.no_pipeline or a.kernel in NO_PIPELINE)
     if stage == "timing":
         s.config.sw_pipelining.minimize_overlapping = False
         s.config.sw_pipelining.allow_post = True

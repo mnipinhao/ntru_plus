@@ -1,9 +1,10 @@
 /* NTRU+1152 inverse driver in the (component, half) lane basis (P68).
  *
  * Three structural changes against inverse_ntt.S:
- *   - one p65_rebase pass puts (component, half) in the lanes, so the sixteen
- *     packed_i9 calls become one per t rather than one per (half, component,
- *     block), and the radix-9 output transpose disappears;
+ *   - (component, half) is in the lanes, so the sixteen packed_i9 calls
+ *     become one per t rather than one per (half, component, block), and the
+ *     radix-9 output transpose disappears.  basemul_rinv writes that basis
+ *     directly (P126); a separate p65_rebase pass did until then;
  *   - the scratch is a plain [s][t] array, so every invntt16 call reads its
  *     sixteen Q from one contiguous run, s=8 included;
  *   - s=8 is an ordinary output written by str q, not a lane scatter, so the
@@ -43,15 +44,7 @@ C(invntt_ternary_asm):
     mov x23, x4
     mov x24, x5
     mov x25, x6                 // scratch [s][t], 2304 bytes, caller-owned
-    mov x26, x25                // the rebase buffer IS the scratch:
-                                // packed_i9 call t reads j*256+t*16 and
-                                // writes s*256+t*16, the same nine
-                                // addresses, and its nine data loads all
-                                // retire before its first store.
-    // (component, half) rebase of the basemul output
-    mov x0, x20
-    mov x1, x26
-    bl C(p65_rebase)
+    mov x26, x20                // basemul_rinv already wrote the lane basis
     // t=0
     mov x0, x25
     mov x2, x26

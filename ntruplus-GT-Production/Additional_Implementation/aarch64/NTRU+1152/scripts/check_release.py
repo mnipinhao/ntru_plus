@@ -37,8 +37,8 @@ for p in files:
         if token in text: fail(f"retired token {token!r}: {p.relative_to(ROOT)}")
 
 required = ["Makefile", "api.h", "kem.c", "api_glue.c", "ntt.S", "ntt_tail.S",
-            "inverse_ntt.S", "rebase.S", "LICENSE",
-            "scripts/check_zeroization.py", "scripts/check_inplace.py",
+            "inverse_ntt.S", "LICENSE",
+            "scripts/check_zeroization.py",
             "scripts/export_supercop.py",
             "test/test_abi.c", "test/test_canonical.c", "test/test_zeroization.c",
             "kat/expected/PQCkemKAT_3488.req", "kat/expected/PQCkemKAT_3488.rsp"]

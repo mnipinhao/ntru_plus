@@ -8,7 +8,6 @@ than printing a warning.
 | `check-release` | the tree contains sources and nothing else: no build products, no result files, and no reference to a path outside it. Also pins the expected KAT hash |
 | `manifest-check` | every shipped file matches `SOURCE-MANIFEST.sha256` |
 | `zeroization-source-check` | the clears are present in source — the barrier in `secure_clear.h`, the C call sites including the decapsulation `io` union that holds the inverse scratch, the declassify sites, the absence of a baseinv failure branch, and all thirty-two SIMD register wipes, enumerated rather than sampled |
-| `check-inplace` | `packed_i9`'s nine data loads all retire before its first store, which is the precondition that lets `inverse_ntt.S` overlay the rebase buffer on the scratch |
 | `test_kem` | 64 round trips plus tampered-ciphertext rejection |
 | `test_canonical` | 13,824 boundary cases of the canonical decoder |
 | `test_abi` | AAPCS64 sentinels on every public entry point |
@@ -17,7 +16,7 @@ than printing a warning.
 | `kat-check` | the generated KAT is byte-identical to `kat/expected/` |
 | `export-check` | the SUPERCOP leaf regenerates deterministically |
 
-## Two gates that exist because something was missed
+## A gate that exists because something was missed
 
 `zeroization-source-check` was added after a rewrite of `inverse_ntt.S` silently
 dropped the thirty-two SIMD register wipes and nothing caught it for eight
@@ -26,9 +25,26 @@ see stores emitted by assembly, and the ABI sentinels check that callee-saved
 registers are *preserved*, which is a different property from volatile ones
 being *erased*. It pins the register wipes individually for that reason.
 
-`check-inplace` guards a property of the current SLOTHY schedule, not of the
-algorithm. A future scheduling pass is free to interleave the loads and stores,
-and the result would be silent corruption; this fails the build instead.
+A second gate, `check-inplace`, guarded the in-place overlay of the rebase
+buffer on the scratch.  It was retired with the rebase itself (P126):
+`packed_i9` now reads `basemul_rinv`'s output and writes the scratch, which do
+not overlap.
+
+## Rebase folded into basemul_rinv (P126, 2026-09-23)
+
+`basemul_rinv` now writes the inverse's (component, half) lane basis itself,
+so the separate `p65_rebase` pass (432 `trn`, a load/store pass) and the
+`check-inplace` gate are gone.  One iteration takes the two halves of one
+(j, tg); the Montgomery narrowing `uzp2` becomes a `trn2` of two components,
+and `zip.4s`/`zip.2d` finish the transpose.  The kernel is generated in
+`dev/ntruplus1152_clean` and scheduled for the A76 in `dev/ntruplus1152_opt`.
+
+Decapsulation, min of blocks: M2 -18.5 ns (-0.37%); A76 unchanged (+-50
+cycles).  The inverse itself is 283 A76 cycles and 30-42 ns faster; the
+basemul pays most of it back on the A76, whose dispatch splits permutes evenly
+over both vector pipes even when V0 is saturated by multiplies (16 `smull` +
+16 `zip` take 23 cycles, not 16).  KAT, TIMECOP (`-O`..`-Os`) and the P125
+range proof are unchanged.
 
 ## Constant time and range proof (P124-P125, 2026-09-23)
 

@@ -25,7 +25,7 @@ C_SOURCES = (
 # would leave eor3/rax1/xar/bcax unconditional and unassemblable without +sha3.
 ASM_SOURCES = (
     "keccakf1600.S", "basemul_rinv.S", "baseinv_num.S", "baseinv_finish.S",
-    "ntt.S", "ntt_top.S", "ntt_tail.S", "ntt9.S", "rebase.S",
+    "ntt.S", "ntt_top.S", "ntt_tail.S", "ntt9.S",
     "inverse_ntt.S", "inverse9.S", "inverse16.S", "inverse16_tail.S",
     "crepmod3_raw.S",
 )

@@ -179,6 +179,88 @@ def basemul_rinv():
                   "// iteration over the 36 Good-Thomas groups.")
 
 
+def basemul_rinv_lane():
+    """basemul_rinv writing the inverse's (component, half) lane basis directly.
+
+    One iteration takes group k (half 0) and group k + 18 (half 1), which share
+    (j, tg) = (k // 2, k % 2), and writes the 128 bytes at 128k that
+    p65_rebase used to produce: for u = 0..7, c0h0 c1h0 c2h0 c3h0 c0h1 c1h1
+    c2h1 c3h1.  The transpose has three levels.  The first is free: the
+    Montgomery narrowing uzp2(lo, hi) of one component becomes
+    trn2(c, c + 1), which narrows two components at once into (c, c + 1) pairs
+    of 32-bit lanes.  zip.4s and zip.2d do the other two (P126).
+
+    Two groups need more than the 19 free registers, so d8-d15 are stashed
+    around the loop and v8-v15 are available to SLOTHY.  The 208-instruction
+    body does not pipeline within SLOTHY's time limit; it is scheduled with
+    --no-pipeline.  P126 also tried one group per iteration, storing each
+    half's 8-byte words with str d / st1 {.d}[1]: two fewer permutes per group,
+    but the lane stores cost the A76 about 2.9 cycles each.
+    """
+    d = DAG()
+    d.emit("stp d8, d9, [sp, #-64]!")
+    d.emit("stp d10, d11, [sp, #16]")
+    d.emit("stp d12, d13, [sp, #32]")
+    d.emit("stp d14, d15, [sp, #48]")
+    d.constant(QREG, Q)
+    d.constant(QI, NEG_QINV)
+    d.emit("mov x4, #18")
+    d.label("basemul_rinv_lane_loop")
+
+    pairs = []                                    # [half][pair] -> (lo, hi)
+    for half in (0, 1):
+        off, zoff = 1152 * half, 288 * half
+        a = [d.load(f"a{half}{i}", "x1", off + 16 * i) for i in range(4)]
+        b = [d.load(f"b{half}{i}", "x2", off + 16 * i) for i in range(4)]
+        z = d.load(f"z{half}", "x3", zoff)
+        bz = [None] + [d.redc(d.wide(z, b[i])) for i in (1, 2, 3)]
+        rows = [[(a[0], b[0]), (a[1], bz[3]), (a[2], bz[2]), (a[3], bz[1])],
+                [(a[0], b[1]), (a[1], b[0]),  (a[2], bz[3]), (a[3], bz[2])],
+                [(a[0], b[2]), (a[1], b[1]),  (a[2], b[0]),  (a[3], bz[3])],
+                [(a[0], b[3]), (a[1], b[2]),  (a[2], b[1]),  (a[3], b[0])]]
+        accs = []
+        for row in rows:
+            acc = d.wide(*row[0])
+            for x, y in row[1:]:
+                d.wide(x, y, acc)
+            lo, hi = acc                          # Montgomery step, narrowing deferred
+            low = d.fresh()
+            d.emit(f"uzp1 {d.r(low, '8h')}, {d.r(lo, '8h')}, {d.r(hi, '8h')}")
+            d.wide(d.binary("mul", low, QI), QREG, acc)
+            accs.append(acc)
+        pairs.append([(d.binary("trn2", accs[c][0], accs[c + 1][0]),
+                       d.binary("trn2", accs[c][1], accs[c + 1][1])) for c in (0, 2)])
+
+    for part in (0, 1):                           # 0: u = 0..3 (low accumulators), 1: u = 4..7
+        A = [pairs[0][0][part], pairs[0][1][part], pairs[1][0][part], pairs[1][1][part]]
+        for k, op in enumerate(("zip1", "zip2")):
+            h0 = d.binary(op, A[0], A[1], "4s")       # u = 2k, 2k+1 of half 0, as 64-bit lanes
+            h1 = d.binary(op, A[2], A[3], "4s")
+            d.store(d.binary("zip1", h0, h1, "2d"), "x0", 64 * part + 32 * k)
+            d.store(d.binary("zip2", h0, h1, "2d"), "x0", 64 * part + 32 * k + 16)
+
+    d.emit("add x0, x0, #128")
+    d.emit("add x1, x1, #64")
+    d.emit("add x2, x2, #64")
+    d.emit("add x3, x3, #16")
+    d.emit("subs x4, x4, #1")
+    d.emit("b.ne basemul_rinv_lane_loop")
+    d.emit("ldp d14, d15, [sp, #48]")
+    d.emit("ldp d12, d13, [sp, #32]")
+    d.emit("ldp d10, d11, [sp, #16]")
+    d.emit("ldp d8, d9, [sp], #64")
+    d.emit("ret")
+    text = d.text("basemul_rinv_lane_kernel",
+                  "// NTRU+1152 degree-4 basemul with the R^-1 boundary, two groups (the\n"
+                  "// two halves of one (j, tg)) per iteration, stored in the inverse's\n"
+                  "// (component, half) lane basis.")
+    return text.replace("// reserved: x18-x30, sp, v0-v3 and v8-v15.  Nothing is stashed, so the\n"
+                        "//           callee-saved vector registers are off limits;",
+                        "// reserved: x18-x30, sp, v0-v4.  d8-d15 are stashed around the loop,\n"
+                        "//           so v8-v15 are free;").replace(
+                        "That leaves v5-v7, v16-v31.", "That leaves v5-v31.")
+
+
 def baseinv_num():
     """The quartic adjugate and the scalar norm, one Good-Thomas group.
 
@@ -274,6 +356,7 @@ def baseinv_finish():
 
 
 KERNELS = {"basemul_rinv": basemul_rinv,
+           "basemul_rinv_lane": basemul_rinv_lane,
            "baseinv_num": baseinv_num,
            "baseinv_finish": baseinv_finish}
 

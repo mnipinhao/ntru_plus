@@ -14,7 +14,7 @@ SLOTHY_ROOT ?= /Users/chenpinhao/slothy
 TIMEOUT     ?= 300
 SPLIT       ?= 8
 
-KERNELS = basemul_rinv
+KERNELS = basemul_rinv_lane
 TARGETS = cortex_a76 neoverse_n1 apple_m1_firestorm
 
 CLEAN_SRC = ../ntruplus1152_clean/src
