@@ -1,13 +1,17 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /* Public AAPCS control wrappers. Arithmetic is in Slothy-allocated leaf cores.
  * Save d8-d15 once per public operation; x19-x28 hold state across core calls.
  * No scalar secret arithmetic except the fixed-length BaseInv failure scan,
  * whose result is a return value, never a branch.
  */
-#ifdef __APPLE__
-#define C(name) _##name
-#else
-#define C(name) name
-#endif
 .text
 .macro SAVE_PUBLIC
     stp x29, x30, [sp, #-160]!
@@ -78,8 +82,8 @@
 .endm
 
 .p2align 4
-.global C(baseinv_asm)
-C(baseinv_asm):
+.global C_SYM(baseinv_asm)
+C_SYM(baseinv_asm):
     SAVE_PUBLIC
     mov x19, x0                 // output; exact out=in is legal
     mov x20, x1
@@ -104,7 +108,7 @@ C(baseinv_asm):
     mov x8, #48
     madd x3, x26, x8, x22
     add x3, x3, x25, lsl #4
-    bl C(binv_num_pair)
+    bl C_SYM(binv_num_pair)
     add x27, x27, #96
     add x28, x28, #96
     add x21, x21, #32
@@ -121,7 +125,7 @@ C(baseinv_asm):
     madd x0, x25, x8, x23
     sub x1, x0, #48
     madd x2, x25, x8, x22
-    bl C(binv_prefix3)
+    bl C_SYM(binv_prefix3)
     add x25, x25, #1
     cmp x25, #12
     b.ne .Lbinv_prefix
@@ -144,7 +148,7 @@ C(baseinv_asm):
     umov w20, v0.h[0]           // 0xffff on failure, 0 on success
     mov x0, x24
     add x1, x23, #528
-    bl C(binv_inverse3)
+    bl C_SYM(binv_inverse3)
     dup v3.8h, w20
     ldp q0, q1, [x24]
     ldr q2, [x24, #32]
@@ -161,7 +165,7 @@ C(baseinv_asm):
     sub x1, x1, #48
     mov x2, x24
     mov x3, x0                 // den overwrite is safe: core loads first
-    bl C(binv_recover3)
+    bl C_SYM(binv_recover3)
     subs x25, x25, #1
     b.ne .Lbinv_recover
     COPY_TRIPLE x22, x24
@@ -179,7 +183,7 @@ C(baseinv_asm):
     mov x8, #48
     madd x1, x26, x8, x22
     add x1, x1, x25, lsl #4
-    bl C(binv_finish_tile)
+    bl C_SYM(binv_finish_tile)
     add x27, x27, #48
     add x26, x26, #1
     cmp x26, #12
@@ -192,15 +196,15 @@ C(baseinv_asm):
 
 .p2align 4
 #ifndef BASEINV_ONLY
-.global C(basemul_rinv_asm)
-C(basemul_rinv_asm):
+.global C_SYM(basemul_rinv_asm)
+C_SYM(basemul_rinv_asm):
     SAVE_PUBLIC
-    bl C(bm_rinv_tile)          // loops over the 36 tiles itself (P130)
+    bl C_SYM(bm_rinv_tile)          // loops over the 36 tiles itself
     RESTORE_PUBLIC
 
 .p2align 4
-.global C(invntt_ternary_asm)
-C(invntt_ternary_asm):
+.global C_SYM(invntt_ternary_asm)
+C_SYM(invntt_ternary_asm):
     SAVE_PUBLIC
     mov x19, x0
     mov x20, x1
@@ -209,10 +213,9 @@ C(invntt_ternary_asm):
     mov x23, x4
     mov x24, x5
     mov x25, x6                 // scratch, 1792 bytes, CALLER-OWNED
-    // No initialization: the padding lanes never reach an output.  What stood
-    // here cleared 256 bytes at sp + 1536, which is the caller's frame -- the
-    // scratch has been caller-owned in x25 since P80.  Both the old and the
-    // new consumer were measured insensitive to the padding's contents.
+    // No initialization: the 32 padding halfwords at scratch + 1548.. are
+    // read but never reach an output (proved over the linked inverse by
+    // interval analysis, docs/VALIDATION.md).
     // Fully unrolled i9 dispatch.  The loop bounds are fixed, so all twelve
     // address quadruples are compile-time constants; the madd chains and the
     // loop control disappear.
@@ -220,63 +223,63 @@ C(invntt_ternary_asm):
     add x1, x25, #1536
     mov x2, x20
     mov x3, x21
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #128
     add x1, x25, #1664
     add x2, x20, #48
     add x3, x21, #288
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #512
     add x1, x25, #1538
     add x2, x20, #16
     mov x3, x21
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #640
     add x1, x25, #1666
     add x2, x20, #64
     add x3, x21, #288
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #1024
     add x1, x25, #1540
     add x2, x20, #32
     mov x3, x21
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #1152
     add x1, x25, #1668
     add x2, x20, #80
     add x3, x21, #288
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #8
     add x1, x25, #1542
     add x2, x20, #864
     add x3, x21, #576
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #136
     add x1, x25, #1670
     add x2, x20, #912
     add x3, x21, #864
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #520
     add x1, x25, #1544
     add x2, x20, #880
     add x3, x21, #576
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #648
     add x1, x25, #1672
     add x2, x20, #928
     add x3, x21, #864
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #1032
     add x1, x25, #1546
     add x2, x20, #896
     add x3, x21, #576
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     add x0, x25, #1160
     add x1, x25, #1674
     add x2, x20, #944
     add x3, x21, #864
-    bl C(packed_i9)
-    /* Three paired main calls.  Each takes the two P8 blocks holding the same
+    bl C_SYM(packed_i9)
+    /* Three paired main calls.  Each takes the two radix-9 output blocks holding the same
      * j-half of two components -- or component 2's two j-halves -- and
      * rewrites them in place as eight-channel banks.  The route below reads
      * Q-bases (0,16,64) for top0 and (32,48,80) for top1, which are exactly
@@ -286,19 +289,19 @@ C(invntt_ternary_asm):
     mov x4, x23
     mov x0, x25
     add x1, x25, #512
-    bl C(invntt16_paired_asm)
+    bl C_SYM(invntt16_paired_asm)
     mov x2, #0
     mov x3, x22
     mov x4, x23
     add x0, x25, #256
     add x1, x25, #768
-    bl C(invntt16_paired_asm)
+    bl C_SYM(invntt16_paired_asm)
     mov x2, #0
     mov x3, x22
     mov x4, x23
     add x0, x25, #1024
     add x1, x25, #1280
-    bl C(invntt16_paired_asm)
+    bl C_SYM(invntt16_paired_asm)
     /* j = 8 writes its exact six bytes per group straight to the natural
      * address: one STR W plus one STRH, no lane ST3. */
     mov x0, x19
@@ -306,12 +309,12 @@ C(invntt_ternary_asm):
     mov x2, #0
     mov x3, x22
     mov x4, x24
-    bl C(invntt_tail_direct_asm)
+    bl C_SYM(invntt_tail_direct_asm)
     /* Rows 0..7 leave as full-vector ST3.4h in natural component-interleaved
      * order with the raw-to-ternary reduction folded in, so no separate
      * crepmod3 pass follows. */
     mov x0, x19
     mov x1, x25
-    bl C(invntt_route_asm)
+    bl C_SYM(invntt_route_asm)
     RESTORE_PUBLIC
 #endif

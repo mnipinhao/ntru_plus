@@ -5,11 +5,6 @@
 /*
  * NTRU+1152 sampling and elementwise leaves, NEON.
  *
- * Replaces the plain C from the milestone-1 tree, which the P12 profile measured at
- * 1246 cycles per poly_cbd1 against the official's 491, and 3277 per
- * poly_sotp_decode against 508.  After the codec work these were 32% of the
- * remaining gap.
- *
  * The old code was bit-serial with a carried dependency:
  *
  *     for (j = 0; j < 8; j++) { r[8*i+j] = (t1 & 1) - (t2 & 1);
@@ -117,9 +112,8 @@ void poly_sotp_encode(poly *r, const uint8_t msg[NTRUPLUS_N / 8],
 /*
  * NTRU+1152 poly_sotp_decode, two bits per coefficient.
  *
- * P21 measured the P13 version at 1343 cycles against the official's 508.  The
- * cause was one horizontal `vaddvq_u16` per output byte, 144 of them: it packed
- * eight 0/1 lanes into a byte by multiplying by {1,2,...,128} and reducing.
+ * Packing eight 0/1 lanes into a byte with one horizontal `vaddvq_u16` per
+ * output byte (multiply by {1,2,...,128} and reduce) would cost 144 of them.
  *
  * The reference's message is just
  *

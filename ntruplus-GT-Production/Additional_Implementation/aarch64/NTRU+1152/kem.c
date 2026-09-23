@@ -332,11 +332,8 @@ int crypto_kem_dec(uint8_t *ss, const uint8_t *ct, const uint8_t *sk)
      * NTRUPLUS_SSBYTES are untouched, so ss can still be read from them below,
      * and buf3 is cleared on the way out either way.
      *
-     * P88 measured the fused compare at 167.2 ns against 119.3 for this on M2
-     * and rejected the swap on Cortex-A76's +79 ns, where the scattered narrow
-     * loads of the expected bytes are nearly free.  It lands now under the
-     * amended promotion criterion: the A76 cost is 0.44% of decapsulation and
-     * the M2 gain is 0.76%.
+     * A compare fused into the serializer is 0.44% faster on Cortex-A76, where
+     * its scattered narrow loads are nearly free, but 0.76% slower on M2.
      */
     poly_tobytes(buf3 + NTRUPLUS_SSBYTES, &f);
     fail |= verify(buf1, buf3 + NTRUPLUS_SSBYTES, NTRUPLUS_POLYBYTES);

@@ -1,7 +1,14 @@
-.global raw_poly_sub
-.global _raw_poly_sub
-raw_poly_sub:
-_raw_poly_sub:
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
+.global C_SYM(raw_poly_sub)
+C_SYM(raw_poly_sub):
     dst       .req x0
     src1      .req x1
     src2      .req x2
@@ -10,7 +17,7 @@ _raw_poly_sub:
     mov counter, #1728
 
 .align 2
-_loop_sub:
+.L_loop_sub:
     ld1 {v0.8h - v3.8h},  [src1], #64
     ld1 {v4.8h - v7.8h},  [src1], #64
     ld1 {v8.8h - v11.8h}, [src1], #64
@@ -39,7 +46,7 @@ _loop_sub:
     st1 {v10.8h, v11.8h}, [dst], #32
 
     subs counter, counter, #192
-    b.ne _loop_sub
+    b.ne .L_loop_sub
 
     .unreq dst
     .unreq src1
@@ -49,10 +56,8 @@ _loop_sub:
     ret
 
 
-.global raw_poly_triple
-.global _raw_poly_triple
-raw_poly_triple:
-_raw_poly_triple:
+.global C_SYM(raw_poly_triple)
+C_SYM(raw_poly_triple):
     dst     .req x0
     src     .req x1
     counter .req x8
@@ -61,7 +66,7 @@ _raw_poly_triple:
     mov counter, #1728
 
 .align 2
-_loop_triple:
+.L_loop_triple:
     ld1 {v1.8h - v4.8h},   [src], #64
     ld1 {v5.8h - v8.8h},   [src], #64
     ld1 {v9.8h - v12.8h},  [src], #64
@@ -88,7 +93,7 @@ _loop_triple:
     st1 {v11.8h, v12.8h}, [dst], #32
 
     subs counter, counter, #192
-    b.ne _loop_triple
+    b.ne .L_loop_triple
 
     .unreq dst
     .unreq src

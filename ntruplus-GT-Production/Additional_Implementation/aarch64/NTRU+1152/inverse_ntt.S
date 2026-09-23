@@ -1,15 +1,20 @@
-/* NTRU+1152 inverse driver in the (component, half) lane basis (P68).
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
+/* NTRU+1152 inverse driver in the (component, half) lane basis.
  *
- * Three structural changes against inverse_ntt.S:
- *   - (component, half) is in the lanes, so the sixteen packed_i9 calls
- *     become one per t rather than one per (half, component, block), and the
- *     radix-9 output transpose disappears.  basemul_rinv writes that basis
- *     directly (P126); a separate p65_rebase pass did until then;
+ *   - (component, half) is in the lanes -- basemul_rinv writes that basis --
+ *     so there is one packed_i9 call per t and no radix-9 output transpose;
  *   - the scratch is a plain [s][t] array, so every invntt16 call reads its
  *     sixteen Q from one contiguous run, s=8 included;
- *   - s=8 is an ordinary output written by str q, not a lane scatter, so the
- *     tail-padding clear is gone.  inverse16_tail.S itself is unchanged: its
- *     lanes were already (component, half), which is what made this possible.
+ *   - s=8 is an ordinary output written by str q, not a lane scatter, so no
+ *     tail padding exists; inverse16_tail.S uses the same lane basis.
  *
  * x0 out, x1 in, x2 invntt9_constants_lane, x3 invntt16, x4 main, x5 tail,
  * x6 scratch: 2304 bytes provided by the caller.  The leaf allocates no
@@ -17,15 +22,10 @@
  * can name -- the arrangement mlkem-native's kernels use.  The leaf does not
  * wipe it; decapsulation overlays it on buffers it clears on exit.
  */
-#ifdef __APPLE__
-#define C(name) _##name
-#else
-#define C(name) name
-#endif
 .text
 .p2align 4
-.global C(invntt_ternary_asm)
-C(invntt_ternary_asm):
+.global C_SYM(invntt_ternary_asm)
+C_SYM(invntt_ternary_asm):
     stp x29, x30, [sp, #-160]!
     mov x29, sp
     stp x19, x20, [sp, #16]
@@ -49,83 +49,83 @@ C(invntt_ternary_asm):
     mov x0, x25
     mov x2, x26
     mov x3, x21
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=1
     add x0, x25, #16
     add x2, x26, #16
     add x3, x21, #288
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=2
     add x0, x25, #32
     add x2, x26, #32
     add x3, x21, #576
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=3
     add x0, x25, #48
     add x2, x26, #48
     add x3, x21, #864
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=4
     add x0, x25, #64
     add x2, x26, #64
     add x3, x21, #1152
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=5
     add x0, x25, #80
     add x2, x26, #80
     add x3, x21, #1440
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=6
     add x0, x25, #96
     add x2, x26, #96
     add x3, x21, #1728
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=7
     add x0, x25, #112
     add x2, x26, #112
     add x3, x21, #2016
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=8
     add x0, x25, #128
     add x2, x26, #128
     add x3, x21, #2304
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=9
     add x0, x25, #144
     add x2, x26, #144
     add x3, x21, #2592
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=10
     add x0, x25, #160
     add x2, x26, #160
     add x3, x21, #2880
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=11
     add x0, x25, #176
     add x2, x26, #176
     add x3, x21, #3168
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=12
     add x0, x25, #192
     add x2, x26, #192
     add x3, x21, #3456
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=13
     add x0, x25, #208
     add x2, x26, #208
     add x3, x21, #3744
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=14
     add x0, x25, #224
     add x2, x26, #224
     add x3, x21, #4032
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // t=15
     add x0, x25, #240
     add x2, x26, #240
     add x3, x21, #4096
     add x3, x3, #224
-    bl C(packed_i9)
+    bl C_SYM(packed_i9)
     // invntt16, one call per radix-9 output s; s=8 is the tail kernel.
     // s=0
     mov x0, x19
@@ -133,69 +133,68 @@ C(invntt_ternary_asm):
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(invntt16_asm)
+    bl C_SYM(invntt16_asm)
     // s=1
     add x0, x19, #8
     add x1, x25, #256
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(invntt16_asm)
+    bl C_SYM(invntt16_asm)
     // s=2
     add x0, x19, #16
     add x1, x25, #512
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(invntt16_asm)
+    bl C_SYM(invntt16_asm)
     // s=3
     add x0, x19, #24
     add x1, x25, #768
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(invntt16_asm)
+    bl C_SYM(invntt16_asm)
     // s=4
     add x0, x19, #32
     add x1, x25, #1024
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(invntt16_asm)
+    bl C_SYM(invntt16_asm)
     // s=5
     add x0, x19, #40
     add x1, x25, #1280
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(invntt16_asm)
+    bl C_SYM(invntt16_asm)
     // s=6
     add x0, x19, #48
     add x1, x25, #1536
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(invntt16_asm)
+    bl C_SYM(invntt16_asm)
     // s=7
     add x0, x19, #56
     add x1, x25, #1792
     mov x2, #0
     mov x3, x22
     mov x4, x23
-    bl C(invntt16_asm)
+    bl C_SYM(invntt16_asm)
     // s=8
     add x0, x19, #64
     add x1, x25, #2048
     mov x2, #0
     mov x3, x22
     mov x4, x24
-    bl C(invntt16_tail_asm)
+    bl C_SYM(invntt16_tail_asm)
     mov x0, x19
-    bl C(crepmod3_ternary_asm)
+    bl C_SYM(crepmod3_ternary_asm)
     /* Erase volatile SIMD state, including the high halves of v8-v15: the ldp
      * below restores only their low 64 bits, so zeroing first leaves the upper
-     * halves clear.  P68 rewrote this driver and dropped the wipe that the
-     * RESTORE_PUBLIC macro used to supply; NTRU+864's inverse.S still has it.
+     * halves clear (NTRU+864's inverse.S does the same in RESTORE_PUBLIC).
      */
     movi v0.16b, #0
     movi v1.16b, #0

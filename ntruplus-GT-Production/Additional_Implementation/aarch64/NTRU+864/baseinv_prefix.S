@@ -1,10 +1,15 @@
+#ifndef C_SYM
 #ifdef __APPLE__
-#define binv_prefix3 _binv_prefix3
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
 #endif
+#endif
+
 .text
-.global binv_prefix3
-binv_prefix3:
-        binv_prefix3_slothy_start:
+.global C_SYM(binv_prefix3)
+C_SYM(binv_prefix3):
         mov w16, #-12929
         mov w5, #3457
         dup v20.8H, w5
@@ -39,5 +44,4 @@ binv_prefix3:
         smlal2 v19.4S, v0.8H, v20.8H
         uzp2 v29.8H, v5.8H, v19.8H
         str q29, [x0, #32]
-        binv_prefix3_slothy_end:
     ret

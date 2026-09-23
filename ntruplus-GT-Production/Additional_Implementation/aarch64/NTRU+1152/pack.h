@@ -4,7 +4,6 @@
 /* FR0 R0 input, disjoint 1728-byte output. Full accepts all signed int16. */
 void poly_tobytes(uint8_t *out, const poly *in);
 /* Decaps-private consumer: returns 0 iff Full serialization equals expected. */
-int poly_tobytes_compare(const uint8_t expected[NTRUPLUS_POLYBYTES], const poly *in);
 /* Requires every coefficient strictly in (-3457,3457). Never on raw Forward output. */
 void poly_tobytes_small(uint8_t *out, const poly *in);
 #endif

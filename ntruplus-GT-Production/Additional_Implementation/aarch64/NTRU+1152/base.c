@@ -18,7 +18,7 @@
  * basemul_zetas is copied verbatim from NTRU+864: the leaf roots are
  * bit-identical between the two parameter sets and the Good-Thomas leaf
  * ordering is fixed by .Lntt_one_bank, which the port copies unchanged.  Both
- * are verified in P03.
+ * were checked against the 864 forward transform.
  */
 
 typedef struct {

@@ -108,7 +108,7 @@ static inline void group(int16x8_t g[8], const int16_t *in, int p, int full)
 }
 
 /* A run takes one 16-byte store when the seven extra bytes land in a
- * neighbouring run that is written later (pack6_store, P130).  The loops are
+ * neighbouring run that is written later (pack6_store).  The loops are
  * fully unrolled over constant tables, so each store's kind is resolved at
  * compile time. */
 static inline void store_run(uint8_t *out, uint8x16_t b, int kind)
@@ -137,8 +137,8 @@ static inline void tobytes6(uint8_t *out, const int16_t *in, int full)
     }
 }
 
-/* The `_asm` names are historical: these were hand-written kernels until P87
- * replaced them, and the ABI test, the manifest and pack_asm.h all name them. */
+/* The `_asm` names are historical (these were once hand-written kernels); the
+ * ABI test, the manifest and pack_asm.h all name them. */
 void tobytes_full_asm(uint8_t *out, const int16_t *in)  { tobytes6(out, in, 1); }
 void tobytes_small_asm(uint8_t *out, const int16_t *in) { tobytes6(out, in, 0); }
 

@@ -1,3 +1,12 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /*
  * Copyright (c) The mlkem-native project authors
  * Copyright (c) 2021-2022 Arm Limited
@@ -39,10 +48,10 @@
  *   0924122d0e92b2d682fab5d5e5e2593ec84c8a1f
  * Upstream source SHA-256:
  *   62134e210376a567c53d460ebeb7feee648eac1d77d8ea2d587f5d89c7ccfeef
- * Integration adapts symbols and sections only.  The fixed-size fused hash_f
- * and hash_g sponges that used to share this file's round source are gone; the
- * sponge is portable C in fips202.c over this permutation, which keeps the
- * assembly the same shape as upstream and as mldsa-native's Keccak backends.
+ * Integration adapts symbols and sections only.  The fixed-size hash_g sponge
+ * that used to share this file's round source is gone; the sponge is portable C
+ * in fips202.c over this permutation, so the assembly keeps upstream's shape and
+ * upstream's verification artifact applies to all of it.
  */
 
 .macro KECCAK_LIVE_PERMUTE
@@ -299,13 +308,22 @@ Lkeccak_live_loop_\@:
 .section .text.module_keccakf1600_body,"ax",%progbits
 #endif
 .balign 4
-.global ntruplus_keccak_f1600_x1_aarch64
-.global _ntruplus_keccak_f1600_x1_aarch64
+/*************************************************
+* Name:        ntruplus_keccak_f1600_x1_aarch64
+*
+* Description: Keccak-f[1600] permutation of one state, scalar AArch64
+*              backend (used when __ARM_FEATURE_SHA3 is not defined).
+*
+* Arguments:   - uint64_t *state: 25-lane state, permuted in place
+*              - const uint64_t *rc: the 24 round constants
+*
+* Returns:     none.
+**************************************************/
+.global C_SYM(ntruplus_keccak_f1600_x1_aarch64)
 #ifndef __APPLE__
 .type ntruplus_keccak_f1600_x1_aarch64, %function
 #endif
-ntruplus_keccak_f1600_x1_aarch64:
-_ntruplus_keccak_f1600_x1_aarch64:
+C_SYM(ntruplus_keccak_f1600_x1_aarch64):
 
         .cfi_startproc
         sub sp, sp, #0x80

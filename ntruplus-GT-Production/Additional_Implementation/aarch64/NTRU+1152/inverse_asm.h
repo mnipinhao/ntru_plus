@@ -6,7 +6,8 @@
  * Returns 1 and clears the output on non-invertibility, 0 on success. */
 int baseinv_asm(int16_t out[BASE_COEFFICIENTS], const int16_t in[BASE_COEFFICIENTS]);
 /* Decaps first product.  Inputs must be canonical, every coefficient in [0,q).
- * FR0 R^-1 output, |x| <= 2458, no normalization -- see P31. Exact alias. */
+ * FR0 R^-1 output, |x| <= 2458, no normalization (bound derived in inverse.c).
+ * Exact alias. */
 void basemul_rinv_asm(int16_t out[BASE_COEFFICIENTS],
                       const int16_t a[BASE_COEFFICIENTS],
                       const int16_t b[BASE_COEFFICIENTS]);

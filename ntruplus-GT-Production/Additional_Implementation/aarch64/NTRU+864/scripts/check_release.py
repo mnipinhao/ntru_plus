@@ -20,7 +20,7 @@ for p in files:
     text=p.read_text(encoding="utf-8")
     for token in BANNED_TOKENS:
         if token in text: fail(f"retired token {token!r}: {p.relative_to(ROOT)}")
-required=["Makefile","api.h","kem.c","ntt_api.c","ntt_tail.S","scripts/export_supercop.py",
+required=["Makefile","api.h","kem.c","api_glue.c","ntt_tail.S","scripts/export_supercop.py",
           "test/test_abi.c","test/test_baseinv_fail.c","test/test_canonical.c","test/test_zeroization.c",
           "kat/expected/PQCkemKAT_2624.req","kat/expected/PQCkemKAT_2624.rsp"]
 missing=[x for x in required if not (ROOT/x).is_file()]

@@ -1,12 +1,18 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 // SLOTHY, cortex_a76, from ntruplus1152_clean/src/basemul_rinv_lane.sym.S.
 // Do not edit; regenerate with `make cortex_a76`.
-#ifdef __APPLE__
-#define basemul_rinv_lane_kernel _basemul_rinv_lane_kernel
-#endif
 .text
 .p2align 4
-.global basemul_rinv_lane_kernel
-basemul_rinv_lane_kernel:
+.global C_SYM(basemul_rinv_lane_kernel)
+C_SYM(basemul_rinv_lane_kernel):
     stp d8, d9, [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
@@ -18,7 +24,7 @@ basemul_rinv_lane_kernel:
     mov x4, #18
 .p2align 5
 .p2align 5
-basemul_rinv_lane_loop:
+.Lbasemul_rinv_lane_loop:
         ldr q5, [x2, #48]
         ldr q27, [x3, #0]
         ldr q18, [x1, #32]
@@ -212,7 +218,7 @@ basemul_rinv_lane_loop:
         str q27, [x0, #0]
         add x0, x0, #128
         subs x4, x4, #1
-        b.ne basemul_rinv_lane_loop
+        b.ne .Lbasemul_rinv_lane_loop
     ldp d14, d15, [sp, #48]
     ldp d12, d13, [sp, #32]
     ldp d10, d11, [sp, #16]

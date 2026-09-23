@@ -53,7 +53,7 @@ static inline int16x8_t montgomery_reduce(wide8 value)
 /*
  * Direct signed 32-bit Barrett reduction of an R0 accumulator.
  *
- * A machine proof over the complete G0 BaseMul/BaseMulAdd accumulator union
+ * A machine proof over the complete BaseMul/BaseMulAdd accumulator union
  * establishes that SQRDMULH(x, 621199) followed by x-qhat*3457 returns a
  * congruent representative in [-2911,2911].  The product qhat*3457 and the
  * subtraction both stay in signed int32, so narrowing is non-saturating.

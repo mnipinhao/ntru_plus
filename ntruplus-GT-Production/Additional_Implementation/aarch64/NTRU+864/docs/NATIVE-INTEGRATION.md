@@ -68,7 +68,7 @@ to arbitrary polynomial multiplication.
 
 ## Files and representation
 
-- inverse.h / inverse_api.c: typed adapter API and table selection.
+- inverse.h / api_glue.c: typed adapter API and table selection.
 - inverse.S: measured AAPCS wrappers, SIMD-aggregated BaseInv
   failure handling and scratch clearing. BaseInv scratch 1200 bytes, Inverse
   scratch 1792 bytes, plus a 160-byte public ABI frame per operation.
@@ -77,8 +77,8 @@ to arbitrary polynomial multiplication.
 - basemul_rinv.S: first-Decaps R^-1 product only. Both inputs come from
   FromBytes in [0,4095], including malformed bytes. Output bound is 2497.
   Both early REDCs and all three final REDCs remain; none were deleted here.
-- inverse9.S, inverse16.S,
-  inverse16_tail.S, crepmod3_raw.S: consume R^-1,
+- inverse9.S, inverse16_paired.S, inverse_tail_direct.S,
+  inverse_route.S: consume R^-1,
   compensate it in terminal scale constants, then center the natural output.
 - inverse_tables.h: exact experimental scaled table values, with
   a distinct include guard to avoid collision with the legacy R0 table header.

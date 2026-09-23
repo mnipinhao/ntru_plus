@@ -31,7 +31,7 @@ static const unsigned short pair_wire[CODEC_PAIRS][8] = {
     {1236, 1524, 1044, 1332, 1620, 1140, 1428, 1716},
 };
 
-/* P130/P131 (gen_store_order.py): group processing order, lane order within
+/* gen_store_order.py: group processing order, lane order within
  * each group, and the store for each lane's 12-byte run -- 0: split stores,
  * 1: one 16-byte store at the run (garbage in the next run, written later),
  * 2: one 16-byte store ending at the run (garbage in the previous run, written

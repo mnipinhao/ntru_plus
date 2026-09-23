@@ -1,3 +1,12 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 // Public AAPCS64 boundary for legacy leaf helpers using v8-v15.
 .text
 .macro SUPPORT name, raw
@@ -18,9 +27,8 @@ _\name:
  ldp x29,x30,[sp],#80
  ret
 .endm
-SUPPORT poly_cbd1, raw_poly_cbd1
-SUPPORT poly_sotp_encode, raw_poly_sotp_encode
-SUPPORT poly_sotp_decode, raw_poly_sotp_decode
-SUPPORT poly_sub, raw_poly_sub
-SUPPORT poly_triple, raw_poly_triple
-SUPPORT poly_crepmod3, raw_poly_crepmod3
+SUPPORT poly_cbd1, C_SYM(raw_poly_cbd1)
+SUPPORT poly_sotp_encode, C_SYM(raw_poly_sotp_encode)
+SUPPORT poly_sotp_decode, C_SYM(raw_poly_sotp_decode)
+SUPPORT poly_sub, C_SYM(raw_poly_sub)
+SUPPORT poly_triple, C_SYM(raw_poly_triple)

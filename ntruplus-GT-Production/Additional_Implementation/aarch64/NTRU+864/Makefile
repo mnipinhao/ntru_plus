@@ -45,20 +45,17 @@ HEADERS := $(wildcard *.h)
 KEM_OBJECTS := \
 	$(BUILD_DIR)/symmetric.o \
 	$(BUILD_DIR)/fips202.o \
-	$(BUILD_DIR)/ntt_api.o \
+	$(BUILD_DIR)/api_glue.o \
 	$(BUILD_DIR)/base.o \
 	$(BUILD_DIR)/add.o \
-	$(BUILD_DIR)/crepmod3.o \
 	$(BUILD_DIR)/cbd.o \
 	$(BUILD_DIR)/ntt.o \
 	$(BUILD_DIR)/ntt9.o \
 	$(BUILD_DIR)/ntt_top.o \
 	$(BUILD_DIR)/unpack.o \
-	$(BUILD_DIR)/unpack_api.o \
 	$(BUILD_DIR)/kem.o \
 	$(BUILD_DIR)/ntt_tail.o \
 	$(BUILD_DIR)/pack.o \
-	$(BUILD_DIR)/inverse_api.o \
 	$(BUILD_DIR)/inverse.o \
 	$(BUILD_DIR)/baseinv_num.o \
 	$(BUILD_DIR)/baseinv_prefix.o \
@@ -68,7 +65,6 @@ KEM_OBJECTS := \
 	$(BUILD_DIR)/inverse16_paired.o \
 	$(BUILD_DIR)/inverse_tail_direct.o \
 	$(BUILD_DIR)/inverse_route.o \
-	$(BUILD_DIR)/crepmod3_raw.o \
 	$(BUILD_DIR)/basemul_rinv.o \
 	$(BUILD_DIR)/inverse9.o \
 	$(BUILD_DIR)/support_abi.o \

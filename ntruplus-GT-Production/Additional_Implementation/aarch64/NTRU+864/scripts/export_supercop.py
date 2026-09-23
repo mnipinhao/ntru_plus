@@ -11,11 +11,11 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 
 C_SOURCES = (
-    "kem.c", "symmetric.c", "fips202.c", "hash_fixed.c", "ntt_api.c",
-    "base.c", "inverse_api.c", "pack.c", "unpack.c", "unpack_api.c",
+    "kem.c", "symmetric.c", "fips202.c", "hash_fixed.c", "api_glue.c",
+    "base.c", "pack.c", "unpack.c",
 )
 ASM_SOURCES = (
-    "add.S", "cbd.S", "crepmod3.S", "crepmod3_raw.S", "support_abi.S",
+    "add.S", "cbd.S", "support_abi.S",
     "ntt.S", "ntt_top.S", "ntt_tail.S", "ntt9.S", "baseinv_num.S",
     "baseinv_prefix.S", "baseinv_inverse.S", "baseinv_recover.S",
     "baseinv_finish.S", "basemul_rinv.S", "inverse.S", "inverse9.S",

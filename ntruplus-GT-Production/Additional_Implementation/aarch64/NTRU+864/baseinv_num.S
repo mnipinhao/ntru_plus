@@ -1,9 +1,15 @@
+#ifndef C_SYM
 #ifdef __APPLE__
-#define binv_num_pair _binv_num_pair
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
 #endif
+#endif
+
 .text
-.global binv_num_pair
-binv_num_pair:
+.global C_SYM(binv_num_pair)
+C_SYM(binv_num_pair):
     ldr q29, [x1, #0]
     ldr q4, [x1, #16]
     ldr q27, [x1, #32]

@@ -1,22 +1,27 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /* The two ST3.4H a group used to take are one ST3.8H: the eight-lane
  * components are c0 = (A.lo | D.lo), c1 = (A.hi | D.hi) and c2 = C, so two
  * ZIP .2D replace three EXT and halve the interleaving stores.  Cortex-A76
  * charges 136 cycles for the 64 ST3.4H and 80 for these 32; M2 33 and 17.
  * Output byte-identical over 5,000 random inputs.
  */
-#ifdef __APPLE__
-#define invntt_route_asm _invntt_route_asm
-#endif
 .text
 .p2align 4
-.global invntt_route_asm
-invntt_route_asm:
+.global C_SYM(invntt_route_asm)
+C_SYM(invntt_route_asm):
 
 
 
 
 
-        invntt_route_asm_slothy_start:
 
 
 
@@ -48,7 +53,6 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q0_start:
 
 
 
@@ -116,9 +120,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q0_end:
 
-        invntt_route_asm_q1_start:
 
 
 
@@ -186,9 +188,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q1_end:
 
-        invntt_route_asm_q2_start:
 
 
 
@@ -256,9 +256,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q2_end:
 
-        invntt_route_asm_q3_start:
 
 
 
@@ -326,9 +324,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q3_end:
 
-        invntt_route_asm_q4_start:
 
 
 
@@ -396,9 +392,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q4_end:
 
-        invntt_route_asm_q5_start:
 
 
 
@@ -466,9 +460,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q5_end:
 
-        invntt_route_asm_q6_start:
 
 
 
@@ -536,9 +528,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q6_end:
 
-        invntt_route_asm_q7_start:
 
 
 
@@ -606,9 +596,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q7_end:
 
-        invntt_route_asm_q8_start:
 
 
 
@@ -676,9 +664,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q8_end:
 
-        invntt_route_asm_q9_start:
 
 
 
@@ -746,9 +732,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q9_end:
 
-        invntt_route_asm_q10_start:
 
 
 
@@ -816,9 +800,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q10_end:
 
-        invntt_route_asm_q11_start:
 
 
 
@@ -886,9 +868,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q11_end:
 
-        invntt_route_asm_q12_start:
 
 
 
@@ -956,9 +936,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q12_end:
 
-        invntt_route_asm_q13_start:
 
 
 
@@ -1026,9 +1004,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q13_end:
 
-        invntt_route_asm_q14_start:
 
 
 
@@ -1096,9 +1072,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q14_end:
 
-        invntt_route_asm_q15_start:
 
 
 
@@ -1166,9 +1140,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q15_end:
 
-        invntt_route_asm_q16_start:
 
 
 
@@ -1236,9 +1208,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q16_end:
 
-        invntt_route_asm_q17_start:
 
 
 
@@ -1306,9 +1276,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q17_end:
 
-        invntt_route_asm_q18_start:
 
 
 
@@ -1376,9 +1344,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q18_end:
 
-        invntt_route_asm_q19_start:
 
 
 
@@ -1446,9 +1412,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q19_end:
 
-        invntt_route_asm_q20_start:
 
 
 
@@ -1516,9 +1480,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q20_end:
 
-        invntt_route_asm_q21_start:
 
 
 
@@ -1586,9 +1548,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q21_end:
 
-        invntt_route_asm_q22_start:
 
 
 
@@ -1656,9 +1616,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q22_end:
 
-        invntt_route_asm_q23_start:
 
 
 
@@ -1726,9 +1684,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q23_end:
 
-        invntt_route_asm_q24_start:
 
 
 
@@ -1796,9 +1752,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q24_end:
 
-        invntt_route_asm_q25_start:
 
 
 
@@ -1866,9 +1820,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q25_end:
 
-        invntt_route_asm_q26_start:
 
 
 
@@ -1936,9 +1888,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q26_end:
 
-        invntt_route_asm_q27_start:
 
 
 
@@ -2006,9 +1956,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q27_end:
 
-        invntt_route_asm_q28_start:
 
 
 
@@ -2076,9 +2024,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q28_end:
 
-        invntt_route_asm_q29_start:
 
 
 
@@ -2146,9 +2092,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q29_end:
 
-        invntt_route_asm_q30_start:
 
 
 
@@ -2216,9 +2160,7 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q30_end:
 
-        invntt_route_asm_q31_start:
 
 
 
@@ -2286,7 +2228,5 @@ invntt_route_asm:
 
 
 
-        invntt_route_asm_q31_end:
 
-invntt_route_asm_slothy_end:
     ret

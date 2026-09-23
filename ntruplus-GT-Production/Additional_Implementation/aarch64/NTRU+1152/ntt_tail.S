@@ -1,3 +1,12 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /* NTRU+1152 T1 boundary: transpose [t][bank] scratch to [bank][t] in place.
  *
  * Ported from NTRU+864's ntt_tail.S.  The transpose network is identical; the
@@ -16,10 +25,8 @@
  */
 .text
 .p2align 4
-.global ntt_tail_asm
-.global _ntt_tail_asm
-ntt_tail_asm:
-_ntt_tail_asm:
+.global C_SYM(ntt_tail_asm)
+C_SYM(ntt_tail_asm):
     ldr q16, [x0, #0]
     ldr q17, [x0, #16]
     ldr q18, [x0, #32]

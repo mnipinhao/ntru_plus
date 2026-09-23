@@ -1,11 +1,18 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /* Requires every input coefficient in [-3,4]; this is not a general-input API. */
 .text
 .p2align 2
 
-.global ntt_top_asm
-.global _ntt_top_asm
-ntt_top_asm:
-_ntt_top_asm:
+.global C_SYM(ntt_top_asm)
+C_SYM(ntt_top_asm):
     /*
      * x0: 896-int16 output in the transform-plus-tail layout
      * x1: 864-int16 natural-order input

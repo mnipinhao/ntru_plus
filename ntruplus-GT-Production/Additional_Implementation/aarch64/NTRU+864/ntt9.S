@@ -1,10 +1,18 @@
-/* M5R-D: six-bank Pass-2 with one-mul level-1 and level-2 B3; ldr ABI retained. */
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
+/* Radix-9 forward pass: six banks, one multiplication at level 1, the level-2
+ * B3 stage, operands loaded with ldr. */
 .text
 .p2align 2
-.global ntt9_asm
-.global _ntt9_asm
-ntt9_asm:
-_ntt9_asm:
+.global C_SYM(ntt9_asm)
+C_SYM(ntt9_asm):
     mov x6, x0
     mov x7, x1
     mov x16, x30
@@ -685,14 +693,11 @@ _ntt9_asm:
     sub v12.8h, v5.8h, v2.8h
     add v23.8h, v18.8h, v2.8h
     ret
-ntt9_end:
 
     .p2align 4
 .p2align 2
-.global ntt_one_bank
-.global _ntt_one_bank
-ntt_one_bank:
-_ntt_one_bank:
+.global C_SYM(ntt_one_bank)
+C_SYM(ntt_one_bank):
     mov x6, x0
     mov x7, x1
     mov x16, x30

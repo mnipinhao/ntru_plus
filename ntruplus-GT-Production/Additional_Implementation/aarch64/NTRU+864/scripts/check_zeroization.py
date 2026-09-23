@@ -31,7 +31,7 @@ if ".Lbinv_fail" in (ROOT / "inverse.S").read_text():
 # nothing the caller cannot name, and the volatile SIMD registers are still
 # erased, which costs a cycle and covers state no later work overwrites.
 require("ntt.S", ("mov x21, x2",))
-require("ntt_api.c", ("int16_t scratch[896];",))
+require("api_glue.c", ("int16_t scratch[896];",))
 require("inverse.S",("movi v8.16b, #0","movi v31.16b, #0"))
 for f in ("inverse.S", "ntt.S"):
     t=(ROOT/f).read_text()

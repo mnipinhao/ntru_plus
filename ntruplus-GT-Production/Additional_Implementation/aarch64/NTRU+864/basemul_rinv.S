@@ -1,21 +1,26 @@
+#ifndef C_SYM
 #ifdef __APPLE__
-#define bm_rinv_tile _bm_rinv_tile
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
 #endif
-/* The 36 tiles of the decapsulation first product in one call (P130): the
+#endif
+
+/* The 36 tiles of the decapsulation first product in one call: the
  * Slothy body is unchanged, its two constants are set once (v2 = q,
  * v5 = -q^-1 mod 2^16; nothing in the body writes them), and the pointers
  * advance here instead of in a per-tile call from the driver.  The caller
  * saves d8-d15 (the body uses v8). */
 .text
-.global bm_rinv_tile
-bm_rinv_tile:
+.global C_SYM(bm_rinv_tile)
+C_SYM(bm_rinv_tile):
         mov w7, #3457
         mov w10, #-12929
         dup v2.8H, w7
         dup v5.8H, w10
         mov x4, #36
 .Lbm_rinv_tile_loop:
-        bm_rinv_tile_slothy_start:
         ldr q19, [x1, #0]
         ldr q11, [x1, #16]
         ldr q7, [x1, #32]
@@ -73,7 +78,6 @@ bm_rinv_tile:
         smlal2 v24.4S, v29.8H, v2.8H
         uzp2 v7.8H, v15.8H, v24.8H
         str q7, [x0, #32]
-        bm_rinv_tile_slothy_end:
         add x0, x0, #48
         add x1, x1, #48
         add x2, x2, #48

@@ -14,7 +14,6 @@ dup v2.8h, w4
 movi v3.8h, #3
 mov x8, #36
 .Lp8_loop:
-        crepmod3_slothy_start:
         ldr q29, [x0, #0]
         ldr q20, [x0, #16]
         ldr q19, [x0, #32]
@@ -47,7 +46,6 @@ mov x8, #36
         str q29, [x0, #16]
         str q6, [x0, #32]
         str q30, [x0, #48]
-        crepmod3_slothy_end:
 add x0, x0, #64
 subs x8, x8, #1
 b.ne .Lp8_loop

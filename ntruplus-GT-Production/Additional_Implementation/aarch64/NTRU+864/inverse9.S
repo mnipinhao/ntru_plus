@@ -1,10 +1,15 @@
+#ifndef C_SYM
 #ifdef __APPLE__
-#define packed_i9 _packed_i9
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
 #endif
+#endif
+
 .text
-.global packed_i9
-packed_i9:
-        packed_i9_slothy_start:
+.global C_SYM(packed_i9)
+C_SYM(packed_i9):
         mov w6, #722
         ldr q16, [x2, #288]
         ldr q3, [x2, #576]
@@ -189,5 +194,4 @@ packed_i9:
         st1 {v28.H}[5], [x1], x14
         st1 {v28.H}[6], [x1], x14
         st1 {v28.H}[7], [x1]
-        packed_i9_slothy_end:
 ret

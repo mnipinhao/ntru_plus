@@ -1,15 +1,12 @@
-/*
- * NTRU+864 Keccak-f[1600], ARMv8.4-A SHA3 backend.
- *
- * This is the routine NTRU+768 already carried -- mlkem-native's hybrid
- * scalar/vector permutation -- in place of the one written for this set.  Same
- * symbol, same AAPCS64 contract including the d8-d15 save, byte-identical
- * output on every state, and 122 instructions against 146: **147.3 ns a
- * permutation on M2 Pro against 158.3**.  With 14 permutations in
- * decapsulation and 24 in encapsulation that is the largest single item left on
- * this part.  The whole file compiles away where the target has no FEAT_SHA3,
- * so Cortex-A76 is untouched.
- */
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /*
  * Copyright (c) The mlkem-native project authors
  * Copyright (c) 2021-2022 Arm Limited
@@ -154,13 +151,23 @@ Lntruplus_keccak_f1600_x1_v84a_loop_\@:
 .section .text.module_keccakf1600_v84a_body,"ax",%progbits
 #endif
 .balign 4
-.global ntruplus_keccak_f1600_x1_v84a_aarch64
-.global _ntruplus_keccak_f1600_x1_v84a_aarch64
+/*************************************************
+* Name:        ntruplus_keccak_f1600_x1_v84a_aarch64
+*
+* Description: Keccak-f[1600] permutation of one state using the Armv8.4-A
+*              SHA3 instructions; assembled only when __ARM_FEATURE_SHA3 is
+*              defined. Saves and restores d8-d15.
+*
+* Arguments:   - uint64_t *state: 25-lane state, permuted in place
+*              - const uint64_t *rc: the 24 round constants
+*
+* Returns:     none.
+**************************************************/
+.global C_SYM(ntruplus_keccak_f1600_x1_v84a_aarch64)
 #ifndef __APPLE__
 .type ntruplus_keccak_f1600_x1_v84a_aarch64, %function
 #endif
-ntruplus_keccak_f1600_x1_v84a_aarch64:
-_ntruplus_keccak_f1600_x1_v84a_aarch64:
+C_SYM(ntruplus_keccak_f1600_x1_v84a_aarch64):
 
         .cfi_startproc
         sub sp, sp, #0x40
@@ -224,11 +231,6 @@ _ntruplus_keccak_f1600_x1_v84a_aarch64:
 #ifndef __APPLE__
 .size ntruplus_keccak_f1600_x1_v84a_aarch64, .-ntruplus_keccak_f1600_x1_v84a_aarch64
 #endif
-
-/* Internal live-state permutation. Callers preserve d8-d15. */
-Lntruplus_keccak_f1600_x1_v84a_live:
-        NTRUPLUS_KECCAK_V84A_PERMUTE
-        ret
 
 #endif /* __ARM_FEATURE_SHA3 */
 #if defined(__ELF__)

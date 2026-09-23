@@ -1,9 +1,15 @@
+#ifndef C_SYM
 #ifdef __APPLE__
-#define binv_finish_tile _binv_finish_tile
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
 #endif
+#endif
+
 .text
-.global binv_finish_tile
-binv_finish_tile:
+.global C_SYM(binv_finish_tile)
+C_SYM(binv_finish_tile):
     ldr q6, [x0, #0]
     ldr q11, [x1, #0]
     ldr q0, [x0, #16]

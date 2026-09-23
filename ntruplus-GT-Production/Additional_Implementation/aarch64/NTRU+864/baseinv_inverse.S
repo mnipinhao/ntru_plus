@@ -1,9 +1,15 @@
+#ifndef C_SYM
 #ifdef __APPLE__
-#define binv_inverse3 _binv_inverse3
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
 #endif
+#endif
+
 .text
-.global binv_inverse3
-binv_inverse3:
+.global C_SYM(binv_inverse3)
+C_SYM(binv_inverse3):
     mov w3, #3457
     mov w5, #-12929
     ldr q19, [x1, #0]

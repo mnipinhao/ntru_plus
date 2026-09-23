@@ -1,3 +1,12 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /* NTRU+1152 Forward Pass-2: eight-bank driver over the NTRU+864
  * 9x16 Good-Thomas core.
  *
@@ -7,10 +16,8 @@
  */
 .text
 .p2align 2
-.global ntt9_asm
-.global _ntt9_asm
-ntt9_asm:
-_ntt9_asm:
+.global C_SYM(ntt9_asm)
+C_SYM(ntt9_asm):
     mov x6, x0
     mov x7, x1
     mov x16, x30
@@ -743,7 +750,6 @@ _ntt9_asm:
     sub v12.8h, v5.8h, v2.8h
     add v23.8h, v18.8h, v2.8h
     ret
-ntt9_end:
 
     .p2align 4
 .p2align 2

@@ -1,11 +1,17 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /* Mach-O prefixes C symbols with an underscore; the other kernels in this
  * tree and all of NTRU+864's baseinv_*.S do the same rename. */
-#ifdef __APPLE__
-#define baseinv_finish_kernel _baseinv_finish_kernel
-#endif
 .text
-.global baseinv_finish_kernel
-baseinv_finish_kernel:
+.global C_SYM(baseinv_finish_kernel)
+C_SYM(baseinv_finish_kernel):
     mov w8, #3457
     dup v0.8h, w8
     mov w8, #-12929
@@ -52,7 +58,7 @@ baseinv_finish_kernel:
         uzp2 v29.8H, v18.8H, v6.8H
         sub x4, x4, #1
 .p2align 5
-baseinv_finish_loop:
+.Lbaseinv_finish_loop:
         str q26, [x0, #16]
         ldr q5, [x1, #0]
         add x1, x1, #16
@@ -94,7 +100,7 @@ baseinv_finish_loop:
         smlal2 v6.4S, v16.8H, v0.8H
         uzp2 v29.8H, v18.8H, v6.8H
         subs x4, x4, #1
-        b.ne baseinv_finish_loop
+        b.ne .Lbaseinv_finish_loop
         str q26, [x0, #16]
         str q29, [x0, #48]
         add x0, x0, #64

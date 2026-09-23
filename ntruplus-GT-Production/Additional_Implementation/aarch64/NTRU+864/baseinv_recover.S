@@ -1,10 +1,15 @@
+#ifndef C_SYM
 #ifdef __APPLE__
-#define binv_recover3 _binv_recover3
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
 #endif
+#endif
+
 .text
-.global binv_recover3
-binv_recover3:
-        binv_recover3_slothy_start:
+.global C_SYM(binv_recover3)
+C_SYM(binv_recover3):
         ldr q15, [x1, #16]
         mov w7, #3457
         mov w5, #-12929
@@ -66,5 +71,4 @@ binv_recover3:
         smlal2 v19.4S, v26.8H, v12.8H
         uzp2 v1.8H, v4.8H, v19.8H
         str q1, [x2, #32]
-        binv_recover3_slothy_end:
     ret
