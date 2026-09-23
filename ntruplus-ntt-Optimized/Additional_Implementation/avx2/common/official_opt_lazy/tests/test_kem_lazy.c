@@ -62,6 +62,22 @@ void __wrap_fips202avx_shake256(uint8_t *out, size_t outlen, const uint8_t *in, 
     }
     __real_fips202avx_shake256(out, outlen, in, inlen);
 }
+#ifdef CANDIDATE_SHAKE256
+/* A candidate whose KEM reaches SHAKE256 through another symbol (the
+ * mlkem-native Keccak candidates: -DCANDIDATE_SHAKE256=<symbol> plus
+ * -Wl,--wrap=<symbol>) gets the same test-only forced-g injection. */
+#define KEM_TEST_CAT_(a, b) a##b
+#define KEM_TEST_CAT(a, b) KEM_TEST_CAT_(a, b)
+void KEM_TEST_CAT(__real_, CANDIDATE_SHAKE256)(uint8_t *, size_t, const uint8_t *, size_t);
+void KEM_TEST_CAT(__wrap_, CANDIDATE_SHAKE256)(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen) {
+    if (force_zero_g_once && outlen == NTRUPLUS_N / 4 && inlen == 32 &&
+        ++keygen_shake_calls == 2) {
+        memset(out, 0, outlen);
+        return;
+    }
+    KEM_TEST_CAT(__real_, CANDIDATE_SHAKE256)(out, outlen, in, inlen);
+}
+#endif
 void __real_randombytes(unsigned char *, unsigned long long);
 void __wrap_randombytes(unsigned char *out, unsigned long long length) {
     random_calls++;
