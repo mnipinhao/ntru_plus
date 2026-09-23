@@ -1,0 +1,61 @@
+{
+  "files_sha256": {
+    "KeccakP-1600-AVX2.s": "46532336cf087f3fa02273c95a844e5918daafb5d06b7e2294ab281f93086914",
+    "KeccakP-1600-SnP.h": "1d18aeaaa6bf23d9e0e6ea9a899d98530f3a715f42c6db62538f4e1c2af0298a",
+    "add.s": "7987e4ce2b09e064e4748b40501dabb121c20a671945c796f90a8874194ba582",
+    "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+    "architectures": "7c0e51663fa70af747fd24defc8d73c6de5f6478c70cb923b4641ef3f7dedf1b",
+    "baseinv.s": "bc88e6622f7e01f2280f38e75bcf413b7aa808e6159c9abb14dd3926f54189ed",
+    "basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+    "cbd.s": "1040e0fece515c0419851d1700c699db01ee865879cb27d99d711437c1ad0be6",
+    "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+    "consts.h": "bc0a46e3d38da3a897c79f2c28898ebf5894816cf7cd161df7233151c0af2ee1",
+    "crepmod3.s": "6e60a465409f262fb57fc217708eddcf8c60be0042be8293985177d305ede2ce",
+    "fips202.c": "8b4059e2702f51e98c34c656132443b2ed3144afa1b295a588cb5a8d41aaf5a1",
+    "fips202.h": "c843fef66468b1fc4ef6662409f789051a27e96470ffa04648cb7146c3b68a8f",
+    "goal-constbranch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "goal-constindex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "invntt.s": "129d462f9053839d817355dcf366555f0100ccee6620a72b0ecb4cea8f4ac37c",
+    "kem.c": "6ab74cfa00d8d77da143f21c504a6391010b9fc38f3b6820d822d994503b2b35",
+    "ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+    "ntt_caller_lazy.s": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092",
+    "pack.s": "406e0d9cff4af069d8b8cc3cb028d11898a61f86d86cece9280fa81dafb11732",
+    "params.h": "3caa8223ce95acd081a2300e53ecdb9145c5b16215b414602954d117c06d78bd",
+    "poly.c": "5a6dd54dd5510dfda93cf7a8278ccc1214dfbfcd935251886422c68126ed1705",
+    "poly.h": "b846b09278195254f9daa1f85bec6db4361eee369c4243b31e1f5db511b812f3",
+    "symmetric.c": "49e7faa9501e3ced6bf6c8da519782adcb32371295ce4f351ebdbf63399f9e0c",
+    "symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+    "tobytes_freeze2op.s": "ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04",
+    "util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9"
+  },
+  "implementation": "avx2-officialopt-lazy-freeze-qual001",
+  "kem_c_flattened_include": {
+    "path": "src/kem_lazy.c",
+    "sha256": "0bd8c009ef362948fd51d7b1c642904b7f5e5d1095f11cf6401dcbf408d2caa7"
+  },
+  "kind": "caller-lazy-qualification-source",
+  "official_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "overlay_sources": {
+    "kem.c": {
+      "path": "src/kem_lazy_freeze2op.c",
+      "sha256": "430ce4f1b73fa622707c706ec3c9328644fed5cbe672d97816ea6fee26581996"
+    },
+    "ntt_caller_lazy.s": {
+      "path": "asm/ntruplus1152_officialopt_ntt_caller_lazy.s",
+      "sha256": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092"
+    },
+    "tobytes_freeze2op.s": {
+      "path": "asm/ntruplus1152_officialopt_tobytes_freeze2op.s",
+      "sha256": "ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04"
+    }
+  },
+  "overlays": {
+    "kem.c": "6ab74cfa00d8d77da143f21c504a6391010b9fc38f3b6820d822d994503b2b35",
+    "ntt_caller_lazy.s": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092",
+    "tobytes_freeze2op.s": "ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04"
+  },
+  "parameter": "1152",
+  "supercop_version": "20260831",
+  "tree_sha256": "3e8068bb63a9d7c502b0f3ca2e8983891abb305f0fe62dbac9e98e80f76a9914",
+  "variant": "lazy-freeze"
+}
