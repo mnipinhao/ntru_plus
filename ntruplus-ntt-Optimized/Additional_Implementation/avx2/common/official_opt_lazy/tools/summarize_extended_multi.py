@@ -38,6 +38,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve()
 sys.path.insert(0, str(HERE.parent))
 from summarize_extended import OPS, native, paired  # noqa: E402
+import run_extended_native  # noqa: E402
 
 
 def compiler_level(compiler: str) -> str:
@@ -47,8 +48,11 @@ def compiler_level(compiler: str) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--param", choices=("864", "1152"), required=True)
-    parser.add_argument("--experiment", type=Path, required=True)
+    parser.add_argument("--param", choices=("768", "864", "1152"), required=True)
+    parser.add_argument("--experiment", type=Path)
+    parser.add_argument("--results-dir", type=Path, help="default: <experiment>/results")
+    parser.add_argument("--order", choices=("alternate", "rotate"), default="alternate",
+                        help="round order used by run_extended_native.py")
     parser.add_argument("--tag", required=True, help="native-ext tag")
     parser.add_argument("--roles", required=True,
                         help="comma-separated roles in round-1 order (as run_extended_native.py --role)")
@@ -57,7 +61,9 @@ def main() -> int:
     parser.add_argument("--resamples", type=int, default=2000)
     parser.add_argument("--seed", type=int, default=20260923)
     args = parser.parse_args()
-    results = args.experiment.resolve() / "results"
+    if (args.experiment is None) == (args.results_dir is None):
+        raise SystemExit("give exactly one of --experiment and --results-dir")
+    results = (args.results_dir or args.experiment / "results").resolve()
     roles = args.roles.split(",")
     paired_tags = dict(p.split("=", 1) for p in args.paired)
 
@@ -86,7 +92,8 @@ def main() -> int:
     if len(nb) != 1 or not nb.pop():
         raise SystemExit(f"unbalanced batches: { {r: len(v) for r, v in identity.items()} }")
     rounds = len(identity[roles[0]])
-    round_order = [roles if k % 2 else roles[::-1] for k in range(1, rounds + 1)]
+    round_order = [list(run_extended_native.round_order(roles, k, args.order))
+                   for k in range(1, rounds + 1)]
 
     comparisons = {}
     for i, spec in enumerate(args.comparison):
@@ -121,13 +128,13 @@ def main() -> int:
         comparisons[spec] = entry
 
     out = {"schema": "ntruplus-caller-lazy-extended-multi/v1", "parameter": args.param,
-           "tag": args.tag, "seed": args.seed, "roles": roles,
+           "tag": args.tag, "seed": args.seed, "roles": roles, "order": args.order,
            "implementations": {r: identity[r][0]["implementation"] for r in roles},
            "round_order": [",".join(o) for o in round_order],
            "methodology": {
                "aslr": "on only (randomize_va_space=2); no ASLR-off setting, no setarch -R",
                "native": "default SUPERCOP compiler selection, unmodified measure.c, one 9-launch batch "
-                         "per role per round, round order alternating forward/reverse, pooled "
+                         f"per role per round, round order {args.order}, pooled "
                          "per role; independent pools, not paired",
                "paired": "O3GC fixed ELFs, ABBA/BAAB blocks, ASLR on; normal placement primary, "
                          "reversed placement secondary robustness check",
