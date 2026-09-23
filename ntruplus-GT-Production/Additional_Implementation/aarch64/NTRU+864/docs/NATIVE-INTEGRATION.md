@@ -1,0 +1,176 @@
+# BaseInv and paired R^-1 BaseMul/Inverse integration — 2026-09-08
+
+## 2026-09-12 P10-A direct-FR0 BaseInv promotion
+
+Production now uses the P10-A direct-FR0 numerator and finish.  The two-tile
+numerator is 132 instructions and keeps q/qi in `v30/v31` across its 18 public
+wrapper calls.  Cofactors use scale R^-1 and determinants R^-2.  Twelve prefix
+steps end at R1; the 164-instruction inverse3 performs one global R^-2
+Algorithm-10 correction; existing recovery yields R2 denominator inverses; the
+26-instruction finish uses three REDCs to return R0 directly.
+
+The user approved the successful raw-output bound change 1972 to 2550 after
+machine closure of the K1 Forward producer (`|x| <= 28765`), every signed
+int16/int32 narrowing, and both Keygen D1 consumers.  D1's final exact Barrett
+range is `[-1861,1861]`, so small ToBytes remains inside `(-q,q)`.
+
+Final production validation passed the manifest, 64 KEM round trips/tampered
+rejection, identical 100-case KAT, identical 417216-byte malformed transcript,
+and 808 BaseInv success/failure/zero-leaf/alias/canary/AAPCS/scratch-wipe cases.
+Six paired Pi 5 runs measured BaseInv success 5197.422 to 4139.985 cycles and
+complete Keygen 45795.250 to 43670.500 versus P9.  At the selected Official
+boundary, two BaseInv calls are 8366.875 versus 8188.250 and complete Keygen is
+44309.125 versus 43651.625.  Evidence is in
+`experiments/gt864-p10-baseinv/`.
+
+## 2026-09-10 BaseInv arithmetic promotion
+
+Production now uses a 160-instruction two-tile fused-wide numerator and the
+37-instruction no-centering finish.  The numerator preserves the existing R1
+denominator and adjugate ABI while sharing four constants across adjacent
+tiles and reducing each tile to seven wide REDC results.  The public wrapper
+makes 18 pair calls instead of 36 tile calls and uses a fixed-length SIMD
+failure aggregation instead of 24 scalar iterations.  Finish retains one
+inverse-denominator R1-to-R0 correction and three product REDCs, but returns raw
+R0 representatives bounded by `[-1972,1972]` instead of centered
+`[-1728,1728]`.  Keygen-to-D1 consumer closure proves the latter still ends in
+`[-1845,1845]`, so small ToBytes remains valid.
+
+The production-linked component test passes 808 cases: 517 successes, 291
+failures, all 288 injected zero-leaf positions, exact in-place aliasing,
+canaries, AAPCS and the complete 1200-byte scratch wipe.  Pi 5 successful
+BaseInv and complete Keygen improvements agree with the prior isolated PMU;
+complete current results are in `OPTIMIZATION-ROADMAP.md` and `VALIDATION.md`.
+
+Both requested source integrations are complete in order. Native Mac AArch64
+and fresh Linux/Pi5 package tests pass. The subsequent isolated Pi5 campaign
+also found a pre-existing noncanonical-ciphertext acceptance difference versus
+new Official. See experiments/gt864-native-asm/INTEGRATED-PI-RESULTS.md; the
+original pending-gate notes below are retained as integration history.
+
+## Active callers
+
+| Caller | Active path |
+| --- | --- |
+| Keygen f/g invertibility | poly_baseinv, direct FR0 R0 -> raw FR0 R0 bounded by 2550 |
+| Keygen h/hinv products | Unchanged D1 R0 |
+| Encaps BaseMulAdd | Unchanged D1 R0 |
+| Decaps first c*f product | poly_basemul_rinv, FR0 R^-1 output |
+| Immediately following Inverse | poly_invntt_ternary, natural centered R0 output |
+| Decaps second product r2 | Unchanged D1 R0 |
+| All ToBytes sites | Unchanged caller-selected full/small entries |
+
+The Makefile aliases Keygen's poly_baseinv calls to the native adapter. kem.c
+explicitly selects the paired Decaps functions. The old poly_baseinv and
+poly_invntt_ternary remain legacy internal helpers, not the active KEM paths.
+Only api.h is the supported public KEM API; this does not broaden the package
+to arbitrary polynomial multiplication.
+
+## Files and representation
+
+- inverse.h / api_glue.c: typed adapter API and table selection.
+- inverse.S: measured AAPCS wrappers, SIMD-aggregated BaseInv
+  failure handling and scratch clearing. BaseInv scratch 1200 bytes, Inverse
+  scratch 1792 bytes, plus a 160-byte public ABI frame per operation.
+- baseinv_{num,prefix,inverse,recover,finish}.S: five scheduled
+  BaseInv cores, directly consuming FR0 without Official layout conversion.
+- basemul_rinv.S: first-Decaps R^-1 product only. Both inputs come from
+  FromBytes in [0,4095], including malformed bytes. Output bound is 2497.
+  Both early REDCs and all three final REDCs remain; none were deleted here.
+- inverse9.S, inverse16_paired.S, inverse_tail_direct.S,
+  inverse_route.S: consume R^-1,
+  compensate it in terminal scale constants, then center the natural output.
+- inverse_tables.h: exact experimental scaled table values, with
+  a distinct include guard to avoid collision with the legacy R0 table header.
+
+No arithmetic DAG, schedule, root, range or coefficient-memory boundary was
+changed during import. audit-production-import.py checks all ten core
+instruction streams against their measured candidate.opt.S artifacts, wrapper
+byte identity and table identity; it also assembles AArch64 ELF and rejects
+stack accesses in leaf cores. Production sources have no experiment-tree build
+dependency. Mac symbol aliases and omission of schedule annotation comments do
+not change the instructions.
+
+The producer contracts are inherited from the tested source-identical
+experiments and the 2026-09-10 consumer closure, not proven by KATs alone:
+BaseInv accepts the K1 Forward producer domain bounded by 28765 and returns raw
+R0 bounded by 2550;
+first-Decaps BaseMul inputs are [0,4095], its output is
+bounded by 2497; inverse I9 terminal bounds and I16 peak 30939 are recorded in
+the experimental contracts. The second D1 product is unchanged, so the small
+ToBytes proof [-3023,3023] remains applicable. BaseInv's changed representatives
+do not invalidate that final D1 output-range proof.
+
+## Sequential validation
+
+The baseline includes the previously integrated dual-entry ToBytes.
+
+| Stage | Objects | KEM test | 100-case KAT |
+| --- | ---: | --- | --- |
+| Before native integration | 32 | pass | identical |
+| BaseInv only | 39 | pass | identical |
+| BaseInv + paired BaseMul/Inverse | 44 | pass | identical |
+
+Each stage passes 64 valid KEM round trips and tampered rejection checks.
+The full .rsp byte streams compare equal, SHA256:
+0c91227497480095a43403852b3a46e423356cdd00242d654001c3c1566de61c.
+
+Actual production-built objects, not separately rebuilt experimental objects:
+
+- BaseInv: 808 cases (517 success, 291 failure), every one of 288 injected
+  zero-leaf positions, zero output on failure, exact in-place alias, output
+  canaries, AAPCS and 1200-byte scratch wipe. Pass at both integration stages.
+- Inverse: 256 inputs and 256 BaseMul R^-1 chains; independent cubic product
+  identity, output range, exact alias, canaries, AAPCS and 1792-byte wipe. Pass.
+- Three-way deterministic transcript comparison: 32 valid cases (exact
+  pk/sk/ct/ss), 32 tampered cases and 1024 malformed ciphertext cases. Both
+  status and returned shared-secret bytes match across all three builds.
+  Transcript SHA256:
+  2404a992d9e625c1287f0fb5b95134fbadf8632830af5fb1532e3f7a3bfdeb67.
+- KEM object references native BaseInv and the paired native functions;
+  D1 BaseMul/Add, K1 Forward, FromBytes and dual-entry ToBytes remain selected.
+
+## Security review scope
+
+BaseInv scans all 24 terminal prefix lanes and does not branch on the result:
+on failure it zeroes all 24 running inverses after the inversion, so every
+recovered denominator and every output coefficient comes out zero on the same
+instruction path.  (864's candidates practically never fail, so this costs
+nothing; NTRU+1152, where 29% fail, declassifies and exits early instead.)  The status is returned; Keygen declassifies it before its
+retry loop, as Official does, because a retry is observable by design.  The
+secret-key decode status in Decaps is declassified the same way.  The
+working scratch is not wiped (Official-aligned policy).
+
+BaseMul/Inverse loops and addresses depend on fixed public counters/pointers;
+their arithmetic cores contain no data-dependent branch. Exact alias is tested;
+partial overlap is unsupported. SIMD temporaries are cleared by the public
+wrapper; this is not a claim that every possible secret register or the whole
+caller's stack is erased. Canary tests are not guard-page overread proofs.
+Security parameters, hash policy and sampling are unchanged.
+
+## Reproduction and pending Linux gate
+
+Use experiments/gt864-native-asm/verify-production-mac.py with a source path and
+a fresh build directory. It uses make -Bn libntruplus.so for source/flag selection
+and links objects directly into Mac test/KAT executables, not a Linux .so.
+verify-integrated-components.py <build> --both tests those actual objects.
+compare-integrated-kem.py <baseline-build> <baseinv-build> <final-build> compares
+the exact transcripts. audit-production-import.py checks source identity/ELF.
+
+Current scratch artifacts: /tmp/gt864-native-integration.qa3hOP, containing
+baseline source snapshot, baseinv-stage.tar, and separate baseline-build,
+baseinv-build and final-build directories. Persistent identities are in the
+source manifest and this report; scratch is disposable.
+
+No new scheduling or benchmark was performed this integration turn. Previous
+experimental Pi5 evidence is in experiments/gt864-native-asm/TIMING-RESULTS.md
+and TOBYTES-TIMING-RESULTS.md, not a fresh measurement of this final package.
+When the current SUPERCOP job is finished, run isolated Linux make check plus
+paired package validation. The Official source for subsequent comparison is
+/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64, not the 20260627 archive.
+### P1 BaseInv field inverse
+
+`binv_inverse3` uses the 15-multiplication addition chain for exponent 3455.
+Together with prefix construction and recovery, its region contains 21 widening
+Montgomery multiplications and 157 instructions.  Inputs and outputs remain R1;
+the public wrapper and failure scan are unchanged.
