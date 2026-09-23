@@ -1057,9 +1057,9 @@ python3 ../../../common/official_opt_lazy/tools/phase_b_batch.py --result-dir re
 
 A third NTRU+864 candidate, `avx2-officialopt-lazy-codec-864-exp002`, puts a
 new codec on the caller-lazy Forward. It implements both "better designs" from
-the Option A section: the 2-op freeze and direct 12-bit packing. **This is
-Phase A plus a same-ELF diagnostic. There was no SUPERCOP campaign, Native was
-not measured, and no host control was changed.** exp001 and the lazy-only
+the Option A section: the 2-op freeze and direct 12-bit packing. **This section
+is Phase A plus a same-ELF diagnostic; Native SUPERCOP evidence is in "NTRU+864
+exp002 Phase B" below.** No host control was changed. exp001 and the lazy-only
 candidate are unchanged, and `make check codec-check` still passes. The new
 rules live in `codec_direct.mk`, which the NTRU+864 Makefile includes after
 `codec.mk`.
@@ -1311,6 +1311,198 @@ python3 $T/phase_b_batch.py --result-dir results/codec-direct-keypair-seedmatche
   python3 tools/run_codec_direct_keypair_seedmatched.py --experiment . --skip-build --result-dir {RESULT}
 ```
 
+## NTRU+864 exp002 Phase B: Native SUPERCOP (2026-09-23)
+
+This is Phase B for `avx2-officialopt-lazy-codec-864-exp002`, which combines
+the caller-lazy Forward with the direct 12-bit codec and the 2-op freeze.
+Phase A is in the previous section. The methodology is the one from
+"Extended Native and ASLR-on paired": ASLR on only, normal placement is the
+primary evidence, and reversed placement is a secondary check. No host
+control was changed. Every run was pinned to CPU 1 and ran one after
+another.
+
+### Qualification export (measured)
+
+`export_caller_lazy_qualification.py --param 864 --variant lazy-codec-direct`
+writes `qualification/avx2-officialopt-lazy-codec-qual002/` and its JSON
+manifest (27 file hashes plus the overlay sources). As for qual001, the
+exporter checks the pinned Official tree against `bench/supercop.lock`
+(`13e0d983…7006`) and refuses to overwrite. The tree hash is
+`ece23c1a9ebf2178658c36157dfb640110bebc1c5fc0ad3747d80a69cd9c06c0`.
+`diff -r` against the upstream copy shows only these changes:
+
+- `kem.c` (`f9f42e74…`) is `src/kem_lazy_codec_direct.c` with its single
+  `#include "kem_lazy.c"` line replaced by the verbatim `src/kem_lazy.c`.
+  SUPERCOP compiles every `.c` file, so the include has to be flattened.
+  `gcc -E -P` of the flat file and of the Phase-A translation unit gives
+  byte-identical output.
+- `ntt_caller_lazy.s` (`db5d4896…`, the same file as in qual001) is added.
+- `codec_direct.s` (`feba151f…`, the generated direct codec) is added.
+
+When no variant is given, the exporter still reproduces the qual001 tree
+hash `1d46cc7b…7e2e`.
+
+`install_qualification.py` installed the export as
+`crypto_kem/ntruplus864/avx2-officialopt-lazy-codec-qual002`.
+`install_reversed_placement.py --skip-baseline` added the `-reversed` copy.
+The existing `avx2-reversed` was reused; the new `codec_direct.s` is renamed
+to `ccc_codec_direct.s`. After installation the campaign uses 641 MB.
+
+**SUPERCOP try passes.** In every Native batch, and in both O3GC builds,
+`try` reported `ok` for all four compilers (O3/Os/O2/O). The
+checksumsmall/checksumbig values were `b0cdac76…/206acd11…`, which match
+the primitive's `checksumsmall`/`checksumbig` and Official.
+
+### Design (measured)
+
+- **Native:** three roles: Official `avx2`, `avx2-officialopt-caller-lazy-qual001`
+  and qual002. Each role had 81 fresh launches: 9 rounds, with one 9-launch
+  `run_supercop_benchmark.py --mode native-kem` batch per role per round. The
+  round order was official,qual001,qual002 for odd rounds and the reverse for
+  even rounds (`run_extended_native.py --role …`). Compiler selection was the
+  SUPERCOP default and `measure.c` was unmodified (`7490844f…`). Each role is
+  pooled independently. The CIs come from resampling launches within each
+  role (2,000 resamples), using `summarize_extended_multi.py`, which calls the
+  unchanged `summarize_extended.native()` for each role pair.
+- **Paired:** O3GC fixed ELFs (`okc-o3gc.sh`) with ASLR on, run by
+  `run_paired_aslr_on.py` with 48 ABBA/BAAB blocks (192 fresh launches). The
+  Official normal/reversed and qual001 normal ELFs are the Phase B ones;
+  their hashes were re-checked against `metadata.json`. qual002 was built
+  fresh: normal `22276081…`, reversed `b0018000…`. For the increment run, the
+  qual001 ELF sits in the manifest's `official` slot.
+- **Hygiene:** 27 Native, 2 build and 3 paired batches were accepted. One
+  Native batch (qual001, round 1) was quarantined on attempt 0. The cause was
+  the operator's own summary script (a sustained foreign `python3`); the
+  batch was accepted on attempt 1. Pre-batch load was 0.08-0.50. Native
+  batches took 15.9-17.1 s. Paired batches took 1.9 s, so only the
+  before/after snapshots apply to them.
+
+### SUPERCOP compiler selection per batch (measured)
+
+| Batch | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|
+| Official | O3 | O3 | **O2** | O3 | O3 | O3 | O3 | O3 | O3 |
+| qual001 | O2 | O2 | O3 | O2 | O2 | O2 | O3 | O3 | O3 |
+| qual002 | O2 | O2 | O3 | O2 | O2 | O2 | O2 | O2 | O2 |
+
+ELFs:
+- Official: O3 `f3cf0a37…` (= Phase B), O2 `7eadf7f3…` (= the follow-up fixed O2);
+- qual001: O2 `b6654906…`, O3 `b11aa429…` (both as in earlier runs);
+- qual002: O2 `439b1441…`, O3 `b136e431…`.
+
+### Extended Native (measured)
+
+Pooled over 81 launches per role, with StQ2 [95% CI]. "Fav." counts the
+candidate launches that fall below the median launch of the baseline.
+
+| Comparison | Op | StQ1 | **StQ2** [95% CI] | StQ3 | StQ2 % | Fav. |
+|---|---|---:|---:|---:|---:|---:|
+| **qual002 − Official** (primary) | Keypair | −825.3 | **−856.5** [−877.5, −837.2] | −894.0 | −3.61% | 81/81 |
+| | Encap | −806.2 | **−841.1** [−878.9, −806.0] | −867.2 | −2.55% | 79/81 |
+| | Decap | −1349.2 | **−1355.1** [−1382.4, −1330.7] | −1416.5 | −5.72% | 81/81 |
+| qual002 − qual001 (codec increment) | Keypair | −694.9 | **−729.5** [−751.3, −705.1] | −748.3 | −3.09% | 81/81 |
+| | Encap | −684.1 | **−755.3** [−782.9, −726.3] | −690.2 | −2.30% | 79/81 |
+| | Decap | −1327.8 | **−1355.0** [−1371.6, −1337.6] | −1338.7 | −5.72% | 81/81 |
+| qual001 − Official (reproduction) | Keypair | −130.5 | **−127.0** [−153.5, −102.8] | −145.7 | −0.53% | 75/81 |
+| | Encap | −122.0 | **−85.8** [−127.0, −49.1] | −177.0 | −0.26% | 75/81 |
+| | Decap | −21.4 | **−0.1** [−29.0, +25.1] | −77.8 | −0.00% | 31/81 |
+
+Absolute pooled StQ2 (Official → qual001 → qual002): Keypair 23,745.4 →
+23,618.5 → 22,888.9; Encap 32,947.5 → 32,861.7 → 32,106.4; Decap 23,674.0 →
+23,673.9 → 22,318.9.
+
+Per-batch StQ2 deltas, 9 launches per side:
+
+| Comparison | Op | b1 | b2 | b3 | b4 | b5 | b6 | b7 | b8 | b9 | SD | neg |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| qual002 − Off. | Keypair | −838 | −904 | −1038 | −790 | −855 | −838 | −836 | −842 | −823 | 72 | 9/9 |
+| | Encap | −792 | −893 | −900 | −772 | −871 | −778 | −841 | −858 | −872 | 49 | 9/9 |
+| | Decap | −1443 | −1339 | −1344 | −1331 | −1321 | −1323 | −1409 | −1326 | −1434 | 50 | 9/9 |
+| qual002 − qual001 | Keypair | −749 | −769 | −808 | −755 | −764 | −732 | −621 | −606 | −707 | 68 | 9/9 |
+| | Encap | −658 | −681 | −774 | −693 | −716 | −767 | −839 | −801 | −745 | 60 | 9/9 |
+| | Decap | −1313 | −1313 | −1333 | −1331 | −1365 | −1327 | −1402 | −1384 | −1387 | 34 | 9/9 |
+| qual001 − Off. | Keypair | −89 | −135 | −230 | −35 | −91 | −106 | −215 | −236 | −116 | 71 | 9/9 |
+| | Encap | −134 | −212 | −125 | −78 | −155 | −11 | −1 | −57 | −127 | 69 | 9/9 |
+| | Decap | −130 | −27 | −10 | −0 | +44 | +4 | −8 | +58 | −47 | 55 | 6/9 |
+
+Grouping qual002 − Official by the measured ELF pair (derived):
+- Official O3 vs qual002 O2 (8 batches): −840.8 / −832.5 / −1360.3;
+- Official O2 vs qual002 O3 (batch 3): −1038.1 / −899.6 / −1343.5.
+
+No natural keypair retries occurred.
+
+The codec gain does not depend on the compiler pick. Every batch and
+every ELF pairing is at least 770 cycles faster for Keypair/Encap and 1,320
+for Decap. The qual001 − Official reproduction matches the 20260923x run
+for Keypair/Encap (−103/−93 then, −127/−86 now). Its Decap is again about
+zero (−24.0 then, −0.1 now, 31/81 favourable). The lazy-only Native Decap
+gain is still not established by itself; see "Still not done".
+
+### Fixed-ELF paired, ASLR on (measured)
+
+Mean delta [block-bootstrap 95% CI], favourable blocks out of 48:
+
+| Setting | Keypair | Encap | Decap |
+|---|---:|---:|---:|
+| **qual002 vs Official, normal (primary)** | **−932.76** [−950.63, −915.13] 48/48 | **−851.90** [−920.96, −791.33] 48/48 | **−1476.50** [−1499.11, −1452.07] 48/48 |
+| qual002 vs Official, reversed (secondary) | −908.81 [−939.89, −882.81] 48/48 | −737.47 [−780.58, −682.60] 47/48 | −1395.89 [−1438.54, −1355.69] 48/48 |
+| qual002 vs qual001, normal (increment) | −729.92 [−757.25, −709.32] 48/48 | −597.77 [−651.96, −536.15] 47/48 | −1263.59 [−1298.68, −1233.13] 48/48 |
+
+The same-ELF diagnostic predicted the increment over the lazy candidate:
+about −762 Keypair (3 tobytes), −695 Encap and −1069 Decap (derived from the
+component deltas). The Native increment is −730 / −755 / −1355 and the paired
+increment is −730 / −598 / −1264. So Decap gains more in Native than the
+component model predicts. The model counts only the direct tobytes/frombytes
+savings, and it is an estimate, not a decision input.
+
+### Decision under the updated rule
+
+| Op | qual002 vs Official |
+|---|---|
+| Keypair | **robust research win**: Native −856.5 [−877.5, −837.2], 81/81; normal CI [−950.6, −915.1]; reversed agrees |
+| Encap | **robust research win**: Native −841.1 [−878.9, −806.0], 79/81; normal CI [−921.0, −791.3]; reversed agrees |
+| Decap | **robust research win**: Native −1355.1 [−1382.4, −1330.7], 81/81; normal CI [−1499.1, −1452.1]; reversed agrees |
+
+No reversed flag was raised. The same rule with qual001 as the baseline
+also gives a robust research win for all three operations. Unlike the
+lazy-only candidate, the exp002 Native margins are 23-52 times their CI
+half-widths and do not depend on SUPERCOP's compiler pick. This is research
+evidence from the qualification export. `promotion: none`, and `clean/` was
+not touched. Details are in `STATUS.yml` `codec_candidate_exp002.performance.phase_b`
+and `results/extended-multi-summary-20260923c.json`.
+
+### Reproduce
+
+```sh
+REPO=/home/nuc/src/ntru_plus-official-opt-864-1152
+A=$REPO/ntruplus-ntt-Optimized/Additional_Implementation/avx2; T=$A/common/official_opt_lazy/tools
+E=$A/NTRU+864/experiments/avx2_official_opt_001; R=$E/results
+C=/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001; TAG=20260923c
+Q2=avx2-officialopt-lazy-codec-qual002
+# (export committed; to recreate: $T/export_caller_lazy_qualification.py --param 864 --experiment $E --variant lazy-codec-direct --output-root <new dir>)
+python3 $T/install_qualification.py --param 864 --campaign-root $C --export-root $E/qualification/$Q2
+python3 $T/install_reversed_placement.py --param 864 --campaign-root $C --candidate $Q2 --skip-baseline
+python3 $T/run_extended_native.py --param 864 --experiment $E --campaign-root $C --tag $TAG \
+  --role official=avx2 --role qual001=avx2-officialopt-caller-lazy-qual001 --role qual002=$Q2
+for spec in normal:$Q2 reversed:$Q2-reversed; do place=${spec%%:*}
+  python3 $T/phase_b_batch.py --result-dir $R/fixed-lazy-codec-qual002-$place-$TAG --metadata metadata.json -- \
+    python3 $REPO/scripts/run_supercop_benchmark.py --campaign-root $C --parameter 864 --implementation ${spec#*:} \
+    --cpu 1 --mode native-kem --fresh-launches 1 --compiler-wrapper $REPO/bench/supercop/okc-o3gc.sh \
+    --require-frequency-control --result-dir {RESULT}
+done
+pair() { # name baseline-elf candidate-elf placement
+  python3 $T/phase_b_batch.py --result-dir $R/paired-aslr-on-$4-$1-$TAG --metadata manifest.json -- \
+    python3 $T/run_paired_aslr_on.py --official $2 --candidate $3 --placement $4 --cpu 1 --blocks 48 \
+    --compiler-recipe O3GC --output {RESULT}
+  python3 $REPO/scripts/summarize_supercop_paired.py --campaign $R/paired-aslr-on-$4-$1-$TAG --parameter 864; }
+pair qual002-vs-official $R/fixed-lazy-official-normal-20260923/measure $R/fixed-lazy-codec-qual002-normal-$TAG/measure normal
+pair qual002-vs-official $R/fixed-lazy-official-reversed-20260923/measure $R/fixed-lazy-codec-qual002-reversed-$TAG/measure reversed
+pair qual002-vs-qual001 $R/fixed-lazy-candidate-normal-20260923/measure $R/fixed-lazy-codec-qual002-normal-$TAG/measure normal
+python3 $T/summarize_extended_multi.py --param 864 --experiment $E --tag $TAG --roles official,qual001,qual002 \
+  --comparison qual002:official --comparison qual002:qual001 --comparison qual001:official \
+  --paired qual002:official=qual002-vs-official-$TAG --paired qual002:qual001=qual002-vs-qual001-$TAG
+```
+
 ## Still not done
 
 - No `clean/` change and no promotion.
@@ -1321,9 +1513,11 @@ python3 $T/phase_b_batch.py --result-dir results/codec-direct-keypair-seedmatche
   why the O3-built 864 candidate loses its Decap gain in Native.
 - 864 reversed placement was not re-run at 48 blocks with ASLR on; the
   secondary check uses the Phase B 16-block run.
-- NTRU+864 lazy+codec candidates (exp001, exp002): no qualification export,
-  no SUPERCOP campaign and no Native measurement yet. Only Phase A and the
-  same-ELF diagnostic exist.
+- NTRU+864 exp002 has Phase B (qual002, robust research win for all three
+  ops); exp001 still has no qualification export or Native measurement.
+- The lazy-only 864 Native Decap gain is not established by itself: it was
+  −24.0 [−55.9, +4.0] in 20260923x and −0.1 [−29.0, +25.1] in the 20260923c
+  reproduction, while its paired CIs are well below zero.
 - The 2-op freeze is proved for NTRU+768/1152 `poly_tobytes` but not applied
   there. The direct 12-bit codec is not ported: 768/1152 have their own
   codec layout, which was not analysed.

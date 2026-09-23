@@ -326,7 +326,7 @@ codec_candidate_exp002:
   composition: caller-lazy Forward (asm/ntruplus864_officialopt_ntt_caller_lazy.s + src/kem_lazy.c, unchanged) + direct 12-bit poly_tobytes/poly_frombytes
   supersedes_for_research: codec_candidate (exp001); exp001 and the lazy-only candidate are unchanged and still pass (make codec-check, make check)
   controls: {direct_codec_only: "Official Forward + direct codec (src/kem_codec_direct.c)", fused_min: "exp001 tobytes + 2-op freeze only (asm/ntruplus864_officialopt_codec_fused_min.s)"}
-  phase: A_correctness_plus_same_elf_diagnostic  # no SUPERCOP campaign, Native not measured
+  phase: B_native_measured  # Phase A + same-ELF diagnostic, then Phase B (qual002 export, extended Native, ASLR-on paired) 2026-09-23; decision: performance.phase_b.decision
   docs: docs/ntruplus864-1152-official-opt.md#ntru864-direct-12-bit-codec-exp002-2026-09-23
   sources:
     generator: tools/generate_codec_direct.py  # sha256 6a829b996075f84e82726c17bddccc91b7f696c1a1b9dfcb509093fbd3ab7301; reuses the exp001 Kernel scheduler (+ ordered-store chain)
@@ -408,8 +408,70 @@ codec_candidate_exp002:
       evidence: results/codec-direct-phase-a/codec-direct-linked-summary.json
     regression: "make check codec-check pass (lazy-only and exp001 unchanged); results/codec-direct-phase-a/closure-tests.log"
   performance:
-    label: supercop-derived same-ELF diagnostic (not Native SUPERCOP)
-    native: not measured
+    label: supercop-native-kem + fixed-elf-paired (phase_b) + supercop-derived same-ELF diagnostic (same_elf, keypair_seed_matched)
+    native: measured  # see phase_b.native
+    phase_b:  # 2026-09-23; docs/ntruplus864-1152-official-opt.md#ntru864-exp002-phase-b-native-supercop-2026-09-23
+      qualification_export:
+        path: qualification/avx2-officialopt-lazy-codec-qual002  # + .json manifest (27 file hashes, overlay sources)
+        exporter: "common/official_opt_lazy/tools/export_caller_lazy_qualification.py --variant lazy-codec-direct"
+        tree_sha256: ece23c1a9ebf2178658c36157dfb640110bebc1c5fc0ad3747d80a69cd9c06c0
+        official_tree_sha256: 13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006  # verified against bench/supercop.lock
+        overlays: {kem.c: f9f42e74fb238e94 (src/kem_lazy_codec_direct.c with its one include replaced by src/kem_lazy.c; gcc -E -P identical to the Phase-A TU), ntt_caller_lazy.s: db5d489658d4f5b7, codec_direct.s: feba151f06fa018a}
+        diff_vs_official: kem.c changed, ntt_caller_lazy.s and codec_direct.s added; nothing else
+        supercop_try: "pass: checksumsmall/checksumbig b0cdac76.../206acd11... (= crypto_kem/ntruplus864/checksum*, = Official) for all 4 compilers (O3/Os/O2/O) in every Native batch, and for the O3GC normal and reversed builds"
+      campaign: /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001  # + crypto_kem/ntruplus864/avx2-officialopt-lazy-codec-qual002{,-reversed}; 641 MB after install
+      reversed_placement: "install_reversed_placement.py --skip-baseline: ntt.s->aaa_, ntt_caller_lazy.s->bbb_, codec_direct.s->ccc_, pack.s->yyy_, basemul.s->zzz_"
+      methodology: "ASLR on only (randomize_va_space=2, no setarch -R); normal placement primary, reversed secondary; default SUPERCOP compiler selection; unmodified measure.c (7490844f...0174)"
+      decision_rule: robust research win iff extended Native pooled StQ2 delta < 0 AND normal-placement ASLR-on fixed-ELF paired 95% CI below zero; reversed ASLR-on reported, flagged (not failed) if it disagrees
+      native:  # measured; 3 roles (Official avx2, qual001, qual002), 81 fresh launches each = 9 rounds x one 9-launch batch per role, round order official,qual001,qual002 (odd) / reversed (even); independent pools; CI by launch resampling (2000)
+        launches_per_role: 81
+        qual002_minus_official:  # PRIMARY
+          keypair: {stq1: -825.32, stq2: -856.50, stq3: -894.04, stq2_ci95: [-877.5, -837.2], stq2_pct: -3.61, official: 23745.4, candidate: 22888.9, favourable_launches: 81/81, batch_sd: 72, negative_batches: 9/9}
+          enc: {stq1: -806.15, stq2: -841.13, stq3: -867.17, stq2_ci95: [-878.9, -806.0], stq2_pct: -2.55, official: 32947.5, candidate: 32106.4, favourable_launches: 79/81, batch_sd: 49, negative_batches: 9/9}
+          dec: {stq1: -1349.18, stq2: -1355.06, stq3: -1416.54, stq2_ci95: [-1382.4, -1330.7], stq2_pct: -5.72, official: 23674.0, candidate: 22318.9, favourable_launches: 81/81, batch_sd: 50, negative_batches: 9/9}
+        qual002_minus_qual001:  # codec increment
+          keypair: {stq1: -694.85, stq2: -729.54, stq3: -748.30, stq2_ci95: [-751.3, -705.1], stq2_pct: -3.09, favourable_launches: 81/81, batch_sd: 68, negative_batches: 9/9}
+          enc: {stq1: -684.11, stq2: -755.31, stq3: -690.18, stq2_ci95: [-782.9, -726.3], stq2_pct: -2.30, favourable_launches: 79/81, batch_sd: 60, negative_batches: 9/9}
+          dec: {stq1: -1327.82, stq2: -1354.98, stq3: -1338.70, stq2_ci95: [-1371.6, -1337.6], stq2_pct: -5.72, favourable_launches: 81/81, batch_sd: 34, negative_batches: 9/9}
+        qual001_minus_official:  # reproduction of the 20260923x run (-103.0 / -92.7 / -24.0)
+          keypair: {stq2: -126.97, stq2_ci95: [-153.5, -102.8], favourable_launches: 75/81}
+          enc: {stq2: -85.81, stq2_ci95: [-127.0, -49.1], favourable_launches: 75/81}
+          dec: {stq2: -0.08, stq2_ci95: [-29.0, +25.1], favourable_launches: 31/81, negative_batches: 6/9}
+        per_batch_stq2_delta:  # qual002 - official, batches 1-9
+          keypair: [-838.0, -904.1, -1038.1, -790.1, -854.8, -838.1, -836.3, -841.9, -822.8]
+          enc: [-792.0, -893.0, -899.6, -771.5, -870.5, -777.5, -840.6, -858.2, -871.7]
+          dec: [-1442.9, -1339.4, -1343.5, -1331.0, -1321.0, -1322.6, -1409.3, -1325.8, -1433.8]
+        compiler_selection:  # per batch 1-9; each compiler gives one ELF
+          official: [O3, O3, O2, O3, O3, O3, O3, O3, O3]  # O3 f3cf0a37de53701b (= Phase B), O2 7eadf7f3bb17981f (= follow-up fixed O2)
+          qual001: [O2, O2, O3, O2, O2, O2, O3, O3, O3]  # O2 b6654906e560c8b1, O3 b11aa429516fe32c (both = earlier runs)
+          qual002: [O2, O2, O3, O2, O2, O2, O2, O2, O2]  # O2 439b14417038f1a1, O3 b136e431a99aeb82
+        by_elf_pair_stq2_delta:  # derived; qual002 - official
+          official_O3_vs_qual002_O2: {batches: 8, keypair: -840.8, enc: -832.5, dec: -1360.3}
+          official_O2_vs_qual002_O3: {batches: 1, keypair: -1038.1, enc: -899.6, dec: -1343.5}
+        keypair_retries: none
+        evidence: results/native-ext-{official,qual001,qual002}-b{1..9}-20260923c/, results/extended-multi-summary-20260923c.json
+      paired:  # measured; O3GC fixed ELFs, ASLR on, 48 ABBA/BAAB blocks (192 fresh launches); mean [block-bootstrap 95% CI] favourable/48
+        elf_sha256: {official_normal: 9bf4b8b74c7a9acf (Phase B, re-hashed), official_reversed: c76505251f288760 (Phase B, re-hashed), qual001_normal: 81f10451ebf1f69a (Phase B, re-hashed), qual002_normal: 22276081b33e1be0, qual002_reversed: b0018000b4ecbd55}
+        qual002_vs_official_normal_aslr_on:  # PRIMARY
+          keypair: {mean: -932.76, ci95: [-950.63, -915.13], favourable: 48/48}
+          enc: {mean: -851.90, ci95: [-920.96, -791.33], favourable: 48/48}
+          dec: {mean: -1476.50, ci95: [-1499.11, -1452.07], favourable: 48/48}
+        qual002_vs_official_reversed_aslr_on:  # secondary
+          keypair: {mean: -908.81, ci95: [-939.89, -882.81], favourable: 48/48}
+          enc: {mean: -737.47, ci95: [-780.58, -682.60], favourable: 47/48}
+          dec: {mean: -1395.89, ci95: [-1438.54, -1355.69], favourable: 48/48}
+        qual002_vs_qual001_normal_aslr_on:  # increment; qual001 ELF in the manifest's official slot
+          keypair: {mean: -729.92, ci95: [-757.25, -709.32], favourable: 48/48}
+          enc: {mean: -597.77, ci95: [-651.96, -536.15], favourable: 47/48}
+          dec: {mean: -1263.59, ci95: [-1298.68, -1233.13], favourable: 48/48}
+        evidence: results/paired-aslr-on-{normal,reversed}-qual002-vs-official-20260923c/, results/paired-aslr-on-normal-qual002-vs-qual001-20260923c/, results/fixed-lazy-codec-qual002-{normal,reversed}-20260923c/
+      host_hygiene: "27 Native + 2 build + 3 paired batches accepted; 1 Native batch (qual001 round 1) contaminated on attempt 0 by the operator's own summary script (sustained foreign python3) and accepted on attempt 1; pre-batch loadavg1 0.08-0.50; Native batches 15.9-17.1 s, paired 1.9 s (before/after snapshots only)"
+      decision:  # under decision_rule; qual002 vs Official
+        keypair: robust-research-win  # Native -856.5 [-877.5, -837.2] 81/81; normal CI [-950.6, -915.1]; reversed agrees
+        enc: robust-research-win  # Native -841.1 [-878.9, -806.0] 79/81; normal CI [-921.0, -791.3]; reversed agrees
+        dec: robust-research-win  # Native -1355.1 [-1382.4, -1330.7] 81/81; normal CI [-1499.1, -1452.1]; reversed agrees
+        reversed_flags: none
+        increment_vs_qual001: {keypair: robust-research-win, enc: robust-research-win, dec: robust-research-win}  # same rule, qual001 as baseline
     host: {cpu: 1, governor: performance, intel_no_turbo: 1, aslr: "on (randomize_va_space=2)", controls_changed: false}
     cpucycles: default-perfevent from the disposable campaign /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001 (read only)
     same_elf:  # 15 fresh launches, 12 blocks x 32 = 384 obs/variant/launch, rotated order; pooled StQ2 delta [launch-level favourable]; normal / reversed link order
@@ -449,7 +511,7 @@ codec_candidate_exp002:
     host_hygiene: 3 batches clean on attempt 0 (pre-batch loadavg1 <= 0.45); same-ELF 2.9 s each, seed-matched 16.3 s
     expected_vs_observed: "component exp002-exp001 (tobytes ~-254, frombytes ~-187) predicts keypair ~-762 (3 tobytes), encap ~-695 (2+1), decap ~-1069 (2+3); observed seed-matched keypair -711 (median), encap -667/-617, decap -1075/-1083"
   not_done:
-    - "Native SUPERCOP measurement (needs a qualification export and campaign; out of scope)"
+    - "no clean/ package or release-package Native re-confirmation (Phase B is research evidence from the qualification export)"
     - "2-op freeze not applied to NTRU+768/1152 (portability recorded only); direct 12-bit codec not ported (768/1152 poly_tobytes/frombytes have their own coefficient layout and packing code, which was not analysed here)"
   promotion: none
   reproduce: "make direct-phase-a (gates); make direct-record; python3 tools/mutate_codec_direct.py --experiment . --output ...; make direct-bench direct-bench-keypair; then the phase_b_batch.py commands in the doc section"
