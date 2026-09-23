@@ -83,7 +83,16 @@ static inline int16x8_t montgomery_reduce(wide8 value)
 
 static inline int16x8_t fqmul(int16x8_t a, int16x8_t b)
 {
-    return montgomery_reduce(multiply(a, b));
+    /* The quotient comes from the low half of the product directly, as
+     * Official's fqmul does, rather than from uzp1 of the widened product:
+     * one permute fewer on the critical path of the batch inversion's
+     * serial chains. */
+    const int16x8_t q = vdupq_n_s16(Q);
+    int16x8_t m = vmulq_s16(vmulq_s16(a, b), vdupq_n_s16(NEG_QINV));
+    wide8 v = multiply(a, b);
+    v.low = vmlal_s16(v.low, vget_low_s16(m), vget_low_s16(q));
+    v.high = vmlal_high_s16(v.high, m, q);
+    return vuzp2q_s16(vreinterpretq_s16_s32(v.low), vreinterpretq_s16_s32(v.high));
 }
 
 /*

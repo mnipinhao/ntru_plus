@@ -30,6 +30,16 @@ buffer on the scratch.  It was retired with the rebase itself (P126):
 `packed_i9` now reads `basemul_rinv`'s output and writes the scratch, which do
 not overlap.
 
+## Batch inversion's fqmul (P128, 2026-09-23)
+
+`baseinv`'s prefix, inversion and recovery chains are serial, so they are
+latency-bound.  Their `fqmul` now takes the Montgomery quotient from the low
+half of the product (`mul`), as Official's does, instead of `uzp1` of the
+widened product: one permute fewer on every step of a ~40-step chain.
+`baseinv` on M2 550 -> 517 ns (Official 532); A76 +44 cycles a call.  Key
+generation: **M2 -90 ns (-1.44%)**, A76 +195 cycles (+0.36%), which lands under
+the roadmap's rule 2.
+
 ## Rebase folded into basemul_rinv (P126, 2026-09-23)
 
 `basemul_rinv` now writes the inverse's (component, half) lane basis itself,
