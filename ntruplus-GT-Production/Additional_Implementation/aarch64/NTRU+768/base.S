@@ -461,6 +461,7 @@ module_keygen_baseinv_prepare_Lgt_keygen_baseinv_prepare_constants:
 #endif
 C_SYM(gt_keygen_baseinv_hier_k8):
 	stp x30, x19, [sp, #-16]!
+	stp x20, xzr, [sp, #-16]!
 	stp d8, d9, [sp, #-16]!
 	stp d10, d11, [sp, #-16]!
 	stp d12, d13, [sp, #-16]!
@@ -486,9 +487,13 @@ C_SYM(gt_keygen_baseinv_hier_k8):
 	module_keygen_baseinv_tree_fqmul2 v12, v8, v9, v13, v10, v11
 	module_keygen_baseinv_tree_fqmul v0, v12, v13
 
+	/*
+	 * Invertibility is decided without branching (TIMECOP): the tree always
+	 * runs to completion, and a zero total product inverts to zero.  On
+	 * failure the caller discards the output and clears den, as before.
+	 */
 	uminv h2, v0.8h
-	umov w8, v2.h[0]
-	cbz w8, module_keygen_baseinv_tree_Lbpq_tree_failure
+	umov w20, v2.h[0]
 
 	bl C_SYM(gt_fqinv15_asm)
 	ldr q1, module_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts
@@ -512,19 +517,17 @@ C_SYM(gt_keygen_baseinv_hier_k8):
 	module_keygen_baseinv_tree_recover_group_pair 192, 64, v28, v29
 	module_keygen_baseinv_tree_recover_group_pair 288, 96, v30, v31
 
-	mov w0, wzr
-	b module_keygen_baseinv_tree_Lbpq_tree_return
+	/* 1 if some lane of the total product was zero (not invertible). */
+	cmp w20, #0
+	cset w0, eq
 
-module_keygen_baseinv_tree_Lbpq_tree_failure:
-	mov w0, #1
-
-module_keygen_baseinv_tree_Lbpq_tree_return:
 	ldp d14, d15, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 0)]
 	ldp d12, d13, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 16)]
 	ldp d10, d11, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 32)]
 	ldp d8, d9, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 48)]
-	ldp x30, x19, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 64)]
-	add sp, sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 80)
+	ldp x20, xzr, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 64)]
+	ldp x30, x19, [sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 80)]
+	add sp, sp, #(module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES + 96)
 	ret
 #ifndef __APPLE__
 .size C_SYM(gt_keygen_baseinv_hier_k8), \
@@ -1101,6 +1104,10 @@ module_encap_muladd_Lpoly_basemul_add_consts:
  * groups.  decoded_ct is retained for re-encryption.  packed_f is never
  * materialized: its second group stays live in v24-v27 while the first group
  * is consumed.
+ *
+ * The product is stored with st4, one group as eight 4-coefficient elements
+ * (element l of group g at byte 64g + 8l), the input layout of
+ * poly_invntt_ternary_decap.  |product| <= (4*3456^2 + 32768*q) / 2^16 = 2458.
  */
 #ifdef __APPLE__
 .text
@@ -1473,7 +1480,7 @@ module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64:
         smlal2 v20.4S, v6.8H, v23.8H
         smlal2 v20.4S, v7.8H, v27.8H
         uzp1 v3.8H, v8.8H, v1.8H
-        st1 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
+        st4 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
         mul v3.8H, v3.8H, v0.H[2]
         uzp1 v15.8H, v25.8H, v20.8H
         uzp1 v12.8H, v9.8H, v18.8H
@@ -1534,7 +1541,7 @@ module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64:
         uzp2 v15.8H, v21.8H, v11.8H
         uzp2 v14.8H, v2.8H, v25.8H
         uzp2 v12.8H, v1.8H, v9.8H
-        st1 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
+        st4 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
 
     subs x8, x8, #128
     b.ne module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64

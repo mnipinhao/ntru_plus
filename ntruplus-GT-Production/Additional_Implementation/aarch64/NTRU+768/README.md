@@ -14,16 +14,16 @@ shape used by other NTRU+ implementations:
 
 | File | Public responsibility |
 |---|---|
-| `ntt.S` | Encap/Keygen/Decap Forward and paired inverse transforms |
+| `ntt.S` | Encap/Keygen/Decap Forward and the Decap Good-Thomas inverse (fused mod 3) |
 | `base.S` | Pointwise multiplication, base inversion leaves, packed first product |
 | `pack.S` | Checked decode and canonical serialization for each layout |
 | `keygen.c` | CQ inversion orchestration and CQ pointwise products |
 | `cbd.S` | CBD and SOTP conversion |
 | `add.S` | ABI-safe subtraction and two-pointer triple |
-| `crepmod3.S` | Center modulo q, then reduce modulo 3 |
+| `crepmod3.S` | Standalone centered mod 3; test oracle only, since decapsulation fuses mod 3 into `poly_invntt_ternary_decap` |
 | `keccakf1600.S` | Baseline AArch64 Keccak-f[1600] backend and fused fixed-size `hash_g` |
 | `keccakf1600_v84a.S` | FEAT_SHA3 x1 permutation selected at compile time when available |
-| `util.h` | Portable secure_clear and optional test audit hook |
+| `util.h` | Portable secure_clear, SUPERCOP declassify annotation, optional test audit hook |
 | `kem_api.S` | AAPCS64 boundary for the public KEM API |
 | `kem.c` | Key generation, encapsulation, and decapsulation |
 
@@ -94,10 +94,10 @@ static source-coverage gate with a runtime audit hook for the portable C
 clears. `make kat-check` regenerates the NIST KAT and compares it byte-for-byte
 with the canonical vectors under `kat/expected/`.
 
-`make support-check` verifies the full mod3 input contract [-3456,3456], including
-q-centering, in-place and out-of-place use. The old direct-mod3 implementation
-was not equivalent outside [-1728,1728]; the current consumer follows Official
-centering semantics. `poly_sub` is the active Decap subtraction name; its arithmetic
+`make support-check` verifies the standalone `poly_crepmod3` oracle over its full
+input contract [-3456,3456], including q-centering, in-place and out-of-place use.
+The KEM no longer calls it: decapsulation's inverse ends in an exactly centered
+Barrett and applies the mod-3 step itself, producing the same ternary output. `poly_sub` is the active Decap subtraction name; its arithmetic
 matches the previous poly_sub_decap and preserves AAPCS64 d8-d15.
 
 The Encap checked decoder stores directly from the pre-64-bit-transpose packets,

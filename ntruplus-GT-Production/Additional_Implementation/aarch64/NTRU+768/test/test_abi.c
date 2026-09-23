@@ -66,6 +66,8 @@ int main(void)
     gt_cq_poly cq_c;
     uint8_t bytes_a[NTRUPLUS_POLYBYTES];
     uint8_t bytes_b[NTRUPLUS_POLYBYTES];
+    uint8_t invntt_scratch[POLY_INVNTT_TERNARY_DECAP_SCRATCHBYTES]
+        __attribute__((aligned(16)));
     uint8_t pk[CRYPTO_PUBLICKEYBYTES];
     uint8_t sk[CRYPTO_SECRETKEYBYTES];
     uint8_t ct[CRYPTO_CIPHERTEXTBYTES];
@@ -135,7 +137,7 @@ int main(void)
         {"decap_basemul", abi_decap_basemul,
          &a, &b, &c, NULL, 1},
         {"decap_invntt", abi_decap_invntt,
-         &a, NULL, NULL, NULL, 1},
+         &a, invntt_scratch, NULL, NULL, 1},
         {"decap_sub", abi_decap_sub,
          &a, &b, &c, NULL, 1},
         {"decap_ntt", abi_decap_ntt,

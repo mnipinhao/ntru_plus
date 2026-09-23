@@ -107,6 +107,9 @@ int poly_baseinv_keygen_cq_scaled_r(
     {
         int result = gt_keygen_baseinv_hier_k8(den);
 
+        /* A non-invertible sample is discarded and resampled; which one it
+         * was is public.  The caller's retry loop branches on this value. */
+        ntruplus_declassify(&result, sizeof result);
         if (result)
             memset(out_cq, 0, sizeof(*out_cq));
         else

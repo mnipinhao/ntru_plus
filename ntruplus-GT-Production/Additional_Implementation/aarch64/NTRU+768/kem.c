@@ -305,8 +305,15 @@ int crypto_kem_dec_internal(uint8_t *ss, const uint8_t *ct,
 {
     struct {
         uint8_t msg[NTRUPLUS_N / 8 + NTRUPLUS_SYMBYTES];
-        uint8_t buf1[NTRUPLUS_POLYBYTES];
-        uint8_t buf2[NTRUPLUS_POLYBYTES];
+        /* The inverse's working area is dead before buf1/buf2 are first
+         * written, and is cleared with the rest of scratch. */
+        union {
+            struct {
+                uint8_t buf1[NTRUPLUS_POLYBYTES];
+                uint8_t buf2[NTRUPLUS_POLYBYTES];
+            } b;
+            uint8_t invntt[POLY_INVNTT_TERNARY_DECAP_SCRATCHBYTES];
+        } io __attribute__((aligned(16)));
         poly c;
         poly hinv;
         union {
@@ -328,22 +335,24 @@ int crypto_kem_dec_internal(uint8_t *ss, const uint8_t *ct,
         m_r, &scratch.c, ct, sk);
     fail |= (int8_t)poly_frombytes_decap(
         &scratch.hinv, sk + NTRUPLUS_POLYBYTES);
+    /* Whether ct, f and hinv decoded canonically is public (Official
+     * declassifies the same decode results before branching). */
+    ntruplus_declassify(&fail, sizeof fail);
     if (fail) {
         secure_clear(ss, NTRUPLUS_SSBYTES);
         goto cleanup;
     }
 
-    poly_invntt_decap_scale(m_r);
-    poly_crepmod3(m_r, m_r);
+    poly_invntt_ternary_decap(m_r, scratch.io.invntt);
 
     poly_ntt_decap(forward, m_r);
     poly_sub(&scratch.c, &scratch.c, forward);
     poly_basemul_decap(
         forward, &scratch.c, &scratch.hinv);
-    poly_tobytes_decap(scratch.buf1, forward);
+    poly_tobytes_decap(scratch.io.b.buf1, forward);
 
-    hash_g(scratch.buf2, scratch.buf1);
-    fail = (int8_t)poly_sotp_decode(scratch.msg, m_r, scratch.buf2);
+    hash_g(scratch.io.b.buf2, scratch.io.b.buf1);
+    fail = (int8_t)poly_sotp_decode(scratch.msg, m_r, scratch.io.b.buf2);
 
     for (size_t i = 0; i < NTRUPLUS_SYMBYTES; i++)
         scratch.msg[i + NTRUPLUS_N / 8] =
@@ -353,9 +362,9 @@ int crypto_kem_dec_internal(uint8_t *ss, const uint8_t *ct,
 
     poly_cbd1(m_r, scratch.slot.buf3 + NTRUPLUS_SSBYTES);
     poly_ntt_decap(&scratch.c, m_r);
-    poly_tobytes_decap(scratch.buf2, &scratch.c);
+    poly_tobytes_decap(scratch.io.b.buf2, &scratch.c);
 
-    fail |= verify(scratch.buf1, scratch.buf2, NTRUPLUS_POLYBYTES);
+    fail |= verify(scratch.io.b.buf1, scratch.io.b.buf2, NTRUPLUS_POLYBYTES);
 
     for (size_t i = 0; i < NTRUPLUS_SSBYTES; i++)
         ss[i] = scratch.slot.buf3[i] & ~(-fail);
