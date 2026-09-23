@@ -4,3 +4,5 @@ PARAM := 864
 include ../../../common/official_opt_lazy/lazy.mk
 # NTRU+864-only layout-fused codec candidates (Option A): see codec.mk.
 include codec.mk
+# NTRU+864-only direct 12-bit codec candidate exp002 (+ 2-op freeze): see codec_direct.mk.
+include codec_direct.mk
