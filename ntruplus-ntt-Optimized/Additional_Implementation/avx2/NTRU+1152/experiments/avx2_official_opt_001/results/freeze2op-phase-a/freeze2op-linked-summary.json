@@ -1,0 +1,76 @@
+{
+  "class": "linked ELF audit (Phase A, correctness only; no timing)",
+  "parameter": "NTRU+1152",
+  "elf": "build/test_kem_lazy_freeze2op",
+  "elf_sha256": "3336d8d0c3d203f163cb2c83b5d464dc1c9198b2cb60b5036caec607e4e578e3",
+  "asm_sha256": "ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "symbol": "ntruplus1152_officialopt_tobytes_freeze2op",
+  "address_mod_32": 0,
+  "aligned_32": true,
+  "size_bytes": 619,
+  "instruction_rows": 114,
+  "official_poly_tobytes_rows": 122,
+  "opcode_counts": {
+    "add": 2,
+    "cmp": 1,
+    "jb": 1,
+    "lea": 1,
+    "ret": 1,
+    "vmovdqa": 10,
+    "vmovdqu": 6,
+    "vpaddw": 8,
+    "vpblendd": 6,
+    "vpblendw": 6,
+    "vperm2i128": 6,
+    "vpminuw": 8,
+    "vpmulhrsw": 8,
+    "vpmullw": 8,
+    "vpslld": 3,
+    "vpsllq": 3,
+    "vpsllw": 6,
+    "vpsrlq": 6,
+    "vpsrlw": 4,
+    "vpsubw": 8,
+    "vpunpckhqdq": 3,
+    "vpunpcklqdq": 3,
+    "vpxor": 6
+  },
+  "static_delta_official_minus_candidate": {
+    "vpand": 8,
+    "vpminuw": -8,
+    "vpsraw": 8
+  },
+  "row_diff": {
+    "removed": {
+      "vpsraw": 8,
+      "vpand": 8,
+      "vpaddw": 8
+    },
+    "added": {
+      "vpaddw": 8,
+      "vpminuw": 8
+    }
+  },
+  "dynamic_delta_per_call": {
+    "vpsraw": -72,
+    "vpand": -72,
+    "vpminuw": 72,
+    "net_instructions": -72
+  },
+  "rows_identical_to_official_except_freeze": true,
+  "stack_references": 0,
+  "calls": 0,
+  "vzeroupper": 0,
+  "kem_call_relocations": {
+    "kem_lazy_freeze2op.o->candidate": 7,
+    "kem_lazy_freeze2op.o->poly_tobytes": 0,
+    "kem_lazy_freeze2op.o->lazy_forward": 6,
+    "kem_lazy_freeze2op.o->poly_ntt": 0,
+    "kem_freeze2op.o->candidate": 7,
+    "kem_freeze2op.o->poly_tobytes": 0,
+    "kem_freeze2op.o->poly_ntt": 6,
+    "kem_lazy.o->poly_tobytes": 7,
+    "kem_lazy.o->candidate": 0
+  }
+}

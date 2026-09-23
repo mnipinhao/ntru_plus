@@ -1,0 +1,83 @@
+# make freeze-phase-a (NTRU+1152 2-op freeze tobytes, Phase A), 2026-09-23T07:52:47Z, cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+python3 ../../../../../../scripts/check_supercop_experiment.py --experiment . --parameter 1152
+verified NTRU+1152 experiment upstream 78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010
+python3 ../../../common/official_opt_lazy/tools/generate_forward_caller_lazy.py --param 1152 --experiment . --check
+ok asm/ntruplus1152_officialopt_ntt_caller_lazy.s sha256=eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092
+ok src/kem_lazy.c sha256=0bd8c009ef362948fd51d7b1c642904b7f5e5d1095f11cf6401dcbf408d2caa7
+removed per Forward: {'removed_per_iteration': {'vpmulhrsw': 8, 'vpmullw': 8, 'vpsubw': 8}, 'iterations': 9, 'removed_vectors_per_forward': 72, 'removed_constant_loads': 1}
+python3 ../../../common/official_opt_lazy/tools/generate_tobytes_freeze2op.py --param 1152 --experiment . --check --meta build/evidence/freeze2op-generation.json
+ok asm/ntruplus1152_officialopt_tobytes_freeze2op.s sha256=ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04
+ok src/kem_lazy_freeze2op.c sha256=430ce4f1b73fa622707c706ec3c9328644fed5cbe672d97816ea6fee26581996
+ok src/kem_freeze2op.c sha256=6b6f31566a58f48bffbd746dcc8718bb9d56703bc82d38f93c2cb16b130a223a
+freeze replacement: {"sites_per_iteration": 8, "iterations": 9, "net_instructions_saved_per_call": 72, "official_site_lines": [[46, 50, 54], [47, 51, 55], [48, 52, 56], [49, 53, 57], [59, 63, 67], [60, 64, 68], [61, 65, 69], [62, 66, 70]]}
+python3 ../../../common/official_opt_lazy/tools/prove_freeze_2op.py --experiment . --output build/evidence/freeze-2op-proof.json
+NTRU+1152 supercop-avx2: q=3457 V=9 sites=8 barrett in [-3291, 3291] 2op==3op=True residue=True -> PASS
+lazy-stream-equal: no LAZY_REFERENCE for NTRU+1152; skipped
+build/test_freeze_2op && build/test_tobytes_freeze2op && build/test_kem_lazy_freeze2op && build/test_kem_lazy_freeze2op_fretry && build/test_kem_freeze2op && build/test_kem_freeze2op_fretry && true
+freeze 2-op: 65536 inputs, Barrett output in [-3291, 3291], q=3457, mismatches=0
+freeze 2-op exhaustive: pass
+  every int16 value at every position (K=0,1,40503): 196608 polys
+  random + edge-set polys: 22000
+  lazy-Forward envelopes + real lazy Forward outputs: 24000 polys
+  guard pages (wire 1728 B, poly 2304 B; leading + trailing PROT_NONE): 1000 rounds, no fault
+NTRU+1152 tobytes 2-op freeze vs Official: pass (242608 polys byte-exact, frombytes round trip canonical, canaries, immutability, 32 wire misalignments, guard pages)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=40 g=45
+f-injection keypair draws: 5 (= discarded-draw oracle 4 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=40 g=45
+f-injection keypair draws: 5 (= discarded-draw oracle 4 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_freeze_2op && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_tobytes_freeze2op && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_lazy_freeze2op && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_lazy_freeze2op_fretry && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_freeze2op && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_freeze2op_fretry && true
+freeze 2-op: 65536 inputs, Barrett output in [-3291, 3291], q=3457, mismatches=0
+freeze 2-op exhaustive: pass
+  every int16 value at every position (K=0,1,40503): 196608 polys
+  random + edge-set polys: 22000
+  lazy-Forward envelopes + real lazy Forward outputs: 24000 polys
+  guard pages (wire 1728 B, poly 2304 B; leading + trailing PROT_NONE): 1000 rounds, no fault
+NTRU+1152 tobytes 2-op freeze vs Official: pass (242608 polys byte-exact, frombytes round trip canonical, canaries, immutability, 32 wire misalignments, guard pages)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=40 g=45
+f-injection keypair draws: 5 (= discarded-draw oracle 4 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=40 g=45
+f-injection keypair draws: 5 (= discarded-draw oracle 4 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+python3 ../../../common/official_opt_lazy/tools/audit_tobytes_freeze2op.py --param 1152 --experiment . \
+	--elf build/test_kem_lazy_freeze2op --output build/evidence/freeze2op-linked-summary.json
+{
+ "parameter": "NTRU+1152",
+ "size_bytes": 619,
+ "instruction_rows": 114,
+ "official_poly_tobytes_rows": 122,
+ "static_delta_official_minus_candidate": {
+  "vpand": 8,
+  "vpminuw": -8,
+  "vpsraw": 8
+ },
+ "kem_call_relocations": {
+  "kem_lazy_freeze2op.o->candidate": 7,
+  "kem_lazy_freeze2op.o->poly_tobytes": 0,
+  "kem_lazy_freeze2op.o->lazy_forward": 6,
+  "kem_lazy_freeze2op.o->poly_ntt": 0,
+  "kem_freeze2op.o->candidate": 7,
+  "kem_freeze2op.o->poly_tobytes": 0,
+  "kem_freeze2op.o->poly_ntt": 6,
+  "kem_lazy.o->poly_tobytes": 7,
+  "kem_lazy.o->candidate": 0
+ }
+}

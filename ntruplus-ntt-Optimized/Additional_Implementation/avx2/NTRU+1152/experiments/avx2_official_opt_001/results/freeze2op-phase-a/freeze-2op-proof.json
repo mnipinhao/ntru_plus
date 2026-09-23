@@ -1,0 +1,110 @@
+{
+  "class": "exhaustive proof record (int16 domain, bit-exact AVX2 word semantics)",
+  "claim": "Barrett output b in (-q,q) for every int16 input; vpminuw(b, b+q) == b + (vpsraw(b,15) & q) bit for bit; both == x mod q",
+  "sources": {
+    "/home/nuc/src/ntru_plus-official-opt-864-1152/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/upstream/supercop-avx2": {
+      "label": "NTRU+1152 supercop-avx2",
+      "q": 3457,
+      "V": 9,
+      "pack_s_sha256": "406e0d9cff4af069d8b8cc3cb028d11898a61f86d86cece9280fa81dafb11732",
+      "freeze_sites_pack_s_lines": {
+        "barrett": [
+          [
+            20,
+            24,
+            28
+          ],
+          [
+            21,
+            25,
+            29
+          ],
+          [
+            22,
+            26,
+            30
+          ],
+          [
+            23,
+            27,
+            31
+          ],
+          [
+            33,
+            37,
+            41
+          ],
+          [
+            34,
+            38,
+            42
+          ],
+          [
+            35,
+            39,
+            43
+          ],
+          [
+            36,
+            40,
+            44
+          ]
+        ],
+        "cond_add": [
+          [
+            46,
+            50,
+            54
+          ],
+          [
+            47,
+            51,
+            55
+          ],
+          [
+            48,
+            52,
+            56
+          ],
+          [
+            49,
+            53,
+            57
+          ],
+          [
+            59,
+            63,
+            67
+          ],
+          [
+            60,
+            64,
+            68
+          ],
+          [
+            61,
+            65,
+            69
+          ],
+          [
+            62,
+            66,
+            70
+          ]
+        ]
+      },
+      "result": {
+        "inputs": 65536,
+        "barrett_min": -3291,
+        "barrett_max": 3291,
+        "barrett_in_open_interval_minus_q_q": true,
+        "two_op_equals_three_op_bitwise": true,
+        "mismatches": 0,
+        "output_equals_x_mod_q": true,
+        "wrong_residues": 0,
+        "pass": true
+      }
+    }
+  },
+  "pass": true
+}

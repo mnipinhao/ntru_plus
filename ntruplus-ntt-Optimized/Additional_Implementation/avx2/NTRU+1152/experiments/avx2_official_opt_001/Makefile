@@ -2,3 +2,6 @@
 # All rules live in the shared, parameterised common/official_opt_lazy/lazy.mk.
 PARAM := 1152
 include ../../../common/official_opt_lazy/lazy.mk
+# 2-op freeze in poly_tobytes stacked on the lazy Forward (candidate
+# avx2-officialopt-lazy-freeze-1152-exp001) + freeze-only control: see freeze2op.mk.
+include ../../../common/official_opt_lazy/freeze2op.mk
