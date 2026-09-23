@@ -1014,7 +1014,7 @@ seed-matched run. Evidence: `results/codec-fused-diag-20260923/`,
 record. The whole-ELF sha256 changes on every rebuild because `.strtab` holds
 gcc's temporary object names, so `.text` is the stable identity.
 
-### Better designs (described, not implemented)
+### Better designs (described here; both implemented in exp002, see the next section)
 
 * **2-op canonicalisation.** Replace `vpsraw/vpand/vpaddw` with
   `t = x + q; x = vpminuw(x, t)`: one op less per register, and one less p01
@@ -1053,6 +1053,264 @@ python3 ../../../common/official_opt_lazy/tools/phase_b_batch.py --result-dir re
   --metadata metadata.json -- python3 tools/run_codec_keypair_seedmatched.py --experiment . --skip-build --result-dir {RESULT}
 ```
 
+## NTRU+864 direct 12-bit codec (exp002, 2026-09-23)
+
+A third NTRU+864 candidate, `avx2-officialopt-lazy-codec-864-exp002`, puts a
+new codec on the caller-lazy Forward. It implements both "better designs" from
+the Option A section: the 2-op freeze and direct 12-bit packing. **This is
+Phase A plus a same-ELF diagnostic. There was no SUPERCOP campaign, Native was
+not measured, and no host control was changed.** exp001 and the lazy-only
+candidate are unchanged, and `make check codec-check` still passes. The new
+rules live in `codec_direct.mk`, which the NTRU+864 Makefile includes after
+`codec.mk`.
+
+| File (in `NTRU+864/experiments/avx2_official_opt_001/`) | Role |
+|---|---|
+| `tools/prove_freeze_2op.py`, `tests/test_freeze_2op.c` | exhaustive 2-op freeze record (Python model + real instructions) |
+| `tools/generate_codec_direct.py` | generator (with `--check`); reuses the exp001 scheduler |
+| `asm/ntruplus864_officialopt_codec_direct.s` | generated `ntruplus864_officialopt_{tobytes,frombytes}_direct` |
+| `asm/ntruplus864_officialopt_codec_fused_min.s` | generated control `ntruplus864_officialopt_tobytes_fused_min` (exp001 + 2-op freeze only) |
+| `src/kem_lazy_codec_direct.c`, `src/kem_codec_direct.c` | candidate KEM overlay of `kem_lazy.c`; direct-codec-only control on Official `kem.c` |
+| `tests/test_codec_direct.c`, `tests/test_codec_fused_min.c` | the unchanged exp001 differential, bound to the new kernels by overlay |
+| `tools/audit_codec_direct.py`, `tools/mutate_codec_direct.py` | linked-ELF audit; mutation check |
+| `bench/bench_codec_direct.c`, `tools/run_codec_direct_diag.py`, `tools/run_codec_direct_keypair_seedmatched.py` | diagnostics |
+
+### Idea 2: 2-op canonicalisation (proved)
+
+Official freezes each coefficient with a Barrett step (`vpmulhrsw _16xv`,
+`vpmullw _16xq`, `vpsubw`) and then adds q to negative results (`vpsraw 15`,
+`vpand q`, `vpaddw`). The last three instructions become
+`y = vpaddw(b, q); out = vpminuw(b, y)`. This is correct exactly when every
+Barrett output b lies in (−q, q):
+- for b ≥ 0, unsigned b < b+q < 2q;
+- for b < 0, unsigned b ≥ 2^16 − q + 1, which is larger than b+q ∈ (0, q).
+
+`prove_freeze_2op.py` reads q and `V = BARRETT_V(q)` = 9 from the pinned
+`params.h` and `consts.c`. It then checks every freeze site in `pack.s`
+instruction by instruction, on the registers loaded from `_16xv` and
+`_16xq`. Over all 65,536 int16 inputs, with bit-exact word semantics, it
+finds:
+- the Barrett output lies in **[−3291, 3291]**;
+- the 2-op and 3-op results are equal bit for bit;
+- both equal x mod q.
+
+The C twin runs the same 65,536 inputs through the real instructions with the
+linked constants. Result: `results/codec-direct-phase-a/freeze-2op-proof.json`.
+
+**Portability:** NTRU+768 and NTRU+1152 `poly_tobytes` (pristine
+`pack.s:20-70`, read-only) use the same freeze: the same 3-op sequence, 8
+sites per iteration, q = 3457, V = 9. The same record passes for both, so the
+change ports as-is. It was not applied there.
+
+In isolation (the `fused_min` control, i.e. exp001 with only this change),
+tobytes drops from 1375 to 1321 instructions per call. That is 6 per 96
+coefficients, all of them p01 shifts. The same-ELF saving is 14–16 cycles
+(15/15 launches, both link orders).
+
+### Idea 1: direct packing, straight from the 6-way layout
+
+In the internal layout, register `R_r`, word `l` (0..15) holds wire
+coefficient `6l + r`. Wire pair `(6l+2s, 6l+2s+1)` is therefore
+`(R_2s[l], R_2s+1[l])`, which is in the same lane of two registers. Per
+96-coefficient block, tobytes does:
+
+1. freeze (Barrett + 2-op) on the six registers;
+2. `vpunpck{l,h}wd(R_2s, R_2s+1)` and `vpmaddwd` by (1, 4096). Each dword now
+   holds the 24-bit wire value `c_even + 4096·c_odd`. `D_s^lo` holds pairs
+   `3l+s` for l = 0..3 | 8..11, and `D_s^hi` for l = 4..7 | 12..15;
+3. a 5-op in-lane dword interleave per triple:
+   `X = unpckldq(D1,D2)`, `Y = unpckhdq(D0,D1)`,
+   `O0 = unpcklqdq(D0,X)`, `O1 = blendd(Y,X,0xCC)`, `O2 = unpckhqdq(Y,D2)`.
+   Every 128-bit lane then holds exactly one 12-byte wire group (4 consecutive
+   pairs, out of order);
+4. one `vpshufb` per register orders the pairs and drops each dword's fourth
+   byte;
+5. each lane goes out as a 16-byte store at `12·group`
+   (`vmovdqu xmm` / `vextracti128 m128`).
+
+There is **no cross-lane permute and no transpose to natural order**. Each
+16-byte store spills 4 zero bytes into the next group, which that group's
+store then overwrites. The generator therefore adds an ordering chain to the
+exp001 list scheduler so that stores stay in ascending address order. The last
+group (bytes 1284..1295) uses `vextracti128` + `vmovq` + `vpextrd`, so nothing
+is written past byte 1295.
+
+frombytes is the mirror image:
+1. 16-byte loads at `12·group` (`vmovdqu xmm` + `vinserti128 m128`);
+2. a `vpshufb` expand to `[b0 b1 b2 0]` dwords, placing the pairs in the same
+   `O_k` positions;
+3. the inverse 5-op interleave
+   (`Z = unpckldq(O1,O2)`, `W = unpckhdq(O0,O1)`, `D0 = unpcklqdq(O0,Z)`,
+   `D1 = blendd(W,Z,0xCC)`, `D2 = unpckhqdq(W,O2)`);
+4. `vpand 0xfff` / `vpsrld 12`;
+5. `vpackusdw(lo, hi)`, which restores the 6-way word order exactly. Values
+   are ≤ 4095, so nothing saturates.
+
+The last group is loaded from byte 1280 with a mask whose lane 1 is shifted
+by 4, so nothing is read past byte 1295. The canonical check is exp001's:
+`vpmaxuw` into one accumulator, then a single `vpcmpgtw q-1` / `vpmovmskb` at
+the end. Blocking is 4 × 192 coefficients plus a final 96, with no stack,
+calls or `vzeroupper`. The pointer and no-overlap contract is exp001's.
+Official pack.s is untouched, and the new constants are local `.rodata`
+labels.
+
+**6-way direct vs "natural order first".** The task also proposed transposing
+to natural order first (pack's in-lane stages) and then packing with
+`vpmaddwd`/`vpshufb`. Per 96 coefficients, that route costs pack's 30
+pair16/pair32/pairq ops plus 6 `vpmaddwd` and 6 `vpshufb`: 42 ops after the
+freeze. Going straight from the 6-way layout costs 6 unpack + 6 `vpmaddwd` +
+10 interleave + 6 `vpshufb`: 28 ops. The worry for the 6-way route was
+compacting 9-byte records. That disappears, because the dword interleave can
+leave the pairs out of order and the final `vpshufb` reorders them for free.
+The first estimate for that interleave (2 `vpshufd` + 6 `vpblendd`) was also
+improved to 5 unpack/blend ops, and frombytes inverts it in 5. The 6-way
+route was the only one built.
+
+**Scheduling effort.** The exp001 scheduler (critical path first, register
+pressure capped, linear-scan allocation) was used unchanged apart from the
+store chain. Pinning the `vpshufb` masks in registers was tried. It does not
+fit in 16 ymm registers: the allocator runs out in both kernels. The masks
+therefore stay RIP-relative memory operands, which cost 6.3 loads per 96
+coefficients on the three load ports. In a scratch `rdtscp` tight loop on
+CPU 1 (TSC ticks, exploratory only), tobytes took 298 against 720 (exp001),
+692 (`fused_min`) and 727 (Official). frombytes took 288 against 573 and 674.
+
+Dynamic instructions (linked ELF, `results/codec-direct-phase-a/codec-direct-linked-summary.json`;
+Official = `pack.s` kernels only). First per call, then per 96 coefficients:
+
+| tobytes | Official | exp001 | fused_min | exp002 |
+|---|---:|---:|---:|---:|
+| total per call | 1613 | 1375 | 1321 | **707** |
+| total per 96 coefficients | 179.2 | 152.8 | 146.8 | **78.6** |
+| p01 (multiply + shift) | 508 | 508 | 454 | 162 |
+| p015 (add/logic/min/blendd) | 370 | 370 | 370 | 180 |
+| in-lane shuffle (p15 on Golden/Redwood Cove, p5 on Skylake) | 290 | 290 | 290 | 180 |
+| cross-lane permute (p5) | 145 | 52 | 52 | 1 |
+| loads / stores | 112 / 96 | 56 / 81 | 56 / 81 | 57 / 109 |
+
+| frombytes | Official | exp001 | exp002 |
+|---|---:|---:|---:|
+| total per call | 1432 | 1170 | **547** |
+| total per 96 coefficients | 159.1 | 130.0 | **60.8** |
+| p01 (shift) | 346 | 346 | 54 |
+| p015 (and/max/blendd) | 348 | 323 | 129 |
+| in-lane shuffle | 290 | 290 | 180 |
+| cross-lane permute (p5) | 145 | 54 | 0 |
+| loads / `vinserti128 m128` / stores | 97 / 0 / 110 | 43 / 39 / 54 | 55 / 54 / 54 |
+
+Per 96 coefficients, exp002 tobytes spends 30 ops on the freeze, 12 on
+unpack + `vpmaddwd`, 10 on interleave, 6 on `vpshufb`, plus 6 loads and 12
+stores. exp002 frombytes spends 12 loads, 6 `vpshufb`, 10 interleave, 18
+split/pack, 6 `vpmaxuw` and 6 stores. The port classes are a coarse model,
+not a measurement.
+
+### Gates (all pass)
+
+1. **Codec differential.** `build/test_codec_direct` is the unchanged exp001
+   test (`tests/test_codec_fused.c`), bound to the direct kernels.
+   - Cases: 287,072 tobytes polys and 3,763,050 frombytes inputs (662,739 of
+     them rejected by Official), as in exp001.
+   - Every call checks canaries, input immutability and 32 byte-array
+     misalignments. Output poly **and** return value must equal Official and
+     the scalar wire model.
+   - `build/test_codec_fused_min` passes the same test.
+   - `tools/mutate_codec_direct.py` applied 20 hand mutations to the direct
+     asm. They cover the freeze, the madd constant, every mask family including
+     lane-1-only and last-group, blend immediates, load/store offsets, store
+     order, the last-group stores, the low12 mask, the shift count, the
+     canonical check and the loop bound. 19 were caught. `vpackusdw →
+     vpackssdw` is an equivalent mutant, since the values are ≤ 4095.
+2. **KEM.** `test_kem_lazy_codec_direct[_fretry]` and
+   `test_kem_codec_direct[_fretry]` use the common `test_kem_lazy.c`
+   unchanged.
+   - 100 deterministic vectors, pk/sk/ct/ss byte-exact vs Official;
+   - invalid PK, bit-flipped CT, noncanonical CT and noncanonical SK all
+     matched;
+   - forced g-retry and f-retry injection pass.
+3. **Sanitizers.** ASan, UBSan (`-fno-sanitize-recover=all`) and LSan on all
+   seven binaries (including the freeze test and `fused_min`).
+4. **Linked audit** (`build/test_kem_lazy_codec_direct`):
+   - the symbols are 32-byte aligned (1,354 B and 1,117 B);
+   - no stack reference, no call, no `vzeroupper`, no text relocations;
+   - the candidate KEM has 7 tobytes and 4 frombytes relocations to the direct
+     symbols and 6 to the lazy Forward, and none to Official or exp001 codec
+     symbols or to `poly_ntt`.
+
+Evidence is in `results/codec-direct-phase-a/`: `closure-tests.log`, which
+also holds the mutation run and the `make check codec-check` regression,
+`codec-direct-linked-summary.json`, `freeze-2op-proof.json` and
+`mutation-check.json`.
+
+### Same-ELF diagnostic (`supercop-derived`, not Native)
+
+One ELF holds:
+- the Official, lazy, exp001 and exp002 KEM translation units;
+- the Official, exp001, `fused_min` and exp002 codec kernels.
+
+The setup matches the exp001 diagnostic: CPU 1, ASLR on, 15 fresh launches,
+common O3GC recipe, cpucycles from the disposable campaign. Each launch uses
+12 rotated blocks × 32 = 384 observations per variant. Cells show the pooled
+StQ2 delta, with favourable launches in brackets. The reversed column uses the
+same objects and asm linked in reverse order. All batches were clean on
+attempt 0.
+
+| region | Official StQ2 | exp002 − Official, normal | reversed | exp002 − exp001, normal | reversed |
+|---|---:|---:|---:|---:|---:|
+| tobytes | 701.3 | −265.3 (15/15) | −273.1 (15/15) | −251.8 (15/15) | −256.9 (15/15) |
+| frombytes | 672.4 | −276.6 (15/15) | −265.1 (15/15) | −192.6 (15/15) | −180.5 (15/15) |
+| Encap | 32921 | −986.9 (15/15) | −1003.1 (15/15) | −666.9 (15/15) | −617.3 (15/15) |
+| Decap | 23826 | −1573.6 (15/15) | −1507.3 (15/15) | −1074.9 (15/15) | −1082.5 (15/15) |
+
+Same batches, other pairs:
+- exp001 − Official: tobytes −13.5/−16.2, frombytes −84.0/−84.6, Encap
+  −320.0/−385.8, Decap −498.7/−424.8;
+- `fused_min` − exp001 (the 2-op freeze alone): −14.4/−16.4, 15/15;
+- exp002 − lazy: Encap −834.8/−874.1, Decap −1379.9/−1359.8, all 15/15.
+
+Keypair in the same ELF gives exp002 − exp001 = −725.9/−704.3 (15/15). The
+KAT DRBG is inside that region, so the seed-matched harness is the reference
+(unchanged `bench_keypair_seedmatched.c`, 9 launches × 1000 iterations per
+pairing, d = B − A):
+
+| pairing | median d | mean d [95% two-stage bootstrap CI] | launches favourable |
+|---|---:|---:|---:|
+| exp002 vs Official | −915.0 | −941.3 [−987.9, −903.9] | 9/9 |
+| exp002 vs exp001 | −711.0 | −718.6 [−758.4, −681.6] | 9/9 |
+| exp002 vs lazy | −736.5 | −741.1 [−775.0, −712.5] | 9/9 |
+
+The component deltas explain the caller deltas. Averaged over both link
+orders, exp002 − exp001 is about −254 per tobytes and −187 per frombytes. That
+predicts:
+- Keypair ≈ −762 (3 tobytes); observed −711 seed-matched;
+- Encap ≈ −695 (2 tobytes + 1 frombytes); observed −667/−617;
+- Decap ≈ −1069 (2 + 3); observed −1075/−1083.
+
+Evidence: `results/codec-direct-diag-20260923/`,
+`results/codec-direct-diag-swapped-20260923/` and
+`results/codec-direct-keypair-seedmatched-20260923/`. Each has `summary.json`
+and `metadata.json` with source hashes, `elf_text_sha256` and the hygiene
+record.
+
+### Reproduce
+
+```sh
+E=ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001
+T=../../../common/official_opt_lazy/tools
+cd $E
+make direct-phase-a        # generator checks, freeze proof (864 + pristine 768/1152), codec + KEM differentials, sanitizers, audit
+make direct-record         # copies proof and audit into results/codec-direct-phase-a/
+python3 tools/mutate_codec_direct.py --experiment . --output results/codec-direct-phase-a/mutation-check.json
+make check codec-check     # lazy-only and exp001, unchanged
+make direct-bench direct-bench-keypair
+python3 $T/phase_b_batch.py --result-dir results/codec-direct-diag-TAG --metadata metadata.json -- \
+  python3 tools/run_codec_direct_diag.py --experiment . --launches 15 --skip-build --result-dir {RESULT}
+python3 $T/phase_b_batch.py --result-dir results/codec-direct-diag-swapped-TAG --metadata metadata.json -- \
+  python3 tools/run_codec_direct_diag.py --experiment . --launches 15 --skip-build \
+  --binary build/bench_codec_direct_swapped --result-dir {RESULT}
+python3 $T/phase_b_batch.py --result-dir results/codec-direct-keypair-seedmatched-TAG --metadata metadata.json -- \
+  python3 tools/run_codec_direct_keypair_seedmatched.py --experiment . --skip-build --result-dir {RESULT}
+```
+
 ## Still not done
 
 - No `clean/` change and no promotion.
@@ -1063,6 +1321,9 @@ python3 ../../../common/official_opt_lazy/tools/phase_b_batch.py --result-dir re
   why the O3-built 864 candidate loses its Decap gain in Native.
 - 864 reversed placement was not re-run at 48 blocks with ASLR on; the
   secondary check uses the Phase B 16-block run.
-- NTRU+864 lazy+codec candidate: no qualification export, no SUPERCOP
-  campaign and no Native measurement yet. Only Phase A and the same-ELF
-  diagnostic exist.
+- NTRU+864 lazy+codec candidates (exp001, exp002): no qualification export,
+  no SUPERCOP campaign and no Native measurement yet. Only Phase A and the
+  same-ELF diagnostic exist.
+- The 2-op freeze is proved for NTRU+768/1152 `poly_tobytes` but not applied
+  there. The direct 12-bit codec is not ported: 768/1152 have their own
+  codec layout, which was not analysed.
