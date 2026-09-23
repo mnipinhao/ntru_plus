@@ -5,7 +5,8 @@ Branch `official-opt-lazy-864-1152`, forked from `avx2-official-opt` at
 (`docs/ntruplus768-official-opt.md`, Rounds 4-6) to the two larger Official
 parameter sets. **Phase A is only about correctness**; it made no timing,
 SUPERCOP campaign or host-control change. **Phase B** (Native SUPERCOP
-performance evidence, 2026-09-23) is at the end of this document. No host
+performance evidence, 2026-09-23) and its follow-up (fixed-compiler 864
+Native, 1152 Keypair retry control) are at the end of this document. No host
 control was changed in either phase.
 
 ## Scope
@@ -324,8 +325,277 @@ python3 $REPO/scripts/summarize_supercop_paired.py --campaign $R/fixed-lazy-pair
 # Summary and decision: python3 $T/summarize_phase_b.py --param $p --experiment $E --tag TAG
 ```
 
+## Phase B follow-up (2026-09-23)
+
+The follow-up targets the two open Phase B questions: 864 Native, where the
+compilers differed, and the 1152 Keypair retry tail. It used the same host,
+CPU 1, unchanged controls and campaign `-001`. Every timing batch ran under
+`phase_b_batch.py`. **All 9 follow-up batches were accepted on attempt 0**:
+pre-batch load was 0.12-0.48 and there were no foreign CPU users. Each
+batch took 5.4-5.8 s, so the 5 s in-batch sampling covered it at most once;
+the 3 s before/after snapshots apply as in Phase B.
+
+Evidence labels used below:
+- **measured**: new timing.
+- **derived**: new analysis of timing that already exists.
+- **estimated**: model or simulation.
+
+### NTRU+864 Native with a fixed compiler (measured)
+
+**How the compiler list was restricted.** SUPERCOP takes its C compiler list
+from `bench/nucpromtlhcubinucai1ummsb209/bin/okc-amd64`, which `do-part init`
+generated from `okcompilers/c`. That file has sha256 `82f1eea7…98b3`, mode 755,
+and four lines after `#!/bin/sh`:
+
+```
+2: echo 'gcc -march=native -mtune=native -O3 -fwrapv -fPIC -fPIE -gdwarf-4 -Wall'   <- Official 864 (Phase B)
+3: echo 'gcc -march=native -mtune=native -Os -fwrapv -fPIC -fPIE -gdwarf-4 -Wall'
+4: echo 'gcc -march=native -mtune=native -O2 -fwrapv -fPIC -fPIE -gdwarf-4 -Wall'   <- candidate 864 (Phase B)
+5: echo 'gcc -march=native -mtune=native -O -fwrapv -fPIC -fPIE -gdwarf-4 -Wall'
+```
+
+Neither the campaign nor `okcompilers/c` was edited by hand. The restriction
+used the existing `run_supercop_benchmark.py --compiler-wrapper` mechanism.
+For the duration of one `do-part` it copies a single-entry list over
+`okc-amd64`, and it restores the original bytes and mode in a `finally`. The
+two lists are committed:
+- `common/official_opt_lazy/compilers/okc-native-gcc-O3-only.sh` (line 2 only)
+- `common/official_opt_lazy/compilers/okc-native-gcc-O2-only.sh` (line 4 only)
+
+Their output was diffed against lines 1 and 3 of the original list's output
+and matched. After every batch, `okc-amd64` was re-hashed and was still
+`82f1eea7…98b3`. Each `metadata.json` records `compiler_policy: fixed-common`
+and the wrapper path and sha256. `crypto_kem/measure.c` was unmodified
+(`7490844f…0174`). Each implementation was enabled alone and got 9 fresh
+launches.
+
+**The builds are reproducible.** The fixed-O3 Official ELF (`f3cf0a37…`) is
+byte-identical to Phase B's Official Native ELF. The fixed-O2 candidate ELF
+(`b6654906…`) is byte-identical to Phase B's candidate Native ELF. The other
+two ELFs are new: O3 candidate `b11aa429…` and O2 Official `7eadf7f3…`.
+
+Primary runs (tag `20260923`, Official first) and a replicate (tag
+`20260923r2`, candidate first). Each cell is candidate − Official for pooled
+StQ1 / StQ2 / StQ3 (864 observations each). *fav* is the number of candidate
+launches below the Official launch median, out of 9, followed by the 9×9
+pairwise count of candidate launch < Official launch.
+
+| Compiler | Op | Primary StQ1 / **StQ2** / StQ3 | fav | Replicate StQ1 / **StQ2** / StQ3 | fav |
+|---|---|---|---|---|---|
+| O3 only | Keypair | −234.2 / **−299.8** / −477.2 | 9/9, 81/81 | −224.4 / **−291.3** / −323.2 | 9/9, 81/81 |
+| O3 only | Encap | +28.8 / **+85.4** / +148.1 | 2/9, 33/81 | −13.3 / **+5.9** / +55.4 | 7/9, 48/81 |
+| O3 only | Decap | +43.3 / **−0.8** / −78.4 | 2/9, 27/81 | +42.5 / **+8.0** / −64.9 | 1/9, 29/81 |
+| O2 only | Keypair | −80.1 / **−133.4** / −141.1 | 9/9, 81/81 | −98.8 / **−135.8** / +220.8 | 7/9, 65/81 |
+| O2 only | Encap | −243.4 / **−218.9** / −243.3 | 9/9, 75/81 | −209.9 / **−143.4** / +263.1 | 7/9, 64/81 |
+| O2 only | Decap | −101.8 / **−71.6** / −44.5 | 7/9, 63/81 | −70.7 / **−24.8** / −29.0 | 8/9, 65/81 |
+
+Pooled StQ2 over both runs (derived; identical ELFs, 1,728 observations per
+role, `native-fixedcc-summary-pooled.json`):
+
+| Compiler | Keypair | Encap | Decap |
+|---|---:|---:|---:|
+| O3 only | −295.27 | +49.20 | +3.59 |
+| O2 only | −138.32 | −185.20 | −48.06 |
+
+Phase B's default-selection Native pairs the O2 candidate ELF with the O3
+Official ELF. Those same two ELFs were re-measured twice here (derived from
+the fixed-compiler runs):
+
+| Op | Phase B | Primary | Replicate |
+|---|---:|---:|---:|
+| Keypair | −90.42 | −143.86 | −83.81 |
+| Encap | −59.45 | +1.93 | −46.74 |
+| Decap | +17.75 | −53.60 | −40.25 |
+
+Phase B's Decap +17.75 did not reproduce with the same binaries. The
+run-to-run spread of a 9-launch pooled delta is about ±70 cycles.
+
+**Robust-research-win rule** (Native pooled StQ2 < 0 AND all 4 fixed-ELF
+paired CIs < 0; the paired evidence is unchanged at 4/4 for all 864 ops):
+
+| Op | Fixed O2 (candidate's Phase B compiler) | Fixed O3 (Official's Phase B compiler) |
+|---|---|---|
+| Keypair | **qualifies** (−133 / −136, both runs) | **qualifies** (−300 / −291, 9/9 launches) |
+| Encap | **qualifies** (−219 / −143) | fails (+85 / +6) |
+| Decap | **qualifies** (−72 / −25, 7/9 and 8/9) | not robust: −0.83 passes the sign test in the primary run only; the replicate is +7.96, the pool +3.59 and 1-2/9 launches are favourable. Read as zero |
+
+Conclusion for 864 Decap: under a **controlled-compiler Native with the O2
+entry**, Decap now meets the rule, in two independent runs. Under the O3 entry
+it shows no Native gain. **This is a controlled-compiler Native. It is not
+SUPERCOP's default compiler selection**, which picks O3 for Official and O2
+for the candidate. With default selection, the three measurements of 864
+Decap are +17.75, −53.60 and −40.25. Encap behaves the same way: it is a
+clear win at O2 and zero at O3. The O3-built candidate loses the Encap/Decap
+gain that the O3GC fixed-ELF controls show. Its text layout after the Forward
+moves by 0x60-0x80 bytes, but the O2 build moves by the same amount. The
+cause was not investigated.
+
+Evidence: `NTRU+864/.../results/native-fixedcc-{O3,O2}-{official,candidate}-20260923{,r2}/`,
+`native-fixedcc-summary-20260923{,r2}.json` and `native-fixedcc-summary-pooled.json`.
+
+### NTRU+1152 Keypair: controlling the BaseInv retry tail
+
+**Step 2a: call-index pairing is impossible (analysis).** `crypto_kem/measure`
+is linked with `fastrandombytes`, not `knownrandombytes` (`do-part` line 420:
+`measurelibs="$lib/$abi/fastrandombytes.o $libs"`). `fastrandombytes` keys its
+ChaCha20 RNG once per process from `kernelrandombytes`. The i-th keypair call
+therefore gets different coins in every fresh launch, for both
+implementations. The zero-key `knownrandombytes` is linked only into the
+try/checksum binaries. This was confirmed empirically: 274 Native and
+fixed-ELF raw launch files contain **274 distinct** retry sequences.
+Candidate_i − official_i is therefore not a matched pair, and no replay can
+make it one.
+
+The retry count is still observed exactly for every timed call. measure.c
+logs `keypair_randomcalls` next to `keypair_cycles`, and both `kem.c` and
+`src/kem_lazy.c` call `randombytes(coins, 32)` exactly once per *f* attempt
+and once per *g* attempt. So retries = randomcalls − 2 and Forward calls =
+randomcalls. No instrumented replay was needed.
+
+**Why Native pooled StQ2 is composition-dominated (derived).** Each retry adds
+about 5.9 k cycles. Official medians by stratum are 31.3 k (r=0), 37.2 k (r=1)
+and 43.1 k (r=2). The share of keypairs with no retry is about 0.51, so StQ2's
+37.5-62.5% window lies right on the r=0/r=1 boundary. In Phase B, the Official
+pool had 52.2% r=0 keypairs and the candidate pool 49.65%, a difference of 22
+of 864, about 1σ. The StQ2 window held 120 r=0 + 96 r=1 observations for
+Official and 100 + 116 for the candidate. The pooled medians fell in different
+clusters (33,063.5 against 36,490.5). That composition shift alone moves StQ2
+by about +540 cycles and hides the real saving. The result is the Phase B
+Native +164.47.
+
+**Retry-stratified re-analysis of the existing raw data (derived, no new
+timing).** Tool: `tools/analyze_keypair_retry_strata.py`, output
+`keypair-retry-strata-20260923.json`.
+
+Native (independent pools; CI from 2,000 launch resamples within each role):
+
+| Retries | n (off / cand) | StQ2 Official | StQ2 candidate | Delta [95% CI] |
+|---|---|---:|---:|---:|
+| 0 | 451 / 429 | 31,460 | 31,084 | **−376.2** [−524.3, −211.4] |
+| 1 | 254 / 269 | 37,456 | 36,917 | **−539.7** [−709.9, −373.4] |
+| 2 | 102 / 105 | 43,372 | 42,691 | **−681.3** [−879.1, −481.6] |
+| 3+ | 57 / 61 | 50,498 | 49,523 | −975.8 [−3266, +1965] |
+
+Fixed-ELF paired (O3GC): the per-block median(candidate) − median(official)
+within each stratum, meaned over 16 blocks, with the block-bootstrap 95% CI
+and favourable blocks:
+
+| Setting | r=0 | r=1 | r=2 |
+|---|---:|---:|---:|
+| Normal, ASLR off | −250.4 [−280.6, −219.4] 16 | −403.5 [−467.1, −342.9] 16 | −534.8 [−620.8, −443.0] 16 |
+| Normal, ASLR on | −203.8 [−295.2, −61.7] 15 | −365.2 [−461.4, −212.2] 15 | −514.7 [−638.9, −338.6] 15 |
+| Reversed, ASLR off | −319.5 [−339.5, −297.0] 16 | −482.6 [−505.3, −459.5] 16 | −625.4 [−658.2, −588.2] 16 |
+| Reversed, ASLR on | −263.7 [−370.0, −109.7] 15 | −466.9 [−517.4, −414.9] 16 | −506.4 [−663.0, −281.1] 14 |
+
+All 12 stratum-matched paired CIs for r = 0-2 lie below zero. The r=3+
+stratum (2-4 observations per launch) is too sparse; its CIs are wide and
+cross zero in 3 of 4 settings.
+
+**Step 2b: seed-matched paired Keypair harness (measured; supercop-derived
+diagnostic, not Native).** Harness `bench/bench_keypair_seedmatched.c`
+(`make bench-keypair`), runner `tools/run_keypair_seedmatched.py`.
+- **Build:** one ELF holds both KEMs through the namespaced
+  `official_{ref,lazy}_keypair` entries, with the same O3GC recipe and objects
+  as the same-ELF bench. A second ELF links the two KEM objects in the
+  opposite order.
+- **Coins:** each iteration derives one coin stream, SHAKE256(seed ‖ iter),
+  outside the timed region. A local `randombytes()` serves it by memcpy.
+- **Timing:** four keypairs per iteration, ABBA on even iterations and BAAB
+  on odd ones, timed with SUPERCOP's `cpucycles` (default-perfevent).
+- **Checks:** outside the timing, the harness traps unless all four calls made
+  the same number of randombytes calls and produced identical pk/sk. No trap
+  occurred.
+- **Runs:** 12 fresh processes on CPU 1 (6 per ELF), 5,000 iterations each
+  plus 32 warm-up, with distinct seeds `20260923000+k`.
+- **Statistics:** per-iteration delta d = (lazy₁ + lazy₂ − off₁ − off₂)/2.
+  CIs are two-stage bootstrap (processes, then iterations; 1,000 resamples).
+
+| Subset | n | Median d [95% CI] | Mean d [95% CI] | d < 0 | Launches |
+|---|---:|---:|---:|---:|---:|
+| **All** | 60,000 | **−391.0** [−396.5, −384.5] | −419.5 [−444.2, −395.1] | 97.1% | 12/12 |
+| Normal link order | 30,000 | −395.0 [−399.5, −390.0] | −432.8 [−471.8, −389.4] | 97.4% | 6/6 |
+| Swapped link order | 30,000 | −387.0 [−394.5, −377.5] | −406.3 [−426.5, −383.0] | 96.9% | 6/6 |
+| r=0 (2 Forwards) | 30,691 | −293.0 [−297.5, −289.0] | −292.1 [−317.4, −263.0] | 95.9% | 12/12 |
+| r=1 (3) | 17,580 | −453.0 [−459.0, −444.5] | −457.1 [−486.2, −425.4] | 98.3% | 12/12 |
+| r=2 (4) | 7,399 | −606.5 [−617.5, −593.0] | −607.0 [−670.0, −545.7] | 98.8% | 12/12 |
+| r=3 (5) | 2,848 | −748.8 [−765.0, −732.0] | −730.3 [−882.7, −576.4] | 98.2% | 12/12 |
+| r≥4 | 1,482 | −939.8 [−972.5, −910.0] | −1079.7 [−1269.1, −957.3] | 98.5% | 12/12 |
+
+The mean retry count per keypair was 0.79. The saving is proportional to the
+number of Forward calls. A fit on the stratum medians gives **−152 cycles per
+Forward** with intercept +7; a fit at iteration level gives −163 per Forward
+with intercept +36. This matches the same-ELF per-Forward price (−169/−171).
+The retry-free cost is 2 Forwards, about −300 cycles; the expected cost per
+keypair at the natural retry rate is about −390 to −420. The first timed call
+of each quadruple is 29 cycles slower (median), and ABBA/BAAB cancels this.
+
+**Pooled-StQ2 noise (estimated by resampling the harness observations).**
+This compares two independent pools of Keypair observations, each 96 per
+launch:
+
+| Launches per role | SD of StQ2 delta | P(delta > 0) given the real saving |
+|---:|---:|---:|
+| 9 (Phase B design) | ≈ 545 | ≈ 0.27 |
+| 36 | ≈ 255 | ≈ 0.09 |
+| 81 | ≈ 166 | ≈ 0.01 |
+
+**Conclusion for 1152 Keypair.** The saving is real. In the seed-matched
+diagnostic it is about 390 cycles per keypair (median; mean 420), about 1.1%
+of the Official 34.4 k StQ2. It is about 150-165 cycles per Forward and
+scales with the retry count. Stratum by stratum, it is also visible in the
+existing *Native* raw data (r=0 −376, r=1 −540, r=2 −681, all CIs < 0), and
+all 12 stratum-matched fixed-ELF CIs (r = 0-2) are below zero.
+
+It does **not** meet the Phase B robust-research-win rule as written. The
+unstratified Native pooled delta is +164.47, and only 1 of 4 unstratified
+paired CIs is below zero. With 9 launches per role that rule cannot resolve
+this operation: composition noise, SD ≈ 545, is larger than the effect. The
+evidence therefore belongs to a different class: *retry-stratified Native +
+retry-stratified fixed-ELF paired + seed-matched paired diagnostic*. Under a
+stratified version of the rule, which asks for Native per-stratum deltas < 0
+and all paired per-stratum CIs < 0 for every well-populated stratum
+(r = 0-2), 1152 Keypair qualifies. A pooled-Native confirmation would need
+about 80 launches per role. That was not run.
+
+### Decision after the follow-up
+
+| Op | NTRU+864 | NTRU+1152 |
+|---|---|---|
+| Keypair | robust research win (unchanged; also under fixed O3 and fixed O2) | not robust under the Phase B rule. **Stratified-evidence win**: seed-matched −391 [−397, −385]; Native r=0-2 all < 0; paired 12/12 stratum CIs < 0 |
+| Encap | robust research win (unchanged; fixed O2 qualifies, fixed O3 does not) | robust research win (unchanged) |
+| Decap | not robust under default selection (+17.75, not reproduced: −53.6, −40.3). **Qualifies under controlled-compiler Native, O2 entry** (−72, −25). No gain under the O3 entry | not robust (unchanged; not re-examined) |
+
+`promotion: none`, and `clean/` was not touched.
+
+### Reproduce the follow-up
+
+```sh
+REPO=/home/nuc/src/ntru_plus-official-opt-864-1152
+A=$REPO/ntruplus-ntt-Optimized/Additional_Implementation/avx2
+T=$A/common/official_opt_lazy/tools; W=$A/common/official_opt_lazy/compilers
+C=/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001
+E=$A/NTRU+864/experiments/avx2_official_opt_001
+for cc in O3 O2; do for pair in official:avx2 candidate:avx2-officialopt-caller-lazy-qual001; do
+  python3 $T/phase_b_batch.py --result-dir $E/results/native-fixedcc-$cc-${pair%%:*}-TAG --metadata metadata.json -- \
+    python3 $REPO/scripts/run_supercop_benchmark.py --campaign-root $C --parameter 864 --implementation ${pair#*:} \
+    --cpu 1 --mode native-kem --fresh-launches 9 --compiler-wrapper $W/okc-native-gcc-$cc-only.sh \
+    --require-frequency-control --result-dir {RESULT}
+done; done   # replicate: same with TAGr2 and the pair order reversed
+python3 $T/summarize_fixed_compiler_native.py --param 864 --experiment $E --tag TAG
+python3 $T/summarize_fixed_compiler_native.py --param 864 --experiment $E --pool TAG TAGr2
+E=$A/NTRU+1152/experiments/avx2_official_opt_001
+python3 $T/analyze_keypair_retry_strata.py --experiment $E --tag 20260923    # Phase B raw
+(cd $E && make check bench-keypair)
+python3 $T/phase_b_batch.py --result-dir $E/results/keypair-seedmatched-TAG --metadata metadata.json -- \
+  python3 $T/run_keypair_seedmatched.py --param 1152 --experiment $E --skip-build --result-dir {RESULT}
+python3 $T/run_keypair_seedmatched.py --param 1152 --experiment $E --result-dir $E/results/keypair-seedmatched-TAG --summarize
+```
+
 ## Still not done
 
 - No `clean/` change and no promotion.
 - No natural *f*-retry for 864; only the injection covers it.
 - No Native re-confirmation from a release package.
+- No large-sample (about 80 launches per role) pooled Native run for 1152
+  Keypair. There is no explanation yet for why the O3-built 864 candidate loses
+  its Encap/Decap gain in Native. 1152 Decap (3/4 CIs) was not re-examined.
