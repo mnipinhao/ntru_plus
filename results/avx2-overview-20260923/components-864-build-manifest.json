@@ -1,0 +1,104 @@
+{
+  "cc": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "cflags": [
+    "-march=native",
+    "-mtune=native",
+    "-O3",
+    "-fwrapv",
+    "-fPIC",
+    "-fPIE",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-gdwarf-4",
+    "-Wall"
+  ],
+  "created_at": "2026-09-23T10:30:46.364897+00:00",
+  "elf": "/home/nuc/src/ntru_plus-official-opt-864-1152/results/avx2-overview-20260923/raw/build-864/overview-components-864",
+  "elf_sha256": "7b8c35384181259eb1771d5471ccc4e78b3d91860cc9a291cf284deba76b00ca",
+  "harness_sha256": "3676245704443212901b41f7ecd25ef0c4b85a718d7663f8d40544c972836e87",
+  "link": "-Wl,--gc-sections",
+  "link_order": [
+    "official",
+    "opt"
+  ],
+  "ovb_h_sha256": "76e01e4b9bbb7aa3679f313585ed970f7e73537fef6a626374f642dd6d04db20",
+  "parameter": "864",
+  "roles": {
+    "official": {
+      "adapter": "adapter_official.c",
+      "adapter_defines": [],
+      "adapter_sha256": "4c791590b2976782fc9f8b30d969bb0cc5d6610b3d9e9d664a093937e6913f91",
+      "directory": "/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001/crypto_kem/ntruplus864/avx2",
+      "linked_members": [
+        "KeccakP-1600-AVX2.s.o",
+        "add.s.o",
+        "baseinv.s.o",
+        "basemul.s.o",
+        "cbd.s.o",
+        "consts.c.o",
+        "crepmod3.s.o",
+        "fips202.c.o",
+        "invntt.s.o",
+        "kem.c.o",
+        "ntt.s.o",
+        "pack.s.o",
+        "poly.c.o",
+        "symmetric.c.o"
+      ],
+      "renamed_symbols": 79,
+      "sources": 14,
+      "tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+      "undefined_symbols": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "crypto_declassify",
+        "memcpy",
+        "memset",
+        "ovb_rng_seed",
+        "randombytes"
+      ]
+    },
+    "opt": {
+      "adapter": "adapter_official.c",
+      "adapter_defines": [
+        "OVB_FORWARD=ntruplus864_officialopt_ntt_caller_lazy",
+        "OVB_TOBYTES=ntruplus864_officialopt_tobytes_direct",
+        "OVB_FROMBYTES=ntruplus864_officialopt_frombytes_direct"
+      ],
+      "adapter_sha256": "4c791590b2976782fc9f8b30d969bb0cc5d6610b3d9e9d664a093937e6913f91",
+      "directory": "/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001/crypto_kem/ntruplus864/avx2-officialopt-lazy-codec-qual002",
+      "linked_members": [
+        "KeccakP-1600-AVX2.s.o",
+        "add.s.o",
+        "baseinv.s.o",
+        "basemul.s.o",
+        "cbd.s.o",
+        "codec_direct.s.o",
+        "consts.c.o",
+        "crepmod3.s.o",
+        "fips202.c.o",
+        "invntt.s.o",
+        "kem.c.o",
+        "ntt_caller_lazy.s.o",
+        "pack.s.o",
+        "poly.c.o",
+        "symmetric.c.o"
+      ],
+      "renamed_symbols": 81,
+      "sources": 16,
+      "tree_sha256": "ece23c1a9ebf2178658c36157dfb640110bebc1c5fc0ad3747d80a69cd9c06c0",
+      "undefined_symbols": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "crypto_declassify",
+        "memcpy",
+        "memset",
+        "ovb_rng_seed",
+        "randombytes"
+      ]
+    }
+  },
+  "schema": "ntruplus-overview-component-build/v1",
+  "size": "/home/nuc/src/ntru_plus-official-opt-864-1152/results/avx2-overview-20260923/raw/build-864/overview-components-864  :\nsection                 size     addr\n.note.gnu.build-id        36      848\n.interp                   28      884\n.gnu.hash                 40      912\n.dynsym                  864      952\n.dynstr                  491     1816\n.gnu.version              72     2308\n.gnu.version_r           160     2384\n.rela.dyn               4056     2544\n.rela.plt                696     6600\n.init                     27     8192\n.plt                     480     8224\n.plt.got                   8     8704\n.text                  67031     8768\n.fini                     13    75800\n.rodata                12992    77824\n.eh_frame_hdr           1052    90816\n.eh_frame               3776    91872\n.note.gnu.property        32    95648\n.note.ABI-tag             32    95680\n.init_array                8   100016\n.fini_array                8   100024\n.data.rel.ro            1568   100032\n.dynamic                 496   101600\n.got                     296   102096\n.data                     56   102400\n.bss                  982976   102464\n.comment                  38        0\n.debug_aranges          3360        0\n.debug_info           147175        0\n.debug_abbrev          14583        0\n.debug_line            75048        0\n.debug_str             19756        0\n.debug_loc            239105        0\n.debug_ranges          60416        0\nTotal                1636775\n\n\n",
+  "supercop_version": "20260831"
+}

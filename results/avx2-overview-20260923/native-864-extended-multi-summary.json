@@ -1,0 +1,545 @@
+{
+  "comparisons": {
+    "opt:official": {
+      "baseline": "official",
+      "candidate": "opt",
+      "native": {
+        "batches": 3,
+        "derived_by_elf_pair": {
+          "official:O3:f3cf0a37de53701b vs opt:O2:439b14417038f1a1": {
+            "batches": [
+              1,
+              3
+            ],
+            "dec_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -1362.0671296296314
+            },
+            "enc_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -804.6319444444453
+            },
+            "keypair_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -841.3819444444453
+            }
+          },
+          "official:O3:f3cf0a37de53701b vs opt:O3:b136e431a99aeb82": {
+            "batches": [
+              2
+            ],
+            "dec_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -1327.6388888888905
+            },
+            "enc_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -780.1898148148102
+            },
+            "keypair_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -950.9583333333321
+            }
+          }
+        },
+        "keypair_retries": {
+          "composition": {
+            "official": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            },
+            "opt": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            }
+          },
+          "pooled": {
+            "delta_stq2": -864.5787037037044,
+            "official": {
+              "median": 23749.5,
+              "stq2": 23745.841049382718,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            },
+            "opt": {
+              "median": 22880.0,
+              "stq2": 22881.262345679013,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            }
+          },
+          "r0_count_difference": {
+            "binomial_sd_of_difference": 0.0,
+            "candidate_minus_official": 0
+          },
+          "strata": {
+            "0": {
+              "median": {
+                "ci95": [
+                  -908.0,
+                  -833.0
+                ],
+                "delta": -869.5,
+                "official": 23749.5,
+                "opt": 22880.0,
+                "resamples": 2000
+              },
+              "n": [
+                2592,
+                2592
+              ],
+              "stq2": {
+                "ci95": [
+                  -906.5401234567908,
+                  -829.4151234567908
+                ],
+                "delta": -864.5787037037044,
+                "official": 23745.841049382718,
+                "opt": 22881.262345679013,
+                "resamples": 2000
+              }
+            }
+          }
+        },
+        "launches": {
+          "official": 27,
+          "opt": 27
+        },
+        "operations": {
+          "dec_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -5.663362746787208,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -1366.4398148148139,
+              -1327.6388888888905,
+              -1357.1712962962993
+            ],
+            "per_batch_summary": {
+              "max": -1327.6388888888905,
+              "mean": -1350.4166666666679,
+              "min": -1366.4398148148139,
+              "negative_batches": 3,
+              "sd": 20.263186552276732,
+              "sd_of_81_launch_pool_from_batch_sd": 11.698956210596577
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -1345.0108024691363,
+              "official": 23567.425925925927,
+              "opt": 22222.41512345679
+            },
+            "stq2": {
+              "delta": -1341.1867283950633,
+              "official": 23681.80864197531,
+              "opt": 22340.621913580246
+            },
+            "stq2_delta_bootstrap_sd": 23.524836807554017,
+            "stq2_delta_ci95_launch_resampling": [
+              -1392.7037037037007,
+              -1300.3148148148139
+            ],
+            "stq3": {
+              "delta": -1409.9351851851825,
+              "official": 23852.189814814814,
+              "opt": 22442.25462962963
+            }
+          },
+          "enc_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -2.415155877036422,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -870.4259259259234,
+              -780.1898148148102,
+              -748.3425925925912
+            ],
+            "per_batch_summary": {
+              "max": -748.3425925925912,
+              "mean": -799.652777777775,
+              "min": -870.4259259259234,
+              "negative_batches": 3,
+              "sd": 63.326063077674995,
+              "sd_of_81_launch_pool_from_batch_sd": 36.561319564614884
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -789.5493827160499,
+              "official": 32695.989197530864,
+              "opt": 31906.439814814814
+            },
+            "stq2": {
+              "delta": -794.6296296296277,
+              "official": 32901.79475308642,
+              "opt": 32107.16512345679
+            },
+            "stq2_delta_bootstrap_sd": 26.09925072171778,
+            "stq2_delta_ci95_launch_resampling": [
+              -853.2129629629671,
+              -752.5246913580268
+            ],
+            "stq3": {
+              "delta": -920.0216049382761,
+              "official": 33335.22993827161,
+              "opt": 32415.208333333332
+            }
+          },
+          "keypair_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -3.6409689676002417,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -864.5925925925949,
+              -950.9583333333321,
+              -819.898148148146
+            ],
+            "per_batch_summary": {
+              "max": -819.898148148146,
+              "mean": -878.4830246913576,
+              "min": -950.9583333333321,
+              "negative_batches": 3,
+              "sd": 66.62507870998408,
+              "sd_of_81_launch_pool_from_batch_sd": 38.466007127989315
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -837.7237654320961,
+              "official": 23584.62037037037,
+              "opt": 22746.896604938273
+            },
+            "stq2": {
+              "delta": -864.5787037037044,
+              "official": 23745.841049382718,
+              "opt": 22881.262345679013
+            },
+            "stq2_delta_bootstrap_sd": 20.05019969921373,
+            "stq2_delta_ci95_launch_resampling": [
+              -907.5617283950633,
+              -828.3966049382689
+            ],
+            "stq3": {
+              "delta": -907.0092592592591,
+              "official": 23944.550925925927,
+              "opt": 23037.541666666668
+            }
+          }
+        },
+        "per_batch": [
+          {
+            "batch": 1,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b1-ov864",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.49
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "opt": {
+              "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-opt-b1-ov864",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.5,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.46
+              },
+              "launches": 9,
+              "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "official,opt",
+            "stq2_delta": {
+              "dec_cycles": -1366.4398148148139,
+              "enc_cycles": -870.4259259259234,
+              "keypair_cycles": -864.5925925925949
+            }
+          },
+          {
+            "batch": 2,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b2-ov864",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.42
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "opt": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-opt-b2-ov864",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.47
+              },
+              "launches": 9,
+              "measure_elf_sha256": "b136e431a99aeb8285b87ac405d6220e2968298b757be172c1f45fba553292aa",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "opt,official",
+            "stq2_delta": {
+              "dec_cycles": -1327.6388888888905,
+              "enc_cycles": -780.1898148148102,
+              "keypair_cycles": -950.9583333333321
+            }
+          },
+          {
+            "batch": 3,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b3-ov864",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 15.9,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.44
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "opt": {
+              "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-opt-b3-ov864",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.7,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.39
+              },
+              "launches": 9,
+              "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "official,opt",
+            "stq2_delta": {
+              "dec_cycles": -1357.1712962962993,
+              "enc_cycles": -748.3425925925912,
+              "keypair_cycles": -819.898148148146
+            }
+          }
+        ]
+      }
+    }
+  },
+  "decision_rule": "robust research win iff extended Native pooled StQ2 delta < 0 AND normal-placement ASLR-on paired 95% CI below zero; reversed ASLR-on reported and flagged (not failed) if it disagrees",
+  "implementations": {
+    "official": "avx2",
+    "opt": "avx2-officialopt-lazy-codec-qual002"
+  },
+  "methodology": {
+    "aslr": "on only (randomize_va_space=2); no ASLR-off setting, no setarch -R",
+    "native": "default SUPERCOP compiler selection, unmodified measure.c, one 9-launch batch per role per round, round order rotate, pooled per role; independent pools, not paired",
+    "paired": "O3GC fixed ELFs, ABBA/BAAB blocks, ASLR on; normal placement primary, reversed placement secondary robustness check",
+    "references": [
+      "SUPERCOP: normal compile/link, many fresh processes, StQ",
+      "mlkem-native: single process, warm-ups, median; no placement/ASLR control"
+    ]
+  },
+  "order": "rotate",
+  "parameter": "864",
+  "per_batch_identity": {
+    "official": [
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "dir": "native-ext-official-b1-ov864",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.0,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.49
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "dir": "native-ext-official-b2-ov864",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.0,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.42
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "dir": "native-ext-official-b3-ov864",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 15.9,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.44
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+      }
+    ],
+    "opt": [
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "dir": "native-ext-opt-b1-ov864",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.5,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.46
+        },
+        "implementation": "avx2-officialopt-lazy-codec-qual002",
+        "launches": 9,
+        "level": "O2",
+        "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "dir": "native-ext-opt-b2-ov864",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.0,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.47
+        },
+        "implementation": "avx2-officialopt-lazy-codec-qual002",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "b136e431a99aeb8285b87ac405d6220e2968298b757be172c1f45fba553292aa",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "dir": "native-ext-opt-b3-ov864",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.7,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.39
+        },
+        "implementation": "avx2-officialopt-lazy-codec-qual002",
+        "launches": 9,
+        "level": "O2",
+        "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+      }
+    ]
+  },
+  "roles": [
+    "official",
+    "opt"
+  ],
+  "round_order": [
+    "official,opt",
+    "opt,official",
+    "official,opt"
+  ],
+  "schema": "ntruplus-caller-lazy-extended-multi/v1",
+  "seed": 20260923,
+  "tag": "ov864"
+}

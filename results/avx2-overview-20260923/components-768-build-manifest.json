@@ -1,0 +1,143 @@
+{
+  "cc": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "cflags": [
+    "-march=native",
+    "-mtune=native",
+    "-O3",
+    "-fwrapv",
+    "-fPIC",
+    "-fPIE",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-gdwarf-4",
+    "-Wall"
+  ],
+  "created_at": "2026-09-23T10:30:36.474819+00:00",
+  "elf": "/home/nuc/src/ntru_plus-official-opt-864-1152/results/avx2-overview-20260923/raw/build-768/overview-components-768",
+  "elf_sha256": "fa5ddbac3776a37544e878eb0cfe42c1fbac27b4858de1a39ffaefecf94e3830",
+  "harness_sha256": "3676245704443212901b41f7ecd25ef0c4b85a718d7663f8d40544c972836e87",
+  "link": "-Wl,--gc-sections",
+  "link_order": [
+    "official",
+    "opt",
+    "gt"
+  ],
+  "ovb_h_sha256": "76e01e4b9bbb7aa3679f313585ed970f7e73537fef6a626374f642dd6d04db20",
+  "parameter": "768",
+  "roles": {
+    "gt": {
+      "adapter": "adapter_gt768.c",
+      "adapter_defines": [],
+      "adapter_sha256": "e8bc7e8d5f3c66260bd873e1be25ed881aa9539b8941d7f6c07607a3b5952e37",
+      "directory": "/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001/crypto_kem/ntruplus768/avx2-gt32-clean",
+      "linked_members": [
+        "KeccakP-1600-AVX2.s.o",
+        "add.s.o",
+        "baseinv.c.o",
+        "basemul.s.o",
+        "batch_inverse.s.o",
+        "cbd.s.o",
+        "consts.c.o",
+        "crepmod3.s.o",
+        "decap.c.o",
+        "encap.c.o",
+        "fips202.c.o",
+        "invntt.s.o",
+        "kem.c.o",
+        "keygen.c.o",
+        "ntt.s.o",
+        "ntt_m.s.o",
+        "ntt_p.s.o",
+        "pack.s.o",
+        "poly.c.o",
+        "symmetric.c.o"
+      ],
+      "renamed_symbols": 90,
+      "sources": 20,
+      "tree_sha256": "5b1ca00fd580ffea8f500f052e7e538dd93a48989849973fab077a636bed1ecc",
+      "undefined_symbols": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "memcpy",
+        "memset",
+        "ovb_rng_seed",
+        "randombytes"
+      ]
+    },
+    "official": {
+      "adapter": "adapter_official.c",
+      "adapter_defines": [],
+      "adapter_sha256": "4c791590b2976782fc9f8b30d969bb0cc5d6610b3d9e9d664a093937e6913f91",
+      "directory": "/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001/crypto_kem/ntruplus768/avx2",
+      "linked_members": [
+        "KeccakP-1600-AVX2.s.o",
+        "add.s.o",
+        "baseinv.s.o",
+        "basemul.s.o",
+        "cbd.s.o",
+        "consts.c.o",
+        "crepmod3.s.o",
+        "fips202.c.o",
+        "invntt.s.o",
+        "kem.c.o",
+        "ntt.s.o",
+        "pack.s.o",
+        "poly.c.o",
+        "symmetric.c.o"
+      ],
+      "renamed_symbols": 75,
+      "sources": 14,
+      "tree_sha256": "8db00172e705b67e231b63708295781d65681fef2c7422d717fe91ab48d576e7",
+      "undefined_symbols": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "crypto_declassify",
+        "memcpy",
+        "memset",
+        "ovb_rng_seed",
+        "randombytes"
+      ]
+    },
+    "opt": {
+      "adapter": "adapter_official.c",
+      "adapter_defines": [
+        "OVB_FORWARD=ntruplus768_officialopt_ntt_caller_lazy",
+        "OVB_TOBYTES=ntruplus768_officialopt_tobytes_freeze2op"
+      ],
+      "adapter_sha256": "4c791590b2976782fc9f8b30d969bb0cc5d6610b3d9e9d664a093937e6913f91",
+      "directory": "/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001/crypto_kem/ntruplus768/avx2-officialopt-lazy-freeze-qual001",
+      "linked_members": [
+        "KeccakP-1600-AVX2.s.o",
+        "add.s.o",
+        "baseinv.s.o",
+        "basemul.s.o",
+        "cbd.s.o",
+        "consts.c.o",
+        "crepmod3.s.o",
+        "fips202.c.o",
+        "invntt.s.o",
+        "kem.c.o",
+        "ntt_caller_lazy.s.o",
+        "pack.s.o",
+        "poly.c.o",
+        "symmetric.c.o",
+        "tobytes_freeze2op.s.o"
+      ],
+      "renamed_symbols": 76,
+      "sources": 16,
+      "tree_sha256": "2d9fa3508a442e05268f5686155a336956d2c00ecab940a7350df49710666d5f",
+      "undefined_symbols": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "crypto_declassify",
+        "memcpy",
+        "memset",
+        "ovb_rng_seed",
+        "randombytes"
+      ]
+    }
+  },
+  "schema": "ntruplus-overview-component-build/v1",
+  "size": "/home/nuc/src/ntru_plus-official-opt-864-1152/results/avx2-overview-20260923/raw/build-768/overview-components-768  :\nsection                 size     addr\n.note.gnu.build-id        36      848\n.interp                   28      884\n.gnu.hash                 40      912\n.dynsym                  864      952\n.dynstr                  491     1816\n.gnu.version              72     2308\n.gnu.version_r           160     2384\n.rela.dyn               5760     2544\n.rela.plt                696     8304\n.init                     27    12288\n.plt                     480    12320\n.plt.got                   8    12800\n.text                 109783    12864\n.fini                     13   122648\n.rodata                64824   122880\n.eh_frame_hdr           1404   187704\n.eh_frame               5008   189112\n.note.gnu.property        32   194120\n.note.ABI-tag             32   194152\n.init_array                8   197520\n.fini_array                8   197528\n.data.rel.ro            2368   197536\n.dynamic                 496   199904\n.got                     296   200400\n.data                     56   200704\n.bss                 1483264   200768\n.comment                  38        0\n.debug_aranges          5040        0\n.debug_info           177038        0\n.debug_abbrev          20426        0\n.debug_line            82057        0\n.debug_str             24650        0\n.debug_loc            206515        0\n.debug_ranges          58304        0\nTotal                2250322\n\n\n",
+  "supercop_version": "20260831"
+}

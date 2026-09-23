@@ -1,0 +1,875 @@
+{
+  "component_build": {
+    "1152": {
+      "elf_sha256": "9e6bbd7c6a5bc5151c458b41d7e07c1b6533d7ba5a013a3b9e75c1135e5015b4",
+      "link_order": [
+        "official",
+        "opt",
+        "gt"
+      ],
+      "roles": {
+        "gt": {
+          "adapter": "adapter_official.c",
+          "adapter_defines": [
+            "OVB_EXP017"
+          ],
+          "renamed_symbols": 81,
+          "sources": 63,
+          "tree_sha256": "380282beef4733be9280669686c433b41dadd6ab35f0497be9636d17e60421ec"
+        },
+        "official": {
+          "adapter": "adapter_official.c",
+          "adapter_defines": [],
+          "renamed_symbols": 75,
+          "sources": 14,
+          "tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010"
+        },
+        "opt": {
+          "adapter": "adapter_official.c",
+          "adapter_defines": [
+            "OVB_FORWARD=ntruplus1152_officialopt_ntt_caller_lazy",
+            "OVB_TOBYTES=ntruplus1152_officialopt_tobytes_freeze2op"
+          ],
+          "renamed_symbols": 76,
+          "sources": 16,
+          "tree_sha256": "3e8068bb63a9d7c502b0f3ca2e8983891abb305f0fe62dbac9e98e80f76a9914"
+        }
+      }
+    },
+    "768": {
+      "elf_sha256": "fa5ddbac3776a37544e878eb0cfe42c1fbac27b4858de1a39ffaefecf94e3830",
+      "link_order": [
+        "official",
+        "opt",
+        "gt"
+      ],
+      "roles": {
+        "gt": {
+          "adapter": "adapter_gt768.c",
+          "adapter_defines": [],
+          "renamed_symbols": 90,
+          "sources": 20,
+          "tree_sha256": "5b1ca00fd580ffea8f500f052e7e538dd93a48989849973fab077a636bed1ecc"
+        },
+        "official": {
+          "adapter": "adapter_official.c",
+          "adapter_defines": [],
+          "renamed_symbols": 75,
+          "sources": 14,
+          "tree_sha256": "8db00172e705b67e231b63708295781d65681fef2c7422d717fe91ab48d576e7"
+        },
+        "opt": {
+          "adapter": "adapter_official.c",
+          "adapter_defines": [
+            "OVB_FORWARD=ntruplus768_officialopt_ntt_caller_lazy",
+            "OVB_TOBYTES=ntruplus768_officialopt_tobytes_freeze2op"
+          ],
+          "renamed_symbols": 76,
+          "sources": 16,
+          "tree_sha256": "2d9fa3508a442e05268f5686155a336956d2c00ecab940a7350df49710666d5f"
+        }
+      }
+    },
+    "864": {
+      "elf_sha256": "7b8c35384181259eb1771d5471ccc4e78b3d91860cc9a291cf284deba76b00ca",
+      "link_order": [
+        "official",
+        "opt"
+      ],
+      "roles": {
+        "official": {
+          "adapter": "adapter_official.c",
+          "adapter_defines": [],
+          "renamed_symbols": 79,
+          "sources": 14,
+          "tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006"
+        },
+        "opt": {
+          "adapter": "adapter_official.c",
+          "adapter_defines": [
+            "OVB_FORWARD=ntruplus864_officialopt_ntt_caller_lazy",
+            "OVB_TOBYTES=ntruplus864_officialopt_tobytes_direct",
+            "OVB_FROMBYTES=ntruplus864_officialopt_frombytes_direct"
+          ],
+          "renamed_symbols": 81,
+          "sources": 16,
+          "tree_sha256": "ece23c1a9ebf2178658c36157dfb640110bebc1c5fc0ad3747d80a69cd9c06c0"
+        }
+      }
+    }
+  },
+  "component_run": {
+    "1152": {
+      "aslr_randomize_va_space": "2",
+      "cpu": 1,
+      "cpucycles": "cpucycles=default-perfevent persecond=1400000000 roles=3",
+      "elf_sha256": "9e6bbd7c6a5bc5151c458b41d7e07c1b6533d7ba5a013a3b9e75c1135e5015b4",
+      "host_hygiene": {
+        "after": {
+          "loadavg": [
+            0.38,
+            0.54,
+            0.45
+          ],
+          "time": "2026-09-23T10:31:59.498672+00:00",
+          "top_cpu_consumers_3s": [
+            {
+              "comm": "claude",
+              "cpu_percent": 1.7,
+              "last_cpu": 1,
+              "pid": 1058899
+            },
+            {
+              "comm": "systemd-logind",
+              "cpu_percent": 0.3,
+              "last_cpu": 12,
+              "pid": 5492
+            },
+            {
+              "comm": "MainThread",
+              "cpu_percent": 0.3,
+              "last_cpu": 6,
+              "pid": 1057219
+            },
+            {
+              "comm": "MainThread",
+              "cpu_percent": 0.3,
+              "last_cpu": 1,
+              "pid": 1057334
+            },
+            {
+              "comm": "systemd",
+              "cpu_percent": 0.0,
+              "last_cpu": 14,
+              "pid": 1
+            }
+          ],
+          "uptime": "18:31:56 up 16 days,  7:31,  6 users,  load average: 0.41, 0.55, 0.46"
+        },
+        "attempt": 0,
+        "before": {
+          "loadavg": [
+            0.41,
+            0.55,
+            0.46
+          ],
+          "time": "2026-09-23T10:31:53.626922+00:00",
+          "top_cpu_consumers_3s": [
+            {
+              "comm": "claude",
+              "cpu_percent": 2.0,
+              "last_cpu": 1,
+              "pid": 1058899
+            },
+            {
+              "comm": "tailscaled",
+              "cpu_percent": 0.7,
+              "last_cpu": 3,
+              "pid": 5713
+            },
+            {
+              "comm": "dbus-daemon",
+              "cpu_percent": 0.3,
+              "last_cpu": 3,
+              "pid": 5459
+            },
+            {
+              "comm": "gvfs-afc-volume",
+              "cpu_percent": 0.3,
+              "last_cpu": 17,
+              "pid": 9688
+            },
+            {
+              "comm": "systemd",
+              "cpu_percent": 0.0,
+              "last_cpu": 1,
+              "pid": 1
+            }
+          ],
+          "uptime": "18:31:50 up 16 days,  7:31,  6 users,  load average: 0.45, 0.56, 0.46"
+        },
+        "contaminated": false,
+        "contamination_reasons": [],
+        "duration_s": 2.8,
+        "during_heavy_windows": 0,
+        "during_max_loadavg1_including_batch": null,
+        "during_offenders": {},
+        "earlier_contaminated_attempts": [],
+        "host_controls_changed": false,
+        "load_threshold": 0.5,
+        "proc_threshold_percent": 25.0,
+        "waited_for_quiet_s": 0.0
+      },
+      "launches": 15,
+      "placement": "normal (link order = role order)"
+    },
+    "768": {
+      "aslr_randomize_va_space": "2",
+      "cpu": 1,
+      "cpucycles": "cpucycles=default-perfevent persecond=1400000000 roles=3",
+      "elf_sha256": "fa5ddbac3776a37544e878eb0cfe42c1fbac27b4858de1a39ffaefecf94e3830",
+      "host_hygiene": {
+        "after": {
+          "loadavg": [
+            0.4,
+            0.55,
+            0.46
+          ],
+          "time": "2026-09-23T10:31:42.825751+00:00",
+          "top_cpu_consumers_3s": [
+            {
+              "comm": "claude",
+              "cpu_percent": 2.0,
+              "last_cpu": 1,
+              "pid": 1058899
+            },
+            {
+              "comm": "MainThread",
+              "cpu_percent": 1.0,
+              "last_cpu": 3,
+              "pid": 1058634
+            },
+            {
+              "comm": "systemd",
+              "cpu_percent": 0.3,
+              "last_cpu": 3,
+              "pid": 1
+            },
+            {
+              "comm": "tailscaled",
+              "cpu_percent": 0.3,
+              "last_cpu": 3,
+              "pid": 5713
+            },
+            {
+              "comm": "MainThread",
+              "cpu_percent": 0.3,
+              "last_cpu": 3,
+              "pid": 1057334
+            }
+          ],
+          "uptime": "18:31:39 up 16 days,  7:30,  6 users,  load average: 0.44, 0.56, 0.46"
+        },
+        "attempt": 0,
+        "before": {
+          "loadavg": [
+            0.44,
+            0.56,
+            0.46
+          ],
+          "time": "2026-09-23T10:31:37.925226+00:00",
+          "top_cpu_consumers_3s": [
+            {
+              "comm": "claude",
+              "cpu_percent": 2.7,
+              "last_cpu": 1,
+              "pid": 1058899
+            },
+            {
+              "comm": "systemd",
+              "cpu_percent": 0.3,
+              "last_cpu": 14,
+              "pid": 1
+            },
+            {
+              "comm": "tailscaled",
+              "cpu_percent": 0.3,
+              "last_cpu": 3,
+              "pid": 5713
+            },
+            {
+              "comm": "MainThread",
+              "cpu_percent": 0.3,
+              "last_cpu": 3,
+              "pid": 1058634
+            },
+            {
+              "comm": "kthreadd",
+              "cpu_percent": 0.0,
+              "last_cpu": 8,
+              "pid": 2
+            }
+          ],
+          "uptime": "18:31:34 up 16 days,  7:30,  6 users,  load average: 0.48, 0.57, 0.46"
+        },
+        "contaminated": false,
+        "contamination_reasons": [],
+        "duration_s": 1.8,
+        "during_heavy_windows": 0,
+        "during_max_loadavg1_including_batch": null,
+        "during_offenders": {},
+        "earlier_contaminated_attempts": [],
+        "host_controls_changed": false,
+        "load_threshold": 0.5,
+        "proc_threshold_percent": 25.0,
+        "waited_for_quiet_s": 15.0
+      },
+      "launches": 15,
+      "placement": "normal (link order = role order)"
+    },
+    "864": {
+      "aslr_randomize_va_space": "2",
+      "cpu": 1,
+      "cpucycles": "cpucycles=default-perfevent persecond=1400000000 roles=2",
+      "elf_sha256": "7b8c35384181259eb1771d5471ccc4e78b3d91860cc9a291cf284deba76b00ca",
+      "host_hygiene": {
+        "after": {
+          "loadavg": [
+            0.45,
+            0.56,
+            0.46
+          ],
+          "time": "2026-09-23T10:31:50.421585+00:00",
+          "top_cpu_consumers_3s": [
+            {
+              "comm": "claude",
+              "cpu_percent": 3.7,
+              "last_cpu": 10,
+              "pid": 1058899
+            },
+            {
+              "comm": "MainThread",
+              "cpu_percent": 0.7,
+              "last_cpu": 3,
+              "pid": 1058634
+            },
+            {
+              "comm": "systemd",
+              "cpu_percent": 0.3,
+              "last_cpu": 13,
+              "pid": 8750
+            },
+            {
+              "comm": "kworker/20:2-events",
+              "cpu_percent": 0.3,
+              "last_cpu": 20,
+              "pid": 1340160
+            },
+            {
+              "comm": "systemd",
+              "cpu_percent": 0.0,
+              "last_cpu": 1,
+              "pid": 1
+            }
+          ],
+          "uptime": "18:31:47 up 16 days,  7:30,  6 users,  load average: 0.45, 0.56, 0.46"
+        },
+        "attempt": 0,
+        "before": {
+          "loadavg": [
+            0.4,
+            0.55,
+            0.46
+          ],
+          "time": "2026-09-23T10:31:46.029660+00:00",
+          "top_cpu_consumers_3s": [
+            {
+              "comm": "claude",
+              "cpu_percent": 2.3,
+              "last_cpu": 10,
+              "pid": 1058899
+            },
+            {
+              "comm": "rcu_preempt",
+              "cpu_percent": 0.3,
+              "last_cpu": 6,
+              "pid": 15
+            },
+            {
+              "comm": "codex",
+              "cpu_percent": 0.3,
+              "last_cpu": 1,
+              "pid": 670981
+            },
+            {
+              "comm": "MainThread",
+              "cpu_percent": 0.3,
+              "last_cpu": 1,
+              "pid": 1058634
+            },
+            {
+              "comm": "MainThread",
+              "cpu_percent": 0.3,
+              "last_cpu": 8,
+              "pid": 1058646
+            }
+          ],
+          "uptime": "18:31:42 up 16 days,  7:30,  6 users,  load average: 0.40, 0.55, 0.46"
+        },
+        "contaminated": false,
+        "contamination_reasons": [],
+        "duration_s": 1.3,
+        "during_heavy_windows": 0,
+        "during_max_loadavg1_including_batch": null,
+        "during_offenders": {},
+        "earlier_contaminated_attempts": [],
+        "host_controls_changed": false,
+        "load_threshold": 0.5,
+        "proc_threshold_percent": 25.0,
+        "waited_for_quiet_s": 0.0
+      },
+      "launches": 15,
+      "placement": "normal (link order = role order)"
+    }
+  },
+  "implementations": {
+    "1152": {
+      "gt": "avx2-gt9x16-wire-h3-pairunpack-serializer-v2-exp017-sc20260831",
+      "official": "avx2",
+      "opt": "avx2-officialopt-lazy-freeze-qual001"
+    },
+    "768": {
+      "gt": "avx2-gt32-clean",
+      "official": "avx2",
+      "opt": "avx2-officialopt-lazy-freeze-qual001"
+    },
+    "864": {
+      "official": "avx2",
+      "opt": "avx2-officialopt-lazy-codec-qual002"
+    }
+  },
+  "native": {
+    "1152": {
+      "implementations": {
+        "gt": "avx2-gt9x16-wire-h3-pairunpack-serializer-v2-exp017-sc20260831",
+        "official": "avx2",
+        "opt": "avx2-officialopt-lazy-freeze-qual001"
+      },
+      "ops": {
+        "dec_cycles": {
+          "gt": {
+            "below_official_median": 7,
+            "ci95": [
+              -14.067901234568126,
+              31.438271604936745
+            ],
+            "delta": 11.280864197531628,
+            "delta_percent": 0.036937653283684084,
+            "launches": 27,
+            "per_batch_delta": [
+              15.89814814814963,
+              19.532407407408755,
+              -8.541666666664241
+            ],
+            "resolved": false,
+            "stq2": 30551.564814814814
+          },
+          "official": 30540.283950617282,
+          "opt": {
+            "below_official_median": 27,
+            "ci95": [
+              -600.6234567901229,
+              -544.1882716049367
+            ],
+            "delta": -570.191358024691,
+            "delta_percent": -1.8670139378752117,
+            "launches": 27,
+            "per_batch_delta": [
+              -565.7546296296277,
+              -554.6481481481496,
+              -598.1342592592591
+            ],
+            "resolved": true,
+            "stq2": 29970.09259259259
+          }
+        },
+        "enc_cycles": {
+          "gt": {
+            "below_official_median": 0,
+            "ci95": [
+              679.3425925925912,
+              862.8950617283917
+            ],
+            "delta": 790.3410493827178,
+            "delta_percent": 1.8331049502971644,
+            "launches": 27,
+            "per_batch_delta": [
+              835.097222222219,
+              710.4907407407372,
+              811.0370370370365
+            ],
+            "resolved": true,
+            "stq2": 43905.2237654321
+          },
+          "official": 43114.88271604938,
+          "opt": {
+            "below_official_median": 27,
+            "ci95": [
+              -834.0293209876545,
+              -648.1790123456813
+            ],
+            "delta": -711.25,
+            "delta_percent": -1.6496623791933438,
+            "launches": 27,
+            "per_batch_delta": [
+              -659.0370370370438,
+              -777.601851851854,
+              -714.3101851851898
+            ],
+            "resolved": true,
+            "stq2": 42403.63271604938
+          }
+        },
+        "keypair_cycles": {
+          "gt": {
+            "below_official_median": 16,
+            "ci95": [
+              -845.4768518518467,
+              244.34722222222626
+            ],
+            "delta": -306.10185185184673,
+            "delta_percent": -0.8840237686400985,
+            "launches": 27,
+            "per_batch_delta": [
+              -350.71759259259125,
+              34.29166666667152,
+              -608.6805555555547
+            ],
+            "resolved": false,
+            "stq2": 34319.87345679013
+          },
+          "official": 34625.97530864197,
+          "opt": {
+            "below_official_median": 19,
+            "ci95": [
+              -810.7777777777737,
+              159.66975308642577
+            ],
+            "delta": -313.91512345679075,
+            "delta_percent": -0.9065885383983497,
+            "launches": 27,
+            "per_batch_delta": [
+              -576.222222222219,
+              -284.9351851851825,
+              -77.08796296295623
+            ],
+            "resolved": false,
+            "stq2": 34312.06018518518
+          }
+        }
+      },
+      "picks": {
+        "gt": [
+          "O3",
+          "O3",
+          "O3"
+        ],
+        "official": [
+          "O3",
+          "O3",
+          "O3"
+        ],
+        "opt": [
+          "O2",
+          "O2",
+          "O2"
+        ]
+      },
+      "roles": [
+        "official",
+        "opt",
+        "gt"
+      ],
+      "round_order": [
+        "official,opt,gt",
+        "gt,official,opt",
+        "opt,gt,official"
+      ]
+    },
+    "768": {
+      "implementations": {
+        "gt": "avx2-gt32-clean",
+        "official": "avx2",
+        "opt": "avx2-officialopt-lazy-freeze-qual001"
+      },
+      "ops": {
+        "dec_cycles": {
+          "gt": {
+            "below_official_median": 26,
+            "ci95": [
+              -278.7438271604915,
+              -205.49845679012287
+            ],
+            "delta": -245.20833333333212,
+            "delta_percent": -1.2607574399328105,
+            "launches": 27,
+            "per_batch_delta": [
+              -286.79629629629926,
+              -230.93981481481387,
+              -218.78240740740875
+            ],
+            "resolved": true,
+            "stq2": 19204.078703703704
+          },
+          "official": 19449.287037037036,
+          "opt": {
+            "below_official_median": 27,
+            "ci95": [
+              -290.6635802469136,
+              -218.74537037037226
+            ],
+            "delta": -256.1820987654319,
+            "delta_percent": -1.3171798959909815,
+            "launches": 27,
+            "per_batch_delta": [
+              -317.0416666666679,
+              -255.79629629629562,
+              -201.226851851854
+            ],
+            "resolved": true,
+            "stq2": 19193.104938271605
+          }
+        },
+        "enc_cycles": {
+          "gt": {
+            "below_official_median": 1,
+            "ci95": [
+              87.70216049382725,
+              305.10648148148175
+            ],
+            "delta": 204.87345679012287,
+            "delta_percent": 0.7270551789852675,
+            "launches": 27,
+            "per_batch_delta": [
+              183.5138888888905,
+              246.5138888888905,
+              178.59259259259488
+            ],
+            "resolved": true,
+            "stq2": 28383.402777777777
+          },
+          "official": 28178.529320987655,
+          "opt": {
+            "below_official_median": 24,
+            "ci95": [
+              -215.5447530864185,
+              -28.873456790122873
+            ],
+            "delta": -110.9043209876545,
+            "delta_percent": -0.3935773926464354,
+            "launches": 27,
+            "per_batch_delta": [
+              -294.0092592592591,
+              -94.52314814814599,
+              -36.78240740740512
+            ],
+            "resolved": true,
+            "stq2": 28067.625
+          }
+        },
+        "keypair_cycles": {
+          "gt": {
+            "below_official_median": 27,
+            "ci95": [
+              -375.5648148148139,
+              -314.65895061728224
+            ],
+            "delta": -345.38734567900974,
+            "delta_percent": -1.5981130340205572,
+            "launches": 27,
+            "per_batch_delta": [
+              -319.1203703703686,
+              -337.0833333333321,
+              -380.6620370370365
+            ],
+            "resolved": true,
+            "stq2": 21266.810185185186
+          },
+          "official": 21612.197530864196,
+          "opt": {
+            "below_official_median": 27,
+            "ci95": [
+              -281.660493827163,
+              -230.3456790123455
+            ],
+            "delta": -253.56172839505962,
+            "delta_percent": -1.1732343646820287,
+            "launches": 27,
+            "per_batch_delta": [
+              -257.45370370370074,
+              -220.51388888888687,
+              -282.30555555555475
+            ],
+            "resolved": true,
+            "stq2": 21358.635802469136
+          }
+        }
+      },
+      "picks": {
+        "gt": [
+          "O3",
+          "O2",
+          "O2"
+        ],
+        "official": [
+          "O2",
+          "O2",
+          "O2"
+        ],
+        "opt": [
+          "O2",
+          "O2",
+          "O3"
+        ]
+      },
+      "roles": [
+        "official",
+        "opt",
+        "gt"
+      ],
+      "round_order": [
+        "official,opt,gt",
+        "gt,official,opt",
+        "opt,gt,official"
+      ]
+    },
+    "864": {
+      "implementations": {
+        "official": "avx2",
+        "opt": "avx2-officialopt-lazy-codec-qual002"
+      },
+      "ops": {
+        "dec_cycles": {
+          "official": 23681.80864197531,
+          "opt": {
+            "below_official_median": 27,
+            "ci95": [
+              -1392.7037037037007,
+              -1300.3148148148139
+            ],
+            "delta": -1341.1867283950633,
+            "delta_percent": -5.663362746787208,
+            "launches": 27,
+            "per_batch_delta": [
+              -1366.4398148148139,
+              -1327.6388888888905,
+              -1357.1712962962993
+            ],
+            "resolved": true,
+            "stq2": 22340.621913580246
+          }
+        },
+        "enc_cycles": {
+          "official": 32901.79475308642,
+          "opt": {
+            "below_official_median": 27,
+            "ci95": [
+              -853.2129629629671,
+              -752.5246913580268
+            ],
+            "delta": -794.6296296296277,
+            "delta_percent": -2.415155877036422,
+            "launches": 27,
+            "per_batch_delta": [
+              -870.4259259259234,
+              -780.1898148148102,
+              -748.3425925925912
+            ],
+            "resolved": true,
+            "stq2": 32107.16512345679
+          }
+        },
+        "keypair_cycles": {
+          "official": 23745.841049382718,
+          "opt": {
+            "below_official_median": 27,
+            "ci95": [
+              -907.5617283950633,
+              -828.3966049382689
+            ],
+            "delta": -864.5787037037044,
+            "delta_percent": -3.6409689676002417,
+            "launches": 27,
+            "per_batch_delta": [
+              -864.5925925925949,
+              -950.9583333333321,
+              -819.898148148146
+            ],
+            "resolved": true,
+            "stq2": 22881.262345679013
+          }
+        }
+      },
+      "picks": {
+        "official": [
+          "O3",
+          "O3",
+          "O3"
+        ],
+        "opt": [
+          "O2",
+          "O3",
+          "O2"
+        ]
+      },
+      "roles": [
+        "official",
+        "opt"
+      ],
+      "round_order": [
+        "official,opt",
+        "opt,official",
+        "official,opt"
+      ]
+    }
+  },
+  "schema": "ntruplus-avx2-overview/v1",
+  "try_checksum": {
+    "1152/gt": [
+      [
+        "2275d10293515833d4651b83e003df32321d6c6cfa2f52fffc6f5df5e4d13ad8/16659d2c39dcc4e4ed7904da526462981f2d5ae1b5bc895b5b11eae8a317cb91",
+        "ok",
+        "crypto_kem/ntruplus1152/avx2-gt9x16-wire-h3-pairunpack-serializer-v2-exp017-sc20260831"
+      ]
+    ],
+    "1152/official": [
+      [
+        "2275d10293515833d4651b83e003df32321d6c6cfa2f52fffc6f5df5e4d13ad8/16659d2c39dcc4e4ed7904da526462981f2d5ae1b5bc895b5b11eae8a317cb91",
+        "ok",
+        "crypto_kem/ntruplus1152/avx2"
+      ]
+    ],
+    "1152/opt": [
+      [
+        "2275d10293515833d4651b83e003df32321d6c6cfa2f52fffc6f5df5e4d13ad8/16659d2c39dcc4e4ed7904da526462981f2d5ae1b5bc895b5b11eae8a317cb91",
+        "ok",
+        "crypto_kem/ntruplus1152/avx2-officialopt-lazy-freeze-qual001"
+      ]
+    ],
+    "768/gt": [
+      [
+        "aa9f61a0a34257b1413336dd42f643f9abf10cb458f2df9097bc0db9de825eff/3a04f700b058b26d5a9a7766debc1defc09248912e24dcf0c4a0e59e166e9fbd",
+        "ok",
+        "crypto_kem/ntruplus768/avx2-gt32-clean"
+      ]
+    ],
+    "768/official": [
+      [
+        "aa9f61a0a34257b1413336dd42f643f9abf10cb458f2df9097bc0db9de825eff/3a04f700b058b26d5a9a7766debc1defc09248912e24dcf0c4a0e59e166e9fbd",
+        "ok",
+        "crypto_kem/ntruplus768/avx2"
+      ]
+    ],
+    "768/opt": [
+      [
+        "aa9f61a0a34257b1413336dd42f643f9abf10cb458f2df9097bc0db9de825eff/3a04f700b058b26d5a9a7766debc1defc09248912e24dcf0c4a0e59e166e9fbd",
+        "ok",
+        "crypto_kem/ntruplus768/avx2-officialopt-lazy-freeze-qual001"
+      ]
+    ],
+    "864/official": [
+      [
+        "b0cdac767e2e48039693200e36eb3f404722e1a383e56856d7edd2a37b48e04c/206acd115bdf985bed1e43be837054da8bcdd54a43d934baf1dc791bd3575647",
+        "ok",
+        "crypto_kem/ntruplus864/avx2"
+      ]
+    ],
+    "864/opt": [
+      [
+        "b0cdac767e2e48039693200e36eb3f404722e1a383e56856d7edd2a37b48e04c/206acd115bdf985bed1e43be837054da8bcdd54a43d934baf1dc791bd3575647",
+        "ok",
+        "crypto_kem/ntruplus864/avx2-officialopt-lazy-codec-qual002"
+      ]
+    ]
+  }
+}
