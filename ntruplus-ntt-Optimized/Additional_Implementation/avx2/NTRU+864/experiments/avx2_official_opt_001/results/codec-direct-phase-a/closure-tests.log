@@ -188,3 +188,22 @@ natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
 f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
 f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
 NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+
+== guard-page bounds (tests/test_codec_guard.c), 2026-09-23T07:30:46Z ==
+$ build/test_codec_guard
+official       trailing guard: 1000 rounds, no fault, Official-equal
+official       leading  guard: 1000 rounds, no fault, Official-equal
+exp001-fused   trailing guard: 1000 rounds, no fault, Official-equal
+exp001-fused   leading  guard: 1000 rounds, no fault, Official-equal
+exp002-direct  trailing guard: 1000 rounds, no fault, Official-equal
+exp002-direct  leading  guard: 1000 rounds, no fault, Official-equal
+codec guard-page bounds PASS (18000 checks)
+$ ASAN_OPTIONS=detect_leaks=1 build_san/test_codec_guard
+official       trailing guard: 1000 rounds, no fault, Official-equal
+official       leading  guard: 1000 rounds, no fault, Official-equal
+exp001-fused   trailing guard: 1000 rounds, no fault, Official-equal
+exp001-fused   leading  guard: 1000 rounds, no fault, Official-equal
+exp002-direct  trailing guard: 1000 rounds, no fault, Official-equal
+exp002-direct  leading  guard: 1000 rounds, no fault, Official-equal
+codec guard-page bounds PASS (18000 checks)
+negative check: wire buffer one byte short against the trailing guard -> SIGSEGV (exit 139)

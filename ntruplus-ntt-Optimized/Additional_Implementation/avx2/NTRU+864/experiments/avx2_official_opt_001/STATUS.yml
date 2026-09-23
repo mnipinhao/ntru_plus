@@ -261,6 +261,14 @@ codec_candidate:
       config: ASan + UBSan (-fno-sanitize-recover=all) + LeakSanitizer (detect_leaks=1)
       binaries: [test_codec_fused, test_kem_lazy_codec, test_kem_lazy_codec_fretry, test_kem_codec, test_kem_codec_fretry]
       evidence: make codec-sanitize; results/codec-phase-a/closure-tests.log
+    guard_page_bounds:
+      result: pass
+      test: tests/test_codec_guard.c (build/test_codec_guard, also ASan/UBSan/LSan build)
+      method: each operand (1296-byte wire array, 1728-byte poly) placed flush against a PROT_NONE page, before and after; 1000 rounds per codec and placement of tobytes, frombytes(valid) and frombytes(arbitrary bytes), each compared with Official
+      codecs: [official, exp001-fused, exp002-direct]
+      closes: out-of-bounds READ coverage that the canary differential cannot detect
+      negative_check: a wire buffer one byte short against the trailing guard faults (SIGSEGV)
+      evidence: make direct-check / direct-sanitize (runs from codec_direct.mk; covers exp001 too); results/codec-direct-phase-a/closure-tests.log
     linked_audit:
       result: pass
       elf: build/test_kem_lazy_codec
@@ -380,6 +388,14 @@ codec_candidate_exp002:
       config: ASan + UBSan (-fno-sanitize-recover=all) + LeakSanitizer (detect_leaks=1)
       binaries: [test_freeze_2op, test_codec_direct, test_codec_fused_min, test_kem_lazy_codec_direct, test_kem_lazy_codec_direct_fretry, test_kem_codec_direct, test_kem_codec_direct_fretry]
       evidence: make direct-sanitize; results/codec-direct-phase-a/closure-tests.log
+    guard_page_bounds:
+      result: pass
+      test: tests/test_codec_guard.c (build/test_codec_guard, also ASan/UBSan/LSan build)
+      method: each operand (1296-byte wire array, 1728-byte poly) placed flush against a PROT_NONE page, before and after; 1000 rounds per codec and placement of tobytes, frombytes(valid) and frombytes(arbitrary bytes), each compared with Official
+      codecs: [official, exp001-fused, exp002-direct]
+      closes: out-of-bounds READ coverage that the canary differential cannot detect
+      negative_check: a wire buffer one byte short against the trailing guard faults (SIGSEGV)
+      evidence: make direct-check / direct-sanitize; results/codec-direct-phase-a/closure-tests.log
     linked_audit:
       result: pass
       elf: build/test_kem_lazy_codec_direct

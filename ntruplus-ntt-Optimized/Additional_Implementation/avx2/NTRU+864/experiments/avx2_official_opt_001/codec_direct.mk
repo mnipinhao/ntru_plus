@@ -15,6 +15,9 @@ DIRECT_TEST_SRC := tests/test_codec_direct.c $(COMMON)/tests/support/crypto_decl
 MIN_TEST_SRC := tests/test_codec_fused_min.c $(COMMON)/tests/support/crypto_declassify.c \
 	$(MIN_ASM) $(CODEC_ASM) $(COMMON_C) $(COMMON_ASM)
 FREEZE_TEST_SRC := tests/test_freeze_2op.c $(OFFICIAL)/consts.c
+# Guard-page bounds check (reads and writes) for Official, exp001 and exp002 codecs.
+GUARD_TEST_SRC := tests/test_codec_guard.c $(COMMON)/tests/support/crypto_declassify.c \
+	$(DIRECT_ASM) $(CODEC_ASM) $(COMMON_C) $(COMMON_ASM)
 
 .PHONY: generate-codec-direct check-codec-direct-generate direct-prove direct-check direct-sanitize \
 	direct-audit direct-phase-a direct-record direct-bench direct-bench-keypair
@@ -56,8 +59,10 @@ $(eval $(call direct_unit,$(BUILD),$(CFLAGS),test_freeze_2op,$(FREEZE_TEST_SRC))
 $(eval $(call direct_unit,$(BUILD_SAN),$(SANFLAGS),test_codec_direct,$(DIRECT_TEST_SRC)))
 $(eval $(call direct_unit,$(BUILD_SAN),$(SANFLAGS),test_codec_fused_min,$(MIN_TEST_SRC)))
 $(eval $(call direct_unit,$(BUILD_SAN),$(SANFLAGS),test_freeze_2op,$(FREEZE_TEST_SRC)))
+$(eval $(call direct_unit,$(BUILD),$(CFLAGS),test_codec_guard,$(GUARD_TEST_SRC)))
+$(eval $(call direct_unit,$(BUILD_SAN),$(SANFLAGS),test_codec_guard,$(GUARD_TEST_SRC)))
 
-DIRECT_TESTS := test_freeze_2op test_codec_direct test_codec_fused_min test_kem_lazy_codec_direct \
+DIRECT_TESTS := test_freeze_2op test_codec_direct test_codec_fused_min test_codec_guard test_kem_lazy_codec_direct \
 	test_kem_lazy_codec_direct_fretry test_kem_codec_direct test_kem_codec_direct_fretry
 
 direct-check: check-upstream check-generate check-codec-generate check-codec-direct-generate direct-prove \
