@@ -894,3 +894,99 @@ source hashes, symbol audit and estimator details are in
 middle batch totals in the outer runner, not the batch engine's upper
 median; its raw data are retained but its summaries are superseded. This is a
 SUPERCOP-derived component/caller diagnostic, not Native SUPERCOP.
+
+## Gauge-aware radix-3 / joint twisted-tower gate (2026-09-23)
+
+This is an **exact modular search gate**, not a new ASM or cycle result.
+Reproduce from the experiment directory with:
+
+```sh
+python3 tools/research_yang_tower_gate.py
+python3 tools/research_yang_joint_gauge.py
+python3 tools/prove_yang_gauge_consumer.py
+python3 tools/probe_yang_full_tower.py
+```
+
+The machine-readable artifacts are `results/yang-joint-tower-gate-20260923.json`,
+`results/yang-joint-gauge-ancestry-20260923.json`, and
+`results/yang-gauge-consumer-contract-20260923.json`, plus the linked Official
+`results/yang-official-full-tower-basis-20260923.json`; they include source
+SHA-256s. The fixed Yang PDF SHA-256 is
+`cd89fef7848f172a1cb2e72fdfb6f8e0bf12959f6519e93fce4aaf281ac2f42f`.
+
+### A. What the fixed CT prefix permits
+
+Each radix-3 triple has gauges `(g, gc, gc²)`: all 256 physical
+cohort/half/lane triples satisfy the geometric relation. Yet only 8/256
+have `c³ = 1`. The actual three-output map is the 3-point DFT with
+`ω = 2734 mod 3457`; its exact matrix and the subsequent trinomial
+level-0/final scale were independently reconstructed from basis columns and
+checked with random vectors for all 128 lanes of eight cohorts.
+
+For a fixed prefix, moving the twist solely to the three radix-3 outputs
+would require `F3·diag(1,c,c²) = D·P·F3`, with `D` diagonal and `P` an output
+permutation. Comparing the first output row proves `c` must be a cubic root
+of unity. The 248 other triples therefore cannot use that simple GS output
+rescaling. This is an exact semantic failure, not a range or register issue.
+
+| Full-inverse tail construction | Vector Montgomery chains after 78-chain prefix | Meaning |
+| --- | ---: | --- |
+| Existing `stage5reuse` factored tail | 144 | Linked research control; includes 40 pre-radix-3 relative chains and 16 post-radix-3 corrections. |
+| Direct six-input/six-output coefficient expansion | 288 | Exact independent matrix oracle; deletes named normalization but doubles tail multiply count. No ASM selection. |
+
+A naive direct three-output DFT expansion already needs 144 coefficient-vector
+products before level-0, versus 56 chains for the current pre-normalization
+plus `ω` stage. The 288-chain full matrix is a valid construction, **not a
+lower bound** on every possible factorization. No new CT/GS factorization
+with a better complete dependency/movement budget was established here, so A
+has no qualifying ASM prototype or timing result. Changing the CT prefix
+itself remains the real open freedom.
+
+### B. Can a materialized input gauge repair the CT prefix?
+
+The linked Official functions establish the current scale anchor:
+`poly_invntt_scale(poly_ntt(e_i)) = 3310·e_i = R·e_i (mod 3457)` for all
+768 coefficient basis vectors, with 100 additional random `[-1,1]` cases.
+The inverse entry is scaled for its real BaseMulScale input; a proposed joint
+tower must account for this `R` exponent, not merely match a permutation.
+
+The new ancestry model tracks each of the 48×16 CT-prefix outputs as
+`fixed_factor × H[input_ancestor]` for arbitrary nonzero per-position input
+gauge `H`. It agrees with 32 independent random-gauge replays of the existing
+five-stage model. Equal-gauge constraints across both radix-3 triples are
+inconsistent. A short witness uses cohort 0: lane 0 has ancestors
+`(0,128,256)` with factors `(1,1,1)`, demanding their `H` values be equal;
+lane 4 uses the **same** ancestors with factors `(1100,1282,765)`, demanding
+different ratios. No choice of `H` satisfies both. The solver records 496
+contradictions across 512 triple-equality constraints. This closes only
+"same CT prefix + arbitrary diagonal input reweighting + common triple
+gauge". A changed prefix/tower is not covered.
+
+The present CT-prefix gauge is an **inverse-side intermediate**, not a valid
+Forward output ABI. As a warning about blindly carrying it into quartic
+arithmetic, 744/768 entries are nonidentity, and 0/192 current quartic leaf
+groups have one gauge shared by all four degrees. The independent consumer
+identity for a materialized diagonal gauge is
+
+```text
+stored_c[o] = sum_{i+k mod 4=o}
+              stored_a[i] stored_b[k] · Ga[i] Gb[k] / Gc[o]
+              · lambda^(i+k>=4)                         (mod q)
+```
+
+It was checked for all 192 Official quartic factors and 1,536 deterministic
+cases. A uniform per-leaf scalar gauge contributes one common correction;
+a general degree-dependent gauge gives separate product coefficients, so a
+mere λ-table change is insufficient. Real AVX2 BaseMul additionally applies
+its Montgomery `R⁻¹` factor and finalizer. This identity is a consumer
+contract, **not** evidence that the current CT-prefix gauge can be exposed
+at the Forward boundary.
+
+No B ASM is selected: the searched input-only reweighting is inconsistent,
+and a valid paired Forward/inverse tower with complete BaseInv/BaseMul/codec
+schedule has not yet been derived. Keygen, Encap, and Decap must all be
+accounted for before promoting such an ABI; Encap has no inverse call.
+Consequently there is no new short benchmark or Native result from this gate.
+The next mathematical search must alter prefix butterfly constants or
+orientation together with Forward's tower and then price every materialized
+consumer conversion. The findings here do not rule out that wider search.

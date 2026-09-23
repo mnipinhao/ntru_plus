@@ -1,0 +1,42 @@
+{
+  "evidence_class": "exact_modular_consumer_contract_not_a_tower_candidate",
+  "identity": "stored_c[o] = sum_{i+k mod 4=o} stored_a[i]*stored_b[k]*Ga[i]*Gb[k]/Gc[o]*lambda^(i+k>=4)",
+  "montgomery_exponent_note": "real AVX2 BaseMul also has R^-1; the unchanged finalizer/domain must be included in any ASM",
+  "actual_official_quartic_factors_checked": 192,
+  "random_cases_checked": 1536,
+  "uniform_gauge_coefficient_count": {
+    "1": 192
+  },
+  "arbitrary_degree_gauge_coefficient_count": {
+    "16": 1300,
+    "15": 43,
+    "14": 1
+  },
+  "example_where_lambda_change_alone_is_insufficient": {
+    "gauge_a": [
+      2113,
+      2383,
+      231,
+      1987
+    ],
+    "gauge_b": [
+      2695,
+      2808,
+      342,
+      252
+    ],
+    "gauge_c": [
+      1352,
+      923,
+      128,
+      3265
+    ],
+    "distinct_pre_lambda_product_coefficients": 16,
+    "lambda": 22
+  },
+  "source_sha256": {
+    "tools/prove_yang_gauge_consumer.py": "9b42d3224f9bb93a0469b7a221c3ee0ada9be4dc48f52fb271d9ad1b79eb0293",
+    "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+    "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe"
+  }
+}

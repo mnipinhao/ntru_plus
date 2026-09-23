@@ -1,0 +1,184 @@
+{
+  "evidence_class": "exact_modular_gauge_ancestry_and_constraint_screen",
+  "scope": "fixed current five CT radix2 layers and their routing; arbitrary nonzero input diagonal gauge; no consumer or machine schedule claim",
+  "final_ancestor_reuse": {
+    "6": 16
+  },
+  "random_nonzero_initial_gauge_replays": 32,
+  "impossibility_witness": {
+    "cohort": 0,
+    "lanes": [
+      0,
+      4
+    ],
+    "upper_vector_indices": [
+      0,
+      8,
+      16
+    ],
+    "same_input_ancestors": [
+      [
+        0,
+        128,
+        256
+      ],
+      [
+        0,
+        128,
+        256
+      ]
+    ],
+    "fixed_factor_vectors": [
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1100,
+        1282,
+        765
+      ]
+    ],
+    "reason": "lane 0 requires H[0]=H[128]=H[256], while lane 4 has the same ancestors and three unequal fixed factors"
+  },
+  "families": [
+    {
+      "constraint_family": "radix3_triples",
+      "constraints": 512,
+      "contradictions": 496,
+      "first_contradictions": [
+        [
+          0,
+          4,
+          0,
+          0,
+          8
+        ],
+        [
+          0,
+          4,
+          0,
+          0,
+          16
+        ],
+        [
+          0,
+          4,
+          1,
+          24,
+          32
+        ],
+        [
+          0,
+          4,
+          1,
+          24,
+          40
+        ],
+        [
+          0,
+          5,
+          0,
+          0,
+          8
+        ],
+        [
+          0,
+          5,
+          0,
+          0,
+          16
+        ],
+        [
+          0,
+          5,
+          1,
+          24,
+          32
+        ],
+        [
+          0,
+          5,
+          1,
+          24,
+          40
+        ]
+      ],
+      "free_gauge_components": 752,
+      "active_ancestor_count": 24,
+      "largest_component": 3
+    },
+    {
+      "constraint_family": "radix3_and_level0",
+      "constraints": 640,
+      "contradictions": 620,
+      "first_contradictions": [
+        [
+          0,
+          4,
+          0,
+          0,
+          8
+        ],
+        [
+          0,
+          4,
+          0,
+          0,
+          16
+        ],
+        [
+          0,
+          4,
+          1,
+          24,
+          32
+        ],
+        [
+          0,
+          4,
+          1,
+          24,
+          40
+        ],
+        [
+          0,
+          4,
+          "level0_j0",
+          0,
+          24
+        ],
+        [
+          0,
+          5,
+          0,
+          0,
+          8
+        ],
+        [
+          0,
+          5,
+          0,
+          0,
+          16
+        ],
+        [
+          0,
+          5,
+          1,
+          24,
+          32
+        ]
+      ],
+      "free_gauge_components": 748,
+      "active_ancestor_count": 24,
+      "largest_component": 6
+    }
+  ],
+  "source_sha256": {
+    "tools/research_yang_joint_gauge.py": "ea7279d49db1e40500ae8e54d7691965a0404a128e7d66d364b78841747625bc",
+    "tools/probe_inverse_ct_gauge.py": "f0a7b43b05c57c17719ac0d64412813c07290f9b479773410d5e9808977aad4c",
+    "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080"
+  }
+}
