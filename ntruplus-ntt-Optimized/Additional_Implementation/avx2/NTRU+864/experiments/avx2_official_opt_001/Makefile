@@ -2,3 +2,5 @@
 # All rules live in the shared, parameterised common/official_opt_lazy/lazy.mk.
 PARAM := 864
 include ../../../common/official_opt_lazy/lazy.mk
+# NTRU+864-only layout-fused codec candidates (Option A): see codec.mk.
+include codec.mk
