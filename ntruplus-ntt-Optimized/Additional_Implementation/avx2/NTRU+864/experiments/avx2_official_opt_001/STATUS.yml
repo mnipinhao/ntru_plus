@@ -203,3 +203,113 @@ host_controls: unchanged
 promotion: none  # research evidence only; not a clean-production promotion
 reproduce: make phase-a  # (from this directory); make record rewrites results/phase-a/
 reproduce_phase_b: docs/ntruplus864-1152-official-opt.md#phase-b-native-supercop-performance
+
+# ---------------------------------------------------------------------------
+# Second candidate (2026-09-23): lazy Forward + layout-fused codec (Option A).
+# The lazy-only candidate above is unchanged and still built/tested by `make check`.
+codec_candidate:
+  candidate: avx2-officialopt-lazy-codec-864-exp001
+  composition: caller-lazy Forward (asm/ntruplus864_officialopt_ntt_caller_lazy.s + src/kem_lazy.c, unchanged) + layout-fused poly_tobytes/poly_frombytes
+  control: codec-only = Official Forward + fused codec (src/kem_codec.c); diagnostic control, not a candidate
+  phase: A_correctness_plus_same_elf_diagnostic  # no SUPERCOP campaign, Native not measured
+  docs: docs/ntruplus864-1152-official-opt.md#ntru864-layout-fused-codec-option-a-2026-09-23
+  sources:
+    generator: tools/generate_codec_fused.py  # sha256 a2a364775fc695a70bcbcdca617c46143d617669b4f3ed388efcffaec880f04d
+    asm: asm/ntruplus864_officialopt_codec_fused.s  # GENERATED; sha256 dcaa2ed5d09b576a1683957b1f8097755745d7642652296598dd0a240ce326e1
+    derived_from: upstream/supercop-avx2/pack.s  # sha256 a39a6fff06928467c559b817f5b21d983fec5783d16a6b5bac0ee08eea6bce62 (never edited)
+    kem: src/kem_lazy_codec.c  # preprocessor overlay of src/kem_lazy.c: poly_tobytes/poly_frombytes -> fused; sha256 6e5a2eef5a04c69259795e0dbff8717083baa31b258e052f8c9ba9854ad20c7d
+    control_kem: src/kem_codec.c  # overlay of upstream kem.c; sha256 e1441c19b812083abe6bec26ffa4be66fdbddf6415ca45ff646d257428231c7e
+    rules: codec.mk  # included by ./Makefile after the shared lazy.mk; 1152 and lazy.mk untouched
+  symbols:
+    ntruplus864_officialopt_tobytes_fused: "== poly_tobytes (poly_ntt_pack + poly_tobytes_raw)"
+    ntruplus864_officialopt_frombytes_fused: "== poly_frombytes (poly_frombytes_raw + poly_ntt_unpack), same return value"
+  contract: Official pointer contract (poly 32-byte aligned, byte array unaligned); byte array and poly must not overlap (true at every KEM call site; Official tobytes would tolerate overlap via its stack copy)
+  design:
+    arithmetic: Official's per-lane sequence unchanged (freeze vpmulhrsw/vpmullw/vpsubw + vpsraw/vpand/vpaddw; 12-bit pack/unpack; vpmaxuw/vpcmpgtw q-1 check)
+    in_lane_shuffles: Official's, same immediates
+    cross_lane: pack-perm o tobytes-perm and frombytes-perm o unpack-perm composed into one vperm2i128/vinserti128 per register (12 instead of 24 per 192 coefficients); tobytes output perms replaced by 16-byte stores (vmovdqu xmm / vextracti128 m128); frombytes input perms replaced by 16-byte loads + vinserti128 m128
+    blocking: 4 x 192-coefficient super-iterations (2 layout blocks = 3 codec blocks) + final 96 (64-coefficient block + 32-coefficient tail); tobytes tail = ymm body on the pack registers' upper lanes
+    canonical_check: vpmaxuw accumulated across blocks, one vpcmpgtw/vpmovmskb at the end (max > q-1 iff any > q-1)
+    scheduling: "generator list-schedules each block (critical path first, register-pressure capped); required, the unscheduled fusion was slower than Official (scratch perf-stat tight loop, tobytes ~570 vs ~495 cycles, ports ~75% vs ~90% busy)"
+    stack: none (Official poly_tobytes frame 1760 B incl. the 1728 B tmp; Official frombytes writes r twice and reads it back once)
+    dynamic_per_call:  # linked-ELF counts, Official = pack.s kernels only (C wrappers, 24/11 rows, not counted)
+      tobytes: {total: [1613, 1375], cross_lane_permute: [145, 52], load: [112, 56], store: [96, 81], scalar: [92, 18], vector_alu_unchanged: true}
+      frombytes: {total: [1432, 1170], cross_lane_permute: [145, 54], insert_from_memory: [0, 39], load: [97, 43], store: [110, 54], alu: [168, 143], scalar: [96, 21]}
+      per_96_coefficients: {tobytes_total: -26.4, tobytes_cross_lane: -10.3, frombytes_total: -29.1, frombytes_cross_lane: -10.1}
+  gates:
+    codec_differential:
+      result: pass
+      binary: build/test_codec_fused  # tests/test_codec_fused.c vs Official poly_tobytes/poly_frombytes in the same ELF + independent scalar wire model
+      tobytes_cases: 287072  # every int16 in every position (65536 constant + 65536 Latin-sweep polys), 36000 lazy-Forward/caller envelopes (random + extreme), 120000 random int16
+      frombytes_cases: 3763050  # 100000 random valid, boundary patterns, every 12-bit value 0..4095 at each of the 864 positions over a valid background + all-equal, 100000 random byte strings; 662739 rejected by Official
+      checks: [byte-exact vs Official, output poly and return value equal, scalar model, 256-byte canaries both sides, input immutability, 32 byte-array misalignments, 20000 fused round trips]
+      mutation_check: "7 hand mutations (tail store offset, missing/shifted canonical check, q vs q-1 threshold, merged-perm immediate, blend immediate, tail load, loop bound) all caught; vpsraw 15->14 is an equivalent mutant (post-Barrett |x| < 2^14)"
+      evidence: results/codec-phase-a/closure-tests.log
+    kem:
+      result: pass
+      binaries: [test_kem_lazy_codec, test_kem_lazy_codec_fretry, test_kem_codec, test_kem_codec_fretry]  # common tests/test_kem_lazy.c unchanged
+      deterministic_vectors: 100  # pk/sk/ct/ss byte-exact vs Official, for lazy+codec and codec-only
+      invalid_pk: matched
+      invalid_ct_bitflip: matched
+      noncanonical_ct: matched
+      noncanonical_sk: matched
+      forced_g_retry: pass
+      forced_f_retry: pass
+      evidence: results/codec-phase-a/closure-tests.log
+    sanitizer:
+      result: pass
+      config: ASan + UBSan (-fno-sanitize-recover=all) + LeakSanitizer (detect_leaks=1)
+      binaries: [test_codec_fused, test_kem_lazy_codec, test_kem_lazy_codec_fretry, test_kem_codec, test_kem_codec_fretry]
+      evidence: make codec-sanitize; results/codec-phase-a/closure-tests.log
+    linked_audit:
+      result: pass
+      elf: build/test_kem_lazy_codec
+      symbols_aligned_32: true
+      size_bytes: {tobytes_fused: 2587, frombytes_fused: 2283}
+      instruction_rows: {tobytes_fused: 472, frombytes_fused: 411}
+      stack_references: 0
+      calls: 0
+      vzeroupper: 0  # Official pack.s kernels and C wrappers: 0 (consistent)
+      official_coexists: [poly_tobytes, poly_frombytes, poly_ntt_pack, poly_ntt_unpack, poly_tobytes_raw, poly_frombytes_raw]
+      kem_call_relocations: {kem_lazy_codec_to_fused: {tobytes: 7, frombytes: 4}, kem_lazy_codec_to_lazy_forward: 6, kem_lazy_codec_to_poly_tobytes_frombytes_ntt: 0, kem_codec_to_fused: {tobytes: 7, frombytes: 4}, kem_codec_to_poly_ntt: 6, kem_ref: {poly_tobytes: 7, poly_frombytes: 4, poly_ntt: 6}}
+      evidence: results/codec-phase-a/codec-linked-summary.json
+  performance:
+    label: supercop-derived same-ELF diagnostic (not Native SUPERCOP)
+    native: not measured
+    host: {cpu: 1, governor: performance, intel_no_turbo: 1, aslr: "on (randomize_va_space=2)", controls_changed: false}
+    cpucycles: default-perfevent from the disposable campaign /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001 (read only)
+    same_elf:  # 15 fresh launches, 256 obs/variant/launch; pooled StQ2 delta; launch-level favourable count; normal / reversed link order
+      elf_text_sha256: {normal: ce7bb8438d8c9af065fbb3675546d69d4baa1ac27f2f7111c0d24ed610890cda, reversed: f258e3f9faadd797}
+      tobytes_fused_minus_official: {normal: [-16.1, 15/15], reversed: [-15.4, 15/15]}  # Official 697.6
+      frombytes_fused_minus_official: {normal: [-82.0, 15/15], reversed: [-81.7, 15/15]}  # Official 666.3
+      encap:
+        lazy_codec-official: {normal: [-465.2, 15/15], reversed: [-303.1, 15/15]}
+        lazy_codec-lazy: {normal: [-222.4, 15/15], reversed: [-171.2, 15/15]}
+        codec-official: {normal: [-153.2, 15/15], reversed: [-140.5, 14/15]}
+        lazy-official: {normal: [-242.8, 15/15], reversed: [-131.9, 14/15]}
+      decap:
+        lazy_codec-official: {normal: [-406.5, 15/15], reversed: [-361.9, 15/15]}
+        lazy_codec-lazy: {normal: [-245.1, 15/15], reversed: [-218.3, 15/15]}
+        codec-official: {normal: [-269.5, 15/15], reversed: [-278.9, 15/15]}
+        lazy-official: {normal: [-161.4, 15/15], reversed: [-143.6, 15/15]}
+      keypair:  # ~66k cycles here (KAT AES DRBG inside the region); codec effect not resolved
+        lazy_codec-official: {normal: [-146.4, 15/15], reversed: [-160.9, 15/15]}
+        lazy_codec-lazy: {normal: [+8.6, 7/15], reversed: [-0.3, 9/15]}
+        codec-official: {normal: [+5.4, 8/15], reversed: [+12.8, 6/15]}
+        lazy-official: {normal: [-155.0, 15/15], reversed: [-160.6, 15/15]}
+      evidence: results/codec-fused-diag-20260923/, results/codec-fused-diag-swapped-20260923/
+    keypair_seed_matched:  # shared bench_keypair_seedmatched.c, byte-identical coins, ABBA/BAAB, 9 launches x 1000 iterations per pairing; d = B - A
+      lazy_codec_vs_official: {median: -177.0, mean: -153.4, mean_ci95: [-176.3, -123.3], favourable_launches: 9/9}
+      lazy_codec_vs_lazy: {median: -11.5, mean: -19.6, mean_ci95: [-46.6, +5.2], favourable_launches: 9/9}
+      codec_vs_official: {median: -32.5, mean: -35.7, mean_ci95: [-72.7, +0.4], favourable_launches: 8/9}
+      keypair_retries: 0
+      evidence: results/codec-keypair-seedmatched-20260923/
+    host_hygiene: 3 batches clean on attempt 0 (pre-batch loadavg1 <= 0.35); same-ELF batches 1.6-2.0 s (snapshots only), seed-matched 15.7 s
+    provenance_note: whole-ELF sha256 changes on every rebuild (.strtab holds gcc temporary object names); runners record elf_text_sha256, which is rebuild-stable
+    expected_vs_observed: "component deltas predict keypair -48 (3 tobytes), encap -115 (2 tobytes + 1 frombytes), decap -279 (2 tobytes + 3 frombytes) for codec-only; observed codec-only encap -153/-141, decap -270/-279, keypair seed-matched -33 (same-ELF keypair unresolved)"
+  not_done:
+    - "Native SUPERCOP measurement (needs a qualification export and campaign; out of scope for this phase)"
+    - "vpaddw q + vpminuw canonicalisation (2 ops instead of 3, one fewer p01 shift): scratch tight loop tobytes ~483 -> ~463 cycles; changes the reduction sequence, so it needs its own identity/range record before use"
+    - "Option B/C (direct 12-bit packing without the SoA transposes, e.g. vpmaddwd + vpshufb on natural order): not implemented; see docs"
+  promotion: none
+  reproduce: "make codec-phase-a (gates); make codec-bench codec-bench-keypair; then the phase_b_batch.py commands in the doc section"
