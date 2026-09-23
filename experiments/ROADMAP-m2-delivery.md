@@ -1,14 +1,17 @@
 # Roadmap — closing NTRU+864 and NTRU+1152's M2 gap
 
 Living document.  Started 2026-09-21 from P83 (corrected M2 baseline) and P84
-(attribution); rewritten 2026-09-22 after P86 through P90 landed.
+(attribution); rewritten 2026-09-22 after P86 through P90 landed; tables and
+the item list brought up to date 2026-09-23 after P123-P129.
 
 ## Where things stand
 
 Rebuilt in one session, every binary of a table with the same compiler, each GT
 tree carrying **its own Makefile `CFLAGS`**; RNG reseeded before every timed
 batch; min of 401 x 300 under the clock gate, median of three sessions.  All
-three sets pass their full gate suite at these revisions.  P108.
+three sets pass their full gate suite at these revisions.  864 and 1152 rows
+are P129 (2026-09-23, GT at cf397cc4, every build output-checked); 768 rows
+are P108.
 
 **Cortex-A76 (Raspberry Pi 5), ns per operation.  Neither side has FEAT_SHA3.**
 
@@ -22,12 +25,24 @@ Good-Thomas one, and its size inside these margins is unmeasured (P112).
 | 768 | Official | 16,025 | 16,068 | 13,942 |
 | | **GT** | **13,135** | **12,263** | **11,551** |
 | | | **-18.0%** | **-23.7%** | **-17.1%** |
-| 864 | Official | 18,391 | 19,189 | 16,943 |
-| | **GT** | **15,200** | **14,802** | **14,208** |
-| | | **-17.4%** | **-22.9%** | **-16.1%** |
-| 1152 | Official | 28,106 | 24,577 | 21,820 |
-| | **GT** | **23,990** | **19,344** | **18,129** |
-| | | **-14.6%** | **-21.3%** | **-16.9%** |
+| 864 | Official | 18,389 | 19,188 | 16,948 |
+| | **GT** | **15,216** | **14,811** | **14,205** |
+| | | **-17.3%** | **-22.8%** | **-16.2%** |
+| 1152 | Official | 28,102 | 24,581 | 21,819 |
+| | **GT** | **24,077** | **19,347** | **18,139** |
+| | | **-14.3%** | **-21.3%** | **-16.9%** |
+
+**Cortex-A76 with the Keccak held equal** -- Official's sponge calling GT's
+scalar permutation (P129).  This removes the 1.27x permutation advantage below:
+
+| set | | key generation | encapsulation | decapsulation |
+|---|---|---:|---:|---:|
+| 864 | Official + GT's Keccak | 16,897 | 16,710 | 15,457 |
+| | **GT** | **15,216** | **14,811** | **14,205** |
+| | | **-9.9%** | **-11.4%** | **-8.1%** |
+| 1152 | Official + GT's Keccak | 25,863 | 21,395 | 19,893 |
+| | **GT** | **24,077** | **19,347** | **18,139** |
+| | | **-6.9%** | **-9.6%** | **-8.8%** |
 
 **M2 Pro, against Official + CryptoExtension.**
 
@@ -44,11 +59,11 @@ The measurement copy of `CE/f1600.S` carries the AAPCS64 save/restore upstream o
 | | **GT** | **3,795** | **4,081** | **3,138** |
 | | | **-8.8%** | **-14.1%** | **-15.2%** |
 | 864 | Official + CE | 4,545 | 5,254 | 4,146 |
-| | **GT** | **4,147** | **4,682** | **3,866** |
-| | | **-8.8%** | **-10.9%** | **-6.8%** |
-| 1152 | Official + CE | 7,115 | 6,952 | 5,487 |
-| | **GT** | **6,519** | **6,130** | **4,986** |
-| | | **-8.4%** | **-11.8%** | **-9.1%** |
+| | **GT** | **4,153** | **4,683** | **3,871** |
+| | | **-8.6%** | **-10.9%** | **-6.6%** |
+| 1152 | Official + CE | 7,115 | 6,953 | 5,486 |
+| | **GT** | **6,440** | **6,129** | **4,959** |
+| | | **-9.5%** | **-11.9%** | **-9.6%** |
 
 **M2 Pro, against Official exactly as SUPERCOP has it** -- portable Keccak,
 because SUPERCOP's copy dropped the SHA3 path that upstream builds by default:
@@ -58,12 +73,12 @@ because SUPERCOP's copy dropped the SHA3 path that upstream builds by default:
 | 768 | Official | 4,479 | 5,152 | 3,863 |
 | | **GT** | **3,795** | **4,081** | **3,138** |
 | | | **-15.3%** | **-20.8%** | **-18.8%** |
-| 864 | Official | 4,909 | 5,987 | 4,598 |
-| | **GT** | **4,147** | **4,682** | **3,866** |
-| | | **-15.5%** | **-21.8%** | **-15.9%** |
-| 1152 | Official | 7,675 | 7,839 | 6,023 |
-| | **GT** | **6,519** | **6,130** | **4,986** |
-| | | **-15.1%** | **-21.8%** | **-17.2%** |
+| 864 | Official | 4,905 | 5,988 | 4,604 |
+| | **GT** | **4,153** | **4,683** | **3,871** |
+| | | **-15.3%** | **-21.8%** | **-15.9%** |
+| 1152 | Official | 7,680 | 7,838 | 6,023 |
+| | **GT** | **6,440** | **6,129** | **4,959** |
+| | | **-16.1%** | **-21.8%** | **-17.7%** |
 
 **M2 Pro, with the Keccak held byte-identical** -- Official's own `CE/fips202.c`
 sponge linked against GT's permutation.  The strictest of the three, P114.
@@ -73,16 +88,24 @@ sponge linked against GT's permutation.  The strictest of the three, P114.
 | 768 | Official + GT's Keccak | 4,025 | 4,520 | 3,580 |
 | | **GT** | **3,796** | **4,080** | **3,139** |
 | | | **-5.7%** | **-9.7%** | **-12.3%** |
-| 864 | Official + GT's Keccak | 4,399 | 4,997 | 4,004 |
-| | **GT** | **4,148** | **4,675** | **3,866** |
-| | | **-5.7%** | **-6.4%** | **-3.4%** |
-| 1152 | Official + GT's Keccak | 6,887 | 6,591 | 5,276 |
-| | **GT** | **6,514** | **6,140** | **4,991** |
-| | | **-5.4%** | **-6.8%** | **-5.4%** |
+| 864 | Official + GT's Keccak | 4,380 | 4,979 | 3,988 |
+| | **GT** | **4,153** | **4,683** | **3,871** |
+| | | **-5.2%** | **-5.9%** | **-2.9%** |
+| 1152 | Official + GT's Keccak | 6,858 | 6,571 | 5,265 |
+| | **GT** | **6,440** | **6,129** | **4,959** |
+| | | **-6.1%** | **-6.7%** | **-5.8%** |
 
 GT wins all nine with the symmetric primitive removed from the question.  The
-thinnest cell is 864 decapsulation at -3.4% -- the same cell P111 found carrying
-the worst inverse.  Of each total margin over SUPERCOP's Official, 22-61% is
+thinnest cell is 864 decapsulation at -2.9% -- the same cell P111 found carrying
+the worst inverse; P127 found GT's 864 decapsulation *arithmetic* ~60 ns behind
+Official's on M2, the lead coming from the rest.
+
+**Output check (P129).**  Upstream's `CE/fips202.c` calls `f1600` only under
+`__ARM_FEATURE_CRYPTO` and otherwise has an *empty* permutation body.
+`-march=armv8.2-a+sha3` alone does not define it under Apple clang: such a
+build hashes nothing, times at half of GT, and still passes an
+encaps/decaps selftest.  Use `+crypto+sha3`, and check the bytes
+(`experiments/gt-p129-current-margins/check_out.sh`).  Of each total margin over SUPERCOP's Official, 22-61% is
 SHA3 instructions, a uniform 20-22% is our Keccak kernel being 7.3% faster than
 upstream's, and 19-60% is the arithmetic.
 
@@ -157,6 +180,9 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 
 | | |
 |---|---|
+| **P128** | 1152 `baseinv`'s C chains: `fqmul` takes the Montgomery quotient from `mul`, as Official's does, not from `uzp1` of the widened product -- one permute fewer on each step of a ~40-step serial chain.  `baseinv` M2 550 -> 517 ns (Official 532).  Key generation **-90 ns on M2 (-1.44%)**, +195 cycles on A76 (+0.36%): rule 2. |
+| **P126** | 1152's `p65_rebase` folded into `basemul_rinv`: two halves per iteration, `trn2` replaces the narrowing `uzp2`, `zip` finishes the transpose.  Decapsulation **-18.5 ns on M2 (-0.37%)**, A76 unchanged: the A76 splits permutes over both vector pipes at dispatch even when V0 is saturated (16 `smull` + 16 `zip` = 23 cycles, not 16), so the saved pass is paid back in basemul.  `check-inplace` and `rebase.S` gone. |
+| **P124** | 864/1152 pass SUPERCOP TIMECOP (`-O`..`-Os`, `TIMECOP=256`); Official fails on `poly_fqinv_batch`.  Decaps key-decode status and keygen's retry declassified; 864 baseinv branch-free, 1152 keeps a declassified early exit (29% of its candidates are non-invertible).  Inverse scratch KEM-owned and cleared.  Timing neutral. |
 | **P86** | 1152's serializer folded the way Official folds: `sli`/`ushr` on the pre-transpose lanes instead of a transpose and per-lane `tbl`.  `tobytes_full` 129.2 -> 98.0, `tobytes_small` 92.9 -> 65.4, `frombytes` 79.8 -> 70.9. |
 | **P87** | 864's serializer in six-vector groups, nine bytes a run, six coefficients folded into five halfwords.  `tobytes_full` 123.7 -> 97.2, `tobytes_small` 114.1 -> 69.7.  **564 KB of assembly deleted.** |
 | **P88** | 864 re-encrypts into `buf3`'s tail and verifies instead of the fused compare.  **244 KB more assembly deleted.**  Not adopted at 1152: A76 regresses 86 ns there. |
@@ -215,7 +241,7 @@ these; what mattered was the algorithm and the unroll factor.
 - **Keep the timing path integer.**  `CE/f1600.S` and `asm/pack.s` both clobber
   `v8-v15` without saving them.
 - Gates before promotion: `make check`, KAT, `check_release.py`,
-  `check_zeroization.py`, `check_inplace.py`, the manifest, the ABI test and the
+  `check_zeroization.py`, the manifest, the ABI test and the
   SUPERCOP leaf check.  A change to decapsulation's rejection path also needs a
   negative differential test -- KAT vectors are all valid ciphertexts.
 
@@ -303,7 +329,18 @@ assembly (`pack.S`, 73 KB, 2,232 instructions); 864's and 1152's were replaced
 by C intrinsics in P87/P86 and the C won.  See
 `experiments/gt768-p104-item2-measured/`.
 
-### 3. NTRU+864 decapsulation, inverse transform: **landed, +68 remains**
+### 3. NTRU+864 decapsulation, inverse transform: **landed, +52 remains, closed (P127)**
+
+P127 re-priced what is left by knockout.  Per callee (M2 / A76): packed_i9
+120 ns / 1,670, invntt16_paired 135 / 1,980, tail 33 / 417, route 52 / 500;
+on M2 the paired kernel sits exactly on its SIMD-op bound.  Upper bounds:
+deleting packed_i9's 192 lane stores -10 ns / -237 cycles, deleting p28_main's
+`ext`/lane inserts -12 ns / 0.  Together at most ~0.5% of decapsulation before
+the replacement permutes, so **not pursued**.  Running decapsulation in
+Official's layout (768's route) is out too: GT's forward NTT and basemul lead
+by ~1,200 A76 cycles there.  The remaining gap is the three-component
+structure itself.  The history below is kept.
+
 
 P29 took the +106 gap against Official down by 38 ns on M2.  What is left is
 **+68 ns**, and it is no longer a store problem: the region now issues 224 store
@@ -425,9 +462,8 @@ timing, and every comparison is checked against `kem.c`'s aliasing first.
 - **Report the two upstream AAPCS64 violations?**  `CE/f1600.S` and
   `poly_tobytes` in `asm/pack.s` write `v8-v15` with no save/restore.  Outputs
   are unaffected; a C caller holding a double is silently corrupted.
-- **864's inverse driver** has a "tail padding" clear writing to `sp + 1536`
-  where the scratch has been caller-owned in `x25` since P80.  Looks like dead
-  code; tests pass either way.  Worth a look.
+- ~~864's inverse "tail padding"~~ -- answered by P125's range proof: the 32
+  never-written scratch halfwords the transform reads never reach an output.
 - **Re-measure the campaign's older component tables.**  Anything from a
   sequential `#define TIME` harness carries P82's fault.
 - **The two `backup-*-20260912` branches** hold 90 unique experiment records.
