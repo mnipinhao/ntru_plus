@@ -9,9 +9,9 @@
 #if __has_include("api.h")
 #include "api.h"
 #include "poly.h"
-#elif __has_include("../../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768/api.h")
-#include "../../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768/api.h"
-#include "../../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768/poly.h"
+#elif __has_include("../../ntruplus-ntt-Optimized/Reference_Implementation/NTRU+768/api.h")
+#include "../../ntruplus-ntt-Optimized/Reference_Implementation/NTRU+768/api.h"
+#include "../../ntruplus-ntt-Optimized/Reference_Implementation/NTRU+768/poly.h"
 #else
 #error "Unable to locate NTRU+ headers (api.h/poly.h)."
 #endif
