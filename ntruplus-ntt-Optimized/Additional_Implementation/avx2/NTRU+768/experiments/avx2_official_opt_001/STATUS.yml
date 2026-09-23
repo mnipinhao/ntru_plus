@@ -693,3 +693,36 @@ round27_twiddle_half_absorption:
   full_inverse_tail_scale_constants_allocation_and_cycles: open
   decision: partial_twiddle_absorption_proven_no_AVX2_or_Decap_winner_yet
   native_and_clean_promotion: no
+round28_mixed_gauge_decision:
+  class: complete_scalar_tail_and_exact_owner_replay_with_local_linked_AVX2_probe
+  report: docs/ntruplus768-mixed-gauge-decision.md
+  tools:
+    - tools/research_mixed_gauge_full_tail.py
+    - tools/research_mixed_gauge_vector_schedule.py
+    - tools/research_true_twist_selective_repair.py
+    - tools/audit_mixed_qhalf_probe.py
+  artifacts:
+    - results/yang-true-y-twist-mixed-gauge-full-tail-20260923.json
+    - results/yang-true-y-twist-mixed-gauge-vector-schedule-20260923.json
+    - results/yang-true-y-twist-mixed-qhalf-probe-20260923.json
+    - results/yang-true-y-twist-selective-repair-20260923.json
+  mixed_gauge:
+    complete_tail_factor_and_independent_CRT_basis: pass
+    final_scale_R_over_48_mod_q: 213
+    complete_formal_max_preoperation: 6703
+    actual_BaseMulScale_inverse_crepmod3_cases: 101
+    crepmod3_byte_exact: true
+    quartic_AoS_owner_replay: pass
+    isolated_stage6_linked_AVX2_vector_tests: 100025
+    modeled_radix2_vector_Montgomery: 96
+    modeled_factored_top_vector_Montgomery: 168
+    modeled_total_vector_Montgomery: 264
+    modeled_top_Barrett_vectors: 16
+    whole_inverse_16YMM_allocation_linked_constants_and_cycles: open
+  selective_repair_counterpoint:
+    greedy_whole_vector_interval_repair_count: 24
+    semantic_top_tail_and_linked_inverse: not_closed
+    first_attempted_replay_vs_Official: mismatch_not_claimed_as_candidate
+  centered_constant_word_model: corrected_and_old_exploratory_results_regenerated
+  decision: no_full_inverse_ASM_until_valid_control_and_whole_kernel_schedule
+  native_and_clean_promotion: no

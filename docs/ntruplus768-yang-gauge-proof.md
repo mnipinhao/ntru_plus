@@ -1193,3 +1193,9 @@ lower child to use modified `w/2` twiddles, eliminating modular-half work at
 those merges. Identity twiddles become actual new multiplications, and the
 remaining modular-half butterflies still need parity correction. This is a
 radix-2 arithmetic/range result, not a linked inverse or cycle win.
+
+The next [mixed-gauge decision gate](ntruplus768-mixed-gauge-decision.md)
+closes the factored top tail and actual BaseMulScale→inverse→crepmod3 scalar
+contract, but finds additional vector Montgomery chains and mixed-lane
+selection. The full 16-YMM linked schedule and Decap pricing remain open;
+there is no full inverse ASM or performance promotion.
