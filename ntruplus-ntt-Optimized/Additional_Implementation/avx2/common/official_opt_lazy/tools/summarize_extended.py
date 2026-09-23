@@ -66,26 +66,29 @@ def stq2(values):
     return stq_sorted(sorted(values))[1]
 
 
-def batches(results: Path, tag: str):
+def batches(results: Path, tag: str, roles=ROLES):
+    base, cand = roles
     out = {}
-    for role in ROLES:
+    for role in roles:
         dirs = sorted(results.glob(f"native-ext-{role}-b*-{tag}"),
                       key=lambda d: int(d.name.split("-b")[1].split("-")[0]))
         out[role] = dirs
-    if len(out["official"]) != len(out["candidate"]) or not out["official"]:
+    if len(out[base]) != len(out[cand]) or not out[base]:
         raise SystemExit(f"unbalanced or missing batches: { {r: len(v) for r, v in out.items()} }")
     return out
 
 
-def native(results: Path, tag: str, rng: random.Random, resamples: int):
-    dirs = batches(results, tag)
-    launches = {r: [] for r in ROLES}   # list of dict op -> values, per launch
-    kp = {r: [] for r in ROLES}         # list of [(cycles, retries)] per launch
+def native(results: Path, tag: str, rng: random.Random, resamples: int, roles=ROLES):
+    """roles = (baseline, candidate); deltas are candidate - baseline."""
+    base, cand = roles
+    dirs = batches(results, tag, roles)
+    launches = {r: [] for r in roles}   # list of dict op -> values, per launch
+    kp = {r: [] for r in roles}         # list of [(cycles, retries)] per launch
     per_batch = []
-    for k, (do, dc) in enumerate(zip(dirs["official"], dirs["candidate"]), 1):
-        row = {"batch": k, "order": "official-first" if k % 2 else "candidate-first"}
+    for k, (do, dc) in enumerate(zip(dirs[base], dirs[cand]), 1):
+        row = {"batch": k, "order": f"{base}-first" if k % 2 else f"{cand}-first"}
         stq = {}
-        for role, d in (("official", do), ("candidate", dc)):
+        for role, d in ((base, do), (cand, dc)):
             meta = json.loads((d / "metadata.json").read_text())
             s = json.loads((d / "stq-summary.json").read_text())
             hh = meta["host_hygiene"]
@@ -104,30 +107,30 @@ def native(results: Path, tag: str, rng: random.Random, resamples: int):
                                      "earlier_contaminated_attempts": len(hh["earlier_contaminated_attempts"]),
                                      "pre_loadavg1": hh["before"]["loadavg"][0],
                                      "duration_s": hh["duration_s"]}}
-        row["stq2_delta"] = {op: stq["candidate"][op]["stq2"] - stq["official"][op]["stq2"] for op in OPS}
+        row["stq2_delta"] = {op: stq[cand][op]["stq2"] - stq[base][op]["stq2"] for op in OPS}
         per_batch.append(row)
     out = {"batches": len(per_batch), "launches": {r: len(v) for r, v in launches.items()},
            "per_batch": per_batch, "operations": {}}
     for op in OPS:
-        pooled = {r: sorted(v for l in launches[r] for v in l[op]) for r in ROLES}
-        q = {r: stq_sorted(pooled[r]) for r in ROLES}
-        assert abs(q["official"][1] - stabilized_quartiles(pooled["official"])[1]) < 1e-6
+        pooled = {r: sorted(v for l in launches[r] for v in l[op]) for r in roles}
+        q = {r: stq_sorted(pooled[r]) for r in roles}
+        assert abs(q[base][1] - stabilized_quartiles(pooled[base])[1]) < 1e-6
         boot = []
         for _ in range(resamples):
             b = {}
-            for r in ROLES:
+            for r in roles:
                 pick = [rng.choice(launches[r]) for _ in launches[r]]
                 b[r] = stq2([v for l in pick for v in l[op]])
-            boot.append(b["candidate"] - b["official"])
-        launch_stq2 = {r: [stq2(l[op]) for l in launches[r]] for r in ROLES}
-        med_o = statistics.median(launch_stq2["official"])
+            boot.append(b[cand] - b[base])
+        launch_stq2 = {r: [stq2(l[op]) for l in launches[r]] for r in roles}
+        med_o = statistics.median(launch_stq2[base])
         bd = [row["stq2_delta"][op] for row in per_batch]
         out["operations"][op] = {
-            "observations": [len(pooled["official"]), len(pooled["candidate"])],
-            **{name: {"official": q["official"][i], "candidate": q["candidate"][i],
-                      "delta": q["candidate"][i] - q["official"][i]}
+            "observations": [len(pooled[base]), len(pooled[cand])],
+            **{name: {base: q[base][i], cand: q[cand][i],
+                      "delta": q[cand][i] - q[base][i]}
                for i, name in enumerate(("stq1", "stq2", "stq3"))},
-            "delta_percent_stq2": 100 * (q["candidate"][1] - q["official"][1]) / q["official"][1],
+            "delta_percent_stq2": 100 * (q[cand][1] - q[base][1]) / q[base][1],
             "stq2_delta_ci95_launch_resampling": ci(boot),
             "stq2_delta_bootstrap_sd": statistics.stdev(boot),
             "resamples": resamples,
@@ -136,32 +139,33 @@ def native(results: Path, tag: str, rng: random.Random, resamples: int):
                                   "min": min(bd), "max": max(bd),
                                   "negative_batches": sum(x < 0 for x in bd),
                                   "sd_of_81_launch_pool_from_batch_sd": statistics.stdev(bd) / len(bd) ** 0.5},
-            "candidate_launches_below_official_median": sum(v < med_o for v in launch_stq2["candidate"]),
-            "launches_per_role": len(launch_stq2["candidate"]),
+            "candidate_launches_below_official_median": sum(v < med_o for v in launch_stq2[cand]),
+            "launches_per_role": len(launch_stq2[cand]),
         }
     # Derived: SUPERCOP re-selects the compiler in every batch, so group batches
     # by the (Official ELF, candidate ELF) pair actually measured and pool each group.
     groups = collections.defaultdict(list)
     for i, row in enumerate(per_batch):
         key = " vs ".join(f"{r}:{row[r]['compiler'].split('_-')[3]}:{row[r]['measure_elf_sha256'][:16]}"
-                          for r in ROLES)
+                          for r in roles)
         groups[key].append(i)
     per_launch_batch = {r: [i // (len(launches[r]) // len(per_batch)) for i in range(len(launches[r]))]
-                        for r in ROLES}
+                        for r in roles}
     out["derived_by_elf_pair"] = {}
     for key, idx in groups.items():
         entry = {"batches": [i + 1 for i in idx]}
         for op in OPS:
             v = {r: [x for l, b in zip(launches[r], per_launch_batch[r]) if b in idx for x in l[op]]
-                 for r in ROLES}
-            entry[op] = {"stq2_delta": stq2(v["candidate"]) - stq2(v["official"]),
-                         "observations": [len(v["official"]), len(v["candidate"])]}
+                 for r in roles}
+            entry[op] = {"stq2_delta": stq2(v[cand]) - stq2(v[base]),
+                         "observations": [len(v[base]), len(v[cand])]}
         out["derived_by_elf_pair"][key] = entry
-    out["keypair_retries"] = retries(kp, rng, resamples)
+    out["keypair_retries"] = retries(kp, rng, resamples, roles)
     return out
 
 
-def retries(kp, rng, resamples):
+def retries(kp, rng, resamples, roles=ROLES):
+    base, cand = roles
     out = {"composition": {}, "pooled": {}, "strata": {}}
     for role, ls in kp.items():
         pooled = collections.Counter(stratum(r) for l in ls for _, r in l)
@@ -179,25 +183,25 @@ def retries(kp, rng, resamples):
         out["pooled"][role] = {"stq2": stq2(allc), "median": statistics.median(allc),
                                "stq2_window_composition": dict(sorted(collections.Counter(
                                    stratum(r) for _, r in window).items()))}
-    out["pooled"]["delta_stq2"] = out["pooled"]["candidate"]["stq2"] - out["pooled"]["official"]["stq2"]
-    n_o = out["composition"]["official"]["observations"]
-    d0 = out["composition"]["candidate"]["pooled"]["0"] - out["composition"]["official"]["pooled"]["0"]
-    p = out["composition"]["official"]["pooled_fraction"]["0"]
+    out["pooled"]["delta_stq2"] = out["pooled"][cand]["stq2"] - out["pooled"][base]["stq2"]
+    n_o = out["composition"][base]["observations"]
+    d0 = out["composition"][cand]["pooled"]["0"] - out["composition"][base]["pooled"]["0"]
+    p = out["composition"][base]["pooled_fraction"]["0"]
     out["r0_count_difference"] = {"candidate_minus_official": d0,
                                   "binomial_sd_of_difference": (2 * n_o * p * (1 - p)) ** 0.5}
     for s in STRATA:
-        o, c = by_stratum(kp["official"])[s], by_stratum(kp["candidate"])[s]
+        o, c = by_stratum(kp[base])[s], by_stratum(kp[cand])[s]
         if len(o) < 8 or len(c) < 8:
             continue
         entry = {"n": [len(o), len(c)]}
         for name, fn in (("stq2", stq2), ("median", statistics.median)):
             boot = []
             for _ in range(resamples):
-                bo = by_stratum([rng.choice(kp["official"]) for _ in kp["official"]])[s]
-                bc = by_stratum([rng.choice(kp["candidate"]) for _ in kp["candidate"]])[s]
+                bo = by_stratum([rng.choice(kp[base]) for _ in kp[base]])[s]
+                bc = by_stratum([rng.choice(kp[cand]) for _ in kp[cand]])[s]
                 if len(bo) >= 4 and len(bc) >= 4:
                     boot.append(fn(bc) - fn(bo))
-            entry[name] = {"official": fn(o), "candidate": fn(c), "delta": fn(c) - fn(o),
+            entry[name] = {base: fn(o), cand: fn(c), "delta": fn(c) - fn(o),
                            "ci95": ci(boot), "resamples": len(boot)}
         out["strata"][s] = entry
     return out
