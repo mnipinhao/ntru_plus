@@ -6,8 +6,10 @@ Branch `official-opt-lazy-864-1152`, forked from `avx2-official-opt` at
 parameter sets. **Phase A is only about correctness**; it made no timing,
 SUPERCOP campaign or host-control change. **Phase B** (Native SUPERCOP
 performance evidence, 2026-09-23) and its follow-up (fixed-compiler 864
-Native, 1152 Keypair retry control) are at the end of this document. No host
-control was changed in either phase.
+Native, 1152 Keypair retry control) are at the end of this document, followed
+by the extended Native / ASLR-on paired runs, which carry the current
+decision rule (ASLR on only; normal placement primary). No host control was
+changed in any phase.
 
 ## Scope
 
@@ -591,11 +593,244 @@ python3 $T/phase_b_batch.py --result-dir $E/results/keypair-seedmatched-TAG --me
 python3 $T/run_keypair_seedmatched.py --param 1152 --experiment $E --result-dir $E/results/keypair-seedmatched-TAG --summarize
 ```
 
+## Extended Native and ASLR-on paired (2026-09-23)
+
+### Methodology decision (applies from here on)
+
+- **ASLR on only.** Production runs keep the kernel default
+  (`randomize_va_space=2`). No ASLR-off setting was run and `setarch -R` was
+  not used. The Phase B and follow-up ASLR-off rows above remain as history.
+- **Normal placement + ASLR on is the primary evidence.** This follows the
+  reference practice: SUPERCOP compiles and links the implementation
+  directory normally, times many fresh processes and reports StQ; mlkem-native
+  times in a single process (50 warm-ups, 300 iterations per test, 500 tests,
+  median) with no placement or ASLR control. Neither controls placement.
+- **Reversed placement + ASLR on is a secondary robustness check only.** As in
+  `bench/mlkem-batch.md`, the favourable placement is never used as the
+  headline.
+- **Updated decision rule.** An operation is a **robust research win** iff
+  (i) the extended Native pooled StQ2 delta (default SUPERCOP compiler
+  selection) is negative, and (ii) the fixed-ELF paired 95% CI with normal
+  placement and ASLR on lies below zero. The reversed ASLR-on result is
+  reported alongside and is flagged, not failed, if it disagrees. This
+  replaces the Phase B rule (Native < 0 and all four paired CIs < 0).
+
+### Design (measured)
+
+- **Native:** Official `avx2` against `avx2-officialopt-caller-lazy-qual001`
+  in campaign `-001`, unmodified `crypto_kem/measure.c` (`7490844f…0174`),
+  default compiler selection (no wrapper; `okc-amd64` still `82f1eea7…98b3`).
+  81 fresh launches per implementation, as 9 rounds of one 9-launch batch
+  per implementation. Round k ran Official then candidate for odd k and
+  candidate then Official for even k (A,B,B,A,A,B,…). Every batch is a full
+  `run_supercop_benchmark.py --mode native-kem` call, so SUPERCOP rebuilt and
+  re-selected the compiler in each batch. Pooled StQ over 7,776 observations
+  per role and operation. The 95% CI of the pooled delta is from resampling
+  launches within each role (2,000 resamples). These are independent pools,
+  not paired estimates.
+- **Paired:** the Phase B O3GC fixed ELFs, unchanged (hashes re-checked
+  against their `metadata.json`). `run_paired_aslr_on.py` is
+  `scripts/run_supercop_paired.py` restricted to one placement, ASLR on and 48
+  ABBA/BAAB blocks (192 fresh launches). It was run once per placement.
+  Summary by the unchanged `scripts/summarize_supercop_paired.py`: per-block
+  mean of StQ2(candidate) − StQ2(Official), block-bootstrap 95% CI (20,000
+  resamples), favourable blocks.
+- **Hygiene:** all 39 batches (36 Native, 3 paired) were accepted on attempt
+  0; none was contaminated or re-run. Pre-batch load was 0.31-0.50, with no
+  sustained foreign CPU user. Native batches took 15.9-16.6 s. Paired
+  batches took 1.9-2.4 s, shorter than one 5 s window, so only the
+  before/after snapshots apply.
+
+### SUPERCOP compiler selection per batch (measured)
+
+SUPERCOP picks the fastest compiler at build time, and the pick was **not
+stable** from batch to batch. Each compiler always produced the same ELF.
+
+| Batch | 1152 Official | 1152 candidate | 864 Official | 864 candidate |
+|---:|---|---|---|---|
+| 1 | O3 | O3 | O3 | O2 |
+| 2 | O3 | O3 | O3 | **O3** |
+| 3 | **O2** | O3 | O3 | O2 |
+| 4 | O3 | **O2** | O3 | O2 |
+| 5 | O3 | O3 | O3 | O2 |
+| 6 | O3 | O3 | O3 | O2 |
+| 7 | O3 | O3 | O3 | O2 |
+| 8 | **O2** | O3 | O3 | **O3** |
+| 9 | O3 | O3 | O3 | O2 |
+
+ELFs: 1152 Official O3 `16cab433…` (= Phase B), O2 `bbd7b998…`; candidate O3
+`0cfa12ab…` (= Phase B), O2 `45c87edb…`. 864 Official O3 `f3cf0a37…`
+(= Phase B); candidate O2 `b6654906…` (= Phase B), O3 `b11aa429…` (= the
+follow-up fixed-O3 ELF). Phase B saw O3/O3 for 1152 and O3/O2 for 864; that
+was the majority pick here as well (6/9 and 7/9 batches).
+
+### NTRU+1152 extended Native (measured)
+
+Candidate − Official, pooled over 81 launches per role:
+
+| Op | StQ1 | **StQ2** [95% CI] | StQ3 | StQ2 % | Cand. launches < Off. median |
+|---|---:|---:|---:|---:|---:|
+| Keypair | −396.3 | **−470.6** [−784.5, −167.8] | −467.2 | −1.36% | 54/81 |
+| Encap | −648.9 | **−486.6** [−552.4, −412.6] | −443.9 | −1.13% | 74/81 |
+| Decap | −499.7 | **−570.7** [−600.2, −531.5] | −434.6 | −1.87% | 81/81 |
+
+Absolute pooled StQ2 (Official → candidate): Keypair 34,643.5 → 34,172.8;
+Encap 43,098.8 → 42,612.2; Decap 30,530.0 → 29,959.3.
+
+Per-batch StQ2 deltas (9 launches per side each):
+
+| Op | b1 | b2 | b3 | b4 | b5 | b6 | b7 | b8 | b9 | mean | SD | neg |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Keypair | −538 | −468 | +23 | +35 | −586 | −422 | −464 | −745 | −1012 | −464 | 333 | 7/9 |
+| Encap | −631 | −684 | −472 | −406 | −690 | −523 | −362 | −221 | −255 | −472 | 176 | 9/9 |
+| Decap | −624 | −624 | −418 | −495 | −606 | −622 | −656 | −242 | −514 | −534 | 135 | 9/9 |
+
+**Keypair retry composition** (retries = `keypair_randomcalls` − 2, per timed
+call):
+
+| Retries | Official n (share) | Candidate n (share) |
+|---|---:|---:|
+| 0 | 3,996 (51.4%) | 4,010 (51.6%) |
+| 1 | 2,302 (29.6%) | 2,266 (29.1%) |
+| 2 | 957 (12.3%) | 938 (12.1%) |
+| 3+ | 521 (6.7%) | 562 (7.2%) |
+| mean retries | 0.781 | 0.786 |
+
+The r=0 counts differ by 14 (binomial SD of the difference ≈ 62), against 22
+of 864 in Phase B. The StQ2 window holds 1,020 r=0 + 924 r=1 observations
+(Official) and 1,014 + 930 (candidate), so both pooled StQ2 values now sit in
+the same place on the r=0/r=1 boundary. Per-batch r=0 shares range over
+0.49-0.53 (Official) and 0.48-0.53 (candidate).
+
+Retry-stratified Native deltas (derived from these runs; CI by resampling
+launches within each role, 2,000 resamples):
+
+| Retries | n (off / cand) | StQ2 delta [95% CI] | Median delta [95% CI] |
+|---|---|---:|---:|
+| 0 | 3,996 / 4,010 | **−396.0** [−427.1, −364.0] | −395.0 [−427.0, −366.5] |
+| 1 | 2,302 / 2,266 | **−549.6** [−586.4, −514.0] | −549.5 [−586.0, −514.0] |
+| 2 | 957 / 938 | **−692.1** [−748.5, −635.1] | −682.0 [−748.5, −632.0] |
+| 3+ | 521 / 562 | −866.3 [−1556.0, −162.0] | −955.5 [−1694.0, −214.0] |
+
+All four strata, including 3+, now have CIs below zero. The step per retry
+(about −150 cycles) matches the seed-matched diagnostic (−152 per Forward).
+
+**Against the simulation (estimated, follow-up).** The follow-up predicted an
+SD of the pooled Keypair StQ2 delta of ≈ 545 at 9 launches per role and
+≈ 166 at 81 (the request quoted ≈ 180), with P(delta > 0) ≈ 0.01 at 81. Here
+the SD of the nine 9-launch batch deltas is 333, and the launch-resampling
+SD of the 81-launch pooled delta is 159 (333/√9 = 111 from the batch
+spread). The 81-launch result, −470.6, is within about 0.5 SD of the seed-matched
+−391/−420 expectation, and 2 of 9 single batches are still positive, as the
+9-launch noise predicts.
+
+Batches grouped by the measured ELF pair (derived): O3/O3 (6 batches) −588.6 /
+−514.5 / −615.9; Official O2 vs candidate O3 (2 batches) −361.1 / −363.5 /
+−330.5; Official O3 vs candidate O2 (1 batch) +34.7 / −406.5 / −495.2
+(Keypair / Encap / Decap). These subsets are small and are not decision inputs.
+
+### NTRU+1152 fixed-ELF paired, ASLR on (measured)
+
+Mean delta [block-bootstrap 95% CI], favourable blocks out of 48:
+
+| Setting | Keypair | Encap | Decap |
+|---|---:|---:|---:|
+| **Normal, ASLR on (primary)** | **−474.14** [−748.32, −202.48] 33/48 | **−312.90** [−400.37, −229.39] 45/48 | **−199.03** [−248.77, −149.36] 44/48 |
+| Reversed, ASLR on (secondary) | −664.58 [−999.53, −325.69] 35/48 | −318.59 [−400.73, −225.75] 44/48 | −267.13 [−301.45, −234.29] 46/48 |
+
+All six intervals lie below zero. Keypair retry-stratified (derived, per-block
+median delta, mean over blocks with ≥ 3 observations per side):
+
+| Setting | r=0 | r=1 | r=2 | r=3+ |
+|---|---:|---:|---:|---:|
+| Normal, ASLR on | −235.7 [−279.3, −194.4] 46/48 | −386.7 [−440.1, −336.0] 48/48 | −561.4 [−605.7, −518.9] 48/48 | −817.9 [−1489.6, −160.0] 33/48 |
+| Reversed, ASLR on | −311.9 [−356.8, −268.2] 47/48 | −457.6 [−511.7, −410.9] 47/48 | −623.6 [−687.9, −551.8] 46/48 | −1676.4 [−2428.3, −958.9] 39/48 |
+
+### NTRU+864 extended Native (measured)
+
+| Op | StQ1 | **StQ2** [95% CI] | StQ3 | StQ2 % | Cand. launches < Off. median |
+|---|---:|---:|---:|---:|---:|
+| Keypair | −88.1 | **−103.0** [−127.8, −78.3] | −122.4 | −0.43% | 75/81 |
+| Encap | −132.0 | **−92.7** [−149.3, −42.9] | −184.9 | −0.28% | 63/81 |
+| Decap | −70.0 | **−24.0** [−55.9, +4.0] | −81.8 | −0.10% | 49/81 |
+
+Absolute pooled StQ2 (Official → candidate): Keypair 23,751.7 → 23,648.7;
+Encap 32,957.7 → 32,865.0; Decap 23,676.1 → 23,652.1.
+
+| Op | b1 | b2 | b3 | b4 | b5 | b6 | b7 | b8 | b9 | mean | SD | neg |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Keypair | −130 | −250 | −63 | −77 | −117 | −48 | −64 | −204 | −80 | −115 | 70 | 9/9 |
+| Encap | −155 | −142 | +68 | −220 | −217 | −137 | +48 | −89 | −52 | −99 | 104 | 7/9 |
+| Decap | −92 | +16 | −35 | −16 | −18 | −58 | −149 | +45 | −53 | −40 | 58 | 7/9 |
+
+No natural retries occurred for 864 (all 7,776 keypairs per side had r=0).
+Grouped by measured ELF pair (derived): Official O3 vs candidate O2
+(7 batches) −82.4 / −89.2 / −57.4; O3 vs candidate O3 (batches 2 and 8)
+−225.7 / −107.6 / **+29.6** (Keypair / Encap / Decap). The two positive
+Decap batches are exactly the two where SUPERCOP picked O3 for the
+candidate. This repeats the follow-up finding that the O3-built 864
+candidate shows no Native Decap gain. The Decap pool is negative, but its
+launch-resampling CI reaches +4.0 and only 49/81 launches are favourable.
+
+### NTRU+864 fixed-ELF paired, normal placement, ASLR on (measured)
+
+| Setting | Keypair | Encap | Decap |
+|---|---:|---:|---:|
+| **Normal, ASLR on (primary), 48 blocks** | **−209.63** [−227.42, −191.25] 47/48 | **−176.15** [−230.95, −110.44] 43/48 | **−222.30** [−249.88, −194.96] 46/48 |
+| Reversed, ASLR on (secondary; Phase B, 16 blocks) | −128.46 [−154.89, −103.90] 16/16 | −238.41 [−327.06, −154.13] 15/16 | −202.69 [−246.51, −156.71] 15/16 |
+
+The reversed row is the existing Phase B ASLR-on result; reversed placement
+was not re-run at 48 blocks for 864.
+
+### Decision under the updated rule
+
+| Op | NTRU+864 | NTRU+1152 |
+|---|---|---|
+| Keypair | **robust research win**: Native −103.0; normal CI [−227, −191]; reversed agrees | **robust research win**: Native −470.6; normal CI [−748, −202]; reversed agrees |
+| Encap | **robust research win**: Native −92.7; normal CI [−231, −110]; reversed agrees | **robust research win**: Native −486.6; normal CI [−400, −229]; reversed agrees |
+| Decap | **robust research win (marginal Native)**: Native −24.0, but its CI [−55.9, +4.0] crosses zero, the pool is 49/81 favourable, and the O3-built candidate batches are positive; normal CI [−250, −195]; reversed agrees | **robust research win**: Native −570.7 (81/81 launches); normal CI [−249, −149]; reversed agrees |
+
+No reversed-placement flag was raised: all reversed ASLR-on CIs lie below
+zero. 864 Decap meets the rule as written; its Native margin depends on
+SUPERCOP picking O2 for the candidate, which it did in 7 of 9 builds. The
+change from the Phase B decisions (864 Decap, 1152 Keypair and Decap not
+robust) comes from two things. The Native samples are 9 times larger. The
+rule no longer asks for ASLR-off or reversed-placement CIs; the one CI that
+had crossed zero (1152 Decap) was reversed + ASLR off. `promotion: none`,
+and `clean/` was not touched.
+
+Evidence: `results/native-ext-{official,candidate}-b{1..9}-20260923x/`,
+`results/paired-aslr-on-{normal,reversed}-20260923x/` (864: normal only) and
+`results/extended-summary-20260923x.json` for each parameter.
+
+### Reproduce the extended runs
+
+```sh
+REPO=/home/nuc/src/ntru_plus-official-opt-864-1152
+A=$REPO/ntruplus-ntt-Optimized/Additional_Implementation/avx2; T=$A/common/official_opt_lazy/tools
+C=/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001
+TAG=20260923x
+for p in 1152 864; do   # strictly sequential; nothing else pinned to CPU 1
+  E=$A/NTRU+$p/experiments/avx2_official_opt_001; R=$E/results
+  python3 $T/run_extended_native.py --param $p --experiment $E --campaign-root $C --tag $TAG   # 9 rounds x 2 batches, ABBA/BAAB
+  for place in normal reversed; do   # 864 ran normal only
+    python3 $T/phase_b_batch.py --result-dir $R/paired-aslr-on-$place-$TAG --metadata manifest.json -- \
+      python3 $T/run_paired_aslr_on.py --official $R/fixed-lazy-official-$place-20260923/measure \
+      --candidate $R/fixed-lazy-candidate-$place-20260923/measure --placement $place --cpu 1 --blocks 48 \
+      --compiler-recipe O3GC --output {RESULT}
+    python3 $REPO/scripts/summarize_supercop_paired.py --campaign $R/paired-aslr-on-$place-$TAG --parameter $p
+  done
+  python3 $T/summarize_extended.py --param $p --experiment $E --tag $TAG
+done
+```
+
 ## Still not done
 
 - No `clean/` change and no promotion.
 - No natural *f*-retry for 864; only the injection covers it.
 - No Native re-confirmation from a release package.
-- No large-sample (about 80 launches per role) pooled Native run for 1152
-  Keypair. There is no explanation yet for why the O3-built 864 candidate loses
-  its Encap/Decap gain in Native. 1152 Decap (3/4 CIs) was not re-examined.
+- The 81-launch pooled Native runs are done for both parameters (see
+  "Extended Native and ASLR-on paired"). There is still no explanation for
+  why the O3-built 864 candidate loses its Decap gain in Native.
+- 864 reversed placement was not re-run at 48 blocks with ASLR on; the
+  secondary check uses the Phase B 16-block run.
