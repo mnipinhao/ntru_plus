@@ -25,7 +25,7 @@ FREEZE_TWIN_SRC := $(COMMON)/tests/test_freeze_2op.c $(OFFICIAL)/consts.c
 FREEZE_DEFS := -DFREEZE_TOBYTES=$(FREEZE) -DLAZY_NTT=$(LAZY)
 
 .PHONY: generate-freeze check-freeze-generate freeze-prove lazy-stream-equal freeze-check \
-	freeze-sanitize freeze-audit freeze-phase-a freeze-record freeze-bench freeze-bench-keypair
+	freeze-sanitize freeze-audit freeze-mutate freeze-phase-a freeze-record freeze-bench freeze-bench-keypair
 
 generate-freeze:
 	$(PYTHON) $(FREEZE_GEN) --param $(PARAM) --experiment .
@@ -81,13 +81,18 @@ freeze-audit: $(BUILD)/test_kem_lazy_freeze2op $(BUILD)/kem_freeze2op.o $(BUILD)
 	$(PYTHON) $(COMMON)/tools/audit_tobytes_freeze2op.py --param $(PARAM) --experiment . \
 		--elf $(BUILD)/test_kem_lazy_freeze2op --output $(EVIDENCE)/freeze2op-linked-summary.json
 
-freeze-phase-a: freeze-check freeze-sanitize freeze-audit
+# Mutation check: the tobytes differential must reject 5 one-line mutants.
+freeze-mutate: $(BUILD)/test_tobytes_freeze2op | $(EVIDENCE)
+	$(PYTHON) $(COMMON)/tools/mutate_tobytes_freeze2op.py --param $(PARAM) --experiment . \
+		--output $(EVIDENCE)/freeze2op-mutation-check.json
+
+freeze-phase-a: freeze-check freeze-sanitize freeze-audit freeze-mutate
 
 # Curated, deterministic-shape evidence into the tracked results dir.
 freeze-record: freeze-phase-a
 	mkdir -p results/freeze2op-phase-a
 	cp $(EVIDENCE)/freeze2op-linked-summary.json $(EVIDENCE)/freeze-2op-proof.json \
-		$(EVIDENCE)/freeze2op-generation.json results/freeze2op-phase-a/
+		$(EVIDENCE)/freeze2op-generation.json $(EVIDENCE)/freeze2op-mutation-check.json results/freeze2op-phase-a/
 	$(if $(LAZY_REFERENCE),cp $(EVIDENCE)/lazy-stream-equality.json results/freeze2op-phase-a/)
 
 # ------------------------------------------------ same-ELF component/caller diagnostic
