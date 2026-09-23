@@ -1,5 +1,7 @@
-#ifndef NTRUPLUS768_INTERNAL_DECAP_VERIFY_H
-#define NTRUPLUS768_INTERNAL_DECAP_VERIFY_H
+#ifndef NTRUPLUS768_DECAP_H
+#define NTRUPLUS768_DECAP_H
+
+/* Decapsulation endpoints (private to kem.c); layouts in docs/IMPLEMENTATION.md. */
 
 #include <stdint.h>
 

@@ -207,7 +207,10 @@ QSoA storage.
 
 The exact release source list is defined by `Makefile`. All production C,
 assembly, and headers are in the package root. Private endpoint declarations
-remain separate in `keygen.h`, `ntt.h`, and `decap_verify.h`.
+are in `keygen.h`, `encap.h`, and `decap.h`; `poly.h` holds the shared
+helpers, and test-only declarations are in `test/reference/poly_reference.h`.
+`ntt.S` holds the shared forward core, `decap_ntt.S` and `decap_invntt.S` the
+decapsulation transforms, and `tables.c` the lambda tables.
 The endpoint naming and ntt/base/pack consolidation preserve parameters and
 layout contracts. Each original assembly owner has a private identifier
 namespace and a corresponding section boundary. The validation endpoints

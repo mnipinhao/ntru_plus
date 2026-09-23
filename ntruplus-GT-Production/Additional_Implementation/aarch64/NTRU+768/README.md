@@ -12,15 +12,17 @@ shape used by other NTRU+ implementations:
 
 | File | Public responsibility |
 |---|---|
-| `ntt.S` | Encap/Keygen/Decap Forward and the Decap Good-Thomas inverse (fused mod 3) |
+| `ntt.S` | Shared Good-Thomas forward core: keygen CQ, Encap, and validation entries |
+| `decap_ntt.S` | Decapsulation forward NTT |
+| `decap_invntt.S` | Decapsulation Good-Thomas inverse, fused centered mod 3 |
 | `base.S` | Pointwise multiplication, base inversion leaves, packed first product |
 | `pack.S` | Checked decode and canonical serialization for each layout |
 | `keygen.c` | CQ inversion orchestration and CQ pointwise products |
 | `cbd.S` | CBD and SOTP conversion |
 | `add.S` | ABI-safe subtraction and two-pointer triple |
-| `crepmod3.S` | Standalone centered mod 3; test oracle only, since decapsulation fuses mod 3 into `poly_invntt_ternary_decap` |
 | `keccakf1600.S` | Scalar AArch64 Keccak-f[1600] backend |
 | `keccakf1600_v84a.S` | FEAT_SHA3 x1 permutation selected at compile time when available |
+| `tables.c` | Keygen CQ and Encap basemul-add lambda tables |
 | `util.h` | Portable secure_clear, SUPERCOP declassify annotation, optional test audit hook |
 | `kem_api.S` | AAPCS64 boundary for the public KEM API |
 | `kem.c` | Key generation, encapsulation, and decapsulation |
@@ -30,8 +32,8 @@ constant tables, and small common macros have been flattened into their owning
 source files; the release does not require separate `.inc` fragments.
 
 The selected KEM also uses private specialized endpoints in this directory.
-Their declarations remain separate in `keygen.h`, `ntt.h`, and
-`decap_verify.h`. These are part of this one production build,
+Their declarations are in `keygen.h`, `encap.h`, and `decap.h` (`poly.h`
+holds the shared helpers). These are part of this one production build,
 not optional profiles:
 
 - A key-generation NTT with a direct vector-native output layout, hierarchical
@@ -109,7 +111,8 @@ static source-coverage gate with a runtime audit hook for the portable C
 clears. `make kat-check` regenerates the NIST KAT and compares it byte-for-byte
 with the canonical vectors under `kat/expected/`.
 
-`make support-check` verifies the standalone `poly_crepmod3` oracle over its full
+`make support-check` verifies the standalone `poly_crepmod3` oracle
+(`test/reference/crepmod3.S`) over its full
 input contract [-3456,3456], including q-centering, in-place and out-of-place use.
 The KEM no longer calls it: decapsulation's inverse ends in an exactly centered
 Barrett and applies the mod-3 step itself, producing the same ternary output.

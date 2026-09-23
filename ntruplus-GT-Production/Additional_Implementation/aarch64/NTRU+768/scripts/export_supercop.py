@@ -29,6 +29,7 @@ with tempfile.TemporaryDirectory(prefix='gt768-export-') as temp:
   defined.update(line.split()[-1] for line in nm.splitlines() if len(line.split())>=3)
 assert 'randombytes' not in defined
 assert not ({'poly_basemul', '_poly_basemul', 'poly_invntt', '_poly_invntt',
+             'poly_crepmod3', '_poly_crepmod3',
              'gt_block_major_poly_invntt', '_gt_block_major_poly_invntt'} & defined), 'Reference kernel in export'
 a.destination.mkdir(parents=True)
 ns=a.destination/'namespace.h'

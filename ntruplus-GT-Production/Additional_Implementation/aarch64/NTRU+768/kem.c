@@ -6,9 +6,9 @@
 
 #include "poly.h"
 #include "randombytes.h"
-#include "decap_verify.h"
+#include "decap.h"
 #include "keygen.h"
-#include "ntt.h"
+#include "encap.h"
 #include "util.h"
 
 typedef gt_cq_poly keygen_poly;

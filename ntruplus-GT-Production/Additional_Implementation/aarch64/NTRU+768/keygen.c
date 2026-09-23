@@ -10,10 +10,6 @@
 #error "The direct-CQ keygen backend is specialized for NTRU+768"
 #endif
 
-#define GT_KEYGEN_CQ_GROUPS 24
-
-extern const int16_t gt_keygen_bpq_lambda8[GT_KEYGEN_CQ_GROUPS][8];
-
 int gt_keygen_baseinv_hier_k8(int16_t *den);
 void gt_keygen_baseinv_cq_prepare(int16_t *numerator, int16_t *den,
                                   const int16_t *input_cq);

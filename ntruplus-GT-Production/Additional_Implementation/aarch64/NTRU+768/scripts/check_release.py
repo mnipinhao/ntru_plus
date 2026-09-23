@@ -52,6 +52,13 @@ REQUIRED_INTERNAL_KEM_SYMBOLS = (
     "poly_ntt_encap_small_lazy",
     "poly_tobytes_encap_loose",
 )
+TEST_ONLY_SYMBOLS = (
+    "poly_basemul",
+    "poly_invntt",
+    "poly_crepmod3",
+    "poly_ntt_loose",
+    "poly_ntt_encap_small",
+)
 EXPECTED_KAT_RSP_SHA256 = (
     "22c72039845361ff142273150a59785bada5146c04018ce0a8b67b99a647eaa8"
 )
@@ -93,19 +100,21 @@ for path in files:
         if token in text:
             fail(f"selector token {token!r}: {path.relative_to(ROOT)}")
 
-headers = (ROOT / "poly.h").read_text(encoding="utf-8")
+production_headers = "".join(
+    path.read_text(encoding="utf-8") for path in sorted(ROOT.glob("*.h")))
 reference_header = (ROOT / "test/reference/poly_reference.h").read_text()
-for symbol in ("poly_basemul", "poly_invntt"):
-    if re.search(rf"\b{symbol}\s*\(", headers):
+for symbol in TEST_ONLY_SYMBOLS:
+    if re.search(rf"\b{symbol}\s*\(", production_headers):
         fail(f"test-only declaration in production header: {symbol}")
     if not re.search(rf"\b{symbol}\s*\(", reference_header):
         fail(f"missing test-only declaration: {symbol}")
+headers = (ROOT / "encap.h").read_text(encoding="utf-8")
 for symbol in REQUIRED_PUBLIC_SYMBOLS:
     if re.search(rf"\b{re.escape(symbol)}\s*\(", headers) is None:
-        fail(f"missing public declaration: {symbol}")
+        fail(f"missing Encap declaration: {symbol}")
 
 kem_source = (ROOT / "kem.c").read_text(encoding="utf-8")
-internal_headers = (ROOT / "ntt.h").read_text(encoding="utf-8")
+internal_headers = headers
 for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
     if re.search(rf"\b{re.escape(symbol)}\s*\(", internal_headers) is None:
         fail(f"missing internal declaration: {symbol}")
@@ -114,11 +123,12 @@ for symbol in REQUIRED_INTERNAL_KEM_SYMBOLS:
 
 expected = {
     "ntt.S",
+    "decap_ntt.S",
+    "decap_invntt.S",
     "add.S",
     "base.S",
     "pack.S",
     "cbd.S",
-    "crepmod3.S",
     "kem_api.S",
     "keccakf1600.S",
     "keccakf1600_v84a.S",
@@ -128,12 +138,16 @@ expected = {
     "LICENSE",
     "SOURCE-MANIFEST.sha256",
     "util.h",
-    "ntt.h",
+    "encap.h",
+    "decap.h",
+    "keygen.h",
+    "tables.c",
     "scripts/check_zeroization.py",
     "test/test_zeroization.c",
     "test/test_canonical.c",
     "test/reference/basemul.S",
     "test/reference/invntt.S",
+    "test/reference/crepmod3.S",
     "test/reference/poly_reference.h",
     "kat/expected/PQCkemKAT_2336.req",
     "kat/expected/PQCkemKAT_2336.rsp",
