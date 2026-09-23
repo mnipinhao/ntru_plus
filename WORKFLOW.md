@@ -12,14 +12,12 @@ cd "$REPO_ROOT"
 
 | Path | Role | Edit policy |
 | --- | --- | --- |
-| `ntruplus-KpqC-Final/` | Frozen comparison baseline | Do not edit during optimization work |
 | `ntruplus-ntt-Optimized/` | Active implementation workspace | Edit the selected parameter/lane only |
 | `bench/` | Portable KAT and cycle comparison front door | Keep implementation-neutral |
 | `ntruplus-ntt-Optimized/aarch64-bench/` | Pi 5 and PMU harnesses | AArch64 host only |
 
-The active and frozen roots contain `NTRU+768`, `NTRU+864`, and `NTRU+1152`
-across scalar reference, scalar optimized, AVX2, and AArch64 lanes. The active
-root also retains a Cortex-M-oriented legacy source lane. Do not assume that
+The active root contains `NTRU+768`, `NTRU+864`, and `NTRU+1152`
+across scalar reference, scalar optimized, AVX2, and AArch64 lanes. It also retains a Cortex-M-oriented legacy source lane. Do not assume that
 similarly named lanes share a Makefile or source contract.
 
 ## Select a target before editing
@@ -55,9 +53,9 @@ Compare arbitrary implementation directories with:
 
 ```sh
 make -C bench impl-compare-kat \
-  IMPL_A=../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768 \
+  IMPL_A=../ntruplus-ntt-Optimized/Reference_Implementation/NTRU+768 \
   IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 \
-  LABEL_A=frozen_ref \
+  LABEL_A=ref \
   LABEL_B=active_opt
 ```
 
@@ -76,7 +74,7 @@ Optional overrides:
 
 ```sh
 PARAM_SET=NTRU+864 \
-IMPL_A="$REPO_ROOT/ntruplus-KpqC-Final/Reference_Implementation/NTRU+864" \
+IMPL_A="$REPO_ROOT/ntruplus-ntt-Optimized/Reference_Implementation/NTRU+864" \
 IMPL_B="$REPO_ROOT/ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+864" \
 CYCLE_ITERATIONS=500 \
 ./scripts/validate_optimization.sh

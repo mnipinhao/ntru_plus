@@ -22,7 +22,6 @@ Derive paths from the active checkout; never assume a user home directory:
 ```sh
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 GT_ROOT="$REPO_ROOT/ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768"
-KPQC_ROOT="$REPO_ROOT/ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768"
 BENCH_ROOT="$REPO_ROOT/ntruplus-ntt-Optimized/aarch64-bench"
 ```
 

@@ -4,8 +4,7 @@ These instructions apply to branch `avx2-official-opt` and its dedicated worktre
 
 Before editing, confirm the branch and worktree status, then read `WORKFLOW.md`
 and `docs/ntruplus768-official-opt.md`. Keep the original `avx2-gt-ntt`
-worktree untouched. Never modify `ntruplus-KpqC-Final/`, a pristine SUPERCOP
-snapshot, or an existing `clean/` implementation during research.
+worktree untouched. Never modify a pristine SUPERCOP snapshot, or an existing `clean/` implementation during research.
 
 The Official baseline is the pinned SUPERCOP release in `bench/supercop.lock`.
 Import `crypto_kem/ntruplus768/avx2` into a new experiment's `upstream/` once,

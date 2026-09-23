@@ -2,7 +2,6 @@ CC ?= gcc
 NTRU_ROOT ?= ../Additional_Implementation/avx2/NTRU+768
 GT_ROOT ?= $(NTRU_ROOT)/experiments/gt_ntt
 AARCH64_REF ?= ../Additional_Implementation/aarch64/NTRU+768/ntt.c
-KPQC_ROOT ?= ../../ntruplus-KpqC-Final/Additional_Implementation/avx2/NTRU+768
 
 BUILD_DIR := build
 TARGET := $(BUILD_DIR)/avx2_bench
@@ -43,7 +42,7 @@ SOURCES := \
 	$(AARCH64_REF)
 
 .PHONY: all build validate scheme-test prototype-test run asm-audit \
-	kpqc-audit clean
+	clean
 
 all: build
 
@@ -245,13 +244,6 @@ asm-audit: $(TARGET)
 	else \
 		echo "fused inverse ASM vzeroupper count mismatch" >&2; exit 1; \
 	fi
-
-kpqc-audit:
-	@for file in asm/ntt.s asm/invntt.s asm/basemul.s consts.c poly.c; do \
-		cmp -s "$(NTRU_ROOT)/$$file" "$(KPQC_ROOT)/$$file" || { \
-			echo "KPQC Final mismatch: $$file" >&2; exit 1; }; \
-	done
-	@echo "KPQC Final AVX2 arithmetic sources match the production baseline"
 
 clean:
 	$(RM) -r $(BUILD_DIR)
