@@ -1162,3 +1162,15 @@ GS and `stage5reuse`, including the six initial `y³²` twists and inverse
 untwists. If that gate finds a safe, allocatable machine mechanism, one paired
 tower ASM candidate is authorized by the plan. If not, document the exact
 overflow or allocation node rather than “fixing” it with unpriced reductions.
+
+### Follow-up: real-cell def/use repair screen
+
+The later [existing-multiply repair gate](ntruplus768-defuse-repair-gate.md)
+corrects the old screen's obsolete two-product zeta derivation for its first
+three planes. It reads the independently proved 768 BaseMulScale cell bounds
+and exact factor ownership. All 24 cohort×degree first unproved true-twist CT
+adds have identity twiddles: 18 at size 8 and six at size 16. Thus the local
+"move an existing CT twiddle before the first dangerous add" mechanism has no
+machine multiply to move. This does not prove reachable overflow or exclude a
+correlated proof or a redesigned butterfly. No ASM or cycles were produced by
+this selection gate; the v2 JSON supersedes the old plane-bound provenance.

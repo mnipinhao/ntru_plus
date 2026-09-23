@@ -1,5 +1,13 @@
 # NTRU+768 Official AVX2 optimization
 
+The latest [existing-multiply repair gate](ntruplus768-defuse-repair-gate.md)
+audits Keygen, Encap and Decap against the caller-lazy control. The corrected
+true-twist screen finds that all 24 first unproved Decap CT additions lie on
+identity-twiddle paths; Keygen and Encap present no new independent repair
+that an existing fixed multiply can absorb under their closed consumer bounds.
+No ASM or timing candidate passed the selection gate. This is a restricted
+mechanism result, not a performance claim or a global CT lower bound.
+
 Latest stage-5 constant-reuse prototype removes 12 linked constant-vector
 loads per inverse, passes raw inverse/Decap differential and sanitizer, but
 isolated inverse short timing is only about ±2 cycles and complete-Decap
