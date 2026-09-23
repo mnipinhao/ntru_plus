@@ -1,0 +1,127 @@
+{
+  "evidence_class": "mixed_gauge_twiddle_absorption_scalar_and_interval_schedule_not_linked_AVX2",
+  "identity": "(a/2)+(w*b)/2 = a_half + Mont(b,w/2) (mod q); only the lower-child scale is absorbed",
+  "fixed_twiddle_only_no_go": "with b=0 and a=1, any a+K*b equals 1 but modular half equals inv2; upper operand must already be half-scaled or receive real work",
+  "recipe": {
+    "U2": {
+      "upper": "U1",
+      "lower": "U1",
+      "merge": "plain",
+      "output_half_exponent": 0
+    },
+    "U4": {
+      "upper": "U2",
+      "lower": "U2",
+      "merge": "plain",
+      "output_half_exponent": 0
+    },
+    "H2": {
+      "upper": "U1",
+      "lower": "U1",
+      "merge": "half",
+      "output_half_exponent": 1
+    },
+    "H4": {
+      "upper": "H2",
+      "lower": "U2",
+      "merge": "plain",
+      "output_half_exponent": 1
+    },
+    "H8": {
+      "upper": "H4",
+      "lower": "U4",
+      "merge": "plain",
+      "output_half_exponent": 1
+    },
+    "H16": {
+      "upper": "H8",
+      "lower": "H8",
+      "merge": "plain",
+      "output_half_exponent": 1
+    },
+    "H32": {
+      "upper": "H16",
+      "lower": "H16",
+      "merge": "half",
+      "output_half_exponent": 2
+    }
+  },
+  "formal_checks": 24,
+  "actual_BaseMulScale_cases": 101,
+  "actual_cohort_degree_checks": 2424,
+  "all_actual_outputs_match_eight_times_normalized_inverse_modq": true,
+  "all_actual_and_interval_signed16_operations_safe": true,
+  "per_32_leaf_degree_block": {
+    "butterflies": 80,
+    "H2_butterflies": 4,
+    "modular_half_butterflies": 20,
+    "U2_butterflies": 12,
+    "H4_butterflies": 8,
+    "new_identity_multiplications": 8,
+    "candidate_fixed_multiplications": 57,
+    "existing_twiddles_changed": 16,
+    "original_fixed_multiplications": 49,
+    "U4_butterflies": 8,
+    "H8_butterflies": 16,
+    "H16_butterflies": 16,
+    "H32_butterflies": 16
+  },
+  "per_full_polynomial": {
+    "butterflies": 1920,
+    "H2_butterflies": 96,
+    "modular_half_butterflies": 480,
+    "U2_butterflies": 288,
+    "H4_butterflies": 192,
+    "new_identity_multiplications": 192,
+    "candidate_fixed_multiplications": 1368,
+    "existing_twiddles_changed": 384,
+    "original_fixed_multiplications": 1176,
+    "U4_butterflies": 192,
+    "H8_butterflies": 384,
+    "H16_butterflies": 384,
+    "H32_butterflies": 384
+  },
+  "formal_max_abs": {
+    "H2_max_abs": 9372,
+    "U2_max_abs": 15288,
+    "H4_max_abs": 11488,
+    "U4_max_abs": 30576,
+    "H8_max_abs": 13990,
+    "H16_max_abs": 27980,
+    "H32_max_abs": 29708
+  },
+  "observed_max_abs": {
+    "H2_max_abs": 7596,
+    "U2_max_abs": 15192,
+    "H4_max_abs": 8278,
+    "U4_max_abs": 30384,
+    "H8_max_abs": 9642,
+    "H16_max_abs": 19284,
+    "H32_max_abs": 19284
+  },
+  "distinct_candidate_constants": 20,
+  "distinct_original_constants": 16,
+  "new_constant_residues": [
+    354,
+    858,
+    968,
+    1729
+  ],
+  "algebraic_final_scale_semantic": 213,
+  "scope_limits": [
+    "no full radix3/trinomial/final scale rewrite",
+    "no 16-YMM def-use or linked constant placement",
+    "new residues do not determine encoded table bytes or load-uops",
+    "no cycle or Decap measurement",
+    "same per-block recipe, not optimized per cell"
+  ],
+  "source_sha256": {
+    "tools/research_twiddle_half_absorption.py": "095ff5034696f1061412b7ceddf6dbf10d315fe23084c0a49184937fccd02a3f",
+    "results/yang-closure-schedule-20260923.json": "30beb533db05d4ca02caf314da0b3b78a3d8700aa1639e4e3ecfcfd7d1984c10",
+    "results/yang-full-twisted-tower-factor-20260923.json": "8f9a78efebd839afe8b4fa3ec7abb9ec9093e1f6363de31a806c09b09654cf17",
+    "results/yang-true-y-twist-pairings-20260923.json": "0b8748efa43be6c786f4dcf73a0c5ce126e7f35f8f8e2c0ed81d61e462edcb96",
+    "tools/research_correlated_ct_butterfly.py": "6a0ebd28cba614e59c2cc73cea4b7de3dfd9ff1c3f9a6d84cb9348b3b4c38f1d",
+    "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe",
+    "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080"
+  }
+}
