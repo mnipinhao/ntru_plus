@@ -1,0 +1,489 @@
+{
+  "class": "Phase-A constant-time review (no timing)",
+  "parameter": "NTRU+768",
+  "pass": true,
+  "dynamic": {
+    "method": "ptrace single-step; per executed instruction (rip, explicit memory operand effective address); traces compared byte-for-byte across secret inputs",
+    "tracer_sha256": "eb20335e3c46f045f620d67582983ef9915e01b92ee246e6c477d19f6314792c",
+    "objects_sha256": {
+      "mlk_fips202.o": "da6e824e42a2ef95b2bde0d071dcc15ab41d5dcaa3ddd38cdd9ed5aea76feb1c",
+      "mlk_keccakf1600.o": "72c589cbf493c235266c282837e9b3f26ad7b88e253b24e0decadd8cbd19ff22",
+      "symmetric_keccak.o": "e3f3f797d18025f6c672727dc975b4d915d4ac4ee314ebbbf99fae209801d55b"
+    },
+    "ea_table_rows": 627,
+    "targets": {
+      "shake_keypair": {
+        "trials": 12,
+        "steps": 9352,
+        "identical_rip_and_address_traces": true,
+        "steps_in_elf": 9288,
+        "steps_in_libc_rip_only": 64,
+        "memory_operand_addresses_checked": 3102,
+        "unique_rips": 768,
+        "trace_sha256": "066179d9afe1184337d5b3fc8c18f09d62bbc01e139f59f50ea9246c81c9d933",
+        "first_difference": null
+      },
+      "shake_hash_g_shape": {
+        "trials": 12,
+        "steps": 45763,
+        "identical_rip_and_address_traces": true,
+        "steps_in_elf": 45699,
+        "steps_in_libc_rip_only": 64,
+        "memory_operand_addresses_checked": 15459,
+        "unique_rips": 790,
+        "trace_sha256": "a4b082f0945f73447c86e6db48b6d1bae52433ee27cfedebc82574bb38cfae84",
+        "first_difference": null
+      },
+      "hash_f": {
+        "trials": 12,
+        "steps": 41355,
+        "identical_rip_and_address_traces": true,
+        "steps_in_elf": 41154,
+        "steps_in_libc_rip_only": 201,
+        "memory_operand_addresses_checked": 13919,
+        "unique_rips": 838,
+        "trace_sha256": "e29b4aa12a53a14e6a98d078ffaea3af39b3823c0f3e64ba25bff099322952e4",
+        "first_difference": null
+      },
+      "hash_g": {
+        "trials": 12,
+        "steps": 46026,
+        "identical_rip_and_address_traces": true,
+        "steps_in_elf": 45728,
+        "steps_in_libc_rip_only": 298,
+        "memory_operand_addresses_checked": 15462,
+        "unique_rips": 920,
+        "trace_sha256": "c3e3ba07087f13957e37de51d1b5e85d7eb757350e5709da892e08de0f073f22",
+        "first_difference": null
+      },
+      "hash_h": {
+        "trials": 12,
+        "steps": 9466,
+        "identical_rip_and_address_traces": true,
+        "steps_in_elf": 9364,
+        "steps_in_libc_rip_only": 102,
+        "memory_operand_addresses_checked": 3127,
+        "unique_rips": 840,
+        "trace_sha256": "926826567621fdd1e0c222fa63f5fc669b073794feed67d861d04c77d9496d18",
+        "first_difference": null
+      },
+      "permute": {
+        "trials": 12,
+        "steps": 4545,
+        "identical_rip_and_address_traces": true,
+        "steps_in_elf": 4481,
+        "steps_in_libc_rip_only": 64,
+        "memory_operand_addresses_checked": 1530,
+        "unique_rips": 552,
+        "trace_sha256": "2121518ba9cb893c4062e60600ceacd6912440865e4775d90a206335936f67c3",
+        "first_difference": null
+      },
+      "negative_control": {
+        "trials": 12,
+        "steps": 77,
+        "identical_rip_and_address_traces": false,
+        "steps_in_elf": 13,
+        "steps_in_libc_rip_only": 64,
+        "memory_operand_addresses_checked": 1,
+        "unique_rips": 77,
+        "trace_sha256": "69ebba4dd9c1805786f431ab93b39ef98cf15d45137c90003e6d5e983bea6f3f",
+        "first_difference": {
+          "trial": 1,
+          "step": 26,
+          "len": [
+            77,
+            77
+          ]
+        }
+      }
+    },
+    "pass": true
+  },
+  "static": {
+    "elf": "build/test_kem_lazy_freeze2op_keccak",
+    "elf_sha256": "3320155401732d5f8d2942b5322164dc23185ef7f9164b956115e18ebf5ddb8b",
+    "totals": {
+      "conditional_branches": 43,
+      "cmov_setcc": 1,
+      "variable_latency_candidates": 0
+    },
+    "permute_c_single_loop_branch_no_indexed_access": true,
+    "functions": {
+      "ntruplus768_keccak_hash_f": {
+        "instructions": 25,
+        "conditional_branches": [
+          {
+            "addr": "0x9b0a",
+            "insn": "jne 9b16 <ntruplus768_keccak_hash_f+0x66>",
+            "flags_from": "sub %fs:0x28,%rax"
+          }
+        ],
+        "cmov_setcc": [],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [],
+        "calls": [
+          "1060 <__stack_chk_fail@plt>",
+          "1090 <memcpy@plt>",
+          "1e60 <__wrap_ntruplus_mlkfips202_shake256>"
+        ]
+      },
+      "ntruplus768_keccak_hash_g": {
+        "instructions": 29,
+        "conditional_branches": [
+          {
+            "addr": "0x9b8c",
+            "insn": "jne 9b98 <ntruplus768_keccak_hash_g+0x78>",
+            "flags_from": "sub %fs:0x28,%rax"
+          }
+        ],
+        "cmov_setcc": [],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [],
+        "calls": [
+          "1060 <__stack_chk_fail@plt>",
+          "1090 <memcpy@plt>",
+          "10c0 <__explicit_bzero_chk@plt>",
+          "1e60 <__wrap_ntruplus_mlkfips202_shake256>"
+        ]
+      },
+      "ntruplus768_keccak_hash_h": {
+        "instructions": 34,
+        "conditional_branches": [
+          {
+            "addr": "0x9c2a",
+            "insn": "jne 9c32 <ntruplus768_keccak_hash_h+0x92>",
+            "flags_from": "sub %fs:0x28,%rax"
+          }
+        ],
+        "cmov_setcc": [],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [],
+        "calls": [
+          "1060 <__stack_chk_fail@plt>",
+          "10c0 <__explicit_bzero_chk@plt>",
+          "1e60 <__wrap_ntruplus_mlkfips202_shake256>"
+        ]
+      },
+      "ntruplus_mlkfips202_shake256": {
+        "instructions": 57,
+        "conditional_branches": [
+          {
+            "addr": "0x7dea",
+            "insn": "je 7e1b <ntruplus_mlkfips202_shake256+0x7b>",
+            "flags_from": "test %r12,%r12"
+          },
+          {
+            "addr": "0x7e19",
+            "insn": "jne 7df0 <ntruplus_mlkfips202_shake256+0x50>",
+            "flags_from": "sub %rbx,%r12"
+          },
+          {
+            "addr": "0x7e62",
+            "insn": "jne 7e74 <ntruplus_mlkfips202_shake256+0xd4>",
+            "flags_from": "sub %fs:0x28,%rax"
+          }
+        ],
+        "cmov_setcc": [
+          "0x7e06 cmovbe %r12,%rbx"
+        ],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [],
+        "calls": [
+          "1060 <__stack_chk_fail@plt>",
+          "7a70 <mlk_keccak_absorb_once.constprop.1>",
+          "8930 <ntruplus_mlkfips202_keccakf1600_extract_bytes>",
+          "9aa0 <ntruplus_mlkfips202_keccakf1600_permute>"
+        ]
+      },
+      "ntruplus_mlkfips202_keccakf1600_permute": {
+        "instructions": 3,
+        "conditional_branches": [],
+        "cmov_setcc": [],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [],
+        "calls": [
+          "8100 <mlk_keccakf1600_permute_c>"
+        ]
+      },
+      "ntruplus_mlkfips202_keccakf1600_xor_bytes": {
+        "instructions": 121,
+        "conditional_branches": [
+          {
+            "addr": "0x8ab6",
+            "insn": "je 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "test %ecx,%ecx"
+          },
+          {
+            "addr": "0x8ad4",
+            "insn": "jbe 8c30 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x180>",
+            "flags_from": "cmp $0x1e,%r9"
+          },
+          {
+            "addr": "0x8ae0",
+            "insn": "jbe 8c54 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x1a4>",
+            "flags_from": "cmp $0x1e,%eax"
+          },
+          {
+            "addr": "0x8b16",
+            "insn": "jne 8b00 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x50>",
+            "flags_from": "cmp %r9,%rax"
+          },
+          {
+            "addr": "0x8b1b",
+            "insn": "je 8c23 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x173>",
+            "flags_from": "test $0x1f,%cl"
+          },
+          {
+            "addr": "0x8b35",
+            "insn": "jbe 8c5b <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x1ab>",
+            "flags_from": "cmp $0xe,%r9d"
+          },
+          {
+            "addr": "0x8b57",
+            "insn": "je 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "test $0xf,%dl"
+          },
+          {
+            "addr": "0x8b73",
+            "insn": "jbe 8ba2 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0xf2>",
+            "flags_from": "cmp $0x6,%r11d"
+          },
+          {
+            "addr": "0x8b96",
+            "insn": "je 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "test $0x7,%dl"
+          },
+          {
+            "addr": "0x8bb6",
+            "insn": "jae 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8bc9",
+            "insn": "jae 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8bdc",
+            "insn": "jae 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8bef",
+            "insn": "jae 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8c02",
+            "insn": "jae 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8c15",
+            "insn": "jae 8c26 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x176>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8c51",
+            "insn": "jne 8c40 <ntruplus_mlkfips202_keccakf1600_xor_bytes+0x190>",
+            "flags_from": "cmp %rax,%rcx"
+          }
+        ],
+        "cmov_setcc": [],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [
+          "0x8af5 data16 cs nopw 0x0(%rax,%rax,1)",
+          "0x8b00 vmovdqu (%rsi,%rax,1),%ymm0",
+          "0x8b05 vpxor (%rdx,%rax,1),%ymm0,%ymm0",
+          "0x8b0a vmovdqu %ymm0,(%rdx,%rax,1)",
+          "0x8b45 vmovdqu (%rdi,%r9,1),%xmm0",
+          "0x8b4b vpxor (%rsi,%r10,1),%xmm0,%xmm0",
+          "0x8b51 vmovdqu %xmm0,(%rdi,%r9,1)",
+          "0x8b81 vmovq (%rsi,%rax,1),%xmm0",
+          "0x8b86 vmovq (%rdi,%r10,1),%xmm1",
+          "0x8b90 vmovq %xmm0,(%rdi,%r10,1)",
+          "0x8ba9 movzbl (%rsi,%rdx,1),%edx",
+          "0x8bad xor %dl,(%rdi,%rax,1)",
+          "0x8bbc movzbl (%rsi,%rax,1),%eax",
+          "0x8bc0 xor %al,(%rdi,%rdx,1)",
+          "0x8bcf movzbl (%rsi,%rax,1),%eax",
+          "0x8bd3 xor %al,(%rdi,%rdx,1)",
+          "0x8be2 movzbl (%rsi,%rax,1),%eax",
+          "0x8be6 xor %al,(%rdi,%rdx,1)",
+          "0x8bf5 movzbl (%rsi,%rax,1),%eax",
+          "0x8bf9 xor %al,(%rdi,%rdx,1)",
+          "0x8c08 movzbl (%rsi,%rax,1),%eax",
+          "0x8c0c xor %al,(%rdi,%rdx,1)",
+          "0x8c1a movzbl (%rsi,%rax,1),%eax",
+          "0x8c1e xor %al,(%rdi,%r8,1)",
+          "0x8c35 data16 cs nopw 0x0(%rax,%rax,1)"
+        ],
+        "calls": []
+      },
+      "ntruplus_mlkfips202_keccakf1600_extract_bytes": {
+        "instructions": 109,
+        "conditional_branches": [
+          {
+            "addr": "0x8939",
+            "insn": "je 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "test %ecx,%ecx"
+          },
+          {
+            "addr": "0x8950",
+            "insn": "jbe 8a70 <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x140>",
+            "flags_from": "cmp $0x1e,%rax"
+          },
+          {
+            "addr": "0x895c",
+            "insn": "jbe 8a92 <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x162>",
+            "flags_from": "cmp $0x1e,%eax"
+          },
+          {
+            "addr": "0x8991",
+            "insn": "jne 8980 <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x50>",
+            "flags_from": "cmp %rax,%rdi"
+          },
+          {
+            "addr": "0x8996",
+            "insn": "je 8a6a <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13a>",
+            "flags_from": "test $0x1f,%cl"
+          },
+          {
+            "addr": "0x89b0",
+            "insn": "jbe 8a9c <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x16c>",
+            "flags_from": "cmp $0xe,%r8d"
+          },
+          {
+            "addr": "0x89c7",
+            "insn": "je 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "test $0xf,%al"
+          },
+          {
+            "addr": "0x89e3",
+            "insn": "jbe 89fc <ntruplus_mlkfips202_keccakf1600_extract_bytes+0xcc>",
+            "flags_from": "cmp $0x6,%r10d"
+          },
+          {
+            "addr": "0x89f4",
+            "insn": "je 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "test $0x7,%al"
+          },
+          {
+            "addr": "0x8a0d",
+            "insn": "jae 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8a1d",
+            "insn": "jae 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8a2d",
+            "insn": "jae 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8a3d",
+            "insn": "jae 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8a4d",
+            "insn": "jae 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "cmp %ecx,%eax"
+          },
+          {
+            "addr": "0x8a5e",
+            "insn": "jae 8a6d <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x13d>",
+            "flags_from": "cmp %ecx,%r8d"
+          },
+          {
+            "addr": "0x8a8f",
+            "insn": "jne 8a80 <ntruplus_mlkfips202_keccakf1600_extract_bytes+0x150>",
+            "flags_from": "cmp %rcx,%rax"
+          }
+        ],
+        "cmov_setcc": [],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [
+          "0x8975 data16 cs nopw 0x0(%rax,%rax,1)",
+          "0x8980 vmovdqu (%rdx,%rax,1),%ymm0",
+          "0x8985 vmovdqu %ymm0,(%rsi,%rax,1)",
+          "0x89bb vmovdqu (%rdx,%r8,1),%xmm0",
+          "0x89c1 vmovdqu %xmm0,(%rsi,%r8,1)",
+          "0x89ec mov (%rdx,%rdi,1),%r9",
+          "0x89f0 mov %r9,(%rsi,%rdi,1)",
+          "0x89ff movzbl (%rdx,%rax,1),%edi",
+          "0x8a03 mov %dil,(%rsi,%rax,1)",
+          "0x8a0f movzbl (%rdx,%rax,1),%edi",
+          "0x8a13 mov %dil,(%rsi,%rax,1)",
+          "0x8a1f movzbl (%rdx,%rax,1),%edi",
+          "0x8a23 mov %dil,(%rsi,%rax,1)",
+          "0x8a2f movzbl (%rdx,%rax,1),%edi",
+          "0x8a33 mov %dil,(%rsi,%rax,1)",
+          "0x8a3f movzbl (%rdx,%rax,1),%edi",
+          "0x8a43 mov %dil,(%rsi,%rax,1)",
+          "0x8a4f movzbl (%rdx,%rax,1),%edi",
+          "0x8a5a mov %dil,(%rsi,%rax,1)",
+          "0x8a60 movzbl (%rdx,%r8,1),%eax",
+          "0x8a65 mov %al,(%rsi,%r8,1)",
+          "0x8a80 movzbl (%rdx,%rax,1),%edi",
+          "0x8a84 mov %dil,(%rsi,%rax,1)"
+        ],
+        "calls": []
+      },
+      "mlk_keccakf1600_permute_c": {
+        "instructions": 472,
+        "conditional_branches": [
+          {
+            "addr": "0x883d",
+            "insn": "jne 8200 <mlk_keccakf1600_permute_c+0x100>",
+            "flags_from": "cmp %rax,-0x78(%rsp)"
+          }
+        ],
+        "cmov_setcc": [],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [],
+        "calls": []
+      },
+      "mlk_keccak_absorb_once.constprop.1": {
+        "instructions": 78,
+        "conditional_branches": [
+          {
+            "addr": "0x7ac3",
+            "insn": "jbe 7b8f <mlk_keccak_absorb_once.constprop.1+0x11f>",
+            "flags_from": null
+          },
+          {
+            "addr": "0x7aff",
+            "insn": "ja 7ad0 <mlk_keccak_absorb_once.constprop.1+0x60>",
+            "flags_from": "cmp $0x87,%rbx"
+          },
+          {
+            "addr": "0x7b06",
+            "insn": "jne 7b48 <mlk_keccak_absorb_once.constprop.1+0xd8>",
+            "flags_from": "test %rbx,%rbx"
+          },
+          {
+            "addr": "0x7b66",
+            "insn": "jne 7b08 <mlk_keccak_absorb_once.constprop.1+0x98>",
+            "flags_from": "cmp $0x87,%rbx"
+          }
+        ],
+        "cmov_setcc": [],
+        "variable_latency_candidates": [],
+        "indexed_memory_operands": [],
+        "calls": [
+          "8ab0 <ntruplus_mlkfips202_keccakf1600_xor_bytes>",
+          "9aa0 <ntruplus_mlkfips202_keccakf1600_permute>"
+        ]
+      }
+    }
+  },
+  "mlkem_native_claims": {
+    "source": "mlkem-native b3ba7b32 README.md 'Formal Verification'/'Security', SOUNDNESS.md A2",
+    "c_code": "CBMC-proved memory safety and type safety (no overflow); constant-time NOT formally proved for C, tested empirically with valgrind across compilers/options; value barriers against compiler-introduced leaks",
+    "assembly": "HOL-Light proved constant-time; not used here (x1 path is pure C)"
+  }
+}

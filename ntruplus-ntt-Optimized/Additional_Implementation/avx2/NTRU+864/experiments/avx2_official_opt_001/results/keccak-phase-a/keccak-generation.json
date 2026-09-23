@@ -1,0 +1,61 @@
+{
+  "parameter": "NTRU+864",
+  "pinned_upstream_sha256": {
+    "kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "symmetric.c": "49e7faa9501e3ced6bf6c8da519782adcb32371295ce4f351ebdbf63399f9e0c",
+    "symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+    "fips202.h": "c843fef66468b1fc4ef6662409f789051a27e96470ffa04648cb7146c3b68a8f",
+    "fips202.c": "8b4059e2702f51e98c34c656132443b2ed3144afa1b295a588cb5a8d41aaf5a1",
+    "util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9"
+  },
+  "base_candidate": "avx2-officialopt-lazy-codec-864-exp002",
+  "candidate": "avx2-officialopt-lazy-codec-keccak-864-exp001",
+  "control": "keccak-only (Official kem.c + mlkem-native Keccak)",
+  "variants": {
+    "src/kem_lazy_codec_direct_keccak.c": {
+      "label": "avx2-officialopt-lazy-codec-keccak-864-exp001",
+      "includes": "kem_lazy_codec_direct.c",
+      "include_chain": [
+        "src/kem_lazy_codec_direct.c",
+        "src/kem_lazy.c"
+      ],
+      "include_chain_sha256": {
+        "src/kem_lazy_codec_direct.c": "5f403bb6ce60879e3c3c5f26ce5e38c5199bf6ec8c2f7d90138690360e23bb68",
+        "src/kem_lazy.c": "398f5faa0b2733cc188ce933380ee8c64d8676a9938da0de8f3cdf3a8253d484"
+      },
+      "call_sites": {
+        "shake256": 2,
+        "hash_f": 2,
+        "hash_g": 2,
+        "hash_h": 2
+      }
+    },
+    "src/kem_keccak.c": {
+      "label": "keccak-only control",
+      "includes": "../upstream/supercop-avx2/kem.c",
+      "include_chain": [
+        "upstream/supercop-avx2/kem.c"
+      ],
+      "include_chain_sha256": {
+        "upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f"
+      },
+      "call_sites": {
+        "shake256": 2,
+        "hash_f": 2,
+        "hash_g": 2,
+        "hash_h": 2
+      }
+    }
+  },
+  "outputs_sha256": {
+    "src/kem_lazy_codec_direct_keccak.c": "b28308c5b81adffef8d631f48b8b2b3f4b48db2241d9fea6844ee9108b64e4a5",
+    "src/kem_keccak.c": "8a2feac0b27e320f01757bb5e3022211325e6f5ac00945fee58a9962989f2054"
+  },
+  "generator_sha256": "1dab9972a461f50ebc4a316a2ba42d53ed59879e10ef9f3765b32f8ed686e82a",
+  "common_sha256": {
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/src/fips202_mlkem.h": "6eef24c2e941f055b7181dd96842ccb8fb6797148de379338d566a4a0b251c01",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/src/keccak_names.h": "2ae2f2c0627f190febf6fe83bff2a81bc4bcaecb4996b99d044339bf3a5d4308",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/src/symmetric_keccak.c": "04c27e82bbcabe9a305cebe6bc2f24ab10d57f2171eb5ffdac8bf0b8579c2a83",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/config/mlkem_native_config.h": "3525493b885ce99ee41da72d08df27f97a4b745757f6fcd4944c870e4548cf09"
+  }
+}

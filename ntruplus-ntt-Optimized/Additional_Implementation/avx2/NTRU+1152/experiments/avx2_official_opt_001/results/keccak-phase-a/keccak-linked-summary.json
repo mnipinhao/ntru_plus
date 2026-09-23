@@ -1,0 +1,387 @@
+{
+  "class": "Phase-A linked audit (no timing)",
+  "parameter": "NTRU+1152",
+  "elf": {
+    "candidate": {
+      "kem_closure": {
+        "elf": "build/test_kem_lazy_freeze2op_keccak",
+        "elf_sha256": "0f1a6c851f23a307fb2a3801acf11745bcfeefad6ffa77a950e3b047fca7aa1f",
+        "roots": [
+          "official_lazy_keypair",
+          "official_lazy_enc",
+          "official_lazy_dec"
+        ],
+        "reachable_functions": 51,
+        "forbidden_reached": [],
+        "indirect_calls_in_closure": {},
+        "required_present": {
+          "ntruplus1152_keccak_hash_f": true,
+          "ntruplus1152_keccak_hash_g": true,
+          "ntruplus1152_keccak_hash_h": true,
+          "ntruplus_mlkfips202_shake256": true,
+          "ntruplus_mlkfips202_keccakf1600_permute": true,
+          "ntruplus_mlkfips202_keccakf1600_xor_bytes": true,
+          "ntruplus_mlkfips202_keccakf1600_extract_bytes": true,
+          "mlk_keccakf1600_permute_c": true
+        },
+        "plt_calls": [
+          "__explicit_bzero_chk",
+          "__stack_chk_fail",
+          "exit",
+          "free",
+          "malloc",
+          "memcpy",
+          "memset"
+        ]
+      },
+      "official_role_closure": {
+        "roots": [
+          "official_ref_keypair",
+          "official_ref_enc",
+          "official_ref_dec"
+        ],
+        "reachable_functions": 62,
+        "required_present": {
+          "KeccakP1600_Permute_24rounds": true,
+          "fips202avx_shake256": true
+        }
+      },
+      "hash_path_functions": [
+        "__wrap_ntruplus_mlkfips202_shake256",
+        "mlk_keccak_absorb_once.constprop.1",
+        "mlk_keccakf1600_permute_c",
+        "ntruplus1152_keccak_hash_f",
+        "ntruplus1152_keccak_hash_g",
+        "ntruplus1152_keccak_hash_h",
+        "ntruplus_mlkfips202_keccakf1600_extract_bytes",
+        "ntruplus_mlkfips202_keccakf1600_permute",
+        "ntruplus_mlkfips202_keccakf1600_xor_bytes",
+        "ntruplus_mlkfips202_shake256"
+      ],
+      "hash_path_plt_calls": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "memcpy"
+      ],
+      "mlk_shake256_functions": [
+        "mlk_keccak_absorb_once.constprop.1",
+        "mlk_keccakf1600_permute_c",
+        "ntruplus_mlkfips202_keccakf1600_extract_bytes",
+        "ntruplus_mlkfips202_keccakf1600_permute",
+        "ntruplus_mlkfips202_keccakf1600_xor_bytes",
+        "ntruplus_mlkfips202_shake256"
+      ],
+      "mlk_shake256_plt_calls": [
+        "__stack_chk_fail"
+      ],
+      "hash_path_forbidden": [],
+      "pass": true
+    },
+    "keccak_only_control": {
+      "kem_closure": {
+        "elf": "build/test_kem_keccak",
+        "elf_sha256": "222f38b35a0736c564c38df39a85c384a0b4f59680f13a64ce8544f94f10278e",
+        "roots": [
+          "official_lazy_keypair",
+          "official_lazy_enc",
+          "official_lazy_dec"
+        ],
+        "reachable_functions": 51,
+        "forbidden_reached": [],
+        "indirect_calls_in_closure": {},
+        "required_present": {
+          "ntruplus1152_keccak_hash_f": true,
+          "ntruplus1152_keccak_hash_g": true,
+          "ntruplus1152_keccak_hash_h": true,
+          "ntruplus_mlkfips202_shake256": true,
+          "ntruplus_mlkfips202_keccakf1600_permute": true,
+          "ntruplus_mlkfips202_keccakf1600_xor_bytes": true,
+          "ntruplus_mlkfips202_keccakf1600_extract_bytes": true,
+          "mlk_keccakf1600_permute_c": true
+        },
+        "plt_calls": [
+          "__explicit_bzero_chk",
+          "__stack_chk_fail",
+          "exit",
+          "free",
+          "malloc",
+          "memcpy",
+          "memset"
+        ]
+      },
+      "official_role_closure": {
+        "roots": [
+          "official_ref_keypair",
+          "official_ref_enc",
+          "official_ref_dec"
+        ],
+        "reachable_functions": 62,
+        "required_present": {
+          "KeccakP1600_Permute_24rounds": true,
+          "fips202avx_shake256": true
+        }
+      },
+      "hash_path_functions": [
+        "__wrap_ntruplus_mlkfips202_shake256",
+        "mlk_keccak_absorb_once.constprop.1",
+        "mlk_keccakf1600_permute_c",
+        "ntruplus1152_keccak_hash_f",
+        "ntruplus1152_keccak_hash_g",
+        "ntruplus1152_keccak_hash_h",
+        "ntruplus_mlkfips202_keccakf1600_extract_bytes",
+        "ntruplus_mlkfips202_keccakf1600_permute",
+        "ntruplus_mlkfips202_keccakf1600_xor_bytes",
+        "ntruplus_mlkfips202_shake256"
+      ],
+      "hash_path_plt_calls": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "memcpy"
+      ],
+      "mlk_shake256_functions": [
+        "mlk_keccak_absorb_once.constprop.1",
+        "mlk_keccakf1600_permute_c",
+        "ntruplus_mlkfips202_keccakf1600_extract_bytes",
+        "ntruplus_mlkfips202_keccakf1600_permute",
+        "ntruplus_mlkfips202_keccakf1600_xor_bytes",
+        "ntruplus_mlkfips202_shake256"
+      ],
+      "mlk_shake256_plt_calls": [
+        "__stack_chk_fail"
+      ],
+      "hash_path_forbidden": [],
+      "pass": true
+    }
+  },
+  "objects": {
+    "candidate_kem": {
+      "object": "build/kem_lazy_freeze2op_keccak.o",
+      "object_sha256": "1d359a8d92b4c84c82e74f99127003762d6d3d1cbeccf0354bc6c3d64d767e25",
+      "undefined": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "memcpy",
+        "memset",
+        "ntruplus1152_keccak_hash_f",
+        "ntruplus1152_keccak_hash_g",
+        "ntruplus1152_keccak_hash_h",
+        "ntruplus1152_officialopt_ntt_caller_lazy",
+        "ntruplus1152_officialopt_tobytes_freeze2op",
+        "ntruplus_mlkfips202_shake256",
+        "poly_add",
+        "poly_baseinv",
+        "poly_basemul",
+        "poly_basemul_scale",
+        "poly_cbd1",
+        "poly_crepmod3",
+        "poly_frombytes",
+        "poly_invntt_scale",
+        "poly_sotp_decode",
+        "poly_sotp_encode",
+        "poly_sub",
+        "poly_triple",
+        "randombytes"
+      ],
+      "forbidden_undefined": [],
+      "relocations": {
+        "ntruplus1152_keccak_hash_f": 2,
+        "ntruplus1152_keccak_hash_g": 2,
+        "ntruplus1152_keccak_hash_h": 2,
+        "ntruplus_mlkfips202_shake256": 2,
+        "hash_f": 0,
+        "hash_g": 0,
+        "hash_h": 0,
+        "fips202avx_shake256": 0
+      },
+      "pass": true
+    },
+    "keccak_only_kem": {
+      "object": "build/kem_keccak.o",
+      "object_sha256": "22517a4b3a7a54bc1aee9e6961ac3bde34a72a40ad2f9af8ce4197f5bddad96f",
+      "undefined": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "memcpy",
+        "memset",
+        "ntruplus1152_keccak_hash_f",
+        "ntruplus1152_keccak_hash_g",
+        "ntruplus1152_keccak_hash_h",
+        "ntruplus_mlkfips202_shake256",
+        "poly_add",
+        "poly_baseinv",
+        "poly_basemul",
+        "poly_basemul_scale",
+        "poly_cbd1",
+        "poly_crepmod3",
+        "poly_frombytes",
+        "poly_invntt_scale",
+        "poly_ntt",
+        "poly_sotp_decode",
+        "poly_sotp_encode",
+        "poly_sub",
+        "poly_tobytes",
+        "poly_triple",
+        "randombytes"
+      ],
+      "forbidden_undefined": [],
+      "relocations": {
+        "ntruplus1152_keccak_hash_f": 2,
+        "ntruplus1152_keccak_hash_g": 2,
+        "ntruplus1152_keccak_hash_h": 2,
+        "ntruplus_mlkfips202_shake256": 2,
+        "hash_f": 0,
+        "hash_g": 0,
+        "hash_h": 0,
+        "fips202avx_shake256": 0
+      },
+      "pass": true
+    }
+  },
+  "stack_usage": {
+    "method": "gcc -fstack-usage with the release CFLAGS; worst depth = own frame + max(8 + callee depth) over callees with a .su frame",
+    "new_path_frames": {
+      "mlk_keccak_absorb_once.constprop": {
+        "bytes": 64,
+        "kind": "static",
+        "file": "mlk_fips202.su"
+      },
+      "mlk_keccakf1600_permute_c": {
+        "bytes": 160,
+        "kind": "static",
+        "file": "mlk_keccakf1600.su"
+      },
+      "ntruplus1152_keccak_hash_f": {
+        "bytes": 1776,
+        "kind": "static",
+        "file": "symmetric_keccak.su"
+      },
+      "ntruplus1152_keccak_hash_g": {
+        "bytes": 1776,
+        "kind": "static",
+        "file": "symmetric_keccak.su"
+      },
+      "ntruplus1152_keccak_hash_h": {
+        "bytes": 224,
+        "kind": "static",
+        "file": "symmetric_keccak.su"
+      },
+      "ntruplus_mlkfips202_keccakf1600_extract_bytes": {
+        "bytes": 8,
+        "kind": "static",
+        "file": "mlk_keccakf1600.su"
+      },
+      "ntruplus_mlkfips202_keccakf1600_permute": {
+        "bytes": 8,
+        "kind": "static",
+        "file": "mlk_keccakf1600.su"
+      },
+      "ntruplus_mlkfips202_keccakf1600_xor_bytes": {
+        "bytes": 8,
+        "kind": "static",
+        "file": "mlk_keccakf1600.su"
+      },
+      "ntruplus_mlkfips202_keccakf1600x4_extract_bytes": {
+        "bytes": 48,
+        "kind": "static",
+        "file": "mlk_keccakf1600.su"
+      },
+      "ntruplus_mlkfips202_keccakf1600x4_permute": {
+        "bytes": 16,
+        "kind": "static",
+        "file": "mlk_keccakf1600.su"
+      },
+      "ntruplus_mlkfips202_keccakf1600x4_xor_bytes": {
+        "bytes": 40,
+        "kind": "static",
+        "file": "mlk_keccakf1600.su"
+      },
+      "ntruplus_mlkfips202_sha3_256": {
+        "bytes": 240,
+        "kind": "static",
+        "file": "mlk_fips202.su"
+      },
+      "ntruplus_mlkfips202_sha3_512": {
+        "bytes": 288,
+        "kind": "static",
+        "file": "mlk_fips202.su"
+      },
+      "ntruplus_mlkfips202_shake128_absorb_once": {
+        "bytes": 80,
+        "kind": "static",
+        "file": "mlk_fips202.su"
+      },
+      "ntruplus_mlkfips202_shake128_init": {
+        "bytes": 8,
+        "kind": "static",
+        "file": "mlk_fips202.su"
+      },
+      "ntruplus_mlkfips202_shake128_release": {
+        "bytes": 8,
+        "kind": "static",
+        "file": "mlk_fips202.su"
+      },
+      "ntruplus_mlkfips202_shake128_squeezeblocks": {
+        "bytes": 32,
+        "kind": "static",
+        "file": "mlk_fips202.su"
+      },
+      "ntruplus_mlkfips202_shake256": {
+        "bytes": 320,
+        "kind": "static",
+        "file": "mlk_fips202.su"
+      }
+    },
+    "new_path_worst_depth_bytes": {
+      "ntruplus1152_keccak_hash_f": 2360,
+      "ntruplus1152_keccak_hash_g": 2360,
+      "ntruplus1152_keccak_hash_h": 808,
+      "ntruplus_mlkfips202_shake256": 576
+    },
+    "new_path_callees_without_frame": {
+      "ntruplus1152_keccak_hash_f": [
+        "__stack_chk_fail",
+        "memcpy"
+      ],
+      "ntruplus1152_keccak_hash_g": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail",
+        "memcpy"
+      ],
+      "ntruplus1152_keccak_hash_h": [
+        "__explicit_bzero_chk",
+        "__stack_chk_fail"
+      ]
+    },
+    "official_c_frames": {
+      "hash_f": {
+        "bytes": 1776,
+        "kind": "static",
+        "file": "official_symmetric.su"
+      },
+      "hash_g": {
+        "bytes": 1776,
+        "kind": "static",
+        "file": "official_symmetric.su"
+      },
+      "hash_h": {
+        "bytes": 224,
+        "kind": "static",
+        "file": "official_symmetric.su"
+      },
+      "fips202avx_shake256": {
+        "bytes": 320,
+        "kind": "static",
+        "file": "official_fips202.su"
+      }
+    },
+    "official_c_worst_depth_bytes_excluding_asm": {
+      "hash_f": 2104,
+      "hash_g": 2104,
+      "hash_h": 552,
+      "fips202avx_shake256": 320
+    },
+    "official_note": "Official permutation/AddBytes/ExtractBytes are AVX2 asm (no .su)",
+    "pass": true
+  },
+  "pass": true
+}

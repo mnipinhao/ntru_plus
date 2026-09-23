@@ -1,0 +1,47 @@
+{
+  "mlkem_native_commit": "b3ba7b32773e657dd37f6f87bce82528459ad8a4",
+  "checkout_clean": true,
+  "vendored_files_identical_to_checkout": {
+    "LICENSE": true,
+    "mlkem/src/cbmc.h": true,
+    "mlkem/src/common.h": true,
+    "mlkem/src/context.h": true,
+    "mlkem/src/fips202/fips202.c": true,
+    "mlkem/src/fips202/fips202.h": true,
+    "mlkem/src/fips202/keccakf1600.c": true,
+    "mlkem/src/fips202/keccakf1600.h": true,
+    "mlkem/src/params.h": true,
+    "mlkem/src/sys.h": true,
+    "mlkem/src/verify.h": true
+  },
+  "readme_sha256_table_matches": true,
+  "cflags": [
+    "-O3",
+    "-mavx2",
+    "-march=native",
+    "-mtune=native",
+    "-fPIE",
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "object_sha256": {
+    "vendored_fips202.o": "da6e824e42a2ef95b2bde0d071dcc15ab41d5dcaa3ddd38cdd9ed5aea76feb1c",
+    "vendored_keccakf1600.o": "72c589cbf493c235266c282837e9b3f26ad7b88e253b24e0decadd8cbd19ff22",
+    "native768_fips202.o": "e9faf38fa466e99151dc6ef5ecd5601c51e10087cd9d918f754a38c8c29e150b",
+    "native768_keccakf1600.o": "f3d36f176185e076df088976f0fb798aac59ac5c74937d6354b6d5433a3f247f"
+  },
+  "x1_instruction_streams_equal": {
+    "NS_shake256": true,
+    "NS_keccakf1600_xor_bytes": true,
+    "NS_keccakf1600_extract_bytes": true,
+    "mlk_keccak_absorb_once": true,
+    "permutation_body (vendored permute_c == native768 inlined permute)": true
+  },
+  "vendored_permute_wrapper": [
+    "endbr64 ",
+    "jmp 0 <mlk_keccakf1600_permute_c>"
+  ],
+  "permutation_body_instructions": 470,
+  "pass": true
+}

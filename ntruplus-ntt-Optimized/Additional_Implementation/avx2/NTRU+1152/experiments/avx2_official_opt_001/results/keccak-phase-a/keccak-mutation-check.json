@@ -1,0 +1,94 @@
+{
+  "parameter": "NTRU+1152",
+  "mutants": 8,
+  "rejected": 8,
+  "pass": true,
+  "results": {
+    "control_unmutated": {
+      "exit": 0,
+      "last_line": [
+        "NTRU+1152 SHAKE256 differential: pass (76626 SHAKE cases, 14105924 output bytes compared)"
+      ]
+    },
+    "shake256_domain_0x1f_to_0x1e": {
+      "file": "fips202.c",
+      "from": "mlk_keccak_absorb_once(state.ctx, SHAKE256_RATE, input, inlen, 0x1F);",
+      "to": "mlk_keccak_absorb_once(state.ctx, SHAKE256_RATE, input, inlen, 0x1E);",
+      "exit": 1,
+      "last_line": [
+        "candidate fails CAVP vector 0"
+      ],
+      "rejected": true
+    },
+    "pad_last_byte_merge_128_to_64": {
+      "file": "fips202.c",
+      "from": "p |= 128;",
+      "to": "p |= 64;",
+      "exit": 1,
+      "last_line": [
+        "candidate fails CAVP vector 21"
+      ],
+      "rejected": true
+    },
+    "squeeze_block_len_r_minus_1": {
+      "file": "fips202.c",
+      "from": "len = r;",
+      "to": "len = r - 1;",
+      "exit": 1,
+      "last_line": [
+        "candidate fails CAVP vector 55"
+      ],
+      "rejected": true
+    },
+    "round_constant_23": {
+      "file": "keccakf1600.c",
+      "from": "(uint64_t)0x8000000080008008ULL};",
+      "to": "(uint64_t)0x8000000080008009ULL};",
+      "exit": 1,
+      "last_line": [
+        "candidate fails CAVP vector 0"
+      ],
+      "rejected": true
+    },
+    "rho_age_44_to_43": {
+      "file": "keccakf1600.c",
+      "from": "BCe = MLK_KECCAK_ROL(Age, 44);",
+      "to": "BCe = MLK_KECCAK_ROL(Age, 43);",
+      "exit": 1,
+      "last_line": [
+        "candidate fails CAVP vector 0"
+      ],
+      "rejected": true
+    },
+    "chi_first_row_and_to_or": {
+      "file": "keccakf1600.c",
+      "from": "Eba = BCa ^ ((~BCe) & BCi);",
+      "to": "Eba = BCa ^ ((~BCe) | BCi);",
+      "exit": 1,
+      "last_line": [
+        "candidate fails CAVP vector 0"
+      ],
+      "rejected": true
+    },
+    "hash_g_domain_0x01_to_0x02": {
+      "file": "symmetric.c",
+      "from": "data[0] = 0x01;",
+      "to": "data[0] = 0x02;",
+      "exit": 1,
+      "last_line": [
+        "hash_g mismatch t=0"
+      ],
+      "rejected": true
+    },
+    "hash_h_input_one_byte_short": {
+      "file": "symmetric.c",
+      "from": "shake256(buf, HASH_H_OUTBYTES, data, HASH_H_INBYTES + 1);",
+      "to": "shake256(buf, HASH_H_OUTBYTES, data, HASH_H_INBYTES);",
+      "exit": 1,
+      "last_line": [
+        "hash_h mismatch t=0"
+      ],
+      "rejected": true
+    }
+  }
+}
