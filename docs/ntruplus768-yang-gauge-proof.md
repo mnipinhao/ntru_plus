@@ -990,3 +990,175 @@ Consequently there is no new short benchmark or Native result from this gate.
 The next mathematical search must alter prefix butterfly constants or
 orientation together with Forward's tower and then price every materialized
 consumer conversion. The findings here do not rule out that wider search.
+
+## Full factor-tree paired-tower screen (2026-09-23)
+
+This is the next, wider **mathematical** gate. It does not turn the preceding
+intermediate CT-prefix gauges into a materialized Forward ABI. Reproduce in
+order from the experiment directory:
+
+```sh
+python3 tools/research_full_twisted_tower.py
+python3 tools/research_full_twisted_pairings.py
+python3 tools/research_full_twisted_consumers.py
+python3 tools/research_yang_true_twist.py
+python3 tools/research_yang_true_twist_range_screen.py
+```
+
+The first three JSON artifacts are `results/yang-full-twisted-tower-{factor,pairings,consumers}-20260923.json`;
+the actual variable-twist model and first range screen are
+`results/yang-true-y-twist-{pairings,range-screen}-20260923.json`.
+They include source hashes and the complete physical cell→leaf→quartic-degree
+map. No source under `upstream/supercop-avx2/`, clean production, or the pinned
+SUPERCOP tree was changed.
+
+### Exact factor, scale, and physical ownership
+
+With `y=x⁴`, the ring polynomial is `P(y)=y¹⁹²−y⁹⁶+1`. The two first
+`y⁹⁶−c` factors have `c=723,2735` modulo 3457. Each splits into three
+`y³²−c` factors and then five binary layers, yielding 192 distinct
+`y−λ` leaves / `x⁴−λ` quartics. The artifact records every factor constant
+at each level and all 768 physical cells. For Official `poly_ntt`, the value
+at the cell owned by `(λ, degree j)` is precisely
+
+```text
+sum_{k=0}^{191} a[4k+j] · λ^k  (mod 3457).
+```
+
+The materialized Forward scale is **1** at all 768 cells. This was checked
+against linked Official ASM on **all 768 coefficient bases** using an
+independent direct-remainder oracle. Conversely, every physical input basis
+to linked `poly_invntt_scale` agrees with the independent Lagrange/CRT
+polynomial, multiplied by `R=65536 mod 3457=3310`. Thus this paired function
+contract is `I(F(a))=R·a`, not unscaled identity. One hundred random small
+polynomials also pass. This proves the scalar factor map and ownership; it
+does **not** prove a new AVX2 orientation, signed range, or timing.
+
+### Rejected fixed-factor gauge-conjugate surrogate
+
+This first executable comparison is **not Yang's true variable-twisted
+tower**. It retains the physical factor tree at every intermediate node and
+tries to force GS butterflies by diagonal gauge conjugation. We keep it as a
+negative control precisely because it exposes a tempting but costly shortcut.
+The top trinomial and radix-3 remainder maps stay exact. At a split with child
+constants `±a`, plain CT Forward produces
+
+```text
+u=A+aB,  v=A−aB.
+```
+
+The explicit twisted GS realization first forms `B'=aB`, then emits
+`S=A+B'=u`, `D=a(A−B')=a·v`. Its lower child carries gauge `a`.
+The paired CT-type inverse consumes `(S,D)` by computing
+`A=(S+D/a)/2`, `B=(S−D/a)/(2a)`. Gauge and Montgomery exponent are distinct:
+at a materialized leaf here `raw=G_λ·semantic`, while `e=0` stays fixed.
+
+Within this surrogate, both the plain/plain and gauged/gauged scalar towers satisfy `R·Id`
+on all 768 bases and 100 random small polynomials. The two crossed pairings
+do **not** satisfy the caller contract without a leaf-gauge adapter; with
+the exact adapter, both close on the same tests. Of the 192 leaves, 186 have
+`G_λ≠1`; each leaf has **one common gauge for all four quartic degrees**.
+An unabsorbed full-state adapter therefore touches 744 coefficients. This
+is materially different from the earlier degree-dependent inverse-prefix
+gauge, which was not a Forward ABI.
+
+| Explicit scalar radix-2 work per transform, four degree columns | Plain | Twisted |
+| --- | ---: | ---: |
+| Forward fixed multiplications | 1,920 | 3,840 = 1,920 high preweights + 1,920 GS output twiddles |
+| Inverse fixed multiplications | 1,920 | 3,840 = 1,920 input untwists + 1,920 high unweights |
+
+These are scalar-model operations, **not AVX2 instruction or cycle counts**.
+An optimized radix-3 or earlier-stage constant could in principle absorb
+some preweights. This concrete realization has **not** demonstrated that
+absorption; counting a moved multiply as eliminated would be wrong.
+
+The first binary stage exposes a more specific obstruction to a *trivial*
+radix-3 table edit. Under the two `y⁹⁶` factors, the three radix-3 output
+polynomials need high-half preweights `(886,147,1033)` and
+`(682,1510,1265)`, respectively. Within each triple they are different.
+Scaling those output rows changes the radix-3 matrix's **A-column** from
+`(1,1,1)` to those three constants; it cannot be achieved merely by
+replacing the existing B/C twiddles while leaving the A contribution free.
+The JSON records all six exact rows. This does not prove a lower bound for a
+new shared radix-3 algorithm, but it identifies precisely where a joint
+schedule must find its credit.
+
+### Surrogate caller-gauge obligations
+
+For one quartic with scalar gauges, the raw product must be corrected by
+`G_c/(G_a G_b)` times the ordinary quartic product (with the same `λ`).
+The model checks this for all 192 actual leaves and 1,536 deterministic
+quartic cases. In Decap's existing plain wire ABI, a twisted state imposes:
+
+| Boundary | Required scalar gauge factor if not absorbed by an existing operation |
+| --- | --- |
+| decoded `c,f` → BaseMulScale → twisted inverse | `G` on product output |
+| message twisted Forward → recovery BaseMul with plain `hinv` → hash bytes | `G⁻¹` on recovery product |
+| regenerated-r twisted Forward → equality serialization | `G⁻¹` before wire bytes |
+
+The paired inverse returns ordinary coefficient-domain data, so crepmod3
+needs no new gauge in this exact model. Encap could keep `h` plain and both
+`r,m,c` twisted through multiplication/addition, but both r-hash and
+ciphertext serializers would need `G⁻¹`. Keygen's BaseInv can algebraically
+return reciprocal leaf gauge, but its actual scale, range, retry, and SK
+serialization remain separate machine contracts. None of these adapters or
+consumer helpers has been implemented or priced as AVX2 instructions.
+
+### The actual y-variable twisted tower
+
+Yang §4–§6 and §9 distinguish the above surrogate from a genuine twist:
+the variable substitution is performed on the **complete** `y=x⁴` tower,
+never on the retained `x` degree. At each `y³²−α` node choose a 32nd root
+`ξ` of `α`, substitute `y=ξz`, and work in `z³²−1`. At each binary split,
+the upper child is `(A+B)`; the lower `(A−B)` is twisted by powers of a
+primitive root of the current node size. At a linear y-leaf, the accumulated
+substitution yields exactly the original `λ`. There is **no terminal leaf
+gauge** and no codec/consumer adapter. The inverse uses the reciprocal
+untwist before its CT merge, with the same total `R` scale as Official.
+
+The executable scalar model independently checked all 768 bases and 100
+small random inputs. The twisted Forward equals the direct remainder oracle
+at every `(λ,degree)` cell; the twisted inverse composes to `R·Id`.
+Plain and true-twisted leaves therefore have the same materialized Official
+ABI. All four plain/twisted Forward–inverse pairings are checked without an
+adapter. This is **not** true of the fixed-factor surrogate above.
+
+| Fixed scalar multiplications per transform, four quartic degree columns | Plain radix-2 | True y-twisted radix-2 |
+| --- | ---: | ---: |
+| Forward | 1,920 CT twiddles | 744 initial `y³²` twists + 1,176 GS lower-output twists = 1,920 |
+| Inverse | 1,920 GS twiddles | 1,176 CT input untwists + 744 final `y³²` untwists = 1,920 |
+
+So this correct Yang realization **moves 744 fixed multiplications** across
+the binary tower but does not eliminate them in the scalar ledger. The
+potential gain is instead reduction placement, dependency, vector mapping,
+or constant reuse. Unlike the rejected surrogate, it does **not** force
+three Decap gauge adapters. The top trinomial and radix-3 remain unchanged
+in this first complete-y-tower model; their joint redesign is still open.
+
+The first AVX2 range screen uses the actual BaseMulScale source-level plane
+envelopes `(3741,5652,7563,7644)`, not four copies of ±7644, and defers
+the five inverse halvings for the existing tail scale contract. In a
+**no-repair** CT merge, the first unproved signed-i16 add for degree 1–3 is
+already at the size-8 node; degree 3 has bound `30576+30576=61152`.
+Degree 0 survives that node but first fails at size 16 with
+`29928+29928=59856`. A Barrett at the valid 30,576-bound predecessor would
+reduce its conservative bound to 3,107, but that repair and the 32× deferred
+scale must be explicitly scheduled and priced. These are interval-proof
+failures, **not** demonstrated reachable overflows. Correlated/lane-wise
+refinement and the complete radix-3/trinomial tail proof remain open.
+
+### Selection decision and remaining open direction
+
+The true y-twist **passes exact factor, scale, ownership, and consumer ABI
+closure**. It does not yet pass the *machine-candidate* gate: there is no
+signed-i16 proof on actual BaseMulScale / crepmod3 domains, no schedule with
+operands/last-use/≤16 YMM, and no evidence that the relocated reductions or
+constants improve the complete inverse+Forward Decap path. A scalar-model
+operation-count tie does not decide cycles. Thus this round stops before
+namespaced ASM, linked audit, KEM vectors, ASLR-on short timing, and
+fixed-layout A/B; none is claimed. The next narrow gate is a real AVX2
+range/schedule comparison of this exact no-adapter y-twist against Official
+GS and `stage5reuse`, including the six initial `y³²` twists and inverse
+untwists. If that gate finds a safe, allocatable machine mechanism, one paired
+tower ASM candidate is authorized by the plan. If not, document the exact
+overflow or allocation node rather than “fixing” it with unpriced reductions.

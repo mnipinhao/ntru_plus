@@ -559,3 +559,64 @@ round23_yang_gauge_aware_joint_tower_gate:
   linked_ASM: none
   cycle_result: none
   native_and_clean_promotion: no
+round24_yang_full_factor_tower_pair_screen:
+  class: executable_scalar_factor_CRT_and_consumer_screen_not_AVX2_ASM_or_timing
+  tools:
+    - tools/research_full_twisted_tower.py
+    - tools/research_full_twisted_pairings.py
+    - tools/research_full_twisted_consumers.py
+    - tools/research_yang_true_twist.py
+    - tools/research_yang_true_twist_range_screen.py
+  artifacts:
+    - results/yang-full-twisted-tower-factor-20260923.json
+    - results/yang-full-twisted-tower-pairings-20260923.json
+    - results/yang-full-twisted-tower-consumers-20260923.json
+    - results/yang-true-y-twist-pairings-20260923.json
+    - results/yang-true-y-twist-range-screen-20260923.json
+  factor_tree:
+    ring_in_y: y^192-y^96+1
+    top_y96_constants: [723, 2735]
+    terminal_quartic_leaves: 192
+    linked_Official_forward_scale: 1
+    linked_Official_inverse_after_forward_scale: R_mod_3457_equals_3310
+    full_forward_basis_direct_remainder: 768/768
+    full_inverse_physical_basis_direct_CRT: 768/768
+  paired_model:
+    scope: rejected_fixed_factor_gauge_conjugate_surrogate_not_Yang_variable_twist
+    plain_and_twisted_R_identity: 768_bases_plus_100_small_random_each
+    crossed_unadapted_pairings_fail: 868/868_each
+    crossed_with_exact_leaf_adapter_pass: 868/868_each
+    nonidentity_leaf_gauges: 186/192
+    quartic_uniform_leaf_gauges: 192/192
+    explicit_scalar_fixed_multiplications_per_forward: {plain: 1920, twisted: 3840}
+    explicit_scalar_fixed_multiplications_per_inverse: {plain: 1920, twisted: 3840}
+    scalar_counts_not_AVX2_instruction_or_cycle_counts: true
+    radix3_first_binary_high_half_preweights:
+      top_723: [886, 147, 1033]
+      top_2735: [682, 1510, 1265]
+    obstruction_scope: cannot_absorb_by_B_C_twiddle_table_edit_with_unchanged_free_A_column
+  consumer_contract:
+    tested_quartic_cases: 1536
+    decap_nontrivial_gauge_edges: 3
+    unabsorbed_adapter_coefficients_per_full_poly: 744
+    keygen_encap_decap_edges_recorded: true
+  true_y_variable_twist:
+    scope: complete_y_radix2_tower_with_exact_top_trinomial_and_radix3_maps_unchanged
+    forward_direct_remainder: 768_bases_plus_100_small_random
+    inverse_composition: R_identity_768_bases_plus_100_small_random
+    all_four_plain_twisted_pairings_same_materialized_Official_ABI: true
+    terminal_gauge: 1
+    forward_scalar_fixed_multiplications: {plain: 1920, true_twist_initial: 744, true_twist_GS: 1176}
+    inverse_scalar_fixed_multiplications: {plain: 1920, true_twist_CT: 1176, true_twist_final: 744}
+    consumer_adapters: 0_at_materialized_Official_ABI
+    machine_gate: range_and_16YMM_instruction_schedule_not_yet_closed
+    no_repair_CT_inverse_range_screen:
+      actual_BaseMulScale_plane_bounds: [3741, 5652, 7563, 7644]
+      first_unproved_size_by_degree: [16, 8, 8, 8]
+      degree3_size8_pre_add_bound: 61152
+      proof_failure_not_reachable_overflow: true
+      explicit_repair_and_deferred_32x_scale_still_unpriced: true
+  stop_node: true_y_twist_semantic_gate_passed_but_AVX2_range_and_schedule_gate_not_yet_closed
+  range_allocation_linked_ASM_KAT_and_timing: not_run_no_qualifying_candidate
+  scope_of_rejection: this_explicit_radix2_realization_not_all_joint_twisted_towers
+  native_and_clean_promotion: no
