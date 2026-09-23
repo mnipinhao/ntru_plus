@@ -1,0 +1,50 @@
+# NTRU+864 fused codec Phase A closure (make codec-record; cc lines elided)
+# 2026-09-23T05:37:23Z 50ed439 cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+# asm sha256 dcaa2ed5d09b576a1683957b1f8097755745d7642652296598dd0a240ce326e1
+# binary order in both runs: test_codec_fused, test_kem_lazy_codec, test_kem_lazy_codec_fretry, test_kem_codec, test_kem_codec_fretry
+# (test_kem_* reuse common/.../test_kem_lazy.c; its messages say 'caller-lazy' for whichever object is bound to official_lazy_*)
+python3 ../../../../../../scripts/check_supercop_experiment.py --experiment . --parameter 864
+verified NTRU+864 experiment upstream 13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006
+python3 ../../../common/official_opt_lazy/tools/generate_forward_caller_lazy.py --param 864 --experiment . --check
+ok asm/ntruplus864_officialopt_ntt_caller_lazy.s sha256=db5d489658d4f5b77ce181c691d7c3b9e054a0a14ebc7c693f79df382a8f0497
+ok src/kem_lazy.c sha256=398f5faa0b2733cc188ce933380ee8c64d8676a9938da0de8f3cdf3a8253d484
+removed per Forward: {'removed_per_iteration': {'vpmulhrsw': 6, 'vpmullw': 6, 'vpsubw': 6}, 'iterations': 9, 'removed_vectors_per_forward': 54, 'removed_constant_loads': 1}
+python3 tools/generate_codec_fused.py --experiment . --check
+asm/ntruplus864_officialopt_codec_fused.s up to date
+build/test_codec_fused && build/test_kem_lazy_codec && build/test_kem_lazy_codec_fretry && build/test_kem_codec && build/test_kem_codec_fretry && true
+tobytes: pass (287072 cases: 131072 all-int16-per-position, 36000 lazy-envelope, 120000 random int16; 17942 scalar-model checks; canaries, immutability, 32 output misalignments)
+frombytes: pass (3763050 cases, 662739 rejected by Official: 100000 random valid, 3563050 boundary+every-value-every-position, 100000 random bytes; output and return equal, scalar model, canaries, immutability, 32 input misalignments; 20000 fused round trips)
+NTRU+864 fused codec differential: pass
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_codec_fused && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_lazy_codec && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_lazy_codec_fretry && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_codec && ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_codec_fretry && true
+tobytes: pass (287072 cases: 131072 all-int16-per-position, 36000 lazy-envelope, 120000 random int16; 17942 scalar-model checks; canaries, immutability, 32 output misalignments)
+frombytes: pass (3763050 cases, 662739 rejected by Official: 100000 random valid, 3563050 boundary+every-value-every-position, 100000 random bytes; output and return equal, scalar model, canaries, immutability, 32 input misalignments; 20000 fused round trips)
+NTRU+864 fused codec differential: pass
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+# codec-audit: pass -> results/codec-phase-a/codec-linked-summary.json

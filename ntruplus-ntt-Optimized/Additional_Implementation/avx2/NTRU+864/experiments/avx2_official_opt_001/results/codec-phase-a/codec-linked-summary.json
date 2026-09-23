@@ -1,0 +1,363 @@
+{
+  "class": "linked ELF audit (codec Phase A, correctness only; no timing)",
+  "parameter": "NTRU+864",
+  "elf": "build/test_kem_lazy_codec",
+  "elf_sha256": "bf8010028f4d8c377ef302cb94287c10a1c9eb3b02979903f4e06dbd12a7afc3",
+  "asm_sha256": "dcaa2ed5d09b576a1683957b1f8097755745d7642652296598dd0a240ce326e1",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "fused": {
+    "ntruplus864_officialopt_tobytes_fused": {
+      "address_mod_32": 0,
+      "size_bytes": 2587,
+      "instruction_rows": 472,
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0,
+      "dynamic_per_call": {
+        "alu": 204,
+        "blendd": 166,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 52,
+        "in_lane_shuffle": 290,
+        "load": 56,
+        "multiply": 108,
+        "scalar": 18,
+        "shift": 400,
+        "store": 81,
+        "total": 1375
+      },
+      "opcode_counts": {
+        "add": 2,
+        "cmp": 1,
+        "jb": 1,
+        "lea": 1,
+        "ret": 1,
+        "vextracti128": 15,
+        "vinserti128": 4,
+        "vmovdqa": 20,
+        "vmovdqu": 12,
+        "vpaddw": 18,
+        "vpand": 18,
+        "vpblendd": 58,
+        "vpblendw": 53,
+        "vperm2i128": 12,
+        "vpmulhrsw": 18,
+        "vpmullw": 18,
+        "vpslld": 14,
+        "vpsllq": 34,
+        "vpsllw": 15,
+        "vpsraw": 18,
+        "vpsrld": 14,
+        "vpsrlq": 34,
+        "vpsrlw": 10,
+        "vpsubw": 18,
+        "vpunpckhqdq": 24,
+        "vpunpcklqdq": 24,
+        "vpxor": 15
+      }
+    },
+    "ntruplus864_officialopt_frombytes_fused": {
+      "address_mod_32": 0,
+      "size_bytes": 2283,
+      "instruction_rows": 411,
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0,
+      "dynamic_per_call": {
+        "alu": 143,
+        "blendd": 180,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 54,
+        "in_lane_shuffle": 290,
+        "insert_from_memory": 39,
+        "load": 43,
+        "scalar": 21,
+        "shift": 346,
+        "store": 54,
+        "total": 1170
+      },
+      "opcode_counts": {
+        "add": 2,
+        "cmp": 1,
+        "jb": 1,
+        "lea": 1,
+        "movzbl": 1,
+        "ret": 1,
+        "setne": 1,
+        "test": 1,
+        "vinserti128": 16,
+        "vmovdqa": 19,
+        "vmovdqu": 15,
+        "vpand": 20,
+        "vpblendd": 63,
+        "vpblendw": 53,
+        "vpcmpgtw": 1,
+        "vperm2i128": 14,
+        "vpmaxuw": 20,
+        "vpmovmskb": 1,
+        "vpshufd": 5,
+        "vpslld": 15,
+        "vpsllq": 33,
+        "vpsllw": 10,
+        "vpsrld": 15,
+        "vpsrlq": 33,
+        "vpsrlw": 15,
+        "vpunpckhqdq": 19,
+        "vpunpcklqdq": 24,
+        "vpxor": 11
+      }
+    }
+  },
+  "official": {
+    "poly_tobytes": {
+      "address_mod_32": 16,
+      "instruction_rows": 24,
+      "calls": [
+        "816a <poly_ntt_pack>",
+        "7b20 <poly_tobytes_raw>",
+        "1060 <__stack_chk_fail@plt>"
+      ],
+      "vzeroupper": 0,
+      "stack": {
+        "sub_rsp_bytes": [
+          1760
+        ],
+        "rsp_or_rbp_rows": 10
+      }
+    },
+    "poly_frombytes": {
+      "address_mod_32": 16,
+      "instruction_rows": 11,
+      "calls": [
+        "7d6d <poly_frombytes_raw>",
+        "801b <poly_ntt_unpack>"
+      ],
+      "vzeroupper": 0,
+      "stack": {
+        "sub_rsp_bytes": [
+          24
+        ],
+        "rsp_or_rbp_rows": 6
+      }
+    },
+    "poly_ntt_pack": {
+      "address_mod_32": 10,
+      "instruction_rows": 92,
+      "calls": [],
+      "vzeroupper": 0,
+      "stack": {
+        "sub_rsp_bytes": [],
+        "rsp_or_rbp_rows": 0
+      },
+      "dynamic_per_call": {
+        "alu": 162,
+        "blendd": 54,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 54,
+        "in_lane_shuffle": 108,
+        "load": 56,
+        "multiply": 108,
+        "scalar": 38,
+        "shift": 162,
+        "store": 54,
+        "total": 796
+      }
+    },
+    "poly_ntt_unpack": {
+      "address_mod_32": 27,
+      "instruction_rows": 54,
+      "calls": [],
+      "vzeroupper": 0,
+      "stack": {
+        "sub_rsp_bytes": [],
+        "rsp_or_rbp_rows": 0
+      },
+      "dynamic_per_call": {
+        "blendd": 54,
+        "cross_lane_permute": 54,
+        "in_lane_shuffle": 108,
+        "load": 54,
+        "scalar": 38,
+        "shift": 108,
+        "store": 54,
+        "total": 470
+      }
+    },
+    "poly_tobytes_raw": {
+      "address_mod_32": 0,
+      "instruction_rows": 109,
+      "calls": [],
+      "vzeroupper": 0,
+      "stack": {
+        "sub_rsp_bytes": [],
+        "rsp_or_rbp_rows": 0
+      },
+      "dynamic_per_call": {
+        "alu": 42,
+        "blendd": 112,
+        "cross_lane_permute": 91,
+        "in_lane_shuffle": 182,
+        "load": 56,
+        "scalar": 54,
+        "shift": 238,
+        "store": 42,
+        "total": 817
+      }
+    },
+    "poly_frombytes_raw": {
+      "address_mod_32": 13,
+      "instruction_rows": 134,
+      "calls": [],
+      "vzeroupper": 0,
+      "stack": {
+        "sub_rsp_bytes": [],
+        "rsp_or_rbp_rows": 0
+      },
+      "dynamic_per_call": {
+        "alu": 168,
+        "blendd": 126,
+        "constant_memory_operands": 15,
+        "cross_lane_permute": 91,
+        "in_lane_shuffle": 182,
+        "load": 43,
+        "scalar": 58,
+        "shift": 238,
+        "store": 56,
+        "total": 962
+      }
+    }
+  },
+  "dynamic_comparison": {
+    "ntruplus864_officialopt_tobytes_fused": {
+      "official_kernels": [
+        "poly_ntt_pack",
+        "poly_tobytes_raw"
+      ],
+      "official_wrapper_rows_not_counted": 24,
+      "official": {
+        "alu": 204,
+        "blendd": 166,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 145,
+        "in_lane_shuffle": 290,
+        "load": 112,
+        "multiply": 108,
+        "scalar": 92,
+        "shift": 400,
+        "store": 96,
+        "total": 1613
+      },
+      "fused": {
+        "alu": 204,
+        "blendd": 166,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 52,
+        "in_lane_shuffle": 290,
+        "load": 56,
+        "multiply": 108,
+        "scalar": 18,
+        "shift": 400,
+        "store": 81,
+        "total": 1375
+      },
+      "fused_minus_official": {
+        "cross_lane_permute": -93,
+        "load": -56,
+        "scalar": -74,
+        "store": -15,
+        "total": -238
+      },
+      "per_96_coefficients_fused_minus_official": {
+        "cross_lane_permute": -10.33,
+        "load": -6.22,
+        "scalar": -8.22,
+        "store": -1.67,
+        "total": -26.44
+      }
+    },
+    "ntruplus864_officialopt_frombytes_fused": {
+      "official_kernels": [
+        "poly_frombytes_raw",
+        "poly_ntt_unpack"
+      ],
+      "official_wrapper_rows_not_counted": 11,
+      "official": {
+        "alu": 168,
+        "blendd": 180,
+        "constant_memory_operands": 15,
+        "cross_lane_permute": 145,
+        "in_lane_shuffle": 290,
+        "insert_from_memory": 0,
+        "load": 97,
+        "scalar": 96,
+        "shift": 346,
+        "store": 110,
+        "total": 1432
+      },
+      "fused": {
+        "alu": 143,
+        "blendd": 180,
+        "constant_memory_operands": 2,
+        "cross_lane_permute": 54,
+        "in_lane_shuffle": 290,
+        "insert_from_memory": 39,
+        "load": 43,
+        "scalar": 21,
+        "shift": 346,
+        "store": 54,
+        "total": 1170
+      },
+      "fused_minus_official": {
+        "alu": -25,
+        "constant_memory_operands": -13,
+        "cross_lane_permute": -91,
+        "insert_from_memory": 39,
+        "load": -54,
+        "scalar": -75,
+        "store": -56,
+        "total": -262
+      },
+      "per_96_coefficients_fused_minus_official": {
+        "alu": -2.78,
+        "constant_memory_operands": -1.44,
+        "cross_lane_permute": -10.11,
+        "insert_from_memory": 4.33,
+        "load": -6.0,
+        "scalar": -8.33,
+        "store": -6.22,
+        "total": -29.11
+      }
+    }
+  },
+  "stack_bytes": {
+    "fused_tobytes": 0,
+    "fused_frombytes": 0,
+    "official_poly_tobytes_frame": [
+      1760
+    ],
+    "official_poly_frombytes_frame": [
+      24
+    ]
+  },
+  "vzeroupper_policy": "fused 0; Official pack.s kernels 0 (see official.*.vzeroupper)",
+  "kem_call_relocations": {
+    "kem_lazy_codec.o->ntruplus864_officialopt_tobytes_fused": 7,
+    "kem_lazy_codec.o->ntruplus864_officialopt_frombytes_fused": 4,
+    "kem_lazy_codec.o->poly_tobytes": 0,
+    "kem_lazy_codec.o->poly_frombytes": 0,
+    "kem_lazy_codec.o->poly_ntt": 0,
+    "kem_lazy_codec.o->ntruplus864_officialopt_ntt_caller_lazy": 6,
+    "kem_codec.o->ntruplus864_officialopt_tobytes_fused": 7,
+    "kem_codec.o->ntruplus864_officialopt_frombytes_fused": 4,
+    "kem_codec.o->poly_tobytes": 0,
+    "kem_codec.o->poly_frombytes": 0,
+    "kem_codec.o->poly_ntt": 6,
+    "kem_codec.o->ntruplus864_officialopt_ntt_caller_lazy": 0,
+    "kem_ref.o->ntruplus864_officialopt_tobytes_fused": 0,
+    "kem_ref.o->ntruplus864_officialopt_frombytes_fused": 0,
+    "kem_ref.o->poly_tobytes": 7,
+    "kem_ref.o->poly_frombytes": 4,
+    "kem_ref.o->poly_ntt": 6,
+    "kem_ref.o->ntruplus864_officialopt_ntt_caller_lazy": 0
+  }
+}
