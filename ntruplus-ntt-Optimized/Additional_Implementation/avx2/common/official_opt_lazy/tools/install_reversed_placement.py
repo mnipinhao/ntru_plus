@@ -5,6 +5,10 @@ Port of NTRU+768 avx2_official_opt_001/tools/install_reversed_placement.py for
 864/1152, with the same renames.  SUPERCOP compiles every .s file of a flat
 implementation; renaming only basenames changes archive member order and thus
 hot-code placement while keeping exact source bytes and arithmetic.
+A direct-codec export's `codec_direct.s` is renamed to `ccc_codec_direct.s`
+(normal order basemul, codec_direct, ntt, ntt_caller_lazy, pack becomes
+ntt, ntt_caller_lazy, codec_direct, pack, basemul).  --skip-baseline adds only
+the candidate when `<baseline>-reversed` already exists.
 """
 
 import argparse
@@ -14,6 +18,7 @@ from pathlib import Path
 
 RENAMES = {"ntt.s": "aaa_ntt.s", "basemul.s": "zzz_basemul.s", "pack.s": "yyy_pack.s"}
 LAZY_RENAME = {"ntt_caller_lazy.s": "bbb_ntt_caller_lazy.s"}
+CODEC_RENAME = {"codec_direct.s": "ccc_codec_direct.s"}
 
 
 def main():
@@ -22,13 +27,20 @@ def main():
     parser.add_argument("--campaign-root", required=True, type=Path)
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--baseline", default="avx2")
+    parser.add_argument("--skip-baseline", action="store_true",
+                        help="copy only the candidate (baseline-reversed must already exist)")
     args = parser.parse_args()
     root = args.campaign_root.resolve()
     marker = root / ".ntruplus-campaign.json"
     if not marker.is_file() or json.loads(marker.read_text()).get("kind") != "disposable-supercop-campaign":
         raise SystemExit("requires a disposable SUPERCOP campaign")
     impl = root / f"crypto_kem/ntruplus{args.param}"
-    for name in (args.baseline, args.candidate):
+    names = (args.baseline, args.candidate)
+    if args.skip_baseline:
+        if not (impl / (args.baseline + "-reversed")).is_dir():
+            raise SystemExit("--skip-baseline needs an existing baseline-reversed copy")
+        names = (args.candidate,)
+    for name in names:
         source = impl / name
         target = impl / (name + "-reversed")
         if target.exists():
@@ -37,6 +49,8 @@ def main():
         renames = dict(RENAMES)
         if (source / "ntt_caller_lazy.s").exists():
             renames.update(LAZY_RENAME)
+        if (source / "codec_direct.s").exists():
+            renames.update(CODEC_RENAME)
         for old, new in renames.items():
             (target / old).rename(target / new)
         (target / "PLACEMENT.json").write_text(json.dumps(
