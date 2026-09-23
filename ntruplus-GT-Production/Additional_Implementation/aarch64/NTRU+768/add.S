@@ -1,13 +1,20 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 #ifdef __APPLE__
 .section __TEXT,__text,regular,pure_instructions
 #else
 .section .text.poly_sub,"ax",%progbits
 #endif
 
-.global poly_sub
-.global _poly_sub
-poly_sub:
-_poly_sub:
+.global C_SYM(poly_sub)
+C_SYM(poly_sub):
     dst       .req x0
     src1      .req x1
     src2      .req x2
@@ -17,7 +24,7 @@ _poly_sub:
 
     # v8-v15 are callee-saved; use v0-v7 and v16-v31 only.
 .align 2
-_loop_sub:
+.Lloop_sub:
     ld1 {v0.8h - v3.8h},  [src1], #64
     ld1 {v4.8h - v7.8h},  [src1], #64
     ld1 {v16.8h - v19.8h}, [src1], #64
@@ -46,7 +53,7 @@ _loop_sub:
     st1 {v18.8h, v19.8h}, [dst], #32
 
     subs counter, counter, #192
-    b.ne _loop_sub
+    b.ne .Lloop_sub
 
     .unreq dst
     .unreq src1
@@ -58,15 +65,13 @@ _loop_sub:
 
 .text
 .align 2
-.global poly_triple
-.global _poly_triple
-poly_triple:
-_poly_triple:
+.global C_SYM(poly_triple)
+C_SYM(poly_triple):
  movi v0.8h, #3
  mov x8, #1536
 
 .align 2
-_support_loop_triple:
+.Lsupport_loop_triple:
  /*
 	 * Live-in: x0=dst, x1=src, x8=public byte counter, v0=3.
 	 * Live-out: dst/src pointers advance by one 192-byte stripe.
@@ -96,5 +101,5 @@ _support_loop_triple:
         st1 {v22.8H, v23.8H}, [x0], #32
 
  subs x8, x8, #192
- b.ne _support_loop_triple
+ b.ne .Lsupport_loop_triple
  ret

@@ -1,9 +1,26 @@
-/* Generic loose Forward NTT and Keygen Direct-CQ shared core.
- * Generic output: [-27548,27548]; Keygen retains its own reductions.
- * Historical provenance is retained in Git; see docs/IMPLEMENTATION.md.
- */
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
 
-/* Instruction scheduling was generated with Slothy; release annotations removed. */
+/* NTRU+768 Good-Thomas transforms.  Sections, in file order:
+ *   module_ntt_            shared forward core with poly_ntt_loose (validation),
+ *                          poly_ntt_keygen_cq and poly_ntt_encap_small; the
+ *                          poly_ntt_encap_small_lazy entry, at the end of the file,
+ *                          branches back into this core
+ *   module_decap_invntt_   poly_invntt_ternary_decap (decapsulation inverse)
+ *   module_decap_forward_  poly_ntt_decap (decapsulation forward)
+ *
+ * The loose forward output lies in [-27548,27548]: its terminal Barrett
+ * reductions are left to the consumers, which accept the loose range; keygen
+ * keeps its own.  Where one stage hands blocks to the next in registers, the
+ * corresponding stores are omitted.  Instruction scheduling is Slothy-generated.
+ * See docs/IMPLEMENTATION.md for the endpoint contracts.
+ */
 #ifdef __APPLE__
 .text
 #else
@@ -12,30 +29,21 @@
 .align 4
 .equ module_ntt_STACK_LOC_0, 0
 
-.global poly_ntt_loose
-.global _poly_ntt_loose
-/* Compatibility aliases: same address, no additional kernel body. */
-.global poly_ntt_loose_block_major
-.global _poly_ntt_loose_block_major
+.global C_SYM(poly_ntt_loose)
 #ifndef __APPLE__
 .type poly_ntt_loose, %function
 #endif
-poly_ntt_loose:
-_poly_ntt_loose:
-poly_ntt_loose_block_major:
-_poly_ntt_loose_block_major:
+C_SYM(poly_ntt_loose):
     mov w2, #0
-    b module_ntt_.Lgt_shared_core_entry
+    b .Lmodule_ntt_gt_shared_core_entry
 
-.global poly_ntt_keygen_cq
-.global _poly_ntt_keygen_cq
+.global C_SYM(poly_ntt_keygen_cq)
 #ifndef __APPLE__
 .type poly_ntt_keygen_cq, %function
 #endif
-poly_ntt_keygen_cq:
-_poly_ntt_keygen_cq:
+C_SYM(poly_ntt_keygen_cq):
     mov w2, #1
-module_ntt_.Lgt_shared_core_entry:
+.Lmodule_ntt_gt_shared_core_entry:
     sub sp, sp, #1696
     str w2, [sp, #8]  // public endpoint selector
     stp x19, x20, [sp, #16]
@@ -50,10 +58,10 @@ module_ntt_.Lgt_shared_core_entry:
     mov x20, x1
     add x21, sp, #160
 
-    adr x2, module_ntt_u01_block_first_zetas
+    adr x2, .Lmodule_ntt_u01_block_first_zetas
     ldr q0, [x2]
-    adr x22, module_ntt_u01_block_first_twist_table
-    adr x23, module_ntt_u01_block_first_gt_ntt32_batch8_twiddle_vecs
+    adr x22, .Lmodule_ntt_u01_block_first_twist_table
+    adr x23, .Lmodule_ntt_u01_block_first_gt_ntt32_batch8_twiddle_vecs
 
     // Fused GT frontend and row-transform body.
     // Block3 is consumed after block0/1/2
@@ -63,7 +71,7 @@ module_ntt_.Lgt_shared_core_entry:
     // Production GT frontend iter0, shared prefix once.
     ldr w2, [sp, #8]
     cmp w2, #2
-    b.hs module_ntt_.Lencap_small_front
+    b.hs .Lmodule_ntt_encap_small_front
     add x1, x20, #0
     add x3, x22, #0
     add x4, x21, #0
@@ -1375,11 +1383,10 @@ module_ntt_.Lgt_shared_core_entry:
         str q10, [x5, #48]
         str q11, [x6, #48]
 
-module_ntt_.Lntt_endpoint_suffix:
+.Lmodule_ntt_ntt_endpoint_suffix:
     ldr w2, [sp, #8]
     cmp w2, #1
-    b.eq module_ntt_.Lgt_shared_core_cq_suffix
-module_ntt_.Lgt_shared_core_generic_suffix:
+    b.eq .Lmodule_ntt_gt_shared_core_cq_suffix
     ldr w2,[sp,#8]
     cmp w2,#3
     b.eq .Lencap_lazy_row0
@@ -1406,9 +1413,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #0] omitted: E3 block0 Q0.
-    // str q10, [x21, #128] omitted: E3 block1 Q8.
-    // str q7, [x21, #256] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #384]     // block3 Q24
 
     // Stage12 row0 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -1429,9 +1434,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #16] omitted: E3 block0 Q1.
-    // str q20, [x21, #144] omitted: E3 block1 Q9.
-    // str q11, [x21, #272] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #400]     // block3 Q25
 
     // Stage12 row0 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -1452,9 +1455,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #32] omitted: E3 block0 Q2.
-    // str q30, [x21, #160] omitted: E3 block1 Q10.
-    // str q12, [x21, #288] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #416]     // block3 Q26
 
     // Stage12 row0 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -1475,9 +1476,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #48] omitted: E3 block0 Q3.
-    // str q24, [x21, #176] omitted: E3 block1 Q11.
-    // str q13, [x21, #304] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #432]     // block3 Q27
 
     // Stage12 row0 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -1498,9 +1497,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #64] omitted: E3 block0 Q4.
-    // str q9, [x21, #192] omitted: E3 block1 Q12.
-    // str q15, [x21, #320] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #448]     // block3 Q28
 
     // Stage12 row0 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -1521,9 +1518,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #80] omitted: E3 block0 Q5.
-    // str q6, [x21, #208] omitted: E3 block1 Q13.
-    // str q16, [x21, #336] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #464]     // block3 Q29
 
     // Stage12 row0 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -1544,9 +1539,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #96] omitted: E3 block0 Q6.
-    // str q31, [x21, #224] omitted: E3 block1 Q14.
-    // str q21, [x21, #352] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #480]     // block3 Q30
 
     // Stage12 row0 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -1567,9 +1560,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #112] omitted: E3 block0 Q7.
-    // str q23, [x21, #240] omitted: E3 block1 Q15.
-    // str q19, [x21, #368] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #496]     // block3 Q31
 
 .Lencap_lazy_join0:
@@ -1656,74 +1647,50 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub v14.8H, v28.8H, v1.8H
         csel x13, x13, x3, hs
         add v17.8H, v27.8H, v18.8H
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         add v1.8H, v28.8H, v1.8H
         add v4.8H, v5.8H, v4.8H
         add x15, x11, #768
-    // WAVE8 common-loose removed: sqdmulh v5.8H, v17.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v18.8H, v18.8H, #11
-    // WAVE8 common-loose removed: mls v3.8H, v18.8H, v0.H[0]
         str x15, [sp, #module_ntt_STACK_LOC_0]
         add v18.8H, v4.8H, v25.8H
         sub v4.8H, v4.8H, v25.8H
-    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         add x15, x13, #24
-    // WAVE8 common-loose removed: sqdmulh v22.8H, v4.8H, v0.H[1]
         sub x5, x15, #768
-    // WAVE8 common-loose removed: mls v17.8H, v5.8H, v0.H[0]
         cmp x15, x14
         ext v5.16B, v3.16B, v3.16B, #8
         str d3, [x16]
-    // WAVE8 common-loose removed: srshr v3.8H, v22.8H, #11
         csel x6, x5, x15, hs
-    // WAVE8 common-loose removed: sqdmulh v22.8H, v14.8H, v0.H[1]
         ldr x15, [sp, #module_ntt_STACK_LOC_0]
         str x6, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: srshr v22.8H, v22.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v25.8H, v18.8H, v0.H[1]
         add x12, x10, #768
         add x8, x7, #768
         add x3, x16, #768
         ldr x6, [sp, #module_ntt_STACK_LOC_0]
         add v26.8H, v8.8H, v2.8H
         sub v2.8H, v8.8H, v2.8H
-    // WAVE8 common-loose removed: srshr v8.8H, v25.8H, #11
         str x3, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: sqdmulh v25.8H, v26.8H, v0.H[1]
         add x5, x6, #24
         ldr x17, [sp, #module_ntt_STACK_LOC_0]
         str d17, [x11]
-    // WAVE8 common-loose removed: sqdmulh v27.8H, v2.8H, v0.H[1]
         cmp x5, x14
         str d5, [x17]
         add x17, x1, #768
-    // WAVE8 common-loose removed: sqdmulh v5.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v27.8H, v27.8H, #11
-    // WAVE8 common-loose removed: mls v18.8H, v8.8H, v0.H[0]
         str x17, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         ext v8.16B, v17.16B, v17.16B, #8
         sub x17, x5, #768
-    // WAVE8 common-loose removed: srshr v17.8H, v25.8H, #11
         csel x5, x17, x5, hs
-    // WAVE8 common-loose removed: mls v2.8H, v27.8H, v0.H[0]
         ldr x17, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: mls v14.8H, v22.8H, v0.H[0]
         str x5, [sp, #module_ntt_STACK_LOC_0]
         // G1+S2 removed ext: v22.16B <- v2.16B high half
         str d18, [x10]
         umov x16, v2.d[1]
         str x16, [x4]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v1.8H, v5.8H, v0.H[0]
         add x4, x13, #768
         // G1+S2 removed ext: v5.16B <- v18.16B high half
         str d2, [x9]
-    // WAVE8 common-loose removed: mls v26.8H, v17.8H, v0.H[0]
         ldr x16, [sp, #module_ntt_STACK_LOC_0]
         str x4, [sp, #module_ntt_STACK_LOC_0]
         add x16, x6, #768
         // G1+S2 removed ext: v2.16B <- v14.16B high half
-    // WAVE8 common-loose removed: mls v4.8H, v3.8H, v0.H[0]
         umov x11, v18.d[1]
         str x11, [x12]  // G1+S2 highhalf_umov_str
         str d14, [x6]
@@ -1810,25 +1777,18 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         add x8, x10, #24
         cmp x8, x14
         sub x2, x8, #768
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v17.8H, v0.H[1]
         csel x8, x2, x8, hs
         add x9, x8, #24
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v2.8H, v0.H[1]
         sub x13, x9, #768
         cmp x9, x14
         csel x13, x13, x9, hs
         mls v1.8H, v4.8H, v0.H[0]
         add x3, x13, #768
-    // WAVE8 common-loose removed: srshr v4.8H, v18.8H, #11
         mul v3.8H, v3.8H, v9.H[6]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v17.8H, v4.8H, v0.H[0]
         sub v4.8H, v5.8H, v10.8H
         add v5.8H, v5.8H, v10.8H
         add v9.8H, v20.8H, v1.8H
-    // WAVE8 common-loose removed: mls v2.8H, v6.8H, v0.H[0]
         sub v1.8H, v20.8H, v1.8H
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v9.8H, v0.H[1]
         // G1+S2 removed ext: v10.16B <- v17.16B high half
         str d17, [x10]
         mls v3.8H, v14.8H, v0.H[0]
@@ -1836,20 +1796,14 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         add x8, x8, #768
         umov x17, v17.d[1]
         str x17, [x4]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v10.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         // G1+S2 removed ext: v2.16B <- v2.16B high half
         umov x17, v2.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v9.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v6.8H, v10.8H, #11
-    // WAVE8 common-loose removed: mls v1.8H, v6.8H, v0.H[0]
         add v6.8H, v8.8H, v3.8H
         sub v3.8H, v8.8H, v3.8H
         str d9, [x13]
         add x13, x13, #24
         // G1+S2 removed ext: v2.16B <- v9.16B high half
-    // WAVE8 common-loose removed: sqdmulh v8.8H, v6.8H, v0.H[1]
         cmp x13, x14
         sub x8, x13, #768
         umov x17, v9.d[1]
@@ -1862,29 +1816,18 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         cmp x13, x14
         umov x17, v1.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v2.8H, v4.8H, v0.H[1]
         sub x16, x13, #768
-    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         csel x8, x16, x13, hs
-    // WAVE8 common-loose removed: sqdmulh v8.8H, v3.8H, v0.H[1]
         add x16, x8, #24
         cmp x16, x14
         sub x11, x16, #768
         csel x11, x11, x16, hs
-    // WAVE8 common-loose removed: mls v6.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
         add x13, x11, #24
         sub x16, x13, #768
-    // WAVE8 common-loose removed: sqdmulh v2.8H, v5.8H, v0.H[1]
         cmp x13, x14
         csel x13, x16, x13, hs
-    // WAVE8 common-loose removed: mls v4.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         add x6, x13, #768
         str d6, [x8]
-    // WAVE8 common-loose removed: mls v3.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
-    // WAVE8 common-loose removed: mls v5.8H, v1.8H, v0.H[0]
         // G1+S2 removed ext: v1.16B <- v3.16B high half
         str d3, [x11]
         add x11, x11, #768
@@ -1984,7 +1927,6 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mls v1.8H, v4.8H, v0.H[0]
         add v19.8H, v6.8H, v9.8H
         sub v9.8H, v6.8H, v9.8H
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v19.8H, v0.H[1]
         add x4, x10, #24
         cmp x4, x14
         sub x8, x4, #768
@@ -1994,28 +1936,19 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mul v11.8H, v26.8H, v11.H[2]
         cmp x15, x14
         sub x11, x15, #768
-    // WAVE8 common-loose removed: srshr v28.8H, v14.8H, #11
         csel x7, x11, x15, hs
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
         add x11, x7, #768
         add v10.8H, v25.8H, v21.8H
-    // WAVE8 common-loose removed: mls v19.8H, v28.8H, v0.H[0]
         sub v28.8H, v31.8H, v1.8H
         add v1.8H, v31.8H, v1.8H
         sqrdmulh v3.8H, v26.8H, v3.H[2]
-    // WAVE8 common-loose removed: srshr v26.8H, v14.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v10.8H, v0.H[1]
         str d19, [x10]
         ext v6.16B, v19.16B, v19.16B, #8
-    // WAVE8 common-loose removed: mls v9.8H, v26.8H, v0.H[0]
         sub v19.8H, v25.8H, v21.8H
         add x16, x10, #768
         str d6, [x16]
         add x16, x7, #24
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
         cmp x16, x14
-    // WAVE8 common-loose removed: srshr v21.8H, v14.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v1.8H, v0.H[1]
         // G1+S2 removed ext: v14.16B <- v9.16B high half
         str d9, [x8]
         mls v11.8H, v3.8H, v0.H[0]
@@ -2023,35 +1956,23 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub x8, x16, #768
         umov x17, v9.d[1]
         str x17, [x1]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: srshr v14.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v10.8H, v21.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
-    // WAVE8 common-loose removed: mls v19.8H, v14.8H, v0.H[0]
         sub v14.8H, v12.8H, v11.8H
         add v11.8H, v12.8H, v11.8H
         str d10, [x7]
         // G1+S2 removed ext: v6.16B <- v10.16B high half
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v11.8H, v0.H[1]
         umov x17, v10.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
         csel x11, x8, x16, hs
         str d19, [x11]
-    // WAVE8 common-loose removed: sqdmulh v30.8H, v14.8H, v0.H[1]
         add x16, x11, #24
         add x6, x11, #768
         cmp x16, x14
         sub x3, x16, #768
-    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         csel x11, x3, x16, hs
-    // WAVE8 common-loose removed: srshr v6.8H, v18.8H, #11
         add x8, x11, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v28.8H, v0.H[1]
         umov x17, v19.d[1]
         str x17, [x6]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v11.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
-    // WAVE8 common-loose removed: srshr v18.8H, v30.8H, #11
         str d11, [x11]
         // G1+S2 removed ext: v11.16B <- v11.16B high half
         add x11, x11, #24
@@ -2059,12 +1980,10 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub x0, x11, #768
         umov x17, v11.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v14.8H, v18.8H, v0.H[0]
         csel x16, x0, x11, hs
         // G1+S2 removed ext: v18.16B <- v1.16B high half
         add x0, x16, #24
         add x11, x16, #768
-    // WAVE8 common-loose removed: mls v28.8H, v26.8H, v0.H[0]
         cmp x0, x14
         sub x3, x0, #768
         csel x3, x3, x0, hs
@@ -2169,75 +2088,51 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mls v1.8H, v6.8H, v0.H[0]
         csel x8, x8, x4, hs
         add x16, x8, #768
-    // WAVE8 common-loose removed: sqdmulh v26.8H, v2.8H, v0.H[1]
         sqrdmulh v8.8H, v29.8H, v8.H[6]
         sub v19.8H, v13.8H, v1.8H
         add v10.8H, v13.8H, v1.8H
         mul v1.8H, v29.8H, v3.H[6]
-    // WAVE8 common-loose removed: srshr v15.8H, v26.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
-    // WAVE8 common-loose removed: sqdmulh v3.8H, v10.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v2.8H, v15.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v14.8H, v14.8H, #11
         mls v1.8H, v8.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v18.8H, v3.8H, #11
-    // WAVE8 common-loose removed: mls v19.8H, v6.8H, v0.H[0]
         sub v3.8H, v30.8H, v20.8H
         str d2, [x8]
         // G1+S2 removed ext: v2.16B <- v2.16B high half
-    // WAVE8 common-loose removed: mls v9.8H, v14.8H, v0.H[0]
         umov x17, v2.d[1]
         str x17, [x16]  // G1+S2 highhalf_umov_str
         add x16, x8, #24
-    // WAVE8 common-loose removed: mls v10.8H, v18.8H, v0.H[0]
         add v12.8H, v28.8H, v1.8H
         cmp x16, x14
         sub x11, x16, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
         csel x8, x11, x16, hs
         sub v14.8H, v28.8H, v1.8H
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v12.8H, v0.H[1]
         add x3, x8, #24
         add x11, x10, #768
         str d9, [x10]
         add v1.8H, v30.8H, v20.8H
         sub x16, x3, #768
         // G1+S2 removed ext: v18.16B <- v9.16B high half
-    // WAVE8 common-loose removed: sqdmulh v24.8H, v14.8H, v0.H[1]
         cmp x3, x14
         str d10, [x8]
         // G1+S2 removed ext: v10.16B <- v10.16B high half
         add x8, x8, #768
         umov x17, v9.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         csel x3, x16, x3, hs
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         umov x17, v10.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
         add x8, x3, #768
         umov x17, v19.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v26.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v24.8H, v24.8H, #11
         str d19, [x3]
         add x3, x3, #24
         cmp x3, x14
-    // WAVE8 common-loose removed: mls v12.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v30.8H, v18.8H, #11
         sub x8, x3, #768
-    // WAVE8 common-loose removed: mls v14.8H, v24.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v26.8H, #11
         csel x3, x8, x3, hs
         add x8, x3, #24
-    // WAVE8 common-loose removed: mls v3.8H, v30.8H, v0.H[0]
         cmp x8, x14
         // G1+S2 removed ext: v18.16B <- v12.16B high half
         str d12, [x3]
         add x3, x3, #768
-    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         umov x17, v12.d[1]
         str x17, [x3]  // G1+S2 highhalf_umov_str
         // G1+S2 removed ext: v26.16B <- v14.16B high half
@@ -2296,9 +2191,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #512] omitted: E3 block0 Q0.
-    // str q10, [x21, #640] omitted: E3 block1 Q8.
-    // str q7, [x21, #768] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #896]     // block3 Q24
 
     // Stage12 row1 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -2319,9 +2212,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #528] omitted: E3 block0 Q1.
-    // str q20, [x21, #656] omitted: E3 block1 Q9.
-    // str q11, [x21, #784] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #912]     // block3 Q25
 
     // Stage12 row1 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -2342,9 +2233,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #544] omitted: E3 block0 Q2.
-    // str q30, [x21, #672] omitted: E3 block1 Q10.
-    // str q12, [x21, #800] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #928]     // block3 Q26
 
     // Stage12 row1 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -2365,9 +2254,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #560] omitted: E3 block0 Q3.
-    // str q24, [x21, #688] omitted: E3 block1 Q11.
-    // str q13, [x21, #816] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #944]     // block3 Q27
 
     // Stage12 row1 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -2388,9 +2275,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #576] omitted: E3 block0 Q4.
-    // str q9, [x21, #704] omitted: E3 block1 Q12.
-    // str q15, [x21, #832] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #960]     // block3 Q28
 
     // Stage12 row1 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -2411,9 +2296,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #592] omitted: E3 block0 Q5.
-    // str q6, [x21, #720] omitted: E3 block1 Q13.
-    // str q16, [x21, #848] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #976]     // block3 Q29
 
     // Stage12 row1 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -2434,9 +2317,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #608] omitted: E3 block0 Q6.
-    // str q31, [x21, #736] omitted: E3 block1 Q14.
-    // str q21, [x21, #864] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #992]     // block3 Q30
 
     // Stage12 row1 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -2457,9 +2338,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #624] omitted: E3 block0 Q7.
-    // str q23, [x21, #752] omitted: E3 block1 Q15.
-    // str q19, [x21, #880] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #1008]     // block3 Q31
 
 .Lencap_lazy_join1:
@@ -2546,74 +2425,50 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub v14.8H, v28.8H, v1.8H
         csel x13, x13, x3, hs
         add v17.8H, v27.8H, v18.8H
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         add v1.8H, v28.8H, v1.8H
         add v4.8H, v5.8H, v4.8H
         add x15, x11, #768
-    // WAVE8 common-loose removed: sqdmulh v5.8H, v17.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v18.8H, v18.8H, #11
-    // WAVE8 common-loose removed: mls v3.8H, v18.8H, v0.H[0]
         str x15, [sp, #module_ntt_STACK_LOC_0]
         add v18.8H, v4.8H, v25.8H
         sub v4.8H, v4.8H, v25.8H
-    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         add x15, x13, #24
-    // WAVE8 common-loose removed: sqdmulh v22.8H, v4.8H, v0.H[1]
         sub x5, x15, #768
-    // WAVE8 common-loose removed: mls v17.8H, v5.8H, v0.H[0]
         cmp x15, x14
         ext v5.16B, v3.16B, v3.16B, #8
         str d3, [x16]
-    // WAVE8 common-loose removed: srshr v3.8H, v22.8H, #11
         csel x6, x5, x15, hs
-    // WAVE8 common-loose removed: sqdmulh v22.8H, v14.8H, v0.H[1]
         ldr x15, [sp, #module_ntt_STACK_LOC_0]
         str x6, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: srshr v22.8H, v22.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v25.8H, v18.8H, v0.H[1]
         add x12, x10, #768
         add x8, x7, #768
         add x3, x16, #768
         ldr x6, [sp, #module_ntt_STACK_LOC_0]
         add v26.8H, v8.8H, v2.8H
         sub v2.8H, v8.8H, v2.8H
-    // WAVE8 common-loose removed: srshr v8.8H, v25.8H, #11
         str x3, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: sqdmulh v25.8H, v26.8H, v0.H[1]
         add x5, x6, #24
         ldr x17, [sp, #module_ntt_STACK_LOC_0]
         str d17, [x11]
-    // WAVE8 common-loose removed: sqdmulh v27.8H, v2.8H, v0.H[1]
         cmp x5, x14
         str d5, [x17]
         add x17, x1, #768
-    // WAVE8 common-loose removed: sqdmulh v5.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v27.8H, v27.8H, #11
-    // WAVE8 common-loose removed: mls v18.8H, v8.8H, v0.H[0]
         str x17, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         ext v8.16B, v17.16B, v17.16B, #8
         sub x17, x5, #768
-    // WAVE8 common-loose removed: srshr v17.8H, v25.8H, #11
         csel x5, x17, x5, hs
-    // WAVE8 common-loose removed: mls v2.8H, v27.8H, v0.H[0]
         ldr x17, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: mls v14.8H, v22.8H, v0.H[0]
         str x5, [sp, #module_ntt_STACK_LOC_0]
         // G1+S2 removed ext: v22.16B <- v2.16B high half
         str d18, [x10]
         umov x16, v2.d[1]
         str x16, [x4]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v1.8H, v5.8H, v0.H[0]
         add x4, x13, #768
         // G1+S2 removed ext: v5.16B <- v18.16B high half
         str d2, [x9]
-    // WAVE8 common-loose removed: mls v26.8H, v17.8H, v0.H[0]
         ldr x16, [sp, #module_ntt_STACK_LOC_0]
         str x4, [sp, #module_ntt_STACK_LOC_0]
         add x16, x6, #768
         // G1+S2 removed ext: v2.16B <- v14.16B high half
-    // WAVE8 common-loose removed: mls v4.8H, v3.8H, v0.H[0]
         umov x11, v18.d[1]
         str x11, [x12]  // G1+S2 highhalf_umov_str
         str d14, [x6]
@@ -2700,25 +2555,18 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         add x8, x10, #24
         cmp x8, x14
         sub x2, x8, #768
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v17.8H, v0.H[1]
         csel x8, x2, x8, hs
         add x9, x8, #24
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v2.8H, v0.H[1]
         sub x13, x9, #768
         cmp x9, x14
         csel x13, x13, x9, hs
         mls v1.8H, v4.8H, v0.H[0]
         add x3, x13, #768
-    // WAVE8 common-loose removed: srshr v4.8H, v18.8H, #11
         mul v3.8H, v3.8H, v9.H[6]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v17.8H, v4.8H, v0.H[0]
         sub v4.8H, v5.8H, v10.8H
         add v5.8H, v5.8H, v10.8H
         add v9.8H, v20.8H, v1.8H
-    // WAVE8 common-loose removed: mls v2.8H, v6.8H, v0.H[0]
         sub v1.8H, v20.8H, v1.8H
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v9.8H, v0.H[1]
         // G1+S2 removed ext: v10.16B <- v17.16B high half
         str d17, [x10]
         mls v3.8H, v14.8H, v0.H[0]
@@ -2726,20 +2574,14 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         add x8, x8, #768
         umov x17, v17.d[1]
         str x17, [x4]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v10.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         // G1+S2 removed ext: v2.16B <- v2.16B high half
         umov x17, v2.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v9.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v6.8H, v10.8H, #11
-    // WAVE8 common-loose removed: mls v1.8H, v6.8H, v0.H[0]
         add v6.8H, v8.8H, v3.8H
         sub v3.8H, v8.8H, v3.8H
         str d9, [x13]
         add x13, x13, #24
         // G1+S2 removed ext: v2.16B <- v9.16B high half
-    // WAVE8 common-loose removed: sqdmulh v8.8H, v6.8H, v0.H[1]
         cmp x13, x14
         sub x8, x13, #768
         umov x17, v9.d[1]
@@ -2752,29 +2594,18 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         cmp x13, x14
         umov x17, v1.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v2.8H, v4.8H, v0.H[1]
         sub x16, x13, #768
-    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         csel x8, x16, x13, hs
-    // WAVE8 common-loose removed: sqdmulh v8.8H, v3.8H, v0.H[1]
         add x16, x8, #24
         cmp x16, x14
         sub x11, x16, #768
         csel x11, x11, x16, hs
-    // WAVE8 common-loose removed: mls v6.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
         add x13, x11, #24
         sub x16, x13, #768
-    // WAVE8 common-loose removed: sqdmulh v2.8H, v5.8H, v0.H[1]
         cmp x13, x14
         csel x13, x16, x13, hs
-    // WAVE8 common-loose removed: mls v4.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         add x6, x13, #768
         str d6, [x8]
-    // WAVE8 common-loose removed: mls v3.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
-    // WAVE8 common-loose removed: mls v5.8H, v1.8H, v0.H[0]
         // G1+S2 removed ext: v1.16B <- v3.16B high half
         str d3, [x11]
         add x11, x11, #768
@@ -2874,7 +2705,6 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mls v1.8H, v4.8H, v0.H[0]
         add v19.8H, v6.8H, v9.8H
         sub v9.8H, v6.8H, v9.8H
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v19.8H, v0.H[1]
         add x4, x10, #24
         cmp x4, x14
         sub x8, x4, #768
@@ -2884,28 +2714,19 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mul v11.8H, v26.8H, v11.H[2]
         cmp x15, x14
         sub x11, x15, #768
-    // WAVE8 common-loose removed: srshr v28.8H, v14.8H, #11
         csel x7, x11, x15, hs
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
         add x11, x7, #768
         add v10.8H, v25.8H, v21.8H
-    // WAVE8 common-loose removed: mls v19.8H, v28.8H, v0.H[0]
         sub v28.8H, v31.8H, v1.8H
         add v1.8H, v31.8H, v1.8H
         sqrdmulh v3.8H, v26.8H, v3.H[2]
-    // WAVE8 common-loose removed: srshr v26.8H, v14.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v10.8H, v0.H[1]
         str d19, [x10]
         ext v6.16B, v19.16B, v19.16B, #8
-    // WAVE8 common-loose removed: mls v9.8H, v26.8H, v0.H[0]
         sub v19.8H, v25.8H, v21.8H
         add x16, x10, #768
         str d6, [x16]
         add x16, x7, #24
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
         cmp x16, x14
-    // WAVE8 common-loose removed: srshr v21.8H, v14.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v1.8H, v0.H[1]
         // G1+S2 removed ext: v14.16B <- v9.16B high half
         str d9, [x8]
         mls v11.8H, v3.8H, v0.H[0]
@@ -2913,35 +2734,23 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub x8, x16, #768
         umov x17, v9.d[1]
         str x17, [x1]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: srshr v14.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v10.8H, v21.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
-    // WAVE8 common-loose removed: mls v19.8H, v14.8H, v0.H[0]
         sub v14.8H, v12.8H, v11.8H
         add v11.8H, v12.8H, v11.8H
         str d10, [x7]
         // G1+S2 removed ext: v6.16B <- v10.16B high half
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v11.8H, v0.H[1]
         umov x17, v10.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
         csel x11, x8, x16, hs
         str d19, [x11]
-    // WAVE8 common-loose removed: sqdmulh v30.8H, v14.8H, v0.H[1]
         add x16, x11, #24
         add x6, x11, #768
         cmp x16, x14
         sub x3, x16, #768
-    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         csel x11, x3, x16, hs
-    // WAVE8 common-loose removed: srshr v6.8H, v18.8H, #11
         add x8, x11, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v28.8H, v0.H[1]
         umov x17, v19.d[1]
         str x17, [x6]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v11.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
-    // WAVE8 common-loose removed: srshr v18.8H, v30.8H, #11
         str d11, [x11]
         // G1+S2 removed ext: v11.16B <- v11.16B high half
         add x11, x11, #24
@@ -2949,12 +2758,10 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub x0, x11, #768
         umov x17, v11.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v14.8H, v18.8H, v0.H[0]
         csel x16, x0, x11, hs
         // G1+S2 removed ext: v18.16B <- v1.16B high half
         add x0, x16, #24
         add x11, x16, #768
-    // WAVE8 common-loose removed: mls v28.8H, v26.8H, v0.H[0]
         cmp x0, x14
         sub x3, x0, #768
         csel x3, x3, x0, hs
@@ -3059,75 +2866,51 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mls v1.8H, v6.8H, v0.H[0]
         csel x8, x8, x4, hs
         add x16, x8, #768
-    // WAVE8 common-loose removed: sqdmulh v26.8H, v2.8H, v0.H[1]
         sqrdmulh v8.8H, v29.8H, v8.H[6]
         sub v19.8H, v13.8H, v1.8H
         add v10.8H, v13.8H, v1.8H
         mul v1.8H, v29.8H, v3.H[6]
-    // WAVE8 common-loose removed: srshr v15.8H, v26.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
-    // WAVE8 common-loose removed: sqdmulh v3.8H, v10.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v2.8H, v15.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v14.8H, v14.8H, #11
         mls v1.8H, v8.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v18.8H, v3.8H, #11
-    // WAVE8 common-loose removed: mls v19.8H, v6.8H, v0.H[0]
         sub v3.8H, v30.8H, v20.8H
         str d2, [x8]
         // G1+S2 removed ext: v2.16B <- v2.16B high half
-    // WAVE8 common-loose removed: mls v9.8H, v14.8H, v0.H[0]
         umov x17, v2.d[1]
         str x17, [x16]  // G1+S2 highhalf_umov_str
         add x16, x8, #24
-    // WAVE8 common-loose removed: mls v10.8H, v18.8H, v0.H[0]
         add v12.8H, v28.8H, v1.8H
         cmp x16, x14
         sub x11, x16, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
         csel x8, x11, x16, hs
         sub v14.8H, v28.8H, v1.8H
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v12.8H, v0.H[1]
         add x3, x8, #24
         add x11, x10, #768
         str d9, [x10]
         add v1.8H, v30.8H, v20.8H
         sub x16, x3, #768
         // G1+S2 removed ext: v18.16B <- v9.16B high half
-    // WAVE8 common-loose removed: sqdmulh v24.8H, v14.8H, v0.H[1]
         cmp x3, x14
         str d10, [x8]
         // G1+S2 removed ext: v10.16B <- v10.16B high half
         add x8, x8, #768
         umov x17, v9.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         csel x3, x16, x3, hs
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         umov x17, v10.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
         add x8, x3, #768
         umov x17, v19.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v26.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v24.8H, v24.8H, #11
         str d19, [x3]
         add x3, x3, #24
         cmp x3, x14
-    // WAVE8 common-loose removed: mls v12.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v30.8H, v18.8H, #11
         sub x8, x3, #768
-    // WAVE8 common-loose removed: mls v14.8H, v24.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v26.8H, #11
         csel x3, x8, x3, hs
         add x8, x3, #24
-    // WAVE8 common-loose removed: mls v3.8H, v30.8H, v0.H[0]
         cmp x8, x14
         // G1+S2 removed ext: v18.16B <- v12.16B high half
         str d12, [x3]
         add x3, x3, #768
-    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         umov x17, v12.d[1]
         str x17, [x3]  // G1+S2 highhalf_umov_str
         // G1+S2 removed ext: v26.16B <- v14.16B high half
@@ -3186,9 +2969,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #1024] omitted: E3 block0 Q0.
-    // str q10, [x21, #1152] omitted: E3 block1 Q8.
-    // str q7, [x21, #1280] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #1408]     // block3 Q24
 
     // Stage12 row2 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -3209,9 +2990,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #1040] omitted: E3 block0 Q1.
-    // str q20, [x21, #1168] omitted: E3 block1 Q9.
-    // str q11, [x21, #1296] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1424]     // block3 Q25
 
     // Stage12 row2 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -3232,9 +3011,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #1056] omitted: E3 block0 Q2.
-    // str q30, [x21, #1184] omitted: E3 block1 Q10.
-    // str q12, [x21, #1312] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1440]     // block3 Q26
 
     // Stage12 row2 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -3255,9 +3032,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #1072] omitted: E3 block0 Q3.
-    // str q24, [x21, #1200] omitted: E3 block1 Q11.
-    // str q13, [x21, #1328] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1456]     // block3 Q27
 
     // Stage12 row2 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -3278,9 +3053,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #1088] omitted: E3 block0 Q4.
-    // str q9, [x21, #1216] omitted: E3 block1 Q12.
-    // str q15, [x21, #1344] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1472]     // block3 Q28
 
     // Stage12 row2 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -3301,9 +3074,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #1104] omitted: E3 block0 Q5.
-    // str q6, [x21, #1232] omitted: E3 block1 Q13.
-    // str q16, [x21, #1360] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #1488]     // block3 Q29
 
     // Stage12 row2 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -3324,9 +3095,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #1120] omitted: E3 block0 Q6.
-    // str q31, [x21, #1248] omitted: E3 block1 Q14.
-    // str q21, [x21, #1376] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #1504]     // block3 Q30
 
     // Stage12 row2 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -3347,9 +3116,7 @@ module_ntt_.Lgt_shared_core_generic_suffix:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #1136] omitted: E3 block0 Q7.
-    // str q23, [x21, #1264] omitted: E3 block1 Q15.
-    // str q19, [x21, #1392] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #1520]     // block3 Q31
 
 .Lencap_lazy_join2:
@@ -3436,74 +3203,50 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub v14.8H, v28.8H, v1.8H
         csel x13, x13, x3, hs
         add v17.8H, v27.8H, v18.8H
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         add v1.8H, v28.8H, v1.8H
         add v4.8H, v5.8H, v4.8H
         add x15, x11, #768
-    // WAVE8 common-loose removed: sqdmulh v5.8H, v17.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v18.8H, v18.8H, #11
-    // WAVE8 common-loose removed: mls v3.8H, v18.8H, v0.H[0]
         str x15, [sp, #module_ntt_STACK_LOC_0]
         add v18.8H, v4.8H, v25.8H
         sub v4.8H, v4.8H, v25.8H
-    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         add x15, x13, #24
-    // WAVE8 common-loose removed: sqdmulh v22.8H, v4.8H, v0.H[1]
         sub x5, x15, #768
-    // WAVE8 common-loose removed: mls v17.8H, v5.8H, v0.H[0]
         cmp x15, x14
         ext v5.16B, v3.16B, v3.16B, #8
         str d3, [x16]
-    // WAVE8 common-loose removed: srshr v3.8H, v22.8H, #11
         csel x6, x5, x15, hs
-    // WAVE8 common-loose removed: sqdmulh v22.8H, v14.8H, v0.H[1]
         ldr x15, [sp, #module_ntt_STACK_LOC_0]
         str x6, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: srshr v22.8H, v22.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v25.8H, v18.8H, v0.H[1]
         add x12, x10, #768
         add x8, x7, #768
         add x3, x16, #768
         ldr x6, [sp, #module_ntt_STACK_LOC_0]
         add v26.8H, v8.8H, v2.8H
         sub v2.8H, v8.8H, v2.8H
-    // WAVE8 common-loose removed: srshr v8.8H, v25.8H, #11
         str x3, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: sqdmulh v25.8H, v26.8H, v0.H[1]
         add x5, x6, #24
         ldr x17, [sp, #module_ntt_STACK_LOC_0]
         str d17, [x11]
-    // WAVE8 common-loose removed: sqdmulh v27.8H, v2.8H, v0.H[1]
         cmp x5, x14
         str d5, [x17]
         add x17, x1, #768
-    // WAVE8 common-loose removed: sqdmulh v5.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v27.8H, v27.8H, #11
-    // WAVE8 common-loose removed: mls v18.8H, v8.8H, v0.H[0]
         str x17, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: srshr v5.8H, v5.8H, #11
         ext v8.16B, v17.16B, v17.16B, #8
         sub x17, x5, #768
-    // WAVE8 common-loose removed: srshr v17.8H, v25.8H, #11
         csel x5, x17, x5, hs
-    // WAVE8 common-loose removed: mls v2.8H, v27.8H, v0.H[0]
         ldr x17, [sp, #module_ntt_STACK_LOC_0]
-    // WAVE8 common-loose removed: mls v14.8H, v22.8H, v0.H[0]
         str x5, [sp, #module_ntt_STACK_LOC_0]
         // G1+S2 removed ext: v22.16B <- v2.16B high half
         str d18, [x10]
         umov x16, v2.d[1]
         str x16, [x4]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v1.8H, v5.8H, v0.H[0]
         add x4, x13, #768
         // G1+S2 removed ext: v5.16B <- v18.16B high half
         str d2, [x9]
-    // WAVE8 common-loose removed: mls v26.8H, v17.8H, v0.H[0]
         ldr x16, [sp, #module_ntt_STACK_LOC_0]
         str x4, [sp, #module_ntt_STACK_LOC_0]
         add x16, x6, #768
         // G1+S2 removed ext: v2.16B <- v14.16B high half
-    // WAVE8 common-loose removed: mls v4.8H, v3.8H, v0.H[0]
         umov x11, v18.d[1]
         str x11, [x12]  // G1+S2 highhalf_umov_str
         str d14, [x6]
@@ -3590,25 +3333,18 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         add x8, x10, #24
         cmp x8, x14
         sub x2, x8, #768
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v17.8H, v0.H[1]
         csel x8, x2, x8, hs
         add x9, x8, #24
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v2.8H, v0.H[1]
         sub x13, x9, #768
         cmp x9, x14
         csel x13, x13, x9, hs
         mls v1.8H, v4.8H, v0.H[0]
         add x3, x13, #768
-    // WAVE8 common-loose removed: srshr v4.8H, v18.8H, #11
         mul v3.8H, v3.8H, v9.H[6]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v17.8H, v4.8H, v0.H[0]
         sub v4.8H, v5.8H, v10.8H
         add v5.8H, v5.8H, v10.8H
         add v9.8H, v20.8H, v1.8H
-    // WAVE8 common-loose removed: mls v2.8H, v6.8H, v0.H[0]
         sub v1.8H, v20.8H, v1.8H
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v9.8H, v0.H[1]
         // G1+S2 removed ext: v10.16B <- v17.16B high half
         str d17, [x10]
         mls v3.8H, v14.8H, v0.H[0]
@@ -3616,20 +3352,14 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         add x8, x8, #768
         umov x17, v17.d[1]
         str x17, [x4]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v10.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         // G1+S2 removed ext: v2.16B <- v2.16B high half
         umov x17, v2.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v9.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v6.8H, v10.8H, #11
-    // WAVE8 common-loose removed: mls v1.8H, v6.8H, v0.H[0]
         add v6.8H, v8.8H, v3.8H
         sub v3.8H, v8.8H, v3.8H
         str d9, [x13]
         add x13, x13, #24
         // G1+S2 removed ext: v2.16B <- v9.16B high half
-    // WAVE8 common-loose removed: sqdmulh v8.8H, v6.8H, v0.H[1]
         cmp x13, x14
         sub x8, x13, #768
         umov x17, v9.d[1]
@@ -3642,29 +3372,18 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         cmp x13, x14
         umov x17, v1.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v2.8H, v4.8H, v0.H[1]
         sub x16, x13, #768
-    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         csel x8, x16, x13, hs
-    // WAVE8 common-loose removed: sqdmulh v8.8H, v3.8H, v0.H[1]
         add x16, x8, #24
         cmp x16, x14
         sub x11, x16, #768
         csel x11, x11, x16, hs
-    // WAVE8 common-loose removed: mls v6.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
         add x13, x11, #24
         sub x16, x13, #768
-    // WAVE8 common-loose removed: sqdmulh v2.8H, v5.8H, v0.H[1]
         cmp x13, x14
         csel x13, x16, x13, hs
-    // WAVE8 common-loose removed: mls v4.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v8.8H, #11
         add x6, x13, #768
         str d6, [x8]
-    // WAVE8 common-loose removed: mls v3.8H, v1.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v1.8H, v2.8H, #11
-    // WAVE8 common-loose removed: mls v5.8H, v1.8H, v0.H[0]
         // G1+S2 removed ext: v1.16B <- v3.16B high half
         str d3, [x11]
         add x11, x11, #768
@@ -3764,7 +3483,6 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mls v1.8H, v4.8H, v0.H[0]
         add v19.8H, v6.8H, v9.8H
         sub v9.8H, v6.8H, v9.8H
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v19.8H, v0.H[1]
         add x4, x10, #24
         cmp x4, x14
         sub x8, x4, #768
@@ -3774,28 +3492,19 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mul v11.8H, v26.8H, v11.H[2]
         cmp x15, x14
         sub x11, x15, #768
-    // WAVE8 common-loose removed: srshr v28.8H, v14.8H, #11
         csel x7, x11, x15, hs
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
         add x11, x7, #768
         add v10.8H, v25.8H, v21.8H
-    // WAVE8 common-loose removed: mls v19.8H, v28.8H, v0.H[0]
         sub v28.8H, v31.8H, v1.8H
         add v1.8H, v31.8H, v1.8H
         sqrdmulh v3.8H, v26.8H, v3.H[2]
-    // WAVE8 common-loose removed: srshr v26.8H, v14.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v10.8H, v0.H[1]
         str d19, [x10]
         ext v6.16B, v19.16B, v19.16B, #8
-    // WAVE8 common-loose removed: mls v9.8H, v26.8H, v0.H[0]
         sub v19.8H, v25.8H, v21.8H
         add x16, x10, #768
         str d6, [x16]
         add x16, x7, #24
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
         cmp x16, x14
-    // WAVE8 common-loose removed: srshr v21.8H, v14.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v1.8H, v0.H[1]
         // G1+S2 removed ext: v14.16B <- v9.16B high half
         str d9, [x8]
         mls v11.8H, v3.8H, v0.H[0]
@@ -3803,35 +3512,23 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub x8, x16, #768
         umov x17, v9.d[1]
         str x17, [x1]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: srshr v14.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v10.8H, v21.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
-    // WAVE8 common-loose removed: mls v19.8H, v14.8H, v0.H[0]
         sub v14.8H, v12.8H, v11.8H
         add v11.8H, v12.8H, v11.8H
         str d10, [x7]
         // G1+S2 removed ext: v6.16B <- v10.16B high half
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v11.8H, v0.H[1]
         umov x17, v10.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
         csel x11, x8, x16, hs
         str d19, [x11]
-    // WAVE8 common-loose removed: sqdmulh v30.8H, v14.8H, v0.H[1]
         add x16, x11, #24
         add x6, x11, #768
         cmp x16, x14
         sub x3, x16, #768
-    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         csel x11, x3, x16, hs
-    // WAVE8 common-loose removed: srshr v6.8H, v18.8H, #11
         add x8, x11, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v28.8H, v0.H[1]
         umov x17, v19.d[1]
         str x17, [x6]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v11.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v18.8H, #11
-    // WAVE8 common-loose removed: srshr v18.8H, v30.8H, #11
         str d11, [x11]
         // G1+S2 removed ext: v11.16B <- v11.16B high half
         add x11, x11, #24
@@ -3839,12 +3536,10 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         sub x0, x11, #768
         umov x17, v11.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: mls v14.8H, v18.8H, v0.H[0]
         csel x16, x0, x11, hs
         // G1+S2 removed ext: v18.16B <- v1.16B high half
         add x0, x16, #24
         add x11, x16, #768
-    // WAVE8 common-loose removed: mls v28.8H, v26.8H, v0.H[0]
         cmp x0, x14
         sub x3, x0, #768
         csel x3, x3, x0, hs
@@ -3949,75 +3644,51 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         mls v1.8H, v6.8H, v0.H[0]
         csel x8, x8, x4, hs
         add x16, x8, #768
-    // WAVE8 common-loose removed: sqdmulh v26.8H, v2.8H, v0.H[1]
         sqrdmulh v8.8H, v29.8H, v8.H[6]
         sub v19.8H, v13.8H, v1.8H
         add v10.8H, v13.8H, v1.8H
         mul v1.8H, v29.8H, v3.H[6]
-    // WAVE8 common-loose removed: srshr v15.8H, v26.8H, #11
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v19.8H, v0.H[1]
-    // WAVE8 common-loose removed: sqdmulh v14.8H, v9.8H, v0.H[1]
-    // WAVE8 common-loose removed: sqdmulh v3.8H, v10.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
-    // WAVE8 common-loose removed: mls v2.8H, v15.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v14.8H, v14.8H, #11
         mls v1.8H, v8.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v18.8H, v3.8H, #11
-    // WAVE8 common-loose removed: mls v19.8H, v6.8H, v0.H[0]
         sub v3.8H, v30.8H, v20.8H
         str d2, [x8]
         // G1+S2 removed ext: v2.16B <- v2.16B high half
-    // WAVE8 common-loose removed: mls v9.8H, v14.8H, v0.H[0]
         umov x17, v2.d[1]
         str x17, [x16]  // G1+S2 highhalf_umov_str
         add x16, x8, #24
-    // WAVE8 common-loose removed: mls v10.8H, v18.8H, v0.H[0]
         add v12.8H, v28.8H, v1.8H
         cmp x16, x14
         sub x11, x16, #768
         // G1+S2 removed ext: v26.16B <- v19.16B high half
         csel x8, x11, x16, hs
         sub v14.8H, v28.8H, v1.8H
-    // WAVE8 common-loose removed: sqdmulh v6.8H, v12.8H, v0.H[1]
         add x3, x8, #24
         add x11, x10, #768
         str d9, [x10]
         add v1.8H, v30.8H, v20.8H
         sub x16, x3, #768
         // G1+S2 removed ext: v18.16B <- v9.16B high half
-    // WAVE8 common-loose removed: sqdmulh v24.8H, v14.8H, v0.H[1]
         cmp x3, x14
         str d10, [x8]
         // G1+S2 removed ext: v10.16B <- v10.16B high half
         add x8, x8, #768
         umov x17, v9.d[1]
         str x17, [x11]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v18.8H, v3.8H, v0.H[1]
         csel x3, x16, x3, hs
-    // WAVE8 common-loose removed: srshr v6.8H, v6.8H, #11
         umov x17, v10.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
         add x8, x3, #768
         umov x17, v19.d[1]
         str x17, [x8]  // G1+S2 highhalf_umov_str
-    // WAVE8 common-loose removed: sqdmulh v26.8H, v1.8H, v0.H[1]
-    // WAVE8 common-loose removed: srshr v24.8H, v24.8H, #11
         str d19, [x3]
         add x3, x3, #24
         cmp x3, x14
-    // WAVE8 common-loose removed: mls v12.8H, v6.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v30.8H, v18.8H, #11
         sub x8, x3, #768
-    // WAVE8 common-loose removed: mls v14.8H, v24.8H, v0.H[0]
-    // WAVE8 common-loose removed: srshr v26.8H, v26.8H, #11
         csel x3, x8, x3, hs
         add x8, x3, #24
-    // WAVE8 common-loose removed: mls v3.8H, v30.8H, v0.H[0]
         cmp x8, x14
         // G1+S2 removed ext: v18.16B <- v12.16B high half
         str d12, [x3]
         add x3, x3, #768
-    // WAVE8 common-loose removed: mls v1.8H, v26.8H, v0.H[0]
         umov x17, v12.d[1]
         str x17, [x3]  // G1+S2 highhalf_umov_str
         // G1+S2 removed ext: v26.16B <- v14.16B high half
@@ -4050,8 +3721,8 @@ module_ntt_.Lgt_shared_core_generic_suffix:
         cmp x7, x14
         csel x13, x13, x7, hs
 
-    b module_ntt_.Lgt_shared_core_epilogue
-module_ntt_.Lgt_shared_core_cq_suffix:
+    b .Lmodule_ntt_gt_shared_core_epilogue
+.Lmodule_ntt_gt_shared_core_cq_suffix:
     // ---- row0: Stage12 one-pass block0+block1+block2 live-out ----
     ldr q2, [x23, #16]
     ldr q3, [x23, #32]
@@ -4075,9 +3746,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #0] omitted: E3 block0 Q0.
-    // str q10, [x21, #128] omitted: E3 block1 Q8.
-    // str q7, [x21, #256] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #384]     // block3 Q24
 
     // Stage12 row0 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -4098,9 +3767,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #16] omitted: E3 block0 Q1.
-    // str q20, [x21, #144] omitted: E3 block1 Q9.
-    // str q11, [x21, #272] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #400]     // block3 Q25
 
     // Stage12 row0 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -4121,9 +3788,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #32] omitted: E3 block0 Q2.
-    // str q30, [x21, #160] omitted: E3 block1 Q10.
-    // str q12, [x21, #288] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #416]     // block3 Q26
 
     // Stage12 row0 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -4144,9 +3809,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #48] omitted: E3 block0 Q3.
-    // str q24, [x21, #176] omitted: E3 block1 Q11.
-    // str q13, [x21, #304] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #432]     // block3 Q27
 
     // Stage12 row0 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -4167,9 +3830,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #64] omitted: E3 block0 Q4.
-    // str q9, [x21, #192] omitted: E3 block1 Q12.
-    // str q15, [x21, #320] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #448]     // block3 Q28
 
     // Stage12 row0 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -4190,9 +3851,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #80] omitted: E3 block0 Q5.
-    // str q6, [x21, #208] omitted: E3 block1 Q13.
-    // str q16, [x21, #336] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #464]     // block3 Q29
 
     // Stage12 row0 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -4213,9 +3872,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #96] omitted: E3 block0 Q6.
-    // str q31, [x21, #224] omitted: E3 block1 Q14.
-    // str q21, [x21, #352] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #480]     // block3 Q30
 
     // Stage12 row0 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -4236,9 +3893,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #112] omitted: E3 block0 Q7.
-    // str q23, [x21, #240] omitted: E3 block1 Q15.
-    // str q19, [x21, #368] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #496]     // block3 Q31
 
     // ---- row0: Stage345 block0 from live handoff ----
@@ -4989,9 +4644,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #512] omitted: E3 block0 Q0.
-    // str q10, [x21, #640] omitted: E3 block1 Q8.
-    // str q7, [x21, #768] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #896]     // block3 Q24
 
     // Stage12 row1 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -5012,9 +4665,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #528] omitted: E3 block0 Q1.
-    // str q20, [x21, #656] omitted: E3 block1 Q9.
-    // str q11, [x21, #784] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #912]     // block3 Q25
 
     // Stage12 row1 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -5035,9 +4686,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #544] omitted: E3 block0 Q2.
-    // str q30, [x21, #672] omitted: E3 block1 Q10.
-    // str q12, [x21, #800] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #928]     // block3 Q26
 
     // Stage12 row1 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -5058,9 +4707,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #560] omitted: E3 block0 Q3.
-    // str q24, [x21, #688] omitted: E3 block1 Q11.
-    // str q13, [x21, #816] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #944]     // block3 Q27
 
     // Stage12 row1 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -5081,9 +4728,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #576] omitted: E3 block0 Q4.
-    // str q9, [x21, #704] omitted: E3 block1 Q12.
-    // str q15, [x21, #832] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #960]     // block3 Q28
 
     // Stage12 row1 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -5104,9 +4749,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #592] omitted: E3 block0 Q5.
-    // str q6, [x21, #720] omitted: E3 block1 Q13.
-    // str q16, [x21, #848] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #976]     // block3 Q29
 
     // Stage12 row1 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -5127,9 +4770,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #608] omitted: E3 block0 Q6.
-    // str q31, [x21, #736] omitted: E3 block1 Q14.
-    // str q21, [x21, #864] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #992]     // block3 Q30
 
     // Stage12 row1 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -5150,9 +4791,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #624] omitted: E3 block0 Q7.
-    // str q23, [x21, #752] omitted: E3 block1 Q15.
-    // str q19, [x21, #880] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #1008]     // block3 Q31
 
     // ---- row1: Stage345 block0 from live handoff ----
@@ -5903,9 +5542,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #1024] omitted: E3 block0 Q0.
-    // str q10, [x21, #1152] omitted: E3 block1 Q8.
-    // str q7, [x21, #1280] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #1408]     // block3 Q24
 
     // Stage12 row2 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -5926,9 +5563,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #1040] omitted: E3 block0 Q1.
-    // str q20, [x21, #1168] omitted: E3 block1 Q9.
-    // str q11, [x21, #1296] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1424]     // block3 Q25
 
     // Stage12 row2 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -5949,9 +5584,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #1056] omitted: E3 block0 Q2.
-    // str q30, [x21, #1184] omitted: E3 block1 Q10.
-    // str q12, [x21, #1312] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1440]     // block3 Q26
 
     // Stage12 row2 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -5972,9 +5605,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #1072] omitted: E3 block0 Q3.
-    // str q24, [x21, #1200] omitted: E3 block1 Q11.
-    // str q13, [x21, #1328] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1456]     // block3 Q27
 
     // Stage12 row2 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -5995,9 +5626,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #1088] omitted: E3 block0 Q4.
-    // str q9, [x21, #1216] omitted: E3 block1 Q12.
-    // str q15, [x21, #1344] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1472]     // block3 Q28
 
     // Stage12 row2 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -6018,9 +5647,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #1104] omitted: E3 block0 Q5.
-    // str q6, [x21, #1232] omitted: E3 block1 Q13.
-    // str q16, [x21, #1360] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #1488]     // block3 Q29
 
     // Stage12 row2 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -6041,9 +5668,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #1120] omitted: E3 block0 Q6.
-    // str q31, [x21, #1248] omitted: E3 block1 Q14.
-    // str q21, [x21, #1376] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #1504]     // block3 Q30
 
     // Stage12 row2 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -6064,9 +5689,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #1136] omitted: E3 block0 Q7.
-    // str q23, [x21, #1264] omitted: E3 block1 Q15.
-    // str q19, [x21, #1392] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #1520]     // block3 Q31
 
     // ---- row2: Stage345 block0 from live handoff ----
@@ -6794,7 +6417,7 @@ module_ntt_.Lgt_shared_core_cq_suffix:
         cmp x7, x14
         csel x13, x13, x7, hs
 
-module_ntt_.Lgt_shared_core_epilogue:
+.Lmodule_ntt_gt_shared_core_epilogue:
     ldp d14, d15, [sp, #112]
     ldp d12, d13, [sp, #96]
     ldp d10, d11, [sp, #80]
@@ -6804,24 +6427,20 @@ module_ntt_.Lgt_shared_core_epilogue:
     ldp x19, x20, [sp, #16]
     add sp, sp, #1696
     ret
-module_ntt_.Lgt_shared_core_end:
+.Lmodule_ntt_gt_shared_core_end:
 #ifndef __APPLE__
-.size poly_ntt_loose, module_ntt_.Lgt_shared_core_end-poly_ntt_loose
-.size poly_ntt_keygen_cq, module_ntt_.Lgt_shared_core_end-poly_ntt_keygen_cq
+.size poly_ntt_loose, .Lmodule_ntt_gt_shared_core_end-poly_ntt_loose
+.size poly_ntt_keygen_cq, .Lmodule_ntt_gt_shared_core_end-poly_ntt_keygen_cq
 #endif
-/* Retained boundary symbol for external audit tooling. */
-.global gt_internal_poly_ntt_loose_end
-gt_internal_poly_ntt_loose_end:
 
-/* Generated by experiments/forward_ntt_phase123_u01/generate_u01_block_first_artifacts.py. */
-/* Do not edit by hand. */
+/* Generated constant table; do not edit by hand. */
 
 .align 4
-module_ntt_u01_block_first_zetas:
+.Lmodule_ntt_u01_block_first_zetas:
     .hword 3457, 19412, -723, -6853, -722, -6844, 0, 0
 
 .align 4
-module_ntt_u01_block_first_twist_table:
+.Lmodule_ntt_u01_block_first_twist_table:
     .hword 1, 1, 1, 1, 1100, 1100, 1100, 1100
     .hword 9, 9, 9, 9, 10427, 10427, 10427, 10427
     .hword 50, 50, 50, 50, -312, -312, -312, -312
@@ -7016,7 +6635,7 @@ module_ntt_u01_block_first_twist_table:
     .hword 5393, 5393, 5393, 5393, -13687, -13687, -13687, -13687
 
 .align 4
-module_ntt_u01_block_first_gt_ntt32_batch8_twiddle_vecs:
+.Lmodule_ntt_u01_block_first_gt_ntt32_batch8_twiddle_vecs:
     .hword 1, -1673, -1241, -1464, 1716, -1558, -44, 1015
     .hword 9, -15858, -11763, -13877, 16266, -14768, -417, 9621
     .hword -708, -1267, 550, -588, -1521, 281, 39, 436
@@ -7038,16 +6657,14 @@ module_ntt_u01_block_first_gt_ntt32_batch8_twiddle_vecs:
  * and the block-major loose output contract are identical to generic NTT.
  * Mode 2 is saved before x2 is reused as a table pointer above.
  */
-.global poly_ntt_encap_small
-.global _poly_ntt_encap_small
+.global C_SYM(poly_ntt_encap_small)
 #ifndef __APPLE__
 .type poly_ntt_encap_small, %function
 #endif
-poly_ntt_encap_small:
-_poly_ntt_encap_small:
+C_SYM(poly_ntt_encap_small):
     mov w2, #2
-    b module_ntt_.Lgt_shared_core_entry
-module_ntt_.Lencap_small_front:
+    b .Lmodule_ntt_gt_shared_core_entry
+.Lmodule_ntt_encap_small_front:
     add x1, x20, #0
     add x3, x22, #0
     add x4, x21, #0
@@ -8263,7 +7880,7 @@ module_ntt_.Lencap_small_front:
         str q10, [x5, #48]
         str q11, [x6, #48]
 
-    b module_ntt_.Lntt_endpoint_suffix
+    b .Lmodule_ntt_ntt_endpoint_suffix
 
 /* End section: ntt.S */
 
@@ -8411,7 +8028,7 @@ module_ntt_.Lencap_small_front:
 .endm
 
 .macro module_decap_invntt_DIRECT_STAGE123_CONSTS
-    adr x7, module_decap_invntt_invntt32_stage123_consts
+    adr x7, .Lmodule_decap_invntt_invntt32_stage123_consts
     ldr q1, [x7]
     ldr q2, [x7, #16]
 .endm
@@ -8466,11 +8083,11 @@ module_ntt_.Lencap_small_front:
 
 .macro module_decap_invntt_RUN_INVNTT32_STAGE45_SCRATCH_ROW
     /*
-     * Slothy N1 schedule for all eight stage45 stripes as one row kernel.
+     * Scheduled stage45 row kernel: all eight stripes of one row.
      * Contract: x14 = stage123 stripe scratch, x2 = row output buffer,
      * v0 = q/reduction constants.  x3 is set here to the stage45 const base.
      */
-    adr x3, module_decap_invntt_invntt32_stage45_consts
+    adr x3, .Lmodule_decap_invntt_invntt32_stage45_consts
         ldr q14, [x3, #16]
         ldr q17, [x14, #48]
         ldr q8, [x14, #0]
@@ -8847,16 +8464,14 @@ module_ntt_.Lencap_small_front:
     ldp d14, d15, [x16, #48]
 .endm
 
-	.global poly_invntt_ternary_decap
-	.global _poly_invntt_ternary_decap
+	.global C_SYM(poly_invntt_ternary_decap)
 
-poly_invntt_ternary_decap:
-_poly_invntt_ternary_decap:
+C_SYM(poly_invntt_ternary_decap):
     sub sp, sp, #module_decap_invntt_INVNTT_STACK_SIZE
     str x30, [sp, #64]
     module_decap_invntt_INVNTT_SAVE_CALLEE_SAVED_SIMD
 
-    adr x3, module_decap_invntt_inv_consts
+    adr x3, .Lmodule_decap_invntt_inv_consts
     ldr q0, [x3]
 
     mov x3, x0
@@ -8869,7 +8484,7 @@ _poly_invntt_ternary_decap:
      *          q0 = q / Barrett constants.
      * live-out: row0 natural-order stage45 output at [x2].
      */
-    bl module_decap_invntt_.Linvntt32_stage45_scratch_row_helper
+    bl .Lmodule_decap_invntt_invntt32_stage45_scratch_row_helper
 
     mov x3, x0
     add x2, x1, #512
@@ -8880,7 +8495,7 @@ _poly_invntt_ternary_decap:
      *          q0 = q / Barrett constants.
      * live-out: row1 natural-order stage45 output at [x2].
      */
-    bl module_decap_invntt_.Linvntt32_stage45_scratch_row_helper
+    bl .Lmodule_decap_invntt_invntt32_stage45_scratch_row_helper
 
     mov x3, x0
     add x2, x1, #1024
@@ -8891,16 +8506,15 @@ _poly_invntt_ternary_decap:
      *          q0 = q / Barrett constants.
      * live-out: row2 natural-order stage45 output at [x2].
      */
-    bl module_decap_invntt_.Linvntt32_stage45_scratch_row_helper
+    bl .Lmodule_decap_invntt_invntt32_stage45_scratch_row_helper
 
-	module_decap_invntt_L_invntt_post_tail:
     mov w9, #10923
     dup v25.8h, w9
     movi v26.8h, #3
     add x8, x1, #0
     add x9, x1, #512
     add x10, x1, #1024
-    adr x3, module_decap_invntt_inv_branchfold_vecs
+    adr x3, .Lmodule_decap_invntt_inv_branchfold_vecs
 
     add x11, x0, #0
     add x12, x0, #512
@@ -8913,22 +8527,22 @@ _poly_invntt_ternary_decap:
     ret
 
 .p2align 4
-module_decap_invntt_.Linvntt32_stage45_scratch_row_helper:
+.Lmodule_decap_invntt_invntt32_stage45_scratch_row_helper:
     module_decap_invntt_RUN_INVNTT32_STAGE45_SCRATCH_ROW
     ret
 
 .align 4
-module_decap_invntt_inv_consts:
+.Lmodule_decap_invntt_inv_consts:
     .hword 3457, 19412, -723, -6853, 1634, 15488, -18, -171
     .hword -36, -341, 1701, 16123, 0, 0, 0, 0
 
 .align 4
-module_decap_invntt_invntt32_stage123_consts:
+.Lmodule_decap_invntt_invntt32_stage123_consts:
     .hword      1,    708,   1521,    708,  -1716,      0,      0,      0
     .hword      9,   6711,  14417,   6711, -16266,      0,      0,      0
 
 .align 4
-module_decap_invntt_invntt32_stage45_consts:
+.Lmodule_decap_invntt_invntt32_stage45_consts:
     // j=0: len16[j], len32[j], len32[j+8] normal multipliers and precompute
     .hword      1,      1,    708,      0,      0,      0,      0,      0
     .hword      9,      9,   6711,      0,      0,      0,      0,      0
@@ -8957,7 +8571,7 @@ module_decap_invntt_invntt32_stage45_consts:
 .align 4
 
 .align 4
-module_decap_invntt_inv_branchfold_vecs:
+.Lmodule_decap_invntt_inv_branchfold_vecs:
 /* Branchfold constants (untwist, branch merge, 1/96 or 1/192 scaling), each
  * multiplied by R = 2^16 mod q to absorb the product's R^-1 factor, with lanes
  * interleaved by branch.  Four vectors per output vector (low normal, low
@@ -9488,18 +9102,12 @@ module_decap_invntt_inv_branchfold_vecs:
 .align 4
 .equ module_decap_forward_STACK_LOC_0, 0
 
-.global poly_ntt_decap
-.global _poly_ntt_decap
+.global C_SYM(poly_ntt_decap)
 /* Compatibility aliases; the current KEM entry is poly_ntt_decap. */
-.global gt_decap_gt_poly_ntt
-.global _gt_decap_gt_poly_ntt
 #ifndef __APPLE__
 .type poly_ntt_decap, %function
 #endif
-poly_ntt_decap:
-_poly_ntt_decap:
-gt_decap_gt_poly_ntt:
-_gt_decap_gt_poly_ntt:
+C_SYM(poly_ntt_decap):
     sub sp, sp, #1696
     stp x19, x20, [sp, #16]
     stp x21, x22, [sp, #32]
@@ -9513,10 +9121,10 @@ _gt_decap_gt_poly_ntt:
     mov x20, x1
     add x21, sp, #160
 
-    adr x2, module_decap_forward_u01_block_first_zetas
+    adr x2, .Lmodule_decap_forward_u01_block_first_zetas
     ldr q0, [x2]
-    adr x22, module_decap_forward_joint_frontend_twist_table
-    adr x23, module_decap_forward_u01_block_first_gt_ntt32_batch8_twiddle_vecs
+    adr x22, .Lmodule_decap_forward_joint_frontend_twist_table
+    adr x23, .Lmodule_decap_forward_u01_block_first_gt_ntt32_batch8_twiddle_vecs
 
     // Fused GT frontend and row-transform body.
     // Block3 is consumed after block0/1/2
@@ -9530,7 +9138,7 @@ _gt_decap_gt_poly_ntt:
     add x5, x21, #512
     add x6, x21, #1024
     // high side
-    // Slothy frontend DCE class 0, fixed allocation.
+    // Frontend group 0 (Slothy-scheduled, fixed register allocation).
         ldp q10, q11, [x1, #768]
         ldr q12, [x1, #1024]
         ldr q14, [x1, #1280]
@@ -9683,7 +9291,7 @@ _gt_decap_gt_poly_ntt:
     add x5, x21, #640
     add x6, x21, #1152
     // high side
-    // Slothy frontend DCE class 2, fixed allocation.
+    // Frontend group 2 (Slothy-scheduled, fixed register allocation).
         ldp q10, q11, [x1, #768]
         ldr q12, [x1, #1024]
         ldr q15, [x1, #1296]
@@ -9836,7 +9444,7 @@ _gt_decap_gt_poly_ntt:
     add x5, x21, #768
     add x6, x21, #1280
     // high side
-    // Slothy frontend DCE class 1, fixed allocation.
+    // Frontend group 1 (Slothy-scheduled, fixed register allocation).
         ldp q10, q11, [x1, #768]
         ldr q12, [x1, #1024]
         ldr q14, [x1, #1280]
@@ -9989,7 +9597,7 @@ _gt_decap_gt_poly_ntt:
     add x5, x21, #896
     add x6, x21, #1408
     // high side
-    // Slothy frontend DCE class 0, fixed allocation.
+    // Frontend group 0 (Slothy-scheduled, fixed register allocation).
         ldp q10, q11, [x1, #768]
         ldr q12, [x1, #1024]
         ldr q14, [x1, #1280]
@@ -10142,7 +9750,7 @@ _gt_decap_gt_poly_ntt:
     add x5, x21, #576
     add x6, x21, #1088
     // high side
-    // Slothy frontend DCE class 1, fixed allocation.
+    // Frontend group 1 (Slothy-scheduled, fixed register allocation).
         ldp q10, q11, [x1, #768]
         ldr q12, [x1, #1024]
         ldr q14, [x1, #1280]
@@ -10295,7 +9903,7 @@ _gt_decap_gt_poly_ntt:
     add x5, x21, #704
     add x6, x21, #1216
     // high side
-    // Slothy frontend DCE class 0, fixed allocation.
+    // Frontend group 0 (Slothy-scheduled, fixed register allocation).
         ldp q10, q11, [x1, #768]
         ldr q12, [x1, #1024]
         ldr q14, [x1, #1280]
@@ -10448,7 +10056,7 @@ _gt_decap_gt_poly_ntt:
     add x5, x21, #832
     add x6, x21, #1344
     // high side
-    // Slothy frontend DCE class 2, fixed allocation.
+    // Frontend group 2 (Slothy-scheduled, fixed register allocation).
         ldp q10, q11, [x1, #768]
         ldr q12, [x1, #1024]
         ldr q15, [x1, #1296]
@@ -10601,7 +10209,7 @@ _gt_decap_gt_poly_ntt:
     add x5, x21, #960
     add x6, x21, #1472
     // high side
-    // Slothy frontend DCE class 1, fixed allocation.
+    // Frontend group 1 (Slothy-scheduled, fixed register allocation).
         ldp q10, q11, [x1, #768]
         ldr q12, [x1, #1024]
         ldr q14, [x1, #1280]
@@ -10749,16 +10357,14 @@ _gt_decap_gt_poly_ntt:
 
 
     // Production table bases after the frontend is complete.
-    adr x23, module_decap_forward_joint_stage12_packed_table
-    adr x20, module_decap_forward_joint_stage345_decap_row_tables
+    adr x23, .Lmodule_decap_forward_joint_stage12_packed_table
+    adr x20, .Lmodule_decap_forward_joint_stage345_decap_row_tables
 
-module_decap_forward_gt_decap_stage12_row0_slothy_start:
-    // Wave25 Decap-only closed-world 21-reducer physical candidate.
+    // Decapsulation-only forward rows (21 reductions), scheduled for Cortex-A76.
 // live-in: x19/x20/x21/x23, v0, row0 scratch image
 // live-out: row0 Decap QSoA stores; fixed 24-Q handoff
 // coefficient range: row0 exact closed-world proof; Stage5 max 32616
 // reserved physical registers: sp, x18, x22, x24-x30; fixed v0
-module_decap_forward_wave25_row0_slothy_start:
                                                 // Instructions:    149
                                                 // Expected cycles: 37
                                                 // Expected IPC:    4.03
@@ -12043,13 +11649,11 @@ module_decap_forward_wave25_row0_slothy_start:
         // str d15, [x19, #1384]                          // .......................................................................................................................*.
         // str d4, [x19, #1400]                           // ........................................................................................................................*
 
-module_decap_forward_wave25_row0_slothy_end:
     add x21, x21, #512
 // live-in: x19/x20/x21/x23, v0, row1 scratch image
 // live-out: row1 Decap QSoA stores; fixed 24-Q handoff
 // coefficient range: row1 exact closed-world proof; Stage5 max 32759
 // reserved physical registers: sp, x18, x22, x24-x30; fixed v0
-module_decap_forward_wave25_row1_slothy_start:
                                                 // Instructions:    149
                                                 // Expected cycles: 37
                                                 // Expected IPC:    4.03
@@ -13334,13 +12938,11 @@ module_decap_forward_wave25_row1_slothy_start:
         // str d29, [x19, #1248]                          // .......................................................................................................................*.
         // str d27, [x19, #1264]                          // ........................................................................................................................*
 
-module_decap_forward_wave25_row1_slothy_end:
     add x21, x21, #512
 // live-in: x19/x20/x21/x23, v0, row2 scratch image
 // live-out: row2 Decap QSoA stores; fixed 24-Q handoff
 // coefficient range: row2 exact closed-world proof; Stage5 max 32648
 // reserved physical registers: sp, x18, x22, x24-x30; fixed v0
-module_decap_forward_wave25_row2_slothy_start:
                                                 // Instructions:    149
                                                 // Expected cycles: 37
                                                 // Expected IPC:    4.03
@@ -14625,8 +14227,6 @@ module_decap_forward_wave25_row2_slothy_start:
         // str d1, [x19, #864]                            // .......................................................................................................................*.
         // str d15, [x19, #880]                           // ........................................................................................................................*
 
-module_decap_forward_wave25_row2_slothy_end:
-module_decap_forward_gt_decap_stage345_decap_row2_slothy_end:
     ldp d14, d15, [sp, #112]
     ldp d12, d13, [sp, #96]
     ldp d10, d11, [sp, #80]
@@ -14639,9 +14239,6 @@ module_decap_forward_gt_decap_stage345_decap_row2_slothy_end:
 #ifndef __APPLE__
 .size poly_ntt_decap, .-poly_ntt_decap
 #endif
-/* Retained boundary symbol for external audit tooling. */
-.global gt_decap_poly_ntt_end
-gt_decap_poly_ntt_end:
 
 #ifdef __APPLE__
 .section __TEXT,__text,regular,pure_instructions
@@ -14650,11 +14247,10 @@ gt_decap_poly_ntt_end:
 #endif
 
 /* Flattened from asm/gt/ntt/poly_ntt_tables.inc. */
-/* Generated by experiments/forward_ntt_phase123_u01/generate_u01_block_first_artifacts.py. */
-/* Do not edit by hand. */
+/* Generated constant table; do not edit by hand. */
 
 .align 4
-module_decap_forward_u01_block_first_zetas:
+.Lmodule_decap_forward_u01_block_first_zetas:
     .hword 3457, 19412, -723, -6853, -722, -6844, 0, 0
 
 /* R4: unreferenced legacy twist table removed; retained in commit 45818405. */
@@ -14663,7 +14259,7 @@ module_decap_forward_u01_block_first_zetas:
 .section .rodata.gt_decap_forward.ntt32,"a",%progbits
 #endif
 .align 4
-module_decap_forward_u01_block_first_gt_ntt32_batch8_twiddle_vecs:
+.Lmodule_decap_forward_u01_block_first_gt_ntt32_batch8_twiddle_vecs:
     .hword 1, -1673, -1241, -1464, 1716, -1558, -44, 1015
     .hword 9, -15858, -11763, -13877, 16266, -14768, -417, 9621
     .hword -708, -1267, 550, -588, -1521, 281, 39, 436
@@ -14677,14 +14273,12 @@ module_decap_forward_u01_block_first_gt_ntt32_batch8_twiddle_vecs:
 
 
 /* Flattened production decapsulation frontend table. */
-/* Experiment-only retargeted GT frontend table. */
-/* Generated after the static <96-chain-equivalent gate passed. */
 
 #ifndef __APPLE__
 .section .rodata.gt_decap_forward.frontend,"a",%progbits
 #endif
 .align 4
-module_decap_forward_joint_frontend_twist_table:
+.Lmodule_decap_forward_joint_frontend_twist_table:
     .hword 1, 1, 1, 1, 1100, 1100, 1100, 1100
     .hword 9, 9, 9, 9, 10427, 10427, 10427, 10427
     .hword -830, -830, -830, -830, 943, 943, 943, 943
@@ -14885,7 +14479,7 @@ module_decap_forward_joint_frontend_twist_table:
 .section .rodata.gt_decap_forward.stage12,"a",%progbits
 #endif
 .align 4
-module_decap_forward_joint_stage12_packed_table:
+.Lmodule_decap_forward_joint_stage12_packed_table:
     .hword 1, -1241, -708, -1716, 44, -550, 1521, -39
     .hword 9, -11763, -6711, -16266, 417, -5213, 14417, -370
 
@@ -14895,7 +14489,7 @@ module_decap_forward_joint_stage12_packed_table:
 .section .rodata.gt_decap_forward.stage345,"a",%progbits
 #endif
 .align 4
-module_decap_forward_joint_stage345_decap_row_tables:
+.Lmodule_decap_forward_joint_stage345_decap_row_tables:
     /* block0, byte offset 0 */
     .hword 1, 1716, -708, -1716, 1521, 0, 0, 0
     .hword 9, 16266, -6711, -16266, 14417, 0, 0, 0
@@ -14925,8 +14519,7 @@ module_decap_forward_joint_stage345_decap_row_tables:
 .section .text.module_ntt_body,"ax",%progbits
 #endif
 .p2align 4
-.global poly_ntt_encap_small_lazy
-.global _poly_ntt_encap_small_lazy
+.global C_SYM(poly_ntt_encap_small_lazy)
 /* Small-input modular endpoint. Mode 3 shares the frontend and late stages;
  * only Stage12 stripe1..7 omit their range-reset pairs. Input [-2,2],
  * output [-21050,21050]; no raw-equality promise to the generic endpoint.
@@ -14934,10 +14527,9 @@ module_decap_forward_joint_stage345_decap_row_tables:
 #ifndef __APPLE__
 .type poly_ntt_encap_small_lazy, %function
 #endif
-poly_ntt_encap_small_lazy:
-_poly_ntt_encap_small_lazy:
+C_SYM(poly_ntt_encap_small_lazy):
     mov w2,#3
-    b module_ntt_.Lgt_shared_core_entry
+    b .Lmodule_ntt_gt_shared_core_entry
 .Lencap_lazy_row0:
     // ---- row0: Stage12 one-pass block0+block1+block2 live-out ----
     ldr q2, [x23, #16]
@@ -14962,9 +14554,7 @@ _poly_ntt_encap_small_lazy:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #0] omitted: E3 block0 Q0.
-    // str q10, [x21, #128] omitted: E3 block1 Q8.
-    // str q7, [x21, #256] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #384]     // block3 Q24
 
     // Stage12 row0 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -14983,9 +14573,7 @@ _poly_ntt_encap_small_lazy:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #16] omitted: E3 block0 Q1.
-    // str q20, [x21, #144] omitted: E3 block1 Q9.
-    // str q11, [x21, #272] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #400]     // block3 Q25
 
     // Stage12 row0 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -15004,9 +14592,7 @@ _poly_ntt_encap_small_lazy:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #32] omitted: E3 block0 Q2.
-    // str q30, [x21, #160] omitted: E3 block1 Q10.
-    // str q12, [x21, #288] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #416]     // block3 Q26
 
     // Stage12 row0 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -15025,9 +14611,7 @@ _poly_ntt_encap_small_lazy:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #48] omitted: E3 block0 Q3.
-    // str q24, [x21, #176] omitted: E3 block1 Q11.
-    // str q13, [x21, #304] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #432]     // block3 Q27
 
     // Stage12 row0 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -15046,9 +14630,7 @@ _poly_ntt_encap_small_lazy:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #64] omitted: E3 block0 Q4.
-    // str q9, [x21, #192] omitted: E3 block1 Q12.
-    // str q15, [x21, #320] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #448]     // block3 Q28
 
     // Stage12 row0 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -15067,9 +14649,7 @@ _poly_ntt_encap_small_lazy:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #80] omitted: E3 block0 Q5.
-    // str q6, [x21, #208] omitted: E3 block1 Q13.
-    // str q16, [x21, #336] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #464]     // block3 Q29
 
     // Stage12 row0 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -15088,9 +14668,7 @@ _poly_ntt_encap_small_lazy:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #96] omitted: E3 block0 Q6.
-    // str q31, [x21, #224] omitted: E3 block1 Q14.
-    // str q21, [x21, #352] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #480]     // block3 Q30
 
     // Stage12 row0 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -15109,9 +14687,7 @@ _poly_ntt_encap_small_lazy:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #112] omitted: E3 block0 Q7.
-    // str q23, [x21, #240] omitted: E3 block1 Q15.
-    // str q19, [x21, #368] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #496]     // block3 Q31
 
     b .Lencap_lazy_join0
@@ -15139,9 +14715,7 @@ _poly_ntt_encap_small_lazy:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #512] omitted: E3 block0 Q0.
-    // str q10, [x21, #640] omitted: E3 block1 Q8.
-    // str q7, [x21, #768] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #896]     // block3 Q24
 
     // Stage12 row1 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -15160,9 +14734,7 @@ _poly_ntt_encap_small_lazy:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #528] omitted: E3 block0 Q1.
-    // str q20, [x21, #656] omitted: E3 block1 Q9.
-    // str q11, [x21, #784] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #912]     // block3 Q25
 
     // Stage12 row1 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -15181,9 +14753,7 @@ _poly_ntt_encap_small_lazy:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #544] omitted: E3 block0 Q2.
-    // str q30, [x21, #672] omitted: E3 block1 Q10.
-    // str q12, [x21, #800] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #928]     // block3 Q26
 
     // Stage12 row1 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -15202,9 +14772,7 @@ _poly_ntt_encap_small_lazy:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #560] omitted: E3 block0 Q3.
-    // str q24, [x21, #688] omitted: E3 block1 Q11.
-    // str q13, [x21, #816] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #944]     // block3 Q27
 
     // Stage12 row1 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -15223,9 +14791,7 @@ _poly_ntt_encap_small_lazy:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #576] omitted: E3 block0 Q4.
-    // str q9, [x21, #704] omitted: E3 block1 Q12.
-    // str q15, [x21, #832] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #960]     // block3 Q28
 
     // Stage12 row1 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -15244,9 +14810,7 @@ _poly_ntt_encap_small_lazy:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #592] omitted: E3 block0 Q5.
-    // str q6, [x21, #720] omitted: E3 block1 Q13.
-    // str q16, [x21, #848] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #976]     // block3 Q29
 
     // Stage12 row1 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -15265,9 +14829,7 @@ _poly_ntt_encap_small_lazy:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #608] omitted: E3 block0 Q6.
-    // str q31, [x21, #736] omitted: E3 block1 Q14.
-    // str q21, [x21, #864] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #992]     // block3 Q30
 
     // Stage12 row1 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -15286,9 +14848,7 @@ _poly_ntt_encap_small_lazy:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #624] omitted: E3 block0 Q7.
-    // str q23, [x21, #752] omitted: E3 block1 Q15.
-    // str q19, [x21, #880] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #1008]     // block3 Q31
 
     b .Lencap_lazy_join1
@@ -15316,9 +14876,7 @@ _poly_ntt_encap_small_lazy:
     add v7.8h, v5.8h, v10.8h     // out2 = t3 + t1
     sub v10.8h, v29.8h, v1.8h     // out1 = t2 - t0
     add v29.8h, v29.8h, v1.8h     // out0 = t2 + t0
-    // str q29, [x21, #1024] omitted: E3 block0 Q0.
-    // str q10, [x21, #1152] omitted: E3 block1 Q8.
-    // str q7, [x21, #1280] omitted: E3 block2 Q16.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q6, [x21, #1408]     // block3 Q24
 
     // Stage12 row2 stripe1: Q1->q1, Q9->q20, Q17->q11; Q25 stored.
@@ -15337,9 +14895,7 @@ _poly_ntt_encap_small_lazy:
     add v11.8h, v6.8h, v20.8h     // out2 = t3 + t1
     sub v20.8h, v1.8h, v5.8h     // out1 = t2 - t0
     add v1.8h, v1.8h, v5.8h     // out0 = t2 + t0
-    // str q1, [x21, #1040] omitted: E3 block0 Q1.
-    // str q20, [x21, #1168] omitted: E3 block1 Q9.
-    // str q11, [x21, #1296] omitted: E3 block2 Q17.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1424]     // block3 Q25
 
     // Stage12 row2 stripe2: Q2->q28, Q10->q30, Q18->q12; Q26 stored.
@@ -15358,9 +14914,7 @@ _poly_ntt_encap_small_lazy:
     add v12.8h, v6.8h, v30.8h     // out2 = t3 + t1
     sub v30.8h, v28.8h, v5.8h     // out1 = t2 - t0
     add v28.8h, v28.8h, v5.8h     // out0 = t2 + t0
-    // str q28, [x21, #1056] omitted: E3 block0 Q2.
-    // str q30, [x21, #1184] omitted: E3 block1 Q10.
-    // str q12, [x21, #1312] omitted: E3 block2 Q18.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1440]     // block3 Q26
 
     // Stage12 row2 stripe3: Q3->q17, Q11->q24, Q19->q13; Q27 stored.
@@ -15379,9 +14933,7 @@ _poly_ntt_encap_small_lazy:
     add v13.8h, v6.8h, v24.8h     // out2 = t3 + t1
     sub v24.8h, v17.8h, v5.8h     // out1 = t2 - t0
     add v17.8h, v17.8h, v5.8h     // out0 = t2 + t0
-    // str q17, [x21, #1072] omitted: E3 block0 Q3.
-    // str q24, [x21, #1200] omitted: E3 block1 Q11.
-    // str q13, [x21, #1328] omitted: E3 block2 Q19.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1456]     // block3 Q27
 
     // Stage12 row2 stripe4: Q4->q26, Q12->q9, Q20->q15; Q28 stored.
@@ -15400,9 +14952,7 @@ _poly_ntt_encap_small_lazy:
     add v15.8h, v6.8h, v9.8h     // out2 = t3 + t1
     sub v9.8h, v26.8h, v5.8h     // out1 = t2 - t0
     add v26.8h, v26.8h, v5.8h     // out0 = t2 + t0
-    // str q26, [x21, #1088] omitted: E3 block0 Q4.
-    // str q9, [x21, #1216] omitted: E3 block1 Q12.
-    // str q15, [x21, #1344] omitted: E3 block2 Q20.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q8, [x21, #1472]     // block3 Q28
 
     // Stage12 row2 stripe5: Q5->q5, Q13->q6, Q21->q16; Q29 stored.
@@ -15421,9 +14971,7 @@ _poly_ntt_encap_small_lazy:
     add v16.8h, v14.8h, v6.8h     // out2 = t3 + t1
     sub v6.8h, v5.8h, v8.8h     // out1 = t2 - t0
     add v5.8h, v5.8h, v8.8h     // out0 = t2 + t0
-    // str q5, [x21, #1104] omitted: E3 block0 Q5.
-    // str q6, [x21, #1232] omitted: E3 block1 Q13.
-    // str q16, [x21, #1360] omitted: E3 block2 Q21.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q18, [x21, #1488]     // block3 Q29
 
     // Stage12 row2 stripe6: Q6->q18, Q14->q31, Q22->q21; Q30 stored.
@@ -15442,9 +14990,7 @@ _poly_ntt_encap_small_lazy:
     add v21.8h, v14.8h, v31.8h     // out2 = t3 + t1
     sub v31.8h, v18.8h, v8.8h     // out1 = t2 - t0
     add v18.8h, v18.8h, v8.8h     // out0 = t2 + t0
-    // str q18, [x21, #1120] omitted: E3 block0 Q6.
-    // str q31, [x21, #1248] omitted: E3 block1 Q14.
-    // str q21, [x21, #1376] omitted: E3 block2 Q22.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q19, [x21, #1504]     // block3 Q30
 
     // Stage12 row2 stripe7: Q7->q8, Q15->q23, Q23->q19; Q31 stored.
@@ -15463,9 +15009,7 @@ _poly_ntt_encap_small_lazy:
     add v19.8h, v22.8h, v23.8h     // out2 = t3 + t1
     sub v23.8h, v8.8h, v14.8h     // out1 = t2 - t0
     add v8.8h, v8.8h, v14.8h     // out0 = t2 + t0
-    // str q8, [x21, #1136] omitted: E3 block0 Q7.
-    // str q23, [x21, #1264] omitted: E3 block1 Q15.
-    // str q19, [x21, #1392] omitted: E3 block2 Q23.
+    // blocks 0-2 stay in registers for the next stage; only block 3 is stored
     str q25, [x21, #1520]     // block3 Q31
 
     b .Lencap_lazy_join2

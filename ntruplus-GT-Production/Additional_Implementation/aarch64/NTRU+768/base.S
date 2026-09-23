@@ -11,8 +11,8 @@
  * Arithmetic schedule adapted from NTRU+ Official Main commit
  * 0c249d5828b90e8dd5de2c8405323d5ee2a0ce41, asm/base.s SHA-256
  * b7ddd7c0859769c7d35d875717f09b90f303c04b415b6d1ec2ea274f893ba872.
- * The fixed-register two-block loop was rescheduled for Cortex-A76 by the
- * Wave 19 Slothy workflow; its exact 199-instruction multiset is unchanged.
+ * The fixed-register two-block loop was rescheduled for Cortex-A76 with
+ * Slothy; its 199-instruction multiset is unchanged.
  *
  * ABI:
  *   x0 = numerator[24][32]
@@ -56,14 +56,14 @@ C_SYM(gt_keygen_baseinv_cq_prepare):
     module_keygen_baseinv_prepare_zetas_ptr .req x3
     module_keygen_baseinv_prepare_counter   .req x8
 
-    adr x4, module_keygen_baseinv_prepare_Lgt_keygen_baseinv_prepare_constants
+    adr x4, .Lmodule_keygen_baseinv_prepare_Lgt_keygen_baseinv_prepare_constants
     ldr q0, [x4]
     LOAD_ADDR_PAGE(module_keygen_baseinv_prepare_zetas_ptr, gt_keygen_bpq_lambda8)
     LOAD_ADDR_OFF(module_keygen_baseinv_prepare_zetas_ptr, gt_keygen_bpq_lambda8)
 
     mov module_keygen_baseinv_prepare_counter, #1536
 
-module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop:
+.Lmodule_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop:
     ld1 {v3.8H, v4.8H, v5.8H, v6.8H}, [module_keygen_baseinv_prepare_src], #64
     ld1 {v1.8H, v2.8H}, [module_keygen_baseinv_prepare_zetas_ptr], #32
     ld1 {v7.8H, v8.8H, v9.8H, v10.8H}, [module_keygen_baseinv_prepare_src], #64
@@ -264,7 +264,7 @@ module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop:
     str q14, [module_keygen_baseinv_prepare_dst, #112]
     add module_keygen_baseinv_prepare_dst, module_keygen_baseinv_prepare_dst, #128
     subs module_keygen_baseinv_prepare_counter, module_keygen_baseinv_prepare_counter, #128
-    b.ne module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop
+    b.ne .Lmodule_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop
 
     .unreq    module_keygen_baseinv_prepare_dst
     .unreq    module_keygen_baseinv_prepare_den
@@ -315,7 +315,7 @@ module_keygen_baseinv_prepare_Lgt_keygen_baseinv_cq_prepare_loop:
 #endif
 
 .p2align 4
-module_keygen_baseinv_prepare_Lgt_keygen_baseinv_prepare_constants:
+.Lmodule_keygen_baseinv_prepare_Lgt_keygen_baseinv_prepare_constants:
     .hword 3457, 19412, -12929, -147, -1393, -682, -6464, 0
 
 /* End section: keygen_baseinv_prepare.S */
@@ -327,14 +327,17 @@ module_keygen_baseinv_prepare_Lgt_keygen_baseinv_prepare_constants:
 .section .text.module_keygen_baseinv_tree_body,"ax",%progbits
 #endif
 /*
- * Production keygen balanced HIER_K8 tree for 24 CQ denominators.
+ * Keygen balanced hierarchical (K=8) batch inversion of 24 CQ denominators.
  *
  * ABI:
- *   x0 = int16_t den[24][8]
+ *   x0 = int16_t den[24][8], replaced in place by the 24 x 8 inverses
  *   w0 = 0 on success, 1 if any denominator product is zero
+ *   saves x19, x20, d8-d15; calls gt_fqinv15_asm
  *
- * The input/output layout is the coefficient-Q scratch layout used by the
- * fixed Direct-CQ key-generation pipeline.
+ * Branch-free: the tree always runs to completion (a zero total product
+ * inverts to zero), so only the returned value depends on invertibility.
+ * The layout is the coefficient-quartic scratch layout of the key-generation
+ * pipeline.
  */
 #ifdef __APPLE__
 .text
@@ -469,7 +472,7 @@ C_SYM(gt_keygen_baseinv_hier_k8):
 	sub sp, sp, #module_keygen_baseinv_tree_BPQ_TREE_LOCAL_BYTES
 
 	mov x19, x0
-	ldr q1, module_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts
+	ldr q1, .Lmodule_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts
 
 	/* Form c01[8] and the eight three-denominator group products. */
 	module_keygen_baseinv_tree_form_group_pair 0, 0
@@ -490,13 +493,13 @@ C_SYM(gt_keygen_baseinv_hier_k8):
 	/*
 	 * Invertibility is decided without branching (TIMECOP): the tree always
 	 * runs to completion, and a zero total product inverts to zero.  On
-	 * failure the caller discards the output and clears den, as before.
+	 * failure the caller zeroes the output and clears numerator and den.
 	 */
 	uminv h2, v0.8h
 	umov w20, v2.h[0]
 
 	bl C_SYM(gt_fqinv15_asm)
-	ldr q1, module_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts
+	ldr q1, .Lmodule_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts
 
 	/* Balanced backward tree: 1 -> 2 -> 4 -> 8. */
 	module_keygen_baseinv_tree_fqmul2 v2, v0, v13, v3, v0, v12
@@ -535,7 +538,7 @@ C_SYM(gt_keygen_baseinv_hier_k8):
 #endif
 
 .p2align 4
-module_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts:
+.Lmodule_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts:
 	.hword 3457, 19412, -12929, -147, -1393, -682, -6464, 0
 
 /* End section: keygen_baseinv_tree.S */
@@ -611,10 +614,10 @@ module_keygen_baseinv_tree_Lbpq_tree_scaled_r_consts:
 .type C_SYM(gt_keygen_baseinv_cq_finish), %function
 #endif
 C_SYM(gt_keygen_baseinv_cq_finish):
-	ldr q1, module_keygen_baseinv_finish_Lbpq_finish_scaled_r_consts
+	ldr q1, .Lmodule_keygen_baseinv_finish_Lbpq_finish_scaled_r_consts
 	mov w3, #24
 
-module_keygen_baseinv_finish_Lbpq_finish_cq_loop:
+.Lmodule_keygen_baseinv_finish_Lbpq_finish_cq_loop:
 	ldp q2, q3, [x1], #32
 	ldp q4, q5, [x1], #32
 	ldr q6, [x2], #16
@@ -626,7 +629,7 @@ module_keygen_baseinv_finish_Lbpq_finish_cq_loop:
 	stp q28, q29, [x0], #32
 	stp q30, q31, [x0], #32
 	subs w3, w3, #1
-	b.ne module_keygen_baseinv_finish_Lbpq_finish_cq_loop
+	b.ne .Lmodule_keygen_baseinv_finish_Lbpq_finish_cq_loop
 	ret
 #ifndef __APPLE__
 .size C_SYM(gt_keygen_baseinv_cq_finish), \
@@ -634,7 +637,7 @@ module_keygen_baseinv_finish_Lbpq_finish_cq_loop:
 #endif
 
 .p2align 4
-module_keygen_baseinv_finish_Lbpq_finish_scaled_r_consts:
+.Lmodule_keygen_baseinv_finish_Lbpq_finish_scaled_r_consts:
 	.hword 3457, 19412, -12929, -147, -1393, -682, -6464, 0
 
 /* End section: keygen_baseinv_finish.S */
@@ -687,7 +690,6 @@ module_keygen_baseinv_finish_Lbpq_finish_scaled_r_consts:
 
 #endif
 
-.global C_SYM(gt_fqinv15_asm)
 C_SYM(gt_fqinv15_asm):
 	smull v16.4s, v0.4h, v0.4h
 	orr v2.16b, v0.16b, v0.16b
@@ -870,10 +872,16 @@ C_SYM(gt_fqinv15_asm):
 
 #endif
 
-.global poly_basemul_add_encap
-.global _poly_basemul_add_encap
-poly_basemul_add_encap:
-_poly_basemul_add_encap:
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+.global C_SYM(poly_basemul_add_encap)
+C_SYM(poly_basemul_add_encap):
  sub sp, sp, #64
  stp d8, d9, [sp, #0]
  stp d10, d11, [sp, #16]
@@ -881,11 +889,11 @@ _poly_basemul_add_encap:
  stp d14, d15, [sp, #48]
  LOAD_ADDR_PAGE(x4, gt_rowbitrev_lambda)
  LOAD_ADDR_OFF(x4, gt_rowbitrev_lambda)
- adr x5, module_encap_muladd_Lpoly_basemul_add_consts
+ adr x5, .Lmodule_encap_muladd_Lpoly_basemul_add_consts
  ldr q11, [x5]
  mov x6, #24
 
-module_encap_muladd_Lpoly_basemul_add_loop:
+.Lmodule_encap_muladd_Lpoly_basemul_add_loop:
  ld4 {v24.8H, v25.8H, v26.8H, v27.8H}, [x1], #64
  ld4 {v28.8H, v29.8H, v30.8H, v31.8H}, [x2], #64
  smull v1.4S, v27.4H, v31.4H
@@ -1067,7 +1075,7 @@ module_encap_muladd_Lpoly_basemul_add_loop:
  st4 {v19.8H, v20.8H, v21.8H, v22.8H}, [x0], #64
 
  subs x6, x6, #2
- b.ne module_encap_muladd_Lpoly_basemul_add_loop
+ b.ne .Lmodule_encap_muladd_Lpoly_basemul_add_loop
 
  ldp d14, d15, [sp, #48]
  ldp d12, d13, [sp, #32]
@@ -1077,7 +1085,7 @@ module_encap_muladd_Lpoly_basemul_add_loop:
  ret
 
 .align 4
-module_encap_muladd_Lpoly_basemul_add_consts:
+.Lmodule_encap_muladd_Lpoly_basemul_add_consts:
  /* h[0]=q, h[2]=Montgomery qinv constant, s[2]=C32, s[0]=Q32. */
  .hword 0x0d81, 0x0000, 0xcd7f, 0xff6d
  .hword 0x7a8f, 0x0009, 0x0000, 0x0363
@@ -1100,7 +1108,7 @@ module_encap_muladd_Lpoly_basemul_add_consts:
  *     const uint8_t packed_ct[1152], const uint8_t packed_f[1152]);
  *
  * One fixed trip decodes 64 canonical coefficients from each operand into the
- * Decap 8x8-transposed layout and executes two consecutive scaled basemul
+ * Decap QSoA layout and executes two consecutive scaled basemul
  * groups.  decoded_ct is retained for re-encryption.  packed_f is never
  * materialized: its second group stays live in v24-v27 while the first group
  * is consumed.
@@ -1289,16 +1297,16 @@ C_SYM(poly_frombytes_basemul_decap_scale):
     stp d12, d13, [sp, #32]
     stp d14, d15, [sp, #48]
 
-    adr x4, module_decap_packed64_.Lgt_decap_zetas_mul
+    adr x4, .Lmodule_decap_packed64_gt_decap_zetas_mul
     ld1 {v0.8h}, [x4], #16
-    adr x5, module_decap_packed64_.Lgt_decap_mask_0fff
+    adr x5, .Lmodule_decap_packed64_gt_decap_mask_0fff
     ldr q31, [x5]
     movi v29.16b, #0
     mov x8, #1536
 
 .p2align 4
-module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64:
-    /* A76 Slothy rename schedule promoted after full-path validation. */
+.Lmodule_decap_packed64_gt_decap_checked_ct_f_basemul_scale64_loop64:
+    /* Scheduled for Cortex-A76 with Slothy. */
         ld1 {v1.8H, v2.8H, v3.8H}, [x2], #48
         ld1 {v4.8H, v5.8H, v6.8H}, [x2], #48
         trn1 v25.2D, v1.2D, v4.2D
@@ -1544,7 +1552,7 @@ module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64:
         st4 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
 
     subs x8, x8, #128
-    b.ne module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64
+    b.ne .Lmodule_decap_packed64_gt_decap_checked_ct_f_basemul_scale64_loop64
 
     umaxv h29, v29.8h
     umov w9, v29.h[0]
@@ -1564,7 +1572,7 @@ module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64:
 #endif
 
 .p2align 4
-module_decap_packed64_.Lgt_decap_zetas_mul:
+.Lmodule_decap_packed64_gt_decap_zetas_mul:
     .hword 0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
     .hword 0x00df, 0x0472, 0xfbdd, 0xfe73, 0xff49, 0x0677, 0x022f, 0xf976
     .hword 0xff21, 0xfb8e, 0x0423, 0x018d, 0x00b7, 0xf989, 0xfdd1, 0x068a
@@ -1592,7 +1600,7 @@ module_decap_packed64_.Lgt_decap_zetas_mul:
     .hword 0xfb3b, 0x00da, 0xfeda, 0x02dc, 0x0447, 0xfc84, 0xf9cc, 0x030b
 
 .p2align 4
-module_decap_packed64_.Lgt_decap_mask_0fff:
+.Lmodule_decap_packed64_gt_decap_mask_0fff:
     .hword 0x0fff, 0x0fff, 0x0fff, 0x0fff
     .hword 0x0fff, 0x0fff, 0x0fff, 0x0fff
 
@@ -1629,10 +1637,16 @@ module_decap_packed64_.Lgt_decap_mask_0fff:
 .section .text.gt_decap_poly_basemul,"ax",%progbits
 #endif
 
-.global poly_basemul_decap
-.global _poly_basemul_decap
-poly_basemul_decap:
-_poly_basemul_decap:
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+.global C_SYM(poly_basemul_decap)
+C_SYM(poly_basemul_decap):
     stp d8,  d9,  [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
@@ -1644,16 +1658,16 @@ _poly_basemul_decap:
     module_decap_base_zetas_ptr .req x3
     module_decap_base_counter   .req x8
 
-    adr module_decap_base_zetas_ptr, module_decap_base_zetas_mul
+    adr module_decap_base_zetas_ptr, .Lmodule_decap_base_zetas_mul
 
     #load
     ld1  {v0.8h}, [module_decap_base_zetas_ptr], #16
-    adr x9, module_decap_base_.Ldecap_basemul_q31_consts
+    adr x9, .Lmodule_decap_base_decap_basemul_q31_consts
     ldr q24, [x9]
 
     mov module_decap_base_counter, #1536
 
-module_decap_base__looptop:
+.Lmodule_decap_base__looptop:
     #load
     ld1  {v1.8h}, [module_decap_base_zetas_ptr], #16
 
@@ -1761,7 +1775,7 @@ module_decap_base__looptop:
     st1 {v8.8h - v11.8h}, [module_decap_base_dst], #64
 
     subs module_decap_base_counter, module_decap_base_counter, #64
-    b.ne module_decap_base__looptop
+    b.ne .Lmodule_decap_base__looptop
 
     .unreq    module_decap_base_dst
     .unreq    module_decap_base_src1
@@ -1783,7 +1797,7 @@ module_decap_base__looptop:
 .section .rodata.gt_decap_base,"a",%progbits
 #endif
 .align 4
-module_decap_base_zetas_mul:
+.Lmodule_decap_base_zetas_mul:
     .hword 0x0d81, 0x4bd4, 0xcd7f, 0xff6d, 0xfa8f, 0xf9dd, 0xc5d5, 0x0000
     .hword 0x00df, 0x0472, 0xfbdd, 0xfe73, 0xff49, 0x0677, 0x022f, 0xf976
     .hword 0xff21, 0xfb8e, 0x0423, 0x018d, 0x00b7, 0xf989, 0xfdd1, 0x068a
@@ -1811,7 +1825,7 @@ module_decap_base_zetas_mul:
     .hword 0xfb3b, 0x00da, 0xfeda, 0x02dc, 0x0447, 0xfc84, 0xf9cc, 0x030b
 
 .align 4
-module_decap_base_.Ldecap_basemul_q31_consts:
+.Lmodule_decap_base_decap_basemul_q31_consts:
     .word 3457, 0, 621199, 0
 
 /* End section: decap_base.S */

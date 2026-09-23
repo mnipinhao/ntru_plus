@@ -1,3 +1,12 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /*
  * Copyright (c) The mlkem-native project authors
  * Copyright (c) 2021-2022 Arm Limited
@@ -299,13 +308,11 @@ Lkeccak_live_loop_\@:
 .section .text.module_keccakf1600_body,"ax",%progbits
 #endif
 .balign 4
-.global ntruplus_keccak_f1600_x1_aarch64
-.global _ntruplus_keccak_f1600_x1_aarch64
+.global C_SYM(ntruplus_keccak_f1600_x1_aarch64)
 #ifndef __APPLE__
 .type ntruplus_keccak_f1600_x1_aarch64, %function
 #endif
-ntruplus_keccak_f1600_x1_aarch64:
-_ntruplus_keccak_f1600_x1_aarch64:
+C_SYM(ntruplus_keccak_f1600_x1_aarch64):
 
         .cfi_startproc
         sub sp, sp, #0x80

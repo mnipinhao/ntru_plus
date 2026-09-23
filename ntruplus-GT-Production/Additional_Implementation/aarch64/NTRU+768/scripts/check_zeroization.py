@@ -38,8 +38,8 @@ for backend in ('keccakf1600.S', 'keccakf1600_v84a.S'):
     text = (ROOT / backend).read_text()
     if 'fused' in text:
         raise SystemExit(f'{backend}: a fused sponge is back; re-audit its wipe')
-require('keccakf1600.S', ('ntruplus_keccak_f1600_x1_aarch64:',))
-require('keccakf1600_v84a.S', ('ntruplus_keccak_f1600_x1_v84a_aarch64:',))
+require('keccakf1600.S', ('C_SYM(ntruplus_keccak_f1600_x1_aarch64):',))
+require('keccakf1600_v84a.S', ('C_SYM(ntruplus_keccak_f1600_x1_v84a_aarch64):',))
 # hash_f and hash_h used to build 0x00||msg and 0x02||msg in a stack buffer and
 # (for hash_h) wipe it afterwards.  They now absorb through shake256_prefixed,
 # so there is no copy to wipe -- the same invariant hash_g already had above,

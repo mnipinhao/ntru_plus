@@ -1,7 +1,14 @@
-.global poly_cbd1
-.global _poly_cbd1
-poly_cbd1:
-_poly_cbd1:
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
+.global C_SYM(poly_cbd1)
+C_SYM(poly_cbd1):
     dst       .req x0
     src       .req x1
     counter   .req x8
@@ -12,7 +19,7 @@ _poly_cbd1:
 
     mov counter, #1536
 
-_loop_cbd:
+.Lloop_cbd:
     #load
     ldr q5, [src, #0]
     ldr q6, [src, #96]
@@ -121,7 +128,7 @@ _loop_cbd:
     st1 {v26.8h - v29.8h}, [dst], #64
 
     subs counter, counter, #256
-    b.ne _loop_cbd
+    b.ne .Lloop_cbd
 
     .unreq    dst
     .unreq    src
@@ -129,10 +136,8 @@ _loop_cbd:
 
     ret
 
-.global poly_sotp_encode
-.global _poly_sotp_encode
-poly_sotp_encode:
-_poly_sotp_encode:
+.global C_SYM(poly_sotp_encode)
+C_SYM(poly_sotp_encode):
     dst       .req x0
     src1      .req x1
     src2      .req x2
@@ -144,7 +149,7 @@ _poly_sotp_encode:
 
     mov counter, #1536
 
-_loop_sotp_encode:
+.Lloop_sotp_encode:
     #load
     ldr q4, [src1, #0]
     ldr q5, [src2, #0]
@@ -258,7 +263,7 @@ _loop_sotp_encode:
     st1 {v26.8h - v29.8h}, [dst], #64
 
     subs counter, counter, #256
-    b.ne _loop_sotp_encode
+    b.ne .Lloop_sotp_encode
 
     .unreq    dst
     .unreq    src1
@@ -268,10 +273,8 @@ _loop_sotp_encode:
     ret
 
 
-.global poly_sotp_decode
-.global _poly_sotp_decode
-poly_sotp_decode:
-_poly_sotp_decode:
+.global C_SYM(poly_sotp_decode)
+C_SYM(poly_sotp_decode):
     dst       .req x0
     src1      .req x1
     src2      .req x2
@@ -287,7 +290,7 @@ _poly_sotp_decode:
 
     mov counter, #1536
 
-_loop_sotp_decode:
+.Lloop_sotp_decode:
     #load
     ld1 { v5.8h -  v8.8h}, [src1], #64
     ld1 { v9.8h - v12.8h}, [src1], #64
@@ -406,7 +409,7 @@ _loop_sotp_decode:
     str q20, [dst], #16
 
     subs counter, counter, #256
-    b.ne _loop_sotp_decode
+    b.ne .Lloop_sotp_decode
 
     eor v3.16b, v3.16b, v2.16b
     and v3.16b, v3.16b, v0.16b

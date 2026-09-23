@@ -1,3 +1,12 @@
+#ifndef C_SYM
+#ifdef __APPLE__
+#define C_SYM_1(sym) _##sym
+#define C_SYM(sym) C_SYM_1(sym)
+#else
+#define C_SYM(sym) sym
+#endif
+#endif
+
 /* Section: pack.S; private namespace module_pack_ */
 /* Dual-entry canonical pack; historical provenance is retained in Git. */
 /* poly_tobytes_encap keeps the reduced fast path; the loose entry */
@@ -9,31 +18,27 @@
 .section .text.module_pack_body,"ax",%progbits
 #endif
 .p2align 4
-.global poly_tobytes_encap
-.global _poly_tobytes_encap
+.global C_SYM(poly_tobytes_encap)
 #ifndef __APPLE__
 .type poly_tobytes_encap, %function
 #endif
-.global poly_tobytes_encap_loose
-.global _poly_tobytes_encap_loose
+.global C_SYM(poly_tobytes_encap_loose)
 #ifndef __APPLE__
 .type poly_tobytes_encap_loose, %function
 #endif
-poly_tobytes_encap_loose:
-_poly_tobytes_encap_loose:
+C_SYM(poly_tobytes_encap_loose):
     mov w3, #1
-    b module_pack_.Lwave8_dual_pack_entry
-poly_tobytes_encap:
-_poly_tobytes_encap:
+    b .Lmodule_pack_dual_pack_entry
+C_SYM(poly_tobytes_encap):
     mov w3, #0
-module_pack_.Lwave8_dual_pack_entry:
+.Lmodule_pack_dual_pack_entry:
     sub sp, sp, #80
     stp d8, d9, [sp, #0]
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
     stp d14, d15, [sp, #48]
     str x30, [sp, #64]
-    adr x2, module_pack_.Lcanonical_pack_compact_q
+    adr x2, .Lmodule_pack_canonical_pack_compact_q
     ldr q0, [x2]
     // canonical blocks 0..15
     ldr d1, [x1, #312]
@@ -60,7 +65,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #96]
     ldr d9, [x1, #120]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 16..31
     ldr d1, [x1, #696]
     ldr d9, [x1, #672]
@@ -86,7 +91,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #480]
     ldr d9, [x1, #504]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 32..47
     ldr d1, [x1, #128]
     ldr d9, [x1, #152]
@@ -112,7 +117,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #464]
     ldr d9, [x1, #488]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 48..63
     ldr d1, [x1, #704]
     ldr d9, [x1, #728]
@@ -138,7 +143,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #536]
     ldr d9, [x1, #512]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 64..79
     ldr d1, [x1, #400]
     ldr d9, [x1, #424]
@@ -164,7 +169,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #520]
     ldr d9, [x1, #496]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 80..95
     ldr d1, [x1, #16]
     ldr d9, [x1, #40]
@@ -190,7 +195,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #136]
     ldr d9, [x1, #112]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 96..111
     ldr d1, [x1, #1136]
     ldr d9, [x1, #1160]
@@ -216,7 +221,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #968]
     ldr d9, [x1, #944]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 112..127
     ldr d1, [x1, #1424]
     ldr d9, [x1, #1448]
@@ -242,7 +247,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #776]
     ldr d9, [x1, #1520]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 128..143
     ldr d1, [x1, #1336]
     ldr d9, [x1, #1312]
@@ -268,7 +273,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #1120]
     ldr d9, [x1, #1144]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 144..159
     ldr d1, [x1, #952]
     ldr d9, [x1, #928]
@@ -294,7 +299,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #1504]
     ldr d9, [x1, #1528]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 160..175
     ldr d1, [x1, #1152]
     ldr d9, [x1, #1176]
@@ -320,7 +325,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #1488]
     ldr d9, [x1, #1512]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     // canonical blocks 176..191
     ldr d1, [x1, #960]
     ldr d9, [x1, #984]
@@ -346,7 +351,7 @@ module_pack_.Lwave8_dual_pack_entry:
     ldr d8, [x1, #792]
     ldr d9, [x1, #768]
     mov v8.d[1], v9.d[0]
-    bl module_pack_.Lcanonical_pack_compact_core
+    bl .Lmodule_pack_canonical_pack_compact_core
     ldr x30, [sp, #64]
     ldp d8, d9, [sp, #0]
     ldp d10, d11, [sp, #16]
@@ -356,9 +361,9 @@ module_pack_.Lwave8_dual_pack_entry:
     ret
 
 .p2align 4
-module_pack_.Lcanonical_pack_compact_core:
-    /* WAVE8 v2: skip this block for already-reduced consumers. */
-    cbz w3, module_pack_.Lwave8_pack_already_reduced
+.Lmodule_pack_canonical_pack_compact_core:
+    /* Skip this block for already-reduced consumers. */
+    cbz w3, .Lmodule_pack_pack_already_reduced
     ldr q30, [x2, #16]
     sqdmulh v31.8H, v1.8H, v30.8H
     srshr v31.8H, v31.8H, #11
@@ -384,7 +389,7 @@ module_pack_.Lcanonical_pack_compact_core:
     sqdmulh v31.8H, v8.8H, v30.8H
     srshr v31.8H, v31.8H, #11
     mls v8.8H, v31.8H, v0.8H
-module_pack_.Lwave8_pack_already_reduced:
+.Lmodule_pack_pack_already_reduced:
     sshr v31.8H, v6.8H, #15
     sshr v19.8H, v5.8H, #15
     and v23.16B, v31.16B, v0.16B
@@ -472,7 +477,7 @@ module_pack_.Lwave8_pack_already_reduced:
     ret
 
 .p2align 4
-module_pack_.Lcanonical_pack_compact_q:
+.Lmodule_pack_canonical_pack_compact_q:
     .hword 3457, 3457, 3457, 3457
     .hword 3457, 3457, 3457, 3457
     /* Barrett quotient constant, one value per halfword lane. */
@@ -492,16 +497,14 @@ module_pack_.Lcanonical_pack_compact_q:
 .section .text.module_unpack_body,"ax",%progbits
 #endif
 .p2align 4
-.global poly_frombytes_encap
-.global _poly_frombytes_encap
-poly_frombytes_encap:
-_poly_frombytes_encap:
+.global C_SYM(poly_frombytes_encap)
+C_SYM(poly_frombytes_encap):
     sub sp, sp, #64
     stp d8, d9, [sp, #0]
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
     stp d14, d15, [sp, #48]
-    adr x2, module_unpack_.Lcanonical_unpack_candidate_mask
+    adr x2, .Lmodule_unpack_canonical_unpack_candidate_mask
     ldr q0, [x2]
     mov w10, #3457
     dup v8.8h, w10
@@ -1629,7 +1632,7 @@ _poly_frombytes_encap:
     ret
 
 .p2align 4
-module_unpack_.Lcanonical_unpack_candidate_mask:
+.Lmodule_unpack_canonical_unpack_candidate_mask:
     .hword 0x0fff, 0x0fff, 0x0fff, 0x0fff
     .hword 0x0fff, 0x0fff, 0x0fff, 0x0fff
 
@@ -1647,18 +1650,16 @@ module_unpack_.Lcanonical_unpack_candidate_mask:
 .section .text.module_keygen_pack_body,"ax",%progbits
 #endif
 .p2align 4
-.global poly_tobytes_keygen_cq
-.global _poly_tobytes_keygen_cq
-poly_tobytes_keygen_cq:
-_poly_tobytes_keygen_cq:
+.global C_SYM(poly_tobytes_keygen_cq)
+C_SYM(poly_tobytes_keygen_cq):
     sub sp, sp, #80
     stp d8, d9, [sp, #0]
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
     stp d14, d15, [sp, #48]
     str x30, [sp, #64]
-    adr x2, module_keygen_pack_.Lbpq_cq_pack_indexes
-    adr x3, module_keygen_pack_.Lbpq_cq_pack_q
+    adr x2, .Lmodule_keygen_pack_bpq_cq_pack_indexes
+    adr x3, .Lmodule_keygen_pack_bpq_cq_pack_q
     ldr q0, [x3]
     // canonical blocks 0..7; CQ groups 2/3
     ldr q1, [x1, #128]
@@ -1700,7 +1701,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 16..23; CQ groups 6/7
     ldr q1, [x1, #384]
     ldr q2, [x1, #448]
@@ -1741,7 +1742,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 32..39; CQ groups 20/21
     ldr q1, [x1, #1280]
     ldr q2, [x1, #1344]
@@ -1782,7 +1783,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 48..55; CQ groups 18/19
     ldr q1, [x1, #1152]
     ldr q2, [x1, #1216]
@@ -1823,7 +1824,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 64..71; CQ groups 8/9
     ldr q1, [x1, #512]
     ldr q2, [x1, #576]
@@ -1864,7 +1865,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 80..87; CQ groups 12/13
     ldr q1, [x1, #768]
     ldr q2, [x1, #832]
@@ -1905,7 +1906,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 96..103; CQ groups 22/23
     ldr q1, [x1, #1408]
     ldr q2, [x1, #1472]
@@ -1946,7 +1947,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 112..119; CQ groups 16/17
     ldr q1, [x1, #1024]
     ldr q2, [x1, #1088]
@@ -1987,7 +1988,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 128..135; CQ groups 10/11
     ldr q1, [x1, #640]
     ldr q2, [x1, #704]
@@ -2028,7 +2029,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 144..151; CQ groups 14/15
     ldr q1, [x1, #896]
     ldr q2, [x1, #960]
@@ -2069,7 +2070,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 160..167; CQ groups 4/5
     ldr q1, [x1, #256]
     ldr q2, [x1, #320]
@@ -2110,7 +2111,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     // canonical blocks 176..183; CQ groups 2/3
     ldr q1, [x1, #128]
     ldr q2, [x1, #192]
@@ -2151,7 +2152,7 @@ _poly_tobytes_keygen_cq:
     uzp1 v21.8h, v12.8h, v29.8h
     uzp2 v29.8h, v12.8h, v29.8h
     mov v12.16b, v21.16b
-    bl module_keygen_pack_.Lgt_keygen_shared_pack64_core
+    bl .Lmodule_keygen_pack_gt_keygen_shared_pack64_core
     ldr x30, [sp, #64]
     ldp d8, d9, [sp, #0]
     ldp d10, d11, [sp, #16]
@@ -2162,7 +2163,7 @@ _poly_tobytes_keygen_cq:
 
 .p2align 4
 .p2align 4
-module_keygen_pack_.Lgt_keygen_shared_pack64_core:
+.Lmodule_keygen_pack_gt_keygen_shared_pack64_core:
     sshr v8.8h, v9.8h, #15
     sshr v30.8h, v10.8h, #15
     and v25.16b, v8.16b, v0.16b
@@ -2226,7 +2227,7 @@ module_keygen_pack_.Lgt_keygen_shared_pack64_core:
     ret
 
 .p2align 4
-module_keygen_pack_.Lbpq_cq_pack_indexes:
+.Lmodule_keygen_pack_bpq_cq_pack_indexes:
     .byte 18, 19, 16, 17, 22, 23, 20, 21, 6, 7, 4, 5, 0, 1, 2, 3
     .byte 0, 1, 2, 3, 6, 7, 22, 23, 16, 17, 18, 19, 20, 21, 4, 5
     .byte 18, 19, 16, 17, 22, 23, 20, 21, 6, 7, 4, 5, 0, 1, 2, 3
@@ -2252,7 +2253,7 @@ module_keygen_pack_.Lbpq_cq_pack_indexes:
     .byte 8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 26, 27, 28, 29, 30, 31
     .byte 28, 29, 12, 13, 26, 27, 24, 25, 10, 11, 8, 9, 30, 31, 14, 15
 .p2align 4
-module_keygen_pack_.Lbpq_cq_pack_q:
+.Lmodule_keygen_pack_bpq_cq_pack_q:
     .hword 3457, 3457, 3457, 3457
     .hword 3457, 3457, 3457, 3457
 
@@ -2276,10 +2277,8 @@ module_keygen_pack_.Lbpq_cq_pack_q:
 * Returns:     0 on success, 1 if any coefficient is greater than or equal to q.
 *              Output coefficients lie in [0,4095].
 **************************************************/
-.global poly_frombytes_decap
-.global _poly_frombytes_decap
-poly_frombytes_decap:
-_poly_frombytes_decap:
+.global C_SYM(poly_frombytes_decap)
+C_SYM(poly_frombytes_decap):
     stp d8,  d9,  [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
@@ -2289,13 +2288,13 @@ _poly_frombytes_decap:
     module_decap_pack_src       .req x1
     module_decap_pack_counter   .req x8
 
-    adr x2, module_decap_pack_const_mask_0fff
+    adr x2, .Lmodule_decap_pack_const_mask_0fff
     ldr q0, [x2]
     movi v29.8h, #0
 
     mov module_decap_pack_counter, #1536
 
-module_decap_pack__loop_frombytes:
+.Lmodule_decap_pack__loop_frombytes:
     ld1 {v1.8h-v3.8h}, [module_decap_pack_src], #48
     ld1 {v4.8h-v6.8h}, [module_decap_pack_src], #48
 
@@ -2352,7 +2351,7 @@ module_decap_pack__loop_frombytes:
     umax v29.8h, v29.8h, v25.8h
 
     subs module_decap_pack_counter, module_decap_pack_counter, #128
-    b.ne module_decap_pack__loop_frombytes
+    b.ne .Lmodule_decap_pack__loop_frombytes
 
     .unreq module_decap_pack_dst
     .unreq module_decap_pack_src
@@ -2383,10 +2382,8 @@ module_decap_pack__loop_frombytes:
 *
 * Returns:     none.
 **************************************************/
-.global poly_tobytes_decap
-.global _poly_tobytes_decap
-poly_tobytes_decap:
-_poly_tobytes_decap:
+.global C_SYM(poly_tobytes_decap)
+C_SYM(poly_tobytes_decap):
     stp d8,  d9,  [sp, #-64]!
     stp d10, d11, [sp, #16]
     stp d12, d13, [sp, #32]
@@ -2396,12 +2393,12 @@ _poly_tobytes_decap:
     module_decap_pack_src       .req x1
     module_decap_pack_counter   .req x8
 
-    adr x2, module_decap_pack_const_q
+    adr x2, .Lmodule_decap_pack_const_q
     ldr q0, [x2]
 
     mov module_decap_pack_counter, #1536
 
-module_decap_pack__loop_tobytes:
+.Lmodule_decap_pack__loop_tobytes:
     #load
     ld1 {v1.8h-v4.8h}, [module_decap_pack_src], #64
     ld1 {v5.8h-v8.8h}, [module_decap_pack_src], #64
@@ -2478,7 +2475,7 @@ module_decap_pack__loop_tobytes:
     st1 {v10.8h-v12.8h}, [module_decap_pack_dst], #48
 
     subs module_decap_pack_counter, module_decap_pack_counter, #128
-    b.ne module_decap_pack__loop_tobytes
+    b.ne .Lmodule_decap_pack__loop_tobytes
 
     .unreq    module_decap_pack_dst
     .unreq    module_decap_pack_src
@@ -2493,12 +2490,12 @@ module_decap_pack__loop_tobytes:
 
 
 .align 4
-module_decap_pack_const_mask_0fff:
+.Lmodule_decap_pack_const_mask_0fff:
     .hword 0x0fff, 0x0fff, 0x0fff, 0x0fff
     .hword 0x0fff, 0x0fff, 0x0fff, 0x0fff
 
 .align 4
-module_decap_pack_const_q:
+.Lmodule_decap_pack_const_q:
     .hword 0x0d81, 0x0009, 0x0000, 0x0000
     .hword 0x0000, 0x0000, 0x0000, 0x0000
 

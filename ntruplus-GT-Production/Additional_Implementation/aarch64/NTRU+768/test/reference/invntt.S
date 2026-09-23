@@ -5,20 +5,10 @@
 .section .text.module_invntt_body,"ax",%progbits
 #endif
 /*
- * Production GT inverse NTT for inputs carrying one extra R^-1 factor.
- *
- * This entry is paired with the raw-factor basemul and returns normal R^0
- * coefficients. Production exports the pair as poly_basemul/poly_invntt.
- * Proof-gated multiplier-1 reductions are deferred through inverse NTT32
- * transform size 16; size 32 remains reduced.
- */
-
-/*
- * Production-only AArch64 NEON inverse NTT for the Good-Thomas row-bitrev
- * layout produced by the generic Forward NTT above.
- *
- * This generic inverse is retained for the raw-factor pair and ABI tests.
- * The active Decap entry is poly_invntt_decap_scale, defined below.
+ * Test-only reference Good-Thomas inverse, paired with test/reference/basemul.S
+ * (block-major input carrying one extra R^-1 factor, normal R^0 output).  It is
+ * not linked into the KEM or the SUPERCOP leaf; decapsulation uses
+ * poly_invntt_ternary_decap in ntt.S, which was derived from this kernel.
  * Its implementation uses:
  *   - direct physical input -> inverse NTT32 stage123
  *   - stage123 stripe scratch laid out for stage45 consumption

@@ -10,7 +10,7 @@ from pathlib import Path
 
 p=argparse.ArgumentParser()
 p.add_argument('destination',type=Path)
-p.add_argument('--prefix',default='gt768_e13_')
+p.add_argument('--prefix',default='ntruplus768_gt_')
 a=p.parse_args();root=Path(__file__).resolve().parents[1]
 assert platform.system()=='Linux' and platform.machine()=='aarch64', 'Requires Linux AArch64 GCC'
 assert re.fullmatch('[A-Za-z_][A-Za-z0-9_]*',a.prefix)
