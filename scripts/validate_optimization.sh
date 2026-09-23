@@ -17,7 +17,7 @@ case "${PARAM_SET}" in
     ;;
 esac
 
-IMPL_A="${IMPL_A:-${ROOT_DIR}/ntruplus-KpqC-Final/Reference_Implementation/${PARAM_SET}}"
+IMPL_A="${IMPL_A:-${ROOT_DIR}/ntruplus-ntt-Optimized/Reference_Implementation/${PARAM_SET}}"
 IMPL_B="${IMPL_B:-${ROOT_DIR}/ntruplus-ntt-Optimized/Optimized_Implementation/${PARAM_SET}}"
 
 echo "[validate] root: ${ROOT_DIR}"
