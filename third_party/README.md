@@ -37,6 +37,26 @@ The relevant implementation is
 scaled basemul/inverse contracts distinct from the KPQC Final out-of-place
 benchmark API.
 
+## mlkem-native x1 FIPS202 (vendored subset)
+
+- Upstream: <https://github.com/pq-code-package/mlkem-native.git>
+- Local path: `third_party/mlkem-native-fips202-b3ba7b32`
+- Revision at import: `b3ba7b32773e657dd37f6f87bce82528459ad8a4`
+- Imported: 2026-09-23
+- License: `Apache-2.0 OR ISC OR MIT` (SPDX header of every vendored source;
+  upstream `LICENSE` included)
+
+A tracked, revision-locked copy of only the x1 Keccak / SHAKE256 C code
+(`mlkem/src/fips202/{fips202,keccakf1600}.{c,h}` and the five headers they
+include) that the NTRU+ AVX2 mlkem-native-Keccak candidates use; no x4
+assembly and no ML-KEM code.  Files are byte-identical to upstream at the
+revision above (per-file SHA-256 in the directory's `README.md`).  Do not
+edit it; configuration lives in
+`ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/config/`.
+To reproduce the import and to re-verify it against a clean checkout, see
+[`mlkem-native-fips202-b3ba7b32/README.md`](mlkem-native-fips202-b3ba7b32/README.md)
+and `common/official_opt_keccak/tools/check_keccak_config_equivalence.py`.
+
 ## NTTRU
 
 - Upstream: <https://github.com/gregorseiler/NTTRU.git>
