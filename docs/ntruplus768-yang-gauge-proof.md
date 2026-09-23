@@ -1174,3 +1174,15 @@ adds have identity twiddles: 18 at size 8 and six at size 16. Thus the local
 machine multiply to move. This does not prove reachable overflow or exclude a
 correlated proof or a redesigned butterfly. No ASM or cycles were produced by
 this selection gate; the v2 JSON supersedes the old plane-bound provenance.
+
+### Correlated-range and butterfly follow-up
+
+The later [correlated-range/butterfly gate](ntruplus768-correlated-range-butterfly.md)
+**supersedes the previous “interval failure only” qualification for the
+unrepaired CT realization**. A canonical decoded `c,f` witness produces raw
+7596 in every degree-3 BaseMulScale leaf; the identity-twiddle size-8 sum is
+60768 and signed `vpaddw` corrupts the residue. A modular-half butterfly has
+an executable arithmetic proof and a local AVX2 probe, but not a complete
+inverse-tail schedule or Decap performance result. Four of five CT levels
+must be halved in the tested uniform-stage, no-other-repair family. This is
+not a lower bound for every CT or twisted-tower implementation.

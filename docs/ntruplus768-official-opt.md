@@ -1,5 +1,12 @@
 # NTRU+768 Official AVX2 optimization
 
+Latest true-twist range follow-up: the prior no-repair CT interval failure is
+now a [reproducible arithmetic overflow](ntruplus768-correlated-range-butterfly.md)
+on canonical decoded Decap inputs. A modular-half AVX2 butterfly passes local
+arithmetic tests, but the full inverse tail, allocation and cycle performance
+remain unverified. The result rejects only that unrepaired realization, not
+the joint Forward/inverse tower direction.
+
 The latest [existing-multiply repair gate](ntruplus768-defuse-repair-gate.md)
 audits Keygen, Encap and Decap against the caller-lazy control. The corrected
 true-twist screen finds that all 24 first unproved Decap CT additions lie on

@@ -643,3 +643,34 @@ round25_existing_multiply_repair_gate:
   linked_ASM_KAT_short_timing_fixed_layout: not_run_no_qualified_candidate
   scope: local_existing_multiply_repair_gate_not_global_CT_or_twisted_tower_rejection
   native_and_clean_promotion: no
+round26_correlated_range_butterfly:
+  class: linked_BaseMulScale_witness_plus_local_AVX2_butterfly_probe
+  report: docs/ntruplus768-correlated-range-butterfly.md
+  tools:
+    - tools/research_correlated_ct_butterfly.py
+    - tools/search_ct_half_stages.py
+    - tools/audit_qhalf_probe.py
+  artifacts:
+    - results/yang-true-y-twist-correlated-butterfly-20260923.json
+    - results/yang-true-y-twist-half-stage-search-20260923.json
+    - results/yang-true-y-twist-qhalf-probe-20260923.json
+  actual_canonical_overflow_witness:
+    c_all_coefficients: 3449
+    f_all_coefficients: 3349
+    BaseMulScale_degree3_raw: 7596
+    size8_mathematical_sum: 60768
+    vpaddw_signed_result: -4768
+    residue_corrupted: true
+  uniform_stage_no_other_repair_screen:
+    choices: 32
+    minimum_halved_levels: 4
+    safe_choices: 6
+    scope: per_cell_interval_not_global_lower_bound
+  modular_half_butterfly:
+    local_AVX2_vector_tests_passed: 100081
+    actual_BaseMulScale_input_cases_checked: 101
+    formal_radix2_final_abs_bound: 16284
+    full_inverse_tail_scale_allocation_and_range: open
+  linked_inverse_ASM_or_Decap_cycles: not_run
+  decision: research_selective_repair_or_cheaper_butterfly_before_full_inverse_ASM
+  native_and_clean_promotion: no
