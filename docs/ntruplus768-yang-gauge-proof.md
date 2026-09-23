@@ -1199,3 +1199,10 @@ closes the factored top tail and actual BaseMulScale→inverse→crepmod3 scalar
 contract, but finds additional vector Montgomery chains and mixed-lane
 selection. The full 16-YMM linked schedule and Decap pricing remain open;
 there is no full inverse ASM or performance promotion.
+
+The subsequent [physical two-schedule comparison](ntruplus768-true-twist-physical-schedule.md)
+repairs the selective-Barrett control's root orientation and compares both
+true-y CT realizations at the same materialized boundary. Both pass 101
+compiled BaseMulScale inverse/crepmod3 differentials; selective repair is the
+preferred first compact-packet ASM prototype, **not** an established cycle
+winner.
