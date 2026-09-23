@@ -81,4 +81,35 @@ $(BUILD)/bench_codec_fused: bench/bench_codec_fused.c $(COMMON)/tests/support/cr
 		$(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
 	$(CC) $(BENCH_CFLAGS) -maes -I$(KAT) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
 
-codec-bench: $(BUILD)/bench_codec_fused
+# Placement control: identical sources, KEM objects and codec/lazy ASM linked
+# in the reverse order.
+CBENCH_OBJS_REV := $(BUILD)/cbench_lazy_codec.o $(BUILD)/cbench_codec.o $(BUILD)/cbench_lazy.o $(BUILD)/cbench_ref.o
+$(BUILD)/bench_codec_fused_swapped: bench/bench_codec_fused.c $(COMMON)/tests/support/crypto_declassify.c \
+		$(CBENCH_OBJS_REV) $(CODEC_ASM) $(LAZY_ASM) $(COMMON_C) $(COMMON_ASM) \
+		$(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -maes -I$(KAT) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
+
+codec-bench: $(BUILD)/bench_codec_fused $(BUILD)/bench_codec_fused_swapped
+
+# ------------------------------------------------ seed-matched paired Keypair
+# The shared harness (common/official_opt_lazy/bench/bench_keypair_seedmatched.c,
+# unchanged) times official_ref_keypair (A) against official_lazy_keypair (B)
+# on byte-identical SHAKE256 coin streams; the pairings below bind A and B to
+# different KEM objects.  supercop-derived diagnostic, not Native.
+define kp_obj # $(1)=name $(2)=source $(3)=rename
+$(BUILD)/kp_$(1).o: $(COMMON)/bench/kem_diag.c $(2) | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I. $(INCLUDES) $(3) '-DKEM_SOURCE="$(2)"' -DDERAND_NAME=kp_$(1)_derand -c -o $$@ $$<
+endef
+$(eval $(call kp_obj,A_official,$(OFFICIAL)/kem.c,$(REF_RENAME)))
+$(eval $(call kp_obj,A_lazy,src/kem_lazy.c,$(REF_RENAME)))
+$(eval $(call kp_obj,B_lazy_codec,src/kem_lazy_codec.c,$(LAZY_RENAME)))
+$(eval $(call kp_obj,B_codec,src/kem_codec.c,$(LAZY_RENAME)))
+KPC_DEPS := $(KP_SRC) $(LAZY_ASM) $(CODEC_ASM) $(COMMON_C) $(COMMON_ASM)
+$(BUILD)/kp_lazycodec_vs_official: $(BUILD)/kp_A_official.o $(BUILD)/kp_B_lazy_codec.o $(KPC_DEPS) | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
+$(BUILD)/kp_lazycodec_vs_lazy: $(BUILD)/kp_A_lazy.o $(BUILD)/kp_B_lazy_codec.o $(KPC_DEPS) | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
+$(BUILD)/kp_codec_vs_official: $(BUILD)/kp_A_official.o $(BUILD)/kp_B_codec.o $(KPC_DEPS) | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
+codec-bench-keypair: $(BUILD)/kp_lazycodec_vs_official $(BUILD)/kp_lazycodec_vs_lazy $(BUILD)/kp_codec_vs_official
+.PHONY: codec-bench-keypair

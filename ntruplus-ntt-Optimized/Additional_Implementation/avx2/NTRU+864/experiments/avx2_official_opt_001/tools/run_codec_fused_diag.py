@@ -46,6 +46,14 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def text_digest(elf):
+    """sha256 of the .text section; the whole-ELF hash changes on every rebuild
+    because .strtab records gcc's temporary object names."""
+    return hashlib.sha256(subprocess.run(
+        ["objcopy", "-O", "binary", "--only-section=.text", str(elf), "/dev/stdout"],
+        check=True, capture_output=True).stdout).hexdigest()
+
+
 def stq(values):
     values = sorted(values)
     n = len(values)
@@ -66,6 +74,9 @@ def main():
     ap.add_argument("--cpu", type=int, default=1)
     ap.add_argument("--launches", type=int, default=15)
     ap.add_argument("--skip-build", action="store_true")
+    ap.add_argument("--binary", default="build/bench_codec_fused",
+                    help="bench ELF relative to the experiment (placement control: "
+                         "build/bench_codec_fused_swapped)")
     args = ap.parse_args()
     root = args.experiment.resolve()
     if execute(["git", "branch", "--show-current"], cwd=REPO).stdout.strip() != BRANCH:
@@ -84,7 +95,7 @@ def main():
     if not args.skip_build:
         execute(["make", "codec-check"], cwd=root)
         execute(["make", "codec-bench"], cwd=root)
-    binary = root / "build/bench_codec_fused"
+    binary = root / args.binary
     result.mkdir(parents=True)
     rows, identities = [], set()
     for launch in range(args.launches):
@@ -135,6 +146,7 @@ def main():
         "parameter": "864",
         "source_sha256": {str(p.relative_to(REPO)): digest(p) for p in sources},
         "elf_sha256": digest(binary),
+        "elf_text_sha256": text_digest(binary),  # rebuild-stable (.strtab carries gcc temp names)
         "host": platform.platform(),
         "cpu": args.cpu,
         "controls_read_only": controls,
@@ -144,6 +156,7 @@ def main():
         "cpucycles_identity": sorted(identities),
         "compiler": execute(["cc", "--version"]).stdout.splitlines()[0],
         "compiler_recipe": "lazy.mk BENCH_CFLAGS (common O3GC); see codec.mk bench_codec_fused rule",
+        "binary": args.binary,
         "command": ["taskset", "-c", str(args.cpu), str(binary)],
     }
     (result / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
