@@ -128,7 +128,7 @@ audit: $(BUILD)/test_kem_lazy $(BUILD)/official_ntt.o | $(EVIDENCE)
 		--output $(EVIDENCE)/linked-symbol-summary.json
 
 range-proof: | $(EVIDENCE)
-	$(PYTHON) $(COMMON)/range_proof/prove_forward_lazy.py --param $(PARAM) --experiment . \
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(COMMON)/range_proof/prove_forward_lazy.py --param $(PARAM) --experiment . \
 		--build $(BUILD)/range_proof --output $(EVIDENCE)/range-proof-summary.json
 
 phase-a: check sanitize audit range-proof
