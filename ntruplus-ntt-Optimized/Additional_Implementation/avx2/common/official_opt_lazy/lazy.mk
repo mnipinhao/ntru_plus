@@ -1,7 +1,9 @@
 # Shared Phase-A (correctness only) rules for the caller-bounded lazy Forward
 # candidates of Official NTRU+864 / NTRU+1152 AVX2.  Included by
 # NTRU+{864,1152}/experiments/avx2_official_opt_001/Makefile after PARAM is set.
-# No timing, SUPERCOP campaign or host-control rule lives here.
+# Phase B adds only the same-ELF diagnostic bench build (`make bench`); the
+# timing itself is run by tools/run_forward_caller_lazy_short.py.  No
+# host-control rule lives here.
 
 ifndef PARAM
 $(error PARAM must be 864 or 1152)
@@ -45,7 +47,7 @@ KAT_CFLAGS := -O2 -maes
 KAT_SANFLAGS := -O1 -g -maes -fno-omit-frame-pointer -fsanitize=address,undefined
 
 .DEFAULT_GOAL := check
-.PHONY: generate check-generate check-upstream check sanitize audit range-proof phase-a record clean
+.PHONY: bench generate check-generate check-upstream check sanitize audit range-proof phase-a record clean
 
 generate:
 	$(PYTHON) $(COMMON)/tools/generate_forward_caller_lazy.py --param $(PARAM) --experiment .
@@ -137,6 +139,30 @@ phase-a: check sanitize audit range-proof
 record: phase-a
 	mkdir -p results/phase-a
 	cp $(EVIDENCE)/linked-symbol-summary.json $(EVIDENCE)/range-proof-summary.json results/phase-a/
+
+# ---------------------------------------------------------------- Phase B same-ELF bench
+# cpucycles comes from an initialised disposable SUPERCOP campaign (read only).
+SUPERCOP_CAMPAIGN ?= /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001
+SUPERCOP_MACHINE ?= nucpromtlhcubinucai1ummsb209
+CPU_INCLUDE := $(SUPERCOP_CAMPAIGN)/bench/$(SUPERCOP_MACHINE)/include/nontimecop/amd64
+CPU_LIB := $(SUPERCOP_CAMPAIGN)/bench/$(SUPERCOP_MACHINE)/lib/nontimecop/amd64/libcpucycles.a
+# Common O3GC recipe, as the NTRU+768 Round-5 same-ELF bench.
+BENCH_CFLAGS := $(CFLAGS) -ffunction-sections -fdata-sections -Wl,--gc-sections
+
+$(BUILD)/bench_kem_ref.o: $(COMMON)/bench/kem_diag.c $(OFFICIAL)/kem.c | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I. $(INCLUDES) $(REF_RENAME) '-DKEM_SOURCE="$(OFFICIAL)/kem.c"' \
+		-DDERAND_NAME=officialopt_ref_enc_derand -c -o $@ $<
+
+$(BUILD)/bench_kem_lazy.o: $(COMMON)/bench/kem_diag.c src/kem_lazy.c | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I. $(INCLUDES) $(LAZY_RENAME) '-DKEM_SOURCE="src/kem_lazy.c"' \
+		-DDERAND_NAME=officialopt_lazy_enc_derand -c -o $@ $<
+
+$(BUILD)/bench_caller_lazy: $(COMMON)/bench/bench_caller_lazy.c $(COMMON)/tests/support/crypto_declassify.c \
+		$(BUILD)/bench_kem_ref.o $(BUILD)/bench_kem_lazy.o $(LAZY_ASM) $(COMMON_C) $(COMMON_ASM) \
+		$(BUILD)/kat_aes.o $(BUILD)/kat_rng.o | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -maes -I$(KAT) -I$(CPU_INCLUDE) $(INCLUDES) -DLAZY_NTT=$(LAZY) -o $@ $^ $(CPU_LIB)
+
+bench: $(BUILD)/bench_caller_lazy
 
 clean:
 	rm -rf $(BUILD) $(BUILD_SAN)

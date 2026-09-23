@@ -5,7 +5,8 @@ The command must write its result into the directory given by the literal
 token {RESULT}.  Each attempt runs under hygiene_batch.py.  A contaminated
 attempt's result directory is moved to <results>/_contaminated/<name>-aN
 (ignored by Git) and the batch is re-run, up to --retries more times.  The
-accepted attempt gets `host-hygiene.json` plus a compact `host_hygiene`
+accepted attempt gets the full `host-hygiene.json` (Git-ignored: it holds
+raw process command lines) plus a compact `host_hygiene`
 object merged into its metadata file (metadata.json or manifest.json), which
 also lists every earlier contaminated attempt.
 
@@ -38,7 +39,8 @@ def compact(record: dict) -> dict:
             "load_threshold": record["load_threshold"],
             "proc_threshold_percent": record["proc_threshold_percent"],
             "during_max_loadavg1_including_batch": record["during"]["max_loadavg1"],
-            "during_offenders": record["during"]["offenders"],
+            "during_offenders": {pid: {k: v for k, v in o.items() if k != "cmd"}
+                                 for pid, o in record["during"]["offenders"].items()},
             "during_heavy_windows": len(record["during"]["heavy_windows"]),
             "before": snap(record["before"]), "after": snap(record["after"])}
 
