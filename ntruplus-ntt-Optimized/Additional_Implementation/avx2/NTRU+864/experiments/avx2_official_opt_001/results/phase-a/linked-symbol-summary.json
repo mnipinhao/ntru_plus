@@ -1,0 +1,68 @@
+{
+  "class": "linked ELF audit (Phase A, correctness only; no timing)",
+  "parameter": "NTRU+864",
+  "elf": "build/test_kem_lazy",
+  "elf_sha256": "d6fc70890419e555073041f52f37b7e87d5d9a2e57a07cf31e3490d713d79f81",
+  "official_ntt_obj_sha256": "ee20b92a9de5d4a5cbadb7daeb0b5d3330b53ee952a1897d1c1ceb6a582a353e",
+  "asm_sha256": "db5d489658d4f5b77ce181c691d7c3b9e054a0a14ebc7c693f79df382a8f0497",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "symbol": "ntruplus864_officialopt_ntt_caller_lazy",
+  "address_mod_32": 0,
+  "aligned_32": true,
+  "size_bytes": 1329,
+  "instruction_rows": 246,
+  "official_poly_ntt_rows": 265,
+  "opcode_counts": {
+    "add": 9,
+    "cmp": 6,
+    "jb": 6,
+    "lea": 7,
+    "ret": 1,
+    "sub": 3,
+    "vmovdqa": 48,
+    "vpaddw": 24,
+    "vpblendd": 6,
+    "vpblendw": 6,
+    "vpbroadcastd": 8,
+    "vperm2i128": 6,
+    "vpmulhw": 36,
+    "vpmullw": 21,
+    "vpsllq": 6,
+    "vpsrlq": 6,
+    "vpsubw": 41,
+    "vpunpckhqdq": 3,
+    "vpunpcklqdq": 3
+  },
+  "static_delta_official_minus_candidate": {
+    "vmovdqa": 1,
+    "vpmulhrsw": 6,
+    "vpmullw": 6,
+    "vpsubw": 6
+  },
+  "dynamic_delta_per_forward": {
+    "vpmulhrsw": 54,
+    "vpmullw": 54,
+    "vpsubw": 54,
+    "terminal_constant_load": 1
+  },
+  "rows_identical_to_official_except_removed": true,
+  "stack_references": 0,
+  "calls": 0,
+  "vzeroupper": 0,
+  "official_vzeroupper": 0,
+  "terminal_barrett_vectors": 0,
+  "kem_call_relocations": {
+    "kem_lazy.o->candidate": 6,
+    "kem_lazy.o->poly_ntt": 0,
+    "kem_ref.o->poly_ntt": 6,
+    "kem_ref.o->candidate": 0
+  },
+  "remaining_branches": [
+    "jb",
+    "jb",
+    "jb",
+    "jb",
+    "jb",
+    "jb"
+  ]
+}

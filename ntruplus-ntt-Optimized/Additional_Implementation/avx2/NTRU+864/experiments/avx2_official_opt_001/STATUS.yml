@@ -1,0 +1,97 @@
+experiment: NTRUPLUS864-OFFICIAL-OPT-LAZY-001
+candidate: avx2-officialopt-caller-lazy-864-exp001
+parameter: NTRU+864
+branch: official-opt-lazy-864-1152
+branch_point: e76ecdf  # avx2-official-opt
+template: NTRU+768/experiments/avx2_official_opt_001 (Rounds 4-6, caller-lazy Forward)
+supercop_version: 20260831
+upstream:
+  source_path: crypto_kem/ntruplus864/avx2
+  import: upstream/UPSTREAM.json  # scripts/import_supercop_ntruplus.py, never edited
+  archive_sha256: 9a258febbfbbf6de0c09cee73f343d4014597c259415e78a598b7af4b1787208
+  source_tree_sha256: 13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006  # == bench/supercop.lock
+  ntt_s_sha256: 980cad5ef69a78f9ed1f2f45fc5dcaa0a04cc07693cf65ea108acc41c547db92
+  kem_c_sha256: 368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f
+scope:
+  change: namespaced Official poly_ntt without the terminal Barrett block (ntt.s:365-383) and its _16xv load
+  generated_asm: asm/ntruplus864_officialopt_ntt_caller_lazy.s
+  generated_asm_sha256: db5d489658d4f5b77ce181c691d7c3b9e054a0a14ebc7c693f79df382a8f0497
+  generated_kem: src/kem_lazy.c  # Official kem.c, 6 poly_ntt call sites -> lazy entry
+  generated_kem_sha256: 398f5faa0b2733cc188ce933380ee8c64d8676a9938da0de8f3cdf3a8253d484
+  general_poly_ntt: unchanged_and_linked
+  removed_per_forward: {vpmulhrsw: 54, vpmullw: 54, vpsubw: 54, terminal_constant_load: 1}
+  input_contract: caller_domains_only  # [-3,4] asm contract; no general-input claim
+phase: A_correctness_only
+gates:
+  generator:
+    result: pass
+    evidence: make check-generate
+    properties:
+      - "pinned ntt.s and kem.c sha256"
+      - "exactly one reduce2-to-store block"
+      - "6x each of vpmulhrsw/vpmullw/vpsubw per iteration"
+      - "each vpsubw closes x-=q*round(x*v) on a stored register"
+      - "9-iteration terminal loop"
+      - "ymm1 unused elsewhere"
+      - "deterministic double derivation"
+      - "check mode"
+  forward_differential:
+    result: pass
+    cases: 27295  # 5 caller domains x 5459 (constants, alternating, 4N impulse patterns, 1000 random, 1000 extreme-only)
+    checks:
+      - "lazy == Official mod q per lane"
+      - "Official Barrett(lazy) == Official bit-exact"
+      - "lazy within per-domain proven bound"
+      - "canaries"
+    extra:
+      - "cbd1/triple/sotp_encode producer domains"
+      - "crepmod3 on all int16 -> [-2,2]"
+      - "tobytes/frombytes canonical on all int16 via real code"
+    evidence: results/phase-a/closure-tests.log
+  kem:
+    result: pass
+    deterministic_vectors: 100  # pk, sk, ct, ss byte-exact vs Official
+    invalid_pk: matched  # rejection + zeroised ct/ss
+    invalid_ct_bitflip: matched
+    noncanonical_ct: matched
+    noncanonical_sk: matched
+    forced_g_retry: pass  # CBD1(g)=0 via --wrap=fips202avx_shake256, 3 draws, post-retry Encap/Decap exact
+    forced_f_retry: pass  # TEST_F_RETRY --wrap=poly_baseinv; keys equal discarded-first-draw oracle, 3 draws, RNG continuation exact
+    natural_f_retries_observed: 0  # byte-exact vs Official
+    natural_g_retries_observed: 0
+    evidence: results/phase-a/closure-tests.log
+  sanitizer:
+    result: pass
+    config: ASan + UBSan (-fno-sanitize-recover=all) + LeakSanitizer enabled (detect_leaks=1)
+    binaries:
+      - "test_forward_caller_lazy"
+      - "test_kem_lazy"
+      - "test_kem_lazy_fretry"
+    evidence: make sanitize; results/phase-a/closure-tests.log
+  linked_audit:
+    result: pass
+    elf: build/test_kem_lazy
+    symbol_aligned_32: true
+    size_bytes: 1329
+    instruction_rows: 246  # Official poly_ntt in same ELF: 265
+    rows_identical_to_official_except_removed: true
+    stack_references: 0
+    calls: 0
+    vzeroupper: 0
+    terminal_barrett_vectors: 0
+    kem_call_relocations: {kem_lazy_to_candidate: 6, kem_lazy_to_poly_ntt: 0, kem_ref_to_poly_ntt: 6}
+    evidence: results/phase-a/linked-symbol-summary.json
+  range_proof:
+    result: pass
+    method: per-lane interval replay of the generated lazy ASM (avx2emu, emulator==machine differential), equal lane-by-lane to Official replay with terminal Barrett skipped
+    lazy_output_envelope: [-17961, 17957]
+    lazy_output_by_caller: {asm_contract: [-17961, 17957], keygen_f: [-17193, 17194], keygen_g: [-17193, 17193], decap_msg: [-16382, 16385], encap_r_m_reenc: [-15580, 15580]}
+    signed_word_failures: 0
+    consumers: {baseinv_1: no_overflow_and_zero_check_exact (den_absmax 8225), basemul_keygen: [-1838, 1838], basemul_encap: [-1824, 1824], basemul_decap: [-1824, 1838], poly_add: [-17404, 17404], poly_sub: [-16385, 19838], tobytes: canonical_all_int16}
+    evidence: results/phase-a/range-proof-summary.json
+performance: not-measured  # Phase B (Native SUPERCOP) not started
+native: not_run
+supercop_campaign: not_run
+host_controls: unchanged
+promotion: none
+reproduce: make phase-a  # (from this directory); make record rewrites results/phase-a/

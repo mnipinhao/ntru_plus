@@ -1,0 +1,77 @@
+# make record (NTRU+1152 Phase A), 2026-09-23T02:30:31Z, cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+python3 ../../../../../../scripts/check_supercop_experiment.py --experiment . --parameter 1152
+verified NTRU+1152 experiment upstream 78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010
+python3 ../../../common/official_opt_lazy/tools/generate_forward_caller_lazy.py --param 1152 --experiment . --check
+ok asm/ntruplus1152_officialopt_ntt_caller_lazy.s sha256=eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092
+ok src/kem_lazy.c sha256=0bd8c009ef362948fd51d7b1c642904b7f5e5d1095f11cf6401dcbf408d2caa7
+removed per Forward: {'removed_per_iteration': {'vpmulhrsw': 8, 'vpmullw': 8, 'vpsubw': 8}, 'iterations': 9, 'removed_vectors_per_forward': 72, 'removed_constant_loads': 1}
+build/test_forward_caller_lazy
+  asm_contract[-3,4]       cases=6611 observed=[-13761,14119] proven=[-17961,17957]
+  keygen_f                 cases=6611 observed=[-13273,13336] proven=[-17193,17194]
+  keygen_g                 cases=6611 observed=[-13401,13044] proven=[-17193,17193]
+  decap_msg[-2,2]          cases=6611 observed=[-12410,12525] proven=[-16382,16385]
+  encap_r_m_reenc[-1,1]    cases=6611 observed=[-12283,11836] proven=[-15580,15580]
+NTRU+1152 caller-lazy Forward residue/Barrett-identity/bound/canary differential: pass (33055 cases); producers pass; tobytes/frombytes canonical on all int16 (57 polys)
+build/test_kem_lazy
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+build/test_kem_lazy_fretry
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=40 g=45
+f-injection keypair draws: 5 (= discarded-draw oracle 4 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_lazy
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_forward_caller_lazy
+  asm_contract[-3,4]       cases=6611 observed=[-13761,14119] proven=[-17961,17957]
+  keygen_f                 cases=6611 observed=[-13273,13336] proven=[-17193,17194]
+  keygen_g                 cases=6611 observed=[-13401,13044] proven=[-17193,17193]
+  decap_msg[-2,2]          cases=6611 observed=[-12410,12525] proven=[-16382,16385]
+  encap_r_m_reenc[-1,1]    cases=6611 observed=[-12283,11836] proven=[-15580,15580]
+NTRU+1152 caller-lazy Forward residue/Barrett-identity/bound/canary differential: pass (33055 cases); producers pass; tobytes/frombytes canonical on all int16 (57 polys)
+ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 build_san/test_kem_lazy_fretry
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=40 g=45
+f-injection keypair draws: 5 (= discarded-draw oracle 4 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+1152 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 85 natural Keygen retries)
+python3 ../../../common/official_opt_lazy/tools/audit_forward_caller_lazy.py --param 1152 --experiment . \
+{
+ "parameter": "NTRU+1152",
+ "size_bytes": 1569,
+ "instruction_rows": 286,
+ "official_poly_ntt_rows": 311,
+ "static_delta_official_minus_candidate": {
+  "vmovdqa": 1,
+  "vpmulhrsw": 8,
+  "vpmullw": 8,
+  "vpsubw": 8
+ },
+ "kem_call_relocations": {
+  "kem_lazy.o->candidate": 6,
+  "kem_lazy.o->poly_ntt": 0,
+  "kem_ref.o->poly_ntt": 6,
+  "kem_ref.o->candidate": 0
+ }
+}
+PYTHONDONTWRITEBYTECODE=1 python3 ../../../common/official_opt_lazy/range_proof/prove_forward_lazy.py --param 1152 --experiment . \
+[1152] emulator == machine: {'poly_ntt': 32, 'ntruplus1152_officialopt_ntt_caller_lazy': 32, 'poly_basemul': 32, 'poly_baseinv_1': 32}
+[1152] asm_contract[-3,4]       official=[-2556, 2555] lazy=[-17961, 17957]
+[1152] keygen_f                 official=[-2556, 2555] lazy=[-17193, 17194]
+[1152] keygen_g                 official=[-2556, 2555] lazy=[-17193, 17193]
+[1152] decap_msg[-2,2]          official=[-2554, 2555] lazy=[-16382, 16385]
+[1152] encap_r/m,reenc[-1,1]    official=[-2372, 2372] lazy=[-15580, 15580]
+[1152] lazy consumer keygen baseinv(f_hat)                    {'failures': 0, 'numerator_absmax': 11070, 'den_absmax': 4739, 'pc1_absmax_env': 2071, 'zero_check_exact': True, 'zero_margin': 'pc1*D=9814469, D^2=22458121 vs 32768q=113278976', 'finv_absmax_env': 4787}
+[1152] lazy consumer keygen baseinv(g_hat)                    {'failures': 0, 'numerator_absmax': 11068, 'den_absmax': 4739, 'pc1_absmax_env': 2071, 'zero_check_exact': True, 'zero_margin': 'pc1*D=9814469, D^2=22458121 vs 32768q=113278976', 'finv_absmax_env': 4787}
+[1152] lazy consumer keygen basemul(h,g_hat,finv)             {'failures': 0, 'fail_lines': [], 'output_range': [-1865, 1865]}
+[1152] lazy consumer keygen basemul(h,f_hat,ginv)             {'failures': 0, 'fail_lines': [], 'output_range': [-1865, 1865]}
+[1152] lazy consumer keygen tobytes(sk,f_hat)                 {'input_range': [-17193, 17194], 'ok': True}
+[1152] lazy consumer encap basemul(c,h,r_hat)                 {'failures': 0, 'fail_lines': [], 'output_range': [-1856, 1856]}
+[1152] lazy consumer encap poly_add(c,m_hat)                  {'range': [-17436, 17436], 'ok': True}
+[1152] lazy consumer encap tobytes(ct,r_hat) / reenc tobytes  {'input_range': [-15580, 15580], 'ok': True}
+[1152] lazy consumer decap poly_sub(c,f_hat)                  {'range': [-16385, 19838], 'ok': True}
+[1152] lazy consumer decap basemul(f,c-f_hat,hinv)            {'failures': 0, 'fail_lines': [], 'output_range': [-1856, 1865]}
+[1152] range proof PASS -> build/evidence/range-proof-summary.json
+cp build/evidence/linked-symbol-summary.json build/evidence/range-proof-summary.json results/phase-a/

@@ -1,0 +1,557 @@
+{
+ "class": "per-lane interval range proof + consumer envelopes (Phase A; no timing)",
+ "parameter": "NTRU+1152",
+ "verdict": "pass",
+ "sources_sha256": {
+  "ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+  "basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+  "baseinv.s": "bc88e6622f7e01f2280f38e75bcf413b7aa808e6159c9abb14dd3926f54189ed",
+  "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+  "crepmod3.s": "6e60a465409f262fb57fc217708eddcf8c60be0042be8293985177d305ede2ce",
+  "pack.s": "406e0d9cff4af069d8b8cc3cb028d11898a61f86d86cece9280fa81dafb11732"
+ },
+ "lazy_asm": "asm/ntruplus1152_officialopt_ntt_caller_lazy.s",
+ "lazy_asm_sha256": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092",
+ "tool_sha256": {
+  "avx2emu.py": "aa8bc39bc325e3158d1afcce78d5bda7a9d1b12e0dcdf7febe6583ae4ca2d370",
+  "common.py": "16eaf30e758e80f8f8d2ec1305ee31afe27e4ded4bd1ac80fb0f20bab1841d3a",
+  "difftest.py": "0b6ec6173d0e24793490b51fc0c74dbafe97365c92aafb292fa0d21a1f832e1f",
+  "ledger.py": "715b9c82ceba337090f2fcc3de866813635cd9b5470ee490f64c7da28fede9c9",
+  "prove_forward_lazy.py": "0118cd492d0a0faca8eafc8f43fb7f2c0efdd10467b1c58b9a553253e2daf916",
+  "images.c": "e155ab31180f9831f0036602b4ba48efc37b6a5fc22aa61ed68c4f5a4f6138b3"
+ },
+ "emulator_machine_differential_calls": {
+  "poly_ntt": 32,
+  "ntruplus1152_officialopt_ntt_caller_lazy": 32,
+  "poly_basemul": 32,
+  "poly_baseinv_1": 32
+ },
+ "official_terminal_barrett_vpsubw_lines": [
+  412,
+  413,
+  414,
+  415,
+  425,
+  426,
+  427,
+  428
+ ],
+ "forward": {
+  "asm_contract[-3,4]": {
+   "official": {
+    "failures": 0,
+    "output_range": [
+     -2556,
+     2555
+    ]
+   },
+   "lazy_generated_asm": {
+    "failures": 0,
+    "output_range": [
+     -17961,
+     17957
+    ],
+    "barrett_lines_executed": 0
+   },
+   "lazy_equals_official_with_terminal_barrett_skipped_per_lane": true
+  },
+  "keygen_f": {
+   "official": {
+    "failures": 0,
+    "output_range": [
+     -2556,
+     2555
+    ]
+   },
+   "lazy_generated_asm": {
+    "failures": 0,
+    "output_range": [
+     -17193,
+     17194
+    ],
+    "barrett_lines_executed": 0
+   },
+   "lazy_equals_official_with_terminal_barrett_skipped_per_lane": true
+  },
+  "keygen_g": {
+   "official": {
+    "failures": 0,
+    "output_range": [
+     -2556,
+     2555
+    ]
+   },
+   "lazy_generated_asm": {
+    "failures": 0,
+    "output_range": [
+     -17193,
+     17193
+    ],
+    "barrett_lines_executed": 0
+   },
+   "lazy_equals_official_with_terminal_barrett_skipped_per_lane": true
+  },
+  "decap_msg[-2,2]": {
+   "official": {
+    "failures": 0,
+    "output_range": [
+     -2554,
+     2555
+    ]
+   },
+   "lazy_generated_asm": {
+    "failures": 0,
+    "output_range": [
+     -16382,
+     16385
+    ],
+    "barrett_lines_executed": 0
+   },
+   "lazy_equals_official_with_terminal_barrett_skipped_per_lane": true
+  },
+  "encap_r/m,reenc[-1,1]": {
+   "official": {
+    "failures": 0,
+    "output_range": [
+     -2372,
+     2372
+    ]
+   },
+   "lazy_generated_asm": {
+    "failures": 0,
+    "output_range": [
+     -15580,
+     15580
+    ],
+    "barrett_lines_executed": 0
+   },
+   "lazy_equals_official_with_terminal_barrett_skipped_per_lane": true
+  }
+ },
+ "forward_levels_asm_contract": {
+  "official": {
+   "level0": {
+    "addsub_absmax": 2896,
+    "mont_out": null,
+    "mont_vec": 0,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": 2892,
+    "entering_absmax": 4
+   },
+   "level1": {
+    "addsub_absmax": 6436,
+    "mont_out": 1778,
+    "mont_vec": 72,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 2896
+   },
+   "level2": {
+    "addsub_absmax": 10119,
+    "mont_out": 1877,
+    "mont_vec": 72,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 6436
+   },
+   "level3": {
+    "addsub_absmax": 12051,
+    "mont_out": 1984,
+    "mont_vec": 36,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 10119
+   },
+   "level4": {
+    "addsub_absmax": 13839,
+    "mont_out": 2016,
+    "mont_vec": 36,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 12051
+   },
+   "level5": {
+    "addsub_absmax": 15862,
+    "mont_out": 2075,
+    "mont_vec": 36,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 13839
+   },
+   "level6": {
+    "addsub_absmax": 17961,
+    "mont_out": 2133,
+    "mont_vec": 36,
+    "barrett_in": 17961,
+    "barrett_out": 2556,
+    "barrett_vec": 72,
+    "raw_product": null,
+    "entering_absmax": 15862
+   }
+  },
+  "lazy": {
+   "level0": {
+    "addsub_absmax": 2896,
+    "mont_out": null,
+    "mont_vec": 0,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": 2892,
+    "entering_absmax": 4
+   },
+   "level1": {
+    "addsub_absmax": 6436,
+    "mont_out": 1778,
+    "mont_vec": 72,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 2896
+   },
+   "level2": {
+    "addsub_absmax": 10119,
+    "mont_out": 1877,
+    "mont_vec": 72,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 6436
+   },
+   "level3": {
+    "addsub_absmax": 12051,
+    "mont_out": 1984,
+    "mont_vec": 36,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 10119
+   },
+   "level4": {
+    "addsub_absmax": 13839,
+    "mont_out": 2016,
+    "mont_vec": 36,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 12051
+   },
+   "level5": {
+    "addsub_absmax": 15862,
+    "mont_out": 2075,
+    "mont_vec": 36,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 13839
+   },
+   "level6": {
+    "addsub_absmax": 17961,
+    "mont_out": 2133,
+    "mont_vec": 36,
+    "barrett_in": null,
+    "barrett_out": null,
+    "barrett_vec": 0,
+    "raw_product": null,
+    "entering_absmax": 15862
+   }
+  }
+ },
+ "forward_census_asm_contract": {
+  "official": {
+   "level0": {
+    "vpaddw": 72,
+    "vpmullw": 36,
+    "vpsubw": 36
+   },
+   "level1": {
+    "vpaddw": 72,
+    "vpmulhw": 144,
+    "vpmullw": 72,
+    "vpsubw": 168
+   },
+   "level2": {
+    "vpaddw": 72,
+    "vpmulhw": 144,
+    "vpmullw": 72,
+    "vpsubw": 168
+   },
+   "level3": {
+    "vpaddw": 36,
+    "vperm2i128": 72,
+    "vpmulhw": 72,
+    "vpmullw": 36,
+    "vpsubw": 72
+   },
+   "level4": {
+    "vpaddw": 36,
+    "vpmulhw": 72,
+    "vpmullw": 36,
+    "vpsubw": 72,
+    "vpunpckhqdq": 36,
+    "vpunpcklqdq": 36
+   },
+   "level5": {
+    "vpaddw": 36,
+    "vpblendd": 72,
+    "vpmulhw": 72,
+    "vpmullw": 36,
+    "vpsllq": 36,
+    "vpsrlq": 36,
+    "vpsubw": 72
+   },
+   "level6": {
+    "vpaddw": 36,
+    "vpblendw": 72,
+    "vpmulhrsw": 72,
+    "vpmulhw": 72,
+    "vpmullw": 108,
+    "vpsllq": 36,
+    "vpsrlq": 36,
+    "vpsubw": 144
+   }
+  },
+  "lazy": {
+   "level0": {
+    "vpaddw": 72,
+    "vpmullw": 36,
+    "vpsubw": 36
+   },
+   "level1": {
+    "vpaddw": 72,
+    "vpmulhw": 144,
+    "vpmullw": 72,
+    "vpsubw": 168
+   },
+   "level2": {
+    "vpaddw": 72,
+    "vpmulhw": 144,
+    "vpmullw": 72,
+    "vpsubw": 168
+   },
+   "level3": {
+    "vpaddw": 36,
+    "vperm2i128": 72,
+    "vpmulhw": 72,
+    "vpmullw": 36,
+    "vpsubw": 72
+   },
+   "level4": {
+    "vpaddw": 36,
+    "vpmulhw": 72,
+    "vpmullw": 36,
+    "vpsubw": 72,
+    "vpunpckhqdq": 36,
+    "vpunpcklqdq": 36
+   },
+   "level5": {
+    "vpaddw": 36,
+    "vpblendd": 72,
+    "vpmulhw": 72,
+    "vpmullw": 36,
+    "vpsllq": 36,
+    "vpsrlq": 36,
+    "vpsubw": 72
+   },
+   "level6": {
+    "vpaddw": 36,
+    "vpblendw": 72,
+    "vpmulhw": 72,
+    "vpmullw": 36,
+    "vpsllq": 36,
+    "vpsrlq": 36,
+    "vpsubw": 72
+   }
+  }
+ },
+ "lazy_output_envelope": [
+  -17961,
+  17957
+ ],
+ "consumers_lazy": {
+  "keygen baseinv(f_hat)": {
+   "failures": 0,
+   "numerator_absmax": 11070,
+   "den_absmax": 4739,
+   "pc1_absmax_env": 2071,
+   "zero_check_exact": true,
+   "zero_margin": "pc1*D=9814469, D^2=22458121 vs 32768q=113278976",
+   "finv_absmax_env": 4787
+  },
+  "keygen baseinv(g_hat)": {
+   "failures": 0,
+   "numerator_absmax": 11068,
+   "den_absmax": 4739,
+   "pc1_absmax_env": 2071,
+   "zero_check_exact": true,
+   "zero_margin": "pc1*D=9814469, D^2=22458121 vs 32768q=113278976",
+   "finv_absmax_env": 4787
+  },
+  "keygen basemul(h,g_hat,finv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1865,
+    1865
+   ]
+  },
+  "keygen basemul(h,f_hat,ginv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1865,
+    1865
+   ]
+  },
+  "keygen tobytes(sk,f_hat)": {
+   "input_range": [
+    -17193,
+    17194
+   ],
+   "ok": true
+  },
+  "encap basemul(c,h,r_hat)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1856,
+    1856
+   ]
+  },
+  "encap poly_add(c,m_hat)": {
+   "range": [
+    -17436,
+    17436
+   ],
+   "ok": true
+  },
+  "encap tobytes(ct,r_hat) / reenc tobytes": {
+   "input_range": [
+    -15580,
+    15580
+   ],
+   "ok": true
+  },
+  "decap poly_sub(c,f_hat)": {
+   "range": [
+    -16385,
+    19838
+   ],
+   "ok": true
+  },
+  "decap basemul(f,c-f_hat,hinv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1856,
+    1865
+   ]
+  }
+ },
+ "consumers_official": {
+  "keygen baseinv(f_hat)": {
+   "failures": 0,
+   "numerator_absmax": 3883,
+   "den_absmax": 3724,
+   "pc1_absmax_env": 1940,
+   "zero_check_exact": true,
+   "zero_margin": "pc1*D=7224560, D^2=13868176 vs 32768q=113278976",
+   "finv_absmax_env": 2801
+  },
+  "keygen baseinv(g_hat)": {
+   "failures": 0,
+   "numerator_absmax": 3883,
+   "den_absmax": 3724,
+   "pc1_absmax_env": 1940,
+   "zero_check_exact": true,
+   "zero_margin": "pc1*D=7224560, D^2=13868176 vs 32768q=113278976",
+   "finv_absmax_env": 2801
+  },
+  "keygen basemul(h,g_hat,finv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1815,
+    1815
+   ]
+  },
+  "keygen basemul(h,f_hat,ginv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1815,
+    1815
+   ]
+  },
+  "keygen tobytes(sk,f_hat)": {
+   "input_range": [
+    -2556,
+    2555
+   ],
+   "ok": true
+  },
+  "encap basemul(c,h,r_hat)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1815,
+    1815
+   ]
+  },
+  "encap poly_add(c,m_hat)": {
+   "range": [
+    -4187,
+    4187
+   ],
+   "ok": true
+  },
+  "encap tobytes(ct,r_hat) / reenc tobytes": {
+   "input_range": [
+    -2372,
+    2372
+   ],
+   "ok": true
+  },
+  "decap poly_sub(c,f_hat)": {
+   "range": [
+    -2555,
+    6010
+   ],
+   "ok": true
+  },
+  "decap basemul(f,c-f_hat,hinv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1819,
+    1824
+   ]
+  }
+ },
+ "crepmod3": {
+  "output_values_all_words": [
+   -2,
+   2
+  ]
+ },
+ "tobytes": {
+  "canonical_for_all_int16": true
+ }
+}
