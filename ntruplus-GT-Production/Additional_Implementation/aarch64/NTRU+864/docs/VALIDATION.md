@@ -1,5 +1,26 @@
 # K1 production integration evidence
 
+## P130 codec and first-product overheads — 2026-09-23
+
+Three M2-driven fixes to overheads around unchanged arithmetic:
+- `frombytes` loads each 12-byte group with one 16-byte load instead of an
+  8-byte load, a scalar load and a lane insert; the group at byte 636 of a
+  half loads the 16 bytes ending at its last byte (AddressSanitizer on
+  exact-size buffers: clean; with the plain load it reports the overflow).
+- the decapsulation first product runs its 36 tiles in one call: constants
+  set once, no per-tile `bl` and pointer shuffling.
+- `tobytes` writes 113 of its 144 nine-byte runs with one 16-byte store whose
+  seven extra bytes land in a neighbouring run written later (group, lane and
+  store order generated and byte-simulated by
+  `experiments/gt864-p130-decaps-m2/gen_store_order.py`): 288 stores become
+  175.
+
+| | M2 keygen / encaps / decaps | A76 keygen / encaps / decaps |
+|---|---|---|
+| before | 4,169 / 4,752 / 3,874 ns | 36,770 / 35,802 / 34,091 cyc |
+| after | 4,146 / 4,731 / **3,824.5** ns | 36,449 / 35,505 / **33,652** cyc |
+| | -0.55% / -0.45% / **-1.28%** | -0.87% / -0.83% / **-1.29%** |
+
 ## P124-P125 constant time, scratch ownership, range proof — 2026-09-23
 
 - **SUPERCOP TIMECOP passes** (20260831, valgrind 3.24.0 with `libc6-dbg`,

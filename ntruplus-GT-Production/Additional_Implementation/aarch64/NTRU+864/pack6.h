@@ -50,4 +50,52 @@ static const unsigned short pack6_off[PACK6_GROUPS][8] = {
     { 1224,  684,  900, 1116,  756,  972, 1188,  828},
 };
 
+/* P130 (gen_store_order.py): group processing order, lane order within each
+ * group, and the store for each lane's run -- 0: 8-byte + 1-byte, 1: one
+ * 16-byte store at the run (garbage in the next run, written later), 2: one
+ * 16-byte store ending at the run (garbage in the previous run, written
+ * later).  113 of the 144 runs take one store; the final
+ * bytes are verified by simulating every write. */
+static const unsigned char pack6_order[PACK6_GROUPS] = {6, 5, 17, 10, 8, 15, 1, 7, 14, 16, 4, 0, 13, 2, 11, 3, 9, 12};
+static const unsigned char pack6_lane[PACK6_GROUPS][8] = {
+    {5, 4, 2, 7, 1, 6, 3, 0},
+    {6, 5, 0, 7, 3, 4, 2, 1},
+    {3, 1, 2, 7, 6, 0, 5, 4},
+    {2, 1, 7, 3, 5, 6, 0, 4},
+    {6, 7, 2, 3, 4, 1, 0, 5},
+    {0, 6, 3, 5, 4, 2, 1, 7},
+    {1, 2, 6, 4, 7, 5, 3, 0},
+    {4, 6, 2, 1, 0, 5, 7, 3},
+    {3, 7, 5, 1, 0, 6, 4, 2},
+    {5, 2, 0, 1, 6, 7, 3, 4},
+    {6, 0, 7, 1, 5, 3, 2, 4},
+    {3, 5, 4, 0, 7, 1, 2, 6},
+    {4, 0, 5, 2, 7, 6, 1, 3},
+    {5, 1, 2, 4, 0, 7, 6, 3},
+    {6, 1, 2, 0, 7, 4, 5, 3},
+    {7, 4, 3, 1, 6, 0, 2, 5},
+    {7, 0, 2, 4, 5, 6, 1, 3},
+    {6, 1, 5, 3, 4, 7, 0, 2},
+};
+static const unsigned char pack6_store[PACK6_GROUPS][8] = {
+    {0, 2, 2, 0, 2, 2, 2, 2},
+    {1, 1, 1, 1, 1, 1, 0, 0},
+    {0, 0, 0, 0, 1, 1, 1, 1},
+    {0, 0, 0, 0, 0, 0, 0, 1},
+    {2, 2, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 2, 2, 2, 2},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 2, 2, 2, 2},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+    {0, 2, 2, 0, 2, 2, 2, 2},
+    {1, 1, 1, 1, 1, 1, 2, 2},
+    {0, 0, 0, 0, 1, 1, 1, 1},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {2, 2, 1, 1, 1, 1, 1, 1},
+    {0, 0, 2, 2, 2, 2, 2, 2},
+    {2, 2, 2, 2, 2, 1, 1, 1},
+    {1, 1, 1, 1, 2, 2, 2, 2},
+    {1, 1, 1, 1, 1, 1, 1, 1},
+};
+
 #endif

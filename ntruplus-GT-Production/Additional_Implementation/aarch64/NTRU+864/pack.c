@@ -107,15 +107,33 @@ static inline void group(int16x8_t g[8], const int16_t *in, int p, int full)
     transpose8(g);
 }
 
+/* A run takes one 16-byte store when the seven extra bytes land in a
+ * neighbouring run that is written later (pack6_store, P130).  The loops are
+ * fully unrolled over constant tables, so each store's kind is resolved at
+ * compile time. */
+static inline void store_run(uint8_t *out, uint8x16_t b, int kind)
+{
+    if (kind == 1)
+        vst1q_u8(out, b);                       /* garbage in the next run's head */
+    else if (kind == 2)
+        vst1q_u8(out - 7, vextq_u8(b, b, 9));   /* garbage in the previous run's tail */
+    else
+        store9(out, b);
+}
+
 static inline void tobytes6(uint8_t *out, const int16_t *in, int full)
 {
 #pragma GCC unroll 18
-    for (int p = 0; p < PACK6_GROUPS; p++) {
+    for (int q = 0; q < PACK6_GROUPS; q++) {
+        const int p = pack6_order[q];
         const unsigned short *w = pack6_off[p];
         int16x8_t g[8];
         group(g, in, p, full);
-        for (int k = 0; k < 8; k++)
-            store9(out + w[k], vreinterpretq_u8_s16(g[k]));
+#pragma GCC unroll 8
+        for (int kk = 0; kk < 8; kk++) {
+            const int k = pack6_lane[p][kk];
+            store_run(out + w[k], vreinterpretq_u8_s16(g[k]), pack6_store[p][k]);
+        }
     }
 }
 

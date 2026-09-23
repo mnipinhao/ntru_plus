@@ -195,23 +195,7 @@ C(baseinv_asm):
 .global C(basemul_rinv_asm)
 C(basemul_rinv_asm):
     SAVE_PUBLIC
-    mov x19, x0
-    mov x20, x1
-    mov x21, x2
-    mov x22, x3
-    mov x23, #36
-.Lbm_tile:
-    mov x0, x19
-    mov x1, x20
-    mov x2, x21
-    mov x3, x22
-    bl C(bm_rinv_tile)
-    add x19, x19, #48
-    add x20, x20, #48
-    add x21, x21, #48
-    add x22, x22, #16
-    subs x23, x23, #1
-    b.ne .Lbm_tile
+    bl C(bm_rinv_tile)          // loops over the 36 tiles itself (P130)
     RESTORE_PUBLIC
 
 .p2align 4
