@@ -1,0 +1,55 @@
+{
+  "class": "mutation check of the tobytes freeze2op differential",
+  "parameter": "NTRU+1152",
+  "mutants": [
+    {
+      "mutant": "unmutated",
+      "from": null,
+      "to": null,
+      "exit": 0,
+      "detected": false,
+      "first_failure": ""
+    },
+    {
+      "mutant": "signed_min",
+      "from": "vpminuw %ymm13, %ymm7, %ymm7",
+      "to": "vpminsw %ymm13, %ymm7, %ymm7",
+      "exit": 1,
+      "detected": true,
+      "first_failure": "FAIL wire mismatch exhaustive tag=1821"
+    },
+    {
+      "mutant": "dropped_min",
+      "from": "vpminuw %ymm10, %ymm0, %ymm0",
+      "to": "",
+      "exit": 1,
+      "detected": true,
+      "first_failure": "FAIL wire mismatch exhaustive tag=1821"
+    },
+    {
+      "mutant": "sub_instead_of_add_q",
+      "from": "vpaddw %ymm14, %ymm5, %ymm11",
+      "to": "vpsubw %ymm14, %ymm5, %ymm11",
+      "exit": 1,
+      "detected": true,
+      "first_failure": "FAIL wire mismatch exhaustive tag=1821"
+    },
+    {
+      "mutant": "min_wrong_operand",
+      "from": "vpminuw %ymm12, %ymm6, %ymm6",
+      "to": "vpminuw %ymm11, %ymm6, %ymm6",
+      "exit": 1,
+      "detected": true,
+      "first_failure": "FAIL wire mismatch exhaustive tag=686"
+    },
+    {
+      "mutant": "barrett_dropped",
+      "from": "vpsubw %ymm13, %ymm3,  %ymm3",
+      "to": "",
+      "exit": 1,
+      "detected": true,
+      "first_failure": "FAIL wire mismatch exhaustive tag=3457"
+    }
+  ],
+  "pass": true
+}

@@ -224,3 +224,57 @@ host_controls: unchanged
 promotion: none  # research evidence only; not a clean-production promotion
 reproduce: make phase-a  # (from this directory); make record rewrites results/phase-a/
 reproduce_phase_b: docs/ntruplus864-1152-official-opt.md#phase-b-native-supercop-performance
+freeze2op:  # 2026-09-23; docs/ntruplus768-1152-freeze2op.md.  Lazy-only candidate above unchanged.
+  candidate: avx2-officialopt-lazy-freeze-1152-exp001  # lazy Forward + 2-op freeze poly_tobytes
+  control: freeze2op_only  # Official Forward + 2-op freeze poly_tobytes (diagnostic only)
+  tooling: common/official_opt_lazy/freeze2op.mk (included by ./Makefile after lazy.mk)
+  change: "each of the 8 per-iteration `vpsraw $15; vpand q; vpaddw` (pack.s:46-57, 59-70) -> `vpaddw q; vpminuw`, same registers and grouping; everything else of poly_tobytes unchanged"
+  pack_s_sha256: 406e0d9cff4af069d8b8cc3cb028d11898a61f86d86cece9280fa81dafb11732
+  generated_asm: asm/ntruplus1152_officialopt_tobytes_freeze2op.s
+  generated_asm_sha256: ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04
+  candidate_kem: src/kem_lazy_freeze2op.c  # generated overlay: #define poly_tobytes -> freeze2op; #include kem_lazy.c
+  control_kem: src/kem_freeze2op.c  # generated overlay on the Official kem.c
+  tobytes_calls_rebound: 7  # keypair 3, enc 2, dec 2; no other caller in the pinned sources
+  saved_per_tobytes: {vpsraw: 72, vpand: 72, net_instructions: 72}  # 9 iterations x 8
+  phase: A_complete_plus_same_elf_diagnostic  # no SUPERCOP campaign, no Native timing
+  gates:
+    generator: {result: pass, evidence: "make check-freeze-generate; results/freeze2op-phase-a/freeze2op-generation.json", properties: "pinned pack.s/kem.c; 8 exact 3-op sites on Barrett outputs; dead temporaries; diff only 24 -> 16 lines; 9 iterations; deterministic"}
+    proof: {result: pass, q: 3457, V: 9, barrett_output_range: [-3291, 3291], two_op_equals_three_op_bitwise: true, output_equals_x_mod_q: true, c_twin: pass, evidence: results/freeze2op-phase-a/freeze-2op-proof.json}
+    tobytes_differential: {result: pass, polys: 242608, coverage: "every int16 at every position (K=0,1,40503), random, edge set, lazy envelopes + real lazy Forward outputs, canaries, immutability, 32 misalignments, guard pages wire 1728 B / poly 2304 B leading+trailing", mutation_check: "pass, 5/5 mutants rejected (results/freeze2op-phase-a/freeze2op-mutation-check.json)"}
+    kem: {result: pass, deterministic_vectors: 100, invalid_pk_ct_noncanonical_ct_sk: matched, forced_g_retry: pass, forced_f_retry: pass, natural_f_g_retries: "40 / 45 byte-exact", binaries: [test_kem_lazy_freeze2op, test_kem_lazy_freeze2op_fretry, test_kem_freeze2op, test_kem_freeze2op_fretry]}
+    sanitizer: {result: pass, config: "ASan + UBSan (-fno-sanitize-recover=all) + LSan (detect_leaks=1)"}
+    linked_audit:
+      result: pass
+      symbol: ntruplus1152_officialopt_tobytes_freeze2op
+      aligned_32: true
+      size_bytes: 619
+      instruction_rows: 114  # Official poly_tobytes: 122
+      row_diff_vs_official: {removed: {vpsraw: 8, vpand: 8, vpaddw: 8}, added: {vpaddw: 8, vpminuw: 8}}
+      stack_calls_vzeroupper: 0
+      kem_call_relocations: {candidate_kem_to_freeze2op: 7, candidate_kem_to_poly_tobytes: 0, candidate_kem_to_lazy_forward: 6, candidate_kem_to_poly_ntt: 0, control_kem_to_freeze2op: 7, control_kem_to_poly_tobytes: 0, lazy_kem_to_poly_tobytes: 7}
+      evidence: results/freeze2op-phase-a/freeze2op-linked-summary.json
+    lazy_only_regression: pass  # make phase-a re-run with the extended common tooling; outputs unchanged
+    closure_log: results/freeze2op-phase-a/closure-tests.log
+  performance:
+    label: same-elf diagnostic only  # supercop-derived; NOT Native SUPERCOP
+    host: {cpu: 1, governor: performance, intel_no_turbo: 1, aslr_sysctl: 2, controls_changed: false}
+    same_elf:  # 31 fresh launches per link order, 384 obs/variant/launch; pooled StQ2 delta, favourable/31
+      tobytes_freeze2op_minus_official: {normal: {delta: -22.9, favourable: 31}, reversed: {delta: -24.2, favourable: 31}}  # Official 531 cycles
+      lazy_freeze2op_minus_lazy:
+        keypair: {normal: {delta: -197.8, favourable: 21}, reversed: {delta: -54.4, favourable: 22}}  # retry-tail noise
+        encap: {normal: {delta: +52.3, favourable: 2}, reversed: {delta: -193.1, favourable: 31}}  # placement-dominated, sign flips
+        decap: {normal: {delta: -90.3, favourable: 31}, reversed: {delta: -99.5, favourable: 31}}
+      lazy_freeze2op_minus_official: {keypair: {normal: -560.9, reversed: -419.4}, encap: {normal: -366.4, reversed: -425.0}, decap: {normal: -429.1, reversed: -289.9}}
+      lazy_minus_official: {keypair: {normal: -363.1, reversed: -364.9}, encap: {normal: -418.7, reversed: -231.9}, decap: {normal: -338.9, reversed: -190.3}}
+      freeze2op_only_minus_official: {keypair: {normal: -164.7, reversed: +22.4}, encap: {normal: -121.2, reversed: -57.4}, decap: {normal: -138.6, reversed: +46.3}}
+      evidence: results/freeze2op-diag-{normal,reversed}-20260923/summary.json
+    keypair_seedmatched:  # lazy+freeze2op (B) vs lazy (A), identical coins, 15 launches x 2000 iters per ELF
+      normal: {median: -41.0, mean: -44.2, mean_ci95: [-61.2, -25.6], favourable_launches: 15/15}
+      swapped: {median: -129.5, mean: -141.5, mean_ci95: [-166.2, -119.0], favourable_launches: 15/15}
+      pooled: {median: -84.5, mean: -92.8, mean_ci95: [-115.2, -70.9], favourable_launches: 30/30}
+      evidence: results/freeze2op-keypair-seedmatched-20260923/summary.json
+    host_hygiene: all 3 batches clean on attempt 0; pre-batch loadavg1 0.44-0.48
+    assessment: "component saving 23-24 cycles per tobytes (31/31 both orders). Caller deltas are placement-dominated: encap +52 (2/31) normal vs -193 (31/31) reversed; decap -90/-100 (31/31 both); seed-matched Keypair -41 normal vs -130 swapped (expected ~3 x 23 = -69). The component win is real; the whole-op effect is at the noise/placement level and would need Native to settle."
+  native: not_run
+  promotion: none
+  reproduce: docs/ntruplus768-1152-freeze2op.md#reproduce
