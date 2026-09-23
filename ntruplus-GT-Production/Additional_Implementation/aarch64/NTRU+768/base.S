@@ -1101,6 +1101,10 @@ module_encap_muladd_Lpoly_basemul_add_consts:
  * groups.  decoded_ct is retained for re-encryption.  packed_f is never
  * materialized: its second group stays live in v24-v27 while the first group
  * is consumed.
+ *
+ * The product is stored with st4, one group as eight 4-coefficient elements
+ * (element l of group g at byte 64g + 8l), the input layout of
+ * poly_invntt_ternary_decap.  |product| <= (4*3456^2 + 32768*q) / 2^16 = 2458.
  */
 #ifdef __APPLE__
 .text
@@ -1473,7 +1477,7 @@ module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64:
         smlal2 v20.4S, v6.8H, v23.8H
         smlal2 v20.4S, v7.8H, v27.8H
         uzp1 v3.8H, v8.8H, v1.8H
-        st1 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
+        st4 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
         mul v3.8H, v3.8H, v0.H[2]
         uzp1 v15.8H, v25.8H, v20.8H
         uzp1 v12.8H, v9.8H, v18.8H
@@ -1534,7 +1538,7 @@ module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64:
         uzp2 v15.8H, v21.8H, v11.8H
         uzp2 v14.8H, v2.8H, v25.8H
         uzp2 v12.8H, v1.8H, v9.8H
-        st1 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
+        st4 {v12.8H, v13.8H, v14.8H, v15.8H}, [x0], #64
 
     subs x8, x8, #128
     b.ne module_decap_packed64_.Lgt_decap_checked_ct_f_basemul_scale64_loop64

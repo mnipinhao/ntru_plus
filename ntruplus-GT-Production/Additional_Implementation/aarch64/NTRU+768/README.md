@@ -14,7 +14,7 @@ shape used by other NTRU+ implementations:
 
 | File | Public responsibility |
 |---|---|
-| `ntt.S` | Encap/Keygen/Decap Forward and paired inverse transforms |
+| `ntt.S` | Encap/Keygen/Decap Forward and the Decap Good-Thomas inverse (fused mod 3) |
 | `base.S` | Pointwise multiplication, base inversion leaves, packed first product |
 | `pack.S` | Checked decode and canonical serialization for each layout |
 | `keygen.c` | CQ inversion orchestration and CQ pointwise products |
