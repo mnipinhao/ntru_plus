@@ -11,8 +11,8 @@ Use repository facts to select one parameter set, implementation family, and
 test contract before editing. Do not assume similarly named directories share
 the same sources, Makefile behavior, transform contract, or platform support.
 
-Treat `ntruplus-KpqC-Final` as the frozen comparison baseline. Do not modify it
-unless the user explicitly places that tree in scope. Treat
+The Official comparison baseline is the SUPERCOP release pinned in
+`bench/supercop.lock` (`ntruplus-KpqC-Final` was removed 2026-09-23). Treat
 `ntruplus-ntt-Optimized` as the active optimization workspace.
 
 Read `references/repo-map.md` when the target path is unknown, the request spans

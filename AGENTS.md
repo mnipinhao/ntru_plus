@@ -16,9 +16,8 @@ before making changes.
 
 ## Directory ownership
 
-- Never modify `ntruplus-KpqC-Final/`; it is the frozen correctness baseline.
 - Import performance baselines from the SUPERCOP release pinned in
-  `bench/supercop.lock`, not from the frozen repository copy.
+  `bench/supercop.lock`.
 - Put unfinished optimization work only below the parameter-specific
   `experiments/` directories documented in the workflow.
 - Put shared GT9x16 models and generators only below
@@ -37,7 +36,6 @@ before making changes.
   in `bench/supercop.lock`.
 - Import upstream NTRU+768, NTRU+864, and NTRU+1152 AVX2 sources from
   `crypto_kem/ntruplus{768,864,1152}/avx2` in that snapshot.
-- Never use `ntruplus-KpqC-Final/` as the primary performance baseline.
 - Never modify a pristine SUPERCOP snapshot.
 - Install candidates under new implementation names in a disposable SUPERCOP
   campaign copy.
@@ -71,8 +69,8 @@ before making changes.
   may select different source-resolved winners.
 - Production contains no runtime candidate selector and must build without the
   experiment tree or generator.
-- Produce the final KpqC-style package through the documented non-overwriting
-  exporter; never assemble it manually.
+- The KpqC-skeleton exporter was retired with `ntruplus-KpqC-Final/`
+  (2026-09-23); define a new export path before the next release.
 
 ## Risk-tiered ASM prototype gates
 

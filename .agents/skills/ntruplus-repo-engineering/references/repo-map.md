@@ -13,7 +13,6 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 
 | Root | Role |
 | --- | --- |
-| `ntruplus-KpqC-Final` | Frozen clean baseline and comparison source |
 | `ntruplus-ntt-Optimized` | Active scalar, Cortex-M-oriented, AVX2, AArch64, experiment, and benchmark workspace |
 | `bench` | Cross-implementation KAT and cycle comparison front door |
 
@@ -22,14 +21,14 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 Each listed family contains `NTRU+768`, `NTRU+864`, and `NTRU+1152` unless
 noted otherwise.
 
-| Lane | Active path | Frozen comparison path |
-| --- | --- | --- |
-| Scalar reference | `ntruplus-ntt-Optimized/Reference_Implementation/<PARAM>` | `ntruplus-KpqC-Final/Reference_Implementation/<PARAM>` |
-| Scalar optimized | `ntruplus-ntt-Optimized/Optimized_Implementation/<PARAM>` | `ntruplus-KpqC-Final/Optimized_Implementation/<PARAM>` |
-| Cortex-M-oriented | `ntruplus-ntt-Optimized/Cortex-M_Optimized_Implementation/<PARAM>` | None in the frozen root |
-| AVX2 | `ntruplus-ntt-Optimized/Additional_Implementation/avx2/<PARAM>` | `ntruplus-KpqC-Final/Additional_Implementation/avx2/<PARAM>` |
-| AArch64 | `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/<PARAM>` | `ntruplus-KpqC-Final/Additional_Implementation/aarch64/<PARAM>` |
-| KAT vectors | `ntruplus-ntt-Optimized/KAT/<PARAM>` | `ntruplus-KpqC-Final/KAT/<PARAM>` |
+| Lane | Active path |
+| --- | --- |
+| Scalar reference | `ntruplus-ntt-Optimized/Reference_Implementation/<PARAM>` |
+| Scalar optimized | `ntruplus-ntt-Optimized/Optimized_Implementation/<PARAM>` |
+| Cortex-M-oriented | `ntruplus-ntt-Optimized/Cortex-M_Optimized_Implementation/<PARAM>` |
+| AVX2 | `ntruplus-ntt-Optimized/Additional_Implementation/avx2/<PARAM>` |
+| AArch64 | `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/<PARAM>` |
+| KAT vectors | `ntruplus-ntt-Optimized/KAT/<PARAM>` |
 
 `<PARAM>` is exactly `NTRU+768`, `NTRU+864`, or `NTRU+1152`.
 

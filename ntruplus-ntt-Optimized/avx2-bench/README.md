@@ -101,7 +101,6 @@ AVX-512:
 make build
 make asm-audit
 make validate
-make kpqc-audit
 ```
 
 `BENCH_LDFLAGS` may be used for benchmark-linker controls.  The recorded
@@ -126,11 +125,9 @@ Default target flags:
 boundary/differential tests, and the benchmark harness's round-trip,
 schoolbook-polymul, and GT-reference checks.
 
-`make kpqc-audit` verifies that the production arithmetic sources linked here
-(`ntt.s`, `invntt.s`, `basemul.s`, `consts.c`, and `poly.c`) are byte-identical
-to `ntruplus-KpqC-Final/Additional_Implementation/avx2/NTRU+768`.  Therefore
-the production NTT/basemul/inverse/polymul rows are also the KPQC Final AVX2
-baseline when compiler and target flags are held fixed.
+The former `make kpqc-audit` drift gate against `ntruplus-KpqC-Final` was
+retired with that tree (2026-09-23). The Official comparison baseline is the
+SUPERCOP release pinned in `bench/supercop.lock`.
 
 ## Reproducible benchmark run
 

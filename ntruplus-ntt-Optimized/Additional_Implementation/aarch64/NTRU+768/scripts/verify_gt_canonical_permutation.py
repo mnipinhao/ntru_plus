@@ -13,7 +13,7 @@ GT_LAMBDA = ROOT / "gt/rowbitrev_lambda.inc"
 GT_SERIAL = ROOT / "poly_gt_canonical.c"
 KPQC_NTT = (
     REPO
-    / "ntruplus-KpqC-Final"
+    / "ntruplus-ntt-Optimized"
     / "Reference_Implementation"
     / "NTRU+768"
     / "ntt.c"

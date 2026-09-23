@@ -1,7 +1,6 @@
 # NTRU+
 
-This repository keeps a frozen KpqC baseline beside an active NTRU+
-optimization workspace. It supports parameter sets 768, 864, and 1152 across
+This repository is an NTRU+ optimization workspace. It supports parameter sets 768, 864, and 1152 across
 scalar, AVX2, AArch64, and preserved Cortex-M-oriented source lanes.
 
 ## Quick start
@@ -25,7 +24,6 @@ engineering records.
 
 ## Directory policy
 
-- `ntruplus-KpqC-Final/`: frozen clean baseline; do not edit during optimization work.
 - `ntruplus-ntt-Optimized/Reference_Implementation/`: active workspace reference lane.
 - `ntruplus-ntt-Optimized/Optimized_Implementation/`: active scalar optimization lane.
 - `ntruplus-ntt-Optimized/Cortex-M_Optimized_Implementation/`: preserved legacy/Cortex-M-oriented source lane; not a validated MCU build by itself.

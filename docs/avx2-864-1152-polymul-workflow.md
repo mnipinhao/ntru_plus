@@ -14,8 +14,6 @@ but no experimental result becomes production merely because one kernel wins.
   general centered mod-q multiplication (`[-1728,1728]`).
 - Public API: `crypto_kem_keypair`, `crypto_kem_enc`, and `crypto_kem_dec` do
   not change. Polynomial benchmark symbols remain internal.
-- Frozen baseline: `ntruplus-KpqC-Final/` is read-only and is not the primary
-  performance source.
 
 ## Branch and commit sequence
 
@@ -34,7 +32,6 @@ promotion in reviewable commits:
 
 | Path | Role | Rule |
 | --- | --- | --- |
-| `ntruplus-KpqC-Final/` | Frozen correctness baseline | Never edit |
 | `bench/supercop.lock` | Performance-source identity | Explicit refresh only |
 | `.../avx2/common/gt9x16/` | Shared model/generator | No production dependency |
 | `NTRU+*/experiments/` | Candidates and local evidence | All research starts here |
@@ -359,11 +356,6 @@ Release documentation records the SUPERCOP URL/version/archive hash, upstream
 tree hashes, implementation names, native KEM results, derived polynomial
 results, paired evidence, CPU, and compiler.
 
-After both clean trees contain reviewed `SOURCE-MANIFEST.json` files, export
-without overwriting an existing package:
-
-```sh
-python3 scripts/export_ntruplus_avx2_final.py \
-  --destination /path/to/ntruplus-AVX2-Final \
-  --qualification-report /path/to/promotion.json
-```
+The former `scripts/export_ntruplus_avx2_final.py`, which built the package on a
+`ntruplus-KpqC-Final` skeleton, was retired with that tree on 2026-09-23. A new
+export path must be defined before the next release.
