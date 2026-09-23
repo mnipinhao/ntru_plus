@@ -1,0 +1,113 @@
+{
+  "class": "supercop-derived seed-matched paired Keypair diagnostic; not Native SUPERCOP",
+  "parameter": "NTRU+768",
+  "roles": {
+    "A": "lazy-only KEM (src/kem_lazy.c)",
+    "B": "lazy+freeze2op KEM (src/kem_lazy_freeze2op.c)"
+  },
+  "d": "(B1 + B2 - A1 - A2) / 2 cycles per iteration; negative favours lazy+freeze2op",
+  "pairings": {
+    "kp_lazyfreeze_vs_lazy": {
+      "iterations": 30000,
+      "launches": 15,
+      "median_d": -46.5,
+      "mean_d": -46.727666666666664,
+      "mean_ci95_two_stage_bootstrap": [
+        -61.3284,
+        -32.3013
+      ],
+      "launch_median_d": [
+        -50.5,
+        -40.5,
+        -46.5,
+        -55.0,
+        -49.0,
+        -56.25,
+        -66.75,
+        -34.0,
+        -41.5,
+        -11.5,
+        -48.0,
+        -42.0,
+        -54.0,
+        -37.5,
+        -60.5
+      ],
+      "favourable_launches": 15,
+      "keypair_retries_total": 3
+    },
+    "kp_lazyfreeze_vs_lazy_swapped": {
+      "iterations": 30000,
+      "launches": 15,
+      "median_d": -58.0,
+      "mean_d": -57.842666666666666,
+      "mean_ci95_two_stage_bootstrap": [
+        -71.63985,
+        -43.9711
+      ],
+      "launch_median_d": [
+        -57.5,
+        -64.5,
+        -64.25,
+        -61.0,
+        -54.0,
+        -56.0,
+        -61.25,
+        -47.0,
+        -59.75,
+        -41.5,
+        -54.5,
+        -49.0,
+        -73.5,
+        -66.25,
+        -59.5
+      ],
+      "favourable_launches": 15,
+      "keypair_retries_total": 2
+    }
+  },
+  "pooled": {
+    "iterations": 60000,
+    "launches": 30,
+    "median_d": -52.5,
+    "mean_d": -52.28516666666667,
+    "mean_ci95_two_stage_bootstrap": [
+      -62.682375,
+      -42.3654
+    ],
+    "launch_median_d": [
+      -50.5,
+      -40.5,
+      -46.5,
+      -55.0,
+      -49.0,
+      -56.25,
+      -66.75,
+      -34.0,
+      -41.5,
+      -11.5,
+      -48.0,
+      -42.0,
+      -54.0,
+      -37.5,
+      -60.5,
+      -57.5,
+      -64.5,
+      -64.25,
+      -61.0,
+      -54.0,
+      -56.0,
+      -61.25,
+      -47.0,
+      -59.75,
+      -41.5,
+      -54.5,
+      -49.0,
+      -73.5,
+      -66.25,
+      -59.5
+    ],
+    "favourable_launches": 30,
+    "keypair_retries_total": 5
+  }
+}
