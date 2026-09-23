@@ -1,0 +1,129 @@
+{
+  "class": "supercop-derived diagnostic; not Native SUPERCOP",
+  "command": [
+    "taskset",
+    "-c",
+    "1",
+    "/home/nuc/src/ntru_plus-official-opt-864-1152/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/build/bench_caller_lazy"
+  ],
+  "compiler_recipe": "lazy.mk BENCH_CFLAGS (common O3GC); see linked ELF and build rule",
+  "controls": {
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "cpu": 1,
+  "cpucycles_identity": [
+    "cpucycles=default-perfevent persecond=1400000000"
+  ],
+  "elf_sha256": "65facb3d083c166c5b2af7edc3710a388fbe1d3e35b3e49c7c66dd331a48e24b",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "host_hygiene": {
+    "after": {
+      "loadavg": [
+        0.4,
+        0.45,
+        0.36
+      ],
+      "time": "2026-09-23T03:02:25.543072+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "claude",
+          "cpu_percent": 7.3,
+          "last_cpu": 2,
+          "pid": 1058899
+        },
+        {
+          "comm": "accounts-daemon",
+          "cpu_percent": 0.3,
+          "last_cpu": 15,
+          "pid": 5478
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 0.3,
+          "last_cpu": 8,
+          "pid": 1182148
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 0.3,
+          "last_cpu": 3,
+          "pid": 1188334
+        },
+        {
+          "comm": "systemd",
+          "cpu_percent": 0.0,
+          "last_cpu": 1,
+          "pid": 1
+        }
+      ],
+      "uptime": "11:02:22 up 16 days, 1 min,  6 users,  load average: 0.40, 0.45, 0.36"
+    },
+    "attempt": 0,
+    "before": {
+      "loadavg": [
+        0.4,
+        0.45,
+        0.36
+      ],
+      "time": "2026-09-23T03:02:21.687143+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "codex",
+          "cpu_percent": 4.0,
+          "last_cpu": 1,
+          "pid": 670981
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 2.3,
+          "last_cpu": 2,
+          "pid": 1058899
+        },
+        {
+          "comm": "codex-code-mode",
+          "cpu_percent": 0.7,
+          "last_cpu": 1,
+          "pid": 672520
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 0.7,
+          "last_cpu": 6,
+          "pid": 1182148
+        },
+        {
+          "comm": "systemd-oomd",
+          "cpu_percent": 0.3,
+          "last_cpu": 3,
+          "pid": 626
+        }
+      ],
+      "uptime": "11:02:18 up 16 days, 1 min,  6 users,  load average: 0.44, 0.46, 0.36"
+    },
+    "contaminated": false,
+    "contamination_reasons": [],
+    "duration_s": 0.8,
+    "during_heavy_windows": 0,
+    "during_max_loadavg1_including_batch": null,
+    "during_offenders": {},
+    "earlier_contaminated_attempts": [],
+    "host_controls_changed": false,
+    "load_threshold": 0.5,
+    "proc_threshold_percent": 25.0,
+    "waited_for_quiet_s": 0.0
+  },
+  "launches": 9,
+  "parameter": "864",
+  "primary_placement": "normal; ASLR enabled",
+  "source_sha256": {
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/asm/ntruplus864_officialopt_ntt_caller_lazy.s": "db5d489658d4f5b77ce181c691d7c3b9e054a0a14ebc7c693f79df382a8f0497",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy.c": "398f5faa0b2733cc188ce933380ee8c64d8676a9938da0de8f3cdf3a8253d484",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/upstream/supercop-avx2/ntt.s": "980cad5ef69a78f9ed1f2f45fc5dcaa0a04cc07693cf65ea108acc41c547db92",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/bench/bench_caller_lazy.c": "a95a1b82aea7ab43c28bb8f5b33ff0301edf4b4e3fc2c787b6e33fd525be8e4b",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/bench/kem_diag.c": "1431453b5983538028dba2c0f12518032d3ac3acc4469fb86e14654f9cf0087c",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/lazy.mk": "ff2b8c4d15ae0ec6a021b87e151ac61e197b45a98526d6f10c08d681c3ab9ee2",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/tools/generate_forward_caller_lazy.py": "b63ee835d767a419cf7aef31c58bfba7ece6ee3875f1b0b6fc091383e5374e6a"
+  }
+}

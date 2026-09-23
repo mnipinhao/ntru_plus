@@ -1,0 +1,204 @@
+{
+  "decision": {
+    "dec_cycles": {
+      "native_pooled_negative": false,
+      "paired_all_ci_above_zero": false,
+      "paired_all_ci_below_zero": true,
+      "paired_ci_above_zero_count": 0,
+      "paired_ci_below_zero_count": 4,
+      "robust_research_win": false,
+      "verdict": "not-robust"
+    },
+    "enc_cycles": {
+      "native_pooled_negative": true,
+      "paired_all_ci_above_zero": false,
+      "paired_all_ci_below_zero": true,
+      "paired_ci_above_zero_count": 0,
+      "paired_ci_below_zero_count": 4,
+      "robust_research_win": true,
+      "verdict": "robust-research-win"
+    },
+    "keypair_cycles": {
+      "native_pooled_negative": true,
+      "paired_all_ci_above_zero": false,
+      "paired_all_ci_below_zero": true,
+      "paired_ci_above_zero_count": 0,
+      "paired_ci_below_zero_count": 4,
+      "robust_research_win": true,
+      "verdict": "robust-research-win"
+    }
+  },
+  "native": {
+    "candidate": {
+      "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+      "fresh_process_launches": 9,
+      "host_hygiene_contaminated": false,
+      "implementation": "avx2-officialopt-caller-lazy-qual001",
+      "measure_elf_sha256": "b6654906e560c8b137ab7528e2808aa38e9898f81ebd2dfd16c2e1868ec5cf85"
+    },
+    "dec_cycles": {
+      "candidate_launch_stq2_median": 23589.791666666668,
+      "candidate_launches_below_official_median": 5,
+      "candidate_stq2": 23668.472222222223,
+      "delta": 17.75,
+      "delta_percent": 0.07505056223324165,
+      "official_launch_stq2_median": 23629.708333333332,
+      "official_stq2": 23650.722222222223
+    },
+    "enc_cycles": {
+      "candidate_launch_stq2_median": 32847.791666666664,
+      "candidate_launches_below_official_median": 7,
+      "candidate_stq2": 32832.46759259259,
+      "delta": -59.449074074072996,
+      "delta_percent": -0.18074068068620608,
+      "official_launch_stq2_median": 32886.666666666664,
+      "official_stq2": 32891.916666666664
+    },
+    "keypair_cycles": {
+      "candidate_launch_stq2_median": 23655.75,
+      "candidate_launches_below_official_median": 9,
+      "candidate_stq2": 23661.25925925926,
+      "delta": -90.41666666666788,
+      "delta_percent": -0.380674891947201,
+      "official_launch_stq2_median": 23753.125,
+      "official_stq2": 23751.675925925927
+    },
+    "official": {
+      "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+      "fresh_process_launches": 9,
+      "host_hygiene_contaminated": false,
+      "implementation": "avx2",
+      "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03"
+    }
+  },
+  "paired": {
+    "dec_cycles": {
+      "normal-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -311.5989583333328,
+          -142.31380208333348
+        ],
+        "favorable_blocks": 16,
+        "mean": -214.24348958333326,
+        "median": -166.38541666666788
+      },
+      "normal-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -217.9140624999991,
+          -150.97395833333462
+        ],
+        "favorable_blocks": 15,
+        "mean": -187.1822916666672,
+        "median": -197.60416666666788
+      },
+      "reversed-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -234.3320312499991,
+          -176.0729166666663
+        ],
+        "favorable_blocks": 16,
+        "mean": -206.64973958333326,
+        "median": -200.1145833333303
+      },
+      "reversed-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -246.51041666666606,
+          -156.7148437499991
+        ],
+        "favorable_blocks": 15,
+        "mean": -202.69401041666606,
+        "median": -203.65625000000182
+      }
+    },
+    "enc_cycles": {
+      "normal-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -406.74609375000045,
+          -162.61588541666742
+        ],
+        "favorable_blocks": 16,
+        "mean": -260.8828125000002,
+        "median": -216.52083333333394
+      },
+      "normal-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -290.9908854166674,
+          -158.0677083333328
+        ],
+        "favorable_blocks": 15,
+        "mean": -220.8919270833337,
+        "median": -219.64583333333212
+      },
+      "reversed-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -290.6002604166665,
+          -198.33593749999932
+        ],
+        "favorable_blocks": 15,
+        "mean": -247.46484374999955,
+        "median": -261.29166666666424
+      },
+      "reversed-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -327.0611979166681,
+          -154.134114583336
+        ],
+        "favorable_blocks": 15,
+        "mean": -238.4062500000016,
+        "median": -237.93750000000364
+      }
+    },
+    "keypair_cycles": {
+      "normal-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -268.6263020833344,
+          -187.18359374999932
+        ],
+        "favorable_blocks": 16,
+        "mean": -220.05859375000045,
+        "median": -193.6770833333303
+      },
+      "normal-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -241.94010416666492,
+          -149.70182291666424
+        ],
+        "favorable_blocks": 16,
+        "mean": -194.70572916666515,
+        "median": -186.28124999999636
+      },
+      "reversed-aslr-off": {
+        "blocks": 16,
+        "ci95": [
+          -161.4257812499991,
+          -133.02864583333258
+        ],
+        "favorable_blocks": 16,
+        "mean": -145.90885416666583,
+        "median": -135.82291666666424
+      },
+      "reversed-aslr-on": {
+        "blocks": 16,
+        "ci95": [
+          -154.89453125,
+          -103.89973958333371
+        ],
+        "favorable_blocks": 16,
+        "mean": -128.45963541666697,
+        "median": -118.3541666666697
+      }
+    }
+  },
+  "parameter": "864",
+  "schema": "ntruplus-caller-lazy-phase-b/v1"
+}
