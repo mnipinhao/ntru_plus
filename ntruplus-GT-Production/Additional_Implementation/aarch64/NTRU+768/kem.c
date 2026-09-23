@@ -335,6 +335,9 @@ int crypto_kem_dec_internal(uint8_t *ss, const uint8_t *ct,
         m_r, &scratch.c, ct, sk);
     fail |= (int8_t)poly_frombytes_decap(
         &scratch.hinv, sk + NTRUPLUS_POLYBYTES);
+    /* Whether ct, f and hinv decoded canonically is public (Official
+     * declassifies the same decode results before branching). */
+    ntruplus_declassify(&fail, sizeof fail);
     if (fail) {
         secure_clear(ss, NTRUPLUS_SSBYTES);
         goto cleanup;

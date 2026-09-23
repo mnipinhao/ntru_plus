@@ -34,6 +34,20 @@ extern int memset_s(void *address, size_t address_size, int value,
 void secure_clear_audit_hook(const void *address, size_t length);
 #endif
 
+/*
+ * Marks a secret-derived value as public before the code branches on it, for
+ * SUPERCOP's TIMECOP; a no-op otherwise.  Same macro and header as Official.
+ * Used only where the value is public by design: whether a discarded key
+ * generation sample was invertible, and whether decapsulation inputs decoded
+ * canonically.
+ */
+#ifdef SUPERCOP
+#include "crypto_declassify.h"
+#define ntruplus_declassify crypto_declassify
+#else
+#define ntruplus_declassify(x, xlen) ((void)(x), (void)(xlen))
+#endif
+
 static inline void secure_clear(void *address, size_t length)
 {
 #ifdef GT_SECURE_CLEAR_AUDIT_HOOK
