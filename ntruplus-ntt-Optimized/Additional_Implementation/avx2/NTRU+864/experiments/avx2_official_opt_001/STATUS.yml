@@ -21,7 +21,7 @@ scope:
   general_poly_ntt: unchanged_and_linked
   removed_per_forward: {vpmulhrsw: 54, vpmullw: 54, vpsubw: 54, terminal_constant_load: 1}
   input_contract: caller_domains_only  # [-3,4] asm contract; no general-input claim
-phase: B_native_measured  # Phase A correctness unchanged; Phase B + follow-up 2026-09-23
+phase: B_native_measured  # Phase A correctness unchanged; Phase B + follow-up + extended ASLR-on 2026-09-23; current decision: performance.extended_aslr_on.decision
 gates:
   generator:
     result: pass
@@ -131,8 +131,8 @@ performance:
     decap: {delta: -223.29, favourable: 9}
     evidence: results/officialopt-forward-caller-lazy-serious-20260923/summary.json
   host_hygiene: all batches clean on attempt 0 (pre-batch loadavg1 <= 0.5, no sustained foreign CPU, no foreign benchmark); records in each metadata.json/manifest.json host_hygiene; batches shorter than the 5 s in-batch sampling window (fixed-ELF paired 2.5-3.0 s, same-ELF 0.8-0.9 s) are covered only by the 3 s before/after snapshots
-  decision_rule: robust research win iff Native pooled delta < 0 AND all four paired 95% CIs below zero
-  decision:
+  decision_rule: robust research win iff Native pooled delta < 0 AND all four paired 95% CIs below zero  # Phase B rule (superseded, see extended_aslr_on)
+  decision:  # Phase B (history)
     keypair: robust-research-win  # native_negative=true, paired_ci_below_zero=4/4
     enc: robust-research-win  # native_negative=true, paired_ci_below_zero=4/4
     dec: not-robust  # native_negative=false, paired_ci_below_zero=4/4
@@ -162,6 +162,41 @@ performance:
     keypair: robust-research-win  # also under fixed O3 and fixed O2
     enc: robust-research-win  # Phase B default selection; fixed O2 qualifies, fixed O3 does not
     dec: qualifies-under-controlled-compiler-O2-only  # default selection not robust (+17.75 / -53.60 / -40.25); fixed O3 ~0
+  extended_aslr_on:  # 2026-09-23; docs/ntruplus864-1152-official-opt.md#extended-native-and-aslr-on-paired-2026-09-23
+    methodology: "ASLR on only (randomize_va_space=2, no setarch -R, no ASLR-off setting); normal placement primary, reversed placement secondary robustness check; references SUPERCOP (normal compile/link, many fresh processes, StQ) and mlkem-native (single process, warm-ups, median; no placement/ASLR control)"
+    decision_rule: robust research win iff extended Native pooled StQ2 delta < 0 (default SUPERCOP compiler selection) AND normal-placement ASLR-on fixed-ELF paired 95% CI below zero; reversed ASLR-on reported, flagged (not failed) if it disagrees
+    native:  # measured; default compiler selection, unmodified measure.c, 81 fresh launches/role = 9 rounds x 9-launch batches alternating ABBA/BAAB; independent pools; CI by launch resampling (2000)
+      launches_per_role: 81
+      keypair: {stq1: -88.09, stq2: -103.02, stq3: -122.37, stq2_ci95: [-127.8, -78.3], stq2_pct: -0.43, official: 23751.72, candidate: 23648.70, favourable_launches: 75/81}
+      enc: {stq1: -132.02, stq2: -92.66, stq3: -184.89, stq2_ci95: [-149.3, -42.9], stq2_pct: -0.28, official: 32957.70, candidate: 32865.04, favourable_launches: 63/81}
+      dec: {stq1: -70.01, stq2: -24.04, stq3: -81.83, stq2_ci95: [-55.9, +4.0], stq2_pct: -0.10, official: 23676.13, candidate: 23652.09, favourable_launches: 49/81}
+      per_batch_stq2_delta:  # 9 launches per side each
+        keypair: [-129.7, -249.9, -62.9, -76.9, -117.1, -48.4, -64.2, -204.3, -80.1]  # SD 70
+        enc: [-155.3, -141.7, +68.0, -219.8, -217.0, -136.8, +48.0, -88.8, -51.8]  # SD 104
+        dec: [-92.0, +16.1, -35.2, -15.9, -18.4, -58.2, -149.4, +44.8, -53.2]  # SD 58
+      compiler_selection:  # per batch 1-9 (SUPERCOP re-selects at every build; each compiler gives one ELF)
+        official: [O3, O3, O3, O3, O3, O3, O3, O3, O3]  # f3cf0a37de53701b (= Phase B)
+        candidate: [O2, O3, O2, O2, O2, O2, O2, O3, O2]  # O2 b6654906e560c8b1 (= Phase B), O3 b11aa429516fe32c (= follow-up fixed O3)
+      by_elf_pair_stq2_delta:  # derived; small subsets, not decision inputs
+        official_O3_vs_candidate_O2: {batches: 7, keypair: -82.4, enc: -89.2, dec: -57.4}
+        official_O3_vs_candidate_O3: {batches: 2, keypair: -225.7, enc: -107.6, dec: +29.6}
+      keypair_retries: none  # all 7776 keypairs per side r=0
+    paired:  # measured; Phase B O3GC fixed ELFs, ASLR on; mean [block-bootstrap 95% CI] favourable/blocks
+      normal-aslr-on:  # PRIMARY; 48 ABBA/BAAB blocks, 192 launches
+        keypair: {mean: -209.63, ci95: [-227.42, -191.25], favourable: 47/48}
+        enc: {mean: -176.15, ci95: [-230.95, -110.44], favourable: 43/48}
+        dec: {mean: -222.30, ci95: [-249.88, -194.96], favourable: 46/48}
+      reversed-aslr-on:  # secondary; Phase B 16-block run (not re-run at 48)
+        keypair: {mean: -128.46, ci95: [-154.89, -103.90], favourable: 16/16}
+        enc: {mean: -238.41, ci95: [-327.06, -154.13], favourable: 15/16}
+        dec: {mean: -202.69, ci95: [-246.51, -156.71], favourable: 15/16}
+    host_hygiene: 18 Native + 1 paired batches clean on attempt 0, none re-run; pre-batch loadavg1 0.31-0.50; Native batches 15.9-16.6 s, paired 1.9 s (snapshots only)
+    evidence: results/native-ext-{official,candidate}-b{1..9}-20260923x/, results/paired-aslr-on-normal-20260923x/, results/extended-summary-20260923x.json
+    decision:  # CURRENT (updated rule); earlier decisions above are kept as history
+      keypair: robust-research-win  # Native -103.02; normal CI [-227.42, -191.25]; reversed agrees
+      enc: robust-research-win  # Native -92.66; normal CI [-230.95, -110.44]; reversed agrees
+      dec: robust-research-win  # marginal Native: -24.04 but CI [-55.9, +4.0], 49/81 launches; O3-built candidate batches positive (+16.1, +44.8); normal CI [-249.88, -194.96]; reversed agrees
+      reversed_flags: none
 native: measured  # see performance.native
 supercop_campaign: /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001
 host_controls: unchanged
