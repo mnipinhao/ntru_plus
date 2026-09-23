@@ -1,0 +1,77 @@
+{
+  "evidence_class": "local_AVX2_arithmetic_probe_not_full_inverse_schedule_or_cycles",
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "flags": [
+    "-O3",
+    "-mavx2",
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "probes": {
+    "officialopt_qhalf_butterfly": {
+      "symbol_size_bytes": 101,
+      "dynamic_instruction_rows_one_call_excluding_ret": 23,
+      "opcode_counts": {
+        "endbr64": 1,
+        "mov": 1,
+        "ret": 1,
+        "vmovd": 1,
+        "vmovdqa": 2,
+        "vpaddw": 2,
+        "vpand": 2,
+        "vpavgw": 2,
+        "vpbroadcastd": 1,
+        "vpsllw": 1,
+        "vpsrlw": 1,
+        "vpsubw": 2,
+        "vpxor": 7
+      },
+      "register_names_used": [
+        "%ymm0",
+        "%ymm1",
+        "%ymm2",
+        "%ymm3",
+        "%ymm4",
+        "%ymm5",
+        "%ymm6",
+        "%ymm7"
+      ],
+      "no_stack_spill_call_or_vzeroupper": true
+    },
+    "officialopt_qhalf_butterfly_floor": {
+      "symbol_size_bytes": 102,
+      "dynamic_instruction_rows_one_call_excluding_ret": 23,
+      "opcode_counts": {
+        "endbr64": 1,
+        "mov": 1,
+        "ret": 1,
+        "vmovd": 1,
+        "vmovdqa": 3,
+        "vpaddw": 4,
+        "vpand": 4,
+        "vpbroadcastd": 1,
+        "vpsraw": 2,
+        "vpsrlw": 1,
+        "vpsubw": 2,
+        "vpxor": 3
+      },
+      "register_names_used": [
+        "%ymm0",
+        "%ymm1",
+        "%ymm2",
+        "%ymm3",
+        "%ymm4",
+        "%ymm5",
+        "%ymm6",
+        "%ymm7"
+      ],
+      "no_stack_spill_call_or_vzeroupper": true
+    }
+  },
+  "test_output": "AVX2 modular-half butterfly: 100081 vectors passed",
+  "test_vectors": 100081,
+  "source_sha256": "0fe0160bc4dc5ff600dc63c29147a0f90231a5ae3fc975f7262a0f0cd68a0d7c",
+  "elf_sha256": "c124cc16ad424f593ba08ec5278307054ecf605f0442e9e41db984e418d4b6bc",
+  "scope_limit": "inputs are already-twiddled a,t; full twiddle, routing, tail, constants, scale and 16-YMM allocation remain open"
+}

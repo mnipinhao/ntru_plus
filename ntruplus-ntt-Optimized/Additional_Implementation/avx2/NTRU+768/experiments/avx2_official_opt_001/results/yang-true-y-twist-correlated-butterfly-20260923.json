@@ -1,0 +1,75 @@
+{
+  "evidence_class": "linked_BaseMulScale_witness_and_executable_word_butterfly_not_AVX2_kernel",
+  "canonical_actual_overflow_witness": {
+    "canonical_c_coefficient": 3449,
+    "canonical_f_coefficient": 3349,
+    "all_192_degree3_BaseMulScale_words": 7596,
+    "no_repair_CT_identity_size2": 15192,
+    "no_repair_CT_identity_size4": 30384,
+    "no_repair_CT_identity_size8_mathematical": 60768,
+    "vpaddw_wrapped": -4768,
+    "residue_corrupted_by_wrap": true,
+    "machine_BaseMulScale_ELF_sha256": "68e9f2279a39d882d865dfdab010d61300cc35b53ed3534f641497f384afbebe"
+  },
+  "positive_Q_half_identity": "vpavgw(signbias(a),signbias(b)) unbias = ceil((a+b)/2); add 1728 iff parity(a xor b)=1",
+  "input_cases": 101,
+  "cohort_degree_blocks_per_case": 24,
+  "butterfly_operands_have_disjoint_leaf_supports": true,
+  "disjoint_support_checks": 480,
+  "correlation_scope": "accepted canonical CT/SK coefficients may vary independently across quartic leaves; valid KEM-derived inputs can be narrower, but canonical invalid inputs still reach BaseMulScale",
+  "max_BaseMulScale_raw_abs_observed": 7596,
+  "max_modular_half_output_abs_observed": 8082,
+  "max_abs_by_stage_observed": {
+    "2": 7596,
+    "4": 7596,
+    "8": 7596,
+    "16": 7596,
+    "32": 8082
+  },
+  "formal_uniform_radix2_bounds": [
+    {
+      "node_size": 2,
+      "input_abs_bound": 7644,
+      "nonidentity_twiddle_abs_bound": 1931,
+      "output_abs_bound": 9372
+    },
+    {
+      "node_size": 4,
+      "input_abs_bound": 9372,
+      "nonidentity_twiddle_abs_bound": 1977,
+      "output_abs_bound": 11100
+    },
+    {
+      "node_size": 8,
+      "input_abs_bound": 11100,
+      "nonidentity_twiddle_abs_bound": 2022,
+      "output_abs_bound": 12828
+    },
+    {
+      "node_size": 16,
+      "input_abs_bound": 12828,
+      "nonidentity_twiddle_abs_bound": 2068,
+      "output_abs_bound": 14556
+    },
+    {
+      "node_size": 32,
+      "input_abs_bound": 14556,
+      "nonidentity_twiddle_abs_bound": 2113,
+      "output_abs_bound": 16284
+    }
+  ],
+  "formal_final_y32_untwist_abs_bound": 2159,
+  "formal_bound_argument": "signed ceil average of two values in [-B,B] stays in [-B,B]; odd correction adds 1728; lower twiddle uses conservative Montgomery bound; no 16-bit add of unhalved values",
+  "all_blocks_modq_match_independent_scalar_CT": true,
+  "all_signed_word_assertions_pass": true,
+  "scale": "per-level modular division by two; no deferred 1/32 in this radix2 block; full tail constants must be regenerated",
+  "machine_ledger": "not_lowered; two qhalf outputs share one parity correction, but sign bias, negation, routing, constant loads, 16-YMM allocation and complete tail remain to price",
+  "source_sha256": {
+    "tools/research_correlated_ct_butterfly.py": "6a0ebd28cba614e59c2cc73cea4b7de3dfd9ff1c3f9a6d84cb9348b3b4c38f1d",
+    "results/yang-closure-schedule-20260923.json": "30beb533db05d4ca02caf314da0b3b78a3d8700aa1639e4e3ecfcfd7d1984c10",
+    "results/yang-full-twisted-tower-factor-20260923.json": "8f9a78efebd839afe8b4fa3ec7abb9ec9093e1f6363de31a806c09b09654cf17",
+    "results/yang-true-y-twist-pairings-20260923.json": "0b8748efa43be6c786f4dcf73a0c5ce126e7f35f8f8e2c0ed81d61e462edcb96",
+    "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe",
+    "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080"
+  }
+}
