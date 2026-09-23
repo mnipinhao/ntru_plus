@@ -21,7 +21,7 @@ scope:
   general_poly_ntt: unchanged_and_linked
   removed_per_forward: {vpmulhrsw: 54, vpmullw: 54, vpsubw: 54, terminal_constant_load: 1}
   input_contract: caller_domains_only  # [-3,4] asm contract; no general-input claim
-phase: B_native_measured  # Phase A correctness unchanged; Phase B 2026-09-23
+phase: B_native_measured  # Phase A correctness unchanged; Phase B + follow-up 2026-09-23
 gates:
   generator:
     result: pass
@@ -140,6 +140,28 @@ performance:
     - "dec: all 4 paired CIs below zero (-187..-214) and same-ELF -223 (9/9), but the independent Native pool is +17.75 (+0.08%); Native selected O3 for Official and O2 for the candidate, so the pooled Native sign is not a paired estimate. Fails the rule as written."
     - "keypair/enc Native deltas (-90/-59) are much smaller than the paired O3GC deltas (-128..-261); magnitudes are machine/compiler specific."
   summary: results/phase-b-summary-20260923.json
+  phase_b_followup:  # 2026-09-23; docs/ntruplus864-1152-official-opt.md#phase-b-follow-up-2026-09-23
+    label: supercop-native-kem, controlled compiler (single-entry okc-amd64); NOT SUPERCOP default compiler selection
+    method: "run_supercop_benchmark.py --compiler-wrapper common/official_opt_lazy/compilers/okc-native-gcc-{O3,O2}-only.sh temporarily replaces bench/<host>/bin/okc-amd64 (orig sha256 82f1eea7...98b3, lines 2-5 = gcc -O3/-Os/-O2/-O; restored in finally, re-hashed unchanged after every batch); unmodified measure.c; 9 fresh launches per implementation, one implementation enabled at a time"
+    elf_sha256: {O3_official: f3cf0a37de53701b, O3_candidate: b11aa429516fe32c, O2_official: 7eadf7f3bb17981f, O2_candidate: b6654906e560c8b1}  # O3_official == Phase B Official ELF, O2_candidate == Phase B candidate ELF
+    stq2_delta:  # candidate - official, primary (20260923) / replicate (20260923r2, reversed order) / pooled 18 launches (derived)
+      O3: {keypair: [-299.76, -291.31, -295.27], enc: [+85.37, +5.89, +49.20], dec: [-0.83, +7.96, +3.59]}
+      O2: {keypair: [-133.36, -135.76, -138.32], enc: [-218.92, -143.38, -185.20], dec: [-71.62, -24.76, -48.06]}
+    favourable_launches_primary:  # candidate launches below Official launch median /9
+      O3: {keypair: 9, enc: 2, dec: 2}
+      O2: {keypair: 9, enc: 9, dec: 7}
+    default_selection_recheck:  # O2 candidate ELF vs O3 Official ELF (= Phase B Native pair), StQ2 delta: Phase B / primary / replicate
+      keypair: [-90.42, -143.86, -83.81]
+      enc: [-59.45, +1.93, -46.74]
+      dec: [+17.75, -53.60, -40.25]  # Phase B +17.75 not reproduced with identical binaries
+    decision_fixed_O2: {keypair: qualifies, enc: qualifies, dec: qualifies}  # both runs negative, paired 4/4
+    decision_fixed_O3: {keypair: qualifies, enc: fails, dec: not-robust}  # dec -0.83 passes sign test only in primary; replicate +7.96, pooled +3.59
+    host_hygiene: 8 batches clean on attempt 0; pre-batch loadavg1 0.30-0.48; batches 5.4-5.8 s
+    evidence: results/native-fixedcc-summary-20260923.json, results/native-fixedcc-summary-20260923r2.json, results/native-fixedcc-summary-pooled.json
+  decision_after_followup:
+    keypair: robust-research-win  # also under fixed O3 and fixed O2
+    enc: robust-research-win  # Phase B default selection; fixed O2 qualifies, fixed O3 does not
+    dec: qualifies-under-controlled-compiler-O2-only  # default selection not robust (+17.75 / -53.60 / -40.25); fixed O3 ~0
 native: measured  # see performance.native
 supercop_campaign: /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001
 host_controls: unchanged

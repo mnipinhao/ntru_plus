@@ -21,7 +21,7 @@ scope:
   general_poly_ntt: unchanged_and_linked
   removed_per_forward: {vpmulhrsw: 72, vpmullw: 72, vpsubw: 72, terminal_constant_load: 1}
   input_contract: caller_domains_only  # [-3,4] asm contract; no general-input claim
-phase: B_native_measured  # Phase A correctness unchanged; Phase B 2026-09-23
+phase: B_native_measured  # Phase A correctness unchanged; Phase B + follow-up 2026-09-23
 gates:
   generator:
     result: pass
@@ -141,6 +141,38 @@ performance:
     - "dec: Native -579.45 (-1.90%) and 3/4 paired CIs below zero; reversed-aslr-off [-167.40, +49.36] crosses zero, so not robust by the rule."
     - "enc: robust (Native -399.54, all 4 CIs below zero, 15-16/16 favourable)."
   summary: results/phase-b-summary-20260923.json
+  phase_b_followup:  # 2026-09-23; docs/ntruplus864-1152-official-opt.md#phase-b-follow-up-2026-09-23
+    call_index_pairing: impossible  # crypto_kem/measure links fastrandombytes (per-process kernelrandombytes-keyed ChaCha20); 274/274 raw launch files have distinct retry sequences
+    retry_derivation: "retries = keypair_randomcalls - 2 (measure.c logs it per timed call; kem.c calls randombytes(coins,32) once per f/g attempt); Forward calls = randomcalls"
+    native_composition:  # derived from Phase B Native raw
+      r0_fraction: {official: 0.5220, candidate: 0.4965}
+      stq2_window_strata: {official: {r0: 120, r1: 96}, candidate: {r0: 100, r1: 116}}
+      note: StQ2 window sits on the r0/r1 boundary; composition shift (~1 sigma) explains Native +164.47
+    native_retry_stratified:  # derived; StQ2 delta [95% CI, launch resampling]
+      r0: {delta: -376.2, ci95: [-524.3, -211.4]}
+      r1: {delta: -539.7, ci95: [-709.9, -373.4]}
+      r2: {delta: -681.3, ci95: [-879.1, -481.6]}
+      r3plus: {delta: -975.8, ci95: [-3266.4, +1964.7]}
+    paired_retry_stratified:  # derived; per-block median delta, mean over 16 blocks [block-bootstrap CI]; r0-r2 12/12 CIs < 0
+      normal-aslr-off: {r0: [-250.4, -280.6, -219.4], r1: [-403.5, -467.1, -342.9], r2: [-534.8, -620.8, -443.0]}
+      normal-aslr-on: {r0: [-203.8, -295.2, -61.7], r1: [-365.2, -461.4, -212.2], r2: [-514.7, -638.9, -338.6]}
+      reversed-aslr-off: {r0: [-319.5, -339.5, -297.0], r1: [-482.6, -505.3, -459.5], r2: [-625.4, -658.2, -588.2]}
+      reversed-aslr-on: {r0: [-263.7, -370.0, -109.7], r1: [-466.9, -517.4, -414.9], r2: [-506.4, -663.0, -281.1]}
+    seed_matched_paired:  # measured; supercop-derived diagnostic, NOT Native; same ELF, identical coins, ABBA/BAAB, 12 procs x 5000 iters, CPU 1
+      overall: {median: -391.0, median_ci95: [-396.5, -384.5], mean: -419.5, mean_ci95: [-444.2, -395.1], favourable_iterations: 0.971, favourable_launches: 12/12}
+      per_elf_median: {normal_link: -395.0, swapped_link: -387.0}
+      per_retry_median: {r0: -293.0, r1: -453.0, r2: -606.5, r3: -748.8, r4plus: -939.8}  # all CIs < 0, 12/12 launches each
+      per_forward_slope: {stratum_medians: -152.1, iteration_ols: -163.0}  # intercept ~0: saving proportional to Forward count
+      elf_sha256: {normal: 4ab31a4149dcaa41, swapped: 9d0298c68320f9db}
+    pooled_stq2_noise_estimate:  # estimated by resampling harness observations
+      sd_by_launches_per_role: {9: 545, 36: 255, 81: 166}
+      p_wrong_sign_by_launches_per_role: {9: 0.27, 36: 0.09, 81: 0.01}
+    host_hygiene: seed-matched batch clean on attempt 0; pre-batch loadavg1 0.12; 5.7 s
+    evidence: results/keypair-retry-strata-20260923.json, results/keypair-seedmatched-20260923/summary.json
+  decision_after_followup:
+    keypair: stratified-evidence-win  # real saving ~390 cycles/keypair (~150-165 per Forward); fails Phase B rule as written (unstratified Native +164.47, 1/4 CIs); qualifies under retry-stratified rule (Native r0-r2 < 0, paired r0-r2 12/12 CIs < 0); pooled Native confirmation would need ~80 launches/role (not run)
+    enc: robust-research-win  # unchanged
+    dec: not-robust  # unchanged, not re-examined
 native: measured  # see performance.native
 supercop_campaign: /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001
 host_controls: unchanged
