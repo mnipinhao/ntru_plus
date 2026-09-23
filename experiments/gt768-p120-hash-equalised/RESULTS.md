@@ -98,3 +98,19 @@ Checks on the fix:
 
 `TIMECOP=1` is SUPERCOP's minimum loop count.  Branch and index coverage does
 not depend on it, but only one random input set per operation was checked.
+
+### Confirmed with the system valgrind
+
+After `apt install valgrind libc6-dbg` on the Pi (libc6 and libc6-dbg both
+2.41-12+rpt1+deb13u4, valgrind 3.24.0; the user-space wrapper was moved
+aside), `timecop_system.sh` re-ran TIMECOP on the promotion tree
+(`promote/gt768-e4-inverse`, b0009e5d):
+
+| leaf | TIMECOP=1 | TIMECOP=16 | TIMECOP=256 |
+|---|---|---|---|
+| GT, promotion tree | pass x4 | pass x4 | pass x4 |
+| Official (goal files restored) | fail: `poly_fqinv_batch` (poly.c:122-123) | | |
+| GT P118, no annotations | fail: `gt_keygen_baseinv_hier_k8`, `kem.c:339` | | |
+
+"x4" means `-O`, `-O2`, `-O3` and `-Os`.  This is the same verdict as the
+user-space setup, now without the loader workaround.
