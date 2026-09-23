@@ -16,16 +16,16 @@ The complete Official main / KPQC Final / GT Production study starts at
 
 The important change is that the compare flow no longer hardcodes one "baseline" tree and one "optimized" tree. It now accepts any two implementation directories that already ship a working `Makefile`, such as:
 
-- `../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768`
+- `../ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768`
 - `../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768`
-- `../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768`
+- `../ntruplus-ntt-Optimized/Reference_Implementation/NTRU+768`
 
 ## Core Commands
 
 ```bash
 cd bench
 
-# default: KpqC reference vs ntt-Optimized optimized for the selected PARAM_SET
+# default: ntt-Optimized reference vs ntt-Optimized optimized for the selected PARAM_SET
 make compare
 
 # correctness only
@@ -41,9 +41,9 @@ make cycles-compare
 cd bench
 
 make impl-compare \
-  IMPL_A=../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+  IMPL_A=../ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768 \
   IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 \
-  LABEL_A=kpqc_aarch64 \
+  LABEL_A=aarch64 \
   LABEL_B=ntt_opt
 ```
 
@@ -51,9 +51,9 @@ Reference vs optimized:
 
 ```bash
 make impl-compare \
-  IMPL_A=../ntruplus-KpqC-Final/Reference_Implementation/NTRU+768 \
+  IMPL_A=../ntruplus-ntt-Optimized/Reference_Implementation/NTRU+768 \
   IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768 \
-  LABEL_A=kpqc_ref \
+  LABEL_A=ref \
   LABEL_B=ntt_opt
 ```
 
@@ -61,7 +61,7 @@ Correctness only for arbitrary paths:
 
 ```bash
 make impl-compare-kat \
-  IMPL_A=../ntruplus-KpqC-Final/Additional_Implementation/aarch64/NTRU+768 \
+  IMPL_A=../ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768 \
   IMPL_B=../ntruplus-ntt-Optimized/Optimized_Implementation/NTRU+768
 ```
 
