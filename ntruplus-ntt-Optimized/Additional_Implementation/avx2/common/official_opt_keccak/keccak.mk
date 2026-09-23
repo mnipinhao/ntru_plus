@@ -134,7 +134,8 @@ keccak-record: keccak-phase-a
 	{ echo "== release ($(CFLAGS))" && $(call keccak_run,$(BUILD),) && \
 	  echo "== sanitizer ($(SANFLAGS); $(SAN_ENV))" && $(SAN_ENV) $(call keccak_run,$(BUILD_SAN),$(SAN_ENV)); } \
 		> $(EVIDENCE)/keccak-closure-tests.log 2>&1
-	cp $(EVIDENCE)/keccak-closure-tests.log $(EVIDENCE)/keccak-generation.json \
+	cp $(EVIDENCE)/keccak-closure-tests.log results/keccak-phase-a/closure-tests.log
+	cp $(EVIDENCE)/keccak-generation.json \
 		$(EVIDENCE)/keccak-linked-summary.json $(EVIDENCE)/keccak-ct-summary.json \
 		$(EVIDENCE)/keccak-mutation-check.json results/keccak-phase-a/
 	$(if $(MLK_ROOT),$(MAKE) --no-print-directory keccak-config-equivalence && \

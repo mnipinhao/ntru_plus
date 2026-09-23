@@ -1,0 +1,40 @@
+== release (-O3 -mavx2 -march=native -mtune=native -fPIE -Wall -Wextra -Werror)
+NIST CAVP SHAKE256 subset: 76/76 vectors pass for Official and candidate
+x1 Keccak-f[1600]: 12001 permutations equal (zero-state KAT + 4000 random states x 3)
+SHAKE256 grid: 43626 cases equal (inlen 0..700 x 41 outlens, outlen 0..600 x 20 inlens, k*136+-2 up to 1770, 200 random up to 6000/1200 bytes; misaligned, canaries, input unchanged)
+NTRU+864 call shapes: 33000 cases equal (SHAKE 32->216, 1297->32, 1297->216, 141->248 x 3000; hash_f/g/h + in-place hash_g + domain bytes 0x00/0x01/0x02 x 3000; untouched tails)
+NTRU+864 SHAKE256 differential: pass (76626 SHAKE cases, 13457924 output bytes compared)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+== sanitizer (-O1 -g -mavx2 -march=native -fPIE -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=all -Wall -Wextra -Werror; ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1)
+NIST CAVP SHAKE256 subset: 76/76 vectors pass for Official and candidate
+x1 Keccak-f[1600]: 12001 permutations equal (zero-state KAT + 4000 random states x 3)
+SHAKE256 grid: 43626 cases equal (inlen 0..700 x 41 outlens, outlen 0..600 x 20 inlens, k*136+-2 up to 1770, 200 random up to 6000/1200 bytes; misaligned, canaries, input unchanged)
+NTRU+864 call shapes: 33000 cases equal (SHAKE 32->216, 1297->32, 1297->216, 141->248 x 3000; hash_f/g/h + in-place hash_g + domain bytes 0x00/0x01/0x02 x 3000; untouched tails)
+NTRU+864 SHAKE256 differential: pass (76626 SHAKE cases, 13457924 output bytes compared)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+864 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
