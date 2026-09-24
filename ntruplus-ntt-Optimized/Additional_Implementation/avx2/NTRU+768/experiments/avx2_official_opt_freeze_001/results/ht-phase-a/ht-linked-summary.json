@@ -1,0 +1,129 @@
+{
+  "class": "linked ELF audit (Phase A, correctness only; no timing)",
+  "parameter": "NTRU+768",
+  "elf": "build/test_kem_lazy_r2fold_freeze2op_keccak_ht",
+  "elf_sha256": "bc9f925e7ddd80a19dee84761e3ce853bfff39a5c77bcd532bbbd607deb4d4a6",
+  "asm_sha256": {
+    "ntruplus768_officialopt_ntt_ht": "8f4bdb303a82657f3b09b269b88725557fd18b0fe8d6a737385a1f0f98294ea6",
+    "ntruplus768_officialopt_basemul_nor2": "f40f77a246d7db63e229da78c70f79829e91298612060c0de1130072bfd32c16"
+  },
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "entries": {
+    "ntruplus768_officialopt_ntt_ht": {
+      "address_mod_32": 0,
+      "size_bytes": 1526,
+      "instruction_rows": 275,
+      "opcode_counts": {
+        "add": 6,
+        "cmp": 3,
+        "jb": 3,
+        "lea": 6,
+        "ret": 1,
+        "sub": 2,
+        "vmovdqa": 50,
+        "vpaddw": 32,
+        "vpbroadcastd": 2,
+        "vperm2i128": 8,
+        "vpmulhw": 52,
+        "vpmullw": 29,
+        "vpsubw": 57,
+        "vpunpckhdq": 8,
+        "vpunpckhwd": 4,
+        "vpunpckldq": 8,
+        "vpunpcklwd": 4
+      },
+      "linked_stream_equals_assembled_source": true,
+      "rip_symbols": [
+        "_16xq",
+        "_16xw",
+        "_16xwqinv",
+        "_16xzeta1",
+        "ntruplus768_officialopt_ht_zetas_a",
+        "ntruplus768_officialopt_ht_zetas_b",
+        "zetas"
+      ],
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0
+    },
+    "ntruplus768_officialopt_basemul_nor2": {
+      "address_mod_32": 0,
+      "size_bytes": 1179,
+      "instruction_rows": 247,
+      "opcode_counts": {
+        "add": 8,
+        "cmp": 1,
+        "jb": 1,
+        "lea": 2,
+        "ret": 1,
+        "vmovdqa": 42,
+        "vpaddw": 24,
+        "vpmulhw": 76,
+        "vpmullw": 54,
+        "vpsubw": 38
+      },
+      "linked_stream_equals_assembled_source": true,
+      "rip_symbols": [
+        "_16xq",
+        "_16xqinv",
+        "zetas"
+      ],
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0
+    }
+  },
+  "ht_tables": {
+    "ntruplus768_officialopt_ht_zetas_a": {
+      "address_mod_32": 0
+    },
+    "ntruplus768_officialopt_ht_zetas_b": {
+      "address_mod_32": 0
+    }
+  },
+  "fold_baseinv": {
+    "size_bytes": 3131,
+    "calls": [
+      "__explicit_bzero_chk@plt",
+      "__stack_chk_fail@plt",
+      "crypto_declassify",
+      "memset@plt",
+      "poly_baseinv_1"
+    ]
+  },
+  "kem_call_relocations": {
+    "kem_lazy_r2fold_freeze2op_keccak_ht": {
+      "ntruplus768_officialopt_ntt_ht": 6,
+      "ntruplus768_officialopt_baseinv_r2fold": 2,
+      "ntruplus768_officialopt_basemul_nor2": 2,
+      "poly_basemul": 2,
+      "ntruplus768_officialopt_tobytes_freeze2op": 7,
+      "ntruplus_mlkfips202_shake256": 2,
+      "ntruplus768_keccak_hash_f": 2,
+      "ntruplus768_keccak_hash_g": 2,
+      "ntruplus768_keccak_hash_h": 2
+    },
+    "kem_lazy_freeze2op_keccak_ht": {
+      "ntruplus768_officialopt_ntt_ht": 6,
+      "poly_baseinv": 2,
+      "poly_basemul": 4,
+      "ntruplus768_officialopt_tobytes_freeze2op": 7,
+      "ntruplus_mlkfips202_shake256": 2,
+      "ntruplus768_keccak_hash_f": 2,
+      "ntruplus768_keccak_hash_g": 2,
+      "ntruplus768_keccak_hash_h": 2
+    },
+    "kem_lazy_r2fold_freeze2op_keccak": {
+      "ntruplus768_officialopt_ntt_caller_lazy": 6,
+      "ntruplus768_officialopt_baseinv_r2fold": 2,
+      "ntruplus768_officialopt_basemul_nor2": 2,
+      "poly_basemul": 2,
+      "ntruplus768_officialopt_tobytes_freeze2op": 7,
+      "ntruplus_mlkfips202_shake256": 2,
+      "ntruplus768_keccak_hash_f": 2,
+      "ntruplus768_keccak_hash_g": 2,
+      "ntruplus768_keccak_hash_h": 2
+    }
+  },
+  "candidate_calls_old_lazy_or_official_forward": false
+}

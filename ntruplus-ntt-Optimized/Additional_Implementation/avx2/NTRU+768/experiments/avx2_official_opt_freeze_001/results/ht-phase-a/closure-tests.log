@@ -1,0 +1,68 @@
+== release (-O3 -mavx2 -march=native -mtune=native -fPIE -Wall -Wextra -Werror)
+  asm_contract[-3,4]       cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-12928,12382]
+  keygen_f                 cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-11864,12054]
+  keygen_g                 cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-11924,12408]
+  decap_msg[-2,2]          cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-11816,11825]
+  encap_r_m_reenc[-1,1]    cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-11272,11117]
+  producers                cases=10000 HT==lazy bit-exact, Barrett(HT)==Official
+  uniform int16            cases=20000 HT==lazy bit-exact
+NTRU+768 HT Forward == caller-lazy Forward bit-exact differential: pass (55375 cases, canaries intact)
+  keygen components: 12000 seeds, 11999 pairs invertible, finv'==R*finv, nor2==BaseMul (mod q), tobytes equal (23999 products)
+  BaseInv: 27993 successes, 2007 failures (both implementations identical; 2000 of the 2000 zero-base inputs failed); finv' range [-2278,2230]; nor2 range [-6866,6876]
+  keypair: 10000 seeds x 3 R^2-fold KEMs byte-exact vs Official (pk/sk, randombytes calls); forced g=0 retries 104, forced f failures 112, total extra draws 216, genuine BaseInv failures per KEM 104
+NTRU+768 keygen R^2 fold differential: pass
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+== sanitizer (-O1 -g -mavx2 -march=native -fPIE -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=all -Wall -Wextra -Werror; ASAN_OPTIONS=detect_leaks=1 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1)
+  asm_contract[-3,4]       cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-12928,12382]
+  keygen_f                 cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-11864,12054]
+  keygen_g                 cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-11924,12408]
+  decap_msg[-2,2]          cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-11816,11825]
+  encap_r_m_reenc[-1,1]    cases=5075 HT==lazy bit-exact, Barrett(HT)==Official, observed=[-11272,11117]
+  producers                cases=10000 HT==lazy bit-exact, Barrett(HT)==Official
+  uniform int16            cases=20000 HT==lazy bit-exact
+NTRU+768 HT Forward == caller-lazy Forward bit-exact differential: pass (55375 cases, canaries intact)
+  keygen components: 12000 seeds, 11999 pairs invertible, finv'==R*finv, nor2==BaseMul (mod q), tobytes equal (23999 products)
+  BaseInv: 27993 successes, 2007 failures (both implementations identical; 2000 of the 2000 zero-base inputs failed); finv' range [-2278,2230]; nor2 range [-6866,6876]
+  keypair: 10000 seeds x 3 R^2-fold KEMs byte-exact vs Official (pk/sk, randombytes calls); forced g=0 retries 104, forced f failures 112, total extra draws 216, genuine BaseInv failures per KEM 104
+NTRU+768 keygen R^2 fold differential: pass
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)
+Keygen forced g-inversion retry: pass (3 matching draws and byte-exact keys)
+natural BaseInv failures in the 100 vectors (per implementation): f=0 g=0
+f-injection keypair draws: 3 (= discarded-draw oracle 2 + 1)
+f BaseInv one-shot failure injection PASS; poisoned failure output; RNG continuation exact
+NTRU+768 Official caller-lazy KEM byte differential: pass (100 vectors pk/sk/ct/ss, invalid PK/CT/noncanonical-CT/SK matched, 0 natural Keygen retries)

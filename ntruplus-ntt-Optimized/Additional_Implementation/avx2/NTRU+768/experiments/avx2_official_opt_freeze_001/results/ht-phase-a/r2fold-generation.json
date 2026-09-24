@@ -1,0 +1,62 @@
+{
+ "baseinv": {
+  "functions": [
+   "fqmul",
+   "fqmul_neg",
+   "fqsqr",
+   "fqinv",
+   "fqinv_batch",
+   "poly_baseinv_2",
+   "poly_baseinv"
+  ],
+  "slice_lines": 364
+ },
+ "basemul": {
+  "core_lines_kept": 371,
+  "removed_R2_pass_ops_static": {
+   "add": 1,
+   "cmp": 1,
+   "jb": 1,
+   "mov": 1,
+   "ret": 1,
+   "sub": 1,
+   "vmovdqa": 10,
+   "vpmulhw": 8,
+   "vpmullw": 4,
+   "vpsubw": 4
+  },
+  "removed_mont_vectors_per_call": 48
+ },
+ "constant_checks": {
+  "R2 == R3 * R^-1 mod q": true,
+  "R2 == R^2 mod q": true,
+  "R2qinv == R2 * qinv mod 2^16": true,
+  "R3 == R^3 mod q": true,
+  "R3qinv == R3 * qinv mod 2^16": true,
+  "Rinv == R^-1 mod q": true,
+  "qinv * q == 1 mod 2^16": true
+ },
+ "constants": {
+  "R2": 867,
+  "R2qinv": 2787,
+  "R3": 460,
+  "R3qinv": -16436,
+  "Rinv": -682
+ },
+ "inputs_sha256": {
+  "src/kem_lazy.c": "ffd9165c36466c2ecc57e4a157a2a847dc9f19d1fc249ebbc9c1c46baa22fd7d",
+  "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe",
+  "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+  "upstream/supercop-avx2/poly.c": "cf8dc307c7acce70270f623ccc1ea8354e2580e307986b4e8fbabcbc6181d77b"
+ },
+ "kem_rebound": {
+  "encap_decap_basemul_official": 2,
+  "keygen_baseinv": 2,
+  "keygen_basemul": 2
+ },
+ "output_sha256": {
+  "asm/ntruplus768_officialopt_basemul_nor2.s": "f40f77a246d7db63e229da78c70f79829e91298612060c0de1130072bfd32c16",
+  "src/kem_lazy_r2fold.c": "132961256af64775100bdb0dd04e54ae057dd483b1f008f2245b1fb19cd52668",
+  "src/ntruplus768_officialopt_baseinv_r2fold.c": "4138c98f21a940ae38f3729532be1c0830404e9760b2f95e5c2a3afc8524dd46"
+ }
+}

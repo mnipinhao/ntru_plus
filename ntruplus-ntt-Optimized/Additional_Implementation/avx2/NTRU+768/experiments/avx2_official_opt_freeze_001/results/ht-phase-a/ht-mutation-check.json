@@ -1,0 +1,56 @@
+{
+ "class": "mutation check (Phase A)",
+ "verdict": "pass",
+ "control_passes": {
+  "symbolic": true,
+  "c_forward": true,
+  "c_keygen": true
+ },
+ "mutants": [
+  {
+   "mutant": "block twiddle word",
+   "file": "ntruplus768_officialopt_ntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "pass-A radix-3 constant operand",
+   "file": "ntruplus768_officialopt_ntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "unpack lo/hi swap",
+   "file": "ntruplus768_officialopt_ntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "store row",
+   "file": "ntruplus768_officialopt_ntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "level-2 twiddle offset",
+   "file": "ntruplus768_officialopt_ntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "fold constant R2 -> R3",
+   "file": "ntruplus768_officialopt_baseinv_r2fold.c",
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "fold companion qinv",
+   "file": "ntruplus768_officialopt_baseinv_r2fold.c",
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "nor2 zeta load",
+   "file": "ntruplus768_officialopt_basemul_nor2.s",
+   "c_differential_rejects": true
+  }
+ ]
+}

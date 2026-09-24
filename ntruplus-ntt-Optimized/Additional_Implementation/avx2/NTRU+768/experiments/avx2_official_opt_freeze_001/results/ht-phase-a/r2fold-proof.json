@@ -1,0 +1,73 @@
+{
+ "class": "exact algebraic proof record (Phase A; no timing)",
+ "parameter": "NTRU+768",
+ "verdict": "pass",
+ "constants": {
+  "R2": 867,
+  "R2qinv": 2787,
+  "R3": 460,
+  "R3qinv": -16436,
+  "Rinv": -682
+ },
+ "constant_checks": {
+  "R2 == R^2 mod q": true,
+  "R3 == R^3 mod q": true,
+  "Rinv == R^-1 mod q": true,
+  "R2 == R3 * R^-1 mod q": true,
+  "R2qinv == R2 * qinv mod 2^16": true,
+  "R3qinv == R3 * qinv mod 2^16": true,
+  "qinv * q == 1 mod 2^16": true
+ },
+ "montgomery_identity": {
+  "exhaustive_constants": [
+   867,
+   460,
+   1,
+   -1,
+   1728,
+   -1728,
+   3456,
+   -3456
+  ],
+  "random_pairs": 4194304,
+  "failures": 0
+ },
+ "fqinv": {
+  "exhaustive_int16": 65536,
+  "form": "fqinv(x) == x^(q-2) * R^-34 (mod q)",
+  "zero_iff_zero": true,
+  "fold_relation_fqinv(fqmul(x,R2)) == R*fqinv(fqmul(x,R3))": true
+ },
+ "baseinv_source_audit": {
+  "fqinv_batch": {
+   "add_sub_intrinsics": 0,
+   "fqmul_calls": 34,
+   "R2FOLD_uses": 2,
+   "R3_uses": 0
+  },
+  "poly_baseinv_2": {
+   "add_sub_intrinsics": 0,
+   "fqmul_calls": 4,
+   "R2FOLD_uses": 0,
+   "R3_uses": 0
+  },
+  "ntruplus768_officialopt_baseinv_r2fold": {
+   "add_sub_intrinsics": 0,
+   "fqmul_calls": 0,
+   "R2FOLD_uses": 0,
+   "R3_uses": 0
+  }
+ },
+ "conclusion": [
+  "finv' == R * finv (mod q), same BaseInv status and failure output",
+  "basemul_nor2(a, finv') == poly_basemul(a, finv) (mod q) per coefficient",
+  "pk/sk byte-identical through canonical poly_tobytes"
+ ],
+ "inputs_sha256": {
+  "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe",
+  "upstream/supercop-avx2/poly.c": "cf8dc307c7acce70270f623ccc1ea8354e2580e307986b4e8fbabcbc6181d77b",
+  "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+  "src/kem_lazy.c": "ffd9165c36466c2ecc57e4a157a2a847dc9f19d1fc249ebbc9c1c46baa22fd7d",
+  "src/ntruplus768_officialopt_baseinv_r2fold.c": "4138c98f21a940ae38f3729532be1c0830404e9760b2f95e5c2a3afc8524dd46"
+ }
+}
