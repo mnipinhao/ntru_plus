@@ -352,7 +352,8 @@ keccak_candidate:  # 2026-09-23 Phase A + same-ELF diagnostic; 2026-09-24 Phase 
   reproduce: "make keccak-record MLK_ROOT=<clean mlkem-native checkout at b3ba7b32>; make keccak-flat FLAT_OUT=<scratch>; make keccak-bench; phase_b_batch.py ... run_keccak_diag.py --param 768 --launches 31 [--binary build/bench_keccak_diag_swapped]"
   reproduce_phase_b: "docs/ntruplus-avx2-keccak-mlkem-native.md#reproduce-phase-b"
 
-ht_candidate:  # 2026-09-24 Phase A + same-ELF diagnostic; no SUPERCOP campaign, no Native; docs/ntruplus768-ht-forward.md
+ht_candidate:  # 2026-09-24 Phase A + same-ELF diagnostic; 2026-09-25 Phase B (export, Native, ASLR-on paired); docs/ntruplus768-ht-forward.md
+  phase: B_native_measured  # decision: phase_b.decision
   candidate: avx2-officialopt-lazy-freeze-keccak-ht-768-exp001  # src/kem_lazy_r2fold_freeze2op_keccak_ht_htinv.c
   base: avx2-officialopt-lazy-freeze-keccak-768-exp001  # src/kem_lazy_freeze2op_keccak.c, unchanged
   items: [ht_forward, keygen_r2fold, ht_inverse_block]  # item 3 (inverse) included in its block-pass form; fused level-1+0 pass dropped
@@ -425,7 +426,59 @@ ht_candidate:  # 2026-09-24 Phase A + same-ELF diagnostic; no SUPERCOP campaign,
     host_hygiene: both batches clean on attempt 0 (phase_b_batch.py)
     evidence: results/ht-diag-{normal,reversed}-20260924/{summary,metadata}.json
     assessment: "Forward and keygen R^2 fold are robust component wins (-28/-29 per Forward, 31/31; -81/-82 per keygen BaseMul, 31/31) and show up at KEM level in both orders (candidate-base keypair -327/-198, encap -50/-50, decap -75/-80). The HT inverse is a robust component win (-24/-17, 31/31) but its expected ~-20 per Decap is below the same-ELF placement noise (htinv_only-base decap +12/-6; candidate-ht_r2fold decap +11/-36): kept because it is bit-identical and cheaper, flagged as not resolved at KEM level. Native not run."
-  native: not_run  # by instruction (Phase A + same-ELF diagnostic only)
+  phase_b:  # 2026-09-25; docs/ntruplus768-ht-forward.md#phase-b-native-supercop-2026-09-25
+    qualification_export:
+      path: qualification/avx2-officialopt-lazy-freeze-keccak-ht-qual001  # + .json manifest (kind ht-qualification-source)
+      tree_sha256: 50b22a3f2000bca8325ac9431deb906880b61b24a13892252999726e10304bb6
+      base_tree_sha256: 6209ebacb81ce313a43d305b960c6b5e94618ff6149abd326c39c15f98bb4fb6  # avx2-officialopt-lazy-freeze-keccak-qual001
+      added: {ntt_ht.s: 8f4bdb30, invntt_ht.s: 999388bb, basemul_nor2.s: f40f77a2, baseinv_r2fold.c: 4138c98f}  # exact Phase-A bytes, sha256-checked against results/ht-phase-a/*-generation.json
+      kem_c: "Phase-A overlay heads (2 #define) + base kem.c with src/kem_lazy.c body -> src/kem_lazy_r2fold.c; diff vs base 26 added / 4 changed lines (unified diff in manifest); only the repo-only Keccak includes of the chain are not carried (flat fips202.h is the adapter, Official hash names)"
+      exporter: common/official_opt_ht/tools/export_ht_flat.py (make ht-qualification / ht-qualification-check); refuses overwrite
+      flat_equals_phase_a: "make ht-flat-record -> results/ht-phase-b/: flat-tree KEM test (100 vectors byte-exact vs Official, invalid PK/CT/SK, forced g retry, f injection; release + ASan/UBSan/LSan) pass; linked audit 6 x HT Forward, 1 x HT inverse, 2 x fold BaseInv, 2 x nor2, 2 x poly_basemul, 7 x freeze2op, 0 x lazy/poly_ntt/poly_invntt_scale/poly_baseinv; flat kem/baseinv_r2fold/symmetric/mlk objects identical to the Phase-A objects up to file symbol and ntruplus768_keccak_hash_* -> hash_*"
+      installed: /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001/crypto_kem/ntruplus768/avx2-officialopt-lazy-freeze-keccak-ht-qual001  # install_qualification.py (new kind accepted)
+      reversed_copies: "install_reversed_placement.py --param 768 (new): {base,ht}-reversed; renames ntt.s->aaa_, ntt_caller_lazy.s->bbb_, pack.s->yyy_, basemul.s->zzz_, ntt_ht.s->bbb_ntt_ht.s, basemul_nor2.s->zzz_basemul_nor2.s"
+      supercop_try: "ok, checksumsmall/big == pinned (= Official) for O3/Os/O2/O in all 27 Native batches and in the 5 O3GC fixed builds; scratch do-part emulation 0 warnings for the export and both reversed copies (results/ht-phase-b/flat-supercop-try.json)"
+    methodology: "CPU 1, ASLR on (randomize_va_space=2); unmodified measure.c; phase_b_batch.py on every batch (35 batches, all attempt 0, pre-load 0.25-0.50); strictly sequential; host controls unchanged"
+    native_design: "3 roles (official=avx2, base=avx2-officialopt-lazy-freeze-keccak-qual001, ht=avx2-officialopt-lazy-freeze-keccak-ht-qual001), 81 fresh launches each = 9 rotated rounds x one 9-launch batch per role; default SUPERCOP compiler selection; independent pools; 95% CI by launch resampling (2000); tag 20260925h"
+    decision_rule: "robust research win iff Native pooled StQ2 ht-base < 0 AND normal-placement ASLR-on fixed-ELF paired 95% CI ht-base below zero; reversed reported and flagged"
+    native_default:  # StQ2 delta [95% CI] favourable launches/81, per-batch deltas
+      compiler_picks: {official: "O2 x8, O3 x1 (batch 2)", base: "O3 x9", ht: "O3 x9"}  # base and ht never differ -> no fixed -O3 check needed
+      measure_elf_sha256_prefix: {official: [e039d327f379d371, 28f374b7a77cf46a], base: [243d2fcdcccb5ba4], ht: [3b64cb2703c2d318]}
+      stq2: {keypair: {official: 21611.5, base: 16862.3, ht: 16598.9}, enc: {official: 28174.3, base: 20531.1, ht: 20455.9}, dec: {official: 19461.7, base: 15051.0, ht: 14960.0}}
+      ht_minus_base:
+        keypair: {stq2: -263.4, pct: -1.56, ci95: [-275.4, -251.8], favourable: 81/81, batches: [-263, -265, -284, -258, -283, -274, -256, -217, -272]}
+        enc: {stq2: -75.2, pct: -0.37, ci95: [-94.2, -58.0], favourable: 67/81, batches: [-38, -69, -63, -70, -92, -98, -44, -75, -127]}
+        dec: {stq2: -91.0, pct: -0.60, ci95: [-102.3, -80.3], favourable: 79/81, batches: [-71, -77, -97, -117, -110, -99, -110, -78, -62]}
+      ht_minus_official:
+        keypair: {stq2: -5012.7, pct: -23.19, ci95: [-5030.2, -4996.9], favourable: 81/81}
+        enc: {stq2: -7718.4, pct: -27.40, ci95: [-7756.9, -7686.6], favourable: 81/81}
+        dec: {stq2: -4501.7, pct: -23.13, ci95: [-4515.5, -4486.7], favourable: 81/81}
+      base_minus_official: {keypair: -4749.3, enc: -7643.1, dec: -4410.7}
+      evidence: results/native-ext-{official,base,ht}-b{1..9}-20260925h/, results/extended-multi-summary-20260925h.json
+    paired:  # O3GC fixed ELFs, ASLR on, 48 ABBA/BAAB blocks (192 fresh launches); mean [block-bootstrap 95% CI] favourable/48
+      elf_sha256_prefix: {official: d9fba9ad078bdc08, base: 708a4f1b3372434a, ht: 4aa840db9caf0b37, base_reversed: a775dd0cd226d821, ht_reversed: d5fb9db30ae8017e}  # official/base byte-identical to the Keccak Phase-B builds
+      ht_vs_base_normal:
+        keypair: {mean: -292.8, ci95: [-302.6, -282.9], favourable: 48/48}  # retry-0 stratum -288.6 [-298.5, -278.5]
+        enc: {mean: -61.0, ci95: [-78.7, -44.1], favourable: 42/48}
+        dec: {mean: -99.1, ci95: [-106.8, -91.7], favourable: 48/48}
+      ht_vs_base_reversed:  # secondary
+        keypair: {mean: -187.6, ci95: [-200.5, -174.3], favourable: 48/48}
+        enc: {mean: +24.4, ci95: [+6.2, +42.4], favourable: 14/48}  # DISAGREES with normal
+        dec: {mean: -106.8, ci95: [-116.5, -97.3], favourable: 48/48}
+      ht_vs_official_normal:
+        keypair: {mean: -5098.3, ci95: [-5116.8, -5081.6], favourable: 48/48}
+        enc: {mean: -7725.2, ci95: [-7760.3, -7693.2], favourable: 48/48}
+        dec: {mean: -4449.8, ci95: [-4467.2, -4432.6], favourable: 48/48}
+      evidence: results/fixed-ht-{official,base,ht}-normal-20260925h/, results/fixed-ht-{base,ht}-reversed-20260925h/, results/paired-aslr-on-{normal,reversed}-ht-vs-base-20260925h/, results/paired-aslr-on-normal-ht-vs-official-20260925h/
+    decision:
+      ht_vs_base:
+        keypair: robust-research-win
+        enc: robust-research-win  # flagged: reversed-placement paired CI [+6.2, +42.4] > 0; small (-75, 0.37%) and placement-sensitive
+        dec: robust-research-win
+      ht_vs_official: {keypair: robust-research-win, enc: robust-research-win, dec: robust-research-win}
+      notes: "keypair conclusive without the seed-matched harness; HT inverse not separately resolved (only the full candidate exported); Native deltas consistent with same-ELF (keypair -327/-198, enc -50/-50, dec -75/-80)"
+  native: measured  # phase_b.native_default
   host_controls: unchanged
   promotion: none
   reproduce: docs/ntruplus768-ht-forward.md#reproduce
+  reproduce_phase_b: docs/ntruplus768-ht-forward.md#reproduce-phase-b
