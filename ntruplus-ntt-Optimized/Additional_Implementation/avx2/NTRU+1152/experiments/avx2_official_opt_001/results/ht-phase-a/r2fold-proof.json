@@ -1,0 +1,78 @@
+{
+ "class": "exact algebraic proof record (Phase A; no timing)",
+ "parameter": "NTRU+1152",
+ "verdict": "pass",
+ "constants": {
+  "R2": 867,
+  "R2qinv": 2787,
+  "R3": 460,
+  "R3qinv": -16436,
+  "Rinv": -682
+ },
+ "constant_checks": {
+  "R2 == R^2 mod q": true,
+  "R3 == R^3 mod q": true,
+  "Rinv == R^-1 mod q": true,
+  "R2 == R3 * R^-1 mod q": true,
+  "R2qinv == R2 * qinv mod 2^16": true,
+  "R3qinv == R3 * qinv mod 2^16": true,
+  "qinv * q == 1 mod 2^16": true
+ },
+ "montgomery_identity": {
+  "exhaustive_constants": [
+   867,
+   460,
+   1,
+   -1,
+   1728,
+   -1728,
+   3456,
+   -3456
+  ],
+  "random_pairs": 4194304,
+  "failures": 0
+ },
+ "fqinv": {
+  "exhaustive_int16": 65536,
+  "form": "fqinv(x) == x^(q-2) * R^-34 (mod q)",
+  "zero_iff_zero": true,
+  "fold_relation_fqinv(fqmul(x,R2)) == R*fqinv(fqmul(x,R3))": true
+ },
+ "baseinv_source_audit": {
+  "fqinv_batch": {
+   "add_sub_intrinsics": 0,
+   "fqmul_calls": 34,
+   "R2FOLD_uses": 2,
+   "R3_uses": 0
+  },
+  "poly_baseinv_2": {
+   "add_sub_intrinsics": 0,
+   "fqmul_calls": 4,
+   "R2FOLD_uses": 0,
+   "R3_uses": 0
+  },
+  "ntruplus1152_officialopt_baseinv_r2fold": {
+   "add_sub_intrinsics": 0,
+   "fqmul_calls": 0,
+   "R2FOLD_uses": 0,
+   "R3_uses": 0
+  }
+ },
+ "conclusion": [
+  "finv' == R * finv (mod q), same BaseInv status and failure output",
+  "basemul_nor2(a, finv') == poly_basemul(a, finv) (mod q) per coefficient",
+  "pk/sk byte-identical through canonical poly_tobytes"
+ ],
+ "inputs_sha256": {
+  "upstream/supercop-avx2/basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+  "upstream/supercop-avx2/poly.c": "5a6dd54dd5510dfda93cf7a8278ccc1214dfbfcd935251886422c68126ed1705",
+  "upstream/supercop-avx2/consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+  "src/kem_lazy.c": "0bd8c009ef362948fd51d7b1c642904b7f5e5d1095f11cf6401dcbf408d2caa7",
+  "src/ntruplus1152_officialopt_baseinv_r2fold.c": "404ad4bde6f04078007333e241ab70b3cd11495a446fecbdc1464ae3916d9724"
+ },
+ "modelled_function_text_sha256": {
+  "fqmul": "fec3e3441b99cd164df9cb6b9bbafec3070c36d6810a0df76a7c901b3f1ba8e9",
+  "fqsqr": "9dfe36d1aa7d6e1f691a6fff5b454a6fb0aa5a3a7bab0c3a3e1ae12720a724b9",
+  "fqinv": "1a5bfa465ffaddbf9a4895c4bf243f2ab35882e3e4fb667ab3cbae27a9d56980"
+ }
+}

@@ -1,0 +1,350 @@
+{
+ "class": "per-lane interval range proof + consumer envelopes (Phase A; no timing)",
+ "parameter": "NTRU+1152",
+ "verdict": "pass",
+ "ht_asm_sha256": "20f3558e002826aca9701385229d5b52562fe7434bbb10bfcccaaa12804a87b1",
+ "nor2_asm_sha256": "38d981adb5e2d35fcef27bd262f4e5ab153fe90ffdbdb436db04baa12945f687",
+ "lazy_asm_sha256": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092",
+ "sources_sha256": {
+  "ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+  "basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+  "baseinv.s": "bc88e6622f7e01f2280f38e75bcf413b7aa808e6159c9abb14dd3926f54189ed",
+  "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+  "pack.s": "406e0d9cff4af069d8b8cc3cb028d11898a61f86d86cece9280fa81dafb11732"
+ },
+ "tool_sha256": {
+  "avx2emu.py": "aa8bc39bc325e3158d1afcce78d5bda7a9d1b12e0dcdf7febe6583ae4ca2d370",
+  "common.py": "98509b4ef39d9d47f684d573dc841aaa4f4f1731b47437691df698ffaa994d62",
+  "difftest.py": "0b6ec6173d0e24793490b51fc0c74dbafe97365c92aafb292fa0d21a1f832e1f",
+  "ledger.py": "715b9c82ceba337090f2fcc3de866813635cd9b5470ee490f64c7da28fede9c9",
+  "prove_forward_lazy.py": "efd8e6be025d662668c40696da1b4562392ee438e9b864abb98db648cadf981e",
+  "images.c": "e155ab31180f9831f0036602b4ba48efc37b6a5fc22aa61ed68c4f5a4f6138b3",
+  "prove_ht.py": "6877510498035cef4c8aa96cb9ae086ca4413b6e9da4bfdb63330e136ff55a54"
+ },
+ "emulator_machine_differential_calls": {
+  "ntruplus1152_officialopt_ntt_ht": 24,
+  "ntruplus1152_officialopt_basemul_nor2": 24
+ },
+ "forward": {
+  "asm_contract[-3,4]": {
+   "lazy": {
+    "failures": 0,
+    "output_range": [
+     -17961,
+     17957
+    ]
+   },
+   "ht": {
+    "failures": 0,
+    "output_range": [
+     -17961,
+     17957
+    ],
+    "barrett_lines_executed": 0
+   },
+   "ht_equals_lazy_per_lane_interval": true
+  },
+  "keygen_f": {
+   "lazy": {
+    "failures": 0,
+    "output_range": [
+     -17193,
+     17194
+    ]
+   },
+   "ht": {
+    "failures": 0,
+    "output_range": [
+     -17193,
+     17194
+    ],
+    "barrett_lines_executed": 0
+   },
+   "ht_equals_lazy_per_lane_interval": true
+  },
+  "keygen_g": {
+   "lazy": {
+    "failures": 0,
+    "output_range": [
+     -17193,
+     17193
+    ]
+   },
+   "ht": {
+    "failures": 0,
+    "output_range": [
+     -17193,
+     17193
+    ],
+    "barrett_lines_executed": 0
+   },
+   "ht_equals_lazy_per_lane_interval": true
+  },
+  "decap_msg[-2,2]": {
+   "lazy": {
+    "failures": 0,
+    "output_range": [
+     -16382,
+     16385
+    ]
+   },
+   "ht": {
+    "failures": 0,
+    "output_range": [
+     -16382,
+     16385
+    ],
+    "barrett_lines_executed": 0
+   },
+   "ht_equals_lazy_per_lane_interval": true
+  },
+  "encap_r/m,reenc[-1,1]": {
+   "lazy": {
+    "failures": 0,
+    "output_range": [
+     -15580,
+     15580
+    ]
+   },
+   "ht": {
+    "failures": 0,
+    "output_range": [
+     -15580,
+     15580
+    ],
+    "barrett_lines_executed": 0
+   },
+   "ht_equals_lazy_per_lane_interval": true
+  }
+ },
+ "forward_levels_asm_contract_ht": {
+  "level0": {
+   "addsub_absmax": 6436,
+   "mont_out": 1778,
+   "mont_vec": 72,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": 2892,
+   "entering_absmax": 4
+  },
+  "level2": {
+   "addsub_absmax": 10119,
+   "mont_out": 1877,
+   "mont_vec": 72,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 6436
+  },
+  "level3": {
+   "addsub_absmax": 12051,
+   "mont_out": 1984,
+   "mont_vec": 36,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 10119
+  },
+  "level4": {
+   "addsub_absmax": 13839,
+   "mont_out": 2016,
+   "mont_vec": 36,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 12051
+  },
+  "level5": {
+   "addsub_absmax": 15862,
+   "mont_out": 2075,
+   "mont_vec": 36,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 13839
+  },
+  "level6": {
+   "addsub_absmax": 17961,
+   "mont_out": 2133,
+   "mont_vec": 36,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 15862
+  }
+ },
+ "forward_census_asm_contract_ht": {
+  "level0": {
+   "vpaddw": 144,
+   "vpmulhw": 144,
+   "vpmullw": 108,
+   "vpsubw": 204
+  },
+  "level2": {
+   "vpaddw": 72,
+   "vpmulhw": 144,
+   "vpmullw": 72,
+   "vpsubw": 168
+  },
+  "level3": {
+   "vpaddw": 36,
+   "vpmulhw": 72,
+   "vpmullw": 36,
+   "vpsubw": 72
+  },
+  "level4": {
+   "vpaddw": 36,
+   "vperm2i128": 72,
+   "vpmulhw": 72,
+   "vpmullw": 36,
+   "vpsubw": 72
+  },
+  "level5": {
+   "vpaddw": 36,
+   "vpmulhw": 72,
+   "vpmullw": 36,
+   "vpsubw": 72,
+   "vpunpckhdq": 72,
+   "vpunpckhwd": 36,
+   "vpunpckldq": 72,
+   "vpunpcklwd": 36
+  },
+  "level6": {
+   "vpaddw": 36,
+   "vpmulhw": 72,
+   "vpmullw": 36,
+   "vpsubw": 72
+  }
+ },
+ "consumers_ht": {
+  "keygen baseinv(f_hat)": {
+   "failures": 0,
+   "numerator_absmax": 11070,
+   "den_absmax": 4739,
+   "pc1_absmax_env": 2071,
+   "zero_check_exact": true,
+   "zero_margin": "pc1*D=9814469, D^2=22458121 vs 32768q=113278976",
+   "finv_absmax_env": 4787
+  },
+  "keygen baseinv(g_hat)": {
+   "failures": 0,
+   "numerator_absmax": 11068,
+   "den_absmax": 4739,
+   "pc1_absmax_env": 2071,
+   "zero_check_exact": true,
+   "zero_margin": "pc1*D=9814469, D^2=22458121 vs 32768q=113278976",
+   "finv_absmax_env": 4787
+  },
+  "keygen basemul(h,g_hat,finv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1865,
+    1865
+   ]
+  },
+  "keygen basemul(h,f_hat,ginv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1865,
+    1865
+   ]
+  },
+  "keygen tobytes(sk,f_hat)": {
+   "input_range": [
+    -17193,
+    17194
+   ],
+   "ok": true
+  },
+  "encap basemul(c,h,r_hat)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1856,
+    1856
+   ]
+  },
+  "encap poly_add(c,m_hat)": {
+   "range": [
+    -17436,
+    17436
+   ],
+   "ok": true
+  },
+  "encap tobytes(ct,r_hat) / reenc tobytes": {
+   "input_range": [
+    -15580,
+    15580
+   ],
+   "ok": true
+  },
+  "decap poly_sub(c,f_hat)": {
+   "range": [
+    -16385,
+    19838
+   ],
+   "ok": true
+  },
+  "decap basemul(f,c-f_hat,hinv)": {
+   "failures": 0,
+   "fail_lines": [],
+   "output_range": [
+    -1856,
+    1865
+   ]
+  }
+ },
+ "keygen_r2fold": {
+  "keygen nor2(h, g_hat, finv)": {
+   "failures": 0,
+   "output_range": [
+    -11250,
+    11250
+   ],
+   "baseinv_output_envelope": 4787,
+   "official_basemul_same_inputs": {
+    "failures": 0,
+    "fail_lines": [],
+    "output_range": [
+     -1865,
+     1865
+    ]
+   }
+  },
+  "keygen nor2(h, f_hat, ginv)": {
+   "failures": 0,
+   "output_range": [
+    -11250,
+    11250
+   ],
+   "baseinv_output_envelope": 4787,
+   "official_basemul_same_inputs": {
+    "failures": 0,
+    "fail_lines": [],
+    "output_range": [
+     -1865,
+     1865
+    ]
+   }
+  }
+ },
+ "inverse_ht": "not part of the NTRU+864/1152 candidates",
+ "crepmod3": {
+  "output_values_all_words": [
+   -2,
+   2
+  ]
+ },
+ "keygen_r2fold_forward_domain": "keygen_f / keygen_g outputs of the HT Forward (= lazy per lane, step 2): the lazy/HT-g domain",
+ "tobytes": {
+  "canonical_for_all_int16": true
+ }
+}
