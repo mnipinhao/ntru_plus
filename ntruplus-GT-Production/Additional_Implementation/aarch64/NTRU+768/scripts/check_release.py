@@ -142,6 +142,7 @@ expected = {
     "decap.h",
     "keygen.h",
     "tables.c",
+    "unpack.c",
     "scripts/check_zeroization.py",
     "test/test_zeroization.c",
     "test/test_canonical.c",

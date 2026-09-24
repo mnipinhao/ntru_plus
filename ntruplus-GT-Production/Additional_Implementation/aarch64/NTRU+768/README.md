@@ -16,7 +16,8 @@ shape used by other NTRU+ implementations:
 | `decap_ntt.S` | Decapsulation forward NTT |
 | `decap_invntt.S` | Decapsulation Good-Thomas inverse, fused centered mod 3 |
 | `base.S` | Pointwise multiplication, base inversion leaves, packed first product |
-| `pack.S` | Checked decode and canonical serialization for each layout |
+| `pack.S` | Canonical serialization for each layout; Decap checked decode |
+| `unpack.c` | Encap checked decode (block-major) |
 | `keygen.c` | CQ inversion orchestration and CQ pointwise products |
 | `cbd.S` | CBD and SOTP conversion |
 | `add.S` | ABI-safe subtraction and two-pointer triple |
@@ -65,11 +66,11 @@ cycles:
 
 | | GT | Official | |
 |---|---:|---:|---:|
-| keypair | 31,646 | 38,426.5 | -17.65% |
-| enc | 29,442.5 | 38,585 | -23.69% |
-| dec | 27,315 | 33,549 | -18.58% |
+| keypair | 31,653.5 | 38,425.5 | -17.62% |
+| enc | 29,276.5 | 38,600.5 | -24.16% |
+| dec | 27,319.5 | 33,586 | -18.66% |
 
-With Official's hash layer linked into both, the margins are -5.6% / -3.8% /
+With Official's hash layer linked into both, the margins are -5.7% / -4.1% /
 -5.6%: most of the lead comes from the Keccak and sponge code, the rest from the
 arithmetic.
 

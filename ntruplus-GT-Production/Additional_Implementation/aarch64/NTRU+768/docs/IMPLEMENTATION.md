@@ -199,6 +199,12 @@ shared normalize/transpose/pack core. The key-generation CQ packer keeps its
 CQ-specific frontend and calls a shared pack core for its output chunks. These
 helpers do not create an intermediate public format.
 
+`poly_frombytes_encap` (`unpack.c`) relies on a property of the block-major
+permutation: each four-lane half of each output vector is four consecutive
+canonical coefficients, six contiguous bytes. A vector is therefore two
+16-byte loads, one two-register `tbl`, a per-lane shift and mask, and one
+store, with no transpose; a single running maximum carries the range check.
+
 Public keys, secret keys, and ciphertexts all use the same canonical encoding,
 regardless of whether the preceding internal path used block-major, CQ, or
 QSoA storage.
@@ -210,7 +216,8 @@ assembly, and headers are in the package root. Private endpoint declarations
 are in `keygen.h`, `encap.h`, and `decap.h`; `poly.h` holds the shared
 helpers, and test-only declarations are in `test/reference/poly_reference.h`.
 `ntt.S` holds the shared forward core, `decap_ntt.S` and `decap_invntt.S` the
-decapsulation transforms, and `tables.c` the lambda tables.
+decapsulation transforms, `tables.c` the lambda tables, and `unpack.c`
+the Encap checked decoder.
 The endpoint naming and ntt/base/pack consolidation preserve parameters and
 layout contracts. Each original assembly owner has a private identifier
 namespace and a corresponding section boundary. The validation endpoints
