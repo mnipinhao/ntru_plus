@@ -9,6 +9,12 @@ A direct-codec export's `codec_direct.s` is renamed to `ccc_codec_direct.s`
 (normal order basemul, codec_direct, ntt, ntt_caller_lazy, pack becomes
 ntt, ntt_caller_lazy, codec_direct, pack, basemul).  --skip-baseline adds only
 the candidate when `<baseline>-reversed` already exists.
+NTRU+768 (--param 768) uses the same renames as NTRU+768
+avx2_official_opt_001/tools/install_reversed_placement.py.  An HT export's
+Forward and keygen BaseMul follow the files they replace:
+`ntt_ht.s` -> `bbb_ntt_ht.s` (next to bbb_ntt_caller_lazy.s) and
+`basemul_nor2.s` -> `zzz_basemul_nor2.s` (next to zzz_basemul.s);
+`invntt_ht.s` stays, like `invntt.s`.
 """
 
 import argparse
@@ -19,11 +25,12 @@ from pathlib import Path
 RENAMES = {"ntt.s": "aaa_ntt.s", "basemul.s": "zzz_basemul.s", "pack.s": "yyy_pack.s"}
 LAZY_RENAME = {"ntt_caller_lazy.s": "bbb_ntt_caller_lazy.s"}
 CODEC_RENAME = {"codec_direct.s": "ccc_codec_direct.s"}
+HT_RENAME = {"ntt_ht.s": "bbb_ntt_ht.s", "basemul_nor2.s": "zzz_basemul_nor2.s"}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--param", type=int, choices=(864, 1152), required=True)
+    parser.add_argument("--param", type=int, choices=(768, 864, 1152), required=True)
     parser.add_argument("--campaign-root", required=True, type=Path)
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--baseline", default="avx2")
@@ -51,6 +58,7 @@ def main():
             renames.update(LAZY_RENAME)
         if (source / "codec_direct.s").exists():
             renames.update(CODEC_RENAME)
+        renames.update({old: new for old, new in HT_RENAME.items() if (source / old).exists()})
         for old, new in renames.items():
             (target / old).rename(target / new)
         (target / "PLACEMENT.json").write_text(json.dumps(
