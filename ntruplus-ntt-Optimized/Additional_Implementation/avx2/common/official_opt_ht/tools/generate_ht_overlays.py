@@ -4,14 +4,19 @@
 Base: avx2-officialopt-lazy-freeze-keccak-768-exp001 = src/kem_lazy_freeze2op_keccak.c
 (mlkem-native Keccak headers + `#define poly_tobytes <freeze2op>` + kem_lazy.c).
 
-  src/kem_lazy_freeze2op_keccak_ht.c         control ht_only  = base, Forward -> HT
+  src/kem_lazy_freeze2op_keccak_ht.c         control ht_only     = base, Forward -> HT
   src/kem_lazy_r2fold_freeze2op_keccak.c     control r2fold_only = base on kem_lazy_r2fold.c
-  src/kem_lazy_r2fold_freeze2op_keccak_ht.c  candidate avx2-officialopt-lazy-freeze-keccak-ht-768-exp001
-                                             = base + HT Forward + keygen R^2 fold
+  src/kem_lazy_freeze2op_keccak_htinv.c      control htinv_only  = base, inverse NTT -> HT inverse
+  src/kem_lazy_r2fold_freeze2op_keccak_ht.c  control ht_r2fold   = base + HT Forward + keygen R^2 fold
+  src/kem_lazy_r2fold_freeze2op_keccak_ht_htinv.c
+                                             candidate avx2-officialopt-lazy-freeze-keccak-ht-768-exp001
+                                             = base + HT Forward + keygen R^2 fold + HT inverse NTT
 
 The Forward rebinding is `#define ntruplus768_officialopt_ntt_caller_lazy
 ntruplus768_officialopt_ntt_ht`, which renames the prototype and all 6 call
-sites of kem_lazy.c (and of kem_lazy_r2fold.c, which keeps them unchanged).
+sites of kem_lazy.c (and of kem_lazy_r2fold.c, which keeps them unchanged);
+the inverse rebinding `#define poly_invntt_scale ntruplus768_officialopt_invntt_ht`
+renames the poly.h prototype and the single (Decap) call site.
 Every included file stays byte-identical, so all variants link into one ELF.
 
   generate_ht_overlays.py --experiment . [--check]
@@ -23,6 +28,7 @@ from pathlib import Path
 
 LAZY = "ntruplus768_officialopt_ntt_caller_lazy"
 HT = "ntruplus768_officialopt_ntt_ht"
+HTINV = "ntruplus768_officialopt_invntt_ht"
 FREEZE = "ntruplus768_officialopt_tobytes_freeze2op"
 PINS = {
     "src/kem_lazy.c": "ffd9165c36466c2ecc57e4a157a2a847dc9f19d1fc249ebbc9c1c46baa22fd7d",
@@ -53,7 +59,10 @@ def outputs(root):
     for name, text in (("kem_lazy.c", lazy), ("kem_lazy_r2fold.c", r2)):
         if text.count(LAZY) != 7 or text.count(f"void {LAZY}(poly *);") != 1:
             raise ValueError(f"{name}: expected 1 prototype + 6 Forward calls")
+        if text.count("poly_invntt_scale(") != 1:
+            raise ValueError(f"{name}: expected 1 inverse NTT call")
     ht_def = f"#define {LAZY} {HT}\n"
+    inv_def = f"#define poly_invntt_scale {HTINV}\n"
     return {
         "src/kem_lazy_freeze2op_keccak_ht.c": HEAD +
         " * NTRU+768 AVX2 control ht_only: the base candidate avx2-officialopt-lazy-freeze-keccak-768-exp001\n"
@@ -66,9 +75,19 @@ def outputs(root):
         " * with the keygen R^2 fold) instead of src/kem_lazy.c.  Diagnostic.\n */\n"
         + keccak_prelude + f"#define poly_tobytes {FREEZE}\n" + '#include "kem_lazy_r2fold.c"\n',
         "src/kem_lazy_r2fold_freeze2op_keccak_ht.c": HEAD +
-        " * NTRU+768 AVX2 candidate avx2-officialopt-lazy-freeze-keccak-ht-768-exp001: base\n"
-        " * candidate + HT Forward (6 calls) + keygen R^2 fold (2 BaseInv, 2 keygen BaseMul).\n */\n"
+        " * NTRU+768 AVX2 control ht_r2fold (items 1+2): base candidate + HT Forward (6 calls)\n"
+        " * + keygen R^2 fold (2 BaseInv, 2 keygen BaseMul).  Diagnostic.\n */\n"
         + ht_def + '#include "kem_lazy_r2fold_freeze2op_keccak.c"\n',
+        "src/kem_lazy_freeze2op_keccak_htinv.c": HEAD +
+        " * NTRU+768 AVX2 control htinv_only: the base candidate (src/kem_lazy_freeze2op_keccak.c,\n"
+        f" * unchanged) with its Decap inverse NTT bound to asm/{HTINV}.s\n"
+        " * (bit-identical to Official poly_invntt_scale).  Diagnostic.\n */\n"
+        + inv_def + '#include "kem_lazy_freeze2op_keccak.c"\n',
+        "src/kem_lazy_r2fold_freeze2op_keccak_ht_htinv.c": HEAD +
+        " * NTRU+768 AVX2 candidate avx2-officialopt-lazy-freeze-keccak-ht-768-exp001: base\n"
+        " * candidate + HT Forward (6 calls) + keygen R^2 fold (2 BaseInv, 2 keygen BaseMul)\n"
+        " * + HT inverse NTT (1 Decap call).\n */\n"
+        + inv_def + '#include "kem_lazy_r2fold_freeze2op_keccak_ht.c"\n',
     }
 
 
