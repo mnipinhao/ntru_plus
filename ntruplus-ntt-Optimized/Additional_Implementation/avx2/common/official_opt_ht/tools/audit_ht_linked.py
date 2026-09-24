@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Linked-ELF audit of the NTRU+768 HT Forward / R^2-fold candidate (not its source).
+"""Linked-ELF audit of the NTRU+768 / 864 / 1152 HT Forward / R^2-fold candidate (not its source).
 
   * new asm entries (HT Forward, no-R^2 BaseMul): unique, sized, 32-byte
     aligned; one ret; no stack (%rsp/%rbp/push/pop/leave), call or
@@ -21,6 +21,12 @@ candidate bindings with the Official hash_f/g/h names, as in the flat tree).
 Each --phase-a-obj FLAT=PHASEA pair must be the same object up to the file
 symbol and the repo-only hash names (ntruplus768_keccak_hash_* -> hash_*):
 identical section headers, contents, relocations and symbol table.
+
+--param 864 / 1152 (default 768): the same checks without the HT inverse
+(not part of those candidates); the KEM objects are the candidate
+(HT Forward + R^2 fold) and the ht_only / r2fold_only controls, and the
+tobytes/frombytes bindings are the base's (864: direct 12-bit codec, 7
+tobytes + 4 frombytes call sites after inlining; 1152: 2-op-freeze tobytes x 7).
 """
 import argparse
 import difflib
@@ -44,6 +50,8 @@ LAZY = "ntruplus768_officialopt_ntt_caller_lazy"
 FREEZE = "ntruplus768_officialopt_tobytes_freeze2op"
 TABLES = ("ntruplus768_officialopt_ht_zetas_a", "ntruplus768_officialopt_ht_zetas_b",
           "ntruplus768_officialopt_htinv_zetas_b")
+PARAMETER = 768
+ASM = {HT: "ntt_ht.s", NOR2: "basemul_nor2.s", HTINV: "invntt_ht.s"}
 TARGETS = [HT, LAZY, "poly_ntt", HTINV, "poly_invntt_scale", R2INV, "poly_baseinv", NOR2, "poly_basemul", FREEZE, "poly_tobytes",
            "ntruplus_mlkfips202_shake256", "fips202avx_shake256", "ntruplus768_keccak_hash_f",
            "ntruplus768_keccak_hash_g", "ntruplus768_keccak_hash_h", "hash_f", "hash_g", "hash_h"]
@@ -65,6 +73,40 @@ FLAT_EXPECT = {**EXPECT["kem_lazy_r2fold_freeze2op_keccak_ht_htinv"],
                "ntruplus768_keccak_hash_f": 0, "ntruplus768_keccak_hash_g": 0, "ntruplus768_keccak_hash_h": 0,
                "hash_f": 2, "hash_g": 2, "hash_h": 2}
 FLAT_NAME_MAP = {f"ntruplus768_keccak_hash_{x}": f"hash_{x}" for x in "fgh"}
+
+
+def configure(param):
+    """NTRU+864 / 1152: rebind the module constants (no HT inverse)."""
+    global HT, HTINV, NOR2, R2INV, LAZY, TABLES, TARGETS, EXPECT, FLAT_EXPECT, FLAT_NAME_MAP, PARAMETER, ASM
+    if param == 768:
+        return
+    p = f"ntruplus{param}_officialopt"
+    HT, NOR2, R2INV, LAZY, HTINV = f"{p}_ntt_ht", f"{p}_basemul_nor2", f"{p}_baseinv_r2fold", \
+        f"{p}_ntt_caller_lazy", None
+    TABLES = (f"{p}_ht_zetas_a", f"{p}_ht_zetas_b")
+    PARAMETER = param
+    ASM = {HT: "ntt_ht.s", NOR2: "basemul_nor2.s"}
+    hashes = [f"ntruplus{param}_keccak_hash_{x}" for x in "fgh"]
+    if param == 864:     # direct 12-bit codec (declassify_poly_frombytes inlined: 1 Encap + 3 Decap sites)
+        codec = {f"{p}_tobytes_direct": 7, f"{p}_frombytes_direct": 4, "poly_tobytes": 0, "poly_frombytes": 0}
+        stem = "codec_direct"
+    else:                # 2-op-freeze tobytes; Official frombytes
+        codec = {f"{p}_tobytes_freeze2op": 7, "poly_tobytes": 0}
+        stem = "freeze2op"
+    TARGETS = [HT, LAZY, "poly_ntt", "poly_invntt_scale", R2INV, "poly_baseinv", NOR2, "poly_basemul",
+               *codec, "ntruplus_mlkfips202_shake256", "fips202avx_shake256", *hashes, "hash_f", "hash_g", "hash_h"]
+    base = {LAZY: 6, "poly_ntt": 0, HT: 0, "poly_invntt_scale": 1, "poly_baseinv": 2, R2INV: 0, "poly_basemul": 4,
+            NOR2: 0, **codec, "ntruplus_mlkfips202_shake256": 2, "fips202avx_shake256": 0,
+            **{h: 2 for h in hashes}, "hash_f": 0, "hash_g": 0, "hash_h": 0}
+    fold = {"poly_baseinv": 0, R2INV: 2, "poly_basemul": 2, NOR2: 2}
+    EXPECT = {
+        f"kem_lazy_r2fold_{stem}_keccak_ht": {**base, LAZY: 0, HT: 6, **fold},   # candidate
+        f"kem_lazy_{stem}_keccak_ht": {**base, LAZY: 0, HT: 6},
+        f"kem_lazy_r2fold_{stem}_keccak": {**base, **fold},
+    }
+    FLAT_EXPECT = {**EXPECT[f"kem_lazy_r2fold_{stem}_keccak_ht"], **{h: 0 for h in hashes},
+                   "hash_f": 2, "hash_g": 2, "hash_h": 2}
+    FLAT_NAME_MAP = {h: f"hash_{x}" for h, x in zip(hashes, "fgh")}
 
 
 def sha(p):
@@ -135,6 +177,7 @@ def compare_objects(flat, phase_a, name_map):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--param", type=int, choices=(768, 864, 1152), default=768)
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--elf", type=Path, required=True)
     ap.add_argument("--output", type=Path, required=True)
@@ -143,21 +186,22 @@ def main():
     ap.add_argument("--phase-a-obj", action="append", default=[], metavar="FLAT=PHASEA",
                     help="flat-mode object pair that must be identical up to the file symbol and hash names")
     args = ap.parse_args()
+    configure(args.param)
     root = args.experiment.resolve()
     flat = args.flat_root.resolve() if args.flat_root else None
     if (flat is None) != (args.flat_kem_obj is None):
         ap.error("--flat-root and --flat-kem-obj go together")
-    asm = {HT: "ntt_ht.s", NOR2: "basemul_nor2.s", HTINV: "invntt_ht.s"}
+    asm = ASM
     src = {n: (flat / asm[n]) if flat else root / f"asm/{n}.s" for n in asm}
     nm = run("nm", "-S", str(args.elf))
     rows = disasm_rows(args.elf)
     with tempfile.TemporaryDirectory() as tmp:
         entries = {name: audit_entry(nm, rows, name, src[name], Path(tmp))
-                   for name in (HT, NOR2, HTINV)}
+                   for name in asm}
     if set(entries[HT]["rip_symbols"]) != {"_16xq", "_16xzeta1", "_16xw", "_16xwqinv", "zetas", *TABLES[:2]}:
         raise ValueError(f"HT rip symbols {entries[HT]['rip_symbols']}")
-    if set(entries[HTINV]["rip_symbols"]) != {"_16xq", "_16xv", "_16xw", "_16xwqinv", "zetas_inv",
-                                              "_16xNinv_scale", "_16xNinv_scaleqinv", TABLES[2]}:
+    if HTINV and set(entries[HTINV]["rip_symbols"]) != {"_16xq", "_16xv", "_16xw", "_16xwqinv", "zetas_inv",
+                                                        "_16xNinv_scale", "_16xNinv_scaleqinv", TABLES[2]}:
         raise ValueError(f"HT inverse rip symbols {entries[HTINV]['rip_symbols']}")
     tables = {}
     for t in TABLES:
@@ -187,10 +231,10 @@ def main():
     out = {
         "class": "linked ELF audit (Phase A, correctness only; no timing)" if not flat else
                  "linked ELF audit of the SUPERCOP-flat qualification export (Phase B, correctness only; no timing)",
-        "parameter": "NTRU+768",
+        "parameter": f"NTRU+{PARAMETER}",
         "elf": str(elf_path.relative_to(root) if elf_path.is_relative_to(root) else args.elf),
         "elf_sha256": sha(args.elf),
-        "asm_sha256": {n: sha(src[n]) for n in (HT, NOR2, HTINV)},
+        "asm_sha256": {n: sha(src[n]) for n in asm},
         "compiler": run("cc", "--version").splitlines()[0],
         "entries": entries, "ht_tables": tables,
         "fold_baseinv": {"size_bytes": r2size, "calls": r2calls},

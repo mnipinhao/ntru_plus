@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Range / consumer proof for the NTRU+768 HT Forward and the keygen R^2 fold.
+"""Range / consumer proof for the NTRU+768 / 864 / 1152 HT Forward and the keygen R^2 fold.
 
 Re-uses the lazy-Forward range-proof tools (common/official_opt_lazy/range_proof,
 read only, unchanged) through a thin emulator extension (EmuHT) that adds the
@@ -22,6 +22,10 @@ Steps, all fatal on failure:
      BaseInv output envelope is the ledger's any-fqmul-output envelope, which
      the fold (a constant change inside a fqmul chain) does not affect;
      poly_tobytes canonical on all int16.
+--param 864 / 1152 (no HT inverse in those candidates): steps 1-4 with the
+parameter's names; step 5 is NTRU+768 only.  The keygen f_hat/g_hat of step
+4 are the HT (= lazy, step 2) Forward outputs: the lazy/HT-g domain, not the
+Official Forward's.
 """
 import argparse
 import ctypes
@@ -94,7 +98,8 @@ def machine_lib(ht_asm, nor2_asm, inv_asm, build):
     out = build / "ht_kernels.so"
     up = CFG["upstream"]
     subprocess.run(["cc", "-O1", "-mavx2", "-shared", "-fPIC", "-I", str(up), "-o", str(out),
-                    str(up / "consts.c"), str(ht_asm), str(nor2_asm), str(inv_asm)], check=True)
+                    str(up / "consts.c"), str(ht_asm), str(nor2_asm)] + ([str(inv_asm)] if inv_asm else []),
+                   check=True)
     return ctypes.CDLL(str(out))
 
 
@@ -103,22 +108,28 @@ def fail(msg):
 
 
 def main():
+    global HT, NOR2, HTINV
     ap = argparse.ArgumentParser()
+    ap.add_argument("--param", type=int, choices=(768, 864, 1152), default=768)
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--build", type=Path, required=True)
     ap.add_argument("--output", type=Path, required=True)
     ap.add_argument("--diff-trials", type=int, default=24)
     args = ap.parse_args()
-    n = 768
+    n = args.param
+    has_inv = n == 768          # the HT inverse is part of the NTRU+768 candidate only
+    HT, NOR2 = f"ntruplus{n}_officialopt_ntt_ht", f"ntruplus{n}_officialopt_basemul_nor2"
+    HTINV = f"ntruplus{n}_officialopt_invntt_ht" if has_inv else None
     configure(n, args.experiment, args.build)
     exp = CFG["experiment"]
-    ht_asm, nor2_asm, inv_asm = exp / f"asm/{HT}.s", exp / f"asm/{NOR2}.s", exp / f"asm/{HTINV}.s"
+    ht_asm, nor2_asm = exp / f"asm/{HT}.s", exp / f"asm/{NOR2}.s"
+    inv_asm = exp / f"asm/{HTINV}.s" if has_inv else None
     V = avx2emu.Val
 
     # 1. emulator == machine (wrap mode)
     L = machine_lib(ht_asm, nor2_asm, inv_asm, CFG["build"])
-    rng = random.Random(0x768)
-    calls = {HT: 0, NOR2: 0, HTINV: 0}
+    rng = random.Random({768: 0x768, 864: 0x864, 1152: 0x1152}[n])
+    calls = {HT: 0, NOR2: 0, HTINV: 0} if has_inv else {HT: 0, NOR2: 0}
     for t in range(args.diff_trials):
         x = [rng.randint(-32768, 32767) if t % 2 else rng.randint(-3, 4) for _ in range(n)]
         b, arr, addr = aligned_poly(n, x)
@@ -138,13 +149,15 @@ def main():
         if list(ar) != [v.lo for v in got]:
             fail(f"emulator != machine on {NOR2} trial {t}")
         calls[NOR2] += 1
+        if not has_inv:
+            continue
         b, arr, addr = aligned_poly(n, a1)
         getattr(L, HTINV)(ctypes.c_void_p(addr))
         _, got = run(inv_asm, HTINV, [("rdi", BASE_A, [V(v, v) for v in a1])], wrap_mode=True)
         if list(arr) != [v.lo for v in got]:
             fail(f"emulator != machine on {HTINV} trial {t}")
         calls[HTINV] += 1
-    print(f"[768] emulator == machine: {calls}")
+    print(f"[{n}] emulator == machine: {calls}")
 
     # 2. interval replay, lazy vs HT, every caller domain
     fwd, outs_h = {}, {}
@@ -170,7 +183,7 @@ def main():
             r["ht_census"] = ledger.opcode_census(eh)
         fwd[dom] = r
         outs_h[dom] = oh
-        print(f"[768] {dom:24s} lazy={r['lazy']['output_range']} ht={r['ht']['output_range']} per-lane equal")
+        print(f"[{n}] {dom:24s} lazy={r['lazy']['output_range']} ht={r['ht']['output_range']} per-lane equal")
 
     # 3. consumers on the HT outputs (Official BaseMul / BaseInv / add / sub)
     cons = ledger.consumers(outs_h)
@@ -180,7 +193,8 @@ def main():
         if cons[k]["range"] != v:
             fail(f"consumer drift {k}: {cons[k]['range']}")
 
-    # 4. keygen R^2 fold: core-only BaseMul on (f_hat/g_hat, BaseInv envelope)
+    # 4. keygen R^2 fold: core-only BaseMul on (f_hat/g_hat, BaseInv envelope); f_hat/g_hat are
+    #    the HT (= lazy) Forward outputs of the keygen domains, i.e. the lazy/HT-g domain
     fold = {}
     for name, a_dom, inv_dom in (("keygen nor2(h, g_hat, finv)", "keygen_g", "keygen_f"),
                                  ("keygen nor2(h, f_hat, ginv)", "keygen_f", "keygen_g")):
@@ -195,31 +209,18 @@ def main():
             fail(f"{name}: signed-word failure")
         if max(abs(v) for v in fold[name]["output_range"]) > 32767:
             fail(f"{name}: output outside int16")
-        print(f"[768] {name}: output {fold[name]['output_range']} (Official BaseMul "
+        print(f"[{n}] {name}: output {fold[name]['output_range']} (Official BaseMul "
               f"{off['output_range']}), BaseInv envelope |x| <= {bi['finv_absmax_env']}")
-    # 5. HT inverse on the Decap domain
+    # 5. HT inverse on the Decap domain (NTRU+768 only)
     canon = [V(0, Q - 1)] * n
-    _, m_in = ledger.basemul(canon, canon, entry="poly_basemul_scale")   # kem.c: c, f from frombytes
-    eo, oo = run(CFG["upstream"] / "invntt.s", "poly_invntt_scale", [("rdi", BASE_A, m_in)])
-    ei, oi = run(inv_asm, HTINV, [("rdi", BASE_A, m_in)])
-    same = all(a.lo == b.lo and a.hi == b.hi for a, b in zip(oo, oi))
-    inverse = {"input": "poly_basemul_scale(c, f), c and f from poly_frombytes: [0,q-1] (kem.c Decap)",
-               "input_range": ledger.rng(m_in),
-               "official": {"failures": len(eo.failures), "output_range": ledger.rng(oo)},
-               "ht": {"failures": len(ei.failures), "output_range": ledger.rng(oi)},
-               "ht_equals_official_per_lane_interval": same,
-               "consumer": "poly_crepmod3 (output in [-2,2] for every int16 input)"}
-    if eo.failures or ei.failures or not same:
-        fail(f"HT inverse replay {inverse}")
-    print(f"[768] invntt decap domain: input {inverse['input_range']} official={inverse['official']['output_range']} "
-          f"ht={inverse['ht']['output_range']} per-lane equal")
+    inverse = prove_inverse(n, canon, inv_asm) if has_inv else None
     tob = ledger.tobytes_accept()
     if not tob["canonical_for_all_int16"]:
         fail("tobytes not canonical on all int16")
 
     summary = {
         "class": "per-lane interval range proof + consumer envelopes (Phase A; no timing)",
-        "parameter": "NTRU+768", "verdict": "pass",
+        "parameter": f"NTRU+{n}", "verdict": "pass",
         "ht_asm_sha256": sha(ht_asm), "nor2_asm_sha256": sha(nor2_asm),
         "lazy_asm_sha256": sha(CFG["lazy_asm"]),
         "sources_sha256": {f: sha(CFG["upstream"] / f) for f in ("ntt.s", "basemul.s", "baseinv.s",
@@ -233,14 +234,37 @@ def main():
         "forward_census_asm_contract_ht": fwd["asm_contract[-3,4]"]["ht_census"],
         "consumers_ht": cons,
         "keygen_r2fold": fold,
-        "inverse_ht": inverse,
+        "inverse_ht": inverse if has_inv else "not part of the NTRU+864/1152 candidates",
         "crepmod3": ledger.crepmod3_accept(),
-        "htinv_asm_sha256": sha(inv_asm),
-        "tobytes": tob,
     }
+    if has_inv:
+        summary["htinv_asm_sha256"] = sha(inv_asm)
+    else:
+        summary["keygen_r2fold_forward_domain"] = ("keygen_f / keygen_g outputs of the HT Forward "
+                                                   "(= lazy per lane, step 2): the lazy/HT-g domain")
+    summary["tobytes"] = tob
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(summary, indent=1, default=str) + "\n")
-    print(f"[768] HT/R2-fold range proof PASS -> {args.output}")
+    print(f"[{n}] HT/R2-fold range proof PASS -> {args.output}")
+
+
+def prove_inverse(n, canon, inv_asm):
+    """Step 5: Official vs HT inverse interval replay on the Decap domain."""
+    _, m_in = ledger.basemul(canon, canon, entry="poly_basemul_scale")   # kem.c: c, f from frombytes
+    eo, oo = run(CFG["upstream"] / "invntt.s", "poly_invntt_scale", [("rdi", BASE_A, m_in)])
+    ei, oi = run(inv_asm, HTINV, [("rdi", BASE_A, m_in)])
+    same = all(a.lo == b.lo and a.hi == b.hi for a, b in zip(oo, oi))
+    inverse = {"input": "poly_basemul_scale(c, f), c and f from poly_frombytes: [0,q-1] (kem.c Decap)",
+               "input_range": ledger.rng(m_in),
+               "official": {"failures": len(eo.failures), "output_range": ledger.rng(oo)},
+               "ht": {"failures": len(ei.failures), "output_range": ledger.rng(oi)},
+               "ht_equals_official_per_lane_interval": same,
+               "consumer": "poly_crepmod3 (output in [-2,2] for every int16 input)"}
+    if eo.failures or ei.failures or not same:
+        fail(f"HT inverse replay {inverse}")
+    print(f"[{n}] invntt decap domain: input {inverse['input_range']} official={inverse['official']['output_range']} "
+          f"ht={inverse['ht']['output_range']} per-lane equal")
+    return inverse
 
 
 if __name__ == "__main__":

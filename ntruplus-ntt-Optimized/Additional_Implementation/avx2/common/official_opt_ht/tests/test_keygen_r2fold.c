@@ -1,18 +1,21 @@
 /*
- * Keygen R^2-fold differential (NTRU+768 AVX2).
+ * Keygen R^2-fold differential (NTRU+768 / 864 / 1152 AVX2; parameter from params.h).
  *
  * Component part (real linked code, Official vs fold):
- *   finv' = ntruplus768_officialopt_baseinv_r2fold(f_hat)  vs  finv = poly_baseinv(f_hat)
+ *   finv' = ntruplusN_officialopt_baseinv_r2fold(f_hat)  vs  finv = poly_baseinv(f_hat)
  *     same status; on success finv' == R * finv (mod q) in every lane, R = 2^16,
  *     |finv'| <= 18112 (any fqmul output of int16 operands);
- *   h' = ntruplus768_officialopt_basemul_nor2(g_hat, finv')  vs  h = poly_basemul(g_hat, finv)
- *     h' == h (mod q) in every lane, h' inside the proven [-10446, 10448],
+ *   h' = ntruplusN_officialopt_basemul_nor2(g_hat, finv')  vs  h = poly_basemul(g_hat, finv)
+ *     h' == h (mod q) in every lane, h' inside the proven interval (range_proof_ht:
+ *     768 [-10446, 10448], 864 [-8936, 8936], 1152 [-11250, 11250]),
  *     poly_tobytes(h') == poly_tobytes(h) byte for byte.
  *   Inputs: KEYGEN_SEEDS keygen f/g pairs (Official SHAKE256 -> cbd1 -> triple (+1)
  *   -> caller-lazy Forward), RANDOM_INV uniform int16 polynomials and
- *   ZERO_BASE polynomials with one all-zero degree-4 base (forced failure).
+ *   ZERO_BASE polynomials with one all-zero base (degree 4 for 768/1152, 3 for 864;
+ *   forced failure).
  * KEM part: KEYPAIR_SEEDS KAT-DRBG seeds, Official kem.c (v0) vs the R^2-fold
- *   KEMs v1 = kem_lazy_r2fold.c, v2 = r2fold_only control, v3 = candidate:
+ *   KEMs v1 = kem_lazy_r2fold.c, v2 = r2fold_only control, v3 = candidate
+ *   (768: + HT Forward + HT inverse; 864/1152: + HT Forward):
  *   pk/sk byte-exact and equal randombytes consumption; every 97th seed forces
  *   g = 0 (second keygen SHAKE256 output zeroed: genuine BaseInv failure and
  *   retry), every 89th seed forces a one-shot f BaseInv failure (poisoned output).
@@ -30,8 +33,40 @@
 #error "define FWD_NTT"
 #endif
 void FWD_NTT(poly *);
-int ntruplus768_officialopt_baseinv_r2fold(poly *, const poly *);
-void ntruplus768_officialopt_basemul_nor2(poly *, const poly *, const poly *);
+/* Per-parameter names, proven nor2 output interval and BaseInv base layout
+ * (poly_baseinv_2: chunk i of BASE_WORDS words, rows c = 0..BASE_ROWS-1, lane j). */
+#if NTRUPLUS_N == 768
+#define R2INV_FN ntruplus768_officialopt_baseinv_r2fold
+#define REAL_R2INV_FN __real_ntruplus768_officialopt_baseinv_r2fold
+#define WRAP_R2INV_FN __wrap_ntruplus768_officialopt_baseinv_r2fold
+#define NOR2_FN ntruplus768_officialopt_basemul_nor2
+#define NOR2_LO -10446
+#define NOR2_HI 10448
+#define BASE_WORDS 64U
+#define BASE_ROWS 4
+#elif NTRUPLUS_N == 864
+#define R2INV_FN ntruplus864_officialopt_baseinv_r2fold
+#define REAL_R2INV_FN __real_ntruplus864_officialopt_baseinv_r2fold
+#define WRAP_R2INV_FN __wrap_ntruplus864_officialopt_baseinv_r2fold
+#define NOR2_FN ntruplus864_officialopt_basemul_nor2
+#define NOR2_LO -8936
+#define NOR2_HI 8936
+#define BASE_WORDS 48U
+#define BASE_ROWS 3
+#elif NTRUPLUS_N == 1152
+#define R2INV_FN ntruplus1152_officialopt_baseinv_r2fold
+#define REAL_R2INV_FN __real_ntruplus1152_officialopt_baseinv_r2fold
+#define WRAP_R2INV_FN __wrap_ntruplus1152_officialopt_baseinv_r2fold
+#define NOR2_FN ntruplus1152_officialopt_basemul_nor2
+#define NOR2_LO -11250
+#define NOR2_HI 11250
+#define BASE_WORDS 64U
+#define BASE_ROWS 4
+#else
+#error "unsupported NTRUPLUS_N"
+#endif
+int R2INV_FN(poly *, const poly *);
+void NOR2_FN(poly *, const poly *, const poly *);
 
 #define DECL(v)                                                          \
     int v##_keypair(unsigned char *, unsigned char *);
@@ -84,10 +119,10 @@ int __wrap_poly_baseinv(poly *out, const poly *in) {
     baseinv_fail[cur_variant] += (unsigned)s;
     return s;
 }
-int __real_ntruplus768_officialopt_baseinv_r2fold(poly *, const poly *);
-int __wrap_ntruplus768_officialopt_baseinv_r2fold(poly *out, const poly *in) {
+int REAL_R2INV_FN(poly *, const poly *);
+int WRAP_R2INV_FN(poly *out, const poly *in) {
     if (inject_f(out)) return 1;
-    int s = __real_ntruplus768_officialopt_baseinv_r2fold(out, in);
+    int s = REAL_R2INV_FN(out, in);
     baseinv_fail[cur_variant] += (unsigned)s;
     return s;
 }
@@ -113,7 +148,7 @@ static int inv_lo, inv_hi, h_lo, h_hi;
 /* Official vs fold BaseInv on a; on success returns 1 and leaves both inverses. */
 static int check_inv(const poly *a, poly *finv, poly *finv2, const char *what, unsigned t) {
     int so = __real_poly_baseinv(finv, a);
-    int sf = __real_ntruplus768_officialopt_baseinv_r2fold(finv2, a);
+    int sf = REAL_R2INV_FN(finv2, a);
     if (so != sf) {
         fprintf(stderr, "BaseInv status mismatch %s t=%u (%d vs %d)\n", what, t, so, sf);
         return -1;
@@ -144,10 +179,10 @@ static int check_mul(const poly *a, const poly *inv, const poly *inv2, const cha
     poly h, h2;
     uint8_t b[NTRUPLUS_POLYBYTES], b2[NTRUPLUS_POLYBYTES];
     poly_basemul(&h, a, inv);
-    ntruplus768_officialopt_basemul_nor2(&h2, a, inv2);
+    NOR2_FN(&h2, a, inv2);
     for (unsigned i = 0; i < NTRUPLUS_N; i++) {
         int x = h2.coeffs[i];
-        if (!mod_eq(x, h.coeffs[i]) || x < -10446 || x > 10448) {
+        if (!mod_eq(x, h.coeffs[i]) || x < NOR2_LO || x > NOR2_HI) {
             fprintf(stderr, "nor2 product mismatch %s t=%u lane=%u (%d vs %d)\n", what, t, i, x, h.coeffs[i]);
             return 1;
         }
@@ -203,11 +238,12 @@ int main(void) {
     }
     unsigned zero_fail_before = (unsigned)inv_fail;
     for (unsigned t = 0; t < ZERO_BASE; t++) {
-        /* NTT-domain operand with one all-zero degree-4 base: chunk k (64 words),
-         * lane j -> coefficients 64k + 16c + j, c = 0..3 (basemul/baseinv layout). */
+        /* NTT-domain operand with one all-zero base: chunk k (BASE_WORDS words),
+         * lane j -> coefficients BASE_WORDS k + 16c + j, c = 0..BASE_ROWS-1 (basemul/baseinv
+         * layout; 768/1152: 64 words, degree 4; 864: 48 words, degree 3). */
         for (unsigned i = 0; i < NTRUPLUS_N; i++) a.coeffs[i] = (int16_t)((int)(random_word() % 32001U) - 16000);
-        unsigned k = random_word() % (NTRUPLUS_N / 64), j = random_word() % 16U;
-        for (unsigned c = 0; c < 4; c++) a.coeffs[64U * k + 16U * c + j] = 0;
+        unsigned k = random_word() % (NTRUPLUS_N / BASE_WORDS), j = random_word() % 16U;
+        for (unsigned c = 0; c < BASE_ROWS; c++) a.coeffs[BASE_WORDS * k + 16U * c + j] = 0;
         if (check_inv(&a, &finv, &finv2, "zero base", t) < 0) return 1;
     }
     printf("  BaseInv: %lu successes, %lu failures (both implementations identical; %u of the "

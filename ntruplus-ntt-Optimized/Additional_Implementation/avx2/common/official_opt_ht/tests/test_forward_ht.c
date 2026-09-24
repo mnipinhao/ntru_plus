@@ -1,8 +1,8 @@
 /*
- * HT Forward vs caller-lazy Forward bit-exact differential (NTRU+768 AVX2).
+ * HT Forward vs caller-lazy Forward bit-exact differential (NTRU+768 / 864 / 1152 AVX2).
  *
- * HT_NTT (ntruplus768_officialopt_ntt_ht) must equal LAZY_NTT
- * (ntruplus768_officialopt_ntt_caller_lazy) word for word, so every bound and
+ * HT_NTT (ntruplusN_officialopt_ntt_ht) must equal LAZY_NTT
+ * (ntruplusN_officialopt_ntt_caller_lazy) word for word, so every bound and
  * consumer proof of the lazy Forward carries over unchanged.  Cases:
  *   - the lazy differential's caller domains (asm contract [-3,4], keygen f/g,
  *     decap [-2,2], encap/re-encap [-1,1]): constant min/max, alternating,
