@@ -1,39 +1,57 @@
 #!/usr/bin/env python3
-"""Generate the NTRU+768 "HT" caller-lazy Forward (Hwang-style data movement).
+"""Generate the NTRU+768 / 864 / 1152 "HT" caller-lazy Forward (Hwang-style data movement).
 
-Output: asm/ntruplus768_officialopt_ntt_ht.s, a drop-in replacement for the
-caller-lazy Forward asm/ntruplus768_officialopt_ntt_caller_lazy.s (common
-official_opt_lazy/tools/generate_forward_caller_lazy.py --param 768; no
+Output: asm/ntruplus{N}_officialopt_ntt_ht.s, a drop-in replacement for the
+caller-lazy Forward asm/ntruplus{N}_officialopt_ntt_caller_lazy.s (common
+official_opt_lazy/tools/generate_forward_caller_lazy.py --param N; no
 terminal Barrett).  Same Official decomposition, twiddle representatives,
 Montgomery domain and output layout; only the passes and the data movement
 change:
 
-  pass A   level 0 (x^768 - x^384 + 1 split, raw zeta1 product) fused with the
+  pass A   level 0 (x^N - x^(N/2) + 1 split, raw zeta1 product) fused with the
            level-1 radix-3 butterflies, 6 vectors per iteration (Hwang 3x2
-           style); rows 128*b + 16*v, v = 0..7.  Radix-3 constants are the
+           style); rows N/6 coefficients apart.  Radix-3 constants are the
            Official broadcast pairs (zetas words 4..11 and 12..19), stored
            as full vectors so they can be memory operands (all 16 YMM
            registers are live).
-  level 2  the Official level-2 pass, copied verbatim from the lazy asm.
-  block    levels 3..6 of each 128-coefficient block in one pass, natural
-           input order, unpack-only exchange network (found by the scratch
-           search_stages.py):  L3 (d=32), L4 (d=16), vperm2i128, L5 (d=8),
-           vpunpck{l,h}wd, vpunpck{l,h}dq, vpunpck{l,h}dq, L6 (d=4);
-           32 shuffle uops per block (the Official network needs 48).
-           Final layout = Official: register r of block b holds coefficients
-           128b + 8l + r (lane l), stored at 32*r.
+  level 2  the Official level-2 pass, copied verbatim from the lazy asm
+           (768: radix 2; 864/1152: radix 3).
+  block    levels 3..6 of each block in one pass, natural input order,
+           unpack-only exchange network.  Final layout = Official.
+
+NTRU+768 (--param 768, the default; output unchanged by the generalisation):
+  rows 128*b + 16*v, v = 0..7; 128-coefficient blocks in 8 registers,
+  L3 (d=32), L4 (d=16), vperm2i128, L5 (d=8), vpunpck{l,h}wd,
+  vpunpck{l,h}dq, vpunpck{l,h}dq, L6 (d=4) (the scratch search_stages.py
+  network); 32 shuffle uops per block (the Official network needs 48);
+  register r of block b holds coefficients 128b + 8l + r (lane l), stored
+  at 32*r.
+NTRU+1152 (--param 1152): the NTRU+768 block network unchanged on nine
+  128-coefficient blocks (32 vs 48 shuffle uops); only the twiddles differ.
+NTRU+864 (--param 864): 96-coefficient blocks in 6 registers, distances
+  24/12/6/3 (cubic leaves): vperm2i128, L3 (d=24), vpunpck{l,h}wd, L4 (d=12),
+  vpunpck{l,h}wd, L5 (d=6), vpunpck{l,h}wd, L6 (d=3).  Every stage pairs
+  logical registers (i, i+3), i = 0..2, and its lo/hi outputs become logical
+  registers 2i / 2i+1 (a renaming, no instruction); the scratch exhaustive
+  search found this to be the only 4-stage unpack-only network.  24 shuffle
+  uops per block (Official: 36); register r lane l of block b holds
+  coefficient 96b + 6l + r, as in the lazy Forward.
+  864/1152 pitfall: the Official radix-3 level 2 reuses ymm2/ymm3 (w*qinv, w)
+  loaded in the level-1 prologue; pass A keeps w/w*qinv in ymm13/ymm14, so it
+  restores ymm2/ymm3 before the verbatim level 2 (checked below: the level-2
+  body reads exactly ymm0, ymm2 and ymm3 before writing them).
 
 Twiddles are not recomputed: every per-lane (zeta, zeta*qinv) pair is the one
 the lazy Forward applies to the same data, found by executing the lazy asm
 symbolically (tools/symexec.py) and matching the operand forms.  The
 generator then executes the emitted asm symbolically and requires every one
-of the 768 output words to have the same interned form as the lazy Forward's
+of the N output words to have the same interned form as the lazy Forward's
 output word, which proves bit-identical outputs for every int16 input.  It
 also checks: no stack, call or vzeroupper; every store inside the polynomial;
 all memory operands 32-byte aligned; entry and tables .p2align 5.
 
-  generate_forward_ht.py --experiment .           # write asm (+ --meta json)
-  generate_forward_ht.py --experiment . --check   # verify, write nothing
+  generate_forward_ht.py [--param N] --experiment .           # write asm (+ --meta json)
+  generate_forward_ht.py [--param N] --experiment . --check   # verify, write nothing
 """
 import argparse
 import hashlib
@@ -45,51 +63,116 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from symexec import Forms, SymExec, parse_consts, s16  # noqa: E402
 
-N = 768
 Q, QINV = 3457, 12929
-NAME = "ntruplus768_officialopt_ntt_ht"
-LAZY = "ntruplus768_officialopt_ntt_caller_lazy"
-TAB_A = "ntruplus768_officialopt_ht_zetas_a"
-TAB_B = "ntruplus768_officialopt_ht_zetas_b"
-PINS = {
-    # imported, never-edited SUPERCOP 20260831 crypto_kem/ntruplus768/avx2
-    "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
-    "upstream/supercop-avx2/ntt.s": "992b613701be5988e83798a4a8f56a798c7e47e4616db70e65eee7feb75332f4",
-    # generate_forward_caller_lazy.py --param 768 output (its --check is a prerequisite)
-    f"asm/{LAZY}.s": "66c3fa6e90bf7cfd74543e8c6748a625c70de560a590b11257d3059d9e1c43e4",
+
+# Block networks on logical registers r0..r(NR-1) (natural order: r_i = coefficients 16i..16i+15).
+# ('BF', lo, hi, distance) / ('PERM'|'UNP16'|'UNP32', i, j) / ('REN',).  Groups of up to four
+# butterflies of one level are emitted interleaved (Official style).  ('REN',) renames
+# logical registers after a stage on the pairs (i, i+3): lo of pair i -> 2i, hi -> 2i+1.
+NET8 = [("BF", 0, 2, 32), ("BF", 1, 3, 32), ("BF", 4, 6, 32), ("BF", 5, 7, 32),
+        ("BF", 0, 1, 16), ("BF", 2, 3, 16), ("BF", 4, 5, 16), ("BF", 6, 7, 16),
+        ("PERM", 0, 4), ("PERM", 1, 5), ("PERM", 2, 6), ("PERM", 3, 7),
+        ("BF", 0, 4, 8), ("BF", 1, 5, 8), ("BF", 2, 6, 8), ("BF", 3, 7, 8),
+        ("UNP16", 0, 4), ("UNP16", 1, 5), ("UNP16", 2, 6), ("UNP16", 3, 7),
+        ("UNP32", 0, 2), ("UNP32", 1, 3), ("UNP32", 4, 6), ("UNP32", 5, 7),
+        ("UNP32", 0, 1), ("UNP32", 2, 3), ("UNP32", 4, 5), ("UNP32", 6, 7),
+        ("BF", 0, 4, 4), ("BF", 1, 5, 4), ("BF", 2, 6, 4), ("BF", 3, 7, 4)]
+REN = ("REN",)
+NET6 = [("PERM", 0, 3), ("PERM", 1, 4), ("PERM", 2, 5), REN,
+        ("BF", 0, 3, 24), ("BF", 1, 4, 24), ("BF", 2, 5, 24),
+        ("UNP16", 0, 3), ("UNP16", 1, 4), ("UNP16", 2, 5), REN,
+        ("BF", 0, 3, 12), ("BF", 1, 4, 12), ("BF", 2, 5, 12),
+        ("UNP16", 0, 3), ("UNP16", 1, 4), ("UNP16", 2, 5), REN,
+        ("BF", 0, 3, 6), ("BF", 1, 4, 6), ("BF", 2, 5, 6),
+        ("UNP16", 0, 3), ("UNP16", 1, 4), ("UNP16", 2, 5), REN,
+        ("BF", 0, 3, 3), ("BF", 1, 4, 3), ("BF", 2, 5, 3)]
+
+PARAMS = {
+    768: {"nr": 8, "net": NET8, "level": {32: 3, 16: 4, 8: 5, 4: 6}, "radix3_level2": False,
+          "pins": {
+              # imported, never-edited SUPERCOP 20260831 crypto_kem/ntruplus768/avx2
+              "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+              "upstream/supercop-avx2/ntt.s": "992b613701be5988e83798a4a8f56a798c7e47e4616db70e65eee7feb75332f4",
+              # generate_forward_caller_lazy.py --param 768 output (its --check is a prerequisite)
+              "asm/ntruplus768_officialopt_ntt_caller_lazy.s":
+                  "66c3fa6e90bf7cfd74543e8c6748a625c70de560a590b11257d3059d9e1c43e4"}},
+    864: {"nr": 6, "net": NET6, "level": {24: 3, 12: 4, 6: 5, 3: 6}, "radix3_level2": True,
+          "pins": {
+              # imported, never-edited SUPERCOP 20260831 crypto_kem/ntruplus864/avx2
+              "upstream/supercop-avx2/consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+              "upstream/supercop-avx2/ntt.s": "980cad5ef69a78f9ed1f2f45fc5dcaa0a04cc07693cf65ea108acc41c547db92",
+              # generate_forward_caller_lazy.py --param 864 output (its --check is a prerequisite)
+              "asm/ntruplus864_officialopt_ntt_caller_lazy.s":
+                  "db5d489658d4f5b77ce181c691d7c3b9e054a0a14ebc7c693f79df382a8f0497"}},
+    1152: {"nr": 8, "net": NET8, "level": {32: 3, 16: 4, 8: 5, 4: 6}, "radix3_level2": True,
+           "pins": {
+               # imported, never-edited SUPERCOP 20260831 crypto_kem/ntruplus1152/avx2
+               "upstream/supercop-avx2/consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+               "upstream/supercop-avx2/ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+               # generate_forward_caller_lazy.py --param 1152 output (its --check is a prerequisite)
+               "asm/ntruplus1152_officialopt_ntt_caller_lazy.s":
+                   "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092"}},
 }
 
-# Block network on registers r0..r7 (natural order: r_i = coefficients 16i..16i+15).
-# ('BF', lo, hi, distance) / ('PERM'|'UNP16'|'UNP32', i, j).  Groups of four
-# butterflies of one level are emitted interleaved (Official style).
-NET = [("BF", 0, 2, 32), ("BF", 1, 3, 32), ("BF", 4, 6, 32), ("BF", 5, 7, 32),
-       ("BF", 0, 1, 16), ("BF", 2, 3, 16), ("BF", 4, 5, 16), ("BF", 6, 7, 16),
-       ("PERM", 0, 4), ("PERM", 1, 5), ("PERM", 2, 6), ("PERM", 3, 7),
-       ("BF", 0, 4, 8), ("BF", 1, 5, 8), ("BF", 2, 6, 8), ("BF", 3, 7, 8),
-       ("UNP16", 0, 4), ("UNP16", 1, 5), ("UNP16", 2, 6), ("UNP16", 3, 7),
-       ("UNP32", 0, 2), ("UNP32", 1, 3), ("UNP32", 4, 6), ("UNP32", 5, 7),
-       ("UNP32", 0, 1), ("UNP32", 2, 3), ("UNP32", 4, 5), ("UNP32", 6, 7),
-       ("BF", 0, 4, 4), ("BF", 1, 5, 4), ("BF", 2, 6, 4), ("BF", 3, 7, 4)]
-LEVEL = {32: 3, 16: 4, 8: 5, 4: 6}   # Official level of each butterfly distance
+# Module-level names for the selected parameter (set by configure(); default NTRU+768 so
+# that importers such as mutate_ht.py see the historical constants).
+N = NAME = LAZY = TAB_A = TAB_B = PINS = NET = LEVEL = None
+NR = BLK = NBLK = ROW = 0
+P = ""
+
+
+def configure(param):
+    global N, NAME, LAZY, TAB_A, TAB_B, PINS, NET, LEVEL, NR, BLK, NBLK, ROW, P
+    cfg = PARAMS[param]
+    N = param
+    P = f"ntruplus{param}_officialopt"
+    NAME = f"{P}_ntt_ht"
+    LAZY = f"{P}_ntt_caller_lazy"
+    TAB_A = f"{P}_ht_zetas_a"
+    TAB_B = f"{P}_ht_zetas_b"
+    PINS = cfg["pins"]
+    NET = cfg["net"]
+    LEVEL = cfg["level"]
+    NR = cfg["nr"]
+    BLK = 16 * NR                 # coefficients per block
+    NBLK = N // BLK
+    ROW = N // 3                  # pass A row stride in bytes (N/6 coefficients)
+    return cfg
+
+
+configure(768)
 
 
 def sha256(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def is_bf(op):
+    return op[0] == "BF"
+
+
 def groups():
     """[(level distance, [net indices])] for the butterfly groups, in order."""
     out, k = [], 0
     while k < len(NET):
-        if NET[k][0] == "BF":
+        if is_bf(NET[k]):
             g = []
-            while k < len(NET) and NET[k][0] == "BF" and len(g) < 4 and NET[k][3] == NET[k - len(g)][3]:
+            while k < len(NET) and is_bf(NET[k]) and len(g) < 4 and NET[k][3] == NET[k - len(g)][3]:
                 g.append(k)
                 k += 1
             out.append((NET[g[0]][3], g))
         else:
             k += 1
     return out
+
+
+def renamed(r):
+    """Logical registers after a stage on the pairs (i, i+3): lo -> 2i, hi -> 2i+1."""
+    h = NR // 2
+    new = [None] * NR
+    for i in range(h):
+        new[2 * i], new[2 * i + 1] = r[i], r[i + h]
+    return new
 
 
 # ------------------------------------------------------------------ lazy reference run
@@ -105,7 +188,7 @@ def run_lazy(F, lazy_text, syms):
         for f, c in zip(data, consts):
             m.setdefault(f, set()).add(c)
     ex.on_mul = on_mul
-    start = ex.labels[f"ntruplus768_officialopt_lazy_looptop_start_3456"]
+    start = ex.labels[f"{P}_lazy_looptop_start_3456"]
 
     def take(e):
         if not snap:
@@ -122,9 +205,12 @@ def model_block(F, snap, zmap, zqmap, b):
     """Run NET on block b symbolically; return per-butterfly (zr[16], zq[16]),
     the final register forms and the used lazy forms."""
     q = F.const(Q)
-    r = [[snap[128 * b + 16 * i + l] for l in range(16)] for i in range(8)]
+    r = [[snap[BLK * b + 16 * i + l] for l in range(16)] for i in range(NR)]
     tw = {}
     for k, op in enumerate(NET):
+        if op == REN:
+            r = renamed(r)
+            continue
         kind, i, j = op[:3]
         a, c = r[i], r[j]
         if kind == "BF":
@@ -161,16 +247,28 @@ def words_lines(words):
     return [".short " + ", ".join(str(v) for v in words[i:i + 16]) for i in range(0, len(words), 16)]
 
 
-def emit(level2, slot_of, nslots, tab_b_words, tab_a_words, store):
+def header():
+    if N == 768:
+        return ["# GENERATED by common/official_opt_ht/tools/generate_forward_ht.py -- do not edit.",
+                "# NTRU+768 Official AVX2 caller-lazy Forward, HT variant: pass A (level 0 +",
+                "# radix-3 level 1, 6 vectors/iteration), Official level 2 (verbatim), one",
+                "# levels-3..6 block pass per 128 coefficients with an unpack-only exchange",
+                "# network.  Output bit-identical to ntruplus768_officialopt_ntt_caller_lazy",
+                "# for every int16 input (symbolic proof in the generator); no terminal",
+                "# Barrett, same caller contract."]
+    return [f"# GENERATED by common/official_opt_ht/tools/generate_forward_ht.py --param {N} -- do not edit.",
+            f"# NTRU+{N} Official AVX2 caller-lazy Forward, HT variant: pass A (level 0 +",
+            "# radix-3 level 1, 6 vectors/iteration; restores the level-1 w/w*qinv registers),",
+            "# Official radix-3 level 2 (verbatim), one levels-3..6 block pass per",
+            f"# {BLK} coefficients with an unpack-only exchange network.  Output bit-identical",
+            f"# to {LAZY} for every int16 input (symbolic proof in",
+            "# the generator); no terminal Barrett, same caller contract."]
+
+
+def emit(level2, slot_of, nslots, tab_b_words, tab_a_words, store, radix3_level2):
     o = []
     e = o.append
-    e("# GENERATED by common/official_opt_ht/tools/generate_forward_ht.py -- do not edit.")
-    e("# NTRU+768 Official AVX2 caller-lazy Forward, HT variant: pass A (level 0 +")
-    e("# radix-3 level 1, 6 vectors/iteration), Official level 2 (verbatim), one")
-    e("# levels-3..6 block pass per 128 coefficients with an unpack-only exchange")
-    e("# network.  Output bit-identical to ntruplus768_officialopt_ntt_caller_lazy")
-    e("# for every int16 input (symbolic proof in the generator); no terminal")
-    e("# Barrett, same caller contract.")
+    o.extend(header())
     e(".text")
     e(".p2align 5")
     e(f".global {NAME}")
@@ -183,14 +281,14 @@ def emit(level2, slot_of, nslots, tab_b_words, tab_a_words, store):
     e("vmovdqa _16xw(%rip), %ymm13")
     e("vmovdqa _16xwqinv(%rip), %ymm14")
     e(f"lea {TAB_A}(%rip), %rsi")
-    e("lea 256(%rdi), %r8")
+    e(f"lea {ROW}(%rdi), %r8")
     e("")
     e(".p2align 5")
-    e("ntruplus768_officialopt_ht_looptop_a:")
+    e(f"{P}_ht_looptop_a:")
     X = [f"%ymm{i}" for i in range(1, 7)]
     T = [f"%ymm{i}" for i in range(7, 13)]
     for b in range(6):
-        e(f"vmovdqa {256 * b}(%rdi), {X[b]}")
+        e(f"vmovdqa {ROW * b}(%rdi), {X[b]}")
     for t in range(3):          # level 0: (A, B) = (row t, row t+3)
         A, Bv, m = X[t], X[t + 3], T[t]
         e(f"vpmullw %ymm15, {Bv}, {m}")
@@ -220,35 +318,42 @@ def emit(level2, slot_of, nslots, tab_b_words, tab_a_words, store):
         e(f"vpaddw {C}, {a0}, {a0}")
         e(f"vpaddw {a2}, {a1}, {a1}")
         e(f"vpsubw {a2}, {Bv}, {Bv}")
-        e(f"vmovdqa {a0}, {256 * (3 * be)}(%rdi)")
-        e(f"vmovdqa {a1}, {256 * (3 * be + 1)}(%rdi)")
-        e(f"vmovdqa {Bv}, {256 * (3 * be + 2)}(%rdi)")
+        e(f"vmovdqa {a0}, {ROW * (3 * be)}(%rdi)")
+        e(f"vmovdqa {a1}, {ROW * (3 * be + 1)}(%rdi)")
+        e(f"vmovdqa {Bv}, {ROW * (3 * be + 2)}(%rdi)")
     e("")
     e("add $32, %rdi")
     e("cmp %r8, %rdi")
-    e("jb  ntruplus768_officialopt_ht_looptop_a")
+    e(f"jb  {P}_ht_looptop_a")
     e("")
-    e("sub $256, %rdi")
+    e(f"sub ${ROW}, %rdi")
     e("lea zetas(%rip), %rdx")
     e("add $32, %rdx")
+    if radix3_level2:
+        e("# the Official radix-3 level 2 reads w*qinv / w from ymm2 / ymm3 (level-1 prologue)")
+        e("vmovdqa %ymm14, %ymm2")
+        e("vmovdqa %ymm13, %ymm3")
     e("")
     o.extend(level2.rstrip("\n").splitlines())
     e("")
     e("#level3456 (block pass)")
     e(f"lea {TAB_B}(%rip), %rsi")
-    e("lea 1536(%rdi), %r8")
+    e(f"lea {2 * N}(%rdi), %r8")
     e("")
     e(".p2align 5")
-    e("ntruplus768_officialopt_ht_looptop_b:")
-    reg = {i: f"%ymm{i + 1}" for i in range(8)}
-    free = ["%ymm9", "%ymm10", "%ymm11", "%ymm12", "%ymm13"]
-    for i in range(8):
+    e(f"{P}_ht_looptop_b:")
+    reg = {i: f"%ymm{i + 1}" for i in range(NR)}
+    free = [f"%ymm{i}" for i in range(NR + 1, 14)]
+    for i in range(NR):
         e(f"vmovdqa {32 * i}(%rdi), {reg[i]}")
     k = 0
     while k < len(NET):
-        if NET[k][0] == "BF":
+        if NET[k] == REN:
+            reg = dict(enumerate(renamed([reg[i] for i in range(NR)])))
+            k += 1
+        elif is_bf(NET[k]):
             grp = []
-            while k < len(NET) and NET[k][0] == "BF" and len(grp) < 4 and \
+            while k < len(NET) and is_bf(NET[k]) and len(grp) < 4 and \
                     (not grp or NET[k][3] == NET[grp[0]][3]):
                 grp.append(k)
                 k += 1
@@ -297,13 +402,13 @@ def emit(level2, slot_of, nslots, tab_b_words, tab_a_words, store):
             free.append(a)
     e("")
     e("#store")
-    for i in range(8):
+    for i in range(NR):
         e(f"vmovdqa {reg[i]}, {32 * store[i]}(%rdi)")
     e("")
-    e("add $256, %rdi")
+    e(f"add ${2 * BLK}, %rdi")
     e(f"add ${64 * nslots}, %rsi")
     e("cmp %r8, %rdi")
-    e("jb  ntruplus768_officialopt_ht_looptop_b")
+    e(f"jb  {P}_ht_looptop_b")
     e("")
     e("ret")
     e("")
@@ -324,26 +429,59 @@ def emit(level2, slot_of, nslots, tab_b_words, tab_a_words, store):
 
 
 # ------------------------------------------------------------------ main derivation
-def extract_level2(lazy_text):
+def reads_before_write(ins):
+    """YMM registers an instruction list reads before writing them (AT&T: last operand = dest)."""
+    written, read = set(), set()
+    for l in ins:
+        if l.endswith(":"):
+            continue
+        ops = [o.strip() for o in re.split(r",(?![^(]*\))", l.partition(" ")[2]) if o.strip()]
+        regs = [o for o in ops if o.startswith("%ymm")]
+        if not regs:
+            continue
+        srcs = ops[:-1] if ops[-1].startswith("%ymm") else ops
+        for s in srcs:
+            if s.startswith("%ymm") and s not in written:
+                read.add(s)
+        if ops[-1].startswith("%ymm"):
+            written.add(ops[-1])
+    return read
+
+
+def extract_level2(lazy_text, radix3):
+    end_line = f"sub ${2 * N}, %rdi\n"
     start = lazy_text.index("#level 2\n")
-    end = lazy_text.index("sub $1536, %rdi\n", start) + len("sub $1536, %rdi\n")
+    end = lazy_text.index(end_line, start) + len(end_line)
     body = lazy_text[start:end]
-    ins = [l.strip() for l in body.splitlines() if l.strip() and not l.strip().startswith(("#", "."))]
-    if not ins[0] == "lea 1536(%rdi), %r8" or ins[-1] != "sub $1536, %rdi":
+    ins = [l.split("#")[0].strip() for l in body.splitlines()]
+    ins = [l for l in ins if l and not l.startswith(".")]
+    if not ins[0] == f"lea {2 * N}(%rdi), %r8" or ins[-1] != f"sub ${2 * N}, %rdi":
         raise ValueError("unexpected level-2 frame")
-    if body.count("ntruplus768_officialopt_lazy_looptop_start_2") != 2 or \
-            "vpbroadcastd  8(%rdx), %ymm15" not in body or "add $8,   %rdx" not in body:
-        raise ValueError("unexpected level-2 body")
+    if not radix3:
+        if body.count(f"{P}_lazy_looptop_start_2") != 2 or \
+                "vpbroadcastd  8(%rdx), %ymm15" not in body or "add $8,   %rdx" not in body:
+            raise ValueError("unexpected level-2 body")
+        labels = {f"{P}_lazy_looptop_start_2": f"{P}_ht_looptop_l2"}
+    else:
+        if body.count(f"{P}_lazy_looptop_start_2") != 2 or body.count(f"{P}_lazy_looptop_j_2") != 2 or \
+                not re.search(r"vpbroadcastd +8\(%rdx\), %ymm4", body) or "add $16,  %rdx" not in body:
+            raise ValueError("unexpected level-2 body")
+        # the pass-A pitfall: level 2 must read nothing but q, w*qinv and w before writing
+        if reads_before_write(ins) != {"%ymm0", "%ymm2", "%ymm3"}:
+            raise ValueError(f"level-2 live-in registers {sorted(reads_before_write(ins))}")
+        labels = {f"{P}_lazy_looptop_start_2": f"{P}_ht_looptop_l2",
+                  f"{P}_lazy_looptop_j_2": f"{P}_ht_looptop_l2j"}
     ops = {}
     for l in ins:
         if not l.endswith(":"):
             ops[l.split()[0]] = ops.get(l.split()[0], 0) + 1
-    body = body.replace("ntruplus768_officialopt_lazy_looptop_start_2",
-                        "ntruplus768_officialopt_ht_looptop_l2")
+    for old, new in labels.items():
+        body = body.replace(old, new)
     return body, ops
 
 
-def derive(root):
+def derive(root, param=768):
+    cfg = configure(param)
     for rel, pin in PINS.items():
         got = sha256((root / rel).read_bytes())
         if got != pin:
@@ -351,7 +489,7 @@ def derive(root):
     up = root / "upstream/supercop-avx2"
     syms = parse_consts((up / "consts.c").read_text())
     lazy_text = (root / f"asm/{LAZY}.s").read_text()
-    level2, level2_ops = extract_level2(lazy_text)
+    level2, level2_ops = extract_level2(lazy_text, cfg["radix3_level2"])
     F = Forms()
     out_l, snap, zmap, zqmap = run_lazy(F, lazy_text, syms)
     if len(snap) != N:
@@ -359,16 +497,16 @@ def derive(root):
 
     # --- block network twiddles and final layout
     per_block, store = [], None
-    for b in range(6):
+    for b in range(NBLK):
         tw, regs = model_block(F, snap, zmap, zqmap, b)
         per_block.append(tw)
-        rows = {tuple(out_l[128 * b + 16 * r:128 * b + 16 * r + 16]): r for r in range(8)}
+        rows = {tuple(out_l[BLK * b + 16 * r:BLK * b + 16 * r + 16]): r for r in range(NR)}
         st = []
-        for i in range(8):
+        for i in range(NR):
             if tuple(regs[i]) not in rows:
                 raise ValueError(f"block {b} register {i} is not an Official output row")
             st.append(rows[tuple(regs[i])])
-        if sorted(st) != list(range(8)) or (store is not None and st != store):
+        if sorted(st) != list(range(NR)) or (store is not None and st != store):
             raise ValueError("non-uniform output layout")
         store = st
     # slot sharing: butterflies of one group share a slot iff their vectors are
@@ -378,7 +516,7 @@ def derive(root):
         seen = []
         for g in grp:
             for s, rep in seen:
-                if all(per_block[b][g] == per_block[b][rep] for b in range(6)):
+                if all(per_block[b][g] == per_block[b][rep] for b in range(NBLK)):
                     slot_of[g] = s
                     break
             else:
@@ -387,7 +525,7 @@ def derive(root):
                 slot_members.append(g)
                 nslots += 1
     tab_b = []
-    for b in range(6):
+    for b in range(NBLK):
         for g in slot_members:
             zr, zq = per_block[b][g]
             tab_b += list(zr) + list(zq)
@@ -402,7 +540,7 @@ def derive(root):
             if any(s16(x * QINV) != y for x, y in zip(zr, zq)):
                 raise ValueError("pass A companion mismatch")
         tab_a += zr_a + zq_a + zr_a2 + zq_a2
-    asm = emit(level2, slot_of, nslots, tab_b, tab_a, store)
+    asm = emit(level2, slot_of, nslots, tab_b, tab_a, store, cfg["radix3_level2"])
     meta = verify(F, asm, syms, out_l)
     meta.update({
         "store_rows": store, "block_slots": nslots, "slot_of_butterfly": [slot_of[g] for g in sorted(slot_of)],
@@ -412,6 +550,9 @@ def derive(root):
         "lazy_dynamic_census": run_lazy.census,
         "inputs_sha256": dict(PINS),
     })
+    if N != 768:
+        meta.update({"parameter": N, "blocks": NBLK, "block_coefficients": BLK,
+                     "level2_live_in_restored": ["%ymm2 <- %ymm14 (w*qinv)", "%ymm3 <- %ymm13 (w)"]})
     return asm, meta
 
 
@@ -435,7 +576,8 @@ def verify(F, asm, syms, out_l):
     for bad in ("%rsp", "call", "vzeroupper", "%rbp", "push", "pop"):
         if re.search(rf"^\s*[^#.\s].*{re.escape(bad)}", asm, re.M):
             raise ValueError(f"forbidden {bad}")
-    if asm.count(".p2align 5") != 6:   # entry, 3 loop heads, 2 tables
+    # entry, pass-A loop head, level-2 loop heads (1 for 768, 2 for 864/1152), block loop head, 2 tables
+    if asm.count(".p2align 5") != (6 if N == 768 else 7):
         raise ValueError("alignment directives")
     ex = SymExec(F, asm, syms)
     B = ex.POLY
@@ -458,19 +600,21 @@ def verify(F, asm, syms, out_l):
             "dynamic_instructions": sum(ex.census.values()),
             "dynamic_census": dict(sorted(ex.census.items())),
             "static_loop_census": {k: dict(sorted(v.items())) for k, v in c.items()},
-            "shuffle_uops_per_block": sum(v for k, v in c["ntruplus768_officialopt_ht_looptop_b"].items()
+            "shuffle_uops_per_block": sum(v for k, v in c[f"{P}_ht_looptop_b"].items()
                                           if k.startswith(("vperm", "vpunpck")))}
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--param", type=int, choices=sorted(PARAMS), default=768)
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--meta", type=Path)
     args = ap.parse_args()
     root = args.experiment.resolve()
-    asm, meta = derive(root)
-    if (asm, json.dumps(meta, sort_keys=True)) != (lambda a, m: (a, json.dumps(m, sort_keys=True)))(*derive(root)):
+    asm, meta = derive(root, args.param)
+    if (asm, json.dumps(meta, sort_keys=True)) != (lambda a, m: (a, json.dumps(m, sort_keys=True)))(
+            *derive(root, args.param)):
         raise ValueError("non-deterministic generation")
     path = root / f"asm/{NAME}.s"
     meta["output_sha256"] = sha256(asm.encode())

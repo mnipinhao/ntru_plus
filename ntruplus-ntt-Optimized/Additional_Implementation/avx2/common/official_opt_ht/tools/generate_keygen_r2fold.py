@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Generate the NTRU+768 keygen R^2 fold (BaseMul R^2 pass folded into BaseInv).
+"""Generate the NTRU+768 / 864 / 1152 keygen R^2 fold (BaseMul R^2 pass folded into BaseInv).
 
 Official keygen computes h = poly_basemul(g_hat, finv) and poly_basemul(f_hat,
 ginv).  poly_basemul is a Montgomery core (every coefficient is congruent to
 the true base product times R^-1, R = 2^16) followed by a separate pass that
 multiplies every coefficient by R^2 in the Montgomery domain (basemul.s
 `_reduce_R2_loop`: mont(c, R2) = c*R mod q), i.e. 48 Montgomery vectors per
-call.  Both keygen products take a BaseInv output, and BaseInv's single field
+call (NTRU+864: 54, NTRU+1152: 72).  Both keygen products take a BaseInv output, and BaseInv's single field
 inversion first scales its input by the constant R3 = R^3 mod q
 (poly.c fqinv_batch: inv = fqmul(pc2[2], R3)).  Using R2 = R^2 there instead
 scales the (multiplicative, addition-free) inversion input by R^-1, hence
@@ -15,13 +15,20 @@ congruent to the Official BaseMul output, and poly_tobytes (canonical for
 every int16) makes pk/sk byte-identical.  Proof and bounds:
 tools/prove_keygen_r2fold.py, tests/test_keygen_r2fold.c.
 
-Outputs (experiment-relative):
-  asm/ntruplus768_officialopt_basemul_nor2.s        Official poly_basemul without the R^2 pass
-  src/ntruplus768_officialopt_baseinv_r2fold.c      Official poly_baseinv (poly.c:1-358) with R3 -> R2
+Outputs (experiment-relative, N = --param, default 768):
+  asm/ntruplusN_officialopt_basemul_nor2.s          Official poly_basemul without the R^2 pass
+  src/ntruplusN_officialopt_baseinv_r2fold.c        Official poly_baseinv (poly.c:1-358 for 768) with R3 -> R2
   src/kem_lazy_r2fold.c                              src/kem_lazy.c with the 2 keygen BaseInv and the
                                                      2 keygen BaseMul calls rebound (enc/dec untouched)
+The NTRU+864 poly.c also defines the poly_tobytes / poly_frombytes wrappers
+(pack/unpack around the raw codec); they are not part of BaseInv and are left
+out of the fold TU (their extern declarations included), so it defines no
+symbol that poly.c already defines.  fqmul .. fqinv_batch are textually
+identical in all three parameters (checked by prove_keygen_r2fold.py through
+the exhaustive fqinv relation); poly_baseinv_2 uses fqmul (864) or
+fqmul/fqmul_neg (768, 1152).
 
-  generate_keygen_r2fold.py --experiment . [--check] [--meta out.json]
+  generate_keygen_r2fold.py [--param N] --experiment . [--check] [--meta out.json]
 """
 import argparse
 import hashlib
@@ -31,15 +38,53 @@ import sys
 from pathlib import Path
 
 Q, QINV, R = 3457, 12929, 1 << 16
-BASEMUL = "ntruplus768_officialopt_basemul_nor2"
-BASEINV = "ntruplus768_officialopt_baseinv_r2fold"
-PINS = {
-    "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe",
-    "upstream/supercop-avx2/poly.c": "cf8dc307c7acce70270f623ccc1ea8354e2580e307986b4e8fbabcbc6181d77b",
-    "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
-    # generate_forward_caller_lazy.py --param 768 output (its --check is a prerequisite)
-    "src/kem_lazy.c": "ffd9165c36466c2ecc57e4a157a2a847dc9f19d1fc249ebbc9c1c46baa22fd7d",
+PARAMS = {
+    768: {"pins": {
+        "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe",
+        "upstream/supercop-avx2/poly.c": "cf8dc307c7acce70270f623ccc1ea8354e2580e307986b4e8fbabcbc6181d77b",
+        "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+        # generate_forward_caller_lazy.py --param 768 output (its --check is a prerequisite)
+        "src/kem_lazy.c": "ffd9165c36466c2ecc57e4a157a2a847dc9f19d1fc249ebbc9c1c46baa22fd7d"},
+        "loop": "_looptop_basemul", "vectors_per_iteration": 4,
+        "baseinv_head": "int poly_baseinv(poly *r, const poly *a)\n{",
+        "functions": ["fqmul", "fqmul_neg", "fqsqr", "fqinv", "fqinv_batch", "poly_baseinv_2", "poly_baseinv"]},
+    864: {"pins": {
+        "upstream/supercop-avx2/basemul.s": "42b9639d4d619ba2214fba73b86f9029a078b1711c5e77bf7b4a26c770d0e761",
+        "upstream/supercop-avx2/poly.c": "9c8d811df31485d9e748018d79a3328d8f9d4aba09176c48a53e0f92acba181e",
+        "upstream/supercop-avx2/consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+        # generate_forward_caller_lazy.py --param 864 output (its --check is a prerequisite)
+        "src/kem_lazy.c": "398f5faa0b2733cc188ce933380ee8c64d8676a9938da0de8f3cdf3a8253d484"},
+        "loop": "_looptop", "vectors_per_iteration": 3,
+        "baseinv_head": "int  poly_baseinv(poly *r, const poly *a)\n{",
+        "functions": ["fqmul", "fqsqr", "fqinv", "fqinv_batch", "poly_baseinv_2", "poly_baseinv"],
+        # poly.c:15-38, the codec wrappers (not BaseInv), left out of the fold TU
+        "drop": ("NTRUPLUS_INTERNAL NTRUPLUS_SYSV\nextern void poly_ntt_pack(poly *b, const poly *a);\n",
+                 "    poly_ntt_unpack(r, r);\n    return fail;\n}\n\n")},
+    1152: {"pins": {
+        "upstream/supercop-avx2/basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+        "upstream/supercop-avx2/poly.c": "5a6dd54dd5510dfda93cf7a8278ccc1214dfbfcd935251886422c68126ed1705",
+        "upstream/supercop-avx2/consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+        # generate_forward_caller_lazy.py --param 1152 output (its --check is a prerequisite)
+        "src/kem_lazy.c": "0bd8c009ef362948fd51d7b1c642904b7f5e5d1095f11cf6401dcbf408d2caa7"},
+        "loop": "_looptop_basemul", "vectors_per_iteration": 4,
+        "baseinv_head": "int  poly_baseinv(poly *r, const poly *a)\n{",
+        "functions": ["fqmul", "fqmul_neg", "fqsqr", "fqinv", "fqinv_batch", "poly_baseinv_2", "poly_baseinv"]},
 }
+# Module-level names for the selected parameter (configure(); default NTRU+768 for importers).
+N = BASEMUL = BASEINV = PINS = CFG = None
+
+
+def configure(param):
+    global N, BASEMUL, BASEINV, PINS, CFG
+    N = param
+    CFG = PARAMS[param]
+    BASEMUL = f"ntruplus{param}_officialopt_basemul_nor2"
+    BASEINV = f"ntruplus{param}_officialopt_baseinv_r2fold"
+    PINS = CFG["pins"]
+    return CFG
+
+
+configure(768)
 
 
 def sha256(data):
@@ -78,22 +123,26 @@ def gen_basemul(src):
     entry = ".global poly_basemul\npoly_basemul:\n"
     if src.count(entry) != 1 or not src.startswith(entry):
         raise ValueError("unexpected basemul.s head")
-    end_core = "jb  _looptop_basemul\n"
-    r2_head = "\nmov %rdi, %r8\nsub $1536, %rdi\n\nvmovdqa _16xR2qinv(%rip), %ymm15\nvmovdqa _16xR2(%rip),     %ymm1\n"
+    loop, v = CFG["loop"], CFG["vectors_per_iteration"]
+    end_core = f"jb  {loop}\n"
+    r2_head = f"\nmov %rdi, %r8\nsub ${2 * N}, %rdi\n\nvmovdqa _16xR2qinv(%rip), %ymm15\nvmovdqa _16xR2(%rip),     %ymm1\n"
     r2_tail = "jb  _reduce_R2_loop\n\nret\n"
     i = src.index(end_core) + len(end_core)
     j = src.index(r2_tail) + len(r2_tail)
     if src.count(end_core) != 1 or src.count(r2_tail) != 1 or not src[i:].startswith(r2_head):
         raise ValueError("unexpected R^2 pass frame")
     core, removed = src[len(entry):i], src[i:j]
-    # the removed block: 12 iterations x 4 vectors of mont(x, R2) in place, nothing else
+    # the removed block: 2N/(32 v) iterations x v vectors of mont(x, R2) in place, nothing else
+    # (768: 12 x 4, 864: 18 x 3, 1152: 18 x 4)
     ins = [l.split("#")[0].strip() for l in removed.splitlines()]
     ins = [l for l in ins if l and not l.startswith(".") and not l.endswith(":")]
     ops = {}
     for l in ins:
         ops[l.split()[0]] = ops.get(l.split()[0], 0) + 1
-    expect = {"mov": 1, "sub": 1, "vmovdqa": 10, "vpmullw": 4, "vpmulhw": 8, "vpsubw": 4,
+    expect = {"mov": 1, "sub": 1, "vmovdqa": 2 + 2 * v, "vpmullw": v, "vpmulhw": 2 * v, "vpsubw": v,
               "add": 1, "cmp": 1, "jb": 1, "ret": 1}
+    if f"add ${32 * v}, %rdi" not in removed:
+        raise ValueError("unexpected R^2 pass stride")
     if ops != expect:
         raise ValueError(f"unexpected R^2 pass body {ops}")
     for l in ins:
@@ -104,30 +153,51 @@ def gen_basemul(src):
     if "ret" in core or "_reduce_R2" in core or "%rsp" in core:
         raise ValueError("unexpected core content")
     labels = set(re.findall(r"^(\w+):", core, re.M))
-    if labels != {"_looptop_basemul"}:
+    if labels != {loop}:
         raise ValueError(f"labels {labels}")
-    core = core.replace("_looptop_basemul", f"{BASEMUL}_looptop")
-    text = ("# GENERATED by common/official_opt_ht/tools/generate_keygen_r2fold.py -- do not edit.\n"
-            "# Official NTRU+768 AVX2 poly_basemul (basemul.s:1-373) without its R^2 pass\n"
-            "# (basemul.s:375-420, ret re-emitted): every output coefficient is the Montgomery core,\n"
+    core = core.replace(loop, f"{BASEMUL}_looptop")
+    core_end, r2_first, r2_last = src[:i].count("\n"), src[:i].count("\n") + 2, src[:j].count("\n")
+    gen = "generate_keygen_r2fold.py" if N == 768 else f"generate_keygen_r2fold.py --param {N}"
+    text = (f"# GENERATED by common/official_opt_ht/tools/{gen} -- do not edit.\n"
+            f"# Official NTRU+{N} AVX2 poly_basemul (basemul.s:1-{core_end}) without its R^2 pass\n"
+            f"# (basemul.s:{r2_first}-{r2_last}, ret re-emitted): every output coefficient is the Montgomery core,\n"
             "# congruent to the base product times R^-1.  Keygen only, on an R-scaled\n"
             f"# BaseInv output ({BASEINV}); Encap/Decap keep poly_basemul.\n"
             f".text\n.p2align 5\n.global {BASEMUL}\n.type {BASEMUL},@function\n{BASEMUL}:\n"
             + core + "\nret\n\n" + f".size {BASEMUL},.-{BASEMUL}\n\n"
             ".ifndef no_gnu_stack\n.section .note.GNU-stack,\"\",@progbits\n.endif\n")
-    return text, {"removed_R2_pass_ops_static": ops, "removed_mont_vectors_per_call": 48,
+    return text, {"removed_R2_pass_ops_static": ops, "removed_mont_vectors_per_call": 2 * N // 32,
                   "core_lines_kept": core.count("\n")}
 
 
 def gen_baseinv(poly_c, k):
-    head_end = "int poly_baseinv(poly *r, const poly *a)\n{"
+    head_end = CFG["baseinv_head"]
     if poly_c.count(head_end) != 1:
         raise ValueError("poly_baseinv definition")
     i = poly_c.index(head_end)
     j = poly_c.index("\n}\n", i) + 3
     body = poly_c[:j]
+    slice_last = body.count("\n")
+    dropped = None
+    if "drop" in CFG:
+        a, b = CFG["drop"]
+        if body.count(a) != 1 or body.count(b) != 1 or body.index(a) > body.index(b):
+            raise ValueError("unexpected codec-wrapper block")
+        lo, hi = body.index(a), body.index(b) + len(b)
+        seg = body[lo:hi]
+        # 4 extern declarations (pack/unpack, raw codec) + the 2 wrapper definitions, nothing else
+        if sorted(re.findall(r"^(?:extern )?\w[\w ]*?\b(\w+)\(", seg, re.M)) != sorted(
+                ["poly_ntt_pack", "poly_ntt_unpack", "poly_frombytes_raw", "poly_tobytes_raw",
+                 "poly_tobytes", "poly_frombytes"]) or seg.count("\n{\n") != 2:
+            raise ValueError("codec-wrapper block holds more than the wrappers")
+        dropped = [body[:lo].count("\n") + 1, body[:hi].count("\n")]
+        body = body[:lo] + body[hi:]
+        for sym in ("poly_ntt_pack", "poly_ntt_unpack", "poly_frombytes_raw", "poly_tobytes_raw",
+                    "poly_tobytes", "poly_frombytes"):
+            if sym in body:
+                raise ValueError(f"residual {sym}")
     funcs = re.findall(r"^(?:static inline )?\w[\w ]*?\b(\w+)\(", body, re.M)
-    if funcs != ["fqmul", "fqmul_neg", "fqsqr", "fqinv", "fqinv_batch", "poly_baseinv_2", "poly_baseinv"]:
+    if funcs != CFG["functions"]:
         raise ValueError(f"unexpected functions {funcs}")
     old_c = ("    const __m256i R3qinv_const = _mm256_set1_epi16(NTRUPLUS_R3_QINV);\n"
              "    const __m256i R3_const     = _mm256_set1_epi16(NTRUPLUS_R3);\n")
@@ -136,7 +206,7 @@ def gen_baseinv(poly_c, k):
             body.count("NTRUPLUS_R3") != 4:
         raise ValueError("unexpected R3 use")
     new_c = ("    /* R^2 fold: R2 = R3 * R^-1 mod q scales this multiplicative inversion's input\n"
-             "     * by R^-1, hence every BaseInv output by R (ntruplus768_officialopt_basemul_nor2). */\n"
+             f"     * by R^-1, hence every BaseInv output by R ({BASEMUL}). */\n"
              "    const __m256i R3qinv_const = _mm256_set1_epi16(NTRUPLUS_R2FOLD_QINV);\n"
              "    const __m256i R3_const     = _mm256_set1_epi16(NTRUPLUS_R2FOLD);\n")
     body = body.replace(old_c, new_c, 1)
@@ -149,11 +219,17 @@ def gen_baseinv(poly_c, k):
                         f"int {BASEINV}(poly *r, const poly *a)\n{{", 1)
     if body.count("poly_baseinv(") != 0:
         raise ValueError("residual poly_baseinv")
-    text = ("/*\n * GENERATED by common/official_opt_ht/tools/generate_keygen_r2fold.py -- do not edit.\n"
-            " * Official NTRU+768 AVX2 poly_baseinv (poly.c:1-358: fqmul .. poly_baseinv) as\n"
+    gen = "generate_keygen_r2fold.py" if N == 768 else f"generate_keygen_r2fold.py --param {N}"
+    left_out = "" if dropped is None else \
+        f" * poly.c:{dropped[0]}-{dropped[1]} (the poly_tobytes/poly_frombytes codec wrappers) left out.\n"
+    text = (f"/*\n * GENERATED by common/official_opt_ht/tools/{gen} -- do not edit.\n"
+            f" * Official NTRU+{N} AVX2 poly_baseinv (poly.c:1-{slice_last}: fqmul .. poly_baseinv) as\n"
             f" * {BASEINV}: the only change is the fqinv input scale R3 -> R2,\n"
-            " * so the output is the Official inverse times R (mod q), same bounds.\n */\n" + body)
-    return text, {"slice_lines": body.count("\n"), "functions": funcs}
+            " * so the output is the Official inverse times R (mod q), same bounds.\n" + left_out + " */\n" + body)
+    meta = {"slice_lines": body.count("\n"), "functions": funcs}
+    if dropped is not None:
+        meta["codec_wrapper_lines_left_out"] = dropped
+    return text, meta
 
 
 def function_span(text, signature):
@@ -189,14 +265,16 @@ def gen_kem(kem):
         raise ValueError("anchor")
     out = out.replace(anchor, f"int {BASEINV}(poly *, const poly *);\n"
                       f"void {BASEMUL}(poly *, const poly *, const poly *);\n\n" + anchor, 1)
-    head = ("/*\n * GENERATED by common/official_opt_ht/tools/generate_keygen_r2fold.py -- do not edit.\n"
+    gen = "generate_keygen_r2fold.py" if N == 768 else f"generate_keygen_r2fold.py --param {N}"
+    head = (f"/*\n * GENERATED by common/official_opt_ht/tools/{gen} -- do not edit.\n"
             " * src/kem_lazy.c (caller-lazy KEM) with the keygen R^2 fold: genf/geng BaseInv ->\n"
             f" * {BASEINV}, the two keygen BaseMul -> {BASEMUL}.\n"
             " * Encap/Decap and every other line unchanged.\n */\n")
     return head + out
 
 
-def derive(root):
+def derive(root, param=768):
+    configure(param)
     for rel, pin in PINS.items():
         got = sha256((root / rel).read_bytes())
         if got != pin:
@@ -215,13 +293,14 @@ def derive(root):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--param", type=int, choices=sorted(PARAMS), default=768)
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--meta", type=Path)
     args = ap.parse_args()
     root = args.experiment.resolve()
-    outputs, meta = derive(root)
-    if (outputs, meta) != derive(root):
+    outputs, meta = derive(root, args.param)
+    if (outputs, meta) != derive(root, args.param):
         raise ValueError("non-deterministic generation")
     bad = []
     for rel, text in outputs.items():

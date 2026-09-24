@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Write the NTRU+768 HT / R^2-fold KEM overlays (preprocessor only).
+"""Write the NTRU+768 / 864 / 1152 HT / R^2-fold KEM overlays (preprocessor only).
+
+NTRU+768 (--param 768, the default; outputs unchanged by the generalisation):
 
 Base: avx2-officialopt-lazy-freeze-keccak-768-exp001 = src/kem_lazy_freeze2op_keccak.c
 (mlkem-native Keccak headers + `#define poly_tobytes <freeze2op>` + kem_lazy.c).
@@ -19,7 +21,22 @@ the inverse rebinding `#define poly_invntt_scale ntruplus768_officialopt_invntt_
 renames the poly.h prototype and the single (Decap) call site.
 Every included file stays byte-identical, so all variants link into one ELF.
 
-  generate_ht_overlays.py --experiment . [--check]
+NTRU+1152 (--param 1152; no HT inverse, which measured slower there):
+  base avx2-officialopt-lazy-freeze-keccak-1152-exp001 = src/kem_lazy_freeze2op_keccak.c
+  src/kem_lazy_freeze2op_keccak_ht.c         control ht_only     = base, Forward -> HT
+  src/kem_lazy_r2fold_freeze2op_keccak.c     control r2fold_only = base on kem_lazy_r2fold.c
+  src/kem_lazy_r2fold_freeze2op_keccak_ht.c  candidate avx2-officialopt-lazy-freeze-keccak-ht-1152-exp001
+                                             = base + HT Forward + keygen R^2 fold
+NTRU+864 (--param 864; no HT inverse: no 4-stage unpack network exists there):
+  base avx2-officialopt-lazy-codec-keccak-864-exp001 = src/kem_lazy_codec_direct_keccak.c
+  (mlkem-native Keccak headers + the direct 12-bit codec #defines of
+  src/kem_lazy_codec_direct.c + kem_lazy.c)
+  src/kem_lazy_codec_direct_keccak_ht.c         control ht_only     = base, Forward -> HT
+  src/kem_lazy_r2fold_codec_direct_keccak.c     control r2fold_only = base on kem_lazy_r2fold.c
+  src/kem_lazy_r2fold_codec_direct_keccak_ht.c  candidate avx2-officialopt-lazy-codec-keccak-ht-864-exp001
+                                                = base + HT Forward + keygen R^2 fold
+
+  generate_ht_overlays.py [--param N] --experiment . [--check]
 """
 import argparse
 import hashlib
@@ -42,7 +59,74 @@ def sha256(b):
     return hashlib.sha256(b).hexdigest()
 
 
-def outputs(root):
+BASES = {  # parameter -> (base overlay, its pin, the non-Keccak base overlay, its #define lines)
+    1152: ("kem_lazy_freeze2op_keccak.c", "2c11774dc3899f23b510d432089aa3ddb7735f711dad2a614e73999b5a0e527c",
+           "kem_lazy_freeze2op.c", ["#define poly_tobytes ntruplus1152_officialopt_tobytes_freeze2op"],
+           "avx2-officialopt-lazy-freeze-keccak-1152-exp001", "avx2-officialopt-lazy-freeze-keccak-ht-1152-exp001",
+           "2-op-freeze poly_tobytes"),
+    864: ("kem_lazy_codec_direct_keccak.c", "b28308c5b81adffef8d631f48b8b2b3f4b48db2241d9fea6844ee9108b64e4a5",
+          "kem_lazy_codec_direct.c", ["#define poly_tobytes ntruplus864_officialopt_tobytes_direct",
+                                      "#define poly_frombytes ntruplus864_officialopt_frombytes_direct"],
+          "avx2-officialopt-lazy-codec-keccak-864-exp001", "avx2-officialopt-lazy-codec-keccak-ht-864-exp001",
+          "direct 12-bit poly_tobytes/poly_frombytes"),
+}
+KEM_LAZY_PINS = {768: "ffd9165c36466c2ecc57e4a157a2a847dc9f19d1fc249ebbc9c1c46baa22fd7d",
+                 864: "398f5faa0b2733cc188ce933380ee8c64d8676a9938da0de8f3cdf3a8253d484",
+                 1152: "0bd8c009ef362948fd51d7b1c642904b7f5e5d1095f11cf6401dcbf408d2caa7"}
+KECCAK_PRELUDE = '#include "util.h"\n#include "fips202_mlkem.h"\n#include "keccak_names.h"\n'
+
+
+def overlay_names(param):
+    """(ht_only, r2fold_only, candidate) overlay paths of an 864/1152 experiment."""
+    stem = BASES[param][0][len("kem_lazy_"):-len("_keccak.c")]
+    return (f"src/kem_lazy_{stem}_keccak_ht.c", f"src/kem_lazy_r2fold_{stem}_keccak.c",
+            f"src/kem_lazy_r2fold_{stem}_keccak_ht.c")
+
+
+def outputs_param(root, param):
+    """NTRU+864 / 1152: ht_only, r2fold_only and the candidate (HT Forward + R^2 fold)."""
+    base, base_pin, plain, defines, base_name, cand_name, codec = BASES[param]
+    lazy_name, ht_name = f"ntruplus{param}_officialopt_ntt_caller_lazy", f"ntruplus{param}_officialopt_ntt_ht"
+    if sha256((root / "src/kem_lazy.c").read_bytes()) != KEM_LAZY_PINS[param]:
+        raise ValueError("pinned input changed: src/kem_lazy.c")
+    if sha256((root / "src" / base).read_bytes()) != base_pin:
+        raise ValueError(f"pinned input changed: src/{base}")
+    pl = (root / "src" / plain).read_text()
+    body = [l for l in pl.splitlines() if l.strip() and not l.lstrip().startswith(("/*", "*"))]
+    if body != defines + ['#include "kem_lazy.c"']:
+        raise ValueError(f"unexpected {plain}: {body}")
+    kc = (root / "src" / base).read_text()
+    if not kc.endswith(KECCAK_PRELUDE + f'#include "{plain}"\n'):
+        raise ValueError("unexpected keccak overlay")
+    for name in ("kem_lazy.c", "kem_lazy_r2fold.c"):
+        text = (root / "src" / name).read_text()
+        if text.count(lazy_name) != 7 or text.count(f"void {lazy_name}(poly *);") != 1:
+            raise ValueError(f"{name}: expected 1 prototype + 6 Forward calls")
+    ht_def = f"#define {lazy_name} {ht_name}\n"
+    ht_only, r2_only, cand = overlay_names(param)
+    head = HEAD.replace("generate_ht_overlays.py --", f"generate_ht_overlays.py --param {param} --")
+    return {
+        ht_only: head +
+        f" * NTRU+{param} AVX2 control ht_only: the base candidate {base_name}\n"
+        f" * (src/{base}, unchanged) with its 6 caller-lazy Forward calls\n"
+        f" * bound to asm/{ht_name}.s (bit-identical output).  Diagnostic.\n */\n"
+        + ht_def + f'#include "{base}"\n',
+        r2_only: head +
+        f" * NTRU+{param} AVX2 control r2fold_only: the base candidate's overlay chain (mlkem-native\n"
+        f" * Keccak headers, {codec}) on src/kem_lazy_r2fold.c (caller-lazy KEM\n"
+        " * with the keygen R^2 fold) instead of src/kem_lazy.c.  Diagnostic.\n */\n"
+        + KECCAK_PRELUDE + "".join(d + "\n" for d in defines) + '#include "kem_lazy_r2fold.c"\n',
+        cand: head +
+        f" * NTRU+{param} AVX2 candidate {cand_name}: base\n"
+        " * candidate + HT Forward (6 calls) + keygen R^2 fold (2 BaseInv, 2 keygen BaseMul).\n"
+        " * No HT inverse (not applicable to NTRU+864; slower on NTRU+1152).\n */\n"
+        + ht_def + f'#include "{Path(r2_only).name}"\n',
+    }
+
+
+def outputs(root, param=768):
+    if param != 768:
+        return outputs_param(root, param)
     for rel, pin in PINS.items():
         data = (root / rel).read_bytes()
         if pin and sha256(data) != pin:
@@ -93,12 +177,13 @@ def outputs(root):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--param", type=int, choices=(768, 864, 1152), default=768)
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
     root = args.experiment.resolve()
-    outs = outputs(root)
-    if outs != outputs(root):
+    outs = outputs(root, args.param)
+    if outs != outputs(root, args.param):
         raise ValueError("non-deterministic")
     bad = []
     for rel, text in outs.items():
