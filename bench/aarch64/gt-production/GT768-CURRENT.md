@@ -72,4 +72,4 @@ Interleaving keygen/enc/dec adds 94 cycles per round (0.1%).  It matters when
 the code has been evicted from L2/L3.  In that case the GT keygen lead
 disappears, and encaps/decaps keep 6-9% / 10%.
 
-Ongoing production work: `/Users/chenpinhao/ntruplus-aarch64-production`.
+Production work lands on `main`; new work branches from `origin/main`.
