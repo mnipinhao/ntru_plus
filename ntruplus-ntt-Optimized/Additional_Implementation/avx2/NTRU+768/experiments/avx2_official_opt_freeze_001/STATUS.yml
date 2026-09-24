@@ -351,3 +351,81 @@ keccak_candidate:  # 2026-09-23 Phase A + same-ELF diagnostic; 2026-09-24 Phase 
   promotion: none
   reproduce: "make keccak-record MLK_ROOT=<clean mlkem-native checkout at b3ba7b32>; make keccak-flat FLAT_OUT=<scratch>; make keccak-bench; phase_b_batch.py ... run_keccak_diag.py --param 768 --launches 31 [--binary build/bench_keccak_diag_swapped]"
   reproduce_phase_b: "docs/ntruplus-avx2-keccak-mlkem-native.md#reproduce-phase-b"
+
+ht_candidate:  # 2026-09-24 Phase A + same-ELF diagnostic; no SUPERCOP campaign, no Native; docs/ntruplus768-ht-forward.md
+  candidate: avx2-officialopt-lazy-freeze-keccak-ht-768-exp001  # src/kem_lazy_r2fold_freeze2op_keccak_ht_htinv.c
+  base: avx2-officialopt-lazy-freeze-keccak-768-exp001  # src/kem_lazy_freeze2op_keccak.c, unchanged
+  items: [ht_forward, keygen_r2fold, ht_inverse_block]  # item 3 (inverse) included in its block-pass form; fused level-1+0 pass dropped
+  controls:  # all diagnostic only
+    ht_only: src/kem_lazy_freeze2op_keccak_ht.c          # base + HT Forward
+    r2fold_only: src/kem_lazy_r2fold_freeze2op_keccak.c  # base + keygen R^2 fold
+    htinv_only: src/kem_lazy_freeze2op_keccak_htinv.c    # base + HT inverse
+    ht_r2fold: src/kem_lazy_r2fold_freeze2op_keccak_ht.c # base + items 1+2 (the candidate without the inverse)
+  tooling: common/official_opt_ht/{ht.mk,tools,tests,range_proof_ht,bench}  # new; every existing generator --check unchanged
+  shared_test_change: "common/official_opt_lazy/tests/test_kem_lazy.c gained an #ifdef CANDIDATE_BASEINV f-failure hook (preprocessed text of every existing build byte-identical)"
+  source_study: "scratch hwang-gt768 (fwd_proto.c, gen_asm.py, search_stages.py, search_inv.py, bm_time.c); Hwang NTRU_Prime_truncation 3eb881fb (CC0) read for reference only, no code copied"
+  ht_forward:
+    generated_asm: asm/ntruplus768_officialopt_ntt_ht.s  # sha256 8f4bdb30..., common/official_opt_ht/tools/generate_forward_ht.py
+    pinned_inputs: {consts.c: 52649ae4..., ntt.s: 992b6137..., lazy_asm: 66c3fa6e...}
+    structure:
+      pass_a: "level 0 (raw zeta1) + level-1 radix-3 fused, 6 vectors/iteration, 8 iterations; radix-3 constants = Official broadcast dwords as 32-byte memory operands"
+      level2: "Official lazy level-2 pass verbatim (rdx = zetas + 32)"
+      block: "levels 3..6 per 128-coefficient block, natural input: L(d32) L(d16) vperm2i128 L(d8) unpck{l,h}wd unpck{l,h}dq unpck{l,h}dq L(d4); output layout = Official (register r, lane l = 128b+8l+r)"
+      shuffle_uops_per_block: {ht: 32, official: 48}
+      tables_bytes: {pass_a: 256, block: 4224}  # 11 slots/block; .rodata, .p2align 5, local symbols
+      dynamic_instructions: {ht: 1710, lazy: 2003}  # vmovdqa 304 vs 436, shuffles 192 vs 288, arithmetic identical
+    proof:
+      method: "exact symbolic dataflow execution (tools/symexec.py: forms over Z/2^16 with vpmulhw/vpmulhrsw atoms); every twiddle is the (zeta, zeta*qinv) the lazy Forward applies to the same operand form; all 768 output words of the emitted asm have the lazy Forward's interned form => bit-identical for every int16 input"
+      executor_validation: "symbolic evaluation == real lazy Forward and Official inverse on random full-int16 inputs"
+      range_proof: "range_proof_ht/prove_ht.py: interval replay of lazy and HT on all 5 caller domains, zero signed-word failures, per-lane intervals identical, output == EXPECTED_LAZY[768]; consumer envelopes unchanged"
+    differential: {cases: 55375, detail: "5 caller domains x 5075 (constants, alternating, 4N impulses, 1000 random, 1000 extreme) + 10000 producer outputs (cbd1, cbd1+triple, +1, sotp_encode, crepmod3) + 20000 uniform int16; HT == lazy word for word, Barrett(HT) == Official on caller domains, canaries"}
+  keygen_r2fold:
+    generated: {basemul: asm/ntruplus768_officialopt_basemul_nor2.s, baseinv: src/ntruplus768_officialopt_baseinv_r2fold.c, kem: src/kem_lazy_r2fold.c}  # generate_keygen_r2fold.py
+    change: "BaseInv: fqinv input scale R3 = R^3 -> R2 = R^2 (one constant pair, 867/2787); keygen BaseMul: Official poly_basemul without its R^2 pass (basemul.s:375-420); Encap/Decap BaseMul unchanged"
+    identity: "fqmul(a,b)*R == a*b (mod q); fqinv(x) == x^(q-2) R^-34 (mod q) (exhaustive over int16) => inv' = R inv, finv' = R finv (BaseInv is addition-free outside fqmul, inv enters every output once); core(a, R finv) == R core(a, finv) == poly_basemul(a, finv) (mod q); poly_tobytes canonical on all int16 => pk/sk byte-identical"
+    bounds: {finv_prime: "fqmul output, |x| <= 18112 (observed [-2278, 2230])", nor2_output_interval: [-10446, 10448], nor2_observed: [-6866, 6876], baseinv_status: "identical (zero check before the fold)"}
+    saved_per_keygen: "2 x 48 Montgomery vectors (the R^2 pass), 0 added"
+    evidence: results/ht-phase-a/{r2fold-proof.json,r2fold-generation.json}
+  ht_inverse:
+    generated_asm: asm/ntruplus768_officialopt_invntt_ht.s  # sha256 999388bb..., generate_inverse_ht.py (pins consts.c, invntt.s 991f13a7...)
+    structure: "one levels-6..2 block pass per 128 coefficients from the Official NTT layout: L(d4, Barrett) unpck wd (bit1) unpck wd (bit0) unpck qdq (bit2) L(d8) L(d16) L(d32, Barrett) vperm2i128 L(d64) -> natural order; Official level-1 and level-0 passes verbatim"
+    shuffle_uops_per_block: {ht: 32, official: 48}
+    dynamic_instructions: {ht: 2226, official: 2465}
+    proof: "symbolic: all 768 outputs have Official poly_invntt_scale's forms (bit-identical for every int16 input); interval replay on the Decap domain (basemul_scale of canonical c, f) identical per lane, output [-1891, 1891], consumed by crepmod3 (total on int16)"
+    differential: {cases: 26539, detail: "5000 real Decap inputs + 1539 structured extremes + 20000 uniform int16, bit-exact, canaries"}
+    dropped: "fused level-1+0 pass (Hwang-style, 6 vectors/iteration): bit-identical (symbolic proof, 2054 dynamic instructions) but slower: quick rdtsc 1164 vs Official 1119 TSC (block-only form 1096); cause not isolated (all 16 YMM live, 28 constant memory operands per iteration). Reproduce with generate_inverse_ht.py --emit-rejected-fused"
+  gates:
+    generator: {result: pass, evidence: "make check-ht-generate (+ check-generate check-freeze-generate check-keccak-generate); results/ht-phase-a/{ht-forward,ht-inverse,r2fold}-generation.json"}
+    kem: {result: pass, detail: "shared test_kem_lazy.c (CANDIDATE_SHAKE256 + CANDIDATE_BASEINV hooks) for the candidate and all 4 controls: 100 vectors pk/sk/ct/ss byte-exact vs Official, invalid PK, bit-flipped/noncanonical CT, noncanonical SK, forced g retry, forced f failure; natural retries 0"}
+    keygen_differential: {result: pass, detail: "12000 keygen f/g seeds + 4000 uniform + 2000 zero-base BaseInv inputs (status identical, 2007 failures incl. 2000 forced, finv' == R finv); 10000 KAT-DRBG keypair seeds x 3 fold KEMs (lazy_r2fold, r2fold_only, candidate) byte-exact vs Official incl. 104 forced g=0 retries and 112 forced f failures, equal randombytes consumption"}
+    sanitizer: {result: pass, config: "ASan + UBSan (-fno-sanitize-recover=all) + LSan (detect_leaks=1)", binaries: 13}
+    linked_audit: {result: pass, sizes: {ntt_ht: 1526, basemul_nor2: 1179, invntt_ht: 1733}, rows: {ntt_ht: 275, basemul_nor2: 247, invntt_ht: 322}, detail: "32-byte aligned entries and tables, one ret, no stack/call/vzeroupper, linked stream == assembled source; candidate KEM: 6 x HT Forward, 0 x lazy/poly_ntt, 1 x HT inverse, 0 x poly_invntt_scale, 2 x fold BaseInv, 0 x poly_baseinv, 2 x nor2 + 2 x poly_basemul (Encap/Decap), 7 x freeze2op tobytes"}
+    mutation: {result: pass, detail: "12/12 one-line mutants rejected (5 Forward + 4 inverse by symbolic proof and C differential, 3 fold/nor2 by the keygen differential); unmutated controls pass"}
+    evidence: results/ht-phase-a/{closure-tests.log,ht-range-proof-summary.json,r2fold-proof.json,ht-linked-summary.json,ht-mutation-check.json}
+  performance:
+    label: same-elf diagnostic only  # supercop-derived; NOT Native SUPERCOP
+    host: {cpu: 1, governor: performance, intel_no_turbo: 1, aslr_sysctl: 2, controls_changed: false}
+    recipe: "ht.mk ht-bench (lazy.mk BENCH_CFLAGS O3GC), cpucycles from supercop-campaign-lazy-864-1152-20260923-001 (read only, default-perfevent); 31 fresh launches per link order, 14 blocks x 32 obs/variant/launch; all deltas between identical cpucycles anchors"
+    elf_text_sha256: {normal: 2ecd84b4d9560326, reversed: dc3dad805f25e0b8}
+    component:  # pooled StQ2 delta [favourable/31], normal / reversed
+      forward_ht_minus_lazy: {normal: [-28.4, 31], reversed: [-28.9, 31]}  # lazy 850/852
+      keygen_basemul_nor2_minus_official: {normal: [-81.0, 31], reversed: [-81.6, 31]}  # Official 722/725
+      baseinv_fold_minus_official: {normal: [+14.8, 0], reversed: [+0.8, 6]}  # same code, separate TU (placement/inlining), not an arithmetic cost
+      invntt_ht_minus_official: {normal: [-24.4, 31], reversed: [-16.8, 31]}  # Official 961/967
+    kem_minus_base:  # pooled StQ2 delta [favourable/31]
+      keypair: {candidate: [[-326.5, 31], [-197.9, 31]], ht_only: [[-133.0, 31], [-63.1, 30]], r2fold_only: [[-236.6, 31], [-97.7, 29]], htinv_only: [[-18.7, 20], [+42.6, 8]], ht_r2fold: [[-281.6, 31], [-160.7, 31]]}
+      encap: {candidate: [[-49.8, 31], [-50.4, 30]], ht_only: [[-55.3, 31], [-60.5, 31]], r2fold_only: [[-3.4, 17], [-18.2, 23]], htinv_only: [[-6.9, 20], [-21.4, 24]], ht_r2fold: [[-56.0, 31], [-66.8, 31]]}
+      decap: {candidate: [[-74.7, 31], [-79.5, 31]], ht_only: [[-77.7, 31], [-71.7, 31]], r2fold_only: [[-3.7, 19], [-13.8, 25]], htinv_only: [[+12.3, 10], [-6.0, 22]], ht_r2fold: [[-85.4, 31], [-44.0, 31]]}
+    candidate_minus_ht_r2fold:  # the inverse increment inside the full candidate
+      keypair: [[-44.8, 27], [-37.3, 26]]
+      encap: [[+6.2, 10], [+16.4, 7]]
+      decap: [[+10.7, 8], [-35.5, 30]]
+    candidate_minus_official: {keypair: [-4868.9, -4613.1], encap: [-7615.1, -7884.7], decap: [-4285.5, -4404.4]}  # normal, reversed
+    seed_matched_keypair: "keypair region reseeds the KAT DRBG per bank for every variant (identical coins and retry composition)"
+    host_hygiene: both batches clean on attempt 0 (phase_b_batch.py)
+    evidence: results/ht-diag-{normal,reversed}-20260924/{summary,metadata}.json
+    assessment: "Forward and keygen R^2 fold are robust component wins (-28/-29 per Forward, 31/31; -81/-82 per keygen BaseMul, 31/31) and show up at KEM level in both orders (candidate-base keypair -327/-198, encap -50/-50, decap -75/-80). The HT inverse is a robust component win (-24/-17, 31/31) but its expected ~-20 per Decap is below the same-ELF placement noise (htinv_only-base decap +12/-6; candidate-ht_r2fold decap +11/-36): kept because it is bit-identical and cheaper, flagged as not resolved at KEM level. Native not run."
+  native: not_run  # by instruction (Phase A + same-ELF diagnostic only)
+  host_controls: unchanged
+  promotion: none
+  reproduce: docs/ntruplus768-ht-forward.md#reproduce
