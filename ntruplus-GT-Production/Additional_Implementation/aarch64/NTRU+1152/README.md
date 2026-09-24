@@ -35,7 +35,8 @@ kernels, and without them `inverse.c`'s C versions are used.
 | `inverse.c`, `baseinv_num.S`, `baseinv_finish.S` | batch inversion (key generation) |
 | `basemul_rinv.S` | decapsulation first product, `R^-1` boundary, written in the inverse's (component, half) lane basis |
 | `inverse_ntt.S`, `inverse9.S`, `inverse16.S`, `inverse16_tail.S`, `crepmod3_raw.S`, `inverse*_tables.h`, `invntt9_lane_tables.h` | decapsulation inverse NTT and the ternary reduction |
-| `pack.c`, `codec_pairs.h` | canonical serialization and decoding |
+| `pack.c`, `codec_pairs.h` | canonical serialization |
+| `unpack.S` | canonical decoding and range check, generated from `codec_pairs.h` |
 | `support.c` | sampling, SOTP, `sub`, `triple` |
 | `secure_clear.h` | clears and the SUPERCOP declassify annotation |
 
@@ -60,9 +61,11 @@ Against SUPERCOP 20260831's `ntruplus1152/aarch64` (2026-09-23; details in
 | Cortex-A76, Keccak held equal | -6.9% | -9.6% | -8.8% |
 
 "Keccak held equal" links Official's sponge against GT's permutation, so the
-margin is the arithmetic alone.  Two later serializer changes are not
-included: the store order of `tobytes` (0.4% on Cortex-A76, none on M2) and
-its `add` + `umin` canonicalisation (0.4-0.5% on Cortex-A76, 11 ns on M2).
+margin is the arithmetic alone.  Three later codec changes are not
+included: the store order of `tobytes` (0.4% on Cortex-A76, none on M2), its
+`add` + `umin` canonicalisation (0.4-0.5% on Cortex-A76, 11 ns on M2), and the
+two-register `tbl` decoder in `unpack.S` (decapsulation -0.9% on M2, -1.0% on
+Cortex-A76).
 
 ## SUPERCOP leaf
 
