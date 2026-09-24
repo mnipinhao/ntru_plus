@@ -46,7 +46,8 @@ KEM_C := \
 	symmetric.c \
 	fips202.c \
 	keygen.c \
-	tables.c
+	tables.c \
+	unpack.c
 
 REFERENCE_ASM := test/reference/basemul.S test/reference/invntt.S \
 	test/reference/crepmod3.S

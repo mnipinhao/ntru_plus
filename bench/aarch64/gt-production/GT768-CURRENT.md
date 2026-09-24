@@ -1,28 +1,35 @@
-# NTRU+768 current production — 2026-09-23
+# NTRU+768 current production — 2026-09-24
 
-Production: `aarch64-production` at **0750fc93** (PR #1).  Relative to the
-previous state, decapsulation now runs a Good-Thomas inverse NTT with the
-centered mod-3 map fused into it (`poly_invntt_ternary_decap`), fed by the
-packed first product stored element-major.  The leaf passes SUPERCOP's
-constant-time check.  The follow-up cleanup (branch `gt768-cleanup`) is
-behaviour-preserving: same instruction sequences, same timing.
+Production: `main` with P135 (branch `gt768-frombytes-encap`).  Encapsulation's
+public-key decoder `poly_frombytes_encap` is now `unpack.c`: each half of each
+block-major output vector is six contiguous wire bytes, so a vector is two
+loads, one `tbl`, a shift and a mask, with no transpose.  Per call it went
+from 503 to 324 cycles on the A76 and from 65.5 to 37.9 ns on the M2;
+encapsulation -0.55% (SUPERCOP, A76), keygen and decaps unchanged.
 
-Evidence lives on the development branch `gt768-e4-inverse-integration`,
-experiments P115-P120 (`experiments/gt768-p1xx-*`).
+Before that, PR #1 (0750fc93) made decapsulation run a Good-Thomas inverse
+NTT with the centered mod-3 map fused into it (`poly_invntt_ternary_decap`),
+fed by the packed first product stored element-major; the cleanup
+(`gt768-cleanup`) was behaviour-preserving.
+
+Evidence lives on the development branches: `gt768-e4-inverse-integration`,
+experiments P115-P120, and `gt864-1152-cleanup`, experiment P135
+(`experiments/gt768-p1xx-*`).
 
 ## SUPERCOP 20260831, Raspberry Pi 5 (Cortex-A76)
 
 Unmodified `do-part` / `measure-anything.c`, gcc 14.2 native selection, core 3,
-six rotated rounds, medians, cycles (P119):
+six rotated rounds, medians, cycles (P135):
 
 | | GT | Official | vs Official |
 |---|---:|---:|---:|
-| keypair | 31,646 | 38,426.5 | -17.65% |
-| enc | 29,442.5 | 38,585 | -23.69% |
-| dec | 27,315 | 33,549 | -18.58% |
+| keypair | 31,653.5 | 38,425.5 | -17.62% |
+| enc | 29,276.5 | 38,600.5 | -24.16% |
+| dec | 27,319.5 | 33,586 | -18.66% |
 
-Decapsulation before PR #1 was 27,780.5 (-17.19%).  All six paired rounds moved
-by -453 to -476 cycles.
+Encapsulation before P135 was 29,439.5 (-23.73%) in the same session; all six
+paired rounds moved by -148 to -182 cycles.  Decapsulation before PR #1 was
+27,780.5 (-17.19%, P119).
 
 ## Package harness
 
@@ -31,33 +38,33 @@ of 400 blocks x 100, alternating runs:
 
 | | keygen | encaps | decaps |
 |---|---:|---:|---:|
-| M2 Pro, ns (clang, SHA3 backend) | 3,828 | 4,135 | 3,111 |
-| Pi 5, cycles (gcc, scalar backend) | 31,650 | 29,655 | 27,252 |
+| M2 Pro, ns (clang, SHA3 backend) | 3,826 | 4,106 | 3,111 |
+| Pi 5, cycles (gcc, scalar backend) | 31,642 | 29,469 | 27,248 |
 
 ## Where the margin comes from
 
 With Official's `fips202.c` and `symmetric.c` linked into both (outputs
-bit-identical, same permutation counts), A76 (P120):
+bit-identical, same permutation counts), A76 (P120's builds, P135 trees):
 
 | | keygen | encaps | decaps |
 |---|---:|---:|---:|
-| GT vs Official, own hash layers | -18.0% | -23.5% | -18.6% |
-| GT vs Official, same hash layer | -5.6% | -3.8% | -5.6% |
+| GT vs Official, own hash layers | -18.0% | -23.9% | -18.6% |
+| GT vs Official, same hash layer | -5.7% | -4.1% | -5.6% |
 
-69-84% of the lead comes from the Keccak/sponge code, the rest from the
+68-83% of the lead comes from the Keccak/sponge code, the rest from the
 arithmetic.
 
 ## Constant time
 
 SUPERCOP TIMECOP (valgrind 3.24.0 with matching `libc6-dbg`, Pi 5): the GT leaf
-passes at `-O`, `-O2`, `-O3` and `-Os` with `TIMECOP=256`.  Official's 768 leaf
+passes at `-O`, `-O2`, `-O3` and `-Os` with `TIMECOP=256` (re-run for P135).  Official's 768 leaf
 fails on its keygen invertibility branch (`poly_fqinv_batch`).
 
 ## Code size
 
 | | GT | Official |
 |---|---:|---:|
-| linked text (KEM only, gc-sections) | 91,144 B | 21,124 B |
+| linked text (KEM only, gc-sections) | 89,528 B | 21,124 B |
 | code executed per operation | ~25 KB | 8-10 KB |
 
 Size costs nothing in steady state: each operation fits the 64 KB L1I.
