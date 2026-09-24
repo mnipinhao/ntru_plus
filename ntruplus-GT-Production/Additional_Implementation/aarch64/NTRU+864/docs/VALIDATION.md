@@ -4,6 +4,27 @@
 and its ancestors), where the evidence and scripts live; this release tree does
 not carry them.
 
+## P133 run-based frombytes — 2026-09-24
+
+`frombytes` is now the exact inverse of the run-based serializer: one 16-byte
+load per nine-byte run at its own offset, one `tbl` expanding it to six
+halfwords, an 8x8 halfword transpose, and one `and` or `ushr` per vector.  It
+replaces the generated decoder, whose 388 lane inserts built each output
+vector 64 bits at a time (~520 lines -> ~110).  The idea is the NEON form of
+an AVX2 decoder for Official's layout; GT's runs are scattered, so each run is
+loaded on its own and the transpose does what AVX2's in-lane interleave does.
+
+Checked against the previous decoder on 200,000 inputs (half canonical, half
+random bytes) and on one out-of-range coefficient at each of the 864
+positions: identical output and return value, with the input ending at a guard
+page.  `frombytes` M2 73.8 -> 55.4 ns, A76 640 -> 498 cycles a call.
+
+| | M2 keygen / encaps / decaps | A76 keygen / encaps / decaps |
+|---|---|---|
+| before | 4,131 / 4,654 / 3,818 ns | 15,090 / 14,687 / 14,022 ns |
+| after | 4,132 / 4,637 / **3,760** ns | 15,080 / 14,637 / **13,841** ns |
+| | +-0 / -0.36% / **-1.5%** | +-0 / -0.34% / **-1.3%** |
+
 ## P130 codec and first-product overheads — 2026-09-23
 
 Three M2-driven fixes to overheads around unchanged arithmetic:
