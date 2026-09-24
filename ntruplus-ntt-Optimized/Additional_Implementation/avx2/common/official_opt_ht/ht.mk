@@ -218,6 +218,27 @@ $(BUILD)/bench_ht_diag_swapped: $(HB_SRC) $(HB_OBJS) $(HT_ASM_ALL) $(COMMON_C) $
 
 ht-bench: $(BUILD)/bench_ht_diag $(BUILD)/bench_ht_diag_swapped
 
+# Seed-matched paired Keypair (NTRU+864 / 1152 Phase-B supporting evidence): the shared
+# unchanged harness official_opt_lazy/bench/bench_keypair_seedmatched.c with A = official_ref_*
+# bound to the base (the Keccak candidate) and B = official_lazy_* bound to the HT candidate;
+# _swapped links B first.  tools/run_ht_keypair_seedmatched.py.  supercop-derived, not Native.
+ifndef HTINV
+define htkp_obj # $(1)=name $(2)=source $(3)=rename
+$(HB)/htkp_$(1).o: $(COMMON)/bench/kem_diag.c $(2) src/kem_lazy.c src/kem_lazy_r2fold.c | $(HB)
+	$(CC) $(BENCH_CFLAGS) -I. $(KECCAK_INCLUDES) $(3) '-DKEM_SOURCE="$(2)"' -DDERAND_NAME=htkp_$(1)_derand -c -o $$@ $$<
+endef
+$(eval $(call htkp_obj,A_base,src/$(KECCAK_CAND).c,$(REF_RENAME)))
+$(eval $(call htkp_obj,B_ht,src/$(HT_CAND).c,$(LAZY_RENAME)))
+HTKP_DEPS := $(KP_SRC) $(HT_ASM_ALL) $(COMMON_C) $(COMMON_ASM) $(HB)/mlk_fips202.o $(HB)/mlk_keccakf1600.o \
+	$(HB)/symmetric_keccak.o $(HB)/$(R2INV).o
+$(BUILD)/kp_ht_vs_base: $(HB)/htkp_A_base.o $(HB)/htkp_B_ht.o $(HTKP_DEPS) | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
+$(BUILD)/kp_ht_vs_base_swapped: $(HB)/htkp_B_ht.o $(HB)/htkp_A_base.o $(HTKP_DEPS) | $(BUILD)
+	$(CC) $(BENCH_CFLAGS) -I$(CPU_INCLUDE) $(INCLUDES) -o $@ $^ $(CPU_LIB)
+.PHONY: ht-bench-keypair
+ht-bench-keypair: $(BUILD)/kp_ht_vs_base $(BUILD)/kp_ht_vs_base_swapped
+endif
+
 # ------------------------------------------------ Phase B: SUPERCOP-flat qualification export
 # avx2-officialopt-lazy-freeze-keccak-ht-qual001 = the Keccak base export + ntt_ht.s, invntt_ht.s,
 # basemul_nor2.s, baseinv_r2fold.c (exact Phase-A bytes) + a kem.c rebinding what the Phase-A
