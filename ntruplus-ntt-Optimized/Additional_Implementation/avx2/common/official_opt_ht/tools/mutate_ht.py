@@ -2,9 +2,9 @@
 """Mutation check: the HT/R^2-fold gates must reject one-line mutants.
 
 Each mutant changes one line of a generated file (in a scratch copy); the
-HT Forward mutants must be rejected both by the generator's symbolic
-output-form proof and by tests/test_forward_ht.c, the fold mutants by
-tests/test_keygen_r2fold.c.  The unmutated control must pass both.
+HT Forward / inverse mutants must be rejected both by the generator's symbolic
+output-form proof and by tests/test_forward_ht.c / tests/test_invntt_ht.c, the
+fold mutants by tests/test_keygen_r2fold.c.  The unmutated control must pass both.
 """
 import argparse
 import json
@@ -25,6 +25,13 @@ HT_MUTANTS = [
     ("unpack lo/hi swap", r"^vpunpckldq ", None, 2),
     ("store row", r"^vmovdqa %ymm\d+, 64\(%rdi\)$", "#store", 0),
     ("level-2 twiddle offset", r"^vpbroadcastd 12\(%rdx\)", None, 0),
+]
+# (label, old, new, occurrence) on the HT inverse asm, rejected by symbolic proof + tests/test_invntt_ht.c
+INV_MUTANTS = [
+    ("inverse Barrett dropped", "vpsubw %ymm2, %ymm10, %ymm10\n", "", 0),
+    ("inverse unpack lo/hi swap", "vpunpcklqdq ", "vpunpckhqdq ", 0),
+    ("inverse twiddle slot", "vpmullw 96(%rsi)", "vpmullw 32(%rsi)", 0),
+    ("inverse level-1 zeta offset", "vpbroadcastd 1160(%rdx)", "vpbroadcastd 1152(%rdx)", 0),
 ]
 FOLD_MUTANTS = [
     ("fold constant R2 -> R3", "src/ntruplus768_officialopt_baseinv_r2fold.c",
@@ -61,6 +68,19 @@ def mutate_ht(text, pattern, after, nth):
     return "\n".join(lines)
 
 
+def symbolic_inv_ok(root, asm):
+    import generate_inverse_ht as GI
+    up = root / "upstream/supercop-avx2"
+    syms = parse_consts((up / "consts.c").read_text())
+    F = Forms()
+    out_o = GI.run_official(F, (up / "invntt.s").read_text(), syms)[0]
+    try:
+        GI.verify(F, asm, syms, out_o, 6)
+        return True
+    except (ValueError, KeyError, IndexError):
+        return False
+
+
 def symbolic_ok(root, asm):
     syms = parse_consts((root / "upstream/supercop-avx2/consts.c").read_text())
     F = Forms()
@@ -77,6 +97,7 @@ def main():
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--fwd-cmd", required=True, help="compile command of test_forward_ht with {HT} {OUT}")
     ap.add_argument("--kg-cmd", required=True, help="compile command of test_keygen_r2fold with {R2INV} {NOR2} {OUT}")
+    ap.add_argument("--inv-cmd", required=True, help="compile command of test_invntt_ht with {HTINV} {OUT}")
     ap.add_argument("--output", type=Path, required=True)
     args = ap.parse_args()
     root = args.experiment.resolve()
@@ -97,6 +118,10 @@ def main():
                 "c_keygen": c_test(args.kg_cmd, {"R2INV": root / "src/ntruplus768_officialopt_baseinv_r2fold.c",
                                                  "NOR2": root / "asm/ntruplus768_officialopt_basemul_nor2.s"},
                                    "kg_ctrl")}
+        inv_path = root / "asm/ntruplus768_officialopt_invntt_ht.s"
+        inv = inv_path.read_text()
+        ctrl["symbolic_inverse"] = symbolic_inv_ok(root, inv)
+        ctrl["c_inverse"] = c_test(args.inv_cmd, {"HTINV": inv_path}, "inv_ctrl")
         if not all(ctrl.values()):
             raise SystemExit(f"unmutated control failed {ctrl}")
         for k, (label, pat, after, nth) in enumerate(HT_MUTANTS):
@@ -107,6 +132,16 @@ def main():
                  "symbolic_rejects": not symbolic_ok(root, m),
                  "c_differential_rejects": not c_test(args.fwd_cmd, {"HT": p}, f"fwd_m{k}")}
             res.append(r)
+        for k, (label, old, new, nth) in enumerate(INV_MUTANTS):
+            parts = inv.split(old)
+            if len(parts) < 2 + nth:
+                raise SystemExit(f"mutant anchor {label}")
+            m = old.join(parts[:nth + 1]) + new + old.join(parts[nth + 1:])
+            p = tmp / f"inv_m{k}.s"
+            p.write_text(m)
+            res.append({"mutant": label, "file": inv_path.name,
+                        "symbolic_rejects": not symbolic_inv_ok(root, m),
+                        "c_differential_rejects": not c_test(args.inv_cmd, {"HTINV": p}, f"inv_m{k}")})
         for k, (label, rel, old, new) in enumerate(FOLD_MUTANTS):
             text = (root / rel).read_text()
             if old not in text:

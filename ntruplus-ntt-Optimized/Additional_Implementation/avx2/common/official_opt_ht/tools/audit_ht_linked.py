@@ -27,23 +27,28 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "official_opt_lazy/
 from audit_forward_caller_lazy import PAD, disasm_rows, function_rows, normalise, relocs_to, run  # noqa: E402
 
 HT = "ntruplus768_officialopt_ntt_ht"
+HTINV = "ntruplus768_officialopt_invntt_ht"
 NOR2 = "ntruplus768_officialopt_basemul_nor2"
 R2INV = "ntruplus768_officialopt_baseinv_r2fold"
 LAZY = "ntruplus768_officialopt_ntt_caller_lazy"
 FREEZE = "ntruplus768_officialopt_tobytes_freeze2op"
-TABLES = ("ntruplus768_officialopt_ht_zetas_a", "ntruplus768_officialopt_ht_zetas_b")
-TARGETS = [HT, LAZY, "poly_ntt", R2INV, "poly_baseinv", NOR2, "poly_basemul", FREEZE, "poly_tobytes",
+TABLES = ("ntruplus768_officialopt_ht_zetas_a", "ntruplus768_officialopt_ht_zetas_b",
+          "ntruplus768_officialopt_htinv_zetas_b")
+TARGETS = [HT, LAZY, "poly_ntt", HTINV, "poly_invntt_scale", R2INV, "poly_baseinv", NOR2, "poly_basemul", FREEZE, "poly_tobytes",
            "ntruplus_mlkfips202_shake256", "fips202avx_shake256", "ntruplus768_keccak_hash_f",
            "ntruplus768_keccak_hash_g", "ntruplus768_keccak_hash_h", "hash_f", "hash_g", "hash_h"]
-KEM_BASE = {LAZY: 6, "poly_ntt": 0, HT: 0, "poly_baseinv": 2, R2INV: 0, "poly_basemul": 4, NOR2: 0,
+KEM_BASE = {LAZY: 6, "poly_ntt": 0, HT: 0, HTINV: 0, "poly_invntt_scale": 1, "poly_baseinv": 2, R2INV: 0, "poly_basemul": 4, NOR2: 0,
             FREEZE: 7, "poly_tobytes": 0, "ntruplus_mlkfips202_shake256": 2, "fips202avx_shake256": 0,
             "ntruplus768_keccak_hash_f": 2, "ntruplus768_keccak_hash_g": 2, "ntruplus768_keccak_hash_h": 2,
             "hash_f": 0, "hash_g": 0, "hash_h": 0}
+FOLD = {"poly_baseinv": 0, R2INV: 2, "poly_basemul": 2, NOR2: 2}
 EXPECT = {
-    "kem_lazy_r2fold_freeze2op_keccak_ht": {**KEM_BASE, LAZY: 0, HT: 6, "poly_baseinv": 0, R2INV: 2,
-                                            "poly_basemul": 2, NOR2: 2},
+    "kem_lazy_r2fold_freeze2op_keccak_ht_htinv": {**KEM_BASE, LAZY: 0, HT: 6, **FOLD,
+                                                  HTINV: 1, "poly_invntt_scale": 0},   # candidate
     "kem_lazy_freeze2op_keccak_ht": {**KEM_BASE, LAZY: 0, HT: 6},
-    "kem_lazy_r2fold_freeze2op_keccak": {**KEM_BASE, "poly_baseinv": 0, R2INV: 2, "poly_basemul": 2, NOR2: 2},
+    "kem_lazy_r2fold_freeze2op_keccak": {**KEM_BASE, **FOLD},
+    "kem_lazy_freeze2op_keccak_htinv": {**KEM_BASE, HTINV: 1, "poly_invntt_scale": 0},
+    "kem_lazy_r2fold_freeze2op_keccak_ht": {**KEM_BASE, LAZY: 0, HT: 6, **FOLD},
 }
 
 
@@ -101,9 +106,12 @@ def main():
     rows = disasm_rows(args.elf)
     with tempfile.TemporaryDirectory() as tmp:
         entries = {name: audit_entry(nm, rows, name, root / f"asm/{name}.s", Path(tmp))
-                   for name in (HT, NOR2)}
-    if set(entries[HT]["rip_symbols"]) != {"_16xq", "_16xzeta1", "_16xw", "_16xwqinv", "zetas", *TABLES}:
+                   for name in (HT, NOR2, HTINV)}
+    if set(entries[HT]["rip_symbols"]) != {"_16xq", "_16xzeta1", "_16xw", "_16xwqinv", "zetas", *TABLES[:2]}:
         raise ValueError(f"HT rip symbols {entries[HT]['rip_symbols']}")
+    if set(entries[HTINV]["rip_symbols"]) != {"_16xq", "_16xv", "_16xw", "_16xwqinv", "zetas_inv",
+                                              "_16xNinv_scale", "_16xNinv_scaleqinv", TABLES[2]}:
+        raise ValueError(f"HT inverse rip symbols {entries[HTINV]['rip_symbols']}")
     tables = {}
     for t in TABLES:
         addr, _ = symbol(nm, t, sized=False)
@@ -127,7 +135,7 @@ def main():
         "class": "linked ELF audit (Phase A, correctness only; no timing)",
         "parameter": "NTRU+768", "elf": str(args.elf.relative_to(root) if args.elf.is_absolute() else args.elf),
         "elf_sha256": sha(args.elf),
-        "asm_sha256": {n: sha(root / f"asm/{n}.s") for n in (HT, NOR2)},
+        "asm_sha256": {n: sha(root / f"asm/{n}.s") for n in (HT, NOR2, HTINV)},
         "compiler": run("cc", "--version").splitlines()[0],
         "entries": entries, "ht_tables": tables,
         "fold_baseinv": {"size_bytes": r2size, "calls": r2calls},
