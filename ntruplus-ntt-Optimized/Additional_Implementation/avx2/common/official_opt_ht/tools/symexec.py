@@ -10,6 +10,8 @@ are exact:
   vpmullw x, c (c constant)   ring multiplication by c in Z/2^16 (linear)
   vpmulhw x, y                the atom HI(x, y) (commutative; exact product
                               >> 16 when both operands are constants)
+  vpmulhrsw x, y              the atom RS(x, y) (rounded high product)
+  vpsllw $k                   ring multiplication by 2^k
   shuffles / blends / shifts  exact lane moves (whole-word shifts only)
 
 so two programs whose output lanes have the same interned form compute the
@@ -92,6 +94,13 @@ class Forms:
             return self.const((cf * cg) >> 16)
         return self._form({self._atom(("HI", min(f, g), max(f, g))): 1})
 
+    def mulhrs(self, f, g):
+        """vpmulhrsw: round(x*y / 2^15); an atom unless both are constants."""
+        cf, cg = self.value(f), self.value(g)
+        if cf is not None and cg is not None:
+            return self.const((cf * cg + (1 << 14)) >> 15)
+        return self._form({self._atom(("RS", min(f, g), max(f, g))): 1})
+
     def evaluate(self, fids, inputs):
         """Concrete int16 values of forms for input words `inputs` (word -> int);
         validates the symbolic semantics against the real machine."""
@@ -107,6 +116,8 @@ class Forms:
                 v = s16(inputs[k[1]])
             elif k[0] == "HI":
                 v = s16((form(k[1]) * form(k[2])) >> 16)
+            elif k[0] == "RS":
+                v = s16((form(k[1]) * form(k[2]) + (1 << 14)) >> 15)
             else:
                 v = s16(form(k[1]) * form(k[2]))
             memo_a[a] = v
@@ -233,12 +244,12 @@ class SymExec:
             elif op == "jb":
                 if flags[0] < flags[1]:
                     pc = self.labels[ops[0]]
-            elif op == "vmovdqa":
+            elif op in ("vmovdqa", "vmovdqu"):
                 if ops[1].startswith("%ymm"):
                     self.ymm[int(ops[1][4:])] = list(self.src(ops[0]))
                 else:
                     a = self.addr(ops[1])
-                    if a % 32:
+                    if a % 32 and op == "vmovdqa":
                         raise ValueError(f"line {ln}: misaligned vmovdqa store")
                     for i, v in enumerate(self.ymm[int(ops[0][4:])]):
                         self.mem[a + 2 * i] = v
@@ -252,7 +263,11 @@ class SymExec:
     def vec(self, ln, op, ops):
         F = self.F
         d = int(ops[-1][4:])
-        if op in ("vpaddw", "vpsubw", "vpmullw", "vpmulhw"):
+        if op == "vpsllw":
+            k = int(ops[0][1:], 0)
+            self.ymm[d] = [F.scale(x, 1 << k) for x in self.src(ops[1])]
+            return
+        if op in ("vpaddw", "vpsubw", "vpmullw", "vpmulhw", "vpmulhrsw"):
             b, a = self.src(ops[0]), self.src(ops[1])
             if op in ("vpmullw", "vpmulhw") and self.on_mul:
                 cb = [F.value(x) for x in b]
@@ -261,7 +276,8 @@ class SymExec:
                     self.on_mul(op, a, cb)
                 elif all(c is not None for c in ca) and not all(c is not None for c in cb):
                     self.on_mul(op, b, ca)
-            f = {"vpaddw": F.add, "vpsubw": F.sub, "vpmullw": F.mullo, "vpmulhw": F.mulhi}[op]
+            f = {"vpaddw": F.add, "vpsubw": F.sub, "vpmullw": F.mullo, "vpmulhw": F.mulhi,
+                 "vpmulhrsw": F.mulhrs}[op]
             self.ymm[d] = [f(a[i], b[i]) for i in range(16)]
         elif op in ("vpsllq", "vpsrlq"):
             k = int(ops[0][1:], 0)
@@ -306,6 +322,9 @@ def parse_consts(text):
     """Official consts.c -> {symbol: [int16 words]} for zetas, zetas_inv and
     every FILL_16 constant whose argument is a #define or integer."""
     defs = {k: int(v, 0) for k, v in re.findall(r"#define\s+(\w+)\s+(0x[0-9a-fA-F]+|-?\d+)\s*$", text, re.M)}
+    defs["V"] = ((1 << 15) + 3457 // 2) // 3457       # BARRETT_V(NTRUPLUS_Q)
+    defs["V2"] = ((1 << 15) + 3 // 2) // 3             # BARRETT_V(3)
+    defs["NTRUPLUS_Q"] = 3457
     syms = {}
     for name in ("zetas", "zetas_inv"):
         m = re.search(rf"const int16_t {name}\[(\d+)\][^=]*=\s*\{{(.*?)\}};", text, re.S)
@@ -315,8 +334,8 @@ def parse_consts(text):
         syms[name] = vals
     for name, expr in re.findall(r"const int16_t (_16x\w+)\[16\][^=]*=\s*FILL_16\(([^)]*)\)", text):
         expr = expr.strip()
-        if expr == "NTRUPLUS_Q":
-            val = 3457
+        if expr == "NTRUPLUS_Q - 1":
+            val = 3456
         elif expr in defs:
             val = defs[expr]
         else:
