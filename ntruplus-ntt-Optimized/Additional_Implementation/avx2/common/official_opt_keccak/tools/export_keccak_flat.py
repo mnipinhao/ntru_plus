@@ -1,5 +1,27 @@
 #!/usr/bin/env python3
-"""SUPERCOP-flat feasibility of the mlkem-native-Keccak NTRU+ candidates (scratch only).
+"""SUPERCOP-flat export of the mlkem-native-Keccak NTRU+ candidates.
+
+Two modes.  `--out DIR` (Phase A) is the scratch feasibility check below.
+`--qualification-root DIR` (Phase B) writes the same flat tree as a
+qualification export DIR/<name> plus DIR/<name>.json and runs no compiler:
+  - refuses to overwrite either path;
+  - verifies bench/supercop.lock against the base export's manifest, the base
+    export tree against its manifest (tree hash and every file hash), and
+    every vendored third_party file against the per-file SHA-256 table in
+    third_party/mlkem-native-fips202-b3ba7b32/README.md;
+  - requires every vendored source file to carry the SPDX line
+    `Apache-2.0 OR ISC OR MIT` and ships upstream LICENSE as LICENSE.mlkem-native;
+  - records the tree hash, every exported file hash, the base export identity,
+    the vendored files (path, upstream commit, source and flat hash, SPDX), the
+    adapter/config sources and every #include rewrite.  If the Phase-A scratch
+    summary results/keccak-supercop-flat-*/summary.json exists, the export must
+    be file-for-file identical to the flat tree it compiled.
+  Names: NTRU+768/1152 avx2-officialopt-lazy-freeze-keccak-qual001,
+  NTRU+864 avx2-officialopt-lazy-codec-keccak-qual001.  Research export, not a
+  clean-production promotion.  Install with
+  common/official_opt_lazy/tools/install_qualification.py.
+
+Scratch mode (`--out`):
 
 SUPERCOP compiles every .c/.s/.S of one implementation directory with each
 okc-<abi> compiler line and no implementation-specific -D flags.  This tool:
@@ -35,6 +57,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve()
@@ -50,7 +73,13 @@ MLK_FILES = {"mlkem/src/common.h": "mlk_common.h", "mlkem/src/sys.h": "mlk_sys.h
              "mlkem/src/fips202/keccakf1600.h": "mlk_keccakf1600.h"}
 NAMES = {"candidate": {768: "avx2-officialopt-lazy-freeze-keccak-768-exp001",
                        864: "avx2-officialopt-lazy-codec-keccak-864-exp001",
-                       1152: "avx2-officialopt-lazy-freeze-keccak-1152-exp001"}}
+                       1152: "avx2-officialopt-lazy-freeze-keccak-1152-exp001"},
+         "qualification": {768: "avx2-officialopt-lazy-freeze-keccak-qual001",
+                           864: "avx2-officialopt-lazy-codec-keccak-qual001",
+                           1152: "avx2-officialopt-lazy-freeze-keccak-qual001"}}
+SPDX = "SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT"
+UPSTREAM = {"url": "https://github.com/pq-code-package/mlkem-native.git",
+            "commit": "b3ba7b32773e657dd37f6f87bce82528459ad8a4"}
 
 
 def sha(path):
@@ -72,8 +101,10 @@ def rewrite_includes(text, mapping, rewrites, fname):
     return re.sub(r'^(\s*#\s*include\s+)"([^"]+)"', sub, text, flags=re.M)
 
 
-def flatten(base: Path, out: Path):
+def flatten(base: Path, out: Path, fresh: bool = False):
     if out.exists():
+        if fresh:
+            raise SystemExit(f"refusing to overwrite {out}")
         shutil.rmtree(out)
     out.mkdir(parents=True)
     kept = {}
@@ -113,6 +144,101 @@ def flatten(base: Path, out: Path):
     return {"kept_from_base_sha256": kept, "dropped": sorted(DROP), "added": added,
             "include_rewrites": rewrites, "unresolved_quoted_includes": [u for u in unresolved if u not in inactive],
             "unresolved_inactive_includes": sorted(set(unresolved) & inactive)}
+
+
+def readme_hashes():
+    """Per-file SHA-256 table of the vendored README (| `path` | `sha256` |)."""
+    rows = re.findall(r"^\| `([^`]+)` \| `([0-9a-f]{64})` \|$", (VENDOR / "README.md").read_text(), flags=re.M)
+    table = dict(rows)
+    if set(table) != set(MLK_FILES) | {"LICENSE"}:
+        raise SystemExit(f"vendored README hash table does not list exactly the vendored files: {sorted(table)}")
+    return table
+
+
+def qualification_export(args, root: Path, base: Path):
+    sys.path.insert(0, str(REPO / "scripts"))
+    from supercop_workflow import read_lock, sha256_tree  # noqa: E402
+    name = NAMES["qualification"][args.param]
+    qroot = args.qualification_root.resolve()
+    target, manifest_path = qroot / name, qroot / (name + ".json")
+    if target.exists() or manifest_path.exists():
+        raise SystemExit("refusing to overwrite qualification export")
+    lock = read_lock(REPO / "bench/supercop.lock")
+    key = f"ntruplus{args.param}_avx2_tree_sha256"
+    base_manifest_path = base.with_suffix(".json")
+    base_manifest = json.loads(base_manifest_path.read_text())
+    if (base_manifest.get("kind") != "caller-lazy-qualification-source" or
+            base_manifest.get("parameter") != str(args.param) or
+            base_manifest.get("supercop_version") != lock["version"] or
+            base_manifest.get("official_tree_sha256") != lock[key] or
+            base_manifest.get("implementation") != base.name):
+        raise SystemExit("base qualification manifest does not match the lock / parameter")
+    if sha256_tree(base) != base_manifest["tree_sha256"]:
+        raise SystemExit("base qualification tree hash mismatch")
+    if {f.name for f in base.iterdir()} != set(base_manifest["files_sha256"]):
+        raise SystemExit("base qualification file set differs from its manifest")
+    for fname, expected in base_manifest["files_sha256"].items():
+        if sha(base / fname) != expected:
+            raise SystemExit(f"base qualification file mismatch: {fname}")
+    table = readme_hashes()
+    vendored = {}
+    for rel, expected in sorted(table.items()):
+        actual = sha(VENDOR / rel)
+        if actual != expected:
+            raise SystemExit(f"vendored file differs from the README hash: {rel}")
+        entry = {"path": f"third_party/mlkem-native-fips202-b3ba7b32/{rel}", "sha256": actual}
+        if rel != "LICENSE":
+            if SPDX not in (VENDOR / rel).read_text().splitlines()[2]:
+                raise SystemExit(f"{rel}: missing '{SPDX}' on line 3")
+            entry["spdx"] = SPDX.split(": ", 1)[1]
+        vendored[rel] = entry
+    meta = flatten(base, target, fresh=True)
+    if meta["unresolved_quoted_includes"]:
+        raise SystemExit(f"unresolved includes: {meta['unresolved_quoted_includes']}")
+    for f in [target, *target.iterdir()]:
+        f.chmod(f.stat().st_mode | 0o200)
+    files = {f.name: sha(f) for f in sorted(target.iterdir()) if f.is_file()}
+    phase_a = {}
+    for summary in sorted((root / "results").glob("keccak-supercop-flat-*/summary.json")):
+        flat = json.loads(summary.read_text())["flat_tree_sha256"]
+        if flat != files:
+            raise SystemExit(f"export differs from the Phase-A flat tree in {summary}")
+        phase_a[str(summary.relative_to(root))] = "identical file set and hashes"
+    if files["symmetric.c"] != base_manifest["files_sha256"]["symmetric.c"] or \
+            files["kem.c"] != base_manifest["files_sha256"]["kem.c"]:
+        raise SystemExit("kem.c / symmetric.c must be the base export's")
+    manifest = {
+        "kind": "keccak-qualification-source",
+        "implementation": name,
+        "phase_a_candidate": NAMES["candidate"][args.param],
+        "parameter": str(args.param),
+        "supercop_version": lock["version"],
+        "official_tree_sha256": lock[key],
+        "tree_sha256": sha256_tree(target),
+        "files_sha256": files,
+        "base": {"implementation": base.name, "tree_sha256": base_manifest["tree_sha256"],
+                 "manifest": str(base_manifest_path.relative_to(root)),
+                 "manifest_sha256": sha(base_manifest_path), "variant": base_manifest.get("variant")},
+        "dropped_from_base": meta["dropped"],
+        "kept_from_base_sha256": meta["kept_from_base_sha256"],
+        "added": meta["added"],
+        "include_rewrites": meta["include_rewrites"],
+        "unresolved_inactive_includes": meta["unresolved_inactive_includes"],
+        "vendored": {"upstream": UPSTREAM, "license": "Apache-2.0 OR ISC OR MIT",
+                     "license_file": {"exported_as": "LICENSE.mlkem-native", "sha256": table["LICENSE"]},
+                     "readme": {"path": "third_party/mlkem-native-fips202-b3ba7b32/README.md",
+                                "sha256": sha(VENDOR / "README.md")},
+                     "files": vendored},
+        "adapter_sources": {"fips202.h": {"path": "common/official_opt_keccak/src/fips202_mlkem.h",
+                                          "sha256": sha(COMMON / "src/fips202_mlkem.h")},
+                            "mlkem_native_config.h": {"path": "common/official_opt_keccak/config/mlkem_native_config.h",
+                                                      "sha256": sha(COMMON / "config/mlkem_native_config.h")}},
+        "phase_a_flat_check": phase_a,
+        "exporter": {"path": "common/official_opt_keccak/tools/export_keccak_flat.py", "sha256": sha(HERE)},
+    }
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    print(target)
+    return 0
 
 
 def compilers(campaign, machine):
@@ -224,14 +350,20 @@ def main():
     ap.add_argument("--param", type=int, choices=(768, 864, 1152), required=True)
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--base-qualification", type=Path, required=True)
-    ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--supercop", type=Path, required=True, help="initialised SUPERCOP campaign (read only)")
-    ap.add_argument("--pristine", type=Path, required=True, help="pristine SUPERCOP (read only)")
-    ap.add_argument("--machine", required=True)
+    mode = ap.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--out", type=Path, help="scratch feasibility directory (Phase A)")
+    mode.add_argument("--qualification-root", type=Path, help="write a qualification export here (Phase B)")
+    ap.add_argument("--supercop", type=Path, help="initialised SUPERCOP campaign (read only; --out only)")
+    ap.add_argument("--pristine", type=Path, help="pristine SUPERCOP (read only; --out only)")
+    ap.add_argument("--machine")
     ap.add_argument("--version", default="20260831")
     ap.add_argument("--summary", type=Path, help="also write the summary JSON here")
     args = ap.parse_args()
     root = args.experiment.resolve()
+    if args.qualification_root:
+        return qualification_export(args, root, (root / args.base_qualification).resolve())
+    if not (args.supercop and args.pristine and args.machine):
+        ap.error("--out needs --supercop, --pristine and --machine")
     out = args.out.resolve()
     if any(str(out).startswith(str(p.resolve())) for p in (args.supercop, args.pristine)):
         raise SystemExit("refusing to write inside a SUPERCOP tree")

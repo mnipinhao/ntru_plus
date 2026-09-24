@@ -33,7 +33,8 @@ KECCAK_WRAP := $(KEM_WRAP) -Wl,--wrap=$(CAND_SHAKE) -DCANDIDATE_SHAKE256=$(CAND_
 KECCAK_CAND := $(KECCAK_BASE)_keccak
 
 .PHONY: generate-keccak check-keccak-generate keccak-vectors-check keccak-check keccak-sanitize \
-	keccak-audit keccak-ct keccak-mutate keccak-config-equivalence keccak-phase-a keccak-record keccak-bench keccak-flat
+	keccak-audit keccak-ct keccak-mutate keccak-config-equivalence keccak-phase-a keccak-record keccak-bench keccak-flat \
+	keccak-qualification
 
 generate-keccak:
 	$(PYTHON) $(KECCAK_GEN) --param $(PARAM) --experiment .
@@ -149,6 +150,12 @@ keccak-flat:
 	$(PYTHON) $(KCOMMON)/tools/export_keccak_flat.py --param $(PARAM) --experiment . \
 		--base-qualification $(KECCAK_BASE_QUAL) --out $(FLAT_OUT) --supercop $(SUPERCOP_CAMPAIGN) \
 		--pristine $(SUPERCOP_PRISTINE) --machine $(SUPERCOP_MACHINE)
+
+# Phase B: the same flat tree as a qualification export (refuses to overwrite;
+# verifies base export, lock and vendored hashes; no compiler run).
+keccak-qualification:
+	$(PYTHON) $(KCOMMON)/tools/export_keccak_flat.py --param $(PARAM) --experiment . \
+		--base-qualification $(KECCAK_BASE_QUAL) --qualification-root qualification
 
 # ------------------------------------------------ same-ELF component/caller diagnostic
 # Official (v0), base candidate (v1), base+keccak (v2) and keccak-only (v3)

@@ -17,6 +17,10 @@ REPO = next(p for p in HERE.parents if (p / "bench/supercop.lock").is_file())
 sys.path.insert(0, str(REPO / "scripts"))
 from supercop_workflow import read_lock, sha256_file, sha256_tree  # noqa: E402
 
+# export_caller_lazy_qualification.py and
+# official_opt_keccak/tools/export_keccak_flat.py --qualification-root
+KINDS = ("caller-lazy-qualification-source", "keccak-qualification-source")
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -39,12 +43,14 @@ def main() -> None:
         raise SystemExit("campaign Official avx2 baseline differs from the lock")
     export_root = args.export_root.resolve()
     manifest = json.loads(export_root.with_suffix(".json").read_text())
-    if (manifest.get("kind") != "caller-lazy-qualification-source" or
+    if (manifest.get("kind") not in KINDS or
             manifest.get("parameter") != str(args.param) or
             manifest.get("supercop_version") != lock["version"] or
             manifest.get("official_tree_sha256") != lock[key] or
             sha256_tree(export_root) != manifest["tree_sha256"]):
         raise SystemExit("qualification export verification failed")
+    if {p.name for p in export_root.iterdir()} != set(manifest["files_sha256"]):
+        raise SystemExit("qualification export file set differs from its manifest")
     for name, expected in manifest["files_sha256"].items():
         if sha256_file(export_root / name) != expected:
             raise SystemExit(f"qualification source mismatch: {name}")
