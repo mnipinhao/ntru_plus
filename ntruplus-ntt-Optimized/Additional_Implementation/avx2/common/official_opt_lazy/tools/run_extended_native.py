@@ -15,6 +15,12 @@ another.  Result directories:
   results/native-ext-{official,candidate}-b<k>-<tag>/
   results/native-ext-<name>-b<k>-<tag>/  (with --role)
 under <experiment>/results, or under --results-dir when given.
+With --compiler-wrapper W (e.g. ../compilers/okc-native-gcc-O3-only.sh),
+every batch passes W to run_supercop_benchmark.py, which swaps the campaign
+okc-amd64 for W for that batch only and restores it afterwards; this runner
+checks the restored okc-amd64 SHA-256 against its pre-run value after every
+batch and stops on a mismatch (fixed-compiler Native, not SUPERCOP's default
+selection).
 Summarise with summarize_extended.py (two roles) or
 summarize_extended_multi.py (several roles).
 """
@@ -22,6 +28,7 @@ summarize_extended_multi.py (several roles).
 from __future__ import annotations
 
 import argparse
+import hashlib
 import subprocess
 import sys
 from pathlib import Path
@@ -55,7 +62,14 @@ def main() -> int:
     parser.add_argument("--start", type=int, default=1, help="resume at this round")
     parser.add_argument("--role", action="append", metavar="NAME=IMPLEMENTATION",
                         help="role and SUPERCOP implementation; repeat (default: official, candidate)")
+    parser.add_argument("--compiler-wrapper", type=Path,
+                        help="single-entry okc-amd64 replacement passed to every batch (fixed-compiler Native)")
     args = parser.parse_args()
+    okc = list((args.campaign_root.resolve() / "bench").glob("*/bin/okc-amd64"))
+    if len(okc) != 1:
+        raise SystemExit(f"expected one campaign okc-amd64, found {len(okc)}")
+    okc_sha = hashlib.sha256(okc[0].read_bytes()).hexdigest()
+    extra = ["--compiler-wrapper", str(args.compiler_wrapper.resolve())] if args.compiler_wrapper else []
     impl = dict(IMPL)
     if args.role:
         impl = dict(r.split("=", 1) for r in args.role)
@@ -77,9 +91,13 @@ def main() -> int:
                    "--campaign-root", str(args.campaign_root), "--parameter", args.param,
                    "--implementation", impl[role], "--cpu", str(args.cpu), "--mode", "native-kem",
                    "--fresh-launches", str(args.fresh_launches), "--require-frequency-control",
-                   "--result-dir", "{RESULT}"]
+                   *extra, "--result-dir", "{RESULT}"]
             print(f"== round {k} {role}", flush=True)
             code = subprocess.call(cmd)
+            now = hashlib.sha256(okc[0].read_bytes()).hexdigest()
+            if now != okc_sha:
+                raise SystemExit(f"okc-amd64 not restored after {out.name}: {now} != {okc_sha}")
+            print(f"okc-amd64 sha256 {now} (unchanged)", flush=True)
             if code:
                 raise SystemExit(f"batch {out.name} failed ({code})")
     return 0

@@ -45,6 +45,17 @@ def compiler_level(compiler: str) -> str:
     return compiler.split()[0].split("_-")[3]
 
 
+def try_lines(batch: Path, expected: str) -> list:
+    """SUPERCOP `try` records of one batch (one per okc compiler line), from its raw data file."""
+    out = []
+    for line in (batch / "data").read_text(errors="replace").splitlines():
+        f = line.split()
+        if len(f) > 13 and f[6] == "try":
+            out.append({"compiler": compiler_level(f[13]) if len(f) > 13 else None, "result": f[8],
+                        "checksum_ok": f[7] == expected})
+    return out
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -60,7 +71,11 @@ def main() -> int:
     parser.add_argument("--paired", action="append", default=[], metavar="CAND:BASE=PTAG")
     parser.add_argument("--resamples", type=int, default=2000)
     parser.add_argument("--seed", type=int, default=20260923)
+    parser.add_argument("--checksums-from", type=Path, default=Path("/home/nuc/src/supercop-pristine-20260831"),
+                        help="SUPERCOP tree holding crypto_kem/ntruplus<N>/checksum{small,big} (read only)")
     args = parser.parse_args()
+    ck = args.checksums_from / "crypto_kem" / f"ntruplus{args.param}"
+    expected = "/".join((ck / f"checksum{k}").read_text().strip() for k in ("small", "big"))
     if (args.experiment is None) == (args.results_dir is None):
         raise SystemExit("give exactly one of --experiment and --results-dir")
     results = (args.results_dir or args.experiment / "results").resolve()
@@ -82,12 +97,19 @@ def main() -> int:
                          "level": compiler_level(s["measure_identity"]["compiler"]),
                          "measure_elf_sha256": meta["measure_elf_sha256"],
                          "measure_source_sha256": meta["measure_source_sha256"],
+                         "compiler_policy": meta["compiler_policy"],
+                         "compiler_wrapper_sha256": meta.get("compiler_wrapper_sha256"),
                          "launches": meta["fresh_process_launches"],
+                         "try": try_lines(d, expected),
                          "hygiene": {"attempt": hh["attempt"], "contaminated": hh["contaminated"],
                                      "earlier_contaminated_attempts": hh["earlier_contaminated_attempts"],
                                      "pre_loadavg1": hh["before"]["loadavg"][0],
                                      "duration_s": hh["duration_s"]}})
         identity[role] = rows
+    bad = [(r["dir"], t) for rows in identity.values() for r in rows for t in r["try"]
+           if t["result"] != "ok" or not t["checksum_ok"]]
+    if bad or any(not r["try"] for rows in identity.values() for r in rows):
+        raise SystemExit(f"SUPERCOP try failed or missing: {bad}")
     nb = {len(v) for v in identity.values()}
     if len(nb) != 1 or not nb.pop():
         raise SystemExit(f"unbalanced batches: { {r: len(v) for r, v in identity.items()} }")
@@ -127,13 +149,20 @@ def main() -> int:
             entry["decision"] = decision
         comparisons[spec] = entry
 
+    policies = sorted({row["compiler_policy"] for rows in identity.values() for row in rows})
+    wrappers = sorted({row["compiler_wrapper_sha256"] or "-" for rows in identity.values() for row in rows})
+    if len(policies) != 1 or len(wrappers) != 1:
+        raise SystemExit(f"mixed compiler policies in one tag: {policies} {wrappers}")
+    selection = ("default SUPERCOP compiler selection" if policies[0] == "native-supercop-selection" else
+                 f"fixed single-entry okc-amd64 (compiler wrapper sha256 {wrappers[0]}); not the default selection")
     out = {"schema": "ntruplus-caller-lazy-extended-multi/v1", "parameter": args.param,
+           "compiler_policy": policies[0], "compiler_wrapper_sha256": None if wrappers[0] == "-" else wrappers[0],
            "tag": args.tag, "seed": args.seed, "roles": roles, "order": args.order,
            "implementations": {r: identity[r][0]["implementation"] for r in roles},
            "round_order": [",".join(o) for o in round_order],
            "methodology": {
                "aslr": "on only (randomize_va_space=2); no ASLR-off setting, no setarch -R",
-               "native": "default SUPERCOP compiler selection, unmodified measure.c, one 9-launch batch "
+               "native": f"{selection}, unmodified measure.c, one 9-launch batch "
                          f"per role per round, round order {args.order}, pooled "
                          "per role; independent pools, not paired",
                "paired": "O3GC fixed ELFs, ABBA/BAAB blocks, ASLR on; normal placement primary, "
@@ -143,6 +172,10 @@ def main() -> int:
            "decision_rule": "robust research win iff extended Native pooled StQ2 delta < 0 AND "
                             "normal-placement ASLR-on paired 95% CI below zero; reversed ASLR-on "
                             "reported and flagged (not failed) if it disagrees",
+           "supercop_try": {"expected_checksum_small_big": expected,
+                            "all_ok": True,
+                            "per_batch_compilers": sorted({t["compiler"] for rows in identity.values()
+                                                           for r in rows for t in r["try"]})},
            "per_batch_identity": identity, "comparisons": comparisons}
     path = results / f"extended-multi-summary-{args.tag}.json"
     path.write_text(json.dumps(out, indent=2, sort_keys=True) + "\n")
