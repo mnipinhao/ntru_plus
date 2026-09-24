@@ -1,0 +1,213 @@
+{
+  "added": {
+    "baseinv_r2fold.c": {
+      "from": "src/ntruplus864_officialopt_baseinv_r2fold.c",
+      "phase_a_record": "results/ht-phase-a/r2fold-generation.json",
+      "phase_a_record_sha256": "88625fa5a56628e327777f0eca53821f9236a5268c419e0cfe94d6d8537eab3b",
+      "sha256": "4089d325add85b82f927e7df24a14180b2bfcaefc2394ec69f063384b894cfbc"
+    },
+    "basemul_nor2.s": {
+      "from": "asm/ntruplus864_officialopt_basemul_nor2.s",
+      "phase_a_record": "results/ht-phase-a/r2fold-generation.json",
+      "phase_a_record_sha256": "88625fa5a56628e327777f0eca53821f9236a5268c419e0cfe94d6d8537eab3b",
+      "sha256": "698af4dd51f7681fa9d16114a4b58ab16d9d7b5228be336f5e6cd05fd1fd8c7c"
+    },
+    "ntt_ht.s": {
+      "from": "asm/ntruplus864_officialopt_ntt_ht.s",
+      "phase_a_record": "results/ht-phase-a/ht-forward-generation.json",
+      "phase_a_record_sha256": "37cce76d50701f1b2030d58f824ea82e33a6d728b94174fe3e34938acd425e02",
+      "sha256": "be52b95a04a0a17e80f8daed7e97688d802f236d24ede390b1a21d5b6df71d52"
+    }
+  },
+  "base": {
+    "implementation": "avx2-officialopt-lazy-codec-keccak-qual001",
+    "kind": "keccak-qualification-source",
+    "manifest": "qualification/avx2-officialopt-lazy-codec-keccak-qual001.json",
+    "manifest_sha256": "1f81f45e3bd197b04f38e316b7d3c80bc33e6176a744b6a59944caa52fbe4a44",
+    "tree_sha256": "0deb127b6f90e4e98bd3338abe1635f878a0e2e46ae4ef8667abbe2aa1e4da71"
+  },
+  "exporter": {
+    "library": {
+      "path": "common/official_opt_ht/tools/export_ht_flat.py",
+      "sha256": "50f67cc7941a2f01a6938f4d640c69ea0c414a2c2de5ebb022bce78a0434fa07"
+    },
+    "path": "common/official_opt_ht/tools/export_ht_flat_param.py",
+    "sha256": "af50b10530459b1a0a5d01b7d3a82e4720be17f395b59863dc112b101438ce84"
+  },
+  "files_sha256": {
+    "LICENSE.mlkem-native": "1c730e3c2cd4f70e058519ef3e910d8bdd4ed822ae2ce689f3c63d32fc52314b",
+    "add.s": "37f330c708de843173c74973fb202104efcbe767a3deb6fb9fd7d43e2059529f",
+    "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+    "architectures": "7c0e51663fa70af747fd24defc8d73c6de5f6478c70cb923b4641ef3f7dedf1b",
+    "baseinv.s": "526f8df9222e4d1902974b42abdea46596085a9163fe592af5690e0faaf5cca1",
+    "baseinv_r2fold.c": "4089d325add85b82f927e7df24a14180b2bfcaefc2394ec69f063384b894cfbc",
+    "basemul.s": "42b9639d4d619ba2214fba73b86f9029a078b1711c5e77bf7b4a26c770d0e761",
+    "basemul_nor2.s": "698af4dd51f7681fa9d16114a4b58ab16d9d7b5228be336f5e6cd05fd1fd8c7c",
+    "cbd.s": "8c5d5cfc8642a8a0c42fc2b0a2567a43b596a32b63589d32e796cf8fdd914ba5",
+    "codec_direct.s": "feba151f06fa018ae71ead15c9d642cd7f39e6785f530fe44246903efe5a2a1c",
+    "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+    "consts.h": "bc0a46e3d38da3a897c79f2c28898ebf5894816cf7cd161df7233151c0af2ee1",
+    "crepmod3.s": "3a77881752003f2483330aa1177870ea5d862cb7816a98227073ad914ae89ac1",
+    "fips202.h": "e9002ee1717aebf76d4c726615377b38c9fd8ca29ac0d37660fe7e63d447e405",
+    "goal-constbranch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "goal-constindex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "invntt.s": "2da75c486e34432e9b9759c0627541f3cee71e7ad7f177108bb1b7ed4c460078",
+    "kem.c": "4032b66095df62593264e3a3859e1b4225abc9dfdef7ae602ca48fe8ba52a1d1",
+    "mlk_cbmc.h": "180bf239c5d7b84fa451727546d4fbc9595008382cfc86d4ae5791e0e5a6b910",
+    "mlk_common.h": "e3dd98611f232aaae62b420d11c6a51ed450a6f91e49b3df4cc7aca6e360d2b5",
+    "mlk_context.h": "e6788b29f4883f57752fd8327a80dfc978eb21ad72a0055cbbaaa7b433637edf",
+    "mlk_fips202.c": "7fcb319c0921f77435682b28e2404b25ca18f7c89c6427c529abae570241ab1e",
+    "mlk_fips202.h": "f0faeb4b918c05fd720ee655665c184af6b44f2859546b3799970a3536140c89",
+    "mlk_keccakf1600.c": "2db20cd996661c8812a6bd0343debc5bfc10b24675d2e4fdb431b7fdafb95372",
+    "mlk_keccakf1600.h": "db8ff646708279c27c94c19490da15930607411fd7fcfb82731162e3325add29",
+    "mlk_params.h": "450fe3e0e50496921920473ae4321660f178c23d51f1453f3c537ee63c4158cb",
+    "mlk_sys.h": "ead54b94f33dcedda50bc59dff65ad78cbe4428e0c3cf25c0b6c0ba3604a35b8",
+    "mlk_verify.h": "0a824bfe86cc26b2d2c94400e0fde57ea19b70a177f0cbc73ce6d426cc935eeb",
+    "mlkem_native_config.h": "3525493b885ce99ee41da72d08df27f97a4b745757f6fcd4944c870e4548cf09",
+    "ntt.s": "980cad5ef69a78f9ed1f2f45fc5dcaa0a04cc07693cf65ea108acc41c547db92",
+    "ntt_caller_lazy.s": "db5d489658d4f5b77ce181c691d7c3b9e054a0a14ebc7c693f79df382a8f0497",
+    "ntt_ht.s": "be52b95a04a0a17e80f8daed7e97688d802f236d24ede390b1a21d5b6df71d52",
+    "pack.s": "a39a6fff06928467c559b817f5b21d983fec5783d16a6b5bac0ee08eea6bce62",
+    "params.h": "39618b1552ab1f1f259ec2733211bca127b72948cec860563c1abe06ea132b50",
+    "poly.c": "9c8d811df31485d9e748018d79a3328d8f9d4aba09176c48a53e0f92acba181e",
+    "poly.h": "b846b09278195254f9daa1f85bec6db4361eee369c4243b31e1f5db511b812f3",
+    "symmetric.c": "49e7faa9501e3ced6bf6c8da519782adcb32371295ce4f351ebdbf63399f9e0c",
+    "symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+    "util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9"
+  },
+  "implementation": "avx2-officialopt-lazy-codec-keccak-ht-qual001",
+  "kem_c": {
+    "base_define_lines_already_in_base_kem_c": [
+      "#define poly_tobytes ntruplus864_officialopt_tobytes_direct",
+      "#define poly_frombytes ntruplus864_officialopt_frombytes_direct"
+    ],
+    "base_kem_c": {
+      "equals": "src/kem_lazy_codec_direct.c with src/kem_lazy.c inlined",
+      "sha256": "f9f42e74fb238e9406e3df9e46f64fbbffd77147025a8ba511095c191a581543"
+    },
+    "construction": "overlay head (HT Forward; comment + one #define) + base export kem.c with its verbatim src/kem_lazy.c body replaced by verbatim src/kem_lazy_r2fold.c",
+    "diff_lines_added": 20,
+    "diff_lines_removed": 4,
+    "inserted_body": {
+      "path": "src/kem_lazy_r2fold.c",
+      "sha256": "537492f013e47849834120825228c5116ec513531434c56f5d9dc902c50e6339"
+    },
+    "overlay_heads": {
+      "src/kem_lazy_r2fold_codec_direct_keccak_ht.c": {
+        "define": "#define ntruplus864_officialopt_ntt_caller_lazy ntruplus864_officialopt_ntt_ht",
+        "sha256": "9ce870b2010e916069d67d09eeff5b39b2329e2e3b26986be6be4405b64b30f7"
+      }
+    },
+    "phase_a_chain": [
+      "src/kem_lazy_r2fold_codec_direct_keccak_ht.c",
+      "src/kem_lazy_r2fold_codec_direct_keccak.c",
+      "src/kem_lazy_r2fold.c"
+    ],
+    "phase_a_chain_lines_not_carried": {
+      "file": "src/kem_lazy_r2fold_codec_direct_keccak.c",
+      "lines": [
+        "#include \"util.h\"",
+        "#include \"fips202_mlkem.h\"",
+        "#include \"keccak_names.h\""
+      ],
+      "reason": "repo-only mlkem-native binding; in the flat tree fips202.h is the mlkem-native adapter and hash_f/g/h keep their Official names (same as the base export)"
+    },
+    "replaced_body": {
+      "path": "src/kem_lazy.c",
+      "sha256": "398f5faa0b2733cc188ce933380ee8c64d8676a9938da0de8f3cdf3a8253d484"
+    },
+    "textual_call_counts": {
+      "ntruplus864_officialopt_baseinv_r2fold(": 3,
+      "ntruplus864_officialopt_basemul_nor2(": 3,
+      "ntruplus864_officialopt_ntt_caller_lazy(": 7,
+      "poly_baseinv(": 0,
+      "poly_basemul(": 2,
+      "poly_invntt_scale(": 1,
+      "poly_ntt(": 0
+    },
+    "unified_diff_vs_base": [
+      "--- avx2-officialopt-lazy-codec-keccak-qual001/kem.c",
+      "+++ avx2-officialopt-lazy-codec-keccak-ht-qual001/kem.c",
+      "@@ -0,0 +1,7 @@",
+      "+/*",
+      "+ * GENERATED by common/official_opt_ht/tools/generate_ht_overlays.py --param 864 -- do not edit.",
+      "+ * NTRU+864 AVX2 candidate avx2-officialopt-lazy-codec-keccak-ht-864-exp001: base",
+      "+ * candidate + HT Forward (6 calls) + keygen R^2 fold (2 BaseInv, 2 keygen BaseMul).",
+      "+ * No HT inverse (not applicable to NTRU+864; slower on NTRU+1152).",
+      "+ */",
+      "+#define ntruplus864_officialopt_ntt_caller_lazy ntruplus864_officialopt_ntt_ht",
+      "@@ -11,0 +19,6 @@",
+      "+/*",
+      "+ * GENERATED by common/official_opt_ht/tools/generate_keygen_r2fold.py --param 864 -- do not edit.",
+      "+ * src/kem_lazy.c (caller-lazy KEM) with the keygen R^2 fold: genf/geng BaseInv ->",
+      "+ * ntruplus864_officialopt_baseinv_r2fold, the two keygen BaseMul -> ntruplus864_officialopt_basemul_nor2.",
+      "+ * Encap/Decap and every other line unchanged.",
+      "+ */",
+      "@@ -25,0 +39,3 @@",
+      "+int ntruplus864_officialopt_baseinv_r2fold(poly *, const poly *);",
+      "+void ntruplus864_officialopt_basemul_nor2(poly *, const poly *, const poly *);",
+      "+",
+      "@@ -87 +103 @@",
+      "-    return poly_baseinv(finv, f);",
+      "+    return ntruplus864_officialopt_baseinv_r2fold(finv, f);",
+      "@@ -115 +131 @@",
+      "-    return poly_baseinv(ginv, g);",
+      "+    return ntruplus864_officialopt_baseinv_r2fold(ginv, g);",
+      "@@ -140 +156 @@",
+      "-    poly_basemul(&h, g, finv);",
+      "+    ntruplus864_officialopt_basemul_nor2(&h, g, finv);",
+      "@@ -143 +159 @@",
+      "-    poly_basemul(&h, f, ginv);",
+      "+    ntruplus864_officialopt_basemul_nor2(&h, f, ginv);"
+    ]
+  },
+  "kept_from_base_sha256": {
+    "LICENSE.mlkem-native": "1c730e3c2cd4f70e058519ef3e910d8bdd4ed822ae2ce689f3c63d32fc52314b",
+    "add.s": "37f330c708de843173c74973fb202104efcbe767a3deb6fb9fd7d43e2059529f",
+    "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+    "architectures": "7c0e51663fa70af747fd24defc8d73c6de5f6478c70cb923b4641ef3f7dedf1b",
+    "baseinv.s": "526f8df9222e4d1902974b42abdea46596085a9163fe592af5690e0faaf5cca1",
+    "basemul.s": "42b9639d4d619ba2214fba73b86f9029a078b1711c5e77bf7b4a26c770d0e761",
+    "cbd.s": "8c5d5cfc8642a8a0c42fc2b0a2567a43b596a32b63589d32e796cf8fdd914ba5",
+    "codec_direct.s": "feba151f06fa018ae71ead15c9d642cd7f39e6785f530fe44246903efe5a2a1c",
+    "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+    "consts.h": "bc0a46e3d38da3a897c79f2c28898ebf5894816cf7cd161df7233151c0af2ee1",
+    "crepmod3.s": "3a77881752003f2483330aa1177870ea5d862cb7816a98227073ad914ae89ac1",
+    "fips202.h": "e9002ee1717aebf76d4c726615377b38c9fd8ca29ac0d37660fe7e63d447e405",
+    "goal-constbranch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "goal-constindex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "invntt.s": "2da75c486e34432e9b9759c0627541f3cee71e7ad7f177108bb1b7ed4c460078",
+    "mlk_cbmc.h": "180bf239c5d7b84fa451727546d4fbc9595008382cfc86d4ae5791e0e5a6b910",
+    "mlk_common.h": "e3dd98611f232aaae62b420d11c6a51ed450a6f91e49b3df4cc7aca6e360d2b5",
+    "mlk_context.h": "e6788b29f4883f57752fd8327a80dfc978eb21ad72a0055cbbaaa7b433637edf",
+    "mlk_fips202.c": "7fcb319c0921f77435682b28e2404b25ca18f7c89c6427c529abae570241ab1e",
+    "mlk_fips202.h": "f0faeb4b918c05fd720ee655665c184af6b44f2859546b3799970a3536140c89",
+    "mlk_keccakf1600.c": "2db20cd996661c8812a6bd0343debc5bfc10b24675d2e4fdb431b7fdafb95372",
+    "mlk_keccakf1600.h": "db8ff646708279c27c94c19490da15930607411fd7fcfb82731162e3325add29",
+    "mlk_params.h": "450fe3e0e50496921920473ae4321660f178c23d51f1453f3c537ee63c4158cb",
+    "mlk_sys.h": "ead54b94f33dcedda50bc59dff65ad78cbe4428e0c3cf25c0b6c0ba3604a35b8",
+    "mlk_verify.h": "0a824bfe86cc26b2d2c94400e0fde57ea19b70a177f0cbc73ce6d426cc935eeb",
+    "mlkem_native_config.h": "3525493b885ce99ee41da72d08df27f97a4b745757f6fcd4944c870e4548cf09",
+    "ntt.s": "980cad5ef69a78f9ed1f2f45fc5dcaa0a04cc07693cf65ea108acc41c547db92",
+    "ntt_caller_lazy.s": "db5d489658d4f5b77ce181c691d7c3b9e054a0a14ebc7c693f79df382a8f0497",
+    "pack.s": "a39a6fff06928467c559b817f5b21d983fec5783d16a6b5bac0ee08eea6bce62",
+    "params.h": "39618b1552ab1f1f259ec2733211bca127b72948cec860563c1abe06ea132b50",
+    "poly.c": "9c8d811df31485d9e748018d79a3328d8f9d4aba09176c48a53e0f92acba181e",
+    "poly.h": "b846b09278195254f9daa1f85bec6db4361eee369c4243b31e1f5db511b812f3",
+    "symmetric.c": "49e7faa9501e3ced6bf6c8da519782adcb32371295ce4f351ebdbf63399f9e0c",
+    "symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+    "util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9"
+  },
+  "kind": "ht-qualification-source",
+  "official_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+  "parameter": "864",
+  "phase_a_candidate": "avx2-officialopt-lazy-codec-keccak-ht-864-exp001",
+  "replaced_from_base": {
+    "kem.c": {
+      "base_sha256": "f9f42e74fb238e9406e3df9e46f64fbbffd77147025a8ba511095c191a581543",
+      "sha256": "4032b66095df62593264e3a3859e1b4225abc9dfdef7ae602ca48fe8ba52a1d1"
+    }
+  },
+  "supercop_version": "20260831",
+  "tree_sha256": "847f5757faa81fb1686027bec2f46eb609f3f28446c464b3cf88aa0f616f361f"
+}
