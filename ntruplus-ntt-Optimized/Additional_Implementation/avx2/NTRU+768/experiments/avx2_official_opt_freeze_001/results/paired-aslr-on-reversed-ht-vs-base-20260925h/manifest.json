@@ -1,0 +1,2442 @@
+{
+  "archive_sha256": "9a258febbfbbf6de0c09cee73f343d4014597c259415e78a598b7af4b1787208",
+  "aslr": "on (kernel randomize_va_space=2; no setarch -R)",
+  "benchmark_class": "fixed-elf-paired",
+  "binaries": {
+    "reversed": {
+      "candidate": {
+        "elf_header": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 \n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Position-Independent Executable file)\n  Machine:                           Advanced Micro Devices X86-64\n  Version:                           0x1\n  Entry point address:               0x2470\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          486960 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         14\n  Size of section headers:           64 (bytes)\n  Number of section headers:         38\n  Section header string table index: 37\n",
+        "path": "/home/nuc/src/ntru_plus-official-opt-864-1152/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_freeze_001/results/fixed-ht-ht-reversed-20260925h/measure",
+        "sections": "/home/nuc/src/ntru_plus-official-opt-864-1152/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_freeze_001/results/fixed-ht-ht-reversed-20260925h/measure  :\nsection                size    addr\n.note.gnu.build-id       36     848\n.interp                  28     884\n.gnu.hash                48     912\n.dynsym                 984     960\n.dynstr                 538    1944\n.gnu.version             82    2482\n.gnu.version_r          160    2568\n.rela.dyn              1392    2728\n.rela.plt               792    4120\n.init                    27    8192\n.plt                    544    8224\n.plt.got                  8    8768\n.text                 41303    8832\n.fini                    13   50136\n.rodata               13576   53248\n.eh_frame_hdr           620   66824\n.eh_frame              2552   67448\n.note.gnu.property       32   70000\n.note.ABI-tag            32   70032\n.init_array               8   76656\n.fini_array               8   76664\n.data.rel.ro            320   76672\n.dynamic                496   76992\n.got                    328   77488\n.data                   144   77824\n.bss                   2560   77984\n.comment                 38       0\n.debug_aranges         2096       0\n.debug_info          106600       0\n.debug_abbrev         13175       0\n.debug_line           55595       0\n.debug_str            20734       0\n.debug_loc           163206       0\n.debug_ranges         36352       0\nTotal                464427\n\n\n",
+        "sha256": "d5fb9db30ae8017e40b835437e829a00bb8b7f2b80b66e396c7a5e34a1ea274a",
+        "symbols": "                 w _ITM_deregisterTMCloneTable\n                 w _ITM_registerTMCloneTable\n                 w __cxa_finalize@GLIBC_2.2.5\n                 U __explicit_bzero_chk@GLIBC_2.25\n                 U __fprintf_chk@GLIBC_2.3.4\n                 w __gmon_start__\n                 U __isoc23_fscanf@GLIBC_2.38\n                 U __isoc23_sscanf@GLIBC_2.38\n                 U __libc_start_main@GLIBC_2.34\n                 U __longjmp_chk@GLIBC_2.11\n                 U __memset_chk@GLIBC_2.3.4\n                 U __printf_chk@GLIBC_2.3.4\n                 U __sigsetjmp@GLIBC_2.2.5\n                 U __stack_chk_fail@GLIBC_2.4\n                 U abort@GLIBC_2.2.5\n                 U calloc@GLIBC_2.2.5\n                 U clock_gettime@GLIBC_2.17\n                 U close@GLIBC_2.2.5\n                 U exit@GLIBC_2.2.5\n                 U fclose@GLIBC_2.2.5\n                 U fflush@GLIBC_2.2.5\n                 U fopen@GLIBC_2.2.5\n                 U getentropy@GLIBC_2.25\n                 U getenv@GLIBC_2.2.5\n                 U gettimeofday@GLIBC_2.2.5\n                 U ioctl@GLIBC_2.2.5\n                 U memcpy@GLIBC_2.14\n                 U memset@GLIBC_2.2.5\n                 U mmap@GLIBC_2.2.5\n                 U pclose@GLIBC_2.2.5\n                 U popen@GLIBC_2.2.5\n                 U putc@GLIBC_2.2.5\n                 U putchar@GLIBC_2.2.5\n                 U read@GLIBC_2.2.5\n                 U setrlimit@GLIBC_2.2.5\n                 U sigaction@GLIBC_2.2.5\n                 U syscall@GLIBC_2.2.5\n                 U sysconf@GLIBC_2.2.5\n0000000000002000 T _init\n0000000000002280 t abort_on_intel.cold\n0000000000002290 T main\n0000000000002470 T _start\n00000000000024a0 t deregister_tm_clones\n00000000000024d0 t register_tm_clones\n0000000000002510 t __do_global_dtors_aux\n0000000000002550 t frame_dummy\n0000000000002560 T preallocate\n0000000000002570 T allocate\n00000000000025e0 T measure\n0000000000002e00 t printword\n0000000000002e90 T alignedcalloc\n0000000000002f00 T printentry\n0000000000003580 T limits\n00000000000035f0 T crypto_declassify\n0000000000003600 t crypto_kem_enc_derand\n0000000000003830 T crypto_kem_ntruplus768_avx2_officialopt_lazy_freeze_keccak_ht_qual001_reversed_constbranchindex_keypair\n0000000000003b00 T crypto_kem_ntruplus768_avx2_officialopt_lazy_freeze_keccak_ht_qual001_reversed_constbranchindex_enc\n0000000000003b80 T crypto_kem_ntruplus768_avx2_officialopt_lazy_freeze_keccak_ht_qual001_reversed_constbranchindex_dec\n0000000000003f70 t mlk_keccak_absorb_once.constprop.1\n00000000000040a0 T ntruplus_mlkfips202_shake256\n0000000000004180 t mlk_keccakf1600_permute_c\n00000000000049c0 T ntruplus_mlkfips202_keccakf1600_extract_bytes\n0000000000004b40 T ntruplus_mlkfips202_keccakf1600_xor_bytes\n0000000000004d10 T ntruplus_mlkfips202_keccakf1600_permute\n0000000000004d20 t poly_sotp_decode\n0000000000005070 t hash_f\n00000000000050e0 t hash_g\n0000000000005160 t hash_h\n0000000000005200 t ntruplus768_officialopt_tobytes_freeze2op\n0000000000005220 t ntruplus768_officialopt_tobytes_freeze2op_looptop\n0000000000005480 T poly_tobytes\n00000000000054a0 t _looptop_poly_tobytes\n0000000000005713 t poly_frombytes\n0000000000005740 t _looptop_poly_frombytes\n0000000000005920 t poly_basemul\n0000000000005960 t _looptop_basemul\n0000000000005de0 t _reduce_R2_loop\n0000000000005e5b t poly_basemul_scale\n0000000000005e80 t _looptop_basemul_scale\n00000000000062e0 T ntruplus768_officialopt_basemul_nor2\n0000000000006320 t ntruplus768_officialopt_basemul_nor2_looptop\n0000000000006780 t poly_add\n00000000000067a0 t _looptop_add\n0000000000006828 t poly_sub\n0000000000006840 t _looptop_sub\n00000000000068c8 t poly_triple\n00000000000068e0 t _looptop_triple\n0000000000006980 t poly_baseinv_1\n00000000000069c0 t _looptop\n0000000000006e10 T ntruplus768_officialopt_baseinv_r2fold\n0000000000007a60 T ntruplus768_officialopt_ntt_ht\n0000000000007aa0 t ntruplus768_officialopt_ht_looptop_a\n0000000000007c20 t ntruplus768_officialopt_ht_looptop_l2\n0000000000007d40 t ntruplus768_officialopt_ht_looptop_b\n0000000000008060 t poly_cbd1\n0000000000008080 t _looptop_poly_cbd1_1\n00000000000082bd t poly_sotp_encode\n00000000000082e0 t _looptop_poly_sotp_1\n0000000000008540 t poly_crepmod3\n0000000000008580 t _loop_poly_crepmod3\n00000000000086a0 t ntruplus768_officialopt_invntt_ht\n00000000000086c0 t ntruplus768_officialopt_htinv_looptop_b\n0000000000008b00 t ntruplus768_officialopt_htinv_looptop_start_1\n0000000000008b40 t ntruplus768_officialopt_htinv_looptop_j_1\n0000000000008c40 t ntruplus768_officialopt_htinv_looptop_start_0\n0000000000008d65 T randombytes\n0000000000008e70 T crypto_rng_chacha20_ref_constbranchindex\n0000000000008efa T crypto_stream_chacha20_moon_avx2_64_constbranchindex_xor\n0000000000008f20 T crypto_stream_chacha20_moon_avx2_64_constbranchindex\n0000000000008f80 T _crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2\n0000000000008f80 T crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2\n0000000000008f80 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_local\n0000000000009040 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_atleast512\n000000000000917e t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop1\n0000000000009787 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_noinput1\n000000000000991e t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop1_cont\n0000000000009946 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_atleast256\n0000000000009a26 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop2\n0000000000009fb7 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_noinput2\n000000000000a112 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop2_cont\n000000000000a12d t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_below256_fixup\n000000000000a15d t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_below256\n000000000000a188 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_copyinput\n000000000000a198 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_noinput3\n000000000000a19b t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_above63\n000000000000a1b0 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop3\n000000000000a290 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_noinput4\n000000000000a2bb t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop3_finishup\n000000000000a2ca t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_copyoutput\n000000000000a2d6 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_done\n000000000000a2ea T _crypto_stream_chacha20_moon_avx2_64_constbranchindex_hchacha\n000000000000a2ea T crypto_stream_chacha20_moon_avx2_64_constbranchindex_hchacha\n000000000000a2ea t hcrypto_local\n000000000000a30c t hhacha_mainloop_avx2\n000000000000a3c9 T _crypto_stream_chacha20_moon_avx2_64_constbranchindex_chacha\n000000000000a3c9 T crypto_stream_chacha20_moon_avx2_64_constbranchindex_chacha\n000000000000a429 T _crypto_stream_chacha20_moon_avx2_64_constbranchindex_xchacha\n000000000000a429 T crypto_stream_chacha20_moon_avx2_64_constbranchindex_xchacha\n000000000000a480 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_constants\n000000000000a4b0 T kernelrandombytes\n000000000000a500 t cpucycles_scaled\n000000000000a530 t crash\n000000000000a550 t cpucycles_extend32\n000000000000a780 T cpucycles_init\n000000000000b4c0 T cpucycles_tracesetup\n000000000000b4d0 T cpucycles_works\n000000000000b6c0 T cpucycles_implementation\n000000000000b6e0 T cpucycles_persecond\n000000000000b700 T cpucycles_version\n000000000000b710 T cpucycles_microseconds\n000000000000b760 T supercop_cpucycles_ticks_amd64_perfpmc\n000000000000b7b0 t abort_on_intel\n000000000000b7e0 T supercop_cpucycles_ticks_amd64_perfpmc_close\n000000000000b820 T supercop_cpucycles_ticks_amd64_perfpmc_setup\n000000000000b970 T supercop_cpucycles_ticks_amd64_perfpmcff\n000000000000b990 T supercop_cpucycles_ticks_amd64_perfpmcff_close\n000000000000b9d0 T supercop_cpucycles_ticks_amd64_perfpmcff_setup\n000000000000bb20 T supercop_cpucycles_ticks_amd64_pmcff\n000000000000bb40 T supercop_cpucycles_ticks_amd64_pmcff_close\n000000000000bb50 T supercop_cpucycles_ticks_amd64_pmcff_setup\n000000000000bb70 T supercop_cpucycles_ticks_amd64_tsc\n000000000000bb80 t cpuid_tsc_invariant_frequency\n000000000000bc50 T supercop_cpucycles_ticks_amd64_tsc_close\n000000000000bc60 T supercop_cpucycles_ticks_amd64_tsc_setup\n000000000000bd60 T supercop_cpucycles_ticks_amd64_tscasm\n000000000000bd70 t cpuid_tsc_invariant_frequency\n000000000000be40 T supercop_cpucycles_ticks_amd64_tscasm_close\n000000000000be50 T supercop_cpucycles_ticks_amd64_tscasm_setup\n000000000000bf50 T supercop_cpucycles_ticks_default_gettimeofday_setup\n000000000000bf60 T supercop_cpucycles_ticks_default_gettimeofday_close\n000000000000bf70 T supercop_cpucycles_ticks_default_gettimeofday\n000000000000bf80 T supercop_cpucycles_ticks_default_mach_setup\n000000000000bf90 T supercop_cpucycles_ticks_default_mach_close\n000000000000bfa0 T supercop_cpucycles_ticks_default_mach\n000000000000bfb0 T supercop_cpucycles_ticks_default_monotonic_setup\n000000000000bfc0 T supercop_cpucycles_ticks_default_monotonic_close\n000000000000bfd0 T supercop_cpucycles_ticks_default_monotonic\n000000000000c020 T supercop_cpucycles_ticks_default_perfevent\n000000000000c140 T supercop_cpucycles_ticks_default_perfevent_close\n000000000000c1a0 T supercop_cpucycles_ticks_default_perfevent_setup\n000000000000c3b0 T supercop_cpucycles_ticks_default_zero_setup\n000000000000c3c0 T supercop_cpucycles_ticks_default_zero_close\n000000000000c3d0 T supercop_cpucycles_ticks_default_zero\n000000000000c3d8 T _fini\n000000000000d280 R sizes\n000000000000d510 r cpuid\n000000000000d620 r mlk_KeccakF_RoundConstants\n000000000000d6e0 r ntruplus768_officialopt_ht_zetas_a\n000000000000d7e0 r ntruplus768_officialopt_ht_zetas_b\n000000000000e860 R zetas_inv\n000000000000eec0 R zetas\n000000000000f520 R _16x0101\n000000000000f540 R _16x0303\n000000000000f560 R _16x5555\n000000000000f580 R _16xNinv_scaleqinv\n000000000000f5a0 R _16xNinv_scale\n000000000000f5c0 R _16xR2qinv\n000000000000f5e0 R _16xR2\n000000000000f600 R _16xwqinv\n000000000000f620 R _16xw\n000000000000f640 R _16xqinv\n000000000000f660 R _16xqm1div2\n000000000000f680 R _16xqp1div2\n000000000000f6a0 R _16xzeta1\n000000000000f6c0 R _16xqm1\n000000000000f6e0 R _16xq\n000000000000f700 R _16x3\n000000000000f720 R _16xv2\n000000000000f740 R _16xv\n000000000000f760 R _low_mask\n000000000000f780 r ntruplus768_officialopt_htinv_zetas_b\n0000000000010500 r nonce\n0000000000010508 r __GNU_EH_FRAME_HDR\n000000000001116c r __FRAME_END__\n0000000000011190 r __abi_tag\n0000000000012b70 d __frame_dummy_init_array_entry\n0000000000012b78 d __do_global_dtors_aux_fini_array_entry\n0000000000012b80 d options\n0000000000012cc0 d _DYNAMIC\n0000000000012eb0 d _GLOBAL_OFFSET_TABLE_\n0000000000013000 D __dso_handle\n0000000000013020 D sizenames\n0000000000013048 D implementationversion\n0000000000013050 D primitiveimplementation\n0000000000013058 d pos\n0000000000013060 D cpucycles\n0000000000013068 d implementation\n0000000000013070 d fdperf\n0000000000013074 d fdperfatom\n0000000000013078 d fdperf\n0000000000013080 d de\n0000000000013088 d fdperf\n0000000000013090 D __TMC_END__\n0000000000013090 D _edata\n00000000000130a0 B __bss_start\n00000000000130a0 B stdout@GLIBC_2.2.5\n00000000000130c0 B stderr@GLIBC_2.2.5\n00000000000130c8 b completed.0\n00000000000130e0 b rcalls\n0000000000013200 b rbytes\n0000000000013320 b cycles\n0000000000013428 b t\n0000000000013430 b c\n0000000000013438 b k\n0000000000013440 b s\n0000000000013448 b p\n0000000000013450 b randombyte\n0000000000013458 b cyclespersecond\n0000000000013460 B randombytes_bytes\n0000000000013468 B randombytes_calls\n0000000000013480 b r\n0000000000013760 b g\n0000000000013780 b init\n00000000000137a0 b cpucycles_extend32_prev_cycles\n00000000000137a8 b cpucycles_extend32_prev_us\n00000000000137b0 b cpucycles_extend32_prev_ticks\n00000000000137b8 b cpucycles_extend32_from\n00000000000137c0 b cpucycles_scaled_from\n00000000000137c8 b cpucycles_scaled_offset\n00000000000137d0 b cpucycles_scaled_scaling\n00000000000137d8 b persecond\n00000000000137e0 b crash_jmp\n00000000000138a8 b tracesetup\n00000000000138c0 b attr.0\n0000000000013950 b buf\n0000000000013960 b attr.0\n0000000000013a00 b attr.0\n0000000000013a90 b lastresult\n0000000000013a98 b whichperf\n0000000000013aa0 B _end\n"
+      },
+      "official": {
+        "elf_header": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 \n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Position-Independent Executable file)\n  Machine:                           Advanced Micro Devices X86-64\n  Version:                           0x1\n  Entry point address:               0x2470\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          380888 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         14\n  Size of section headers:           64 (bytes)\n  Number of section headers:         38\n  Section header string table index: 37\n",
+        "path": "/home/nuc/src/ntru_plus-official-opt-864-1152/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_freeze_001/results/fixed-ht-base-reversed-20260925h/measure",
+        "sections": "/home/nuc/src/ntru_plus-official-opt-864-1152/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+768/experiments/avx2_official_opt_freeze_001/results/fixed-ht-base-reversed-20260925h/measure  :\nsection                size    addr\n.note.gnu.build-id       36     848\n.interp                  28     884\n.gnu.hash                48     912\n.dynsym                 984     960\n.dynstr                 538    1944\n.gnu.version             82    2482\n.gnu.version_r          160    2568\n.rela.dyn              1392    2728\n.rela.plt               792    4120\n.init                    27    8192\n.plt                    544    8224\n.plt.got                  8    8768\n.text                 40471    8832\n.fini                    13   49304\n.rodata                5640   53248\n.eh_frame_hdr           620   58888\n.eh_frame              2552   59512\n.note.gnu.property       32   62064\n.note.ABI-tag            32   62096\n.init_array               8   68464\n.fini_array               8   68472\n.data.rel.ro            320   68480\n.dynamic                496   68800\n.got                    328   69296\n.data                   144   69632\n.bss                   2560   69792\n.comment                 38       0\n.debug_aranges         2000       0\n.debug_info           82963       0\n.debug_abbrev         12160       0\n.debug_line           45526       0\n.debug_str            20612       0\n.debug_loc           112621       0\n.debug_ranges         24384       0\nTotal                358167\n\n\n",
+        "sha256": "a775dd0cd226d821192d6027609d180b69670b624666bdbd69e3f567f8c1019f",
+        "symbols": "                 w _ITM_deregisterTMCloneTable\n                 w _ITM_registerTMCloneTable\n                 w __cxa_finalize@GLIBC_2.2.5\n                 U __explicit_bzero_chk@GLIBC_2.25\n                 U __fprintf_chk@GLIBC_2.3.4\n                 w __gmon_start__\n                 U __isoc23_fscanf@GLIBC_2.38\n                 U __isoc23_sscanf@GLIBC_2.38\n                 U __libc_start_main@GLIBC_2.34\n                 U __longjmp_chk@GLIBC_2.11\n                 U __memset_chk@GLIBC_2.3.4\n                 U __printf_chk@GLIBC_2.3.4\n                 U __sigsetjmp@GLIBC_2.2.5\n                 U __stack_chk_fail@GLIBC_2.4\n                 U abort@GLIBC_2.2.5\n                 U calloc@GLIBC_2.2.5\n                 U clock_gettime@GLIBC_2.17\n                 U close@GLIBC_2.2.5\n                 U exit@GLIBC_2.2.5\n                 U fclose@GLIBC_2.2.5\n                 U fflush@GLIBC_2.2.5\n                 U fopen@GLIBC_2.2.5\n                 U getentropy@GLIBC_2.25\n                 U getenv@GLIBC_2.2.5\n                 U gettimeofday@GLIBC_2.2.5\n                 U ioctl@GLIBC_2.2.5\n                 U memcpy@GLIBC_2.14\n                 U memset@GLIBC_2.2.5\n                 U mmap@GLIBC_2.2.5\n                 U pclose@GLIBC_2.2.5\n                 U popen@GLIBC_2.2.5\n                 U putc@GLIBC_2.2.5\n                 U putchar@GLIBC_2.2.5\n                 U read@GLIBC_2.2.5\n                 U setrlimit@GLIBC_2.2.5\n                 U sigaction@GLIBC_2.2.5\n                 U syscall@GLIBC_2.2.5\n                 U sysconf@GLIBC_2.2.5\n0000000000002000 T _init\n0000000000002280 t abort_on_intel.cold\n0000000000002290 T main\n0000000000002470 T _start\n00000000000024a0 t deregister_tm_clones\n00000000000024d0 t register_tm_clones\n0000000000002510 t __do_global_dtors_aux\n0000000000002550 t frame_dummy\n0000000000002560 T preallocate\n0000000000002570 T allocate\n00000000000025e0 T measure\n0000000000002e00 t printword\n0000000000002e90 T alignedcalloc\n0000000000002f00 T printentry\n0000000000003580 T limits\n00000000000035f0 T crypto_declassify\n0000000000003600 t crypto_kem_enc_derand\n0000000000003830 T crypto_kem_ntruplus768_avx2_officialopt_lazy_freeze_keccak_qual001_reversed_constbranchindex_keypair\n0000000000003b00 T crypto_kem_ntruplus768_avx2_officialopt_lazy_freeze_keccak_qual001_reversed_constbranchindex_enc\n0000000000003b80 T crypto_kem_ntruplus768_avx2_officialopt_lazy_freeze_keccak_qual001_reversed_constbranchindex_dec\n0000000000003f70 t mlk_keccak_absorb_once.constprop.1\n00000000000040a0 T ntruplus_mlkfips202_shake256\n0000000000004180 t mlk_keccakf1600_permute_c\n00000000000049c0 T ntruplus_mlkfips202_keccakf1600_extract_bytes\n0000000000004b40 T ntruplus_mlkfips202_keccakf1600_xor_bytes\n0000000000004d10 T ntruplus_mlkfips202_keccakf1600_permute\n0000000000004d20 t poly_baseinv\n0000000000005960 t poly_sotp_decode\n0000000000005cb0 t hash_f\n0000000000005d20 t hash_g\n0000000000005da0 t hash_h\n0000000000005e40 t ntruplus768_officialopt_tobytes_freeze2op\n0000000000005e60 t ntruplus768_officialopt_tobytes_freeze2op_looptop\n00000000000060c0 T poly_tobytes\n00000000000060e0 t _looptop_poly_tobytes\n0000000000006353 t poly_frombytes\n0000000000006380 t _looptop_poly_frombytes\n0000000000006560 t poly_basemul\n00000000000065a0 t _looptop_basemul\n0000000000006a20 t _reduce_R2_loop\n0000000000006a9b t poly_basemul_scale\n0000000000006ac0 t _looptop_basemul_scale\n0000000000006f20 t poly_add\n0000000000006f40 t _looptop_add\n0000000000006fc8 t poly_sub\n0000000000006fe0 t _looptop_sub\n0000000000007068 t poly_triple\n0000000000007080 t _looptop_triple\n0000000000007120 t poly_baseinv_1\n0000000000007160 t _looptop\n00000000000075c0 T ntruplus768_officialopt_ntt_caller_lazy\n00000000000075e0 t ntruplus768_officialopt_lazy_looptop_j_0\n00000000000076a0 t ntruplus768_officialopt_lazy_looptop_start_1\n00000000000076c0 t ntruplus768_officialopt_lazy_looptop_j_1\n0000000000007780 t ntruplus768_officialopt_lazy_looptop_start_2\n00000000000078a0 t ntruplus768_officialopt_lazy_looptop_start_3456\n0000000000007c40 t poly_cbd1\n0000000000007c60 t _looptop_poly_cbd1_1\n0000000000007e9d t poly_sotp_encode\n0000000000007ec0 t _looptop_poly_sotp_1\n0000000000008120 t poly_crepmod3\n0000000000008160 t _loop_poly_crepmod3\n0000000000008280 t poly_invntt_scale\n00000000000082a0 t _looptop_start_6543\n00000000000086a0 t _looptop_start_2\n00000000000087c0 t _looptop_start_1\n0000000000008800 t _looptop_j_1\n0000000000008900 t _looptop_start_0\n0000000000008a25 T randombytes\n0000000000008b30 T crypto_rng_chacha20_ref_constbranchindex\n0000000000008bba T crypto_stream_chacha20_moon_avx2_64_constbranchindex_xor\n0000000000008be0 T crypto_stream_chacha20_moon_avx2_64_constbranchindex\n0000000000008c40 T _crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2\n0000000000008c40 T crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2\n0000000000008c40 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_local\n0000000000008d00 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_atleast512\n0000000000008e3e t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop1\n0000000000009447 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_noinput1\n00000000000095de t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop1_cont\n0000000000009606 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_atleast256\n00000000000096e6 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop2\n0000000000009c77 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_noinput2\n0000000000009dd2 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop2_cont\n0000000000009ded t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_below256_fixup\n0000000000009e1d t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_below256\n0000000000009e48 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_copyinput\n0000000000009e58 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_noinput3\n0000000000009e5b t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_above63\n0000000000009e70 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop3\n0000000000009f50 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_noinput4\n0000000000009f7b t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_mainloop3_finishup\n0000000000009f8a t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_copyoutput\n0000000000009f96 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_blocks_avx2_done\n0000000000009faa T _crypto_stream_chacha20_moon_avx2_64_constbranchindex_hchacha\n0000000000009faa T crypto_stream_chacha20_moon_avx2_64_constbranchindex_hchacha\n0000000000009faa t hcrypto_local\n0000000000009fcc t hhacha_mainloop_avx2\n000000000000a089 T _crypto_stream_chacha20_moon_avx2_64_constbranchindex_chacha\n000000000000a089 T crypto_stream_chacha20_moon_avx2_64_constbranchindex_chacha\n000000000000a0e9 T _crypto_stream_chacha20_moon_avx2_64_constbranchindex_xchacha\n000000000000a0e9 T crypto_stream_chacha20_moon_avx2_64_constbranchindex_xchacha\n000000000000a140 t crypto_stream_chacha20_moon_avx2_64_constbranchindex_constants\n000000000000a170 T kernelrandombytes\n000000000000a1c0 t cpucycles_scaled\n000000000000a1f0 t crash\n000000000000a210 t cpucycles_extend32\n000000000000a440 T cpucycles_init\n000000000000b180 T cpucycles_tracesetup\n000000000000b190 T cpucycles_works\n000000000000b380 T cpucycles_implementation\n000000000000b3a0 T cpucycles_persecond\n000000000000b3c0 T cpucycles_version\n000000000000b3d0 T cpucycles_microseconds\n000000000000b420 T supercop_cpucycles_ticks_amd64_perfpmc\n000000000000b470 t abort_on_intel\n000000000000b4a0 T supercop_cpucycles_ticks_amd64_perfpmc_close\n000000000000b4e0 T supercop_cpucycles_ticks_amd64_perfpmc_setup\n000000000000b630 T supercop_cpucycles_ticks_amd64_perfpmcff\n000000000000b650 T supercop_cpucycles_ticks_amd64_perfpmcff_close\n000000000000b690 T supercop_cpucycles_ticks_amd64_perfpmcff_setup\n000000000000b7e0 T supercop_cpucycles_ticks_amd64_pmcff\n000000000000b800 T supercop_cpucycles_ticks_amd64_pmcff_close\n000000000000b810 T supercop_cpucycles_ticks_amd64_pmcff_setup\n000000000000b830 T supercop_cpucycles_ticks_amd64_tsc\n000000000000b840 t cpuid_tsc_invariant_frequency\n000000000000b910 T supercop_cpucycles_ticks_amd64_tsc_close\n000000000000b920 T supercop_cpucycles_ticks_amd64_tsc_setup\n000000000000ba20 T supercop_cpucycles_ticks_amd64_tscasm\n000000000000ba30 t cpuid_tsc_invariant_frequency\n000000000000bb00 T supercop_cpucycles_ticks_amd64_tscasm_close\n000000000000bb10 T supercop_cpucycles_ticks_amd64_tscasm_setup\n000000000000bc10 T supercop_cpucycles_ticks_default_gettimeofday_setup\n000000000000bc20 T supercop_cpucycles_ticks_default_gettimeofday_close\n000000000000bc30 T supercop_cpucycles_ticks_default_gettimeofday\n000000000000bc40 T supercop_cpucycles_ticks_default_mach_setup\n000000000000bc50 T supercop_cpucycles_ticks_default_mach_close\n000000000000bc60 T supercop_cpucycles_ticks_default_mach\n000000000000bc70 T supercop_cpucycles_ticks_default_monotonic_setup\n000000000000bc80 T supercop_cpucycles_ticks_default_monotonic_close\n000000000000bc90 T supercop_cpucycles_ticks_default_monotonic\n000000000000bce0 T supercop_cpucycles_ticks_default_perfevent\n000000000000be00 T supercop_cpucycles_ticks_default_perfevent_close\n000000000000be60 T supercop_cpucycles_ticks_default_perfevent_setup\n000000000000c070 T supercop_cpucycles_ticks_default_zero_setup\n000000000000c080 T supercop_cpucycles_ticks_default_zero_close\n000000000000c090 T supercop_cpucycles_ticks_default_zero\n000000000000c098 T _fini\n000000000000d280 R sizes\n000000000000d510 r cpuid\n000000000000d620 r mlk_KeccakF_RoundConstants\n000000000000d6e0 R zetas_inv\n000000000000dd40 R zetas\n000000000000e3a0 R _16x0101\n000000000000e3c0 R _16x0303\n000000000000e3e0 R _16x5555\n000000000000e400 R _16xNinv_scaleqinv\n000000000000e420 R _16xNinv_scale\n000000000000e440 R _16xR2qinv\n000000000000e460 R _16xR2\n000000000000e480 R _16xwqinv\n000000000000e4a0 R _16xw\n000000000000e4c0 R _16xqinv\n000000000000e4e0 R _16xqm1div2\n000000000000e500 R _16xqp1div2\n000000000000e520 R _16xzeta1\n000000000000e540 R _16xqm1\n000000000000e560 R _16xq\n000000000000e580 R _16x3\n000000000000e5a0 R _16xv2\n000000000000e5c0 R _16xv\n000000000000e5e0 R _low_mask\n000000000000e600 r nonce\n000000000000e608 r __GNU_EH_FRAME_HDR\n000000000000f26c r __FRAME_END__\n000000000000f290 r __abi_tag\n0000000000010b70 d __frame_dummy_init_array_entry\n0000000000010b78 d __do_global_dtors_aux_fini_array_entry\n0000000000010b80 d options\n0000000000010cc0 d _DYNAMIC\n0000000000010eb0 d _GLOBAL_OFFSET_TABLE_\n0000000000011000 D __dso_handle\n0000000000011020 D sizenames\n0000000000011048 D implementationversion\n0000000000011050 D primitiveimplementation\n0000000000011058 d pos\n0000000000011060 D cpucycles\n0000000000011068 d implementation\n0000000000011070 d fdperf\n0000000000011074 d fdperfatom\n0000000000011078 d fdperf\n0000000000011080 d de\n0000000000011088 d fdperf\n0000000000011090 D __TMC_END__\n0000000000011090 D _edata\n00000000000110a0 B __bss_start\n00000000000110a0 B stdout@GLIBC_2.2.5\n00000000000110c0 B stderr@GLIBC_2.2.5\n00000000000110c8 b completed.0\n00000000000110e0 b rcalls\n0000000000011200 b rbytes\n0000000000011320 b cycles\n0000000000011428 b t\n0000000000011430 b c\n0000000000011438 b k\n0000000000011440 b s\n0000000000011448 b p\n0000000000011450 b randombyte\n0000000000011458 b cyclespersecond\n0000000000011460 B randombytes_bytes\n0000000000011468 B randombytes_calls\n0000000000011480 b r\n0000000000011760 b g\n0000000000011780 b init\n00000000000117a0 b cpucycles_extend32_prev_cycles\n00000000000117a8 b cpucycles_extend32_prev_us\n00000000000117b0 b cpucycles_extend32_prev_ticks\n00000000000117b8 b cpucycles_extend32_from\n00000000000117c0 b cpucycles_scaled_from\n00000000000117c8 b cpucycles_scaled_offset\n00000000000117d0 b cpucycles_scaled_scaling\n00000000000117d8 b persecond\n00000000000117e0 b crash_jmp\n00000000000118a8 b tracesetup\n00000000000118c0 b attr.0\n0000000000011950 b buf\n0000000000011960 b attr.0\n0000000000011a00 b attr.0\n0000000000011a90 b lastresult\n0000000000011a98 b whichperf\n0000000000011aa0 B _end\n"
+      }
+    }
+  },
+  "blocks": 48,
+  "compiler_recipe": "O3GC",
+  "cpu": 1,
+  "created_at": "2026-09-24T17:33:09.619758+00:00",
+  "host_hygiene": {
+    "after": {
+      "loadavg": [
+        0.49,
+        0.58,
+        0.48
+      ],
+      "time": "2026-09-24T17:33:12.693989+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "gnome-shell",
+          "cpu_percent": 2.7,
+          "last_cpu": 3,
+          "pid": 9216
+        },
+        {
+          "comm": "tailscaled",
+          "cpu_percent": 2.3,
+          "last_cpu": 8,
+          "pid": 5713
+        },
+        {
+          "comm": "MainThread",
+          "cpu_percent": 1.7,
+          "last_cpu": 1,
+          "pid": 1548120
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 1.7,
+          "last_cpu": 3,
+          "pid": 1548771
+        },
+        {
+          "comm": "code-fc3def6774",
+          "cpu_percent": 1.0,
+          "last_cpu": 0,
+          "pid": 1556065
+        }
+      ],
+      "uptime": "01:33:09 up 17 days, 14:32,  7 users,  load average: 0.49, 0.58, 0.48"
+    },
+    "attempt": 0,
+    "before": {
+      "loadavg": [
+        0.44,
+        0.57,
+        0.47
+      ],
+      "time": "2026-09-24T17:33:08.130280+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "tailscaled",
+          "cpu_percent": 2.0,
+          "last_cpu": 8,
+          "pid": 5713
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 2.0,
+          "last_cpu": 13,
+          "pid": 1548771
+        },
+        {
+          "comm": "MainThread",
+          "cpu_percent": 1.7,
+          "last_cpu": 3,
+          "pid": 1548120
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 0.7,
+          "last_cpu": 1,
+          "pid": 1548354
+        },
+        {
+          "comm": "code-fc3def6774",
+          "cpu_percent": 0.7,
+          "last_cpu": 0,
+          "pid": 1556065
+        }
+      ],
+      "uptime": "01:33:05 up 17 days, 14:32,  7 users,  load average: 0.44, 0.57, 0.47"
+    },
+    "contaminated": false,
+    "contamination_reasons": [],
+    "duration_s": 1.5,
+    "during_heavy_windows": 0,
+    "during_max_loadavg1_including_batch": null,
+    "during_offenders": {},
+    "earlier_contaminated_attempts": [],
+    "host_controls_changed": false,
+    "load_threshold": 0.5,
+    "proc_threshold_percent": 25.0,
+    "waited_for_quiet_s": 45.0
+  },
+  "launches": [
+    {
+      "block": 1,
+      "file": "reversed-aslr-on/block-01-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 1,
+      "file": "reversed-aslr-on/block-01-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 1,
+      "file": "reversed-aslr-on/block-01-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 1,
+      "file": "reversed-aslr-on/block-01-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 2,
+      "file": "reversed-aslr-on/block-02-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 2,
+      "file": "reversed-aslr-on/block-02-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 2,
+      "file": "reversed-aslr-on/block-02-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 2,
+      "file": "reversed-aslr-on/block-02-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 3,
+      "file": "reversed-aslr-on/block-03-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 3,
+      "file": "reversed-aslr-on/block-03-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 3,
+      "file": "reversed-aslr-on/block-03-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 3,
+      "file": "reversed-aslr-on/block-03-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 4,
+      "file": "reversed-aslr-on/block-04-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 4,
+      "file": "reversed-aslr-on/block-04-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 4,
+      "file": "reversed-aslr-on/block-04-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 4,
+      "file": "reversed-aslr-on/block-04-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 5,
+      "file": "reversed-aslr-on/block-05-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 5,
+      "file": "reversed-aslr-on/block-05-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 5,
+      "file": "reversed-aslr-on/block-05-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 5,
+      "file": "reversed-aslr-on/block-05-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 6,
+      "file": "reversed-aslr-on/block-06-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 6,
+      "file": "reversed-aslr-on/block-06-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 6,
+      "file": "reversed-aslr-on/block-06-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 6,
+      "file": "reversed-aslr-on/block-06-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 7,
+      "file": "reversed-aslr-on/block-07-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 7,
+      "file": "reversed-aslr-on/block-07-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 7,
+      "file": "reversed-aslr-on/block-07-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 7,
+      "file": "reversed-aslr-on/block-07-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 8,
+      "file": "reversed-aslr-on/block-08-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 8,
+      "file": "reversed-aslr-on/block-08-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 8,
+      "file": "reversed-aslr-on/block-08-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 8,
+      "file": "reversed-aslr-on/block-08-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 9,
+      "file": "reversed-aslr-on/block-09-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 9,
+      "file": "reversed-aslr-on/block-09-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 9,
+      "file": "reversed-aslr-on/block-09-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 9,
+      "file": "reversed-aslr-on/block-09-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 10,
+      "file": "reversed-aslr-on/block-10-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 10,
+      "file": "reversed-aslr-on/block-10-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 10,
+      "file": "reversed-aslr-on/block-10-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 10,
+      "file": "reversed-aslr-on/block-10-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 11,
+      "file": "reversed-aslr-on/block-11-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 11,
+      "file": "reversed-aslr-on/block-11-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 11,
+      "file": "reversed-aslr-on/block-11-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 11,
+      "file": "reversed-aslr-on/block-11-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 12,
+      "file": "reversed-aslr-on/block-12-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 12,
+      "file": "reversed-aslr-on/block-12-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 12,
+      "file": "reversed-aslr-on/block-12-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 12,
+      "file": "reversed-aslr-on/block-12-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 13,
+      "file": "reversed-aslr-on/block-13-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 13,
+      "file": "reversed-aslr-on/block-13-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 13,
+      "file": "reversed-aslr-on/block-13-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 13,
+      "file": "reversed-aslr-on/block-13-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 14,
+      "file": "reversed-aslr-on/block-14-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 14,
+      "file": "reversed-aslr-on/block-14-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 14,
+      "file": "reversed-aslr-on/block-14-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 14,
+      "file": "reversed-aslr-on/block-14-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 15,
+      "file": "reversed-aslr-on/block-15-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 15,
+      "file": "reversed-aslr-on/block-15-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 15,
+      "file": "reversed-aslr-on/block-15-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 15,
+      "file": "reversed-aslr-on/block-15-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 16,
+      "file": "reversed-aslr-on/block-16-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 16,
+      "file": "reversed-aslr-on/block-16-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 16,
+      "file": "reversed-aslr-on/block-16-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 16,
+      "file": "reversed-aslr-on/block-16-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 17,
+      "file": "reversed-aslr-on/block-17-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 17,
+      "file": "reversed-aslr-on/block-17-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 17,
+      "file": "reversed-aslr-on/block-17-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 17,
+      "file": "reversed-aslr-on/block-17-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 18,
+      "file": "reversed-aslr-on/block-18-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 18,
+      "file": "reversed-aslr-on/block-18-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 18,
+      "file": "reversed-aslr-on/block-18-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 18,
+      "file": "reversed-aslr-on/block-18-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 19,
+      "file": "reversed-aslr-on/block-19-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 19,
+      "file": "reversed-aslr-on/block-19-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 19,
+      "file": "reversed-aslr-on/block-19-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 19,
+      "file": "reversed-aslr-on/block-19-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 20,
+      "file": "reversed-aslr-on/block-20-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 20,
+      "file": "reversed-aslr-on/block-20-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 20,
+      "file": "reversed-aslr-on/block-20-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 20,
+      "file": "reversed-aslr-on/block-20-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 21,
+      "file": "reversed-aslr-on/block-21-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 21,
+      "file": "reversed-aslr-on/block-21-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 21,
+      "file": "reversed-aslr-on/block-21-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 21,
+      "file": "reversed-aslr-on/block-21-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 22,
+      "file": "reversed-aslr-on/block-22-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 22,
+      "file": "reversed-aslr-on/block-22-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 22,
+      "file": "reversed-aslr-on/block-22-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 22,
+      "file": "reversed-aslr-on/block-22-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 23,
+      "file": "reversed-aslr-on/block-23-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 23,
+      "file": "reversed-aslr-on/block-23-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 23,
+      "file": "reversed-aslr-on/block-23-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 23,
+      "file": "reversed-aslr-on/block-23-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 24,
+      "file": "reversed-aslr-on/block-24-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 24,
+      "file": "reversed-aslr-on/block-24-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 24,
+      "file": "reversed-aslr-on/block-24-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 24,
+      "file": "reversed-aslr-on/block-24-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 25,
+      "file": "reversed-aslr-on/block-25-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 25,
+      "file": "reversed-aslr-on/block-25-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 25,
+      "file": "reversed-aslr-on/block-25-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 25,
+      "file": "reversed-aslr-on/block-25-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 26,
+      "file": "reversed-aslr-on/block-26-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 26,
+      "file": "reversed-aslr-on/block-26-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 26,
+      "file": "reversed-aslr-on/block-26-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 26,
+      "file": "reversed-aslr-on/block-26-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 27,
+      "file": "reversed-aslr-on/block-27-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 27,
+      "file": "reversed-aslr-on/block-27-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 27,
+      "file": "reversed-aslr-on/block-27-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 27,
+      "file": "reversed-aslr-on/block-27-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 28,
+      "file": "reversed-aslr-on/block-28-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 28,
+      "file": "reversed-aslr-on/block-28-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 28,
+      "file": "reversed-aslr-on/block-28-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 28,
+      "file": "reversed-aslr-on/block-28-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 29,
+      "file": "reversed-aslr-on/block-29-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 29,
+      "file": "reversed-aslr-on/block-29-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 29,
+      "file": "reversed-aslr-on/block-29-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 29,
+      "file": "reversed-aslr-on/block-29-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 30,
+      "file": "reversed-aslr-on/block-30-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 30,
+      "file": "reversed-aslr-on/block-30-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 30,
+      "file": "reversed-aslr-on/block-30-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 30,
+      "file": "reversed-aslr-on/block-30-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 31,
+      "file": "reversed-aslr-on/block-31-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 31,
+      "file": "reversed-aslr-on/block-31-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 31,
+      "file": "reversed-aslr-on/block-31-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 31,
+      "file": "reversed-aslr-on/block-31-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 32,
+      "file": "reversed-aslr-on/block-32-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 32,
+      "file": "reversed-aslr-on/block-32-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 32,
+      "file": "reversed-aslr-on/block-32-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 32,
+      "file": "reversed-aslr-on/block-32-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 33,
+      "file": "reversed-aslr-on/block-33-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 33,
+      "file": "reversed-aslr-on/block-33-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 33,
+      "file": "reversed-aslr-on/block-33-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 33,
+      "file": "reversed-aslr-on/block-33-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 34,
+      "file": "reversed-aslr-on/block-34-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 34,
+      "file": "reversed-aslr-on/block-34-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 34,
+      "file": "reversed-aslr-on/block-34-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 34,
+      "file": "reversed-aslr-on/block-34-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 35,
+      "file": "reversed-aslr-on/block-35-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 35,
+      "file": "reversed-aslr-on/block-35-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 35,
+      "file": "reversed-aslr-on/block-35-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 35,
+      "file": "reversed-aslr-on/block-35-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 36,
+      "file": "reversed-aslr-on/block-36-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 36,
+      "file": "reversed-aslr-on/block-36-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 36,
+      "file": "reversed-aslr-on/block-36-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 36,
+      "file": "reversed-aslr-on/block-36-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 37,
+      "file": "reversed-aslr-on/block-37-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 37,
+      "file": "reversed-aslr-on/block-37-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 37,
+      "file": "reversed-aslr-on/block-37-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 37,
+      "file": "reversed-aslr-on/block-37-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 38,
+      "file": "reversed-aslr-on/block-38-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 38,
+      "file": "reversed-aslr-on/block-38-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 38,
+      "file": "reversed-aslr-on/block-38-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 38,
+      "file": "reversed-aslr-on/block-38-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 39,
+      "file": "reversed-aslr-on/block-39-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 39,
+      "file": "reversed-aslr-on/block-39-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 39,
+      "file": "reversed-aslr-on/block-39-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 39,
+      "file": "reversed-aslr-on/block-39-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 40,
+      "file": "reversed-aslr-on/block-40-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 40,
+      "file": "reversed-aslr-on/block-40-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 40,
+      "file": "reversed-aslr-on/block-40-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 40,
+      "file": "reversed-aslr-on/block-40-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 41,
+      "file": "reversed-aslr-on/block-41-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 41,
+      "file": "reversed-aslr-on/block-41-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 41,
+      "file": "reversed-aslr-on/block-41-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 41,
+      "file": "reversed-aslr-on/block-41-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 42,
+      "file": "reversed-aslr-on/block-42-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 42,
+      "file": "reversed-aslr-on/block-42-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 42,
+      "file": "reversed-aslr-on/block-42-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 42,
+      "file": "reversed-aslr-on/block-42-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 43,
+      "file": "reversed-aslr-on/block-43-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 43,
+      "file": "reversed-aslr-on/block-43-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 43,
+      "file": "reversed-aslr-on/block-43-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 43,
+      "file": "reversed-aslr-on/block-43-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 44,
+      "file": "reversed-aslr-on/block-44-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 44,
+      "file": "reversed-aslr-on/block-44-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 44,
+      "file": "reversed-aslr-on/block-44-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 44,
+      "file": "reversed-aslr-on/block-44-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 45,
+      "file": "reversed-aslr-on/block-45-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 45,
+      "file": "reversed-aslr-on/block-45-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 45,
+      "file": "reversed-aslr-on/block-45-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 45,
+      "file": "reversed-aslr-on/block-45-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 46,
+      "file": "reversed-aslr-on/block-46-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 46,
+      "file": "reversed-aslr-on/block-46-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 46,
+      "file": "reversed-aslr-on/block-46-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 46,
+      "file": "reversed-aslr-on/block-46-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 47,
+      "file": "reversed-aslr-on/block-47-slot-1-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 47,
+      "file": "reversed-aslr-on/block-47-slot-2-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 47,
+      "file": "reversed-aslr-on/block-47-slot-3-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 47,
+      "file": "reversed-aslr-on/block-47-slot-4-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    },
+    {
+      "block": 48,
+      "file": "reversed-aslr-on/block-48-slot-1-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 1
+    },
+    {
+      "block": 48,
+      "file": "reversed-aslr-on/block-48-slot-2-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 2
+    },
+    {
+      "block": 48,
+      "file": "reversed-aslr-on/block-48-slot-3-official.out",
+      "implementation": "official",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 3
+    },
+    {
+      "block": 48,
+      "file": "reversed-aslr-on/block-48-slot-4-candidate.out",
+      "implementation": "candidate",
+      "observations": {
+        "dec_cycles": 96,
+        "enc_cycles": 96,
+        "keypair_cycles": 96
+      },
+      "setting": "reversed-aslr-on",
+      "slot": 4
+    }
+  ],
+  "ntruplus1152_avx2_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "ntruplus768_avx2_tree_sha256": "8db00172e705b67e231b63708295781d65681fef2c7422d717fe91ab48d576e7",
+  "ntruplus864_avx2_tree_sha256": "13e0d983221e430a3cc5097042aa04dd1197981fb39761b02fbc845253107006",
+  "observations_per_operation_per_launch_minimum": 96,
+  "operations": [
+    "keypair_cycles",
+    "enc_cycles",
+    "dec_cycles"
+  ],
+  "placement": "reversed",
+  "url": "https://bench.cr.yp.to/supercop/supercop-20260831.tar.xz",
+  "variant": "single-placement-aslr-on",
+  "version": "20260831"
+}
