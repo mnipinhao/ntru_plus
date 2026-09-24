@@ -1,0 +1,1434 @@
+{
+  "comparisons": {
+    "base:official": {
+      "baseline": "official",
+      "candidate": "base",
+      "native": {
+        "batches": 3,
+        "derived_by_elf_pair": {
+          "official:O3:28f374b7a77cf46a vs base:O3:a5d19ef0fd6bef52": {
+            "batches": [
+              1,
+              2,
+              3
+            ],
+            "dec_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -219.964506172837
+            },
+            "enc_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -209.99382716049513
+            },
+            "keypair_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -271.6049382716046
+            }
+          }
+        },
+        "keypair_retries": {
+          "composition": {
+            "base": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            },
+            "official": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            }
+          },
+          "pooled": {
+            "base": {
+              "median": 21354.0,
+              "stq2": 21351.70524691358,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            },
+            "delta_stq2": -271.6049382716046,
+            "official": {
+              "median": 21623.5,
+              "stq2": 21623.310185185186,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            }
+          },
+          "r0_count_difference": {
+            "binomial_sd_of_difference": 0.0,
+            "candidate_minus_official": 0
+          },
+          "strata": {
+            "0": {
+              "median": {
+                "base": 21354.0,
+                "ci95": [
+                  -302.0,
+                  -236.0
+                ],
+                "delta": -269.5,
+                "official": 21623.5,
+                "resamples": 2000
+              },
+              "n": [
+                2592,
+                2592
+              ],
+              "stq2": {
+                "base": 21351.70524691358,
+                "ci95": [
+                  -304.3796296296314,
+                  -236.45370370370438
+                ],
+                "delta": -271.6049382716046,
+                "official": 21623.310185185186,
+                "resamples": 2000
+              }
+            }
+          }
+        },
+        "launches": {
+          "base": 27,
+          "official": 27
+        },
+        "operations": {
+          "dec_cycles": {
+            "candidate_launches_below_official_median": 26,
+            "delta_percent_stq2": -1.1297636204811448,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -219.78703703704014,
+              -234.43518518518613,
+              -202.101851851854
+            ],
+            "per_batch_summary": {
+              "max": -202.101851851854,
+              "mean": -218.77469135802676,
+              "min": -234.43518518518613,
+              "negative_batches": 3,
+              "sd": 16.19042136392547,
+              "sd_of_81_launch_pool_from_batch_sd": 9.34754413275584
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 19111.862654320987,
+              "delta": -237.59876543209975,
+              "official": 19349.461419753086
+            },
+            "stq2": {
+              "base": 19249.993827160495,
+              "delta": -219.964506172837,
+              "official": 19469.958333333332
+            },
+            "stq2_delta_bootstrap_sd": 13.507406830146381,
+            "stq2_delta_ci95_launch_resampling": [
+              -244.56172839505962,
+              -192.04938271604988
+            ],
+            "stq3": {
+              "base": 19348.944444444445,
+              "delta": -210.43827160493674,
+              "official": 19559.382716049382
+            }
+          },
+          "enc_cycles": {
+            "candidate_launches_below_official_median": 26,
+            "delta_percent_stq2": -0.7428264076436554,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -201.08333333333576,
+              -250.73611111111313,
+              -185.10648148148175
+            ],
+            "per_batch_summary": {
+              "max": -185.10648148148175,
+              "mean": -212.30864197531022,
+              "min": -250.73611111111313,
+              "negative_batches": 3,
+              "sd": 34.2245195278376,
+              "sd_of_81_launch_pool_from_batch_sd": 19.759535562282643
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 27837.033950617282,
+              "delta": -255.81327160494038,
+              "official": 28092.847222222223
+            },
+            "stq2": {
+              "base": 28059.57561728395,
+              "delta": -209.99382716049513,
+              "official": 28269.569444444445
+            },
+            "stq2_delta_bootstrap_sd": 21.95011480787961,
+            "stq2_delta_ci95_launch_resampling": [
+              -251.84104938271412,
+              -167.07253086419587
+            ],
+            "stq3": {
+              "base": 28390.554012345678,
+              "delta": -195.72376543209975,
+              "official": 28586.277777777777
+            }
+          },
+          "keypair_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -1.2560747450114726,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -280.29166666666424,
+              -222.64351851851825,
+              -315.1388888888905
+            ],
+            "per_batch_summary": {
+              "max": -222.64351851851825,
+              "mean": -272.691358024691,
+              "min": -315.1388888888905,
+              "negative_batches": 3,
+              "sd": 46.71372286146785,
+              "sd_of_81_launch_pool_from_batch_sd": 26.97018046891804
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 21211.975308641977,
+              "delta": -292.449074074073,
+              "official": 21504.42438271605
+            },
+            "stq2": {
+              "base": 21351.70524691358,
+              "delta": -271.6049382716046,
+              "official": 21623.310185185186
+            },
+            "stq2_delta_bootstrap_sd": 16.743733039458917,
+            "stq2_delta_ci95_launch_resampling": [
+              -302.84259259259125,
+              -237.59259259259125
+            ],
+            "stq3": {
+              "base": 21513.452160493827,
+              "delta": -246.20061728395012,
+              "official": 21759.652777777777
+            }
+          }
+        },
+        "per_batch": [
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-base-b1-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.44
+              },
+              "launches": 9,
+              "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 1,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-official-b1-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.45
+              },
+              "launches": 9,
+              "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "official,base,keccak",
+            "stq2_delta": {
+              "dec_cycles": -219.78703703704014,
+              "enc_cycles": -201.08333333333576,
+              "keypair_cycles": -280.29166666666424
+            }
+          },
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-base-b2-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.7,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.4
+              },
+              "launches": 9,
+              "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 2,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-official-b2-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.38
+              },
+              "launches": 9,
+              "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "keccak,official,base",
+            "stq2_delta": {
+              "dec_cycles": -234.43518518518613,
+              "enc_cycles": -250.73611111111313,
+              "keypair_cycles": -222.64351851851825
+            }
+          },
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-base-b3-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.44
+              },
+              "launches": 9,
+              "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 3,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-official-b3-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.39
+              },
+              "launches": 9,
+              "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "base,keccak,official",
+            "stq2_delta": {
+              "dec_cycles": -202.101851851854,
+              "enc_cycles": -185.10648148148175,
+              "keypair_cycles": -315.1388888888905
+            }
+          }
+        ]
+      }
+    },
+    "keccak:base": {
+      "baseline": "base",
+      "candidate": "keccak",
+      "native": {
+        "batches": 3,
+        "derived_by_elf_pair": {
+          "base:O3:a5d19ef0fd6bef52 vs keccak:O3:243d2fcdcccb5ba4": {
+            "batches": [
+              1,
+              2,
+              3
+            ],
+            "dec_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -4200.512345679013
+            },
+            "enc_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -7535.641975308641
+            },
+            "keypair_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -4484.091049382718
+            }
+          }
+        },
+        "keypair_retries": {
+          "composition": {
+            "base": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            },
+            "keccak": {
+              "mean_retries_per_keypair": 0.00038580246913580245,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                0.9988425925925926
+              ],
+              "pooled": {
+                "0": 2591,
+                "1": 1,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 0.9996141975308642,
+                "1": 0.00038580246913580245,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            }
+          },
+          "pooled": {
+            "base": {
+              "median": 21354.0,
+              "stq2": 21351.70524691358,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            },
+            "delta_stq2": -4484.091049382718,
+            "keccak": {
+              "median": 16865.0,
+              "stq2": 16867.614197530864,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            }
+          },
+          "r0_count_difference": {
+            "binomial_sd_of_difference": 0.0,
+            "candidate_minus_official": -1
+          },
+          "strata": {
+            "0": {
+              "median": {
+                "base": 21354.0,
+                "ci95": [
+                  -4528.5,
+                  -4456.5
+                ],
+                "delta": -4489.0,
+                "keccak": 16865,
+                "resamples": 2000
+              },
+              "n": [
+                2592,
+                2591
+              ],
+              "stq2": {
+                "base": 21351.70524691358,
+                "ci95": [
+                  -4521.964506172837,
+                  -4450.591918368904
+                ],
+                "delta": -4484.218369260165,
+                "keccak": 16867.486877653417,
+                "resamples": 2000
+              }
+            }
+          }
+        },
+        "launches": {
+          "base": 27,
+          "keccak": 27
+        },
+        "operations": {
+          "dec_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -21.820850351403035,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -4176.087962962962,
+              -4189.615740740739,
+              -4236.370370370369
+            ],
+            "per_batch_summary": {
+              "max": -4176.087962962962,
+              "mean": -4200.69135802469,
+              "min": -4236.370370370369,
+              "negative_batches": 3,
+              "sd": 31.630588587213467,
+              "sd_of_81_launch_pool_from_batch_sd": 18.261928835454
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 19111.862654320987,
+              "delta": -4192.888888888889,
+              "keccak": 14918.973765432098
+            },
+            "stq2": {
+              "base": 19249.993827160495,
+              "delta": -4200.512345679013,
+              "keccak": 15049.481481481482
+            },
+            "stq2_delta_bootstrap_sd": 13.81056319111599,
+            "stq2_delta_ci95_launch_resampling": [
+              -4229.561728395061,
+              -4174.444444444445
+            ],
+            "stq3": {
+              "base": 19348.944444444445,
+              "delta": -4122.226851851852,
+              "keccak": 15226.717592592593
+            }
+          },
+          "enc_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -26.855865812406968,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -7560.620370370369,
+              -7486.800925925927,
+              -7552.972222222223
+            ],
+            "per_batch_summary": {
+              "max": -7486.800925925927,
+              "mean": -7533.46450617284,
+              "min": -7560.620370370369,
+              "negative_batches": 3,
+              "sd": 40.592374082073874,
+              "sd_of_81_launch_pool_from_batch_sd": 23.436018103331342
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 27837.033950617282,
+              "delta": -7489.8688271604915,
+              "keccak": 20347.16512345679
+            },
+            "stq2": {
+              "base": 28059.57561728395,
+              "delta": -7535.641975308641,
+              "keccak": 20523.93364197531
+            },
+            "stq2_delta_bootstrap_sd": 19.182563932619253,
+            "stq2_delta_ci95_launch_resampling": [
+              -7574.592592592595,
+              -7499.060185185186
+            ],
+            "stq3": {
+              "base": 28390.554012345678,
+              "delta": -7391.035493827159,
+              "keccak": 20999.51851851852
+            }
+          },
+          "keypair_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -21.00109100199807,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -4481.865740740741,
+              -4544.101851851854,
+              -4424.833333333332
+            ],
+            "per_batch_summary": {
+              "max": -4424.833333333332,
+              "mean": -4483.600308641976,
+              "min": -4544.101851851854,
+              "negative_batches": 3,
+              "sd": 59.65317612461004,
+              "sd_of_81_launch_pool_from_batch_sd": 34.44077729355977
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 21211.975308641977,
+              "delta": -4498.540123456791,
+              "keccak": 16713.435185185186
+            },
+            "stq2": {
+              "base": 21351.70524691358,
+              "delta": -4484.091049382718,
+              "keccak": 16867.614197530864
+            },
+            "stq2_delta_bootstrap_sd": 18.960685714792238,
+            "stq2_delta_ci95_launch_resampling": [
+              -4525.583333333332,
+              -4451.361111111113
+            ],
+            "stq3": {
+              "base": 21513.452160493827,
+              "delta": -4404.882716049382,
+              "keccak": 17108.569444444445
+            }
+          }
+        },
+        "per_batch": [
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-base-b1-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.44
+              },
+              "launches": 9,
+              "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 1,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-keccak-b1-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.45
+              },
+              "launches": 9,
+              "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "official,base,keccak",
+            "stq2_delta": {
+              "dec_cycles": -4176.087962962962,
+              "enc_cycles": -7560.620370370369,
+              "keypair_cycles": -4481.865740740741
+            }
+          },
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-base-b2-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.7,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.4
+              },
+              "launches": 9,
+              "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 2,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-keccak-b2-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.45
+              },
+              "launches": 9,
+              "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "keccak,official,base",
+            "stq2_delta": {
+              "dec_cycles": -4189.615740740739,
+              "enc_cycles": -7486.800925925927,
+              "keypair_cycles": -4544.101851851854
+            }
+          },
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-base-b3-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.44
+              },
+              "launches": 9,
+              "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 3,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-keccak-b3-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.38
+              },
+              "launches": 9,
+              "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "base,keccak,official",
+            "stq2_delta": {
+              "dec_cycles": -4236.370370370369,
+              "enc_cycles": -7552.972222222223,
+              "keypair_cycles": -4424.833333333332
+            }
+          }
+        ]
+      }
+    },
+    "keccak:official": {
+      "baseline": "official",
+      "candidate": "keccak",
+      "native": {
+        "batches": 3,
+        "derived_by_elf_pair": {
+          "official:O3:28f374b7a77cf46a vs keccak:O3:243d2fcdcccb5ba4": {
+            "batches": [
+              1,
+              2,
+              3
+            ],
+            "dec_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -4420.47685185185
+            },
+            "enc_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -7745.635802469136
+            },
+            "keypair_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -4755.695987654322
+            }
+          }
+        },
+        "keypair_retries": {
+          "composition": {
+            "keccak": {
+              "mean_retries_per_keypair": 0.00038580246913580245,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                0.9988425925925926
+              ],
+              "pooled": {
+                "0": 2591,
+                "1": 1,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 0.9996141975308642,
+                "1": 0.00038580246913580245,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            },
+            "official": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            }
+          },
+          "pooled": {
+            "delta_stq2": -4755.695987654322,
+            "keccak": {
+              "median": 16865.0,
+              "stq2": 16867.614197530864,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            },
+            "official": {
+              "median": 21623.5,
+              "stq2": 21623.310185185186,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            }
+          },
+          "r0_count_difference": {
+            "binomial_sd_of_difference": 0.0,
+            "candidate_minus_official": -1
+          },
+          "strata": {
+            "0": {
+              "median": {
+                "ci95": [
+                  -4789.0,
+                  -4731.0
+                ],
+                "delta": -4758.5,
+                "keccak": 16865,
+                "official": 21623.5,
+                "resamples": 2000
+              },
+              "n": [
+                2592,
+                2591
+              ],
+              "stq2": {
+                "ci95": [
+                  -4784.2870370370365,
+                  -4726.88994947328
+                ],
+                "delta": -4755.823307531769,
+                "keccak": 16867.486877653417,
+                "official": 21623.310185185186,
+                "resamples": 2000
+              }
+            }
+          }
+        },
+        "launches": {
+          "keccak": 27,
+          "official": 27
+        },
+        "operations": {
+          "dec_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -22.704089942934395,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -4395.875000000002,
+              -4424.050925925925,
+              -4438.472222222223
+            ],
+            "per_batch_summary": {
+              "max": -4395.875000000002,
+              "mean": -4419.466049382717,
+              "min": -4438.472222222223,
+              "negative_batches": 3,
+              "sd": 21.66556380410314,
+              "sd_of_81_launch_pool_from_batch_sd": 12.508619094443961
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -4430.487654320988,
+              "keccak": 14918.973765432098,
+              "official": 19349.461419753086
+            },
+            "stq2": {
+              "delta": -4420.47685185185,
+              "keccak": 15049.481481481482,
+              "official": 19469.958333333332
+            },
+            "stq2_delta_bootstrap_sd": 8.18119429334974,
+            "stq2_delta_ci95_launch_resampling": [
+              -4435.689814814816,
+              -4403.611111111111
+            ],
+            "stq3": {
+              "delta": -4332.665123456789,
+              "keccak": 15226.717592592593,
+              "official": 19559.382716049382
+            }
+          },
+          "enc_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -27.399199756794715,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -7761.703703703704,
+              -7737.53703703704,
+              -7738.078703703704
+            ],
+            "per_batch_summary": {
+              "max": -7737.53703703704,
+              "mean": -7745.77314814815,
+              "min": -7761.703703703704,
+              "negative_batches": 3,
+              "sd": 13.798923904634954,
+              "sd_of_81_launch_pool_from_batch_sd": 7.966812430868153
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -7745.682098765432,
+              "keccak": 20347.16512345679,
+              "official": 28092.847222222223
+            },
+            "stq2": {
+              "delta": -7745.635802469136,
+              "keccak": 20523.93364197531,
+              "official": 28269.569444444445
+            },
+            "stq2_delta_bootstrap_sd": 13.36166835300291,
+            "stq2_delta_ci95_launch_resampling": [
+              -7772.012345679013,
+              -7719.240740740741
+            ],
+            "stq3": {
+              "delta": -7586.759259259259,
+              "keccak": 20999.51851851852,
+              "official": 28586.277777777777
+            }
+          },
+          "keypair_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -21.993376346756566,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -4762.157407407405,
+              -4766.745370370372,
+              -4739.972222222223
+            ],
+            "per_batch_summary": {
+              "max": -4739.972222222223,
+              "mean": -4756.291666666667,
+              "min": -4766.745370370372,
+              "negative_batches": 3,
+              "sd": 14.318014920681607,
+              "sd_of_81_launch_pool_from_batch_sd": 8.266509768716604
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -4790.989197530864,
+              "keccak": 16713.435185185186,
+              "official": 21504.42438271605
+            },
+            "stq2": {
+              "delta": -4755.695987654322,
+              "keccak": 16867.614197530864,
+              "official": 21623.310185185186
+            },
+            "stq2_delta_bootstrap_sd": 13.944578986708128,
+            "stq2_delta_ci95_launch_resampling": [
+              -4784.040123456787,
+              -4729.793209876545
+            ],
+            "stq3": {
+              "delta": -4651.083333333332,
+              "keccak": 17108.569444444445,
+              "official": 21759.652777777777
+            }
+          }
+        },
+        "per_batch": [
+          {
+            "batch": 1,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-keccak-b1-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.45
+              },
+              "launches": 9,
+              "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-official-b1-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.45
+              },
+              "launches": 9,
+              "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "official,base,keccak",
+            "stq2_delta": {
+              "dec_cycles": -4395.875000000002,
+              "enc_cycles": -7761.703703703704,
+              "keypair_cycles": -4762.157407407405
+            }
+          },
+          {
+            "batch": 2,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-keccak-b2-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.45
+              },
+              "launches": 9,
+              "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-official-b2-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.38
+              },
+              "launches": 9,
+              "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "keccak,official,base",
+            "stq2_delta": {
+              "dec_cycles": -4424.050925925925,
+              "enc_cycles": -7737.53703703704,
+              "keypair_cycles": -4766.745370370372
+            }
+          },
+          {
+            "batch": 3,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-keccak-b3-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.38
+              },
+              "launches": 9,
+              "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "fixed-common",
+              "dir": "native-ext-official-b3-20260924kO3",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 5.6,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.39
+              },
+              "launches": 9,
+              "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "base,keccak,official",
+            "stq2_delta": {
+              "dec_cycles": -4438.472222222223,
+              "enc_cycles": -7738.078703703704,
+              "keypair_cycles": -4739.972222222223
+            }
+          }
+        ]
+      }
+    }
+  },
+  "compiler_policy": "fixed-common",
+  "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+  "decision_rule": "robust research win iff extended Native pooled StQ2 delta < 0 AND normal-placement ASLR-on paired 95% CI below zero; reversed ASLR-on reported and flagged (not failed) if it disagrees",
+  "implementations": {
+    "base": "avx2-officialopt-lazy-freeze-qual001",
+    "keccak": "avx2-officialopt-lazy-freeze-keccak-qual001",
+    "official": "avx2"
+  },
+  "methodology": {
+    "aslr": "on only (randomize_va_space=2); no ASLR-off setting, no setarch -R",
+    "native": "fixed single-entry okc-amd64 (compiler wrapper sha256 8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59); not the default selection, unmodified measure.c, one 9-launch batch per role per round, round order rotate, pooled per role; independent pools, not paired",
+    "paired": "O3GC fixed ELFs, ABBA/BAAB blocks, ASLR on; normal placement primary, reversed placement secondary robustness check",
+    "references": [
+      "SUPERCOP: normal compile/link, many fresh processes, StQ",
+      "mlkem-native: single process, warm-ups, median; no placement/ASLR control"
+    ]
+  },
+  "order": "rotate",
+  "parameter": "768",
+  "per_batch_identity": {
+    "base": [
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-base-b1-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.6,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.44
+        },
+        "implementation": "avx2-officialopt-lazy-freeze-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-base-b2-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.7,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.4
+        },
+        "implementation": "avx2-officialopt-lazy-freeze-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-base-b3-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.6,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.44
+        },
+        "implementation": "avx2-officialopt-lazy-freeze-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "a5d19ef0fd6bef5232e6a24b78dc96eba60072b007ab800c42415f67176af1a3",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      }
+    ],
+    "keccak": [
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-keccak-b1-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.0,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.45
+        },
+        "implementation": "avx2-officialopt-lazy-freeze-keccak-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-keccak-b2-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.0,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.45
+        },
+        "implementation": "avx2-officialopt-lazy-freeze-keccak-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-keccak-b3-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.0,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.38
+        },
+        "implementation": "avx2-officialopt-lazy-freeze-keccak-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "243d2fcdcccb5ba413c3c8adaafef3f138d64246bd9c90ca88c149dd58f3dfb7",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      }
+    ],
+    "official": [
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-official-b1-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.6,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.45
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-official-b2-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.6,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.38
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "fixed-common",
+        "compiler_wrapper_sha256": "8fb0b954c52ca302e3817592513f8cefdac9618e89f2f86400153d266c9b3b59",
+        "dir": "native-ext-official-b3-20260924kO3",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 5.6,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.39
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "28f374b7a77cf46aba0f8c993bb42d1ad3454939b1ff9462223a4521153cfb19",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          }
+        ]
+      }
+    ]
+  },
+  "roles": [
+    "official",
+    "base",
+    "keccak"
+  ],
+  "round_order": [
+    "official,base,keccak",
+    "keccak,official,base",
+    "base,keccak,official"
+  ],
+  "schema": "ntruplus-caller-lazy-extended-multi/v1",
+  "seed": 20260923,
+  "supercop_try": {
+    "all_ok": true,
+    "expected_checksum_small_big": "aa9f61a0a34257b1413336dd42f643f9abf10cb458f2df9097bc0db9de825eff/3a04f700b058b26d5a9a7766debc1defc09248912e24dcf0c4a0e59e166e9fbd",
+    "per_batch_compilers": [
+      "O3"
+    ]
+  },
+  "tag": "20260924kO3"
+}

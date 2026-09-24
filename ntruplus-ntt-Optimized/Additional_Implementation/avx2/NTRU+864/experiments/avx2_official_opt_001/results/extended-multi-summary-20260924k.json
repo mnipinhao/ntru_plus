@@ -1,0 +1,1840 @@
+{
+  "comparisons": {
+    "base:official": {
+      "baseline": "official",
+      "candidate": "base",
+      "native": {
+        "batches": 3,
+        "derived_by_elf_pair": {
+          "official:O3:f3cf0a37de53701b vs base:O2:439b14417038f1a1": {
+            "batches": [
+              1,
+              2
+            ],
+            "dec_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -1337.7407407407409
+            },
+            "enc_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -781.9467592592628
+            },
+            "keypair_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -801.1828703703723
+            }
+          },
+          "official:O3:f3cf0a37de53701b vs base:O3:b136e431a99aeb82": {
+            "batches": [
+              3
+            ],
+            "dec_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -1351.3564814814818
+            },
+            "enc_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -869.6620370370401
+            },
+            "keypair_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -1002.6851851851861
+            }
+          }
+        },
+        "keypair_retries": {
+          "composition": {
+            "base": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            },
+            "official": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            }
+          },
+          "pooled": {
+            "base": {
+              "median": 22898.0,
+              "stq2": 22896.237654320987,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            },
+            "delta_stq2": -849.6882716049404,
+            "official": {
+              "median": 23749.0,
+              "stq2": 23745.925925925927,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            }
+          },
+          "r0_count_difference": {
+            "binomial_sd_of_difference": 0.0,
+            "candidate_minus_official": 0
+          },
+          "strata": {
+            "0": {
+              "median": {
+                "base": 22898.0,
+                "ci95": [
+                  -905.0,
+                  -805.0
+                ],
+                "delta": -851.0,
+                "official": 23749.0,
+                "resamples": 2000
+              },
+              "n": [
+                2592,
+                2592
+              ],
+              "stq2": {
+                "base": 22896.237654320987,
+                "ci95": [
+                  -899.7361111111131,
+                  -803.0648148148139
+                ],
+                "delta": -849.6882716049404,
+                "official": 23745.925925925927,
+                "resamples": 2000
+              }
+            }
+          }
+        },
+        "launches": {
+          "base": 27,
+          "official": 27
+        },
+        "operations": {
+          "dec_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -5.639948733424766,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -1337.7037037037044,
+              -1335.3472222222226,
+              -1351.3564814814818
+            ],
+            "per_batch_summary": {
+              "max": -1335.3472222222226,
+              "mean": -1341.4691358024695,
+              "min": -1351.3564814814818,
+              "negative_batches": 3,
+              "sd": 8.64337634696951,
+              "sd_of_81_launch_pool_from_batch_sd": 4.990255660630091
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 22239.30864197531,
+              "delta": -1319.5262345679002,
+              "official": 23558.83487654321
+            },
+            "stq2": {
+              "base": 22350.506172839505,
+              "delta": -1335.9012345679039,
+              "official": 23686.40740740741
+            },
+            "stq2_delta_bootstrap_sd": 19.67921610354612,
+            "stq2_delta_ci95_launch_resampling": [
+              -1375.9953703703686,
+              -1298.765432098764
+            ],
+            "stq3": {
+              "base": 22444.577160493827,
+              "delta": -1387.5030864197543,
+              "official": 23832.08024691358
+            }
+          },
+          "enc_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -2.4701357859161295,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -727.5787037037007,
+              -845.3194444444453,
+              -869.6620370370401
+            ],
+            "per_batch_summary": {
+              "max": -727.5787037037007,
+              "mean": -814.186728395062,
+              "min": -869.6620370370401,
+              "negative_batches": 3,
+              "sd": 75.9858730899162,
+              "sd_of_81_launch_pool_from_batch_sd": 43.87046428307186
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 31913.84413580247,
+              "delta": -789.2037037037044,
+              "official": 32703.047839506173
+            },
+            "stq2": {
+              "base": 32120.277777777777,
+              "delta": -813.5092592592591,
+              "official": 32933.78703703704
+            },
+            "stq2_delta_bootstrap_sd": 34.76221675559934,
+            "stq2_delta_ci95_launch_resampling": [
+              -881.8734567901265,
+              -747.7885802469136
+            ],
+            "stq3": {
+              "base": 32474.137345679013,
+              "delta": -900.0972222222226,
+              "official": 33374.234567901236
+            }
+          },
+          "keypair_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -3.578248640442554,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -789.5185185185182,
+              -814.0462962962956,
+              -1002.6851851851861
+            ],
+            "per_batch_summary": {
+              "max": -789.5185185185182,
+              "mean": -868.75,
+              "min": -1002.6851851851861,
+              "negative_batches": 3,
+              "sd": 116.63780837970843,
+              "sd_of_81_launch_pool_from_batch_sd": 67.34087006571265
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 22749.279320987655,
+              "delta": -835.382716049382,
+              "official": 23584.662037037036
+            },
+            "stq2": {
+              "base": 22896.237654320987,
+              "delta": -849.6882716049404,
+              "official": 23745.925925925927
+            },
+            "stq2_delta_bootstrap_sd": 25.9195495755292,
+            "stq2_delta_ci95_launch_resampling": [
+              -904.125,
+              -804.0679012345681
+            ],
+            "stq3": {
+              "base": 23071.595679012345,
+              "delta": -878.050925925927,
+              "official": 23949.646604938273
+            }
+          }
+        },
+        "per_batch": [
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-base-b1-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.4,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.47
+              },
+              "launches": 9,
+              "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 1,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b1-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 15.9,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.44
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "official,base,keccak",
+            "stq2_delta": {
+              "dec_cycles": -1337.7037037037044,
+              "enc_cycles": -727.5787037037007,
+              "keypair_cycles": -789.5185185185182
+            }
+          },
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-base-b2-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.4,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.4
+              },
+              "launches": 9,
+              "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 2,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b2-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.36
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "keccak,official,base",
+            "stq2_delta": {
+              "dec_cycles": -1335.3472222222226,
+              "enc_cycles": -845.3194444444453,
+              "keypair_cycles": -814.0462962962956
+            }
+          },
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-base-b3-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.1,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.45
+              },
+              "launches": 9,
+              "measure_elf_sha256": "b136e431a99aeb8285b87ac405d6220e2968298b757be172c1f45fba553292aa",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 3,
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b3-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.1,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.39
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "base,keccak,official",
+            "stq2_delta": {
+              "dec_cycles": -1351.3564814814818,
+              "enc_cycles": -869.6620370370401,
+              "keypair_cycles": -1002.6851851851861
+            }
+          }
+        ]
+      }
+    },
+    "keccak:base": {
+      "baseline": "base",
+      "candidate": "keccak",
+      "decision": {
+        "dec_cycles": {
+          "native_ci95": [
+            -4916.464506172841,
+            -4855.577160493827
+          ],
+          "native_negative": true,
+          "native_pooled_stq2_delta": -4886.660493827159,
+          "normal_aslr_on_ci95": [
+            -4928.830729166667,
+            -4878.41796875
+          ],
+          "normal_aslr_on_ci_below_zero": true,
+          "reversed_aslr_on_ci95": null,
+          "verdict": "robust-research-win"
+        },
+        "enc_cycles": {
+          "native_ci95": [
+            -8744.746913580246,
+            -8662.064814814818
+          ],
+          "native_negative": true,
+          "native_pooled_stq2_delta": -8702.08950617284,
+          "normal_aslr_on_ci95": [
+            -8580.756944444443,
+            -8531.003038194443
+          ],
+          "normal_aslr_on_ci_below_zero": true,
+          "reversed_aslr_on_ci95": null,
+          "verdict": "robust-research-win"
+        },
+        "keypair_cycles": {
+          "native_ci95": [
+            -4963.155864197532,
+            -4877.132716049382
+          ],
+          "native_negative": true,
+          "native_pooled_stq2_delta": -4923.444444444442,
+          "normal_aslr_on_ci95": [
+            -4987.778645833332,
+            -4956.985677083334
+          ],
+          "normal_aslr_on_ci_below_zero": true,
+          "reversed_aslr_on_ci95": null,
+          "verdict": "robust-research-win"
+        }
+      },
+      "native": {
+        "batches": 3,
+        "derived_by_elf_pair": {
+          "base:O2:439b14417038f1a1 vs keccak:O3:c36b0349eb3b44ca": {
+            "batches": [
+              1,
+              2
+            ],
+            "dec_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -4857.483796296296
+            },
+            "enc_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -8714.511574074073
+            },
+            "keypair_cycles": {
+              "observations": [
+                1728,
+                1728
+              ],
+              "stq2_delta": -4958.902777777777
+            }
+          },
+          "base:O3:b136e431a99aeb82 vs keccak:O3:c36b0349eb3b44ca": {
+            "batches": [
+              3
+            ],
+            "dec_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -4928.75
+            },
+            "enc_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -8681.48611111111
+            },
+            "keypair_cycles": {
+              "observations": [
+                864,
+                864
+              ],
+              "stq2_delta": -4791.453703703704
+            }
+          }
+        },
+        "keypair_retries": {
+          "composition": {
+            "base": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            },
+            "keccak": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            }
+          },
+          "pooled": {
+            "base": {
+              "median": 22898.0,
+              "stq2": 22896.237654320987,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            },
+            "delta_stq2": -4923.444444444442,
+            "keccak": {
+              "median": 17968.0,
+              "stq2": 17972.793209876545,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            }
+          },
+          "r0_count_difference": {
+            "binomial_sd_of_difference": 0.0,
+            "candidate_minus_official": 0
+          },
+          "strata": {
+            "0": {
+              "median": {
+                "base": 22898.0,
+                "ci95": [
+                  -4968.0,
+                  -4882.5
+                ],
+                "delta": -4930.0,
+                "keccak": 17968.0,
+                "resamples": 2000
+              },
+              "n": [
+                2592,
+                2592
+              ],
+              "stq2": {
+                "base": 22896.237654320987,
+                "ci95": [
+                  -4964.770061728395,
+                  -4878.439814814814
+                ],
+                "delta": -4923.444444444442,
+                "keccak": 17972.793209876545,
+                "resamples": 2000
+              }
+            }
+          }
+        },
+        "launches": {
+          "base": 27,
+          "keccak": 27
+        },
+        "operations": {
+          "dec_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -21.863757608163095,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -4883.5601851851825,
+              -4831.2361111111095,
+              -4928.75
+            ],
+            "per_batch_summary": {
+              "max": -4831.2361111111095,
+              "mean": -4881.182098765431,
+              "min": -4928.75,
+              "negative_batches": 3,
+              "sd": 48.80042113367032,
+              "sd_of_81_launch_pool_from_batch_sd": 28.174936278091664
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 22239.30864197531,
+              "delta": -4936.746913580246,
+              "keccak": 17302.561728395063
+            },
+            "stq2": {
+              "base": 22350.506172839505,
+              "delta": -4886.660493827159,
+              "keccak": 17463.845679012345
+            },
+            "stq2_delta_bootstrap_sd": 15.455385454876215,
+            "stq2_delta_ci95_launch_resampling": [
+              -4916.464506172841,
+              -4855.577160493827
+            ],
+            "stq3": {
+              "base": 22444.577160493827,
+              "delta": -4760.158950617282,
+              "keccak": 17684.418209876545
+            }
+          },
+          "enc_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -27.09219878600592,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -8717.967592592595,
+              -8710.388888888887,
+              -8681.48611111111
+            ],
+            "per_batch_summary": {
+              "max": -8681.48611111111,
+              "mean": -8703.28086419753,
+              "min": -8717.967592592595,
+              "negative_batches": 3,
+              "sd": 19.251431999482275,
+              "sd_of_81_launch_pool_from_batch_sd": 11.114819447186868
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 31913.84413580247,
+              "delta": -8704.246913580246,
+              "keccak": 23209.597222222223
+            },
+            "stq2": {
+              "base": 32120.277777777777,
+              "delta": -8702.08950617284,
+              "keccak": 23418.188271604937
+            },
+            "stq2_delta_bootstrap_sd": 21.057294291194104,
+            "stq2_delta_ci95_launch_resampling": [
+              -8744.746913580246,
+              -8662.064814814818
+            ],
+            "stq3": {
+              "base": 32474.137345679013,
+              "delta": -8491.52314814815,
+              "keccak": 23982.614197530864
+            }
+          },
+          "keypair_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -21.503290273174148,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -4958.763888888887,
+              -4961.166666666664,
+              -4791.453703703704
+            ],
+            "per_batch_summary": {
+              "max": -4791.453703703704,
+              "mean": -4903.7947530864185,
+              "min": -4961.166666666664,
+              "negative_batches": 3,
+              "sd": 97.29762005090055,
+              "sd_of_81_launch_pool_from_batch_sd": 56.17480712789737
+            },
+            "resamples": 2000,
+            "stq1": {
+              "base": 22749.279320987655,
+              "delta": -4932.313271604937,
+              "keccak": 17816.966049382718
+            },
+            "stq2": {
+              "base": 22896.237654320987,
+              "delta": -4923.444444444442,
+              "keccak": 17972.793209876545
+            },
+            "stq2_delta_bootstrap_sd": 22.010295097028177,
+            "stq2_delta_ci95_launch_resampling": [
+              -4963.155864197532,
+              -4877.132716049382
+            ],
+            "stq3": {
+              "base": 23071.595679012345,
+              "delta": -4836.675925925927,
+              "keccak": 18234.91975308642
+            }
+          }
+        },
+        "per_batch": [
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-base-b1-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.4,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.47
+              },
+              "launches": 9,
+              "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 1,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-keccak-b1-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 13.1,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.38
+              },
+              "launches": 9,
+              "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "official,base,keccak",
+            "stq2_delta": {
+              "dec_cycles": -4883.5601851851825,
+              "enc_cycles": -8717.967592592595,
+              "keypair_cycles": -4958.763888888887
+            }
+          },
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-base-b2-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.4,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.4
+              },
+              "launches": 9,
+              "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 2,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-keccak-b2-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 13.1,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.41
+              },
+              "launches": 9,
+              "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "keccak,official,base",
+            "stq2_delta": {
+              "dec_cycles": -4831.2361111111095,
+              "enc_cycles": -8710.388888888887,
+              "keypair_cycles": -4961.166666666664
+            }
+          },
+          {
+            "base": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-base-b3-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.1,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.45
+              },
+              "launches": 9,
+              "measure_elf_sha256": "b136e431a99aeb8285b87ac405d6220e2968298b757be172c1f45fba553292aa",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "batch": 3,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-keccak-b3-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 13.2,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.41
+              },
+              "launches": 9,
+              "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "base,keccak,official",
+            "stq2_delta": {
+              "dec_cycles": -4928.75,
+              "enc_cycles": -8681.48611111111,
+              "keypair_cycles": -4791.453703703704
+            }
+          }
+        ]
+      },
+      "paired": {
+        "normal-aslr-on": {
+          "blocks": 48,
+          "dir": "paired-aslr-on-normal-keccak-vs-base-20260924k",
+          "elf_sha256": {
+            "candidate": "83370eddbe8a664b36fb7c3ff8d6434195802118c9f307a18d6ce9c783a1b860",
+            "official": "22276081b33e1be0283d9bcf9c752895918e81ee71a21c4826509da781196101"
+          },
+          "hygiene": {
+            "attempt": 0,
+            "contaminated": false,
+            "duration_s": 1.7,
+            "earlier_contaminated_attempts": 0,
+            "pre_loadavg1": 0.32
+          },
+          "keypair_retry_strata": {
+            "0": {
+              "blocks_used": 48,
+              "ci95_mean": [
+                -4996.572916666667,
+                -4966.052083333333
+              ],
+              "favourable_blocks": 48,
+              "mean": -4980.75,
+              "median": -4971.5
+            }
+          },
+          "operations": {
+            "dec_cycles": {
+              "blocks": 48,
+              "ci95": [
+                -4928.830729166667,
+                -4878.41796875
+              ],
+              "favourable_blocks": 48,
+              "mean": -4901.5859375,
+              "median": -4873.197916666668
+            },
+            "enc_cycles": {
+              "blocks": 48,
+              "ci95": [
+                -8580.756944444443,
+                -8531.003038194443
+              ],
+              "favourable_blocks": 48,
+              "mean": -8555.971788194443,
+              "median": -8567.427083333336
+            },
+            "keypair_cycles": {
+              "blocks": 48,
+              "ci95": [
+                -4987.778645833332,
+                -4956.985677083334
+              ],
+              "favourable_blocks": 48,
+              "mean": -4972.124565972223,
+              "median": -4969.406250000002
+            }
+          }
+        }
+      },
+      "paired_tag": "keccak-vs-base-20260924k"
+    },
+    "keccak:official": {
+      "baseline": "official",
+      "candidate": "keccak",
+      "decision": {
+        "dec_cycles": {
+          "native_ci95": [
+            -6262.018518518518,
+            -6186.515432098764
+          ],
+          "native_negative": true,
+          "native_pooled_stq2_delta": -6222.561728395063,
+          "normal_aslr_on_ci95": [
+            -6396.618489583333,
+            -6346.881076388888
+          ],
+          "normal_aslr_on_ci_below_zero": true,
+          "reversed_aslr_on_ci95": null,
+          "verdict": "robust-research-win"
+        },
+        "enc_cycles": {
+          "native_ci95": [
+            -9583.683641975305,
+            -9455.575617283954
+          ],
+          "native_negative": true,
+          "native_pooled_stq2_delta": -9515.5987654321,
+          "normal_aslr_on_ci95": [
+            -9436.700954861111,
+            -9379.016059027777
+          ],
+          "normal_aslr_on_ci_below_zero": true,
+          "reversed_aslr_on_ci95": null,
+          "verdict": "robust-research-win"
+        },
+        "keypair_cycles": {
+          "native_ci95": [
+            -5804.998456790123,
+            -5745.251543209877
+          ],
+          "native_negative": true,
+          "native_pooled_stq2_delta": -5773.132716049382,
+          "normal_aslr_on_ci95": [
+            -5935.0290798611095,
+            -5884.177083333332
+          ],
+          "normal_aslr_on_ci_below_zero": true,
+          "reversed_aslr_on_ci95": null,
+          "verdict": "robust-research-win"
+        }
+      },
+      "native": {
+        "batches": 3,
+        "derived_by_elf_pair": {
+          "official:O3:f3cf0a37de53701b vs keccak:O3:c36b0349eb3b44ca": {
+            "batches": [
+              1,
+              2,
+              3
+            ],
+            "dec_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -6222.561728395063
+            },
+            "enc_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -9515.5987654321
+            },
+            "keypair_cycles": {
+              "observations": [
+                2592,
+                2592
+              ],
+              "stq2_delta": -5773.132716049382
+            }
+          }
+        },
+        "keypair_retries": {
+          "composition": {
+            "keccak": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            },
+            "official": {
+              "mean_retries_per_keypair": 0.0,
+              "observations": 2592,
+              "per_batch_r0_fraction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "pooled": {
+                "0": 2592,
+                "1": 0,
+                "2": 0,
+                "3+": 0
+              },
+              "pooled_fraction": {
+                "0": 1.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3+": 0.0
+              }
+            }
+          },
+          "pooled": {
+            "delta_stq2": -5773.132716049382,
+            "keccak": {
+              "median": 17968.0,
+              "stq2": 17972.793209876545,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            },
+            "official": {
+              "median": 23749.0,
+              "stq2": 23745.925925925927,
+              "stq2_window_composition": {
+                "0": 648
+              }
+            }
+          },
+          "r0_count_difference": {
+            "binomial_sd_of_difference": 0.0,
+            "candidate_minus_official": 0
+          },
+          "strata": {
+            "0": {
+              "median": {
+                "ci95": [
+                  -5813.0,
+                  -5750.5
+                ],
+                "delta": -5781.0,
+                "keccak": 17968.0,
+                "official": 23749.0,
+                "resamples": 2000
+              },
+              "n": [
+                2592,
+                2592
+              ],
+              "stq2": {
+                "ci95": [
+                  -5805.350308641973,
+                  -5742.807098765432
+                ],
+                "delta": -5773.132716049382,
+                "keccak": 17972.793209876545,
+                "official": 23745.925925925927,
+                "resamples": 2000
+              }
+            }
+          }
+        },
+        "launches": {
+          "keccak": 27,
+          "official": 27
+        },
+        "operations": {
+          "dec_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -26.270601621287202,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -6221.263888888887,
+              -6166.583333333332,
+              -6280.106481481482
+            ],
+            "per_batch_summary": {
+              "max": -6166.583333333332,
+              "mean": -6222.6512345679,
+              "min": -6280.106481481482,
+              "negative_batches": 3,
+              "sd": 56.774288523868705,
+              "sd_of_81_launch_pool_from_batch_sd": 32.77865076230508
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -6256.273148148146,
+              "keccak": 17302.561728395063,
+              "official": 23558.83487654321
+            },
+            "stq2": {
+              "delta": -6222.561728395063,
+              "keccak": 17463.845679012345,
+              "official": 23686.40740740741
+            },
+            "stq2_delta_bootstrap_sd": 19.77481978603566,
+            "stq2_delta_ci95_launch_resampling": [
+              -6262.018518518518,
+              -6186.515432098764
+            ],
+            "stq3": {
+              "delta": -6147.6620370370365,
+              "keccak": 17684.418209876545,
+              "official": 23832.08024691358
+            }
+          },
+          "enc_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -28.893120474517385,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -9445.546296296296,
+              -9555.708333333332,
+              -9551.14814814815
+            ],
+            "per_batch_summary": {
+              "max": -9445.546296296296,
+              "mean": -9517.467592592593,
+              "min": -9555.708333333332,
+              "negative_batches": 3,
+              "sd": 62.32738938809791,
+              "sd_of_81_launch_pool_from_batch_sd": 35.984735041104955
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -9493.45061728395,
+              "keccak": 23209.597222222223,
+              "official": 32703.047839506173
+            },
+            "stq2": {
+              "delta": -9515.5987654321,
+              "keccak": 23418.188271604937,
+              "official": 32933.78703703704
+            },
+            "stq2_delta_bootstrap_sd": 33.35364466944209,
+            "stq2_delta_ci95_launch_resampling": [
+              -9583.683641975305,
+              -9455.575617283954
+            ],
+            "stq3": {
+              "delta": -9391.620370370372,
+              "keccak": 23982.614197530864,
+              "official": 33374.234567901236
+            }
+          },
+          "keypair_cycles": {
+            "candidate_launches_below_official_median": 27,
+            "delta_percent_stq2": -24.31209772176643,
+            "launches_per_role": 27,
+            "observations": [
+              2592,
+              2592
+            ],
+            "per_batch_stq2_delta": [
+              -5748.282407407405,
+              -5775.21296296296,
+              -5794.1388888888905
+            ],
+            "per_batch_summary": {
+              "max": -5748.282407407405,
+              "mean": -5772.5447530864185,
+              "min": -5794.1388888888905,
+              "negative_batches": 3,
+              "sd": 23.044386115156286,
+              "sd_of_81_launch_pool_from_batch_sd": 13.304682526895157
+            },
+            "resamples": 2000,
+            "stq1": {
+              "delta": -5767.695987654319,
+              "keccak": 17816.966049382718,
+              "official": 23584.662037037036
+            },
+            "stq2": {
+              "delta": -5773.132716049382,
+              "keccak": 17972.793209876545,
+              "official": 23745.925925925927
+            },
+            "stq2_delta_bootstrap_sd": 15.305336827293683,
+            "stq2_delta_ci95_launch_resampling": [
+              -5804.998456790123,
+              -5745.251543209877
+            ],
+            "stq3": {
+              "delta": -5714.726851851854,
+              "keccak": 18234.91975308642,
+              "official": 23949.646604938273
+            }
+          }
+        },
+        "per_batch": [
+          {
+            "batch": 1,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-keccak-b1-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 13.1,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.38
+              },
+              "launches": 9,
+              "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b1-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 15.9,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.44
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "official,base,keccak",
+            "stq2_delta": {
+              "dec_cycles": -6221.263888888887,
+              "enc_cycles": -9445.546296296296,
+              "keypair_cycles": -5748.282407407405
+            }
+          },
+          {
+            "batch": 2,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-keccak-b2-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 13.1,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.41
+              },
+              "launches": 9,
+              "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b2-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.0,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.36
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "keccak,official,base",
+            "stq2_delta": {
+              "dec_cycles": -6166.583333333332,
+              "enc_cycles": -9555.708333333332,
+              "keypair_cycles": -5775.21296296296
+            }
+          },
+          {
+            "batch": 3,
+            "keccak": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-keccak-b3-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 13.2,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.41
+              },
+              "launches": 9,
+              "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "official": {
+              "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+              "compiler_policy": "native-supercop-selection",
+              "dir": "native-ext-official-b3-20260924k",
+              "hygiene": {
+                "attempt": 0,
+                "contaminated": false,
+                "duration_s": 16.1,
+                "earlier_contaminated_attempts": 0,
+                "pre_loadavg1": 0.39
+              },
+              "launches": 9,
+              "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+              "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174"
+            },
+            "order": "base,keccak,official",
+            "stq2_delta": {
+              "dec_cycles": -6280.106481481482,
+              "enc_cycles": -9551.14814814815,
+              "keypair_cycles": -5794.1388888888905
+            }
+          }
+        ]
+      },
+      "paired": {
+        "normal-aslr-on": {
+          "blocks": 48,
+          "dir": "paired-aslr-on-normal-keccak-vs-official-20260924k",
+          "elf_sha256": {
+            "candidate": "83370eddbe8a664b36fb7c3ff8d6434195802118c9f307a18d6ce9c783a1b860",
+            "official": "9bf4b8b74c7a9acf3d14484622741ba5c1988ad4dc11a4ea4a194dfcb96418c0"
+          },
+          "hygiene": {
+            "attempt": 0,
+            "contaminated": false,
+            "duration_s": 1.7,
+            "earlier_contaminated_attempts": 0,
+            "pre_loadavg1": 0.35
+          },
+          "keypair_retry_strata": {
+            "0": {
+              "blocks_used": 48,
+              "ci95_mean": [
+                -5946.020833333333,
+                -5889.34375
+              ],
+              "favourable_blocks": 48,
+              "mean": -5913.635416666667,
+              "median": -5898.25
+            }
+          },
+          "operations": {
+            "dec_cycles": {
+              "blocks": 48,
+              "ci95": [
+                -6396.618489583333,
+                -6346.881076388888
+              ],
+              "favourable_blocks": 48,
+              "mean": -6371.04079861111,
+              "median": -6341.21875
+            },
+            "enc_cycles": {
+              "blocks": 48,
+              "ci95": [
+                -9436.700954861111,
+                -9379.016059027777
+              ],
+              "favourable_blocks": 48,
+              "mean": -9406.484809027777,
+              "median": -9395.656249999998
+            },
+            "keypair_cycles": {
+              "blocks": 48,
+              "ci95": [
+                -5935.0290798611095,
+                -5884.177083333332
+              ],
+              "favourable_blocks": 48,
+              "mean": -5906.569878472221,
+              "median": -5889.708333333332
+            }
+          }
+        }
+      },
+      "paired_tag": "keccak-vs-official-20260924k"
+    }
+  },
+  "compiler_policy": "native-supercop-selection",
+  "compiler_wrapper_sha256": null,
+  "decision_rule": "robust research win iff extended Native pooled StQ2 delta < 0 AND normal-placement ASLR-on paired 95% CI below zero; reversed ASLR-on reported and flagged (not failed) if it disagrees",
+  "implementations": {
+    "base": "avx2-officialopt-lazy-codec-qual002",
+    "keccak": "avx2-officialopt-lazy-codec-keccak-qual001",
+    "official": "avx2"
+  },
+  "methodology": {
+    "aslr": "on only (randomize_va_space=2); no ASLR-off setting, no setarch -R",
+    "native": "default SUPERCOP compiler selection, unmodified measure.c, one 9-launch batch per role per round, round order rotate, pooled per role; independent pools, not paired",
+    "paired": "O3GC fixed ELFs, ABBA/BAAB blocks, ASLR on; normal placement primary, reversed placement secondary robustness check",
+    "references": [
+      "SUPERCOP: normal compile/link, many fresh processes, StQ",
+      "mlkem-native: single process, warm-ups, median; no placement/ASLR control"
+    ]
+  },
+  "order": "rotate",
+  "parameter": "864",
+  "per_batch_identity": {
+    "base": [
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-base-b1-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.4,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.47
+        },
+        "implementation": "avx2-officialopt-lazy-codec-qual002",
+        "launches": 9,
+        "level": "O2",
+        "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O2_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-base-b2-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.4,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.4
+        },
+        "implementation": "avx2-officialopt-lazy-codec-qual002",
+        "launches": 9,
+        "level": "O2",
+        "measure_elf_sha256": "439b14417038f1a12cda2e9965c08a0b718bd88c404d63f2b07ccd8bda6c1fba",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-base-b3-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.1,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.45
+        },
+        "implementation": "avx2-officialopt-lazy-codec-qual002",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "b136e431a99aeb8285b87ac405d6220e2968298b757be172c1f45fba553292aa",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      }
+    ],
+    "keccak": [
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-keccak-b1-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 13.1,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.38
+        },
+        "implementation": "avx2-officialopt-lazy-codec-keccak-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-keccak-b2-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 13.1,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.41
+        },
+        "implementation": "avx2-officialopt-lazy-codec-keccak-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-keccak-b3-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 13.2,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.41
+        },
+        "implementation": "avx2-officialopt-lazy-codec-keccak-qual001",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "c36b0349eb3b44ca32afa80057e9bfebfbf1cb5a3458ed72af9aca87617a2eb7",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      }
+    ],
+    "official": [
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-official-b1-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 15.9,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.44
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-official-b2-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.0,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.36
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      },
+      {
+        "compiler": "gcc_-march=native_-mtune=native_-O3_-fwrapv_-fPIC_-fPIE_-gdwarf-4_-Wall 15.2.0",
+        "compiler_policy": "native-supercop-selection",
+        "compiler_wrapper_sha256": null,
+        "dir": "native-ext-official-b3-20260924k",
+        "hygiene": {
+          "attempt": 0,
+          "contaminated": false,
+          "duration_s": 16.1,
+          "earlier_contaminated_attempts": [],
+          "pre_loadavg1": 0.39
+        },
+        "implementation": "avx2",
+        "launches": 9,
+        "level": "O3",
+        "measure_elf_sha256": "f3cf0a37de53701b9c9635e75c86d7cd5f388aa34ea07736e508fc97ef0c4d03",
+        "measure_source_sha256": "7490844f4a1b6645903e79afe95d8e58e544e0bc66e28a95d61d78de352e0174",
+        "try": [
+          {
+            "checksum_ok": true,
+            "compiler": "O3",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "Os",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O2",
+            "result": "ok"
+          },
+          {
+            "checksum_ok": true,
+            "compiler": "O",
+            "result": "ok"
+          }
+        ]
+      }
+    ]
+  },
+  "roles": [
+    "official",
+    "base",
+    "keccak"
+  ],
+  "round_order": [
+    "official,base,keccak",
+    "keccak,official,base",
+    "base,keccak,official"
+  ],
+  "schema": "ntruplus-caller-lazy-extended-multi/v1",
+  "seed": 20260923,
+  "supercop_try": {
+    "all_ok": true,
+    "expected_checksum_small_big": "b0cdac767e2e48039693200e36eb3f404722e1a383e56856d7edd2a37b48e04c/206acd115bdf985bed1e43be837054da8bcdd54a43d934baf1dc791bd3575647",
+    "per_batch_compilers": [
+      "O",
+      "O2",
+      "O3",
+      "Os"
+    ]
+  },
+  "tag": "20260924k"
+}
