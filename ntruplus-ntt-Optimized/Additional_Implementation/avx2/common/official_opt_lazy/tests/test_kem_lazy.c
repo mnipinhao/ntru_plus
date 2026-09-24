@@ -39,6 +39,29 @@ int __wrap_poly_baseinv(poly *out, const poly *in) {
     return status;
 }
 #define KEYGEN_CLASSIFY(impl) (keygen_impl = (impl), keygen_on_g = 0)
+#ifdef CANDIDATE_BASEINV
+/* A candidate whose keygen reaches BaseInv through another symbol (the keygen
+ * R^2-fold candidates: -DCANDIDATE_BASEINV=<symbol> plus -Wl,--wrap=<symbol>)
+ * gets the same one-shot f-failure injection and failure classification. */
+#define KEM_TEST_BCAT_(a, b) a##b
+#define KEM_TEST_BCAT(a, b) KEM_TEST_BCAT_(a, b)
+int KEM_TEST_BCAT(__real_, CANDIDATE_BASEINV)(poly *, const poly *);
+int KEM_TEST_BCAT(__wrap_, CANDIDATE_BASEINV)(poly *out, const poly *in) {
+    if (force_f_failure) {
+        force_f_failure = 0;
+        injected_f_failures++;
+        memset(out, 0xa5, sizeof *out);
+        return 1;
+    }
+    int status = KEM_TEST_BCAT(__real_, CANDIDATE_BASEINV)(out, in);
+    if (keygen_impl >= 0) {
+        if (status && !keygen_on_g) natural_f_failures[keygen_impl]++;
+        else if (status) natural_g_failures[keygen_impl]++;
+        else keygen_on_g = 1;
+    }
+    return status;
+}
+#endif
 #else
 #define KEYGEN_CLASSIFY(impl) ((void)0)
 #endif
