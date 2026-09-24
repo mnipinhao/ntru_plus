@@ -13,3 +13,7 @@ KECCAK_BASE_ASM = $(LAZY_ASM) $(DIRECT_ASM)
 KECCAK_BASE_CHECKS := check-generate check-codec-generate check-codec-direct-generate
 KECCAK_BASE_QUAL := qualification/avx2-officialopt-lazy-codec-qual002
 include ../../../common/official_opt_keccak/keccak.mk
+# HT Forward (Hwang-style data movement, new 6-register block network) + keygen
+# R^2 fold stacked on the Keccak candidate (avx2-officialopt-lazy-codec-keccak-ht-864-exp001)
+# + ht_only / r2fold_only controls; no HT inverse: see common/official_opt_ht/ht.mk.
+include ../../../common/official_opt_ht/ht.mk
