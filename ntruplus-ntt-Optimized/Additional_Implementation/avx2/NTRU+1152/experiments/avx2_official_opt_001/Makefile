@@ -14,3 +14,7 @@ KECCAK_BASE_ASM = $(LAZY_ASM) $(FREEZE_ASM)
 KECCAK_BASE_CHECKS := check-generate check-freeze-generate
 KECCAK_BASE_QUAL := qualification/avx2-officialopt-lazy-freeze-qual001
 include ../../../common/official_opt_keccak/keccak.mk
+# HT Forward (Hwang-style data movement, the NTRU+768 block network) + keygen R^2
+# fold stacked on the Keccak candidate (avx2-officialopt-lazy-freeze-keccak-ht-1152-exp001)
+# + ht_only / r2fold_only controls; no HT inverse: see common/official_opt_ht/ht.mk.
+include ../../../common/official_opt_ht/ht.mk
