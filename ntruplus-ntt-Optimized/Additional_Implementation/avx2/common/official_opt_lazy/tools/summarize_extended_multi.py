@@ -86,7 +86,7 @@ def main() -> int:
     identity = {}
     for role in roles:
         dirs = sorted(results.glob(f"native-ext-{role}-b*-{args.tag}"),
-                      key=lambda d: int(d.name.split("-b")[1].split("-")[0]))
+                      key=lambda d: int(d.name[len(f"native-ext-{role}-b"):].split("-")[0]))
         rows = []
         for d in dirs:
             meta = json.loads((d / "metadata.json").read_text())

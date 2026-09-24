@@ -71,7 +71,7 @@ def batches(results: Path, tag: str, roles=ROLES):
     out = {}
     for role in roles:
         dirs = sorted(results.glob(f"native-ext-{role}-b*-{tag}"),
-                      key=lambda d: int(d.name.split("-b")[1].split("-")[0]))
+                      key=lambda d: int(d.name[len(f"native-ext-{role}-b"):].split("-")[0]))
         out[role] = dirs
     if len(out[base]) != len(out[cand]) or not out[base]:
         raise SystemExit(f"unbalanced or missing batches: { {r: len(v) for r, v in out.items()} }")
