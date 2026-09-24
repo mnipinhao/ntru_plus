@@ -1,0 +1,151 @@
+{
+  "aslr": "on (randomize_va_space=2, no setarch -R)",
+  "binary": "build/bench_ht_diag_swapped",
+  "class": "supercop-derived diagnostic; not Native SUPERCOP",
+  "command": [
+    "taskset",
+    "-c",
+    "1",
+    "/home/nuc/src/ntru_plus-official-opt-864-1152/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/build/bench_ht_diag_swapped"
+  ],
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "compiler_recipe": "lazy.mk BENCH_CFLAGS (common O3GC) for all objects (ht.mk ht-bench)",
+  "controls_read_only": {
+    "/proc/sys/kernel/randomize_va_space": "2",
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "cpu": 1,
+  "cpucycles_identity": [
+    "cpucycles=default-perfevent persecond=1400000000"
+  ],
+  "elf_sha256": "b58641c587bae8e6323a736e651602ac31f10f792e70f4b389be84988b868016",
+  "elf_text_sha256": "b3933daa0e0aeb1bc000509588ff924dbe198680d217f2a280dd2c6bb8aa2234",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "host_hygiene": {
+    "after": {
+      "loadavg": [
+        0.61,
+        0.85,
+        0.64
+      ],
+      "time": "2026-09-24T18:13:58.827725+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "tailscaled",
+          "cpu_percent": 2.0,
+          "last_cpu": 13,
+          "pid": 5713
+        },
+        {
+          "comm": "MainThread",
+          "cpu_percent": 1.7,
+          "last_cpu": 10,
+          "pid": 1548120
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 1.3,
+          "last_cpu": 1,
+          "pid": 1548771
+        },
+        {
+          "comm": "localsearch-3",
+          "cpu_percent": 0.3,
+          "last_cpu": 16,
+          "pid": 9607
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 0.3,
+          "last_cpu": 3,
+          "pid": 1548354
+        }
+      ],
+      "uptime": "02:13:55 up 17 days, 15:13,  7 users,  load average: 0.61, 0.85, 0.64"
+    },
+    "attempt": 0,
+    "before": {
+      "loadavg": [
+        0.49,
+        0.84,
+        0.63
+      ],
+      "time": "2026-09-24T18:13:41.274483+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "gnome-shell",
+          "cpu_percent": 2.7,
+          "last_cpu": 3,
+          "pid": 9216
+        },
+        {
+          "comm": "tailscaled",
+          "cpu_percent": 2.3,
+          "last_cpu": 13,
+          "pid": 5713
+        },
+        {
+          "comm": "claude",
+          "cpu_percent": 2.3,
+          "last_cpu": 3,
+          "pid": 1548771
+        },
+        {
+          "comm": "MainThread",
+          "cpu_percent": 1.3,
+          "last_cpu": 21,
+          "pid": 1548120
+        },
+        {
+          "comm": "code-fc3def6774",
+          "cpu_percent": 0.7,
+          "last_cpu": 3,
+          "pid": 1556065
+        }
+      ],
+      "uptime": "02:13:38 up 17 days, 15:12,  7 users,  load average: 0.45, 0.83, 0.63"
+    },
+    "contaminated": false,
+    "contamination_reasons": [],
+    "duration_s": 14.5,
+    "during_heavy_windows": 0,
+    "during_max_loadavg1_including_batch": 0.57,
+    "during_offenders": {},
+    "earlier_contaminated_attempts": [],
+    "host_controls_changed": false,
+    "load_threshold": 0.5,
+    "proc_threshold_percent": 25.0,
+    "waited_for_quiet_s": 15.0
+  },
+  "launches": 31,
+  "link_order": "reversed",
+  "observations_per_variant_per_launch": 640,
+  "parameter": "1152",
+  "source_sha256": {
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/asm/ntruplus1152_officialopt_basemul_nor2.s": "38d981adb5e2d35fcef27bd262f4e5ab153fe90ffdbdb436db04baa12945f687",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/asm/ntruplus1152_officialopt_ntt_caller_lazy.s": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/asm/ntruplus1152_officialopt_ntt_ht.s": "20f3558e002826aca9701385229d5b52562fe7434bbb10bfcccaaa12804a87b1",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/asm/ntruplus1152_officialopt_tobytes_freeze2op.s": "ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/kem_lazy.c": "0bd8c009ef362948fd51d7b1c642904b7f5e5d1095f11cf6401dcbf408d2caa7",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/kem_lazy_freeze2op.c": "430ce4f1b73fa622707c706ec3c9328644fed5cbe672d97816ea6fee26581996",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/kem_lazy_freeze2op_keccak.c": "2c11774dc3899f23b510d432089aa3ddb7735f711dad2a614e73999b5a0e527c",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/kem_lazy_freeze2op_keccak_ht.c": "918aaa6cc12a13e992bb572b6644913724fe934483f2f2d9d7fa6d981547a058",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/kem_lazy_r2fold.c": "113d48aa5b6b4f2ba3db1d829f15435ef8f7abcc98097ef01ed23dfd1dd5b809",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_freeze2op_keccak.c": "35f9b778ab27465ac20c142beddac4eba82b2f988a6e4857ee1d50d59202032f",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_freeze2op_keccak_ht.c": "f345b21a61a63760ffc609422eb9c5033d6498f969fe9c5465d4eb05e6f51690",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/src/ntruplus1152_officialopt_baseinv_r2fold.c": "404ad4bde6f04078007333e241ab70b3cd11495a446fecbdc1464ae3916d9724",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/upstream/supercop-avx2/basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/upstream/supercop-avx2/ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+1152/experiments/avx2_official_opt_001/upstream/supercop-avx2/poly.c": "5a6dd54dd5510dfda93cf7a8278ccc1214dfbfcd935251886422c68126ed1705",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_ht/bench/bench_ht_diag.c": "a2c4fac99bbdd8c66c5b5b3cd8df7c1131c9c7832e692a03656d00d2e22b0432",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_ht/ht.mk": "7a6e64695a0fe40089bcfa834786a49514cee27cb749cdb498596e4d53847221",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/keccak.mk": "83037ee67de4aff46deb5bd48efca9537a0ac50ada004364c1991cde288e905e",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/src/symmetric_keccak.c": "04c27e82bbcabe9a305cebe6bc2f24ab10d57f2171eb5ffdac8bf0b8579c2a83",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/bench/kem_diag.c": "1431453b5983538028dba2c0f12518032d3ac3acc4469fb86e14654f9cf0087c",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/lazy.mk": "d8f6cc15889fa49f1c8f7d7269fc2dd7190249400f4939bde788b7fa3fe38391",
+    "third_party/mlkem-native-fips202-b3ba7b32/mlkem/src/fips202/fips202.c": "fb0654c0b33c45c929fdb2af2287807a7b8f312ac7f3baa3ddfaef0c030ef0b2",
+    "third_party/mlkem-native-fips202-b3ba7b32/mlkem/src/fips202/keccakf1600.c": "461c278b0abb9fde098ee6b34a47056445573cb7aa5c4362d59e35041d0997e5"
+  }
+}
