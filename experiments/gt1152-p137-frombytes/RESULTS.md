@@ -71,3 +71,38 @@ assembly is the one that wins on both.
   loads/stores (144 + 144) are well under their limits.  Closing it would need
   cross-pair scheduling without moves, i.e. more registers (v8-v15 with a
   d8-d15 save).  Not attempted.
+
+## Integration (branch gt1152-frombytes-tbl2, from main 21a1de6a)
+
+`unpack.S` = `gen_asm.py codec_pairs.h --imm --symbol frombytes_asm`: the
+body is byte-identical to the measured `frombytes_tbl2_asm.S`, only the
+entry name and header differ.  `pack.c` loses the C decoder with `load12` and
+`unfold4`; `api_glue.c` and `pack_asm.h` are unchanged.
+
+The first SUPERCOP run failed to link the new leaf (`undefined reference to
+frombytes_asm`): `export_supercop.py` keeps its own source list and did not
+ship `unpack.S`, and `export-check` only checks that the export is
+deterministic.  The script now compares its lists with the Makefile's
+`C_SRC`/`ASM_SRC` and refuses to export on a difference (checked by dropping
+`unpack.S` from its list).  864's lists match its Makefile today.
+
+Checks: `make check` on macOS and Linux (KAT, 13,824 canonical-decode cases,
+ABI mask 0 for `frombytes`); TIMECOP=256 passes at -O, -O2, -O3 and -Os (timecop.sh, the exported leaf as `gt-p137` in the P119 staging).
+
+SUPERCOP 20260831 on the Pi 5 (`supercop_run.py`, six rotated rounds, core 3;
+`throttled=0x50000` at every reading, the sticky bits of P135):
+
+| cycles, median | Official | GT before | GT after | after - before |
+|---|---:|---:|---:|---:|
+| keypair | 63,901 | 54,780 | 54,683 | -97 (noise: +-7,000 between rounds) |
+| enc | 59,005 | 46,039.5 | 45,886.5 | **-153 (-0.33%)** |
+| dec | 52,505.5 | 43,405.5 | 42,966.5 | **-439 (-1.01%)** |
+
+Paired rounds: dec -333, -428, -450, -454, -390, -517; enc -136, -139, -151,
+-195, -125, -199.  keypair moves by thousands between rounds either way:
+29% of 1152's f/g candidates fail inversion, and SUPERCOP's RNG differs
+from round to round.  Against Official: dec -17.33% -> -18.17%, enc -21.97% ->
+-22.23%.
+
+M2, P129 harness, the two trees (`tree_ab.sh`, three sessions): keygen
+6,429 / 6,428, encaps 6,122 -> 6,105 (-0.26%), decaps 4,952 -> 4,907 (-0.91%).
