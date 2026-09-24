@@ -187,11 +187,11 @@ direct_codec:  # 2026-09-23; NTRU+864 exp002 idea evaluated for NTRU+768; docs/n
   promotion: none
   reproduce: docs/ntruplus768-1152-direct-codec.md#reproduce
 
-keccak_candidate:  # 2026-09-23, Phase A + same-ELF diagnostic; docs/ntruplus-avx2-keccak-mlkem-native.md
+keccak_candidate:  # 2026-09-23 Phase A + same-ELF diagnostic; 2026-09-24 Phase B (qualification export, Native default/-O3/-O2, ASLR-on paired); docs/ntruplus-avx2-keccak-mlkem-native.md
   candidate: avx2-officialopt-lazy-freeze-keccak-768-exp001  # base candidate + every SHAKE256 on mlkem-native x1 C Keccak
   base: avx2-officialopt-lazy-freeze-768-exp001  # src/kem_lazy_freeze2op.c, unchanged
   control: keccak_only  # src/kem_keccak.c = pinned Official kem.c + mlkem-native Keccak (diagnostic)
-  phase: A_complete_plus_same_elf_diagnostic  # no SUPERCOP campaign, no Native timing
+  phase: B_native_measured  # Phase A + same-ELF diagnostic (2026-09-23), Phase B 2026-09-24; decision: phase_b.decision
   backend:
     upstream: https://github.com/pq-code-package/mlkem-native.git
     commit: b3ba7b32773e657dd37f6f87bce82528459ad8a4
@@ -251,8 +251,103 @@ keccak_candidate:  # 2026-09-23, Phase A + same-ELF diagnostic; docs/ntruplus-av
       cause: "gcc 15 -O2 leaves keccakf1600_xor_bytes/extract_bytes as byte loops (16/15 insns, no vector); -O3 vectorises them; the C permutation is insensitive"
     observation: "KEM-level keccak deltas exceed the sum of the isolated hash_f/g/h deltas (see doc); component numbers understate the KEM effect in this harness"
     evidence: results/keccak-diag-{normal,reversed}-20260923/, ../../../../../../results/keccak-mlkem-native-20260923/ (repo root)
+  phase_b:  # 2026-09-24; docs/ntruplus-avx2-keccak-mlkem-native.md#phase-b-native-supercop-2026-09-24
+    qualification_export:
+      path: qualification/avx2-officialopt-lazy-freeze-keccak-qual001  # + .json manifest (36 file hashes, base identity, vendored files + SPDX + LICENSE, include rewrites)
+      tree_sha256: 6209ebacb81ce313a43d305b960c6b5e94618ff6149abd326c39c15f98bb4fb6
+      base_tree_sha256: 2d9fa3508a442e05268f5686155a336956d2c00ecab940a7350df49710666d5f  # avx2-officialopt-lazy-freeze-qual001
+      exporter: common/official_opt_keccak/tools/export_keccak_flat.py --qualification-root qualification (make keccak-qualification); refuses overwrite; == Phase-A flat tree file for file
+      installed: /home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001/crypto_kem/ntruplus768/avx2-officialopt-lazy-freeze-keccak-qual001  # install_qualification.py (kind keccak-qualification-source)
+      supercop_try: "ok, checksumsmall/big == pinned crypto_kem checksums (= Official), for O3/Os/O2/O in every default-selection batch, the single line in every fixed-O3/O2 batch, and the O3GC fixed builds"
+    methodology: "CPU 1, ASLR on (randomize_va_space=2), normal placement; unmodified measure.c; hygiene wrapper on every batch; strictly sequential; host controls unchanged"
+    native_design: "3 roles (official=avx2, base, keccak), 27 fresh launches each = 3 rounds x one 9-launch batch per role, order rotated (official,base,keccak / keccak,official,base / base,keccak,official); independent pools; 95% CI by launch resampling (2000)"
+    decision_rule: "robust research win iff Native (default compiler selection) pooled StQ2 delta vs Official < 0 AND normal-placement ASLR-on fixed-ELF paired 95% CI vs Official below zero; vs-base verdict by the same rule; fixed -O3/-O2 Native is compiler-sensitivity evidence"
+    native_default:  # default SUPERCOP compiler selection; StQ2 delta [95% CI] favourable launches/27
+      compiler_picks: {official: [O2, O2, O2], base: [O2, O2, O2], keccak: [O3, O3, O3]}
+      measure_elf_sha256_prefix: {official: [e039d327f379d371], base: [e234b4c4ff146bbc], keccak: [243d2fcdcccb5ba4]}
+      stq2: {keypair: {official: 21594.0, base: 21379.4, keccak: 16842.9}, enc: {official: 28157.8, base: 27998.2, keccak: 20530.8}, dec: {official: 19465.9, base: 19147.0, keccak: 15043.3}}
+      keccak_minus_official:
+        keypair: {stq2: -4751.1, pct: -22.00, ci95: [-4765.3, -4737.2], favourable: 27/27, batches: [-4758, -4739, -4756]}
+        enc: {stq2: -7627.0, pct: -27.09, ci95: [-7722.9, -7573.3], favourable: 27/27, batches: [-7642, -7566, -7723]}
+        dec: {stq2: -4422.6, pct: -22.72, ci95: [-4455.8, -4393.0], favourable: 27/27, batches: [-4410, -4459, -4396]}
+      keccak_minus_base:
+        keypair: {stq2: -4536.4, pct: -21.22, ci95: [-4561.2, -4512.9], favourable: 27/27, batches: [-4534, -4507, -4567]}
+        enc: {stq2: -7467.4, pct: -26.67, ci95: [-7536.8, -7410.6], favourable: 27/27, batches: [-7549, -7426, -7435]}
+        dec: {stq2: -4103.7, pct: -21.43, ci95: [-4136.4, -4074.9], favourable: 27/27, batches: [-4109, -4095, -4108]}
+      base_minus_official:
+        keypair: {stq2: -214.7, pct: -0.99, ci95: [-237.3, -190.5], favourable: 27/27, batches: [-224, -231, -189]}
+        enc: {stq2: -159.6, pct: -0.57, ci95: [-258.9, -80.2], favourable: 25/27, batches: [-93, -140, -287]}
+        dec: {stq2: -318.9, pct: -1.64, ci95: [-354.8, -280.5], favourable: 26/27, batches: [-301, -365, -288]}
+      evidence: results/native-ext-{official,base,keccak}-b{1..3}-20260924k/, results/extended-multi-summary-20260924k.json
+    native_O3:  # fixed -O3 only (okc-native-gcc-O3-only.sh; okc-amd64 hash re-checked after every batch); StQ2 delta [95% CI] favourable launches/27
+      compiler_picks: {official: [O3, O3, O3], base: [O3, O3, O3], keccak: [O3, O3, O3]}
+      measure_elf_sha256_prefix: {official: [28f374b7a77cf46a], base: [a5d19ef0fd6bef52], keccak: [243d2fcdcccb5ba4]}
+      stq2: {keypair: {official: 21623.3, base: 21351.7, keccak: 16867.6}, enc: {official: 28269.6, base: 28059.6, keccak: 20523.9}, dec: {official: 19470.0, base: 19250.0, keccak: 15049.5}}
+      keccak_minus_official:
+        keypair: {stq2: -4755.7, pct: -21.99, ci95: [-4784.0, -4729.8], favourable: 27/27, batches: [-4762, -4767, -4740]}
+        enc: {stq2: -7745.6, pct: -27.40, ci95: [-7772.0, -7719.2], favourable: 27/27, batches: [-7762, -7738, -7738]}
+        dec: {stq2: -4420.5, pct: -22.70, ci95: [-4435.7, -4403.6], favourable: 27/27, batches: [-4396, -4424, -4438]}
+      keccak_minus_base:
+        keypair: {stq2: -4484.1, pct: -21.00, ci95: [-4525.6, -4451.4], favourable: 27/27, batches: [-4482, -4544, -4425]}
+        enc: {stq2: -7535.6, pct: -26.86, ci95: [-7574.6, -7499.1], favourable: 27/27, batches: [-7561, -7487, -7553]}
+        dec: {stq2: -4200.5, pct: -21.82, ci95: [-4229.6, -4174.4], favourable: 27/27, batches: [-4176, -4190, -4236]}
+      base_minus_official:
+        keypair: {stq2: -271.6, pct: -1.26, ci95: [-302.8, -237.6], favourable: 27/27, batches: [-280, -223, -315]}
+        enc: {stq2: -210.0, pct: -0.74, ci95: [-251.8, -167.1], favourable: 26/27, batches: [-201, -251, -185]}
+        dec: {stq2: -220.0, pct: -1.13, ci95: [-244.6, -192.0], favourable: 26/27, batches: [-220, -234, -202]}
+      evidence: results/native-ext-{official,base,keccak}-b{1..3}-20260924kO3/, results/extended-multi-summary-20260924kO3.json
+    native_O2:  # fixed -O2 only (okc-native-gcc-O2-only.sh; okc-amd64 hash re-checked after every batch); StQ2 delta [95% CI] favourable launches/27
+      compiler_picks: {official: [O2, O2, O2], base: [O2, O2, O2], keccak: [O2, O2, O2]}
+      measure_elf_sha256_prefix: {official: [e039d327f379d371], base: [e234b4c4ff146bbc], keccak: [64bcbb9a878a0329]}
+      stq2: {keypair: {official: 21599.6, base: 21377.1, keccak: 18363.1}, enc: {official: 28178.6, base: 27975.9, keccak: 23438.1}, dec: {official: 19461.3, base: 19167.2, keccak: 16697.3}}
+      keccak_minus_official:
+        keypair: {stq2: -3236.5, pct: -14.98, ci95: [-3267.8, -3211.0], favourable: 27/27, batches: [-3215, -3278, -3225]}
+        enc: {stq2: -4740.5, pct: -16.82, ci95: [-4867.5, -4673.6], favourable: 27/27, batches: [-4684, -4802, -4744]}
+        dec: {stq2: -2764.0, pct: -14.20, ci95: [-2789.2, -2737.4], favourable: 27/27, batches: [-2758, -2775, -2758]}
+      keccak_minus_base:
+        keypair: {stq2: -3014.0, pct: -14.10, ci95: [-3040.2, -2990.4], favourable: 27/27, batches: [-3038, -3003, -2999]}
+        enc: {stq2: -4537.8, pct: -16.22, ci95: [-4580.3, -4492.3], favourable: 27/27, batches: [-4495, -4575, -4541]}
+        dec: {stq2: -2469.9, pct: -12.89, ci95: [-2513.3, -2437.2], favourable: 27/27, batches: [-2445, -2471, -2493]}
+      base_minus_official:
+        keypair: {stq2: -222.5, pct: -1.03, ci95: [-260.8, -187.3], favourable: 26/27, batches: [-177, -275, -226]}
+        enc: {stq2: -202.7, pct: -0.72, ci95: [-327.0, -125.0], favourable: 25/27, batches: [-189, -227, -203]}
+        dec: {stq2: -294.1, pct: -1.51, ci95: [-334.0, -242.4], favourable: 27/27, batches: [-314, -304, -265]}
+      evidence: results/native-ext-{official,base,keccak}-b{1..3}-20260924kO2/, results/extended-multi-summary-20260924kO2.json
+    paired:  # O3GC fixed ELFs (okc-o3gc.sh), ASLR on, normal placement, 48 ABBA/BAAB blocks (192 fresh launches); mean [block-bootstrap 95% CI] favourable/48
+      elf_sha256: {official: d9fba9ad078bdc08, base: 10d7e27b6f8de35f, keccak: 708a4f1b3372434a}  # results/fixed-keccak-{official,base,keccak}-normal-20260924k/
+      keccak_vs_official:
+        keypair: {mean: -4806.1, ci95: [-4818.8, -4795.2], favourable: 48/48}
+        enc: {mean: -7649.9, ci95: [-7698.5, -7612.2], favourable: 48/48}
+        dec: {mean: -4353.1, ci95: [-4372.2, -4335.3], favourable: 48/48}
+      keccak_vs_base:
+        keypair: {mean: -4530.4, ci95: [-4543.1, -4518.0], favourable: 48/48}
+        enc: {mean: -7523.8, ci95: [-7560.1, -7492.9], favourable: 48/48}
+        dec: {mean: -4193.2, ci95: [-4208.5, -4177.7], favourable: 48/48}
+      evidence: results/paired-aslr-on-normal-keccak-vs-{official,base}-20260924k/
+    decision:
+      vs_official:
+        keypair: robust-research-win  # Native default -4751.1 [-4765.3, -4737.2]; paired CI [-4818.8, -4795.2]; fixed O3 -4755.7, fixed O2 -3236.5
+        enc: robust-research-win  # Native default -7627.0 [-7722.9, -7573.3]; paired CI [-7698.5, -7612.2]; fixed O3 -7745.6, fixed O2 -4740.5
+        dec: robust-research-win  # Native default -4422.6 [-4455.8, -4393.0]; paired CI [-4372.2, -4335.3]; fixed O3 -4420.5, fixed O2 -2764.0
+      vs_base:
+        keypair: robust-research-win  # Native default -4536.4 [-4561.2, -4512.9]; paired CI [-4543.1, -4518.0]; fixed O3 -4484.1, fixed O2 -3014.0
+        enc: robust-research-win  # Native default -7467.4 [-7536.8, -7410.6]; paired CI [-7560.1, -7492.9]; fixed O3 -7535.6, fixed O2 -4537.8
+        dec: robust-research-win  # Native default -4103.7 [-4136.4, -4074.9]; paired CI [-4208.5, -4177.7]; fixed O3 -4200.5, fixed O2 -2469.9
+      compiler_sensitivity: "negative under default, fixed -O3 and fixed -O2 for every op, vs Official and vs base; at fixed -O2 the Keccak saving vs base shrinks to keypair 67%, enc 60%, dec 59% of the fixed -O3 saving (byte-loop xor_bytes/extract_bytes); default selection picked O3 for keccak in 3/3 batches"
+    anomaly_check:  # Phase A: in-KEM same-ELF saving ~1.7x the isolated hash sum; which does Native keccak-base follow?
+      enc: {native_default: -7467.4, same_elf_in_kem: -7528.6, isolated_f_g_h_sum: -4385.0, native_over_same_elf: 0.99, native_over_isolated: 1.70, closer_to: same-ELF in-KEM delta}
+      dec: {native_default: -4103.7, same_elf_in_kem: -4029.5, isolated_g_h_sum: -2494.6, native_over_same_elf: 1.02, native_over_isolated: 1.65, closer_to: same-ELF in-KEM delta}
+      keypair: {native_default: -4536.4, same_elf_in_kem: -4263.1}  # no isolated counterpart (direct genf/geng shake256)
+      conclusion: "Native follows the same-ELF in-KEM delta, not the isolated hash sum; the component harness understates the in-KEM saving"
+    host_hygiene: "all 32 batches for this parameter (27 Native, 3 fixed-ELF builds, 2 paired) accepted on attempt 0, none contaminated; campaign okc-amd64 sha256 82f1eea7... unchanged after every batch"
+    evidence: results/keccak-phase-b-summary-20260924k.json
+
   not_done:
-    - "no Native SUPERCOP timing (Phase B); flat trees exist only in scratch (tools/export_keccak_flat.py regenerates them)"
-    - "no production promotion; x4 C fallback of keccakf1600.c is linked but unused"
+    - "no production promotion and no clean/ package; Phase B is research evidence from the qualification export"
+    - "27 launches per role (user decision: the effect is thousands of cycles; CI half-widths are 1-7% of the deltas)"
+    - "no reversed-placement paired run (not requested this time)"
+    - "compiler-independent vectorised xor_bytes/extract_bytes not attempted; default selection picked -O3 for the candidate in every batch, fixed -O2 keeps ~60-70% of the saving"
+    - "x4 C fallback of keccakf1600.c is compiled and linked but unused; SUPERCOP lists the 13 ntruplus_mlkfips202_* globals as outside CRYPTO_NAMESPACE (same class as Official KeccakP1600_*)"
   promotion: none
   reproduce: "make keccak-record MLK_ROOT=<clean mlkem-native checkout at b3ba7b32>; make keccak-flat FLAT_OUT=<scratch>; make keccak-bench; phase_b_batch.py ... run_keccak_diag.py --param 768 --launches 31 [--binary build/bench_keccak_diag_swapped]"
+  reproduce_phase_b: "docs/ntruplus-avx2-keccak-mlkem-native.md#reproduce-phase-b"
