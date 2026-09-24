@@ -53,7 +53,9 @@ Against SUPERCOP 20260831's `ntruplus864/aarch64` (2026-09-24; details in
 | Cortex-A76, Keccak held equal | -10.8% | -12.5% | -10.5% |
 
 "Keccak held equal" links Official's sponge against GT's permutation, so the
-margin is the arithmetic alone.
+margin is the arithmetic alone.  A later serializer change, the `add` +
+`umin` canonicalisation of `tobytes` (0.4% on Cortex-A76, 4-8 ns on M2), is
+not included.
 
 The Forward kernel is restricted to the proven KEM input producers. Its
 stage-one copy optimization is not valid for arbitrary input polynomials.

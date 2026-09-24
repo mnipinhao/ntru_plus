@@ -4,6 +4,14 @@
 and its ancestors), where the evidence and scripts live; this release tree does
 not carry them.
 
+## Canonical reduction in the full serializer (P134, 2026-09-24)
+
+`reduce_canon` keeps its Barrett step (rounding multiply-high and
+multiply-subtract, landing in (-q, q)) and then picks the canonical
+representative with an add and an unsigned minimum instead of a sign mask and
+a second multiply-subtract: four instructions either way, one multiply fewer.
+Identical for all 65,536 int16 inputs (exhaustive check).  M2 keygen / decaps -7 / -8 ns; A76 keygen / encaps / decaps -0.39 / -0.41 / -0.45%.
+
 ## P133 run-based frombytes — 2026-09-24
 
 `frombytes` is now the exact inverse of the run-based serializer: one 16-byte

@@ -34,6 +34,14 @@ buffer on the scratch.  It was retired with the rebase itself (P126):
 `packed_i9` now reads `basemul_rinv`'s output and writes the scratch, which do
 not overlap.
 
+## Canonical reduction in the full serializer (P134, 2026-09-24)
+
+`reduce_canon` keeps its Barrett step (rounding multiply-high and
+multiply-subtract, landing in (-q, q)) and then picks the canonical
+representative with an add and an unsigned minimum instead of a sign mask and
+a second multiply-subtract: four instructions either way, one multiply fewer.
+Identical for all 65,536 int16 inputs (exhaustive check).  M2 -11 ns on each operation; A76 keygen / encaps / decaps -0.40 / -0.47 / -0.54%.
+
 ## tobytes with 16-byte stores where safe (P131, 2026-09-23)
 
 NTRU+864's P130 scheme on 1152's twelve-byte blocks: a block takes one
