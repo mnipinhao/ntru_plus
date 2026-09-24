@@ -680,3 +680,56 @@ keccak_candidate:  # 2026-09-23 Phase A + same-ELF diagnostic; 2026-09-24 Phase 
   promotion: none
   reproduce: "make keccak-record MLK_ROOT=<clean mlkem-native checkout at b3ba7b32>; make keccak-flat FLAT_OUT=<scratch>; make keccak-bench; phase_b_batch.py ... run_keccak_diag.py --param 864 --launches 31 [--binary build/bench_keccak_diag_swapped]"
   reproduce_phase_b: "docs/ntruplus-avx2-keccak-mlkem-native.md#reproduce-phase-b"
+ht_candidate:  # 2026-09-25 Phase A + same-ELF diagnostic + Phase B (export, Native, ASLR-on paired); docs/ntruplus864-1152-ht.md
+  phase: B_native_measured  # decision: phase_b.decision
+  candidate: avx2-officialopt-lazy-codec-keccak-ht-864-exp001  # src/kem_lazy_r2fold_codec_direct_keccak_ht.c
+  base: avx2-officialopt-lazy-codec-keccak-864-exp001  # src/kem_lazy_codec_direct_keccak.c, unchanged
+  items: [ht_forward, keygen_r2fold]  # no HT inverse: no 4-stage unpack-only inverse network exists for 864
+  controls: {ht_only: src/kem_lazy_codec_direct_keccak_ht.c, r2fold_only: src/kem_lazy_r2fold_codec_direct_keccak.c}  # diagnostic only
+  tooling: "common/official_opt_ht/* --param 864 (generalised 2026-09-25; NTRU+768 outputs unchanged, see docs); export_ht_flat_param.py"
+  ht_forward:
+    generated_asm: asm/ntruplus864_officialopt_ntt_ht.s  # sha256 be52b95a..., generate_forward_ht.py --param 864
+    pinned_inputs: {consts.c: 0c60897a..., ntt.s: 980cad5e..., lazy_asm: db5d4896...}
+    structure:
+      pass_a: "level 0 (raw zeta1) + level-1 radix-3 fused, 6 rows/iteration (288-byte rows), 9 iterations; radix-3 constants as 32-byte memory operands"
+      level2: "Official lazy radix-3 level-2 pass verbatim; pass A restores ymm2 <- ymm14 (w*qinv), ymm3 <- ymm13 (w) first (Official ntt.s:57-58 pitfall; generator checks the level-2 live-in set is exactly ymm0/ymm2/ymm3)"
+      block: "new network on 96-coefficient blocks in 6 registers, distances 24/12/6/3 (cubic leaves): vperm2i128 L(d24) unpck{l,h}wd L(d12) unpck{l,h}wd L(d6) unpck{l,h}wd L(d3); every stage pairs logical registers (i, i+3) and writes lo/hi to 2i/2i+1 (renaming only); unique 4-stage solution of the scratch exhaustive search; output = lazy layout (register r lane l = 96b + 6l + r)"
+      data_movement_uops_per_block: {ht: 24, lazy: 36}
+      tables_bytes: {pass_a: 256, block: 2304}  # one slot per level
+      dynamic_instructions: {ht: 2239, lazy: 2524}  # vmovdqa 402 vs 508; arithmetic identical
+    proof: "symbolic execution: all 864 output words have the caller-lazy Forward's forms (bit-identical for every int16 input); interval replay on the 5 caller domains per-lane identical to lazy (= EXPECTED_LAZY[864])"
+    differential: {cases: 57295}
+    direct_codec: "unaffected: it reads the lazy Forward's 6-way layout and the HT output words are bit-identical; KEM byte-exactness and the audit's 7 tobytes_direct / 4 frombytes_direct call sites confirm it"
+  keygen_r2fold:
+    generated: {basemul: asm/ntruplus864_officialopt_basemul_nor2.s, baseinv: src/ntruplus864_officialopt_baseinv_r2fold.c, kem: src/kem_lazy_r2fold.c}
+    change: "fqinv input scale R3 -> R2 (867/2787) in poly.c:1-371 minus poly.c:16-39 (the pack/unpack codec wrappers, not BaseInv); keygen BaseMul = basemul.s:1-224 without the R^2 pass basemul.s:226-265 (18 x 3 = 54 vectors)"
+    bounds: {baseinv_envelope_absmax: 5176, nor2_output_interval: [-8936, 8936], nor2_observed: [-5285, 5365], finv_prime_observed: [-2456, 2423], domain: "HT (= lazy) keygen f/g Forward outputs"}
+  gates:
+    result: pass
+    detail: "generators --check (+ every existing generator); symbolic bit-identity; range proof; fold proof (exhaustive fqinv, modelled fqmul/fqsqr/fqinv text pinned); Forward differential 57295 cases; keygen differential 12000 seeds + 4000 uniform + 2000 zero-base (48-word, degree-3) BaseInv inputs (2000 failures = the forced ones, identical) and 10000 KAT-DRBG keypairs x 3 fold KEMs (104 forced g retries, 112 forced f failures); shared KEM test candidate + 2 controls (100 vectors, invalid PK/CT/SK, forced g/f); ASan/UBSan/LSan 8 binaries; linked audit (6 x HT Forward, 2 x fold BaseInv, 2 x nor2, 7 x tobytes_direct, 4 x frombytes_direct; ntt_ht 1267 B, nor2 645 B); 9/9 mutants rejected"
+    evidence: results/ht-phase-a/
+  diagnostic:  # supercop-derived same-ELF, 31 launches per link order; pooled StQ2 delta [favourable/31], normal / reversed
+    forward_ht_minus_lazy: [[-69.8, 31], [-77.4, 31]]
+    keygen_basemul_nor2_minus_official: [[-90.5, 31], [-86.4, 31]]
+    candidate_minus_base: {keypair: [[-340.6, 31], [-493.3, 31]], encap: [[-145.4, 31], [-166.8, 31]], decap: [[-134.6, 31], [-158.0, 31]]}
+    evidence: results/ht-diag-{normal,reversed}-20260925/
+  phase_b:
+    qualification_export: {path: qualification/avx2-officialopt-lazy-codec-keccak-ht-qual001, tree_sha256: 847f5757faa81fb1686027bec2f46eb609f3f28446c464b3cf88aa0f616f361f, base: avx2-officialopt-lazy-codec-keccak-qual001, kem_c_diff: "20 added / 4 changed lines", flat_equals_phase_a: "results/ht-phase-b/ (flat KEM test release + sanitizers, flat linked audit, object identity, try emulation)"}
+    supercop_try: "ok, pinned checksums, O3/Os/O2/O, all 27 Native batches + fixed builds"
+    tag: 20260925ht
+    compiler_picks: {official: "O3 x9", base: "O3 x9", ht: "O3 x9"}  # no fixed -O3 check needed
+    native_stq2: {keypair: {official: 23737.3, base: 17977.6, ht: 17594.6}, enc: {official: 32913.0, base: 23394.0, ht: 23300.3}, dec: {official: 23668.9, base: 17460.4, ht: 17322.9}}
+    ht_minus_base_native: {keypair: {stq2: -383.0, ci95: [-396.5, -369.3], favourable: 81/81}, enc: {stq2: -93.7, ci95: [-112.1, -75.8], favourable: 71/81}, dec: {stq2: -137.5, ci95: [-150.5, -124.5], favourable: 81/81}}
+    ht_minus_official_native: {keypair: [-6142.7, [-6160.1, -6125.7]], enc: [-9612.7, [-9644.8, -9586.0]], dec: [-6346.1, [-6368.6, -6326.4]]}
+    paired_ht_vs_base_normal: {keypair: [-376.5, [-387.7, -364.7], 48/48], enc: [-133.8, [-151.2, -115.3], 46/48], dec: [-161.2, [-173.9, -148.9], 48/48]}
+    paired_ht_vs_base_reversed: {keypair: [-307.2, [-329.8, -279.2], 47/48], enc: [-147.7, [-165.4, -127.3], 46/48], dec: [-196.8, [-214.8, -179.4], 48/48]}
+    paired_ht_vs_official_normal: {keypair: [-6293.5, [-6328.8, -6269.4]], enc: [-9560.6, [-9596.8, -9526.1]], dec: [-6534.8, [-6569.9, -6505.1]]}
+    hygiene: "35 batches, all accepted on attempt 0"
+    decision:
+      ht_vs_base: {keypair: robust-research-win, enc: robust-research-win, dec: robust-research-win}
+      flags: []
+      ht_vs_official: {keypair: robust-research-win, enc: robust-research-win, dec: robust-research-win}
+    evidence: results/{native-ext-*-20260925ht,fixed-ht-*-20260925ht,paired-aslr-on-*-20260925ht}/, results/extended-multi-summary-20260925ht.json
+  host_controls: unchanged
+  promotion: none
+  reproduce: docs/ntruplus864-1152-ht.md#reproduce

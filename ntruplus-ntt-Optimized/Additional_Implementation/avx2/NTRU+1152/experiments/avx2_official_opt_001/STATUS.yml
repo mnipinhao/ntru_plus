@@ -482,3 +482,56 @@ keccak_candidate:  # 2026-09-23 Phase A + same-ELF diagnostic; 2026-09-24 Phase 
   promotion: none
   reproduce: "make keccak-record MLK_ROOT=<clean mlkem-native checkout at b3ba7b32>; make keccak-flat FLAT_OUT=<scratch>; make keccak-bench; phase_b_batch.py ... run_keccak_diag.py --param 1152 --launches 31 [--binary build/bench_keccak_diag_swapped]"
   reproduce_phase_b: "docs/ntruplus-avx2-keccak-mlkem-native.md#reproduce-phase-b"
+ht_candidate:  # 2026-09-25 Phase A + same-ELF diagnostic + Phase B (export, Native, ASLR-on paired); docs/ntruplus864-1152-ht.md
+  phase: B_native_measured  # decision: phase_b.decision
+  candidate: avx2-officialopt-lazy-freeze-keccak-ht-1152-exp001  # src/kem_lazy_r2fold_freeze2op_keccak_ht.c
+  base: avx2-officialopt-lazy-freeze-keccak-1152-exp001  # src/kem_lazy_freeze2op_keccak.c, unchanged
+  items: [ht_forward, keygen_r2fold]  # no HT inverse: the 768 network carries over but measured +62 cycles slower (no radix-2 level 2 to fuse)
+  controls: {ht_only: src/kem_lazy_freeze2op_keccak_ht.c, r2fold_only: src/kem_lazy_r2fold_freeze2op_keccak.c}  # diagnostic only
+  tooling: "common/official_opt_ht/* --param 1152 (generalised 2026-09-25; NTRU+768 outputs unchanged, see docs); export_ht_flat_param.py; run_ht_keypair_seedmatched.py + ht.mk ht-bench-keypair"
+  ht_forward:
+    generated_asm: asm/ntruplus1152_officialopt_ntt_ht.s  # sha256 20f3558e..., generate_forward_ht.py --param 1152
+    pinned_inputs: {consts.c: 0c60897a..., ntt.s: 23c85170..., lazy_asm: eb6a536c...}
+    structure:
+      pass_a: "level 0 (raw zeta1) + level-1 radix-3 fused, 6 rows/iteration (384-byte rows), 12 iterations; radix-3 constants as 32-byte memory operands"
+      level2: "Official lazy radix-3 level-2 pass verbatim; pass A restores ymm2 <- ymm14 (w*qinv), ymm3 <- ymm13 (w) first (Official ntt.s:57-58 pitfall; generator checks the level-2 live-in set is exactly ymm0/ymm2/ymm3)"
+      block: "the NTRU+768 network unchanged on nine 128-coefficient blocks: L(d32) L(d16) vperm2i128 L(d8) unpck{l,h}wd unpck{l,h}dq unpck{l,h}dq L(d4); output layout = Official"
+      data_movement_uops_per_block: {ht: 32, lazy: 48}
+      tables_bytes: {pass_a: 256, block: 6336}
+      dynamic_instructions: {ht: 2872, lazy: 3301}  # vmovdqa 456 vs 652; arithmetic identical
+    proof: "symbolic execution: all 1152 output words have the caller-lazy Forward's forms (bit-identical for every int16 input); interval replay on the 5 caller domains per-lane identical to lazy (= EXPECTED_LAZY[1152])"
+    differential: {cases: 63055}
+  keygen_r2fold:
+    generated: {basemul: asm/ntruplus1152_officialopt_basemul_nor2.s, baseinv: src/ntruplus1152_officialopt_baseinv_r2fold.c, kem: src/kem_lazy_r2fold.c}
+    change: "fqinv input scale R3 -> R2 (867/2787) in poly.c:1-358; keygen BaseMul = basemul.s:1-373 without the R^2 pass basemul.s:375-420 (18 x 4 = 72 vectors)"
+    bounds: {baseinv_envelope_absmax: 4787, nor2_output_interval: [-11250, 11250], nor2_observed: [-6937, 6906], finv_prime_observed: [-2283, 2269], domain: "HT (= lazy) keygen f/g Forward outputs"}
+  gates:
+    result: pass
+    detail: "generators --check (+ every existing generator); symbolic bit-identity; range proof; fold proof (exhaustive fqinv, modelled fqmul/fqsqr/fqinv text pinned); Forward differential 63055 cases; keygen differential 12000 seeds + 4000 uniform + 2000 zero-base BaseInv inputs (9935 failures, identical) and 10000 KAT-DRBG keypairs x 3 fold KEMs (104 forced g retries, 112 forced f failures, 7822 genuine BaseInv failures per KEM); shared KEM test candidate + 2 controls (100 vectors, invalid PK/CT/SK, forced g/f); ASan/UBSan/LSan 8 binaries; linked audit (6 x HT Forward, 2 x fold BaseInv, 2 x nor2, 7 x freeze2op tobytes; ntt_ht 1462 B, nor2 1179 B); 9/9 mutants rejected"
+    evidence: results/ht-phase-a/
+  diagnostic:  # supercop-derived same-ELF, 31 launches per link order; pooled StQ2 delta [favourable/31], normal / reversed
+    forward_ht_minus_lazy: [[-42.5, 31], [-43.3, 31]]
+    keygen_basemul_nor2_minus_official: [[-127.3, 31], [-137.9, 31]]
+    candidate_minus_base: {keypair: [[-216.8, 21], [-341.4, 26]], encap: [[-98.4, 31], [-124.6, 31]], decap: [[-89.2, 31], [-60.9, 29]]}
+    evidence: results/ht-diag-{normal,reversed}-20260925/
+  phase_b:
+    qualification_export: {path: qualification/avx2-officialopt-lazy-freeze-keccak-ht-qual001, tree_sha256: 3aa2d6ae8b7590c72ca4d5339c71cca82d8dfadfcedf26c64679ef048b185473, base: avx2-officialopt-lazy-freeze-keccak-qual001, kem_c_diff: "20 added / 4 changed lines", flat_equals_phase_a: "results/ht-phase-b/ (flat KEM test release + sanitizers, flat linked audit, object identity, try emulation)"}
+    supercop_try: "ok, pinned checksums, O3/Os/O2/O, all 27 Native batches + fixed builds"
+    tag: 20260925ht
+    compiler_picks: {official: "O2 x2, O3 x7", base: "O3 x9", ht: "O3 x9"}  # base == ht every batch -> no fixed -O3 check
+    native_stq2: {keypair: {official: 34708.6, base: 27112.6, ht: 26852.7}, enc: {official: 43100.7, base: 31217.1, ht: 31072.5}, dec: {official: 30530.6, base: 23470.0, ht: 23353.3}}
+    ht_minus_base_native: {keypair: {stq2: -259.9, ci95: [-549.8, 30.4], favourable: 44/81}, enc: {stq2: -144.7, ci95: [-176.4, -108.8], favourable: 74/81}, dec: {stq2: -116.7, ci95: [-132.6, -101.9], favourable: 78/81}}
+    ht_minus_official_native: {keypair: [-7855.9, [-8167.9, -7491.4]], enc: [-12028.3, [-12061.1, -11995.8]], dec: [-7177.3, [-7192.9, -7160.8]]}
+    paired_ht_vs_base_normal: {keypair: [-260.8, [-508.3, -4.0], 29/48], enc: [-133.6, [-151.2, -116.8], 47/48], dec: [-109.5, [-121.0, -97.6], 48/48]}
+    paired_ht_vs_base_reversed: {keypair: [-262.7, [-552.6, 30.7], 27/48], enc: [-89.8, [-115.3, -60.0], 42/48], dec: [-23.9, [-37.5, -8.8], 37/48]}
+    paired_ht_vs_official_normal: {keypair: [-7768.8, [-8049.1, -7497.4]], enc: [-11914.6, [-11951.7, -11880.5]], dec: [-7069.4, [-7094.8, -7046.1]]}
+    keypair_seedmatched_supporting: {pooled_mean: -325.9, ci95: [-350.1, -299.4], launches_favourable: 18/18, normal_elf: -280.5, swapped_elf: -371.3, retry_strata_mean: {"0": -303.6, "1": -334.7, "2": -362.4, "3+": -388.0}, evidence: results/ht-keypair-seedmatched-20260925ht/}
+    hygiene: "35 batches + 1 seed-matched; all attempt 0 except native-ext-base-b2 (attempt 1 after a 0.52 pre-load)"
+    decision:
+      ht_vs_base: {keypair: robust-research-win, enc: robust-research-win, dec: robust-research-win}
+      flags: ["keypair marginal: Native CI and reversed paired CI cross zero (BaseInv retry tail); seed-matched harness -325.9 [-350.1, -299.4] supports it", "reversed decap only -23.9 (placement-sensitive)"]
+      ht_vs_official: {keypair: robust-research-win, enc: robust-research-win, dec: robust-research-win}
+    evidence: results/{native-ext-*-20260925ht,fixed-ht-*-20260925ht,paired-aslr-on-*-20260925ht}/, results/extended-multi-summary-20260925ht.json
+  host_controls: unchanged
+  promotion: none
+  reproduce: docs/ntruplus864-1152-ht.md#reproduce
