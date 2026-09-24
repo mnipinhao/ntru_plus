@@ -1,6 +1,6 @@
 /*
- * Same-ELF SUPERCOP-derived component/caller diagnostic for the NTRU+768 HT
- * Forward and keygen R^2 fold.  Derived from
+ * Same-ELF SUPERCOP-derived component/caller diagnostic for the NTRU+768 / 864 /
+ * 1152 HT Forward and keygen R^2 fold (parameter from params.h).  Derived from
  * common/official_opt_keccak/bench/bench_keccak_diag.c (same cpucycles source,
  * 16 banks, 32 observations per block, 4 warm-ups per slot; 14 blocks so the
  * 2- and 7-variant rotations are balanced).  Diagnostic only, not Native.
@@ -18,6 +18,11 @@
  *   5 encap     (derandomised, fixed coins)  same seven
  *   6 decap                                  same seven
  * Block b runs the variants in the rotated order (b + slot) mod V.
+ *
+ * NTRU+864 / 1152 (no HT inverse in those candidates): regions 0 forward,
+ * 1 basemul, 2 baseinv as above, then 3 keypair, 4 encap, 5 decap with five
+ * variants 0 Official  1 base  2 candidate (HT Forward + R^2 fold)  3 ht_only
+ * 4 r2fold_only; 20 blocks (balanced for the 2- and 5-variant rotations).
  */
 #include <stdint.h>
 #include <stdio.h>
@@ -33,21 +38,52 @@
     int v##_enc(unsigned char *, unsigned char *, const unsigned char *);        \
     int v##_dec(unsigned char *, const unsigned char *, const unsigned char *);  \
     int v##_enc_derand(uint8_t *, uint8_t *, const uint8_t *, const uint8_t *);
+#if NTRUPLUS_N == 768
+#define HT_INV 1
+#define LAZY_FN ntruplus768_officialopt_ntt_caller_lazy
+#define HT_FN ntruplus768_officialopt_ntt_ht
+#define NOR2_FN ntruplus768_officialopt_basemul_nor2
+#define R2INV_FN ntruplus768_officialopt_baseinv_r2fold
+#elif NTRUPLUS_N == 864
+#define HT_INV 0
+#define LAZY_FN ntruplus864_officialopt_ntt_caller_lazy
+#define HT_FN ntruplus864_officialopt_ntt_ht
+#define NOR2_FN ntruplus864_officialopt_basemul_nor2
+#define R2INV_FN ntruplus864_officialopt_baseinv_r2fold
+#elif NTRUPLUS_N == 1152
+#define HT_INV 0
+#define LAZY_FN ntruplus1152_officialopt_ntt_caller_lazy
+#define HT_FN ntruplus1152_officialopt_ntt_ht
+#define NOR2_FN ntruplus1152_officialopt_basemul_nor2
+#define R2INV_FN ntruplus1152_officialopt_baseinv_r2fold
+#else
+#error "unsupported NTRUPLUS_N"
+#endif
 DECL(v0)
 DECL(v1)
 DECL(v2)
 DECL(v3)
 DECL(v4)
+#if HT_INV
 DECL(v5)
 DECL(v6)
 void ntruplus768_officialopt_invntt_ht(poly *);
-void ntruplus768_officialopt_ntt_caller_lazy(poly *);
-void ntruplus768_officialopt_ntt_ht(poly *);
-void ntruplus768_officialopt_basemul_nor2(poly *, const poly *, const poly *);
-int ntruplus768_officialopt_baseinv_r2fold(poly *, const poly *);
+#endif
+void LAZY_FN(poly *);
+void HT_FN(poly *);
+void NOR2_FN(poly *, const poly *, const poly *);
+int R2INV_FN(poly *, const poly *);
 
+#if HT_INV
 enum { BANKS = 16, OBS = 32, BLOCKS = 14, REGIONS = 7, MAXV = 7, KP = 4 };
+#else
+enum { BANKS = 16, OBS = 32, BLOCKS = 20, REGIONS = 6, MAXV = 5, KP = 3 };
+#endif
+#if HT_INV
 static poly f_in[BANKS], f_hat[BANKS], g_hat[BANKS], finv[BANKS], finv2[BANKS], out[BANKS], inv_in[BANKS];
+#else
+static poly f_in[BANKS], f_hat[BANKS], g_hat[BANKS], finv[BANKS], finv2[BANKS], out[BANKS];
+#endif
 static uint8_t pk[BANKS][NTRUPLUS_PUBLICKEYBYTES];
 static uint8_t sk[BANKS][NTRUPLUS_SECRETKEYBYTES];
 static uint8_t ct[BANKS][NTRUPLUS_CIPHERTEXTBYTES];
@@ -80,32 +116,36 @@ static void fixture(void) {
             poly_triple(&f_in[b]);
             f_in[b].coeffs[0]++;
             f_hat[b] = f_in[b];
-            ntruplus768_officialopt_ntt_caller_lazy(&f_hat[b]);
+            LAZY_FN(&f_hat[b]);
             for (unsigned i = 0; i < sizeof sample; i++) sample[i] = (uint8_t)(i * 17U + b * 5U + tries);
             poly_cbd1(&g_hat[b], sample);
             poly_triple(&g_hat[b]);
-            ntruplus768_officialopt_ntt_caller_lazy(&g_hat[b]);
+            LAZY_FN(&g_hat[b]);
             if (!poly_baseinv(&finv[b], &f_hat[b]) &&
-                !ntruplus768_officialopt_baseinv_r2fold(&finv2[b], &f_hat[b])) break;
+                !R2INV_FN(&finv2[b], &f_hat[b])) break;
             if (tries > 8) __builtin_trap();
         }
+#if HT_INV
         poly cpoly;
         uint8_t wire[NTRUPLUS_POLYBYTES];
         memcpy(wire, ct[b], sizeof wire);
         if (poly_frombytes(&cpoly, wire)) __builtin_trap();
         poly_basemul_scale(&inv_in[b], &cpoly, &f_hat[b]);
+#endif
     }
 }
 
 typedef void (*operation)(unsigned);
-static void fw_l(unsigned b) { ntruplus768_officialopt_ntt_caller_lazy(&out[b]); }
-static void fw_h(unsigned b) { ntruplus768_officialopt_ntt_ht(&out[b]); }
+static void fw_l(unsigned b) { LAZY_FN(&out[b]); }
+static void fw_h(unsigned b) { HT_FN(&out[b]); }
 static void bm_o(unsigned b) { poly_basemul(&out[b], &g_hat[b], &finv[b]); }
-static void bm_n(unsigned b) { ntruplus768_officialopt_basemul_nor2(&out[b], &g_hat[b], &finv2[b]); }
+static void bm_n(unsigned b) { NOR2_FN(&out[b], &g_hat[b], &finv2[b]); }
 static void bi_o(unsigned b) { status_sink = poly_baseinv(&out[b], &f_hat[b]); }
-static void bi_f(unsigned b) { status_sink = ntruplus768_officialopt_baseinv_r2fold(&out[b], &f_hat[b]); }
+static void bi_f(unsigned b) { status_sink = R2INV_FN(&out[b], &f_hat[b]); }
+#if HT_INV
 static void iv_o(unsigned b) { poly_invntt_scale(&out[b]); }
 static void iv_h(unsigned b) { ntruplus768_officialopt_invntt_ht(&out[b]); }
+#endif
 #define OPS(v)                                                                                   \
     static void kg_##v(unsigned b) { status_sink = v##_keypair(pk_out[b], sk_out[b]); }         \
     static void en_##v(unsigned b) { status_sink = v##_enc_derand(ct_out[b], ss_out[b], pk[b], coins[b]); } \
@@ -115,6 +155,7 @@ OPS(v1)
 OPS(v2)
 OPS(v3)
 OPS(v4)
+#if HT_INV
 OPS(v5)
 OPS(v6)
 static const unsigned nvariants[REGIONS] = {2, 2, 2, 2, 7, 7, 7};
@@ -123,10 +164,20 @@ static operation ops[REGIONS][MAXV] = {
     {kg_v0, kg_v1, kg_v2, kg_v3, kg_v4, kg_v5, kg_v6},
     {en_v0, en_v1, en_v2, en_v3, en_v4, en_v5, en_v6},
     {de_v0, de_v1, de_v2, de_v3, de_v4, de_v5, de_v6}};
+#else
+static const unsigned nvariants[REGIONS] = {2, 2, 2, 5, 5, 5};
+static operation ops[REGIONS][MAXV] = {
+    {fw_l, fw_h}, {bm_o, bm_n}, {bi_o, bi_f},
+    {kg_v0, kg_v1, kg_v2, kg_v3, kg_v4},
+    {en_v0, en_v1, en_v2, en_v3, en_v4},
+    {de_v0, de_v1, de_v2, de_v3, de_v4}};
+#endif
 
 static void reset(unsigned region, unsigned b) {
     if (region == 0) out[b] = f_in[b];
+#if HT_INV
     if (region == 3) out[b] = inv_in[b];
+#endif
     if (region == KP) seed_rng(5000U + b);
 }
 
@@ -140,9 +191,11 @@ static void preflight(void) {
         bm_o(b); poly_tobytes(w0, &out[b]);
         bm_n(b); poly_tobytes(w1, &out[b]);
         if (memcmp(w0, w1, sizeof w0)) __builtin_trap();
+#if HT_INV
         reset(3, b); iv_o(b); ref = out[b];
         reset(3, b); iv_h(b);
         if (memcmp(&ref, &out[b], sizeof ref)) __builtin_trap();          /* bit-exact */
+#endif
         uint8_t rpk[NTRUPLUS_PUBLICKEYBYTES], rsk[NTRUPLUS_SECRETKEYBYTES];
         uint8_t rct[NTRUPLUS_CIPHERTEXTBYTES], rss[NTRUPLUS_SSBYTES], rdss[NTRUPLUS_SSBYTES];
         for (unsigned v = 0; v < MAXV; v++) {

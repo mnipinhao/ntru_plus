@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Same-ELF SUPERCOP-derived diagnostic of the NTRU+768 HT Forward and keygen
-R^2 fold (supercop-derived, NOT Native SUPERCOP KEM).
+"""Same-ELF SUPERCOP-derived diagnostic of the NTRU+768 / 864 / 1152 HT Forward
+and keygen R^2 fold (supercop-derived, NOT Native SUPERCOP KEM).
 
 Derived from common/official_opt_keccak/tools/run_keccak_diag.py.  Runs N
 fresh processes of build/bench_ht_diag (normal link order) or --binary
@@ -11,6 +11,8 @@ Regions: forward (lazy vs HT), keygen basemul (Official vs no-R^2 core on the
 R-scaled inverse), baseinv (Official vs fold), invntt (Official vs HT inverse);
 keypair (seed-matched) / encap / decap for Official, base (lazy+freeze+keccak),
 candidate, ht_only, r2fold_only, htinv_only, ht_r2fold.
+--param 864 / 1152: no invntt region; KEM variants Official, base, candidate
+(HT Forward + R^2 fold), ht_only, r2fold_only; 20 blocks x 32 observations.
 All deltas are between identical cpucycles() anchors (same null-call overhead).
 
 Summary per region and variant: pooled StQ1..3 and quartiles; per-launch
@@ -43,6 +45,27 @@ VARIANTS = {0: ("lazy", "ht"), 1: ("official", "nor2_on_fold_inverse"), 2: ("off
 KEM_PAIRS = [(v, 1) for v in range(2, 7)] + [(2, v) for v in range(3, 7)]
 PAIRS = {0: [], 1: [], 2: [], 3: [], 4: KEM_PAIRS, 5: KEM_PAIRS, 6: KEM_PAIRS}
 OBS_PER_LAUNCH = 448   # 14 blocks x 32
+# NTRU+864 / 1152 (bench_ht_diag.c without HT_INV)
+REGIONS_NOINV = ("forward", "basemul", "baseinv", "keypair", "encap", "decap")
+KEM_NOINV = ("official", "base", "candidate", "ht_only", "r2fold_only")
+VARIANTS_NOINV = {0: ("lazy", "ht"), 1: ("official", "nor2_on_fold_inverse"), 2: ("official", "fold"),
+                  3: KEM_NOINV, 4: KEM_NOINV, 5: KEM_NOINV}
+KEM_PAIRS_NOINV = [(v, 1) for v in range(2, 5)] + [(2, v) for v in range(3, 5)]
+PAIRS_NOINV = {0: [], 1: [], 2: [], 3: KEM_PAIRS_NOINV, 4: KEM_PAIRS_NOINV, 5: KEM_PAIRS_NOINV}
+OBS_PER_LAUNCH_NOINV = 640   # 20 blocks x 32
+# experiment sources recorded in the metadata, per parameter (besides upstream kem.c/poly.c/basemul.s/ntt.s)
+SOURCES = {
+    864: ["src/kem_lazy.c", "src/kem_lazy_codec_direct.c", "src/kem_lazy_codec_direct_keccak.c",
+          "src/kem_lazy_r2fold.c", "src/kem_lazy_codec_direct_keccak_ht.c", "src/kem_lazy_r2fold_codec_direct_keccak.c",
+          "src/kem_lazy_r2fold_codec_direct_keccak_ht.c", "src/ntruplus864_officialopt_baseinv_r2fold.c",
+          "asm/ntruplus864_officialopt_ntt_caller_lazy.s", "asm/ntruplus864_officialopt_ntt_ht.s",
+          "asm/ntruplus864_officialopt_basemul_nor2.s", "asm/ntruplus864_officialopt_codec_direct.s"],
+    1152: ["src/kem_lazy.c", "src/kem_lazy_freeze2op.c", "src/kem_lazy_freeze2op_keccak.c",
+           "src/kem_lazy_r2fold.c", "src/kem_lazy_freeze2op_keccak_ht.c", "src/kem_lazy_r2fold_freeze2op_keccak.c",
+           "src/kem_lazy_r2fold_freeze2op_keccak_ht.c", "src/ntruplus1152_officialopt_baseinv_r2fold.c",
+           "asm/ntruplus1152_officialopt_ntt_caller_lazy.s", "asm/ntruplus1152_officialopt_ntt_ht.s",
+           "asm/ntruplus1152_officialopt_basemul_nor2.s", "asm/ntruplus1152_officialopt_tobytes_freeze2op.s"],
+}
 
 
 def execute(command, **kwargs):
@@ -75,6 +98,7 @@ def quartiles(values):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--param", type=int, choices=(768, 864, 1152), default=768)
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--result-dir", type=Path, required=True)
     ap.add_argument("--cpu", type=int, default=1)
@@ -83,6 +107,9 @@ def main():
                     help="bench ELF relative to the experiment (placement control: "
                          "build/bench_ht_diag_swapped)")
     args = ap.parse_args()
+    global REGIONS, VARIANTS, PAIRS, OBS_PER_LAUNCH
+    if args.param != 768:
+        REGIONS, VARIANTS, PAIRS, OBS_PER_LAUNCH = REGIONS_NOINV, VARIANTS_NOINV, PAIRS_NOINV, OBS_PER_LAUNCH_NOINV
     root = args.experiment.resolve()
     if execute(["git", "branch", "--show-current"], cwd=REPO).stdout.strip() != BRANCH:
         raise SystemExit("wrong branch")
@@ -116,7 +143,7 @@ def main():
         pooled[region, variant].append(cycles)
         per_launch[launch, region, variant].append(cycles)
     summary = {"class": "supercop-derived same-ELF diagnostic; not Native SUPERCOP",
-               "parameter": "NTRU+768", "binary": args.binary, "regions": {}}
+               "parameter": f"NTRU+{args.param}", "binary": args.binary, "regions": {}}
     for region, rname in enumerate(REGIONS):
         names = VARIANTS[region]
         launch_stq2 = {v: [stq(per_launch[l, region, v])[1] for l in range(args.launches)]
@@ -140,7 +167,9 @@ def main():
     lcommon = hcommon.parent / "official_opt_lazy"
     kcommon = hcommon.parent / "official_opt_keccak"
     mlk = REPO / "third_party/mlkem-native-fips202-b3ba7b32/mlkem/src/fips202"
-    sources = [root / p for p in (
+    sources = ([root / p for p in SOURCES[args.param] + [
+        "upstream/supercop-avx2/kem.c", "upstream/supercop-avx2/poly.c", "upstream/supercop-avx2/basemul.s",
+        "upstream/supercop-avx2/ntt.s"]] if args.param != 768 else [root / p for p in (
         "src/kem_lazy.c", "src/kem_lazy_freeze2op.c", "src/kem_lazy_freeze2op_keccak.c",
         "src/kem_lazy_r2fold.c", "src/kem_lazy_freeze2op_keccak_ht.c", "src/kem_lazy_r2fold_freeze2op_keccak.c",
         "src/kem_lazy_r2fold_freeze2op_keccak_ht.c", "src/kem_lazy_freeze2op_keccak_htinv.c",
@@ -149,12 +178,12 @@ def main():
         "asm/ntruplus768_officialopt_ntt_caller_lazy.s", "asm/ntruplus768_officialopt_ntt_ht.s",
         "asm/ntruplus768_officialopt_basemul_nor2.s", "asm/ntruplus768_officialopt_tobytes_freeze2op.s",
         "upstream/supercop-avx2/kem.c", "upstream/supercop-avx2/poly.c", "upstream/supercop-avx2/basemul.s",
-        "upstream/supercop-avx2/ntt.s")] + [hcommon / p for p in ("bench/bench_ht_diag.c", "ht.mk")] + [
+        "upstream/supercop-avx2/ntt.s")]) + [hcommon / p for p in ("bench/bench_ht_diag.c", "ht.mk")] + [
         lcommon / "bench/kem_diag.c", lcommon / "lazy.mk", kcommon / "keccak.mk",
         kcommon / "src/symmetric_keccak.c", mlk / "fips202.c", mlk / "keccakf1600.c"]
     metadata = {
         "class": "supercop-derived diagnostic; not Native SUPERCOP",
-        "parameter": "768",
+        "parameter": str(args.param),
         "source_sha256": {str(p.resolve().relative_to(REPO)): digest(p) for p in sources},
         "elf_sha256": digest(binary),
         "elf_text_sha256": text_digest(binary),
