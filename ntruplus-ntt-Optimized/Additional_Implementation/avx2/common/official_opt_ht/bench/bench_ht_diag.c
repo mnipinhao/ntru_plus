@@ -2,8 +2,8 @@
  * Same-ELF SUPERCOP-derived component/caller diagnostic for the NTRU+768 HT
  * Forward and keygen R^2 fold.  Derived from
  * common/official_opt_keccak/bench/bench_keccak_diag.c (same cpucycles source,
- * 16 banks, 32 observations per block, 4 warm-ups per slot; 10 blocks so the
- * 2- and 5-variant rotations are balanced).  Diagnostic only, not Native.
+ * 16 banks, 32 observations per block, 4 warm-ups per slot; 14 blocks so the
+ * 2- and 7-variant rotations are balanced).  Diagnostic only, not Native.
  *
  * Regions and variants:
  *   0 forward   keygen-f-domain input, reset outside the timed call:
@@ -11,10 +11,12 @@
  *   1 basemul   keygen h = g_hat * finv: 0 Official poly_basemul(g_hat, finv)
  *               1 ntruplus768_officialopt_basemul_nor2(g_hat, R*finv)
  *   2 baseinv   0 Official poly_baseinv(f_hat)  1 fold BaseInv(f_hat)
- *   3 keypair   0 Official  1 base (lazy+freeze+keccak)  2 candidate
- *               3 ht_only  4 r2fold_only   (KAT DRBG reseeded per bank: seed-matched)
- *   4 encap     (derandomised, fixed coins)  same five
- *   5 decap                                  same five
+ *   3 invntt    Decap input basemul_scale(c, f_hat), reset outside the timed call:
+ *               0 Official poly_invntt_scale  1 HT inverse
+ *   4 keypair   0 Official  1 base (lazy+freeze+keccak)  2 candidate  3 ht_only
+ *               4 r2fold_only  5 htinv_only  6 ht_r2fold  (KAT DRBG reseeded per bank: seed-matched)
+ *   5 encap     (derandomised, fixed coins)  same seven
+ *   6 decap                                  same seven
  * Block b runs the variants in the rotated order (b + slot) mod V.
  */
 #include <stdint.h>
@@ -36,13 +38,16 @@ DECL(v1)
 DECL(v2)
 DECL(v3)
 DECL(v4)
+DECL(v5)
+DECL(v6)
+void ntruplus768_officialopt_invntt_ht(poly *);
 void ntruplus768_officialopt_ntt_caller_lazy(poly *);
 void ntruplus768_officialopt_ntt_ht(poly *);
 void ntruplus768_officialopt_basemul_nor2(poly *, const poly *, const poly *);
 int ntruplus768_officialopt_baseinv_r2fold(poly *, const poly *);
 
-enum { BANKS = 16, OBS = 32, BLOCKS = 10, REGIONS = 6, MAXV = 5 };
-static poly f_in[BANKS], f_hat[BANKS], g_hat[BANKS], finv[BANKS], finv2[BANKS], out[BANKS];
+enum { BANKS = 16, OBS = 32, BLOCKS = 14, REGIONS = 7, MAXV = 7, KP = 4 };
+static poly f_in[BANKS], f_hat[BANKS], g_hat[BANKS], finv[BANKS], finv2[BANKS], out[BANKS], inv_in[BANKS];
 static uint8_t pk[BANKS][NTRUPLUS_PUBLICKEYBYTES];
 static uint8_t sk[BANKS][NTRUPLUS_SECRETKEYBYTES];
 static uint8_t ct[BANKS][NTRUPLUS_CIPHERTEXTBYTES];
@@ -84,6 +89,11 @@ static void fixture(void) {
                 !ntruplus768_officialopt_baseinv_r2fold(&finv2[b], &f_hat[b])) break;
             if (tries > 8) __builtin_trap();
         }
+        poly cpoly;
+        uint8_t wire[NTRUPLUS_POLYBYTES];
+        memcpy(wire, ct[b], sizeof wire);
+        if (poly_frombytes(&cpoly, wire)) __builtin_trap();
+        poly_basemul_scale(&inv_in[b], &cpoly, &f_hat[b]);
     }
 }
 
@@ -94,6 +104,8 @@ static void bm_o(unsigned b) { poly_basemul(&out[b], &g_hat[b], &finv[b]); }
 static void bm_n(unsigned b) { ntruplus768_officialopt_basemul_nor2(&out[b], &g_hat[b], &finv2[b]); }
 static void bi_o(unsigned b) { status_sink = poly_baseinv(&out[b], &f_hat[b]); }
 static void bi_f(unsigned b) { status_sink = ntruplus768_officialopt_baseinv_r2fold(&out[b], &f_hat[b]); }
+static void iv_o(unsigned b) { poly_invntt_scale(&out[b]); }
+static void iv_h(unsigned b) { ntruplus768_officialopt_invntt_ht(&out[b]); }
 #define OPS(v)                                                                                   \
     static void kg_##v(unsigned b) { status_sink = v##_keypair(pk_out[b], sk_out[b]); }         \
     static void en_##v(unsigned b) { status_sink = v##_enc_derand(ct_out[b], ss_out[b], pk[b], coins[b]); } \
@@ -103,15 +115,19 @@ OPS(v1)
 OPS(v2)
 OPS(v3)
 OPS(v4)
-static const unsigned nvariants[REGIONS] = {2, 2, 2, 5, 5, 5};
+OPS(v5)
+OPS(v6)
+static const unsigned nvariants[REGIONS] = {2, 2, 2, 2, 7, 7, 7};
 static operation ops[REGIONS][MAXV] = {
-    {fw_l, fw_h}, {bm_o, bm_n}, {bi_o, bi_f},
-    {kg_v0, kg_v1, kg_v2, kg_v3, kg_v4}, {en_v0, en_v1, en_v2, en_v3, en_v4},
-    {de_v0, de_v1, de_v2, de_v3, de_v4}};
+    {fw_l, fw_h}, {bm_o, bm_n}, {bi_o, bi_f}, {iv_o, iv_h},
+    {kg_v0, kg_v1, kg_v2, kg_v3, kg_v4, kg_v5, kg_v6},
+    {en_v0, en_v1, en_v2, en_v3, en_v4, en_v5, en_v6},
+    {de_v0, de_v1, de_v2, de_v3, de_v4, de_v5, de_v6}};
 
 static void reset(unsigned region, unsigned b) {
     if (region == 0) out[b] = f_in[b];
-    if (region == 3) seed_rng(5000U + b);
+    if (region == 3) out[b] = inv_in[b];
+    if (region == KP) seed_rng(5000U + b);
 }
 
 static void preflight(void) {
@@ -124,17 +140,20 @@ static void preflight(void) {
         bm_o(b); poly_tobytes(w0, &out[b]);
         bm_n(b); poly_tobytes(w1, &out[b]);
         if (memcmp(w0, w1, sizeof w0)) __builtin_trap();
+        reset(3, b); iv_o(b); ref = out[b];
+        reset(3, b); iv_h(b);
+        if (memcmp(&ref, &out[b], sizeof ref)) __builtin_trap();          /* bit-exact */
         uint8_t rpk[NTRUPLUS_PUBLICKEYBYTES], rsk[NTRUPLUS_SECRETKEYBYTES];
         uint8_t rct[NTRUPLUS_CIPHERTEXTBYTES], rss[NTRUPLUS_SSBYTES], rdss[NTRUPLUS_SSBYTES];
         for (unsigned v = 0; v < MAXV; v++) {
-            reset(3, b); ops[3][v](b); if (status_sink) __builtin_trap();
-            ops[4][v](b); if (status_sink) __builtin_trap();
+            reset(KP, b); ops[KP][v](b); if (status_sink) __builtin_trap();
+            ops[KP + 1][v](b); if (status_sink) __builtin_trap();
             if (v == 0) { memcpy(rpk, pk_out[b], sizeof rpk); memcpy(rsk, sk_out[b], sizeof rsk);
                           memcpy(rct, ct_out[b], sizeof rct); memcpy(rss, ss_out[b], sizeof rss); }
             else if (memcmp(rpk, pk_out[b], sizeof rpk) || memcmp(rsk, sk_out[b], sizeof rsk) ||
                      memcmp(rct, ct_out[b], sizeof rct) || memcmp(rss, ss_out[b], sizeof rss))
                 __builtin_trap();
-            ops[5][v](b); if (status_sink) __builtin_trap();
+            ops[KP + 2][v](b); if (status_sink) __builtin_trap();
             if (v == 0) memcpy(rdss, ss_out[b], sizeof rdss);
             else if (memcmp(rdss, ss_out[b], sizeof rdss)) __builtin_trap();
         }

@@ -8,8 +8,9 @@ build/bench_ht_diag_swapped (reversed link order, placement control) pinned
 to one CPU with ASLR left on (no setarch -R).  Host controls are only read.
 Build first with `make ht-check ht-bench`.
 Regions: forward (lazy vs HT), keygen basemul (Official vs no-R^2 core on the
-R-scaled inverse), baseinv (Official vs fold); keypair (seed-matched) / encap /
-decap for Official, base (lazy+freeze+keccak), candidate, ht_only, r2fold_only.
+R-scaled inverse), baseinv (Official vs fold), invntt (Official vs HT inverse);
+keypair (seed-matched) / encap / decap for Official, base (lazy+freeze+keccak),
+candidate, ht_only, r2fold_only, htinv_only, ht_r2fold.
 All deltas are between identical cpucycles() anchors (same null-call overhead).
 
 Summary per region and variant: pooled StQ1..3 and quartiles; per-launch
@@ -35,13 +36,13 @@ from pathlib import Path
 HERE = Path(__file__).resolve()
 REPO = next(p for p in HERE.parents if (p / "bench/supercop.lock").exists())
 BRANCH = "official-opt-lazy-864-1152"
-REGIONS = ("forward", "basemul", "baseinv", "keypair", "encap", "decap")
-KEM = ("official", "base", "candidate", "ht_only", "r2fold_only")
+REGIONS = ("forward", "basemul", "baseinv", "invntt", "keypair", "encap", "decap")
+KEM = ("official", "base", "candidate", "ht_only", "r2fold_only", "htinv_only", "ht_r2fold")
 VARIANTS = {0: ("lazy", "ht"), 1: ("official", "nor2_on_fold_inverse"), 2: ("official", "fold"),
-            3: KEM, 4: KEM, 5: KEM}
-KEM_PAIRS = [(2, 1), (3, 1), (4, 1), (2, 3), (2, 4)]
-PAIRS = {0: [], 1: [], 2: [], 3: KEM_PAIRS, 4: KEM_PAIRS, 5: KEM_PAIRS}
-OBS_PER_LAUNCH = 320   # 10 blocks x 32
+            3: ("official", "ht"), 4: KEM, 5: KEM, 6: KEM}
+KEM_PAIRS = [(v, 1) for v in range(2, 7)] + [(2, v) for v in range(3, 7)]
+PAIRS = {0: [], 1: [], 2: [], 3: [], 4: KEM_PAIRS, 5: KEM_PAIRS, 6: KEM_PAIRS}
+OBS_PER_LAUNCH = 448   # 14 blocks x 32
 
 
 def execute(command, **kwargs):
@@ -142,7 +143,9 @@ def main():
     sources = [root / p for p in (
         "src/kem_lazy.c", "src/kem_lazy_freeze2op.c", "src/kem_lazy_freeze2op_keccak.c",
         "src/kem_lazy_r2fold.c", "src/kem_lazy_freeze2op_keccak_ht.c", "src/kem_lazy_r2fold_freeze2op_keccak.c",
-        "src/kem_lazy_r2fold_freeze2op_keccak_ht.c", "src/ntruplus768_officialopt_baseinv_r2fold.c",
+        "src/kem_lazy_r2fold_freeze2op_keccak_ht.c", "src/kem_lazy_freeze2op_keccak_htinv.c",
+        "src/kem_lazy_r2fold_freeze2op_keccak_ht_htinv.c", "src/ntruplus768_officialopt_baseinv_r2fold.c",
+        "asm/ntruplus768_officialopt_invntt_ht.s", "upstream/supercop-avx2/invntt.s",
         "asm/ntruplus768_officialopt_ntt_caller_lazy.s", "asm/ntruplus768_officialopt_ntt_ht.s",
         "asm/ntruplus768_officialopt_basemul_nor2.s", "asm/ntruplus768_officialopt_tobytes_freeze2op.s",
         "upstream/supercop-avx2/kem.c", "upstream/supercop-avx2/poly.c", "upstream/supercop-avx2/basemul.s",
