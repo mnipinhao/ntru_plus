@@ -1,8 +1,10 @@
 # NTRU+768 / 864 / 1152 Official AVX2: mlkem-native x1 C Keccak for every SHAKE256
 
 Date 2026-09-23, branch `official-opt-lazy-864-1152` (from `335daed` = `origin/avx2-official-opt`, not pushed).
-This is Phase A (code, correctness, audits) plus a same-ELF diagnostic. No SUPERCOP campaign was
-created and no Native timing was run.
+Phase A (code, correctness, audits) plus a same-ELF diagnostic were done on 2026-09-23. Phase B
+(qualification exports, Native SUPERCOP and ASLR-on fixed-ELF paired timing) followed on 2026-09-24; see
+[Phase B](#phase-b-native-supercop-2026-09-24). Result: a robust research win for every operation of all three
+parameters, vs Official and vs the base candidate. `promotion: none`.
 
 Motivation: Codex's component comparison `NTRU+768/experiments/avx2_keccak_compare_001` (in the
 `ntru_plus-official-opt` worktree; read, not reused as evidence) found that mlkem-native's x1 *C*
@@ -257,11 +259,246 @@ python3 ../../../common/official_opt_keccak/tools/summarize_keccak_diag.py --tag
 # CAVP subset provenance: make keccak-vectors-check CAVP_ZIP=shakebytetestvectors.zip
 ```
 
+## Phase B: Native SUPERCOP (2026-09-24)
+
+Worktree `ntru_plus-official-opt-864-1152`, branch `official-opt-lazy-864-1152`, from `4d14314`
+(= `origin/avx2-official-opt`). Not pushed. Everything ran on CPU 1 of the Core Ultra 7 155H, with ASLR on
+(`randomize_va_space=2`) and normal placement only. The host was checked and left unchanged:
+`performance` governor, `intel_pstate/no_turbo=1`. Every timing batch ran under `phase_b_batch.py` /
+`hygiene_batch.py`. All timing ran strictly one batch after another, and nothing was built while timing ran.
+
+### Qualification exports (measured)
+
+`export_keccak_flat.py` has a new mode, `--qualification-root` (`make keccak-qualification`). It writes the
+same flat tree that Phase A compiled into `qualification/<name>/`, plus a JSON manifest. It runs no compiler.
+It refuses to overwrite and checks the following:
+
+- the base export's manifest matches `bench/supercop.lock`, and the base tree matches that manifest (tree hash and every file hash);
+- every vendored `third_party/mlkem-native-fips202-b3ba7b32` file matches the per-file SHA-256 table in its
+  `README.md`, and every vendored source file carries `SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT`
+  (upstream `LICENSE` ships as `LICENSE.mlkem-native`);
+- `kem.c` and `symmetric.c` are still the base export's files;
+- the export is file-for-file identical to the Phase-A flat tree in `results/keccak-supercop-flat-20260923/summary.json`.
+
+The manifest (`kind: keccak-qualification-source`) records the tree hash, all 36 file hashes, the base
+identity, and each vendored file with its upstream path, commit, source/flat hash and SPDX. It also records the
+LICENSE hash, the adapter/config sources, all 16 `#include` rewrites and the exporter's own hash.
+`install_qualification.py` now accepts this kind and also checks the exported file set. It installed the three
+trees into `/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001`. The base exports already installed
+there were re-hashed and match their committed manifests.
+
+| n | Export (under the experiment's `qualification/`) | Tree SHA-256 | Base export (tree) |
+|---|---|---|---|
+| 768 | `avx2-officialopt-lazy-freeze-keccak-qual001` | `6209ebacb81ce313a43d305b960c6b5e94618ff6149abd326c39c15f98bb4fb6` | `avx2-officialopt-lazy-freeze-qual001` (`2d9fa350…`) |
+| 864 | `avx2-officialopt-lazy-codec-keccak-qual001` | `0deb127b6f90e4e98bd3338abe1635f878a0e2e46ae4ef8667abbe2aa1e4da71` | `avx2-officialopt-lazy-codec-qual002` (`ece23c1a…`) |
+| 1152 | `avx2-officialopt-lazy-freeze-keccak-qual001` | `e88c9c6d67606a4a414999a2992a9192c9049572a7c0ee328505412625f39dd0` | `avx2-officialopt-lazy-freeze-qual001` (`3e8068bb…`) |
+
+**SUPERCOP try passes.** In every default-selection batch, `try` reported `ok` for all four compilers
+(O3/Os/O2/O), with checksumsmall/checksumbig equal to the pinned `crypto_kem/ntruplus<N>/checksum*` (= Official).
+The single compiler line of every fixed-O3/O2 batch passed too, and so did the O3GC fixed builds.
+`summarize_extended_multi.py` now reads these `try` records and fails on any mismatch. SUPERCOP's namespace
+report lists the 13 `ntruplus_mlkfips202_*` globals as outside `CRYPTO_NAMESPACE`. That is the same class as
+the Official `KeccakP1600_*` symbols it replaces, and it is not a failure.
+
+### Design (measured)
+
+- **Native:** three roles: `official` (`avx2`), `base` (the installed current best export) and `keccak`
+  (the new export). Each role had 27 fresh launches: 3 rounds with one 9-launch
+  `run_supercop_benchmark.py --mode native-kem` batch per role per round. The role order rotated:
+  official,base,keccak / keccak,official,base / base,keccak,official. `measure.c` was unmodified. The user
+  decided that 27 launches are enough because the expected effect is thousands of cycles. Each role is pooled
+  independently. CIs come from resampling launches within each role (2,000 resamples).
+- **Three compiler settings, each a full 3 x 27 run per parameter:** SUPERCOP default selection (4-line
+  `okc-amd64`); fixed `-O3` only; fixed `-O2` only. For the fixed runs, `run_extended_native.py --compiler-wrapper`
+  passes `okc-native-gcc-{O3,O2}-only.sh` to each batch, and the batch swaps it in and restores it afterwards.
+  After every batch the runner checked that the campaign `okc-amd64` was back to `82f1eea7…98b3`, and it
+  was unchanged every time.
+- **Paired:** O3GC fixed ELFs (`bench/supercop/okc-o3gc.sh`, one fresh build per role and parameter via
+  `run_supercop_benchmark.py --fresh-launches 1`). `run_paired_aslr_on.py` ran 48 ABBA/BAAB blocks
+  (192 fresh launches) with normal placement and ASLR on, for keccak vs Official and keccak vs base. The rebuilt
+  864 Official (`9bf4b8b7…`), 864 base (`22276081…`) and 1152 Official (`fe8de722…`) ELFs are byte-identical
+  to the earlier Phase-B builds.
+- **Hygiene:** 96 batches ran (81 Native, 9 fixed-ELF builds, 6 paired). All were accepted on attempt 0 and
+  none was contaminated. Pre-batch 1-minute load was 0.03-0.50. Default-selection batches took 12.7-16.5 s and
+  fixed-compiler batches 4.6-5.8 s. Paired batches took 1.6-2.2 s, so only the before/after snapshots apply to them.
+
+### Native, default SUPERCOP compiler selection
+
+| n | Op | Official | Base | Keccak | Keccak − Official [95% CI] fav. | Keccak − Base [95% CI] fav. | Base − Official |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 768 | Keypair | 21,594.0 | 21,379.4 | 16,842.9 | **−4,751.1** (−22.0%) [−4,765.3, −4,737.2] 27/27 | −4,536.4 (−21.2%) [−4,561.2, −4,512.9] 27/27 | −214.7 [−237.3, −190.5] 27/27 |
+| 768 | Encap | 28,157.8 | 27,998.2 | 20,530.8 | **−7,627.0** (−27.1%) [−7,722.9, −7,573.3] 27/27 | −7,467.4 (−26.7%) [−7,536.8, −7,410.6] 27/27 | −159.6 [−258.9, −80.2] 25/27 |
+| 768 | Decap | 19,465.9 | 19,147.0 | 15,043.3 | **−4,422.6** (−22.7%) [−4,455.8, −4,393.0] 27/27 | −4,103.7 (−21.4%) [−4,136.4, −4,074.9] 27/27 | −318.9 [−354.8, −280.5] 26/27 |
+| 864 | Keypair | 23,745.9 | 22,896.2 | 17,972.8 | **−5,773.1** (−24.3%) [−5,805.0, −5,745.3] 27/27 | −4,923.4 (−21.5%) [−4,963.2, −4,877.1] 27/27 | −849.7 [−904.1, −804.1] 27/27 |
+| 864 | Encap | 32,933.8 | 32,120.3 | 23,418.2 | **−9,515.6** (−28.9%) [−9,583.7, −9,455.6] 27/27 | −8,702.1 (−27.1%) [−8,744.7, −8,662.1] 27/27 | −813.5 [−881.9, −747.8] 27/27 |
+| 864 | Decap | 23,686.4 | 22,350.5 | 17,463.8 | **−6,222.6** (−26.3%) [−6,262.0, −6,186.5] 27/27 | −4,886.7 (−21.9%) [−4,916.5, −4,855.6] 27/27 | −1,335.9 [−1,376.0, −1,298.8] 27/27 |
+| 1152 | Keypair | 34,705.0 | 34,164.4 | 27,104.5 | **−7,600.5** (−21.9%) [−8,089.2, −7,098.9] 27/27 | −7,059.9 (−20.7%) [−7,563.8, −6,583.4] 27/27 | −540.7 [−1,097.0, +42.0] 18/27 |
+| 1152 | Encap | 43,100.0 | 42,655.1 | 31,216.7 | **−11,883.3** (−27.6%) [−11,941.2, −11,839.3] 27/27 | −11,438.4 (−26.8%) [−11,518.4, −11,348.0] 27/27 | −444.9 [−548.2, −355.3] 25/27 |
+| 1152 | Decap | 30,510.4 | 30,112.6 | 23,462.8 | **−7,047.6** (−23.1%) [−7,078.4, −7,007.2] 27/27 | −6,649.8 (−22.1%) [−6,707.6, −6,583.9] 27/27 | −397.8 [−463.6, −329.3] 26/27 |
+
+### Native, fixed `-O3` only
+
+| n | Op | Official | Base | Keccak | Keccak − Official [95% CI] fav. | Keccak − Base [95% CI] fav. | Base − Official |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 768 | Keypair | 21,623.3 | 21,351.7 | 16,867.6 | **−4,755.7** (−22.0%) [−4,784.0, −4,729.8] 27/27 | −4,484.1 (−21.0%) [−4,525.6, −4,451.4] 27/27 | −271.6 [−302.8, −237.6] 27/27 |
+| 768 | Encap | 28,269.6 | 28,059.6 | 20,523.9 | **−7,745.6** (−27.4%) [−7,772.0, −7,719.2] 27/27 | −7,535.6 (−26.9%) [−7,574.6, −7,499.1] 27/27 | −210.0 [−251.8, −167.1] 26/27 |
+| 768 | Decap | 19,470.0 | 19,250.0 | 15,049.5 | **−4,420.5** (−22.7%) [−4,435.7, −4,403.6] 27/27 | −4,200.5 (−21.8%) [−4,229.6, −4,174.4] 27/27 | −220.0 [−244.6, −192.0] 26/27 |
+| 864 | Keypair | 23,737.3 | 22,766.4 | 17,976.6 | **−5,760.7** (−24.3%) [−5,781.0, −5,740.2] 27/27 | −4,789.8 (−21.0%) [−4,831.5, −4,759.1] 27/27 | −970.9 [−1,002.2, −926.6] 27/27 |
+| 864 | Encap | 32,908.3 | 32,138.5 | 23,404.3 | **−9,504.0** (−28.9%) [−9,538.8, −9,467.0] 27/27 | −8,734.2 (−27.2%) [−8,788.2, −8,697.6] 27/27 | −769.8 [−810.7, −718.3] 27/27 |
+| 864 | Decap | 23,646.9 | 22,362.4 | 17,451.9 | **−6,195.0** (−26.2%) [−6,222.0, −6,166.6] 27/27 | −4,910.4 (−22.0%) [−4,933.0, −4,888.5] 27/27 | −1,284.5 [−1,309.7, −1,259.3] 27/27 |
+| 1152 | Keypair | 34,691.9 | 33,733.8 | 27,468.4 | **−7,223.5** (−20.8%) [−7,792.0, −6,646.8] 27/27 | −6,265.4 (−18.6%) [−6,802.2, −5,796.5] 27/27 | −958.0 [−1,543.1, −330.5] 23/27 |
+| 1152 | Encap | 43,113.0 | 42,736.4 | 31,266.1 | **−11,846.9** (−27.5%) [−11,936.6, −11,770.7] 27/27 | −11,470.3 (−26.8%) [−11,519.7, −11,396.1] 27/27 | −376.6 [−458.4, −341.5] 27/27 |
+| 1152 | Decap | 30,542.1 | 30,200.5 | 23,463.9 | **−7,078.2** (−23.2%) [−7,096.6, −7,059.6] 27/27 | −6,736.6 (−22.3%) [−6,761.8, −6,715.0] 27/27 | −341.6 [−359.9, −321.3] 27/27 |
+
+### Native, fixed `-O2` only
+
+| n | Op | Official | Base | Keccak | Keccak − Official [95% CI] fav. | Keccak − Base [95% CI] fav. | Base − Official |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 768 | Keypair | 21,599.6 | 21,377.1 | 18,363.1 | **−3,236.5** (−15.0%) [−3,267.8, −3,211.0] 27/27 | −3,014.0 (−14.1%) [−3,040.2, −2,990.4] 27/27 | −222.5 [−260.8, −187.3] 26/27 |
+| 768 | Encap | 28,178.6 | 27,975.9 | 23,438.1 | **−4,740.5** (−16.8%) [−4,867.5, −4,673.6] 27/27 | −4,537.8 (−16.2%) [−4,580.3, −4,492.3] 27/27 | −202.7 [−327.0, −125.0] 25/27 |
+| 768 | Decap | 19,461.3 | 19,167.2 | 16,697.3 | **−2,764.0** (−14.2%) [−2,789.2, −2,737.4] 27/27 | −2,469.9 (−12.9%) [−2,513.3, −2,437.2] 27/27 | −294.1 [−334.0, −242.4] 27/27 |
+| 864 | Keypair | 23,788.1 | 22,909.0 | 19,771.9 | **−4,016.2** (−16.9%) [−4,052.7, −3,983.1] 27/27 | −3,137.1 (−13.7%) [−3,154.3, −3,119.2] 27/27 | −879.1 [−916.3, −845.2] 27/27 |
+| 864 | Encap | 32,937.9 | 32,076.6 | 26,639.0 | **−6,298.8** (−19.1%) [−6,343.1, −6,255.5] 27/27 | −5,437.6 (−17.0%) [−5,462.7, −5,411.9] 27/27 | −861.3 [−910.3, −812.6] 27/27 |
+| 864 | Decap | 23,756.0 | 22,287.7 | 19,227.9 | **−4,528.1** (−19.1%) [−4,570.2, −4,487.9] 27/27 | −3,059.8 (−13.7%) [−3,090.3, −3,032.9] 27/27 | −1,468.3 [−1,512.8, −1,420.6] 27/27 |
+| 1152 | Keypair | 34,917.8 | 34,074.9 | 29,505.5 | **−5,412.3** (−15.5%) [−5,911.9, −4,924.3] 27/27 | −4,569.5 (−13.4%) [−5,113.6, −4,040.9] 27/27 | −842.9 [−1,338.3, −402.8] 23/27 |
+| 1152 | Encap | 43,016.5 | 42,521.2 | 35,406.9 | **−7,609.6** (−17.7%) [−7,728.0, −7,507.6] 27/27 | −7,114.3 (−16.7%) [−7,255.3, −7,015.3] 27/27 | −495.3 [−632.3, −338.5] 25/27 |
+| 1152 | Decap | 30,435.5 | 30,010.1 | 25,862.9 | **−4,572.6** (−15.0%) [−4,664.9, −4,494.0] 27/27 | −4,147.2 (−13.8%) [−4,173.3, −4,121.1] 27/27 | −425.4 [−519.7, −343.5] 27/27 |
+
+### Compiler picks (default selection), batches 1-3
+
+| n | Official | Base | Keccak |
+|---|---|---|---|
+| 768 | O2 O2 O2 | O2 O2 O2 | O3 O3 O3 |
+| 864 | O3 O3 O3 | O2 O2 O3 | O3 O3 O3 |
+| 1152 | O3 O3 O2 | O2 O3 O2 | O3 O3 O3 |
+
+### Fixed-ELF paired, O3GC, ASLR on, normal placement, 48 blocks
+
+| n | Op | Keccak vs Official: mean [95% CI] fav./48 | Keccak vs Base: mean [95% CI] fav./48 |
+|---|---|---:|---:|
+| 768 | Keypair | **−4,806.1** [−4,818.8, −4,795.2] 48/48 | −4,530.4 [−4,543.1, −4,518.0] 48/48 |
+| 768 | Encap | **−7,649.9** [−7,698.5, −7,612.2] 48/48 | −7,523.8 [−7,560.1, −7,492.9] 48/48 |
+| 768 | Decap | **−4,353.1** [−4,372.2, −4,335.3] 48/48 | −4,193.2 [−4,208.5, −4,177.7] 48/48 |
+| 864 | Keypair | **−5,906.6** [−5,935.0, −5,884.2] 48/48 | −4,972.1 [−4,987.8, −4,957.0] 48/48 |
+| 864 | Encap | **−9,406.5** [−9,436.7, −9,379.0] 48/48 | −8,556.0 [−8,580.8, −8,531.0] 48/48 |
+| 864 | Decap | **−6,371.0** [−6,396.6, −6,346.9] 48/48 | −4,901.6 [−4,928.8, −4,878.4] 48/48 |
+| 1152 | Keypair | **−7,489.7** [−7,779.9, −7,189.4] 48/48 | −6,985.1 [−7,258.0, −6,712.9] 48/48 |
+| 1152 | Encap | **−11,725.6** [−11,768.1, −11,676.9] 48/48 | −11,259.6 [−11,297.8, −11,225.0] 48/48 |
+| 1152 | Decap | **−6,960.4** [−6,990.0, −6,934.3] 48/48 | −6,564.3 [−6,586.8, −6,544.5] 48/48 |
+
+### Anomaly check (keccak − base)
+
+| n | Op | Native (default) | Same-ELF in-KEM (Phase A) | Isolated hash sum (Phase A) | Native / same-ELF | Native / isolated |
+|---|---|---:|---:|---:|---:|---:|
+| 768 | Keypair | −4,536.4 | −4,263.1 | n/a | 1.06 | n/a |
+| 768 | Encap | −7,467.4 | −7,528.6 | −4,385.0 (hash_f+hash_g+hash_h) | 0.99 | 1.70 |
+| 768 | Decap | −4,103.7 | −4,029.5 | −2,494.6 (hash_g+hash_h) | 1.02 | 1.65 |
+| 864 | Keypair | −4,923.4 | −4,406.8 | n/a | 1.12 | n/a |
+| 864 | Encap | −8,702.1 | −8,550.5 | −5,007.0 (hash_f+hash_g+hash_h) | 1.02 | 1.74 |
+| 864 | Decap | −4,886.7 | −4,600.3 | −2,884.3 (hash_g+hash_h) | 1.06 | 1.69 |
+| 1152 | Keypair | −7,059.9 | −6,896.2 | n/a | 1.02 | n/a |
+| 1152 | Encap | −11,438.4 | −11,588.4 | −6,791.7 (hash_f+hash_g+hash_h) | 0.99 | 1.68 |
+| 1152 | Decap | −6,649.8 | −6,523.0 | −4,019.0 (hash_g+hash_h) | 1.02 | 1.65 |
+
+Values are pooled StQ2 cycles. "fav." is the number of candidate launches below the baseline's median launch.
+CIs come from launch resampling. Per-batch deltas are in `STATUS.yml` and in the summaries. Every per-batch
+Keccak − Official and Keccak − Base delta (3 per comparison and setting) is negative under all three compiler settings.
+
+- **Compiler pick.** SUPERCOP picked `-O3` for the Keccak candidate in 9/9 batches. Official and base moved
+  between `-O2` and `-O3`, as in earlier runs. The default-selection candidate ELFs are byte-identical to the
+  fixed-O3 ones (768 `243d2fcd…`, 864 `c36b0349…`, 1152 `b645c5b3…`).
+- **`-O2` sensitivity.** At fixed `-O2` the Keccak saving vs base drops to 59-73% of the fixed `-O3` saving
+  (768 67/60/59%, 864 65/62/62%, 1152 73/62/62% for keypair/enc/dec). The cause is the byte-loop
+  `xor_bytes`/`extract_bytes` described above. The saving stays 2.5-7 thousand cycles and every launch is
+  favourable, so the candidate beats both Official and base under every compiler line tested.
+- **1152 Keypair** has a wide CI, [−8,089, −7,099] for keccak − Official, because of the known BaseInv retry
+  tail. The paired CI is also wider ([−7,780, −7,189]) but far below zero. The **base − Official** keypair CI for
+  1152 crosses zero ([−1,097, +42], 18/27) at default selection; that does not bear on the Keccak verdict.
+
+### Decision (rule: Native default-selection pooled delta vs Official < 0 AND normal-placement ASLR-on paired CI vs Official < 0)
+
+| n | Keypair | Encap | Decap |
+|---|---|---|---|
+| 768 | **robust research win** | **robust research win** | **robust research win** |
+| 864 | **robust research win** | **robust research win** | **robust research win** |
+| 1152 | **robust research win** | **robust research win** | **robust research win** |
+
+The same rule with the base candidate as the baseline also gives a robust research win for all 9 (n, op)
+pairs. Under fixed `-O3` and fixed `-O2` every Native delta is also negative, vs Official and vs base, so the
+result does not depend on SUPERCOP's compiler pick. `promotion: none`, and `clean/` was not touched. Details:
+`STATUS.yml` `keccak_candidate.phase_b` and `results/keccak-phase-b-summary-20260924k.json` for each parameter.
+
+### Phase-A anomaly: settled by Native
+
+In Phase A, the in-KEM Keccak saving (same ELF) was about 1.7x the sum of the isolated `hash_*` deltas.
+Native answers which figure is real: the Native keccak − base saving matches the **same-ELF in-KEM delta**
+(ratio 0.99-1.06 for Encap/Decap). It is **not** the isolated hash sum (ratio 1.65-1.74). For 768 Encap,
+Native gives −7,467 against the same-ELF −7,529 and the isolated −4,385. The per-call component harness
+therefore understates the in-KEM benefit, and component numbers should not be used to predict KEM deltas for
+this change. Keypair has no isolated counterpart; its Native saving is 1.02-1.12x the same-ELF value.
+
+### Reproduce Phase B
+
+```sh
+REPO=/home/nuc/src/ntru_plus-official-opt-864-1152
+A=$REPO/ntruplus-ntt-Optimized/Additional_Implementation/avx2
+T=$A/common/official_opt_lazy/tools; W=$A/common/official_opt_lazy/compilers
+C=/home/nuc/src/supercop-campaign-lazy-864-1152-20260923-001; TAG=20260924k
+E768=$A/NTRU+768/experiments/avx2_official_opt_freeze_001; E864=$A/NTRU+864/experiments/avx2_official_opt_001
+E1152=$A/NTRU+1152/experiments/avx2_official_opt_001
+# exports (committed; recreate into a new dir with ... --qualification-root <dir>)
+(cd $E768 && make keccak-qualification); (cd $E864 && make keccak-qualification); (cd $E1152 && make keccak-qualification)
+python3 $T/install_qualification.py --param 768 --campaign-root $C --export-root $E768/qualification/avx2-officialopt-lazy-freeze-keccak-qual001
+python3 $T/install_qualification.py --param 864 --campaign-root $C --export-root $E864/qualification/avx2-officialopt-lazy-codec-keccak-qual001
+python3 $T/install_qualification.py --param 1152 --campaign-root $C --export-root $E1152/qualification/avx2-officialopt-lazy-freeze-keccak-qual001
+# per parameter p (E, BASE, CAND as above; 864: BASE=avx2-officialopt-lazy-codec-qual002, CAND=avx2-officialopt-lazy-codec-keccak-qual001;
+# 768/1152: BASE=avx2-officialopt-lazy-freeze-qual001, CAND=avx2-officialopt-lazy-freeze-keccak-qual001)
+ROLES="--role official=avx2 --role base=$BASE --role keccak=$CAND"
+python3 $T/run_extended_native.py --param $p --experiment $E --campaign-root $C --tag $TAG --batches 3 --order rotate $ROLES
+for cc in O3 O2; do
+  python3 $T/run_extended_native.py --param $p --experiment $E --campaign-root $C --tag $TAG$cc --batches 3 --order rotate $ROLES \
+    --compiler-wrapper $W/okc-native-gcc-$cc-only.sh
+done
+for spec in official:avx2 base:$BASE keccak:$CAND; do
+  python3 $T/phase_b_batch.py --result-dir $E/results/fixed-keccak-${spec%%:*}-normal-$TAG --metadata metadata.json -- \
+    python3 $REPO/scripts/run_supercop_benchmark.py --campaign-root $C --parameter $p --implementation ${spec#*:} \
+    --cpu 1 --mode native-kem --fresh-launches 1 --compiler-wrapper $REPO/bench/supercop/okc-o3gc.sh \
+    --require-frequency-control --result-dir {RESULT}
+done
+for b in official base; do R=$E/results
+  python3 $T/phase_b_batch.py --result-dir $R/paired-aslr-on-normal-keccak-vs-$b-$TAG --metadata manifest.json -- \
+    python3 $T/run_paired_aslr_on.py --official $R/fixed-keccak-$b-normal-$TAG/measure \
+    --candidate $R/fixed-keccak-keccak-normal-$TAG/measure --placement normal --cpu 1 --blocks 48 --compiler-recipe O3GC --output {RESULT}
+  python3 $REPO/scripts/summarize_supercop_paired.py --campaign $R/paired-aslr-on-normal-keccak-vs-$b-$TAG --parameter $p
+done
+CMP="--comparison keccak:official --comparison keccak:base --comparison base:official"
+python3 $T/summarize_extended_multi.py --param $p --experiment $E --tag $TAG --order rotate --roles official,base,keccak $CMP \
+  --paired keccak:official=keccak-vs-official-$TAG --paired keccak:base=keccak-vs-base-$TAG
+for cc in O3 O2; do python3 $T/summarize_extended_multi.py --param $p --experiment $E --tag $TAG$cc --order rotate --roles official,base,keccak $CMP; done
+python3 $A/common/official_opt_keccak/tools/summarize_keccak_phase_b.py --param $p --experiment $E --tag $TAG
+```
+
+Curated evidence per experiment: `results/native-ext-{official,base,keccak}-b{1..3}-20260924k{,O3,O2}/`
+(`metadata.json`, `stq-summary.json`, `supercop.lock`), `results/fixed-keccak-*-normal-20260924k/`,
+`results/paired-aslr-on-normal-keccak-vs-{official,base}-20260924k/`,
+`results/extended-multi-summary-20260924k{,O3,O2}.json`, `results/keccak-phase-b-summary-20260924k.json`.
+Raw launch output, `data`, `run.out`, the `measure` ELFs and `host-hygiene.json` stay local (Git-ignored).
+
+### Deviations
+
+- 27 launches per role instead of the 81 used for earlier small-effect candidates. This was the user's
+  decision. The CI half-widths are 0.3-7% of the Keccak deltas under default selection, and at most 12%
+  (1152 Keypair, fixed `-O2`) in the fixed-compiler runs.
+- No reversed-placement paired run (not requested). The Phase-A same-ELF diagnostic had both link orders agree within 5%.
+- The fixed-ELF Official/base ELFs were rebuilt instead of reused. Where earlier builds exist they are byte-identical.
+- One analysis-tool fix: `summarize_extended{,_multi}.py` read the batch number with `split("-b")`, which broke
+  for a role named `base`. It is now parsed after the `native-ext-<role>-b` prefix. Summaries of earlier tags do not change.
+
 ## Next (not done)
 
-- Phase B: export the flat trees as qualification trees and run Native SUPERCOP. Default compiler selection first,
-  then fixed `-O3` and fixed `-O2` single-line runs (the `common/official_opt_lazy/compilers/` wrappers).
-  Record which `okc` line SUPERCOP picks.
-- If `-O2` or another non-O3 line is picked, consider a compiler-independent vectorised absorb/extract for the
-  byte-level `xor_bytes`/`extract_bytes`. It would have to sit outside the vendored files, as a replacement TU, and would need its own gates.
-- No production promotion.
+- No production promotion and no `clean/` package. The next step toward production would be a clean package and
+  a release-package Native re-confirmation.
+- A compiler-independent vectorised absorb/extract for the byte-level `xor_bytes`/`extract_bytes` is **not needed
+  for SUPERCOP**, which picked `-O3` for the candidate in every batch. It would recover the remaining ~30-40% for
+  `-O2` builds. It would have to sit outside the vendored files, as a replacement TU, and would need its own gates.
+- Distinct `MLK_CONFIG_NAMESPACE_PREFIX` per parameter if several NTRU+ parameters are ever linked into one binary.
