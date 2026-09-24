@@ -4,7 +4,9 @@
  "control_passes": {
   "symbolic": true,
   "c_forward": true,
-  "c_keygen": true
+  "c_keygen": true,
+  "symbolic_inverse": true,
+  "c_inverse": true
  },
  "mutants": [
   {
@@ -34,6 +36,30 @@
   {
    "mutant": "level-2 twiddle offset",
    "file": "ntruplus768_officialopt_ntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "inverse Barrett dropped",
+   "file": "ntruplus768_officialopt_invntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "inverse unpack lo/hi swap",
+   "file": "ntruplus768_officialopt_invntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "inverse twiddle slot",
+   "file": "ntruplus768_officialopt_invntt_ht.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "inverse level-1 zeta offset",
+   "file": "ntruplus768_officialopt_invntt_ht.s",
    "symbolic_rejects": true,
    "c_differential_rejects": true
   },

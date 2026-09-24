@@ -19,11 +19,12 @@
   "ledger.py": "715b9c82ceba337090f2fcc3de866813635cd9b5470ee490f64c7da28fede9c9",
   "prove_forward_lazy.py": "efd8e6be025d662668c40696da1b4562392ee438e9b864abb98db648cadf981e",
   "images.c": "e155ab31180f9831f0036602b4ba48efc37b6a5fc22aa61ed68c4f5a4f6138b3",
-  "prove_ht.py": "cb69cbb28f7b3197bff38db9ee4cf61cc75260d2818787df85215b59043fb86a"
+  "prove_ht.py": "0a63bc8e0fffe5309e475925c8536e263902e8f12147cf80992277b4acca694b"
  },
  "emulator_machine_differential_calls": {
   "ntruplus768_officialopt_ntt_ht": 24,
-  "ntruplus768_officialopt_basemul_nor2": 24
+  "ntruplus768_officialopt_basemul_nor2": 24,
+  "ntruplus768_officialopt_invntt_ht": 24
  },
  "forward": {
   "asm_contract[-3,4]": {
@@ -336,6 +337,36 @@
    }
   }
  },
+ "inverse_ht": {
+  "input": "poly_basemul_scale(c, f), c and f from poly_frombytes: [0,q-1] (kem.c Decap)",
+  "input_range": [
+   -6956,
+   7640
+  ],
+  "official": {
+   "failures": 0,
+   "output_range": [
+    -1891,
+    1891
+   ]
+  },
+  "ht": {
+   "failures": 0,
+   "output_range": [
+    -1891,
+    1891
+   ]
+  },
+  "ht_equals_official_per_lane_interval": true,
+  "consumer": "poly_crepmod3 (output in [-2,2] for every int16 input)"
+ },
+ "crepmod3": {
+  "output_values_all_words": [
+   -2,
+   2
+  ]
+ },
+ "htinv_asm_sha256": "999388bbad8f3fbf0ea35d40c9c88fa50104a97af44a92b13994f6f13106b499",
  "tobytes": {
   "canonical_for_all_int16": true
  }
