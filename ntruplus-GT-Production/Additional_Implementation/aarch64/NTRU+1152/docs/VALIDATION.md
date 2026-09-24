@@ -34,6 +34,30 @@ buffer on the scratch.  It was retired with the rebase itself (P126):
 `packed_i9` now reads `basemul_rinv`'s output and writes the scratch, which do
 not overlap.
 
+## Decoder with two-register tbl (P137, 2026-09-24)
+
+`unpack.S` replaces the C decoder of `pack.c`.  A two-register `tbl` costs
+one `trn` on both Apple M2 and Cortex-A76 (measured), so one `tbl` per block
+pair and half does the transpose's first level and the byte expansion
+together: 40 SIMD operations a pair of groups against 48.  The file is
+generated from `codec_pairs.h` by `experiments/gt1152-p137-frombytes/gen_asm.py
+--imm --symbol frombytes_asm`; as assembly, the loads land in the `tbl`
+register pairs, where gcc's C code moves each pair (270 moves, one A76 vector
+op each).
+
+- Identical to the previous decoder on 200,000 inputs (half canonical, half
+  random) and, at every one of the 1,152 positions, on an out-of-range
+  coefficient; the input ends at a guard page.  M2 clang and A76 gcc.
+- Per call: M2 70.0 -> 54.6 ns, A76 612 -> 479 cycles (Official 54.6 ns / 486).
+- SUPERCOP 20260831 on the Pi 5, six rounds: decapsulation 43,405.5 -> 42,966.5
+  cycles (-1.01%, all six paired rounds negative), encapsulation -153 (-0.33%),
+  key generation within its retry noise.  M2: decapsulation -0.91%,
+  encapsulation -0.26%.
+- SUPERCOP TIMECOP (`TIMECOP=256`) passes at `-O`, `-O2`, `-O3` and `-Os`.
+- `export_supercop.py` now refuses to export when its source lists differ
+  from the Makefile's: the first SUPERCOP run of this change linked without
+  `unpack.S`, which `export-check` (a determinism check) could not see.
+
 ## Canonical reduction in the full serializer (P134, 2026-09-24)
 
 `reduce_canon` keeps its Barrett step (rounding multiply-high and

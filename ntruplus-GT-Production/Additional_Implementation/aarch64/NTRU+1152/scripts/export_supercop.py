@@ -24,11 +24,33 @@ C_SOURCES = (
 # #if defined(__ARM_FEATURE_SHA3), and preprocessing strips the guard, which
 # would leave eor3/rax1/xar/bcax unconditional and unassemblable without +sha3.
 ASM_SOURCES = (
-    "keccakf1600.S", "basemul_rinv.S", "baseinv_num.S", "baseinv_finish.S",
+    "keccakf1600.S", "basemul_rinv.S", "unpack.S", "baseinv_num.S", "baseinv_finish.S",
     "ntt.S", "ntt_top.S", "ntt_tail.S", "ntt9.S",
     "inverse_ntt.S", "inverse9.S", "inverse16.S", "inverse16_tail.S",
     "crepmod3_raw.S",
 )
+
+
+
+def makefile_sources() -> tuple:
+    """C_SRC and ASM_SRC as the Makefile lists them."""
+    text = (ROOT / "Makefile").read_text().replace("\\\n", " ")
+    lists = {}
+    for line in text.splitlines():
+        for name in ("C_SRC", "ASM_SRC"):
+            if line.startswith(name + " :="):
+                lists[name] = line.split(":=", 1)[1].split()
+    return tuple(lists[name] for name in ("C_SRC", "ASM_SRC"))
+
+
+# The leaf must build what the Makefile builds; a source added to one list and
+# not the other links locally and fails in SUPERCOP with undefined references.
+_c_src, _asm_src = makefile_sources()
+if set(_c_src) != set(C_SOURCES) or set(_asm_src) != set(ASM_SOURCES) | {"keccakf1600_v84a.S"}:
+    raise SystemExit(
+        "export-check: export lists differ from the Makefile: "
+        f"C {sorted(set(_c_src) ^ set(C_SOURCES))}, "
+        f"asm {sorted(set(_asm_src) ^ (set(ASM_SOURCES) | {'keccakf1600_v84a.S'}))}")
 
 ASM_NOTICE_MARKERS = {
     "keccakf1600.S": b"\n/*yaml\n",

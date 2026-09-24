@@ -41,14 +41,8 @@
  * twenty-four a widen-and-`tbl` encoding needs on top of its transpose.
  */
 /*
- * The decode runs the same fold backwards: three halfwords carry four
- * coefficients, and ushr/sli/and recover them, so the table lookup and the
- * per-lane shift vector the 24-bit form needed both disappear.
- */
-
-/*
- * The 8x8 int16 transpose, three trn levels.  A transpose is an involution, so
- * the same network serves both directions.
+ * The 8x8 int16 transpose, three trn levels.  (The decoder, unpack.S, does
+ * its first level and the byte expansion together with two-register tbl.)
  */
 #define S32(x) vreinterpretq_s32_s16(x)
 #define S16_32(x) vreinterpretq_s16_s32(x)
@@ -120,18 +114,6 @@ static inline void fold4(uint16x8_t o[3], int16x8_t c0, int16x8_t c1,
     o[2] = vsliq_n_u16(vshrq_n_u16(u2, 8), u3, 4);
 }
 
-/* and back again */
-static inline void unfold4(int16x8_t *c0, int16x8_t *c1, int16x8_t *c2,
-                           int16x8_t *c3, uint16x8_t h0, uint16x8_t h1,
-                           uint16x8_t h2)
-{
-    const uint16x8_t m12 = vdupq_n_u16(0x0FFF);
-    *c0 = vreinterpretq_s16_u16(vandq_u16(h0, m12));
-    *c1 = vreinterpretq_s16_u16(vandq_u16(vsliq_n_u16(vshrq_n_u16(h0,12), h1, 4), m12));
-    *c2 = vreinterpretq_s16_u16(vandq_u16(vsliq_n_u16(vshrq_n_u16(h1, 8), h2, 8), m12));
-    *c3 = vreinterpretq_s16_u16(vshrq_n_u16(h2, 4));
-}
-
 /*
  * One pair's eight vectors, lane-aligned rather than transposed: vector i
  * holds coefficient i of every block, which is the order `fold4` consumes.
@@ -167,14 +149,6 @@ static inline void store12(uint8_t *out, uint8x16_t b)
 {
     vst1_u8(out, vget_low_u8(b));
     vst1q_lane_u32((uint32_t *)(void *)(out + 8), vreinterpretq_u32_u8(b), 2);
-}
-
-static inline uint8x16_t load12(const uint8_t *in)
-{
-    uint8x16_t b = vcombine_u8(vld1_u8(in), vdup_n_u8(0));
-    return vreinterpretq_u8_u32(
-        vld1q_lane_u32((const uint32_t *)(const void *)(in + 8),
-                       vreinterpretq_u32_u8(b), 2));
 }
 
 /* ---- public entry points ---- */
@@ -221,64 +195,4 @@ void tobytes_small_asm(uint8_t out[NTRUPLUS1152_POLYBYTES],
                        const int16_t in[NTRUPLUS1152_N])
 {
     tobytes(out, in, 0);
-}
-
-/*
- * Decode.  Each block's twelve bytes are fetched whole and the eight blocks of
- * a pair are transposed so that lane k of the six halfword streams is block k;
- * `unfold4` then recovers the coefficients without a table.
- *
- * The plain 16-byte load reads four bytes past a block, which the transpose
- * discards.  Only the final block, at offset 1716, would read past the
- * 1728-byte input, so that one takes the two-load path.
- */
-int frombytes_asm(int16_t out[NTRUPLUS1152_N],
-                  const uint8_t in[NTRUPLUS1152_POLYBYTES])
-{
-    uint16x8_t hi = vdupq_n_u16(0);
-
-    for (int p = 0; p < CODEC_PAIRS; p++) {
-        const unsigned short *w = pair_wire[p];
-        int16_t *a = out + 32 * pair_group[p];
-        int16_t *b = a + 32 * 9;
-        int16x8_t g[8], v[8];
-
-        for (int k = 0; k < 8; k++)
-            g[k] = (p == CODEC_PAIRS - 1 && k == 7)
-                 ? vreinterpretq_s16_u8(load12(in + w[k]))
-                 : vreinterpretq_s16_u8(vld1q_u8(in + w[k]));
-        transpose8(g);
-
-        unfold4(&v[0], &v[4], &v[1], &v[5], vreinterpretq_u16_s16(g[0]),
-                vreinterpretq_u16_s16(g[1]), vreinterpretq_u16_s16(g[2]));
-        unfold4(&v[2], &v[6], &v[3], &v[7], vreinterpretq_u16_s16(g[3]),
-                vreinterpretq_u16_s16(g[4]), vreinterpretq_u16_s16(g[5]));
-
-        /* One running maximum rather than a compare per lane: some coefficient
-         * is out of range exactly when the maximum is.  Written as an explicit
-         * tree rather than a loop: as a loop, gcc below -O3 keeps v[] as a
-         * stack array, spills all eight vectors and reloads them one at a time
-         * to fold them, so every coefficient makes three trips through memory
-         * instead of one.  That is 1,156 cycles a call at -O2 against 876 here
-         * on Cortex-A76, and it also removes a 256-byte stack frame.  At the
-         * -O3 this Makefile uses it is worth 10 cycles; SUPERCOP builds with
-         * whatever flags it likes. */
-        {
-            uint16x8_t m0 = vmaxq_u16(vreinterpretq_u16_s16(v[0]),
-                                      vreinterpretq_u16_s16(v[1]));
-            uint16x8_t m1 = vmaxq_u16(vreinterpretq_u16_s16(v[2]),
-                                      vreinterpretq_u16_s16(v[3]));
-            uint16x8_t m2 = vmaxq_u16(vreinterpretq_u16_s16(v[4]),
-                                      vreinterpretq_u16_s16(v[5]));
-            uint16x8_t m3 = vmaxq_u16(vreinterpretq_u16_s16(v[6]),
-                                      vreinterpretq_u16_s16(v[7]));
-            hi = vmaxq_u16(hi, vmaxq_u16(vmaxq_u16(m0, m1), vmaxq_u16(m2, m3)));
-        }
-
-        vst1q_s16(a,      v[0]); vst1q_s16(a +  8, v[4]);
-        vst1q_s16(a + 16, v[1]); vst1q_s16(a + 24, v[5]);
-        vst1q_s16(b,      v[2]); vst1q_s16(b +  8, v[6]);
-        vst1q_s16(b + 16, v[3]); vst1q_s16(b + 24, v[7]);
-    }
-    return vmaxvq_u16(hi) >= Q;
 }
