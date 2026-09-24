@@ -23,15 +23,16 @@
 
 #define Q 3457
 
-/* Official's reduction: round-multiply-high and multiply-subtract to land in
- * (-q, q), then a sign mask and a second multiply-subtract to make it
- * canonical.  Four instructions a vector. */
+/* A rounding multiply-high and a multiply-subtract land in (-q, q), then an
+ * add and an unsigned minimum pick the canonical representative, as
+ * canon_only does.  Four instructions a vector, one multiply fewer than a
+ * sign mask and a second multiply-subtract (the same result for every int16,
+ * checked exhaustively). */
 static inline int16x8_t reduce_canon(int16x8_t a)
 {
     int16x8_t t = vqrdmulhq_n_s16(a, 9);          /* round(2^15/q) = 9 */
-    a = vmlsq_n_s16(a, t, (int16_t)Q);
-    int16x8_t m = vreinterpretq_s16_u16(vcltq_s16(a, vdupq_n_s16(0)));
-    return vmlsq_n_s16(a, m, (int16_t)Q);
+    uint16x8_t u = vreinterpretq_u16_s16(vmlsq_n_s16(a, t, (int16_t)Q));
+    return vreinterpretq_s16_u16(vminq_u16(u, vaddq_u16(u, vdupq_n_u16(Q))));
 }
 
 /* Already inside (-q, q): a + q is in (0, 2q) and never wraps sixteen bits, so

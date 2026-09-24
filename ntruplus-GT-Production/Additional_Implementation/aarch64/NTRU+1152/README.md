@@ -60,8 +60,9 @@ Against SUPERCOP 20260831's `ntruplus1152/aarch64` (2026-09-23; details in
 | Cortex-A76, Keccak held equal | -6.9% | -9.6% | -8.8% |
 
 "Keccak held equal" links Official's sponge against GT's permutation, so the
-margin is the arithmetic alone.  A later serializer change (0.4% on
-Cortex-A76, none on M2) is not included.
+margin is the arithmetic alone.  Two later serializer changes are not
+included: the store order of `tobytes` (0.4% on Cortex-A76, none on M2) and
+its `add` + `umin` canonicalisation (0.4-0.5% on Cortex-A76, 11 ns on M2).
 
 ## SUPERCOP leaf
 

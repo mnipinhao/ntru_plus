@@ -29,7 +29,7 @@ comparison, and deterministic SUPERCOP export.
 | `basemul_rinv.S` | decapsulation first product, `R^-1` boundary |
 | `inverse9.S`, `inverse16_paired.S`, `inverse_tail_direct.S`, `inverse_route.S`, `inverse*_tables.h` | decapsulation inverse NTT with the ternary reduction fused in |
 | `pack.c`, `pack6.h` | canonical serialization |
-| `unpack.c` | canonical decoding and range check |
+| `unpack.c` | canonical decoding and range check, the exact inverse of `pack.c` |
 | `cbd.S`, `add.S`, `support_abi.S` | sampling, SOTP, `sub`, `triple`; `support_abi.S` gives the leaves that use v8-v15 an AAPCS64 boundary |
 | `secure_clear.h` | clears and the SUPERCOP declassify annotation |
 
@@ -42,18 +42,20 @@ comparison, and deterministic SUPERCOP export.
 
 ## Performance
 
-Against SUPERCOP 20260831's `ntruplus864/aarch64` (2026-09-23; details in
+Against SUPERCOP 20260831's `ntruplus864/aarch64` (2026-09-24; details in
 `experiments/ROADMAP-m2-delivery.md` on the development branch
 `gt864-1152-cleanup`):
 
 | | key generation | encapsulation | decapsulation |
 |---|---:|---:|---:|
-| M2 Pro, vs Official + CryptoExtension | -9.4% | -11.2% | -7.8% |
-| M2 Pro, Keccak held equal | -6.0% | -6.4% | -4.2% |
-| Cortex-A76, Keccak held equal | -10.8% | -12.1% | -9.4% |
+| M2 Pro, vs Official + CryptoExtension | -9.6% | -11.7% | -9.1% |
+| M2 Pro, Keccak held equal | -6.0% | -6.7% | -5.6% |
+| Cortex-A76, Keccak held equal | -10.8% | -12.5% | -10.5% |
 
 "Keccak held equal" links Official's sponge against GT's permutation, so the
-margin is the arithmetic alone.
+margin is the arithmetic alone.  A later serializer change, the `add` +
+`umin` canonicalisation of `tobytes` (0.4% on Cortex-A76, 4-8 ns on M2), is
+not included.
 
 The Forward kernel is restricted to the proven KEM input producers. Its
 stage-one copy optimization is not valid for arbitrary input polynomials.
