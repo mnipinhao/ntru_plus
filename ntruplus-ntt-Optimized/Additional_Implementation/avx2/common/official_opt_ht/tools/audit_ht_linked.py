@@ -12,8 +12,18 @@
     Forward, BaseInv, BaseMul, tobytes and SHAKE256/hash bindings are exactly
     the intended ones (the candidate never calls the old lazy or the Official
     Forward, nor Official BaseInv, nor poly_tobytes).
+
+Flat mode (Phase B, --flat-root DIR --flat-kem-obj OBJ): the same entry, table
+and fold-BaseInv checks on an ELF linked from the SUPERCOP-flat qualification
+export DIR (entries compared with DIR/{ntt_ht,basemul_nor2,invntt_ht}.s), and
+the call relocations of the flat kem.c object OBJ against FLAT_EXPECT (the
+candidate bindings with the Official hash_f/g/h names, as in the flat tree).
+Each --phase-a-obj FLAT=PHASEA pair must be the same object up to the file
+symbol and the repo-only hash names (ntruplus768_keccak_hash_* -> hash_*):
+identical section headers, contents, relocations and symbol table.
 """
 import argparse
+import difflib
 import hashlib
 import json
 import re
@@ -50,6 +60,11 @@ EXPECT = {
     "kem_lazy_freeze2op_keccak_htinv": {**KEM_BASE, HTINV: 1, "poly_invntt_scale": 0},
     "kem_lazy_r2fold_freeze2op_keccak_ht": {**KEM_BASE, LAZY: 0, HT: 6, **FOLD},
 }
+# flat kem.c (qualification export): candidate bindings, Official hash names
+FLAT_EXPECT = {**EXPECT["kem_lazy_r2fold_freeze2op_keccak_ht_htinv"],
+               "ntruplus768_keccak_hash_f": 0, "ntruplus768_keccak_hash_g": 0, "ntruplus768_keccak_hash_h": 0,
+               "hash_f": 2, "hash_g": 2, "hash_h": 2}
+FLAT_NAME_MAP = {f"ntruplus768_keccak_hash_{x}": f"hash_{x}" for x in "fgh"}
 
 
 def sha(p):
@@ -95,17 +110,49 @@ def audit_entry(nm, rows, name, asm, build):
             "stack_references": 0, "calls": 0, "vzeroupper": 0}
 
 
+def object_dump(obj, name_map):
+    """Section headers, contents, relocations and symbols of one object, minus the file symbol."""
+    text = run("objdump", "-h", "-s", "-r", "-t", "-w", str(obj))
+    lines = []
+    for line in text.splitlines()[2:]:  # drop the '<file>: file format' header
+        if re.search(r"\sdf\s+\*ABS\*\s", line):
+            continue
+        for a, b in name_map.items():
+            line = re.sub(r"\b" + a + r"\b", b, line)
+        lines.append(line)
+    return lines
+
+
+def compare_objects(flat, phase_a, name_map):
+    a, b = object_dump(flat, {}), object_dump(phase_a, name_map)
+    if a != b:
+        diff = [l for l in difflib.unified_diff(b, a, lineterm="", n=0)][:12]
+        raise ValueError(f"{flat} differs from Phase-A {phase_a}: {diff}")
+    return {"flat": str(flat), "phase_a": str(phase_a), "flat_sha256": sha(flat), "phase_a_sha256": sha(phase_a),
+            "identical_modulo": ["file symbol", *(f"{k}->{v}" for k, v in name_map.items())],
+            "dump_lines": len(a)}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--experiment", type=Path, required=True)
     ap.add_argument("--elf", type=Path, required=True)
     ap.add_argument("--output", type=Path, required=True)
+    ap.add_argument("--flat-root", type=Path, help="flat qualification export (flat mode)")
+    ap.add_argument("--flat-kem-obj", type=Path, help="flat kem.c object (flat mode)")
+    ap.add_argument("--phase-a-obj", action="append", default=[], metavar="FLAT=PHASEA",
+                    help="flat-mode object pair that must be identical up to the file symbol and hash names")
     args = ap.parse_args()
     root = args.experiment.resolve()
+    flat = args.flat_root.resolve() if args.flat_root else None
+    if (flat is None) != (args.flat_kem_obj is None):
+        ap.error("--flat-root and --flat-kem-obj go together")
+    asm = {HT: "ntt_ht.s", NOR2: "basemul_nor2.s", HTINV: "invntt_ht.s"}
+    src = {n: (flat / asm[n]) if flat else root / f"asm/{n}.s" for n in asm}
     nm = run("nm", "-S", str(args.elf))
     rows = disasm_rows(args.elf)
     with tempfile.TemporaryDirectory() as tmp:
-        entries = {name: audit_entry(nm, rows, name, root / f"asm/{name}.s", Path(tmp))
+        entries = {name: audit_entry(nm, rows, name, src[name], Path(tmp))
                    for name in (HT, NOR2, HTINV)}
     if set(entries[HT]["rip_symbols"]) != {"_16xq", "_16xzeta1", "_16xw", "_16xwqinv", "zetas", *TABLES[:2]}:
         raise ValueError(f"HT rip symbols {entries[HT]['rip_symbols']}")
@@ -125,23 +172,34 @@ def main():
             "poly_baseinv_1" not in r2calls:
         raise ValueError(f"fold BaseInv call graph {r2calls}")
     relocs = {}
-    for v, exp in EXPECT.items():
-        obj = root / f"build/{v}.o"
+    objects = {"flat kem.c": (args.flat_kem_obj, FLAT_EXPECT)} if flat else \
+        {v: (root / f"build/{v}.o", exp) for v, exp in EXPECT.items()}
+    for v, (obj, exp) in objects.items():
         got = {t: relocs_to(obj, t) for t in TARGETS}
         if got != exp:
             raise ValueError(f"{v}: call relocations {got} != {exp}")
         relocs[v] = {k: n for k, n in got.items() if n}
+    equivalence = {}
+    for pair in args.phase_a_obj:
+        f, p = (Path(x) for x in pair.split("=", 1))
+        equivalence[f.name] = compare_objects(f, p, FLAT_NAME_MAP)
+    elf_path = args.elf.resolve()
     out = {
-        "class": "linked ELF audit (Phase A, correctness only; no timing)",
-        "parameter": "NTRU+768", "elf": str(args.elf.relative_to(root) if args.elf.is_absolute() else args.elf),
+        "class": "linked ELF audit (Phase A, correctness only; no timing)" if not flat else
+                 "linked ELF audit of the SUPERCOP-flat qualification export (Phase B, correctness only; no timing)",
+        "parameter": "NTRU+768",
+        "elf": str(elf_path.relative_to(root) if elf_path.is_relative_to(root) else args.elf),
         "elf_sha256": sha(args.elf),
-        "asm_sha256": {n: sha(root / f"asm/{n}.s") for n in (HT, NOR2, HTINV)},
+        "asm_sha256": {n: sha(src[n]) for n in (HT, NOR2, HTINV)},
         "compiler": run("cc", "--version").splitlines()[0],
         "entries": entries, "ht_tables": tables,
         "fold_baseinv": {"size_bytes": r2size, "calls": r2calls},
         "kem_call_relocations": relocs,
         "candidate_calls_old_lazy_or_official_forward": False,
     }
+    if flat:
+        out["flat_root"] = str(flat.relative_to(root) if flat.is_relative_to(root) else flat)
+        out["phase_a_object_equivalence"] = equivalence
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(out, indent=2) + "\n")
     print(json.dumps({"entries": {k: {x: v[x] for x in ("size_bytes", "instruction_rows")}

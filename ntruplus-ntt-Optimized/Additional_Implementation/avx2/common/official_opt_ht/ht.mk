@@ -179,3 +179,77 @@ $(BUILD)/bench_ht_diag_swapped: $(HB_SRC) $(HB_OBJS) $(HT_ASM_ALL) $(COMMON_C) $
 		$(call reverse,$(HT_ASM_ALL)) $(BUILD)/kat_rng.o $(BUILD)/kat_aes.o $(CPU_LIB)
 
 ht-bench: $(BUILD)/bench_ht_diag $(BUILD)/bench_ht_diag_swapped
+
+# ------------------------------------------------ Phase B: SUPERCOP-flat qualification export
+# avx2-officialopt-lazy-freeze-keccak-ht-qual001 = the Keccak base export + ntt_ht.s, invntt_ht.s,
+# basemul_nor2.s, baseinv_r2fold.c (exact Phase-A bytes) + a kem.c rebinding what the Phase-A
+# overlay chain rebinds (tools/export_ht_flat.py).  ht-qualification refuses to overwrite;
+# ht-qualification-check regenerates in a temp dir and requires identity.
+HT_QUAL_NAME := avx2-officialopt-lazy-freeze-keccak-ht-qual001
+HT_QUAL := qualification/$(HT_QUAL_NAME)
+ht-qualification:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(HT_GEN)/export_ht_flat.py --experiment . --qualification-root qualification
+ht-qualification-check:
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(HT_GEN)/export_ht_flat.py --experiment . --qualification-root qualification --check
+
+# Flat-tree KEM test: every file of the export compiled from the export directory (its own
+# fips202.h = mlkem-native adapter, Official hash_f/g/h names), kem.c renamed to official_lazy_*,
+# against the pinned Official kem.c (official_ref_*; its symmetric.c hash_f/g/h renamed
+# official_ref_hash_* so both copies link).  Byte-identical shared files (poly.c, consts.c, the
+# Official .s) are linked once, from the export.  Same shared test_kem_lazy.c and wraps as Phase A.
+HT_FLAT_INCLUDES := -I$(COMMON)/tests/support -I$(HT_QUAL) -I$(SUPERCOP_PRISTINE)/cryptoint \
+	-I$(SUPERCOP_PRISTINE)/include
+HT_FLAT_C := $(filter-out kem.c symmetric.c,$(notdir $(wildcard $(HT_QUAL)/*.c)))
+HT_FLAT_S := $(addprefix $(HT_QUAL)/,$(notdir $(wildcard $(HT_QUAL)/*.s)))
+REF_HASH_RENAME := -Dhash_f=official_ref_hash_f -Dhash_g=official_ref_hash_g -Dhash_h=official_ref_hash_h
+define ht_flat # $(1)=build dir, $(2)=flags
+$(1)/htflat:
+	mkdir -p $$@
+$(1)/htflat/%.o: $(HT_QUAL)/%.c | $(1)/htflat
+	$(CC) $(2) $(HT_FLAT_INCLUDES) -c -o $$@ $$<
+$(1)/htflat/kem.o: $(HT_QUAL)/kem.c | $(1)/htflat
+	$(CC) $(2) $(HT_FLAT_INCLUDES) $(LAZY_RENAME) -c -o $$@ $$<
+$(1)/htflat/ref_kem.o: $(OFFICIAL)/kem.c | $(1)/htflat
+	$(CC) $(2) $(INCLUDES) $(REF_RENAME) $(REF_HASH_RENAME) -c -o $$@ $$<
+$(1)/htflat/ref_symmetric.o: $(OFFICIAL)/symmetric.c | $(1)/htflat
+	$(CC) $(2) $(INCLUDES) $(REF_HASH_RENAME) -c -o $$@ $$<
+$(1)/htflat/ref_fips202.o: $(OFFICIAL)/fips202.c | $(1)/htflat
+	$(CC) $(2) $(INCLUDES) -c -o $$@ $$<
+HT_FLAT_OBJS_$(1) := $(addprefix $(1)/htflat/,$(HT_FLAT_C:.c=.o) symmetric.o kem.o ref_kem.o ref_symmetric.o ref_fips202.o)
+$(1)/test_ht_flat: $(COMMON)/tests/test_kem_lazy.c $(COMMON)/tests/support/crypto_declassify.c \
+		$(OFFICIAL)/KeccakP-1600-AVX2.s $(HT_FLAT_S) $$(HT_FLAT_OBJS_$(1)) $(1)/kat_aes.o $(1)/kat_rng.o | $(1)
+	$(CC) $(2) -maes -I$(KAT) $(INCLUDES) $(KECCAK_WRAP) -o $$@ $$^
+$(1)/test_ht_flat_fretry: $(COMMON)/tests/test_kem_lazy.c $(COMMON)/tests/support/crypto_declassify.c \
+		$(OFFICIAL)/KeccakP-1600-AVX2.s $(HT_FLAT_S) $$(HT_FLAT_OBJS_$(1)) $(1)/kat_aes.o $(1)/kat_rng.o | $(1)
+	$(CC) $(2) -maes -I$(KAT) $(INCLUDES) $(KECCAK_WRAP) $(FRETRY) $(HT_BASEINV_WRAP) -o $$@ $$^
+endef
+$(eval $(call ht_flat,$(BUILD),$(CFLAGS)))
+$(eval $(call ht_flat,$(BUILD_SAN),$(SANFLAGS)))
+
+.PHONY: ht-qualification ht-qualification-check ht-flat-check ht-flat-audit ht-flat ht-flat-record
+ht-flat-check: ht-qualification-check $(BUILD)/test_ht_flat $(BUILD)/test_ht_flat_fretry \
+		$(BUILD_SAN)/test_ht_flat $(BUILD_SAN)/test_ht_flat_fretry | $(EVIDENCE)
+	{ echo "== release ($(CFLAGS))" && $(BUILD)/test_ht_flat && $(BUILD)/test_ht_flat_fretry && \
+	  echo "== sanitizer ($(SANFLAGS); $(SAN_ENV))" && $(SAN_ENV) $(BUILD_SAN)/test_ht_flat && \
+	  $(SAN_ENV) $(BUILD_SAN)/test_ht_flat_fretry; } > $(EVIDENCE)/ht-flat-tests.log 2>&1 || \
+		{ cat $(EVIDENCE)/ht-flat-tests.log; false; }
+	cat $(EVIDENCE)/ht-flat-tests.log
+
+# Linked audit of the flat ELF + object identity with the Phase-A build (make ht-phase-a first).
+ht-flat-audit: $(BUILD)/test_ht_flat $(BUILD)/test_$(HT_CAND) | $(EVIDENCE)
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(HT_GEN)/audit_ht_linked.py --experiment . \
+		--elf $(BUILD)/test_ht_flat --flat-root $(HT_QUAL) --flat-kem-obj $(BUILD)/htflat/kem.o \
+		--phase-a-obj $(BUILD)/htflat/kem.o=$(BUILD)/$(HT_CAND).o \
+		--phase-a-obj $(BUILD)/htflat/baseinv_r2fold.o=$(BUILD)/$(R2INV).o \
+		--phase-a-obj $(BUILD)/htflat/symmetric.o=$(BUILD)/symmetric_keccak.o \
+		--phase-a-obj $(BUILD)/htflat/mlk_fips202.o=$(BUILD)/mlk_fips202.o \
+		--phase-a-obj $(BUILD)/htflat/mlk_keccakf1600.o=$(BUILD)/mlk_keccakf1600.o \
+		--output $(EVIDENCE)/ht-flat-linked-summary.json
+
+ht-flat: ht-flat-check ht-flat-audit
+
+# Curated Phase-B flat-export evidence into the tracked results dir.
+ht-flat-record: ht-flat
+	mkdir -p results/ht-phase-b
+	cp $(EVIDENCE)/ht-flat-tests.log results/ht-phase-b/closure-tests.log
+	cp $(EVIDENCE)/ht-flat-linked-summary.json results/ht-phase-b/flat-linked-summary.json
