@@ -62,3 +62,60 @@ within layout noise.  The prototype alone takes most of the available gain;
 landing it as a C file (as 864's unpack.c) replacing pack.S's
 `poly_frombytes_encap` is the proportionate step.  A hand-scheduled A76
 variant is optional, worth a further ~0.3% of encaps on A76 only.
+
+## Integration (branch gt768-frombytes-encap, from main 4aa65073)
+
+`unpack.c` replaces the `unpack.S` section of `pack.S` (-1,162 lines); same
+symbol and signature, so kem.c, encap.h and the ABI sentinel are unchanged.
+The two late vectors (48, 49) are peeled out of the loop, so nothing depends
+on the compiler resolving the load offsets; `#pragma GCC unroll` is still
+required for speed: without it the loop runs at 48.3 ns on M2 against 37.9
+(bench3.c; the first SUPERCOP run caught this at -18 cycles on encaps and was
+discarded).
+
+Checks:
+
+- check.c against the previous decoder, via prod_shim.c: 0 mismatches on
+  200,000 inputs, 768/768 single out-of-range positions, M2 and Pi;
+- `make check` (KAT byte-identical, canonical-boundary 9,216 cases, ABI
+  masks, zeroization, release check) on macOS and Linux;
+- TIMECOP (timecop.sh, P119 staging, the exported leaf as `gt-p135`): pass at
+  -O, -O2, -O3, -Os with TIMECOP=16 and TIMECOP=256.
+
+Per call, same binary (bench3.c):
+
+| | previous asm | unpack.c |
+|---|---:|---:|
+| M2 (clang) | 65.5 ns | 37.9 ns |
+| A76 (gcc -O3) | 502.6 cyc | 323.6 cyc |
+| A76 (gcc -march=native, SUPERCOP's flags) | 502.6 cyc | 326.0 cyc |
+
+SUPERCOP 20260831 on the Pi 5 (supercop_run.py = P119's run.py with the P135
+trees; six rotated rounds, core 3; `throttled=0x50000` at every reading
+including the first, i.e. sticky bits from before the session, current bits
+clear; Official's numbers match P119 within 0.1%):
+
+| cycles, median | Official | GT before | GT after | after - before |
+|---|---:|---:|---:|---:|
+| keypair | 38,425.5 | 31,638.0 | 31,653.5 | +15.5 (+0.05%) |
+| enc | 38,600.5 | 29,439.5 | 29,276.5 | **-163.0 (-0.55%)** |
+| dec | 33,586.0 | 27,320.0 | 27,319.5 | -0.5 (0.00%) |
+
+Paired rounds: enc -163, -148, -177, -176, -182, -148 (all six); keypair +63,
+-17, -92, +50, -51, +32 (noise, the decoder is not on its path); dec within
++-8.
+
+Package harnesses (tree_ab.sh / build_hasheq.sh, each tree from its own
+Makefile source list):
+
+| | keygen | encaps | decaps |
+|---|---:|---:|---:|
+| M2 perop5 (ns) before / after | 3,789 / 3,788 | 4,079 / 4,039 (-1.0%) | 3,105 / 3,106 |
+| M2 bench_min (ns) before / after | 3,827 / 3,826 | 4,134 / 4,106 (-0.7%) | 3,111 / 3,111 |
+| A76 bench_min (cyc) before / after | 31,677 / 31,642 | 29,654 / 29,469 (-0.62%) | 27,252 / 27,248 |
+
+Hash layer held equal (P120's three builds, same digest for all five):
+GT + Official hash vs Official on the A76 is -5.7% / -4.1% / -5.6% (before:
+-5.7% / -3.8% / -5.6%).
+
+Linked text of test_kem (Linux, gc-sections): 91,514 -> 89,898 B.
