@@ -540,3 +540,54 @@ ht_candidate:  # 2026-09-25 Phase A + same-ELF diagnostic + Phase B (export, Nat
   host_controls: unchanged
   promotion: none
   reproduce: docs/ntruplus864-1152-ht.md#reproduce
+
+invshoup_candidate:  # 2026-09-25 Phase A + same-ELF diagnostic + Phase B (export, Native, ASLR-on paired); docs/ntruplus-avx2-invd-shoup.md
+  phase: B_native_measured  # decision: phase_b.decision; current_best NOT changed (user decides)
+  candidate: src/kem_lazy_r2fold_invcrep_shoup_freeze2op_keccak_ht.c  # current best + Inverse D + Shoup BaseMul
+  base: current best (src/kem_lazy_r2fold_freeze2op_keccak_ht.c, export avx2-officialopt-lazy-freeze-keccak-ht-qual001)
+  controls: {invd_only: src/kem_lazy_r2fold_invcrep_freeze2op_keccak_ht.c, shoup_only: src/kem_lazy_r2fold_shoup_freeze2op_keccak_ht.c}  # diagnostic only
+  tooling: common/official_opt_invshoup/ (invshoup.mk, generators, proofs, tests, audit, mutation, bench, exporter)
+  inverse:
+    generated_asm: asm/ntruplus1152_officialopt_invntt_crep.s  # sha256 2a02b944..., generate_invntt_crep.py --param 1152
+    changes: "sigma fold (sigma mod q -1693) into level-1 twiddles + level-1 X+Y+Z Montgomery by Ns; 8-op level 0; crep5 fused; block pass split (L6,L5)|(L4,L3); levels 6..2 Official verbatim"
+    dynamic_instructions: {"candidate": 4311, "nosplit": 4129, "official_invntt": 3993, "pre": 3947}
+    proof: {decap_domain: [-6959, 7640], pre_crep_range: [-6123, 6123], official_invntt_range: [-1731, 1731], crep5_exact: [-16388, 16391], official_crepmod3_exact: [-5185, 5185], basis_unit_vectors: 1152}
+  shoup:
+    generated: {asm: asm/ntruplus1152_officialopt_basemul_shoup.s, c_source: src/ntruplus1152_officialopt_basemul_shoup.c}  # sha256 8820c097... / 03daf6b4...
+    compiler: "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0 -O3 -mavx2 -mtune=alderlake -fschedule-insns -fsched-pressure -fno-asynchronous-unwind-tables -fcf-protection=none -fno-stack-protector -S"  # pinned; --check refuses others
+    dynamic_instructions: 1961
+    stack_slots: {"-128": "data", "-160": "data", "-192": "constant", "-64": "constant", "-96": "data"}  # audited: fixed %rsp offsets, data slots not cleared
+    encap: {a_envelope: [-15580, 15580], term: [-3344, 3344], output: [-13376, 13376]}
+    decap: {a_envelope: [-16385, 19838], term: [-3443, 3800], output: [-13772, 15200]}
+    encap_poly_add_c_m_hat: [-28956, 28956]
+  gates:
+    result: pass
+    evidence: results/invshoup-phase-a/
+  diagnostic:  # supercop-derived same-ELF, 31 launches per link order; pooled StQ2 delta [favourable/31], normal / reversed
+    inverse_fused_minus_current_best: [[-279.0, 31], [-283.0, 31]]
+    encap_basemul_shoup_minus_official: [[-192.7, 31], [-190.6, 31]]
+    decap_basemul_shoup_minus_official: [[-189.9, 31], [-190.7, 31]]
+    candidate_minus_base: {keypair: [[83.3, 10], [64.5, 11]], encap: [[-173.8, 31], [-155.0, 31]], decap: [[-459.5, 31], [-487.6, 31]]}
+    invd_only_minus_base: {keypair: [[-59.9, 16], [-163.8, 18]], encap: [[-11.5, 20], [0.9, 14]], decap: [[-287.4, 31], [-294.4, 31]]}
+    shoup_only_minus_base: {keypair: [[-20.3, 18], [-143.8, 18]], encap: [[-187.9, 31], [-156.1, 31]], decap: [[-194.6, 31], [-215.2, 31]]}
+    evidence: results/invshoup-diag-{normal,reversed}-20260925/
+  phase_b:
+    qualification_export: {path: qualification/avx2-officialopt-lazy-freeze-keccak-ht-invd-shoup-qual001, tree_sha256: 94fc539de23a604f00560016109d2f1fc4f1f921d2f569d1adf3176f82946b75, base: avx2-officialopt-lazy-freeze-keccak-ht-qual001, kem_c_diff: "12 added / 4 removed lines", flat_equals_phase_a: results/invshoup-phase-b/}
+    supercop_try: "ok, pinned checksums, O3/Os/O2/O, all 27 Native batches + 5 fixed builds"
+    tag: 20260925is
+    compiler_picks: {"base": {"O3": 9}, "cand": {"O3": 9}, "official": {"O3": 9}}  # base and cand identical; no fixed -O3 check needed
+    native_stq2: {"keypair": {"official": 34624.2, "base": 26740.2, "cand": 26732.2}, "enc": {"official": 43116.9, "base": 31074.8, "cand": 30958.0}, "dec": {"official": 30550.4, "base": 23349.3, "cand": 22973.3}}
+    cand_minus_base_native: {keypair: {stq2: -8.0, ci95: [-289.8, 271.1], favourable: 39/81}, enc: {stq2: -116.8, ci95: [-149.7, -86.1], favourable: 73/81}, dec: {stq2: -376.0, ci95: [-393.8, -359.9], favourable: 81/81}}
+    cand_minus_official_native: {keypair: [-7891.9, [-8217.7, -7560.3]], enc: [-12158.9, [-12189.7, -12131.4]], dec: [-7577.0, [-7591.4, -7563.8]]}
+    paired_cand_vs_base_normal: {keypair: [-178.9, [-392.8, 33.9], 28/48], enc: [-147.6, [-162.1, -133.0], 48/48], dec: [-396.1, [-408.5, -383.4], 48/48]}
+    paired_cand_vs_base_reversed: {keypair: [116.6, [-128.0, 357.4], 23/48], enc: [-83.4, [-106.4, -60.4], 39/48], dec: [-419.0, [-436.1, -403.7], 48/48]}
+    paired_cand_vs_official_normal: {keypair: [-7802.5, [-8071.1, -7521.3], 48/48], enc: [-12074.3, [-12121.3, -12033.1], 48/48], dec: [-7472.1, [-7510.3, -7440.9], 48/48]}
+    hygiene: "35 batches; reruns (pre-batch load > 0.5, accepted on attempt 1): none"
+    decision:
+      cand_vs_base: {keypair: not-robust, enc: robust-research-win, dec: robust-research-win}
+      cand_vs_official: {keypair: robust-research-win, enc: robust-research-win, dec: robust-research-win}
+      notes: "keypair runs no changed code: its delta is placement (and, 1152, BaseInv retry) noise, not claimed"
+    evidence: results/{native-ext-*-20260925is,fixed-is-*-20260925is,paired-aslr-on-*-20260925is}/, results/extended-multi-summary-20260925is.json
+  host_controls: unchanged
+  promotion: none
+  reproduce: docs/ntruplus-avx2-invd-shoup.md#reproduce
