@@ -28,7 +28,7 @@ kernels, and without them `inverse.c`'s C versions are used.
 |---|---|
 | `kem.c` | key generation, encapsulation, decapsulation |
 | `symmetric.c`, `hash_fixed.c`, `fips202.c` | SHAKE256 and the fixed-length hashes |
-| `keccakf1600.S`, `keccakf1600_v84a.S` | Keccak-f[1600]: scalar AArch64, or FEAT_SHA3 when the compiler targets it (the same files as NTRU+768 and NTRU+864) |
+| `keccakf1600.S`, `keccakf1600_v84a.S`, `keccakf1600_x2_v84a.S` | Keccak-f[1600]: scalar AArch64, or FEAT_SHA3 when the compiler targets it, with a two-state FEAT_SHA3 routine for key generation's two seeds (the same files as NTRU+768 and NTRU+864) |
 | `api_glue.c` | the C wrappers behind the `poly_*` API: tables and caller-owned scratch |
 | `ntt.S`, `ntt_top.S`, `ntt9.S`, `ntt_tail.S` | forward Good-Thomas NTT (eight banks) |
 | `base.c`, `base_tables.h` | pointwise products in the transform domain |
@@ -91,6 +91,10 @@ Official's 20.9 KB, and one operation executes 30.4 / 23.1 / 29.0 KB of it
 (keygen / encaps / decaps) against 12.1 / 8.0 / 10.5 KB.  In steady state
 every operation fits the 64 KB L1I.  With every cache flushed before each
 operation the margins shrink to -6.3% / -12.6% / -4.8% (Cortex-A76).
+
+Not yet in these tables: key generation's f and g seeds now share one
+two-state Keccak permutation (`keccakf1600_x2_v84a.S`) on FEAT_SHA3 cores, M2
+key generation -7.5%; Cortex-A76 is unchanged.
 
 ## SUPERCOP leaf
 

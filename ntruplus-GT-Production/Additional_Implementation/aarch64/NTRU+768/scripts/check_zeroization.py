@@ -9,8 +9,8 @@ def require(relative, needles):
             raise SystemExit(f'{relative}: missing {needle!r}')
 require('util.h', ('GT_SECURE_CLEAR_AUDIT_HOOK', 'volatile uint8_t *cursor'))
 require('kem.c', (
-    'if (!genf_derand(&f, &finv, coins, buf))',
-    'if (!geng_derand(&g, &ginv, coins, buf))',
+    'while (genf_from_seed(&f, &finv, buf[cur]))',
+    'while (geng_from_seed(&g, &ginv, buf[cur]))',
     'secure_clear(buf, sizeof buf);', 'secure_clear(coins, sizeof coins);',
     'secure_clear(&f, sizeof f);', 'secure_clear(&finv, sizeof finv);',
     'secure_clear(&g, sizeof g);', 'secure_clear(&ginv, sizeof ginv);',

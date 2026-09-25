@@ -23,6 +23,7 @@ shape used by other NTRU+ implementations:
 | `add.S` | ABI-safe subtraction and two-pointer triple |
 | `keccakf1600.S` | Scalar AArch64 Keccak-f[1600] backend |
 | `keccakf1600_v84a.S` | FEAT_SHA3 x1 permutation selected at compile time when available |
+| `keccakf1600_x2_v84a.S` | FEAT_SHA3 two-state permutation (mlkem-native's), for key generation's two seeds |
 | `tables.c` | Keygen CQ and Encap basemul-add lambda tables |
 | `util.h` | Portable secure_clear, SUPERCOP declassify annotation, optional test audit hook |
 | `kem_api.S` | AAPCS64 boundary for the public KEM API |
@@ -100,11 +101,17 @@ Official's 19.2 KB, and one operation executes 45.3 / 22.4 / 25.0 KB of it
 operation fits the 64 KB L1I.  With every cache flushed before each operation
 the margins shrink to +3.3% / -6.4% / -4.3% (Cortex-A76).
 
+Not yet in these tables: key generation's f and g seeds now share one
+two-state Keccak permutation (`keccakf1600_x2_v84a.S`) on FEAT_SHA3 cores, M2
+key generation -8.0%; Cortex-A76 is unchanged.
+
 ## Build
 
 The public SHAKE interface is unchanged and its sponge is portable C. The
 Keccak-f[1600] permutation is selected at compile time: FEAT_SHA3 builds use
-`keccakf1600_v84a.S`, other builds the scalar `keccakf1600.S`.
+`keccakf1600_v84a.S`, other builds the scalar `keccakf1600.S`.  FEAT_SHA3 builds
+also expand key generation's f and g seeds together with the two-state
+`keccakf1600_x2_v84a.S`; other builds make two single-state calls.
 
 ```sh
 make

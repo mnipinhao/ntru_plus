@@ -70,7 +70,8 @@ KEM_OBJECTS := \
 	$(BUILD_DIR)/support_abi.o \
 	$(BUILD_DIR)/hash_fixed.o \
 	$(BUILD_DIR)/keccakf1600.o \
-	$(BUILD_DIR)/keccakf1600_v84a.o
+	$(BUILD_DIR)/keccakf1600_v84a.o \
+	$(BUILD_DIR)/keccakf1600_x2_v84a.o
 KAT_REQ := kat/expected/PQCkemKAT_2624.req
 KAT_RSP := kat/expected/PQCkemKAT_2624.rsp
 GENERATED_KAT_REQ := $(BUILD_DIR)/PQCkemKAT_2624.req
@@ -160,7 +161,7 @@ keccak-v84a: $(TEST_KECCAK_V84A)
 	$(TEST_KECCAK_V84A)
 
 $(TEST_SHAKE_PREFIXED): test/test_shake_prefixed.c fips202.c keccakf1600.S \
-  keccakf1600_v84a.S | $(BUILD_DIR)
+  keccakf1600_v84a.S keccakf1600_x2_v84a.S | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
 
 shake-prefixed: $(TEST_SHAKE_PREFIXED)

@@ -376,6 +376,74 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
 #endif
 #endif
 
+/*
+ * Two states at once, laid out one after the other.  keccakf1600_x2_v84a.S
+ * (mlkem-native's x2 FEAT_SHA3 routine) permutes both for about the price of
+ * one on cores that implement FEAT_SHA3; elsewhere two single-state calls.
+ */
+#if defined(__aarch64__) && defined(__ARM_FEATURE_SHA3)
+extern void ntruplus_keccak_f1600_x2_v84a_aarch64(uint64_t *state,
+                                                  const uint64_t *rc);
+
+static void KeccakF1600_StatePermute_x2(uint64_t *state) {
+    ntruplus_keccak_f1600_x2_v84a_aarch64(state, KeccakF_RoundConstants);
+}
+#else
+static void KeccakF1600_StatePermute_x2(uint64_t *state) {
+    KeccakF1600_StatePermute(state);
+    KeccakF1600_StatePermute(state + 25);
+}
+#endif
+
+/*************************************************
+ * Name:        shake256_x2
+ *
+ * Description: Two independent SHAKE256(in_k[inlen]) -> out_k[outlen],
+ *              inlen < SHAKE256_RATE, permuted together.  The same bytes as
+ *              two shake256 calls.
+ **************************************************/
+void shake256_x2(uint8_t *out0, uint8_t *out1, size_t outlen,
+                 const uint8_t *in0, const uint8_t *in1, size_t inlen) {
+    uint64_t s[50];
+    uint8_t t[SHAKE256_RATE];
+    size_t i, k;
+
+    for (i = 0; i < 50; ++i) {
+        s[i] = 0;
+    }
+    for (k = 0; k < 2; ++k) {
+        for (i = 0; i < SHAKE256_RATE; ++i) {
+            t[i] = 0;
+        }
+        memcpy(t, k ? in1 : in0, inlen);
+        t[inlen] ^= 0x1F;
+        t[SHAKE256_RATE - 1] ^= 0x80;
+        for (i = 0; i < SHAKE256_RATE / 8; ++i) {
+            s[25 * k + i] ^= load64(t + 8 * i);
+        }
+    }
+    while (outlen > 0) {
+        size_t n = outlen < SHAKE256_RATE ? outlen : SHAKE256_RATE;
+
+        KeccakF1600_StatePermute_x2(s);
+        for (k = 0; k < 2; ++k) {
+            uint8_t *o = k ? out1 : out0;
+
+            for (i = 0; i + 8 <= n; i += 8) {
+                store64(o + i, s[25 * k + i / 8]);
+            }
+            for (; i < n; ++i) {
+                o[i] = (uint8_t)(s[25 * k + i / 8] >> (8 * (i % 8)));
+            }
+        }
+        out0 += n;
+        out1 += n;
+        outlen -= n;
+    }
+    secure_clear(s, sizeof s);
+    secure_clear(t, sizeof t);
+}
+
 /*************************************************
  * Name:        shake256_prefixed
  *
