@@ -12,6 +12,7 @@ engineering records.
 ## Active AVX2 Official-opt evidence (768 / 864 / 1152)
 
 - [Current best and comparison against Official](ntruplus-avx2-official-opt-current-best.md)
+- [Fused inverse NTT + crepmod3 and Shoup BaseMul](ntruplus-avx2-invd-shoup.md)
 - [HT Forward, R² fold and HT inverse (768)](ntruplus768-ht-forward.md)
 - [HT Forward and R² fold (864/1152)](ntruplus864-1152-ht.md)
 - [mlkem-native Keccak](ntruplus-avx2-keccak-mlkem-native.md)

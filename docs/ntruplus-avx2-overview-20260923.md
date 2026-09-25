@@ -1,7 +1,7 @@
 # NTRU+768 / 864 / 1152 AVX2 overview: Official vs Official-opt vs GT (2026-09-23)
 
-> **Dated snapshot.** The Official-opt rows below are the 2026-09-23 exports, from before the mlkem-native Keccak
-> and HT changes. The current best and its comparison against Official are in
+> **Dated snapshot.** The Official-opt rows below are the 2026-09-23 exports, from before the mlkem-native Keccak,
+> HT, fused-inverse and Shoup changes. The current best and its comparison against Official are in
 > [ntruplus-avx2-official-opt-current-best.md](ntruplus-avx2-official-opt-current-best.md) (2026-09-25).
 > The GT comparison and the component profiler here are still the latest of their kind.
 

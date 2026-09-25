@@ -1,6 +1,6 @@
 # NTRU+768 / 864 / 1152 AVX2 Official-opt: fused inverse (Inverse D) and Shoup BaseMul
 
-Date 2026-09-25, branch `official-opt-lazy-864-1152` (from `60ae07c`, local, not pushed). Two changes on top of the
+Date 2026-09-25, branch `official-opt-lazy-864-1152` (from `60ae07c`; pushed as `d7d69f8`). Two changes on top of the
 current best ([ntruplus-avx2-official-opt-current-best.md](ntruplus-avx2-official-opt-current-best.md), the HT
 exports), each taken through Phase A (code and correctness), a same-ELF diagnostic, a flat qualification export and
 Phase B (Native SUPERCOP and ASLR-on fixed-ELF paired timing), one parameter at a time for all timing:
@@ -14,8 +14,8 @@ Phase B (Native SUPERCOP and ASLR-on fixed-ELF paired timing), one parameter at 
 2. **Shoup BaseMul** (Barrett-companion products, lazy accumulation, no R² pass) for the Encap BaseMul and the second
    Decap BaseMul, all three parameters. The Decap `poly_basemul_scale` and the keygen `basemul_nor2` are unchanged.
 
-`current_best` in STATUS.yml and the current-best doc are **not** changed (the user decides promotion);
-`promotion: none`.
+The user made these candidates the current best on 2026-09-25 (`current_best` in STATUS.yml,
+[ntruplus-avx2-official-opt-current-best.md](ntruplus-avx2-official-opt-current-best.md)); `promotion: none` (research status).
 
 **Result.** Both changes are component wins in both link orders for every parameter (31/31 launches). Under the decision
 rule (Native default-selection pooled cand − base < 0 AND normal-placement ASLR-on paired 95% CI < 0), **Encap and Decap
