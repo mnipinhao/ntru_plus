@@ -3,6 +3,11 @@ candidate: avx2-officialopt-lazy-freeze-768-exp001  # lazy Forward + 2-op freeze
 control: freeze2op_only  # Official Forward + 2-op freeze poly_tobytes (diagnostic only)
 lazy_only: avx2-officialopt-caller-lazy (common generator; instruction stream == NTRU+768 qual001)
 parameter: NTRU+768
+current_best:  # 2026-09-25, set by the user; research status (promotion: none, no clean/ package)
+  candidate: avx2-officialopt-lazy-freeze-keccak-ht-768-exp001
+  export: qualification/avx2-officialopt-lazy-freeze-keccak-ht-qual001  # tree 50b22a3f2000bca8325ac9431deb906880b61b24a13892252999726e10304bb6
+  supersedes: avx2-officialopt-lazy-freeze-keccak-qual001  # current best 2026-09-24 .. 2026-09-25
+  evidence: ht_candidate.phase_b  # docs/ntruplus-avx2-official-opt-current-best.md
 branch: official-opt-lazy-864-1152
 branch_point: 369d82a  # == origin/avx2-official-opt
 tooling: common/official_opt_lazy/{lazy.mk,freeze2op.mk}  # shared with NTRU+864/1152, PARAM=768
