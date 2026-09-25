@@ -1,0 +1,163 @@
+{
+  "aslr": "on (randomize_va_space=2, no setarch -R)",
+  "binary": "build/bench_invshoup_diag_swapped",
+  "class": "supercop-derived diagnostic; not Native SUPERCOP",
+  "command": [
+    "taskset",
+    "-c",
+    "1",
+    "/home/nuc/src/ntru_plus-official-opt-864-1152/ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/build/bench_invshoup_diag_swapped"
+  ],
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "compiler_recipe": "lazy.mk BENCH_CFLAGS (common O3GC) for all objects (invshoup.mk invshoup-bench)",
+  "controls_read_only": {
+    "/proc/sys/kernel/randomize_va_space": "2",
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_governor": "performance",
+    "/sys/devices/system/cpu/intel_pstate/no_turbo": "1"
+  },
+  "cpu": 1,
+  "cpucycles_identity": [
+    "cpucycles=default-perfevent persecond=1400000000"
+  ],
+  "elf_sha256": "cafb8221a2b90d1c1306a47313cdd1bbc55f6c7095d82de5299c9f3dcea0a616",
+  "elf_text_sha256": "2118c1a91bcb90e99802d93a6ede5cbe2efd1c6590204c355a21ef429371f87b",
+  "host": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "host_hygiene": {
+    "after": {
+      "loadavg": [
+        0.32,
+        0.65,
+        0.62
+      ],
+      "time": "2026-09-25T05:53:36.526181+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "claude",
+          "cpu_percent": 2.3,
+          "last_cpu": 3,
+          "pid": 1757640
+        },
+        {
+          "comm": "copilot-runtime",
+          "cpu_percent": 0.7,
+          "last_cpu": 3,
+          "pid": 1757012
+        },
+        {
+          "comm": "thermald",
+          "cpu_percent": 0.3,
+          "last_cpu": 15,
+          "pid": 5493
+        },
+        {
+          "comm": "fwupd",
+          "cpu_percent": 0.3,
+          "last_cpu": 4,
+          "pid": 6662
+        },
+        {
+          "comm": "codex",
+          "cpu_percent": 0.3,
+          "last_cpu": 1,
+          "pid": 670981
+        }
+      ],
+      "uptime": "13:53:33 up 18 days,  2:52,  7 users,  load average: 0.32, 0.65, 0.62"
+    },
+    "attempt": 0,
+    "before": {
+      "loadavg": [
+        0.19,
+        0.64,
+        0.62
+      ],
+      "time": "2026-09-25T05:53:23.235848+00:00",
+      "top_cpu_consumers_3s": [
+        {
+          "comm": "claude",
+          "cpu_percent": 1.7,
+          "last_cpu": 1,
+          "pid": 1757640
+        },
+        {
+          "comm": "systemd",
+          "cpu_percent": 0.3,
+          "last_cpu": 1,
+          "pid": 1
+        },
+        {
+          "comm": "tailscaled",
+          "cpu_percent": 0.3,
+          "last_cpu": 14,
+          "pid": 5713
+        },
+        {
+          "comm": "ptyxis-agent",
+          "cpu_percent": 0.3,
+          "last_cpu": 3,
+          "pid": 13580
+        },
+        {
+          "comm": "MainThread",
+          "cpu_percent": 0.3,
+          "last_cpu": 3,
+          "pid": 1756891
+        }
+      ],
+      "uptime": "13:53:20 up 18 days,  2:52,  7 users,  load average: 0.21, 0.65, 0.62"
+    },
+    "contaminated": false,
+    "contamination_reasons": [],
+    "duration_s": 10.2,
+    "during_heavy_windows": 0,
+    "during_max_loadavg1_including_batch": 0.32,
+    "during_offenders": {},
+    "earlier_contaminated_attempts": [],
+    "host_controls_changed": false,
+    "load_threshold": 0.5,
+    "proc_threshold_percent": 25.0,
+    "waited_for_quiet_s": 0.0
+  },
+  "launches": 31,
+  "link_order": "reversed",
+  "observations_per_variant_per_launch": 640,
+  "parameter": "864",
+  "source_sha256": {
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/asm/ntruplus864_officialopt_basemul_nor2.s": "698af4dd51f7681fa9d16114a4b58ab16d9d7b5228be336f5e6cd05fd1fd8c7c",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/asm/ntruplus864_officialopt_basemul_shoup.s": "fff9b922aba677c62e28d2cea78255508b813cea9404ae49e0bf5ff391219f75",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/asm/ntruplus864_officialopt_codec_direct.s": "feba151f06fa018ae71ead15c9d642cd7f39e6785f530fe44246903efe5a2a1c",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/asm/ntruplus864_officialopt_invntt_crep.s": "57c3c95b17b7dfdecd389af671d1a094d918ea3f584a961c648f84e677eb5546",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/asm/ntruplus864_officialopt_ntt_caller_lazy.s": "db5d489658d4f5b77ce181c691d7c3b9e054a0a14ebc7c693f79df382a8f0497",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/asm/ntruplus864_officialopt_ntt_ht.s": "be52b95a04a0a17e80f8daed7e97688d802f236d24ede390b1a21d5b6df71d52",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy.c": "398f5faa0b2733cc188ce933380ee8c64d8676a9938da0de8f3cdf3a8253d484",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold.c": "537492f013e47849834120825228c5116ec513531434c56f5d9dc902c50e6339",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_codec_direct_keccak.c": "c52b3d150ccdd2c1f1bbb8c9c76eb79f8e4895401f05449e1ba9075a9b17cd8e",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_codec_direct_keccak_ht.c": "9ce870b2010e916069d67d09eeff5b39b2329e2e3b26986be6be4405b64b30f7",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_invcrep.c": "48ab972404e3942bcdd5a58fce9cb783a9c0390e1899bcebd5278e6d4dd081d5",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_invcrep_codec_direct_keccak.c": "f2962774db3b7aee6caa16349ea7aa2149ce4f97a129e646755a1f881e200e6e",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_invcrep_codec_direct_keccak_ht.c": "a2de6115fbc87aff9e3b682d00be6eefa8f5884fbafb5ec88ac4d2245fb6d331",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_invcrep_shoup.c": "acfe2f08d4e101747a606f9449e3eb477910debb8dcfd51804dedee0ad735e8c",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_invcrep_shoup_codec_direct_keccak.c": "bd446099e09d6a4f0e04f751d1dcca849055d760a81ae0cd1ae096dd16c6d19a",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_invcrep_shoup_codec_direct_keccak_ht.c": "5f0202b9cf373e1a2c176287a5fc8004711d4de54eb2050aecf360ca364a2988",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_shoup.c": "53b9802b3d750d39c4303e3e7d4a31127d92671cfcebb8eb52e189c7485672d0",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_shoup_codec_direct_keccak.c": "ddf220ecd83b520352d80b64ab3117f487669d65c21b2577bfd4fbbb1cbed573",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/kem_lazy_r2fold_shoup_codec_direct_keccak_ht.c": "e1c0a918db4f14949c012ec61ab6b04f61f6321a9d9399576638694be3e3167b",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/ntruplus864_officialopt_baseinv_r2fold.c": "4089d325add85b82f927e7df24a14180b2bfcaefc2394ec69f063384b894cfbc",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/src/ntruplus864_officialopt_basemul_shoup.c": "8c38fbc953748766784ba01833cf0726d0ec98b84dd9220ce05160848c7e612f",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/upstream/supercop-avx2/basemul.s": "42b9639d4d619ba2214fba73b86f9029a078b1711c5e77bf7b4a26c770d0e761",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/upstream/supercop-avx2/crepmod3.s": "3a77881752003f2483330aa1177870ea5d862cb7816a98227073ad914ae89ac1",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/upstream/supercop-avx2/invntt.s": "2da75c486e34432e9b9759c0627541f3cee71e7ad7f177108bb1b7ed4c460078",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/upstream/supercop-avx2/kem.c": "368bb8f799566cf199960ffdc80e33acce0da5cfe141fffa248a21f221ae7f3f",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/upstream/supercop-avx2/ntt.s": "980cad5ef69a78f9ed1f2f45fc5dcaa0a04cc07693cf65ea108acc41c547db92",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/NTRU+864/experiments/avx2_official_opt_001/upstream/supercop-avx2/poly.c": "9c8d811df31485d9e748018d79a3328d8f9d4aba09176c48a53e0f92acba181e",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_ht/ht.mk": "8a5b84eafa1cc9e8c977c57ab8530a4b613b8dbadca6deeedaab606c3375ffe3",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_invshoup/bench/bench_invshoup_diag.c": "df07f37135d4ec127a3f92da9d45c46156dde56af22e0ef76db9e37daa508624",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_invshoup/invshoup.mk": "b3bccc312a43359528ef8e3f5a111d194ddf4bf747e3029e37bf3930d02347c0",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/keccak.mk": "83037ee67de4aff46deb5bd48efca9537a0ac50ada004364c1991cde288e905e",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_keccak/src/symmetric_keccak.c": "04c27e82bbcabe9a305cebe6bc2f24ab10d57f2171eb5ffdac8bf0b8579c2a83",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/bench/kem_diag.c": "1431453b5983538028dba2c0f12518032d3ac3acc4469fb86e14654f9cf0087c",
+    "ntruplus-ntt-Optimized/Additional_Implementation/avx2/common/official_opt_lazy/lazy.mk": "d8f6cc15889fa49f1c8f7d7269fc2dd7190249400f4939bde788b7fa3fe38391",
+    "third_party/mlkem-native-fips202-b3ba7b32/mlkem/src/fips202/fips202.c": "fb0654c0b33c45c929fdb2af2287807a7b8f312ac7f3baa3ddfaef0c030ef0b2",
+    "third_party/mlkem-native-fips202-b3ba7b32/mlkem/src/fips202/keccakf1600.c": "461c278b0abb9fde098ee6b34a47056445573cb7aa5c4362d59e35041d0997e5"
+  }
+}
