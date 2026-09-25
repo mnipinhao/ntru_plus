@@ -50,22 +50,29 @@ kernels, and without them `inverse.c`'s C versions are used.
 
 ## Performance
 
-Against SUPERCOP 20260831's `ntruplus1152/aarch64` (2026-09-23; details in
-`experiments/ROADMAP-m2-delivery.md` on the development branch
-`gt864-1152-cleanup`):
+Against the official implementation, `github.com/ntruplus/ntruplus` main at
+3991b2a (2026-08-14), measured 2026-09-25: on Apple M2 Pro its default build
+(SHA3 Keccak, `CE/`), on Cortex-A76 (Raspberry Pi 5, no FEAT_SHA3) its `NO_CE`
+build.  SUPERCOP 20260831 carries the `NO_CE` build from an earlier snapshot
+that differs from main only in `crepmod3.s`.  Both sides use the same harness
+and compiler; medians of three sessions.  Details are in
+`experiments/gt-p138-unified-margins/` on the development branch
+`gt864-1152-cleanup`.
 
 | | key generation | encapsulation | decapsulation |
 |---|---:|---:|---:|
-| M2 Pro, vs Official + CryptoExtension | -9.5% | -11.9% | -9.6% |
-| M2 Pro, Keccak held equal | -6.1% | -6.7% | -5.8% |
-| Cortex-A76, Keccak held equal | -6.9% | -9.6% | -8.8% |
+| M2 Pro, vs Official (default build) | -9.8% | -12.0% | -10.1% |
+| Cortex-A76, vs Official (`NO_CE` build) | -15.0% | -22.2% | -18.8% |
+| M2 Pro, Keccak permutation held equal | -6.1% | -6.9% | -6.6% |
+| Cortex-A76, Keccak permutation held equal | -7.7% | -10.6% | -10.6% |
 
-"Keccak held equal" links Official's sponge against GT's permutation, so the
-margin is the arithmetic alone.  Three later codec changes are not
-included: the store order of `tobytes` (0.4% on Cortex-A76, none on M2), its
-`add` + `umin` canonicalisation (0.4-0.5% on Cortex-A76, 11 ns on M2), and the
-two-register `tbl` decoder in `unpack.S` (decapsulation -0.9% on M2, -1.0% on
-Cortex-A76).
+"Keccak permutation held equal" links Official's sponge against GT's
+permutation (these two rows use the SUPERCOP revision of Official's code,
+which times within 0.6% of main).  That margin is not the arithmetic alone: it
+also contains GT's sponge code.  Separating the two (GT's arithmetic with
+Official's sponge), the sponge is 69-97% of it on M2 and 42-69% on Cortex-A76;
+the arithmetic is -15 to -130 ns an operation on M2 and -709 to -1,216 ns on
+Cortex-A76.
 
 ## SUPERCOP leaf
 

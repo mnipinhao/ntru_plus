@@ -61,18 +61,38 @@ and fixed build contracts. The benchmark harness is under
 
 ## Performance
 
-SUPERCOP 20260831 on a Raspberry Pi 5 (Cortex-A76), medians of six rounds,
-cycles:
+Against the official implementation, `github.com/ntruplus/ntruplus` main at
+3991b2a (2026-08-14), measured 2026-09-25: on Apple M2 Pro its default build
+(SHA3 Keccak, `CE/`), on Cortex-A76 (Raspberry Pi 5, no FEAT_SHA3) its `NO_CE`
+build.  SUPERCOP 20260831 carries the `NO_CE` build from an earlier snapshot
+that differs from main only in `crepmod3.s`.  Both sides use the same harness
+and compiler; medians of three sessions.  Details are in
+`experiments/gt-p138-unified-margins/` on the development branch
+`gt864-1152-cleanup`.
+
+| | key generation | encapsulation | decapsulation |
+|---|---:|---:|---:|
+| M2 Pro, vs Official (default build) | -9.0% | -15.5% | -16.1% |
+| Cortex-A76, vs Official (`NO_CE` build) | -18.0% | -24.1% | -19.0% |
+| M2 Pro, Keccak permutation held equal | -5.1% | -11.7% | -12.8% |
+| Cortex-A76, Keccak permutation held equal | -10.2% | -13.4% | -11.7% |
+
+"Keccak permutation held equal" links Official's sponge against GT's
+permutation (these two rows use the SUPERCOP revision of Official's code,
+which times within 0.6% of main).  That margin is not the arithmetic alone: it
+also contains GT's sponge code.  Separating the two (GT's arithmetic with
+Official's sponge), the sponge is 81-101% of it on M2 and 40-64% on
+Cortex-A76; the arithmetic is +2 to -88 ns an operation on M2 and -684 to -900
+ns on Cortex-A76.
+
+SUPERCOP 20260831 itself on the Raspberry Pi 5, medians of six rounds,
+cycles (its Official is the earlier snapshot):
 
 | | GT | Official | |
 |---|---:|---:|---:|
 | keypair | 31,653.5 | 38,425.5 | -17.62% |
 | enc | 29,276.5 | 38,600.5 | -24.16% |
 | dec | 27,319.5 | 33,586 | -18.66% |
-
-With Official's hash layer linked into both, the margins are -5.7% / -4.1% /
--5.6%: most of the lead comes from the Keccak and sponge code, the rest from the
-arithmetic.
 
 ## Build
 
