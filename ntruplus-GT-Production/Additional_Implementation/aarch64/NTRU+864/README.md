@@ -21,7 +21,7 @@ comparison, and deterministic SUPERCOP export.
 |---|---|
 | `kem.c` | key generation, encapsulation, decapsulation |
 | `symmetric.c`, `hash_fixed.c`, `fips202.c` | SHAKE256 and the fixed-length hashes |
-| `keccakf1600.S`, `keccakf1600_v84a.S` | Keccak-f[1600]: scalar AArch64, or FEAT_SHA3 when the compiler targets it (the same files as NTRU+768 and NTRU+1152) |
+| `keccakf1600.S`, `keccakf1600_v84a.S`, `keccakf1600_x2_v84a.S` | Keccak-f[1600]: scalar AArch64, or FEAT_SHA3 when the compiler targets it, with a two-state FEAT_SHA3 routine for key generation's two seeds (the same files as NTRU+768 and NTRU+1152) |
 | `api_glue.c` | the C wrappers behind the `poly_*` API: tables and caller-owned scratch |
 | `ntt.S`, `ntt_top.S`, `ntt9.S`, `ntt_tail.S` | forward Good-Thomas NTT |
 | `base.c`, `base_tables.h` | pointwise products in the transform domain |
@@ -80,6 +80,10 @@ Official's 22.8 KB, and one operation executes 28.3 / 21.7 / 32.7 KB of it
 (keygen / encaps / decaps) against 12.2 / 8.5 / 10.7 KB.  In steady state
 every operation fits the 64 KB L1I.  With every cache flushed before each
 operation the margins shrink to -2.0% / -11.7% / -1.8% (Cortex-A76).
+
+Not yet in these tables: key generation's f and g seeds now share one
+two-state Keccak permutation (`keccakf1600_x2_v84a.S`) on FEAT_SHA3 cores, M2
+key generation -7.9%; Cortex-A76 is unchanged.
 
 The Forward kernel is restricted to the proven KEM input producers. Its
 stage-one copy optimization is not valid for arbitrary input polynomials.

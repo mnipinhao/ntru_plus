@@ -23,9 +23,9 @@ ASM_SOURCES = (
     "keccakf1600.S",
 )
 
-# keccakf1600_v84a.S is deliberately not exported: the whole file is inside
+# keccakf1600_v84a.S and keccakf1600_x2_v84a.S are deliberately not exported: each is inside
 # #if defined(__ARM_FEATURE_SHA3), and SUPERCOP's aarch64 has no SHA3 gate.
-NOT_EXPORTED = {"keccakf1600_v84a.S"}
+NOT_EXPORTED = {"keccakf1600_v84a.S", "keccakf1600_x2_v84a.S"}
 
 
 def makefile_sources() -> set:

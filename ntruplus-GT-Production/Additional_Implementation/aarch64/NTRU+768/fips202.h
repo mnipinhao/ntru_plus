@@ -19,6 +19,12 @@ typedef struct {
     uint64_t ctx[25];
 } shake256ctx;
 
+/* Two independent one-shot SHAKE256 calls with the same lengths, inlen < 136
+ * (one rate block): key generation's f and g seeds.  FEAT_SHA3 builds permute
+ * both states in one two-state call. */
+void shake256_x2(uint8_t *out0, uint8_t *out1, size_t outlen,
+                 const uint8_t *in0, const uint8_t *in1, size_t inlen);
+
 /* Initialize the state and absorb the provided input.
  *
  * This function does not support being called multiple times

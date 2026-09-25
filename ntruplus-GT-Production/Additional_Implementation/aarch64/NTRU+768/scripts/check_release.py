@@ -132,6 +132,7 @@ expected = {
     "kem_api.S",
     "keccakf1600.S",
     "keccakf1600_v84a.S",
+    "keccakf1600_x2_v84a.S",
     "kem.c",
     "poly.h",
     "Makefile",

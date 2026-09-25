@@ -20,6 +20,22 @@ than printing a warning.
 | `kat-check` | the generated KAT is byte-identical to `kat/expected/` |
 | `export-check` | the SUPERCOP leaf regenerates deterministically |
 
+## Two-state Keccak for key generation's seeds (P140, 2026-09-25)
+
+The f and g seeds (SHAKE256 of 32 coins each) are the only two independent
+hashes in the KEM; `shake256_x2` permutes both states at once, with FEAT_SHA3
+through `keccakf1600_x2_v84a.S` (mlkem-native's x2 routine, instructions
+unchanged; about the cost of one single-state call on Apple M2) and elsewhere
+as two single-state calls.  The key pair draws the next 32 coins before trying
+f -- that draw is certain to be used, by an f retry or by g -- so randombytes
+sees the same calls in the same order.
+
+- KAT byte-identical with the two-state path (macOS) and the fallback (Linux);
+  `make check` passes on both.
+- M2 key generation 6,448 -> 5,964 ns (-7.5%); encapsulation and decapsulation
+  unchanged; Cortex-A76 unchanged (the fallback path).
+- SUPERCOP TIMECOP (`TIMECOP=256`) passes at `-O`, `-O2`, `-O3` and `-Os`.
+
 ## A gate that exists because something was missed
 
 `zeroization-source-check` was added after a rewrite of `inverse_ntt.S` silently

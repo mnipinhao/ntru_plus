@@ -75,13 +75,11 @@ static inline int verify(const uint8_t *a, const uint8_t *b, size_t len)
 *
 * Returns 0 on success; non-zero if f is not invertible in the NTT domain.
 **************************************************/
-static inline int genf_derand(keygen_poly *f,
-                              keygen_poly *finv,
-                              const uint8_t *coins, uint8_t buf[NTRUPLUS_N / 4])
+static inline int genf_from_seed(keygen_poly *f,
+                                 keygen_poly *finv,
+                                 const uint8_t buf[NTRUPLUS_N / 4])
 {
     int result;
-
-    shake256(buf, NTRUPLUS_N / 4, coins, 32);
 
     poly_cbd1(&f->storage, buf);
     keygen_ntt_mul3_add1(f);
@@ -104,13 +102,11 @@ static inline int genf_derand(keygen_poly *f,
 *
 * Returns 0 on success; non-zero if g is not invertible in the NTT domain.
 **************************************************/
-static inline int geng_derand(keygen_poly *g,
-                              keygen_poly *ginv,
-                              const uint8_t *coins, uint8_t buf[NTRUPLUS_N / 4])
+static inline int geng_from_seed(keygen_poly *g,
+                                 keygen_poly *ginv,
+                                 const uint8_t buf[NTRUPLUS_N / 4])
 {
     int result;
-
-    shake256(buf, NTRUPLUS_N / 4, coins, 32);
 
     poly_cbd1(&g->storage, buf);
     keygen_ntt_mul3(g);
@@ -171,24 +167,33 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
 **************************************************/
 int crypto_kem_keypair_internal(uint8_t *pk, uint8_t *sk)
 {
-    uint8_t coins[NTRUPLUS_SYMBYTES];
-    uint8_t buf[NTRUPLUS_N / 4];
+    /*
+     * Coins are drawn and consumed in stream order, exactly as one draw per f
+     * attempt and then one per g attempt: while f is being tried, the next
+     * draw is certain to be used (by an f retry or by g), so it is drawn up
+     * front and both seeds are expanded in one two-state SHAKE256.
+     * randombytes sees the same calls in the same order.
+     */
+    uint8_t coins[2][NTRUPLUS_SYMBYTES];
+    uint8_t buf[2][NTRUPLUS_N / 4];
+    unsigned cur = 0;
 
     keygen_poly f, g;
     keygen_poly finv, ginv;
 
-    for (;;) {
-        randombytes(coins, sizeof coins);
-        if (!genf_derand(&f, &finv, coins, buf))
-            break;
+    randombytes(coins[0], sizeof coins[0]);
+    randombytes(coins[1], sizeof coins[1]);
+    shake256_x2(buf[0], buf[1], NTRUPLUS_N / 4, coins[0], coins[1], 32);
 
+    while (genf_from_seed(&f, &finv, buf[cur])) {
+        cur ^= 1;
+        randombytes(coins[cur ^ 1], sizeof coins[0]);
+        shake256(buf[cur ^ 1], NTRUPLUS_N / 4, coins[cur ^ 1], 32);
     }
-
-    for (;;) {
-        randombytes(coins, sizeof coins);
-        if (!geng_derand(&g, &ginv, coins, buf))
-            break;
-
+    cur ^= 1;
+    while (geng_from_seed(&g, &ginv, buf[cur])) {
+        randombytes(coins[cur], sizeof coins[0]);
+        shake256(buf[cur], NTRUPLUS_N / 4, coins[cur], 32);
     }
 
     crypto_kem_keypair_derand(pk, sk, &f, &finv, &g, &ginv);

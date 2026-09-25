@@ -39,6 +39,7 @@ KEM_ASM := \
 	add.S \
 	keccakf1600.S \
 	keccakf1600_v84a.S \
+	keccakf1600_x2_v84a.S \
 	kem_api.S
 
 KEM_C := \
@@ -131,7 +132,7 @@ kat-check: kat $(KAT_REQ) $(KAT_RSP)
 	shasum -a 256 $(GENERATED_KAT_RSP)
 
 $(TEST_SHAKE_PREFIXED): test/test_shake_prefixed.c fips202.c keccakf1600.S \
-  keccakf1600_v84a.S | $(BUILD_DIR)
+  keccakf1600_v84a.S keccakf1600_x2_v84a.S | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 shake-prefixed: $(TEST_SHAKE_PREFIXED)
