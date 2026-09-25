@@ -34,7 +34,8 @@
 * post with one pairwise branch merge, one Barrett and the mod-3 step per
 * output vector.  Overflow-free for every input with |x| <= 2458 (interval
 * proof over this kernel's disassembly; the interpreter and its record are on
-* the development branch gt768-e4-inverse-integration, experiment P117).
+* the development branch gt768-e4-inverse-integration, experiment P117,
+* preserved at tag evidence/aarch64-20260925).
 **************************************************/
 
 .macro module_decap_invntt_BARRETT_REDUCE reg, tmp

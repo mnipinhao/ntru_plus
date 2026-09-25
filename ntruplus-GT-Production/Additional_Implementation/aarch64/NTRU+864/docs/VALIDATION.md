@@ -1,8 +1,8 @@
 # K1 production integration evidence
 
-`experiments/...` paths below refer to the development branch (`gt864-1152-cleanup`
-and its ancestors), where the evidence and scripts live; this release tree does
-not carry them.
+`experiments/...` paths below refer to the development branch `gt864-1152-cleanup`,
+preserved at tag `evidence/aarch64-20260925`, where the evidence and scripts live; this release
+tree does not carry them.
 
 ## Canonical reduction in the full serializer (P134, 2026-09-24)
 
