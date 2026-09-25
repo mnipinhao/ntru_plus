@@ -42,20 +42,29 @@ comparison, and deterministic SUPERCOP export.
 
 ## Performance
 
-Against SUPERCOP 20260831's `ntruplus864/aarch64` (2026-09-24; details in
-`experiments/ROADMAP-m2-delivery.md` on the development branch
-`gt864-1152-cleanup`):
+Against the official implementation, `github.com/ntruplus/ntruplus` main at
+3991b2a (2026-08-14), measured 2026-09-25: on Apple M2 Pro its default build
+(SHA3 Keccak, `CE/`), on Cortex-A76 (Raspberry Pi 5, no FEAT_SHA3) its `NO_CE`
+build.  SUPERCOP 20260831 carries the `NO_CE` build from an earlier snapshot
+that differs from main only in `crepmod3.s`.  Both sides use the same harness
+and compiler; medians of three sessions.  Details are in
+`experiments/gt-p138-unified-margins/` on the development branch
+`gt864-1152-cleanup`.
 
 | | key generation | encapsulation | decapsulation |
 |---|---:|---:|---:|
-| M2 Pro, vs Official + CryptoExtension | -9.6% | -11.7% | -9.1% |
-| M2 Pro, Keccak held equal | -6.0% | -6.7% | -5.6% |
-| Cortex-A76, Keccak held equal | -10.8% | -12.5% | -10.5% |
+| M2 Pro, vs Official (default build) | -9.6% | -12.0% | -9.5% |
+| Cortex-A76, vs Official (`NO_CE` build) | -17.9% | -24.1% | -19.0% |
+| M2 Pro, Keccak permutation held equal | -6.1% | -6.8% | -5.8% |
+| Cortex-A76, Keccak permutation held equal | -10.7% | -12.8% | -10.9% |
 
-"Keccak held equal" links Official's sponge against GT's permutation, so the
-margin is the arithmetic alone.  A later serializer change, the `add` +
-`umin` canonicalisation of `tobytes` (0.4% on Cortex-A76, 4-8 ns on M2), is
-not included.
+"Keccak permutation held equal" links Official's sponge against GT's
+permutation (these two rows use the SUPERCOP revision of Official's code,
+which times within 0.6% of main).  That margin is not the arithmetic alone: it
+also contains GT's sponge code.  Separating the two (GT's arithmetic with
+Official's sponge), the sponge is 77-90% of it on M2 and 36-52% on Cortex-A76;
+the arithmetic is -34 to -53 ns an operation on M2 and -1,016 to -1,148 ns on
+Cortex-A76.
 
 The Forward kernel is restricted to the proven KEM input producers. Its
 stage-one copy optimization is not valid for arbitrary input polynomials.
