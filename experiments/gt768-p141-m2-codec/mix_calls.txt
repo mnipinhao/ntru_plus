@@ -1,0 +1,12 @@
+1: 1220 instructions: 936 SIMD, 217 vector loads, 24 vector stores, 43 scalar  -> M2 SIMD floor 234 cycles (66.9 ns at 3.5 GHz)
+2: 1649 instructions: 1368 SIMD, 13 vector loads, 24 vector stores, 244 scalar  -> M2 SIMD floor 342 cycles (97.7 ns at 3.5 GHz)
+3: 2108 instructions: 1944 SIMD, 97 vector loads, 24 vector stores, 43 scalar  -> M2 SIMD floor 486 cycles (138.9 ns at 3.5 GHz)
+4: 1345 instructions: 1080 SIMD, 1 vector loads, 24 vector stores, 240 scalar  -> M2 SIMD floor 270 cycles (77.1 ns at 3.5 GHz)
+5: 2318 instructions: 2136 SIMD, 97 vector loads, 24 vector stores, 61 scalar  -> M2 SIMD floor 534 cycles (152.6 ns at 3.5 GHz)
+6: 805 instructions: 720 SIMD, 25 vector loads, 24 vector stores, 36 scalar  -> M2 SIMD floor 180 cycles (51.4 ns at 3.5 GHz)
+/home/pi/p141/tools/mix768.c:9:17: error: unknown type name ‘poly’
+/home/pi/p141/tools/mix768.c:33:11: error: implicit declaration of function ‘o_poly_ntt’ [-Wimplicit-function-declaration]
+7: -1 instructions: 0 SIMD, 0 vector loads, 0 vector stores, -1 scalar  -> M2 SIMD floor 0 cycles (0.0 ns at 3.5 GHz)     ? 1 
+8: -1 instructions: 0 SIMD, 0 vector loads, 0 vector stores, -1 scalar  -> M2 SIMD floor 0 cycles (0.0 ns at 3.5 GHz)     ? 1 
+per iteration of 8 (cyc): ld4 5.125  ld1x4 2.000  2x ldp q 2.000  st4 6.000  st1x4 6.000
+4 SIMD adds alone 2.000; with an ld4 6.125; with an ld1x4 2.125

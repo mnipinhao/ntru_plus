@@ -1,0 +1,5 @@
+7: 3289 instructions: 1982 SIMD, 350 vector loads, 120 vector stores, 837 scalar  -> M2 SIMD floor 496 cycles (141.6 ns at 3.5 GHz)     add 705, sub 513, str 335, mul 323, sqrdmulh 299, mls 299, ldr 249, ldp 134, mov 108, cmp 101, csel 96, zip2 48, zip1 48, ext 12 
+8: 2779 instructions: 2384 SIMD, 205 vector loads, 120 vector stores, 70 scalar  -> M2 SIMD floor 596 cycles (170.3 ns at 3.5 GHz)     add 448, sqrdmulh 432, mls 432, sub 418, mul 384, ldr 192, trn1 144, trn2 144, str 96, st1 24, subs 20, b.ne 20, ld1 13, ldp 4 
+3: 2104 instructions: 1944 SIMD, 97 vector loads, 24 vector stores, 39 scalar  -> M2 SIMD floor 486 cycles (138.9 ns at 3.5 GHz)     smlal 360, smlal2 360, uzp1 264, sqrdmulh 192, smull 168, smull2 168, mls 96, saddw 96, saddw2 96, mul 72, uzp2 72, ld4 72, ldr 25, st4 24 
+per iteration of 8 (cyc): ld4 5.125  ld1x4 2.000  2x ldp q 2.000  st4 6.000  st1x4 6.000
+4 SIMD adds alone 2.000; with an ld4 6.125; with an ld1x4 2.125
