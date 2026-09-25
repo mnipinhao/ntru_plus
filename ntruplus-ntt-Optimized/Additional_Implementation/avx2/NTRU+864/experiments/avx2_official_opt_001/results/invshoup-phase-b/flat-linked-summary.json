@@ -1,0 +1,195 @@
+{
+  "class": "linked ELF audit of the SUPERCOP-flat qualification export (Phase B, correctness only)",
+  "parameter": "NTRU+864",
+  "elf": "build/test_is_flat",
+  "elf_sha256": "5fcac6355e98293dd9f7bb8a7ad42832ca09d1859db5e53352d1f8cd6b7b6927",
+  "asm_sha256": {
+    "ntruplus864_officialopt_basemul_shoup": "fff9b922aba677c62e28d2cea78255508b813cea9404ae49e0bf5ff391219f75",
+    "ntruplus864_officialopt_invntt_crep": "57c3c95b17b7dfdecd389af671d1a094d918ea3f584a961c648f84e677eb5546"
+  },
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "entries": {
+    "ntruplus864_officialopt_invntt_crep": {
+      "address_mod_32": 0,
+      "size_bytes": 1843,
+      "instruction_rows": 337,
+      "opcode_counts": {
+        "add": 12,
+        "cmp": 7,
+        "jb": 7,
+        "lea": 8,
+        "ret": 1,
+        "sub": 5,
+        "vmovdqa": 63,
+        "vmovdqu": 2,
+        "vpaddw": 24,
+        "vpblendd": 6,
+        "vpblendw": 6,
+        "vpbroadcastd": 10,
+        "vperm2i128": 6,
+        "vpmulhrsw": 18,
+        "vpmulhw": 50,
+        "vpmullw": 34,
+        "vpslld": 3,
+        "vpsllq": 3,
+        "vpsrld": 3,
+        "vpsrlq": 3,
+        "vpsubw": 60,
+        "vpunpckhqdq": 3,
+        "vpunpcklqdq": 3
+      },
+      "linked_stream_equals_assembled_source": true,
+      "rip_symbols": [
+        "_16xNinv_scale",
+        "_16xNinv_scaleqinv",
+        "_16xq",
+        "_16xv",
+        "_16xw",
+        "_16xwqinv",
+        "ntruplus864_officialopt_invcrep_16x128",
+        "ntruplus864_officialopt_invcrep_16x4853",
+        "ntruplus864_officialopt_invcrep_16xinv3",
+        "ntruplus864_officialopt_invcrep_16xm1",
+        "ntruplus864_officialopt_invcrep_l1sigma",
+        "zetas_inv"
+      ],
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0
+    },
+    "ntruplus864_officialopt_basemul_shoup": {
+      "address_mod_32": 0,
+      "size_bytes": 398,
+      "instruction_rows": 84,
+      "opcode_counts": {
+        "add": 4,
+        "and": 1,
+        "cmp": 1,
+        "jne": 1,
+        "lea": 2,
+        "leave": 1,
+        "mov": 3,
+        "push": 1,
+        "ret": 1,
+        "vmovd": 2,
+        "vmovdqa": 14,
+        "vpaddw": 12,
+        "vpbroadcastd": 2,
+        "vpmulhrsw": 11,
+        "vpmulhuw": 3,
+        "vpmullw": 16,
+        "vpsllw": 3,
+        "vpsubw": 5,
+        "vzeroupper": 1
+      },
+      "linked_stream_equals_assembled_source": true,
+      "rip_symbols": [
+        "ntruplus864_officialopt_basemul_shoup_zt"
+      ],
+      "calls": 0,
+      "vzeroupper": 1,
+      "conditional_branches": 1,
+      "loop_back_edge_only": true,
+      "index_register_operands": 0,
+      "frame": [
+        "and $0xffffffffffffffe0,%rsp",
+        "leave",
+        "mov %rsp,%rbp",
+        "push %rbp"
+      ],
+      "stack_memory_operands": 4,
+      "stack_memory_operand_forms": [
+        "%ymm5,-0x40(%rsp)",
+        "%ymm7,-0x20(%rsp)",
+        "-0x20(%rsp),%ymm7,%ymm7",
+        "-0x40(%rsp),%ymm14"
+      ]
+    }
+  },
+  "kem_call_relocations": {
+    "flat kem.c": {
+      "ntruplus864_officialopt_ntt_ht": 6,
+      "ntruplus864_officialopt_baseinv_r2fold": 2,
+      "ntruplus864_officialopt_basemul_nor2": 2,
+      "ntruplus864_officialopt_tobytes_direct": 7,
+      "ntruplus864_officialopt_frombytes_direct": 4,
+      "ntruplus_mlkfips202_shake256": 2,
+      "hash_f": 2,
+      "hash_g": 2,
+      "hash_h": 2,
+      "poly_basemul_scale": 1,
+      "ntruplus864_officialopt_invntt_crep": 1,
+      "ntruplus864_officialopt_basemul_shoup": 2
+    }
+  },
+  "shoup_stack_note": "gcc spills (fixed %rsp offsets, red zone / realigned frame): see the generator's stack_slot_contents; data slots hold secret-derived intermediates and are not cleared, as with compiler spills in the C KEM code",
+  "flat_root": "qualification/avx2-officialopt-lazy-codec-keccak-ht-invd-shoup-qual001",
+  "flat_candidate": "kem_lazy_r2fold_invcrep_shoup_codec_direct_keccak_ht",
+  "phase_a_object_equivalence": {
+    "kem.o": {
+      "flat": "build/isflat/kem.o",
+      "phase_a": "build/kem_lazy_r2fold_invcrep_shoup_codec_direct_keccak_ht.o",
+      "flat_sha256": "a39a766756f08cef07253face9b11d0eaa9d7214bff02f0f6a74e34c247f19c7",
+      "phase_a_sha256": "860bf46ae375f9620fcbabd9a43891121c58ca36a4a812031fa212c2397423d2",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus864_keccak_hash_f->hash_f",
+        "ntruplus864_keccak_hash_g->hash_g",
+        "ntruplus864_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 294
+    },
+    "baseinv_r2fold.o": {
+      "flat": "build/isflat/baseinv_r2fold.o",
+      "phase_a": "build/ntruplus864_officialopt_baseinv_r2fold.o",
+      "flat_sha256": "73e370fc0ff8f1cdf35009f333118394597bd5ace930993a79290523fa6b4d2b",
+      "phase_a_sha256": "0f673243a8b3f8900a0079fac39787917ec06e170da12230ca74babbdf834e15",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus864_keccak_hash_f->hash_f",
+        "ntruplus864_keccak_hash_g->hash_g",
+        "ntruplus864_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 327
+    },
+    "symmetric.o": {
+      "flat": "build/isflat/symmetric.o",
+      "phase_a": "build/symmetric_keccak.o",
+      "flat_sha256": "4d47cdbe318b2177178e0ce9219750d073c6dcf90c61183b848b23faa65f35fe",
+      "phase_a_sha256": "fec2ca5bfb3d151b4a5ca5d0e34aa4ace52cba24d0360bd1f9374ae794ca68da",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus864_keccak_hash_f->hash_f",
+        "ntruplus864_keccak_hash_g->hash_g",
+        "ntruplus864_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 87
+    },
+    "mlk_fips202.o": {
+      "flat": "build/isflat/mlk_fips202.o",
+      "phase_a": "build/mlk_fips202.o",
+      "flat_sha256": "6c7c8f477ac7e8c1c73d27803fb06b2b4651ceec35ea107c3decff45bef61946",
+      "phase_a_sha256": "da6e824e42a2ef95b2bde0d071dcc15ab41d5dcaa3ddd38cdd9ed5aea76feb1c",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus864_keccak_hash_f->hash_f",
+        "ntruplus864_keccak_hash_g->hash_g",
+        "ntruplus864_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 208
+    },
+    "mlk_keccakf1600.o": {
+      "flat": "build/isflat/mlk_keccakf1600.o",
+      "phase_a": "build/mlk_keccakf1600.o",
+      "flat_sha256": "5e4f5dde13d79f58bd79936a796a3e459d324fc3762606a0cbbaf2f9589d7fcf",
+      "phase_a_sha256": "72c589cbf493c235266c282837e9b3f26ad7b88e253b24e0decadd8cbd19ff22",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus864_keccak_hash_f->hash_f",
+        "ntruplus864_keccak_hash_g->hash_g",
+        "ntruplus864_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 492
+    }
+  }
+}
