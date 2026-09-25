@@ -2,10 +2,10 @@ experiment: NTRUPLUS864-OFFICIAL-OPT-LAZY-001
 candidate: avx2-officialopt-caller-lazy-864-exp001
 parameter: NTRU+864
 current_best:  # 2026-09-25, set by the user; research status (promotion: none, no clean/ package)
-  candidate: avx2-officialopt-lazy-codec-keccak-ht-864-exp001
-  export: qualification/avx2-officialopt-lazy-codec-keccak-ht-qual001  # tree 847f5757faa81fb1686027bec2f46eb609f3f28446c464b3cf88aa0f616f361f
-  supersedes: avx2-officialopt-lazy-codec-keccak-qual001  # current best 2026-09-24 .. 2026-09-25
-  evidence: ht_candidate.phase_b  # docs/ntruplus-avx2-official-opt-current-best.md
+  candidate: src/kem_lazy_r2fold_invcrep_shoup_codec_direct_keccak_ht.c  # HT current best + fused inverse NTT/crepmod3 + Shoup BaseMul
+  export: qualification/avx2-officialopt-lazy-codec-keccak-ht-invd-shoup-qual001  # tree b1d546b3e88abf9fde6a6035317c3a2705086fe88aca7e668da96eea15aa0cc4
+  supersedes: avx2-officialopt-lazy-codec-keccak-ht-qual001  # HT; current best earlier on 2026-09-25
+  evidence: invshoup_candidate.phase_b  # docs/ntruplus-avx2-official-opt-current-best.md, docs/ntruplus-avx2-invd-shoup.md
 branch: official-opt-lazy-864-1152
 branch_point: e76ecdf  # avx2-official-opt
 template: NTRU+768/experiments/avx2_official_opt_001 (Rounds 4-6, caller-lazy Forward)
@@ -740,7 +740,7 @@ ht_candidate:  # 2026-09-25 Phase A + same-ELF diagnostic + Phase B (export, Nat
   reproduce: docs/ntruplus864-1152-ht.md#reproduce
 
 invshoup_candidate:  # 2026-09-25 Phase A + same-ELF diagnostic + Phase B (export, Native, ASLR-on paired); docs/ntruplus-avx2-invd-shoup.md
-  phase: B_native_measured  # decision: phase_b.decision; current_best NOT changed (user decides)
+  phase: B_native_measured  # decision: phase_b.decision; promoted to current_best by the user 2026-09-25
   candidate: src/kem_lazy_r2fold_invcrep_shoup_codec_direct_keccak_ht.c  # current best + Inverse D + Shoup BaseMul
   base: current best (src/kem_lazy_r2fold_codec_direct_keccak_ht.c, export avx2-officialopt-lazy-codec-keccak-ht-qual001)
   controls: {invd_only: src/kem_lazy_r2fold_invcrep_codec_direct_keccak_ht.c, shoup_only: src/kem_lazy_r2fold_shoup_codec_direct_keccak_ht.c}  # diagnostic only
