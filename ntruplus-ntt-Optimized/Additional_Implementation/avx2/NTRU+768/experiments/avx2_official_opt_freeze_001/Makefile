@@ -21,3 +21,7 @@ include ../../../common/official_opt_keccak/keccak.mk
 # candidate (avx2-officialopt-lazy-freeze-keccak-ht-768-exp001) + ht_only /
 # r2fold_only controls: see common/official_opt_ht/ht.mk.
 include ../../../common/official_opt_ht/ht.mk
+# Fused inverse NTT + crepmod3 (864/1152 "Inverse D"; 768: on the HT inverse) and the Shoup
+# BaseMul (Encap + second Decap BaseMul) stacked on the HT current best, with controls:
+# see common/official_opt_invshoup/invshoup.mk.
+include ../../../common/official_opt_invshoup/invshoup.mk

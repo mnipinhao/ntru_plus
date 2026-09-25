@@ -17,3 +17,7 @@ include ../../../common/official_opt_keccak/keccak.mk
 # R^2 fold stacked on the Keccak candidate (avx2-officialopt-lazy-codec-keccak-ht-864-exp001)
 # + ht_only / r2fold_only controls; no HT inverse: see common/official_opt_ht/ht.mk.
 include ../../../common/official_opt_ht/ht.mk
+# Fused inverse NTT + crepmod3 (864/1152 "Inverse D"; 768: on the HT inverse) and the Shoup
+# BaseMul (Encap + second Decap BaseMul) stacked on the HT current best, with controls:
+# see common/official_opt_invshoup/invshoup.mk.
+include ../../../common/official_opt_invshoup/invshoup.mk
