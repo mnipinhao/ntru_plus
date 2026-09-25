@@ -1,8 +1,8 @@
 # NTRU+1152 AArch64 — what `make check` verifies
 
-`experiments/...` paths below refer to the development branch (`gt864-1152-cleanup`
-and its ancestors), where the evidence and scripts live; this release tree does
-not carry them.
+`experiments/...` paths below refer to the development branch `gt864-1152-cleanup`,
+preserved at tag `evidence/aarch64-20260925`, where the evidence and scripts live; this release
+tree does not carry them.
 
 Every gate below runs from one `make check`, and each one fails the build rather
 than printing a warning.

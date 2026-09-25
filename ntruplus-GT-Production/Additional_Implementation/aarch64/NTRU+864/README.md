@@ -48,8 +48,8 @@ Against the official implementation, `github.com/ntruplus/ntruplus` main at
 build.  SUPERCOP 20260831 carries the `NO_CE` build from an earlier snapshot
 that differs from main only in `crepmod3.s`.  Both sides use the same harness
 and compiler; medians of three sessions.  Details are in
-`experiments/gt-p138-unified-margins/` on the development branch
-`gt864-1152-cleanup`.
+`experiments/gt-p138-unified-margins/` and `experiments/gt-p139-report-data/` at
+tag `evidence/aarch64-20260925`.
 
 | | key generation | encapsulation | decapsulation |
 |---|---:|---:|---:|
@@ -65,6 +65,21 @@ also contains GT's sponge code.  Separating the two (GT's arithmetic with
 Official's sponge), the sponge is 77-90% of it on M2 and 36-52% on Cortex-A76;
 the arithmetic is -34 to -53 ns an operation on M2 and -1,016 to -1,148 ns on
 Cortex-A76.
+
+SUPERCOP 20260831 itself on the Raspberry Pi 5 (unmodified `do-part`, six
+rotated rounds, medians, cycles; its Official is the `NO_CE` leaf):
+
+| keygen / encaps / decaps | cycles |
+|---|---|
+| Official | 44,045.5 / 46,086.5 / 40,791.5 |
+| **GT** | **36,290.5 / 34,962.0 / 33,184.0** |
+| | **-17.6% / -24.1% / -18.7%** |
+
+Code size (Linux, gcc, gc-sections): GT's linked KEM text is 48.4 KB against
+Official's 22.8 KB, and one operation executes 28.3 / 21.7 / 32.7 KB of it
+(keygen / encaps / decaps) against 12.2 / 8.5 / 10.7 KB.  In steady state
+every operation fits the 64 KB L1I.  With every cache flushed before each
+operation the margins shrink to -2.0% / -11.7% / -1.8% (Cortex-A76).
 
 The Forward kernel is restricted to the proven KEM input producers. Its
 stage-one copy optimization is not valid for arbitrary input polynomials.

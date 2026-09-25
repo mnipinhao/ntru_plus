@@ -12,24 +12,24 @@ NTT with the centered mod-3 map fused into it (`poly_invntt_ternary_decap`),
 fed by the packed first product stored element-major; the cleanup
 (`gt768-cleanup`) was behaviour-preserving.
 
-Evidence lives on the development branches: `gt768-e4-inverse-integration`,
-experiments P115-P120, and `gt864-1152-cleanup`, experiment P135
-(`experiments/gt768-p1xx-*`).
+Evidence lives on the development branch `gt864-1152-cleanup` (which contains
+`gt768-e4-inverse-integration`), preserved at tag `evidence/aarch64-20260925`:
+experiments P115-P120, P135, P138 and P139.
 
 ## SUPERCOP 20260831, Raspberry Pi 5 (Cortex-A76)
 
 Unmodified `do-part` / `measure-anything.c`, gcc 14.2 native selection, core 3,
-six rotated rounds, medians, cycles (P135):
+six rotated rounds, medians, cycles (P139).  "GitHub main" is SUPERCOP's leaf
+with main 3991b2a's `crepmod3.s`, the only difference between them:
 
-| | GT | Official | vs Official |
-|---|---:|---:|---:|
-| keypair | 31,653.5 | 38,425.5 | -17.62% |
-| enc | 29,276.5 | 38,600.5 | -24.16% |
-| dec | 27,319.5 | 33,586 | -18.66% |
+| | GT | Official (SUPERCOP) | Official (GitHub main) | vs SUPERCOP / main |
+|---|---:|---:|---:|---:|
+| keypair | 31,621.5 | 38,419.5 | 38,416.5 | -17.69% / -17.69% |
+| enc | 29,277.5 | 38,590.5 | 38,582.5 | -24.13% / -24.12% |
+| dec | 27,322.0 | 33,586.5 | 33,741.5 | -18.65% / -19.03% |
 
-Encapsulation before P135 was 29,439.5 (-23.73%) in the same session; all six
-paired rounds moved by -148 to -182 cycles.  Decapsulation before PR #1 was
-27,780.5 (-17.19%, P119).
+P135 moved encapsulation from 29,439.5 to 29,276.5 (all six paired rounds
+-148 to -182 cycles); PR #1 moved decapsulation from 27,780.5 (P119).
 
 ## Package harness
 
@@ -72,7 +72,8 @@ byte by byte into the state in memory (768's `hash_h` input, 129 bytes, is
 all tail).  On the A76 the upstream `load64` byte loop, which gcc vectorises
 into byte shuffles, is the larger part.  Applied to Official, the two fixes
 make it 4-9% faster on M2 (default build) and 2-5% on the A76; see
-`experiments/gt-p138-unified-margins/upstream_fix/` on the development branch.
+`experiments/gt-p138-unified-margins/upstream_fix/` at tag
+`evidence/aarch64-20260925`.
 The permutation itself is the same speed on M2 and 1.27x faster in GT's
 scalar assembly on the A76.
 
@@ -82,16 +83,20 @@ SUPERCOP TIMECOP (valgrind 3.24.0 with matching `libc6-dbg`, Pi 5): the GT leaf
 passes at `-O`, `-O2`, `-O3` and `-Os` with `TIMECOP=256` (re-run for P135).  Official's 768 leaf
 fails on its keygen invertibility branch (`poly_fqinv_batch`).
 
-## Code size
+## Code size and cold start (P139, Pi 5)
 
 | | GT | Official |
 |---|---:|---:|
-| linked text (KEM only, gc-sections) | 89,528 B | 21,124 B |
-| code executed per operation | ~25 KB | 8-10 KB |
+| linked KEM text (gc-sections) | 87,546 B | 19,174 B |
+| executed: keygen / encaps / decaps | 45.3 / 22.4 / 25.0 KB | 12.1 / 7.5 / 9.3 KB |
+| fully cold, cycles | 47,956 / 44,103 / 43,179 | 46,415 / 47,130 / 45,129 |
 
-Size costs nothing in steady state: each operation fits the 64 KB L1I.
-Interleaving keygen/enc/dec adds 94 cycles per round (0.1%).  It matters when
-the code has been evicted from L2/L3.  In that case the GT keygen lead
-disappears, and encaps/decaps keep 6-9% / 10%.
+Executed bytes are the distinct instructions callgrind sees inside each entry
+point (P122's 25 KB figure for key generation used another method).  Size
+costs nothing in steady state: each operation fits the 64 KB L1I, and
+interleaving keygen/enc/dec adds 94 cycles per round (0.1%).  Fully cold
+(32 MiB read and 96 KiB of nops before every operation, 12 alternating process
+pairs), GT is **+3.3%** behind on key generation and keeps -6.4% on
+encapsulation and -4.3% on decapsulation.
 
 Production work lands on `main`; new work branches from `origin/main`.

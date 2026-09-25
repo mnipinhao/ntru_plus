@@ -67,8 +67,8 @@ Against the official implementation, `github.com/ntruplus/ntruplus` main at
 build.  SUPERCOP 20260831 carries the `NO_CE` build from an earlier snapshot
 that differs from main only in `crepmod3.s`.  Both sides use the same harness
 and compiler; medians of three sessions.  Details are in
-`experiments/gt-p138-unified-margins/` on the development branch
-`gt864-1152-cleanup`.
+`experiments/gt-p138-unified-margins/` and `experiments/gt-p139-report-data/` at
+tag `evidence/aarch64-20260925`.
 
 | | key generation | encapsulation | decapsulation |
 |---|---:|---:|---:|
@@ -85,14 +85,20 @@ Official's sponge), the sponge is 81-101% of it on M2 and 40-64% on
 Cortex-A76; the arithmetic is +2 to -88 ns an operation on M2 and -684 to -900
 ns on Cortex-A76.
 
-SUPERCOP 20260831 itself on the Raspberry Pi 5, medians of six rounds,
-cycles (its Official is the earlier snapshot):
+SUPERCOP 20260831 itself on the Raspberry Pi 5 (unmodified `do-part`, six
+rotated rounds, medians, cycles; its Official is the `NO_CE` leaf):
 
-| | GT | Official | |
-|---|---:|---:|---:|
-| keypair | 31,653.5 | 38,425.5 | -17.62% |
-| enc | 29,276.5 | 38,600.5 | -24.16% |
-| dec | 27,319.5 | 33,586 | -18.66% |
+| keygen / encaps / decaps | cycles |
+|---|---|
+| Official | 38,419.5 / 38,590.5 / 33,586.5 |
+| **GT** | **31,621.5 / 29,277.5 / 27,322.0** |
+| | **-17.7% / -24.1% / -18.7%** |
+
+Code size (Linux, gcc, gc-sections): GT's linked KEM text is 87.5 KB against
+Official's 19.2 KB, and one operation executes 45.3 / 22.4 / 25.0 KB of it
+(keygen / encaps / decaps) against 12.1 / 7.5 / 9.3 KB.  In steady state every
+operation fits the 64 KB L1I.  With every cache flushed before each operation
+the margins shrink to +3.3% / -6.4% / -4.3% (Cortex-A76).
 
 ## Build
 

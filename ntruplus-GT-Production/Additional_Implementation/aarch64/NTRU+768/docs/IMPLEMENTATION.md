@@ -145,7 +145,7 @@ must remain paired:
   inputs, and the inverse is overflow-free for every input within that bound
   (interval proof over its disassembly; the interpreter, `range_interp.py`,
   and its record are on the development branch `gt768-e4-inverse-integration`,
-  experiment P117).
+  experiment P117, preserved at tag `evidence/aarch64-20260925`).
 
 `poly_invntt_ternary_decap` also performs `poly_crepmod3`: its last Barrett is
 exactly centered for the bounded merge sums, so only the mod-3 step remains, and
