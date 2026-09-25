@@ -40,5 +40,10 @@ evidence live in:
 - `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/docs/gt-new-vs-kpqc-final-optimization-summary.md`
 - `ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/experiments/optimization_scoreboard.md`
 
+For AVX2 (768/864/1152), the current best is the Official-opt line on branch `avx2-official-opt`:
+about 22–29% fewer cycles than the Official SUPERCOP `avx2` implementation. This is research status,
+not yet a production package. See
+[docs/ntruplus-avx2-official-opt-current-best.md](docs/ntruplus-avx2-official-opt-current-best.md).
+
 Architecture-specific code must be built and timed on a compatible host.
 Correctness must be established before performance results are used.

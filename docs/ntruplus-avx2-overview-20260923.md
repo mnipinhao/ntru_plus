@@ -1,5 +1,10 @@
 # NTRU+768 / 864 / 1152 AVX2 overview: Official vs Official-opt vs GT (2026-09-23)
 
+> **Dated snapshot.** The Official-opt rows below are the 2026-09-23 exports, from before the mlkem-native Keccak
+> and HT changes. The current best and its comparison against Official are in
+> [ntruplus-avx2-official-opt-current-best.md](ntruplus-avx2-official-opt-current-best.md) (2026-09-25).
+> The GT comparison and the component profiler here are still the latest of their kind.
+
 Branch `official-opt-lazy-864-1152`, SUPERCOP 20260831, Intel Core Ultra 7 155H, CPU 1,
 performance governor, turbo off (checked, not changed), ASLR on (`randomize_va_space=2`),
 normal placement only. This is a quick overview, not a full qualification. It has no fixed-ELF

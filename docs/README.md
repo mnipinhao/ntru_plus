@@ -9,6 +9,15 @@ engineering records.
 - [Portable benchmark and KAT comparison](../bench/README.md)
 - [Repository-local engineering skills](../.agents/skills/ntruplus-repo-engineering/SKILL.md)
 
+## Active AVX2 Official-opt evidence (768 / 864 / 1152)
+
+- [Current best and comparison against Official](ntruplus-avx2-official-opt-current-best.md)
+- [HT Forward, R² fold and HT inverse (768)](ntruplus768-ht-forward.md)
+- [HT Forward and R² fold (864/1152)](ntruplus864-1152-ht.md)
+- [mlkem-native Keccak](ntruplus-avx2-keccak-mlkem-native.md)
+- [Lazy Forward (864/1152)](ntruplus864-1152-official-opt.md), [2-op freeze](ntruplus768-1152-freeze2op.md), [direct 12-bit codec](ntruplus768-1152-direct-codec.md)
+- [2026-09-23 overview snapshot (includes GT and component profiler)](ntruplus-avx2-overview-20260923.md)
+
 ## Active NTRU+768 AArch64 GT evidence
 
 - [Production optimization summary](../ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/docs/gt-new-vs-kpqc-final-optimization-summary.md)
