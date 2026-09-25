@@ -176,3 +176,86 @@ $(BUILD)/bench_invshoup_diag_swapped: $(IS_B_SRC) $(IS_B_OBJS) $(IS_ASM_ALL) $(C
 
 .PHONY: invshoup-bench
 invshoup-bench: $(BUILD)/bench_invshoup_diag $(BUILD)/bench_invshoup_diag_swapped
+
+# ------------------------------------------------ Phase B: SUPERCOP-flat qualification export
+# The current-best (HT) export + invntt_crep.s / basemul_shoup.s (exact Phase-A bytes) + a kem.c
+# with the KEM body of the candidate (tools/export_invshoup_flat.py).  invshoup-qualification
+# refuses to overwrite; invshoup-qualification-check regenerates in a temp dir and requires identity.
+# NTRU+768: IS_QUAL_VARIANT = shoup (default) or invcrep_shoup.
+ifeq ($(PARAM),768)
+IS_QUAL_VARIANT ?= shoup
+IS_QUAL_NAME := avx2-officialopt-lazy-freeze-keccak-ht-$(if $(filter invcrep_shoup,$(IS_QUAL_VARIANT)),invc-shoup,shoup)-qual001
+IS_FLAT_CAND := $(if $(filter invcrep_shoup,$(IS_QUAL_VARIANT)),kem_lazy_r2fold_invcrep_shoup_$(IS_STEM)_keccak_ht,$(IS_CAND))
+else
+IS_QUAL_VARIANT := invcrep_shoup
+IS_QUAL_NAME := avx2-officialopt-lazy-$(if $(filter 864,$(PARAM)),codec,freeze)-keccak-ht-invd-shoup-qual001
+IS_FLAT_CAND := $(IS_CAND)
+endif
+IS_QUAL := qualification/$(IS_QUAL_NAME)
+IS_EXPORT = PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(IS_TOOLS)/export_invshoup_flat.py $(IS_P) --variant $(IS_QUAL_VARIANT) \
+	--experiment . --qualification-root qualification
+.PHONY: invshoup-qualification invshoup-qualification-check invshoup-flat-check invshoup-flat-audit invshoup-flat \
+	invshoup-flat-record
+invshoup-qualification:
+	$(IS_EXPORT)
+invshoup-qualification-check:
+	$(IS_EXPORT) --check
+
+# Flat-tree KEM test: every file of the export compiled from the export directory (as ht.mk
+# ht-flat: kem.c renamed to official_lazy_*, against the pinned Official kem.c with its hash_f/g/h
+# renamed official_ref_hash_*), shared test_kem_lazy.c and wraps as Phase A.
+IS_FLAT_INCLUDES := -I$(COMMON)/tests/support -I$(IS_QUAL) -I$(SUPERCOP_PRISTINE)/cryptoint \
+	-I$(SUPERCOP_PRISTINE)/include
+IS_FLAT_C := $(filter-out kem.c symmetric.c,$(notdir $(wildcard $(IS_QUAL)/*.c)))
+IS_FLAT_S := $(addprefix $(IS_QUAL)/,$(notdir $(wildcard $(IS_QUAL)/*.s)))
+define is_flat # $(1)=build dir, $(2)=flags
+$(1)/isflat:
+	mkdir -p $$@
+$(1)/isflat/%.o: $(IS_QUAL)/%.c | $(1)/isflat
+	$(CC) $(2) $(IS_FLAT_INCLUDES) -c -o $$@ $$<
+$(1)/isflat/kem.o: $(IS_QUAL)/kem.c | $(1)/isflat
+	$(CC) $(2) $(IS_FLAT_INCLUDES) $(LAZY_RENAME) -c -o $$@ $$<
+$(1)/isflat/ref_kem.o: $(OFFICIAL)/kem.c | $(1)/isflat
+	$(CC) $(2) $(INCLUDES) $(REF_RENAME) $(REF_HASH_RENAME) -c -o $$@ $$<
+$(1)/isflat/ref_symmetric.o: $(OFFICIAL)/symmetric.c | $(1)/isflat
+	$(CC) $(2) $(INCLUDES) $(REF_HASH_RENAME) -c -o $$@ $$<
+$(1)/isflat/ref_fips202.o: $(OFFICIAL)/fips202.c | $(1)/isflat
+	$(CC) $(2) $(INCLUDES) -c -o $$@ $$<
+IS_FLAT_OBJS_$(1) := $(addprefix $(1)/isflat/,$(IS_FLAT_C:.c=.o) symmetric.o kem.o ref_kem.o ref_symmetric.o ref_fips202.o)
+$(1)/test_is_flat: $(COMMON)/tests/test_kem_lazy.c $(COMMON)/tests/support/crypto_declassify.c \
+		$(OFFICIAL)/KeccakP-1600-AVX2.s $(IS_FLAT_S) $$(IS_FLAT_OBJS_$(1)) $(1)/kat_aes.o $(1)/kat_rng.o | $(1)
+	$(CC) $(2) -maes -I$(KAT) $(INCLUDES) $(KECCAK_WRAP) -o $$@ $$^
+$(1)/test_is_flat_fretry: $(COMMON)/tests/test_kem_lazy.c $(COMMON)/tests/support/crypto_declassify.c \
+		$(OFFICIAL)/KeccakP-1600-AVX2.s $(IS_FLAT_S) $$(IS_FLAT_OBJS_$(1)) $(1)/kat_aes.o $(1)/kat_rng.o | $(1)
+	$(CC) $(2) -maes -I$(KAT) $(INCLUDES) $(KECCAK_WRAP) $(FRETRY) $(IS_BASEINV_WRAP) -o $$@ $$^
+endef
+$(eval $(call is_flat,$(BUILD),$(CFLAGS)))
+$(eval $(call is_flat,$(BUILD_SAN),$(SANFLAGS)))
+
+invshoup-flat-check: invshoup-qualification-check $(BUILD)/test_is_flat $(BUILD)/test_is_flat_fretry \
+		$(BUILD_SAN)/test_is_flat $(BUILD_SAN)/test_is_flat_fretry | $(EVIDENCE)
+	{ echo "== release ($(CFLAGS))" && $(BUILD)/test_is_flat && $(BUILD)/test_is_flat_fretry && \
+	  echo "== sanitizer ($(SANFLAGS); $(SAN_ENV))" && $(SAN_ENV) $(BUILD_SAN)/test_is_flat && \
+	  $(SAN_ENV) $(BUILD_SAN)/test_is_flat_fretry; } > $(EVIDENCE)/invshoup-flat-tests.log 2>&1 || \
+		{ cat $(EVIDENCE)/invshoup-flat-tests.log; false; }
+	cat $(EVIDENCE)/invshoup-flat-tests.log
+
+# Flat linked audit + object identity with the Phase-A build (make invshoup-phase-a first).
+invshoup-flat-audit: $(BUILD)/test_is_flat $(BUILD)/$(IS_FLAT_CAND).o | $(EVIDENCE)
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(IS_TOOLS)/audit_invshoup_linked.py $(IS_P) --experiment . \
+		--elf $(BUILD)/test_is_flat --flat-root $(IS_QUAL) --flat-kem-obj $(BUILD)/isflat/kem.o \
+		--flat-candidate $(IS_FLAT_CAND) $(if $(filter shoup,$(IS_QUAL_VARIANT)),--flat-no-invcrep) \
+		--phase-a-obj $(BUILD)/isflat/kem.o=$(BUILD)/$(IS_FLAT_CAND).o \
+		--phase-a-obj $(BUILD)/isflat/baseinv_r2fold.o=$(BUILD)/$(R2INV).o \
+		--phase-a-obj $(BUILD)/isflat/symmetric.o=$(BUILD)/symmetric_keccak.o \
+		--phase-a-obj $(BUILD)/isflat/mlk_fips202.o=$(BUILD)/mlk_fips202.o \
+		--phase-a-obj $(BUILD)/isflat/mlk_keccakf1600.o=$(BUILD)/mlk_keccakf1600.o \
+		--output $(EVIDENCE)/invshoup-flat-linked-summary.json
+
+invshoup-flat: invshoup-flat-check invshoup-flat-audit
+
+# Curated Phase-B flat-export evidence into the tracked results dir.
+invshoup-flat-record: invshoup-flat
+	mkdir -p results/invshoup-phase-b
+	cp $(EVIDENCE)/invshoup-flat-tests.log results/invshoup-phase-b/closure-tests.log
+	cp $(EVIDENCE)/invshoup-flat-linked-summary.json results/invshoup-phase-b/flat-linked-summary.json

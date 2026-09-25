@@ -14,7 +14,10 @@ avx2_official_opt_001/tools/install_reversed_placement.py.  An HT export's
 Forward and keygen BaseMul follow the files they replace:
 `ntt_ht.s` -> `bbb_ntt_ht.s` (next to bbb_ntt_caller_lazy.s) and
 `basemul_nor2.s` -> `zzz_basemul_nor2.s` (next to zzz_basemul.s);
-`invntt_ht.s` stays, like `invntt.s`.
+`invntt_ht.s` stays, like `invntt.s`.  An Inverse D / Shoup export's Shoup BaseMul
+follows the BaseMul it replaces (`basemul_shoup.s` -> `zzz_basemul_shoup.s`, next to
+zzz_basemul.s); its `invntt_crep.s` stays, like `invntt.s`.  Trees without these files are
+renamed exactly as before.
 """
 
 import argparse
@@ -26,6 +29,7 @@ RENAMES = {"ntt.s": "aaa_ntt.s", "basemul.s": "zzz_basemul.s", "pack.s": "yyy_pa
 LAZY_RENAME = {"ntt_caller_lazy.s": "bbb_ntt_caller_lazy.s"}
 CODEC_RENAME = {"codec_direct.s": "ccc_codec_direct.s"}
 HT_RENAME = {"ntt_ht.s": "bbb_ntt_ht.s", "basemul_nor2.s": "zzz_basemul_nor2.s"}
+INVSHOUP_RENAME = {"basemul_shoup.s": "zzz_basemul_shoup.s"}
 
 
 def main():
@@ -59,6 +63,7 @@ def main():
         if (source / "codec_direct.s").exists():
             renames.update(CODEC_RENAME)
         renames.update({old: new for old, new in HT_RENAME.items() if (source / old).exists()})
+        renames.update({old: new for old, new in INVSHOUP_RENAME.items() if (source / old).exists()})
         for old, new in renames.items():
             (target / old).rename(target / new)
         (target / "PLACEMENT.json").write_text(json.dumps(

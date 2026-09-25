@@ -18,9 +18,11 @@ sys.path.insert(0, str(REPO / "scripts"))
 from supercop_workflow import read_lock, sha256_file, sha256_tree  # noqa: E402
 
 # export_caller_lazy_qualification.py,
-# official_opt_keccak/tools/export_keccak_flat.py --qualification-root and
-# official_opt_ht/tools/export_ht_flat.py --qualification-root
-KINDS = ("caller-lazy-qualification-source", "keccak-qualification-source", "ht-qualification-source")
+# official_opt_keccak/tools/export_keccak_flat.py --qualification-root,
+# official_opt_ht/tools/export_ht_flat.py --qualification-root and
+# official_opt_invshoup/tools/export_invshoup_flat.py
+KINDS = ("caller-lazy-qualification-source", "keccak-qualification-source", "ht-qualification-source",
+         "invshoup-qualification-source")
 
 
 def main() -> None:
