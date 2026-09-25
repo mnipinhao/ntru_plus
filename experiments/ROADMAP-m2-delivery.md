@@ -2,7 +2,39 @@
 
 Living document.  Started 2026-09-21 from P83 (corrected M2 baseline) and P84
 (attribution); rewritten 2026-09-22 after P86 through P90 landed; tables and
-the item list brought up to date 2026-09-23 after P123-P131.
+the item list brought up to date 2026-09-23 after P123-P131; the current
+margins, against GitHub main, and the landings since are 2026-09-25 (P132-P138).
+
+## Current margins (P138, 2026-09-25)
+
+**Supersedes the tables in "Where things stand" below**, which are kept for
+their method notes and history.  GT at main a6524aea.  Official is the
+published implementation, `github.com/ntruplus/ntruplus` main 3991b2a: its
+default build (SHA3, `CE/`) on M2, its `NO_CE` build on the A76.  SUPERCOP
+20260831's leaves are that `NO_CE` build from a 2026-07-23 snapshot and differ
+from main only in `crepmod3.s` (main's is 0.4-0.6% slower in decapsulation on
+the A76).  One session per machine for all three sets, every build
+output-checked; `experiments/gt-p138-unified-margins/`.
+
+| GT vs Official (keygen / encaps / decaps) | M2 Pro, default build | Cortex-A76, `NO_CE` | M2, permutation equal | A76, permutation equal |
+|---|---|---|---|---|
+| 768 | -9.0 / -15.5 / -16.1% | -18.0 / -24.1 / -19.0% | -5.1 / -11.7 / -12.8% | -10.2 / -13.4 / -11.7% |
+| 864 | -9.6 / -12.0 / -9.5% | -17.9 / -24.1 / -19.0% | -6.1 / -6.8 / -5.8% | -10.7 / -12.8 / -10.9% |
+| 1152 | -9.8 / -12.0 / -10.1% | -15.0 / -22.2 / -18.8% | -6.1 / -6.9 / -6.6% | -7.7 / -10.6 / -10.6% |
+
+**"Keccak held equal" is not the arithmetic alone.**  It holds the permutation
+equal and leaves each side its own sponge.  A build of GT's arithmetic with
+Official's sponge splits it: GT's sponge is 69-101% of the permutation-equal
+margin on M2 and 36-69% on the A76; the arithmetic is +2 to -130 ns an
+operation on M2 and -684 to -1,216 ns on the A76 (matching P136's component
+sums, so the KEM glue is small).  The sponge difference is two things in
+upstream's C: `CE/fips202.c` absorbs the final partial block byte by byte into
+the state in memory (the M2 part), and every upstream `load64` is a byte loop
+that gcc vectorises into byte shuffles (the A76 part).  With both fixed,
+Official is 4-9% faster on M2 (default build) and 2-5% on the A76, and GT's
+M2 margins against the default build fall to -3.8 to -7.9%
+(`upstream_fix/`).  Not reported upstream; the user will cover it in their
+report.
 
 ## Where things stand
 
@@ -184,6 +216,12 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 
 | | |
 |---|---|
+| **P137** | 1152 decoder with two-register `tbl` (`unpack.S`, generated): the first transpose level and the byte expansion in one `tbl` per block pair, 40 SIMD ops a pair against 48; two-register `tbl` costs one `trn` on both machines.  Per call M2 70.0 -> 54.6 ns, A76 612 -> 479 cycles (Official 54.6 / 486).  SUPERCOP: decapsulation **-1.01%**, encapsulation -0.33%; M2 decapsulation -0.91%.  `export_supercop.py` now checks its lists against the Makefile (the first SUPERCOP run linked without `unpack.S`). |
+| **P136** | Component table on the current trees (no code change).  P128's tool charged Official a `poly` copy before every in-place `poly_ntt`/`poly_triple`; its kem.c copies once, in decapsulation.  Corrected, M2 arithmetic is 864 -39 / -39 / -40 ns, 1152 -113 / -8.5 / -25; the forward NTT is +12-13 ns a call on M2 (as P100/P105), -360 to -430 cycles on the A76. |
+| **P135** | 768 `poly_frombytes_encap` (NTRU+768 tree, noted here for completeness): each half of each block-major output vector is six contiguous bytes, so no transpose.  Per call M2 65.5 -> 37.9 ns, A76 503 -> 324 cycles; SUPERCOP encapsulation -0.55%. |
+| **P134** | 864/1152 `reduce_canon`: Barrett, then `add` + `umin` instead of a sign mask and a second `mls` -- one multiply fewer.  A76 -0.4 to -0.54% on every operation, M2 4-11 ns. |
+| **P133** | 864 `frombytes` as the inverse of the run-based serializer: one 16-byte load and one `tbl` per nine-byte run, a 6-of-8 transpose, one op per vector.  Per call M2 73.8 -> 55.4 ns, A76 640 -> 498 cycles; decapsulation -1.5% M2, -1.3% A76. |
+| **P132** | 864/1152 cleanup as 768's P121: Slothy listings stripped, `.L` labels, one `C_SYM` spelling, dead code removed, comments describe code, READMEs rewritten.  Code bytes unchanged where not deleted. |
 | **P131** | 1152 `tobytes`: P130's store scheme on twelve-byte blocks.  On M2 backward stores and the forward-maximal order both cost ~9 ns of decapsulation, so the shipped order has 66 of 144 blocks in one store: A76 keygen / encaps / decaps **-0.44 / -0.34 / -0.39%**, M2 unchanged.  1152 `frombytes` already had the 16-byte load. |
 | **P130** | 864 overheads around unchanged arithmetic: `frombytes` one 16-byte load per 12-byte group (was 8-byte + scalar + lane insert; the group at byte 636 loads the 16 bytes ending at its last byte, ASan-checked); the first product's 36 tiles in one call (constants set once); `tobytes` one 16-byte store for 113 of 144 nine-byte runs where the extra bytes land in a neighbour written later (order generated and byte-simulated), 288 stores -> 175.  M2 keygen / encaps / decaps **-0.55 / -0.45 / -1.28%**, A76 **-0.87 / -0.83 / -1.29%**. |
 | **P128** | 1152 `baseinv`'s C chains: `fqmul` takes the Montgomery quotient from `mul`, as Official's does, not from `uzp1` of the widened product -- one permute fewer on each step of a ~40-step serial chain.  `baseinv` M2 550 -> 517 ns (Official 532).  Key generation **-90 ns on M2 (-1.44%)**, +195 cycles on A76 (+0.36%): rule 2. |
@@ -258,6 +296,13 @@ these; what mattered was the algorithm and the unroll factor.
 Per-role deficits as they stand, GT minus Official, ns, Keccak aligned.
 
 ### 1. NTRU+1152 unpack: **measured, structural, closed**
+
+**Reopened and landed by P137 (2026-09-24).**  The transpose stays, but a
+two-register `tbl` (one `trn`'s cost on both machines) does its first level
+and the byte expansion together, 40 SIMD ops a pair against 48; per call M2
+70.0 -> 54.6 ns and A76 612 -> 479 cycles, both now at or under Official.  The
+analysis below was right that the permutation cannot be removed; it priced
+the permutation's cost too high.
 
 The profiler's +157 was wrong; the compare it blamed is gone (`ecb6d5e1`), and
 what remained was one kernel, `poly_frombytes`, at 1.29 on M2 and 1.27 on A76
