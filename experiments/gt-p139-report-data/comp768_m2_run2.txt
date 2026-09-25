@@ -1,0 +1,23 @@
+NTRU+768 arithmetic, GT - Official (ns), Official as its kem.c calls it
+keygen  cbd1 (f, g)                      GT     37.1  Off     33.3  x2 ->     +7.5
+keygen  triple + forward NTT (f, g)      GT    215.0  Off    209.2  x2 ->    +11.7
+keygen  baseinv (f, g)                   GT    369.6  Off    367.5  x2 ->     +4.2
+keygen  basemul x2                       GT    135.0  Off    161.2  x2 ->    -52.5
+keygen  tobytes x3                       GT    207.5  Off    164.2  x1 ->    +43.3
+encaps  frombytes (pk)                   GT     40.8  Off     39.6  x1 ->     +1.2
+encaps  cbd1                             GT     37.5  Off     35.4  x1 ->     +2.1
+encaps  forward NTT x2                   GT    154.6  Off    184.2  x2 ->    -59.2
+encaps  tobytes (r transcript)           GT     99.6  Off     52.1  x1 ->    +47.5
+encaps  sotp_encode                      GT     36.7  Off     37.9  x1 ->     -1.2
+encaps  basemul_add + tobytes (ct)       GT    275.4  Off    221.7  x1 ->    +53.8
+decaps  decode ct,f,hinv + 1st product   GT    260.8  Off    246.7  x1 ->    +14.2
+decaps  inverse -> ternary               GT    214.2  Off    255.0  x1 ->    -40.8
+decaps  forward NTT x2 (+Official copy)  GT    359.6  Off    392.1  x1 ->    -32.5
+decaps  sub                              GT     20.4  Off     20.4  x1 ->     -0.0
+decaps  basemul                          GT    145.8  Off    160.4  x1 ->    -14.6
+decaps  tobytes x2                       GT    105.0  Off    105.4  x1 ->     -0.4
+decaps  sotp_decode                      GT     40.8  Off     41.2  x1 ->     -0.4
+decaps  cbd1                             GT     38.3  Off     35.4  x1 ->     +2.9
+keygen arithmetic  GT 1720.8  Off 1706.7  +14.2 ns
+encaps arithmetic  GT 799.2  Off 755.0  +44.2 ns
+decaps arithmetic  GT 1185.0  Off 1256.7  -71.7 ns

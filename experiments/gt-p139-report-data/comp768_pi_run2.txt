@@ -1,0 +1,24 @@
+NTRU+768 arithmetic, GT - Official (cyc), Official as its kem.c calls it
+keygen  cbd1 (f, g)                      GT    306.7  Off    313.7  x2 ->    -14.1
+keygen  triple + forward NTT (f, g)      GT   2855.5  Off   3057.6  x2 ->   -404.2
+keygen  baseinv (f, g)                   GT   3547.6  Off   3621.4  x2 ->   -147.6
+keygen  basemul x2                       GT   1762.2  Off   2256.7  x2 ->   -989.0
+keygen  tobytes x3                       GT   1615.2  Off   2258.4  x1 ->   -643.3
+encaps  frombytes (pk)                   GT    326.1  Off    327.0  x1 ->     -0.9
+encaps  cbd1                             GT    306.7  Off    313.8  x1 ->     -7.1
+encaps  forward NTT x2                   GT   2067.8  Off   2874.4  x2 ->  -1613.2
+encaps  tobytes (r transcript)           GT    958.6  Off    748.0  x1 ->   +210.6
+encaps  sotp_encode                      GT    323.6  Off    330.7  x1 ->     -7.1
+encaps  basemul_add + tobytes (ct)       GT   2733.4  Off   2979.7  x1 ->   -246.4
+decaps  decode ct,f,hinv + 1st product   GT   2631.7  Off   2663.2  x1 ->    -31.5
+decaps  inverse -> ternary               GT   3335.0  Off   3956.5  x1 ->   -621.5
+decaps  forward NTT x2 (+Official copy)  GT   4982.2  Off   5852.3  x1 ->   -870.0
+decaps  sub                              GT    171.8  Off    171.8  x1 ->     -0.0
+decaps  basemul                          GT   1993.7  Off   2256.7  x1 ->   -263.0
+decaps  tobytes x2                       GT   1507.9  Off   1507.8  x1 ->     +0.1
+decaps  sotp_decode                      GT    315.2  Off    325.8  x1 ->    -10.5
+decaps  cbd1                             GT    306.7  Off    313.8  x1 ->     -7.1
+  (encaps detail) GT basemul_add out-of-place 2116.7, in place as kem.c 2116.1, tobytes_encap 617.2; Official basemul_add 2220.7, tobytes 747.8 cyc
+keygen arithmetic  GT 18559.2  Off 20757.4  -2198.2 cyc
+encaps arithmetic  GT 8784.0  Off 10447.9  -1664.0 cyc
+decaps arithmetic  GT 15244.3  Off 17047.9  -1803.6 cyc

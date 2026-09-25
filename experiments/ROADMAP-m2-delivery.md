@@ -36,6 +36,21 @@ M2 margins against the default build fall to -3.8 to -7.9%
 (`upstream_fix/`).  Not reported upstream; the user will cover it in their
 report.
 
+**P139 (2026-09-25)** adds what a report needs (`experiments/gt-p139-report-data/`):
+
+- SUPERCOP 20260831 on the Pi 5 for all three sets, against SUPERCOP's leaf
+  and main's: GT -17.1 / -24.1 / -18.7% (768), -17.0 / -24.1 / -18.7% (864),
+  -12.5 / -22.2 / -18.1% (1152); key generation as the mean of 576 samples,
+  because 1152's retries make its median unstable (-12.5% or -17.2% by
+  median, depending on the round mix).
+- Code size: linked KEM text 87.5 / 48.4 / 48.5 KB against Official's 19.2 /
+  22.8 / 20.9 KB; executed per operation 22-45 KB against 7.5-12.2 KB.  Fully
+  cold (caches flushed before each operation), GT keeps -6 to -13% on
+  encapsulation, -2 to -5% on decapsulation, and 768's key generation is
+  **+3.3%** behind.
+- 768's component table; its M2 deficits are the codec and
+  `poly_basemul_add_encap`.
+
 ## Where things stand
 
 Rebuilt in one session, every binary of a table with the same compiler, each GT
@@ -510,11 +525,12 @@ timing, and every comparison is checked against `kem.c`'s aliasing first.
 
 ## Open questions, not scheduled
 
-- **Report the two upstream AAPCS64 violations?**  `CE/f1600.S` and
-  `poly_tobytes` in `asm/pack.s` write `v8-v15` with no save/restore.  Outputs
-  are unaffected; a C caller holding a double is silently corrupted.
+- ~~Report the two upstream AAPCS64 violations?~~  Fixed upstream: GitHub
+  main 3991b2a's `CE/f1600.S` and `asm/pack.s` (768, 1152) save and restore
+  d8-d15; 864's `pack.s` does not use v8-v15.  Only our old vendored copies had
+  them (checked 2026-09-25).
 - ~~864's inverse "tail padding"~~ -- answered by P125's range proof: the 32
   never-written scratch halfwords the transform reads never reach an output.
-- **Re-measure the campaign's older component tables.**  Anything from a
-  sequential `#define TIME` harness carries P82's fault.
+- ~~Re-measure the campaign's older component tables.~~  Done: P136 (864,
+  1152, which also found P128's tool charging Official a copy) and P139 (768).
 - **The two `backup-*-20260912` branches** hold 90 unique experiment records.
