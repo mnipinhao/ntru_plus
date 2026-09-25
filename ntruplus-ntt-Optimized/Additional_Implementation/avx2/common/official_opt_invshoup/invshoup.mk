@@ -181,9 +181,11 @@ invshoup-bench: $(BUILD)/bench_invshoup_diag $(BUILD)/bench_invshoup_diag_swappe
 # The current-best (HT) export + invntt_crep.s / basemul_shoup.s (exact Phase-A bytes) + a kem.c
 # with the KEM body of the candidate (tools/export_invshoup_flat.py).  invshoup-qualification
 # refuses to overwrite; invshoup-qualification-check regenerates in a temp dir and requires identity.
-# NTRU+768: IS_QUAL_VARIANT = shoup (default) or invcrep_shoup.
+# NTRU+768: IS_QUAL_VARIANT = invcrep_shoup (default: the fused inverse passed every gate and won
+# its same-ELF component diagnostic, so the NTRU+768 candidate is current best + fused inverse +
+# Shoup) or shoup (current best + Shoup, HT inverse kept).
 ifeq ($(PARAM),768)
-IS_QUAL_VARIANT ?= shoup
+IS_QUAL_VARIANT ?= invcrep_shoup
 IS_QUAL_NAME := avx2-officialopt-lazy-freeze-keccak-ht-$(if $(filter invcrep_shoup,$(IS_QUAL_VARIANT)),invc-shoup,shoup)-qual001
 IS_FLAT_CAND := $(if $(filter invcrep_shoup,$(IS_QUAL_VARIANT)),kem_lazy_r2fold_invcrep_shoup_$(IS_STEM)_keccak_ht,$(IS_CAND))
 else
