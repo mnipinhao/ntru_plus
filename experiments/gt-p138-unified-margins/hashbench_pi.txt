@@ -1,0 +1,19 @@
+NTRU+768 hash layer, per call (cyc), GT permutation on both sides
+  shake256 32 -> N/4 (cbd seed)    GT   1982.7  Official   2130.1    -147.4
+  hash_f  (pk, POLYBYTES -> 32)    GT   8608.1  Official   9726.2   -1118.1
+  hash_g  (POLYBYTES -> N/4)       GT   9544.5  Official  10752.5   -1208.0
+  hash_h  (N/8+32 -> 32+N/4)       GT   2029.8  Official   2551.4    -521.6
+  weighted by calls: keygen -1413  encaps -2848  decaps -1730 cyc
+NTRU+864 hash layer, per call (cyc), GT permutation on both sides
+  shake256 32 -> N/4 (cbd seed)    GT   1980.4  Official   2126.7    -146.3
+  hash_f  (pk, POLYBYTES -> 32)    GT   9550.5  Official  10807.2   -1256.6
+  hash_g  (POLYBYTES -> N/4)       GT  10517.5  Official  11853.7   -1336.2
+  hash_h  (N/8+32 -> 32+N/4)       GT   2949.7  Official   3101.6    -151.8
+  weighted by calls: keygen -1549  encaps -2745  decaps -1488 cyc
+NTRU+1152 hash layer, per call (cyc), GT permutation on both sides
+  shake256 32 -> N/4 (cbd seed)    GT   2907.9  Official   3109.9    -202.0
+  hash_f  (pk, POLYBYTES -> 32)    GT  12367.6  Official  14052.8   -1685.2
+  hash_g  (POLYBYTES -> N/4)       GT  14299.5  Official  16103.8   -1804.2
+  hash_h  (N/8+32 -> 32+N/4)       GT   3915.5  Official   4225.6    -310.0
+  weighted by calls: keygen -2251  encaps -3799  decaps -2114 cyc
+throttled=0x50000

@@ -1,0 +1,24 @@
+NTRU+768, per call (cyc); both on GT's permutation; all six forms agree on the digest
+                                           hash_g     step       hash_f     step
+  O0 Official as written                  10791.9                9727.0         
+  O1  - clear of the copy                 10737.0    -54.9       9726.8     -0.2
+  O2  - byte-wise tail absorb             10606.9   -130.1       9607.3   -119.5
+  O3  - temp[] squeeze                    10561.6    -45.3       9584.4    -23.0
+  O4  - input copy (prefix in place)      10490.1    -71.4       9509.7    -74.6
+  GT shake256_prefixed                     9569.1   -921.1       8594.5   -915.2
+NTRU+864, per call (cyc); both on GT's permutation; all six forms agree on the digest
+                                           hash_g     step       hash_f     step
+  O0 Official as written                  11844.6               10775.8         
+  O1  - clear of the copy                 11788.0    -56.6      10810.4    +34.6
+  O2  - byte-wise tail absorb             11647.6   -140.4      10654.8   -155.6
+  O3  - temp[] squeeze                    11607.3    -40.3      10639.1    -15.7
+  O4  - input copy (prefix in place)      11545.9    -61.4      10562.5    -76.6
+  GT shake256_prefixed                    10551.5   -994.4       9554.9  -1007.6
+NTRU+1152, per call (cyc); both on GT's permutation; all six forms agree on the digest
+                                           hash_g     step       hash_f     step
+  O0 Official as written                  16105.4               14077.2         
+  O1  - clear of the copy                 16048.0    -57.5      14057.2    -19.9
+  O2  - byte-wise tail absorb             15817.1   -230.9      13821.5   -235.7
+  O3  - temp[] squeeze                    15757.9    -59.2      13798.5    -23.0
+  O4  - input copy (prefix in place)      15654.5   -103.3      13708.5    -90.0
+  GT shake256_prefixed                    14294.3  -1360.2      12373.3  -1335.3

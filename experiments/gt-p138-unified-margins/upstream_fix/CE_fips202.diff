@@ -1,0 +1,43 @@
+--- a/Additional_Implementation/aarch64/NTRU+768/CE/fips202.c	2026-09-25 00:57:22
++++ b/Additional_Implementation/aarch64/NTRU+768/CE/fips202.c	2026-09-25 10:17:09
+@@ -1,6 +1,7 @@
+ #include "fips202.h"
+ #include <stddef.h>
+ #include <stdint.h>
++#include <string.h>
+ 
+ #ifdef __ARM_FEATURE_CRYPTO
+ /* On ARM platforms with crypto extensions, use the assembly-implemented f1600 */
+@@ -51,10 +52,8 @@
+ 
+ /* Helper function: load 8 bytes as a little‑endian 64‑bit integer */
+ static uint64_t load64(const uint8_t *x) {
+-    uint64_t r = 0;
+-    for (unsigned int i = 0; i < 8; i++) {
+-        r |= ((uint64_t)x[i]) << (8 * i);
+-    }
++    uint64_t r;
++    memcpy(&r, x, sizeof r);    /* little-endian AArch64: one unaligned load */
+     return r;
+ }
+ 
+@@ -79,12 +78,14 @@
+         inlen -= r;
+         KeccakF1600_StatePermute(state);
+     }
+-    unsigned int i;
+-    for (i = 0; i < inlen; i++){
+-        state[i / 8] ^= ((uint64_t)in[i]) << (8 * (i % 8));
++    uint8_t t[200];
++    for (unsigned int i = 0; i < r; i++) t[i] = 0;
++    memcpy(t, in, inlen);
++    t[inlen] = p;
++    t[r - 1] |= 128;
++    for (unsigned int i = 0; i < r / 8; i++){
++        state[i] ^= load64(t + 8 * i);
+     }
+-    state[i / 8] ^= ((uint64_t)p) << (8 * (i % 8));
+-    state[(r - 1) / 8] ^= 1ULL << 63;
+ }
+ 
+ /* Squeeze full blocks from the state */

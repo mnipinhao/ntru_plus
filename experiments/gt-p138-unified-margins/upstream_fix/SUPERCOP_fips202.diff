@@ -1,0 +1,16 @@
+--- a/crypto_kem/ntruplus864/aarch64/fips202.c	2026-09-25 00:57:22
++++ b/crypto_kem/ntruplus864/aarch64/fips202.c	2026-09-25 10:17:09
+@@ -26,11 +26,8 @@
+  * Returns the loaded 64-bit unsigned integer
+  **************************************************/
+ static uint64_t load64(const uint8_t *x) {
+-    uint64_t r = 0;
+-    for (size_t i = 0; i < 8; ++i) {
+-        r |= (uint64_t)x[i] << 8 * i;
+-    }
+-
++    uint64_t r;
++    memcpy(&r, x, sizeof r);    /* little-endian AArch64: one unaligned load */
+     return r;
+ }
+ 

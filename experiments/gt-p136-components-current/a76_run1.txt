@@ -1,0 +1,50 @@
+NTRU+864   (Official in place, as its kem.c calls it)
+keygen  cbd1 (f,g)         GT    365.8  Off    372.8  x2.00 ->    -14.0 cyc
+keygen  triple (f,g)       GT    221.7  Off    221.7  x2.00 ->     +0.1 cyc
+keygen  forward NTT (f,g)  GT   3383.0  Off   3741.7  x2.00 ->   -717.3 cyc
+keygen  baseinv (f,g)      GT   4026.7  Off   4156.9  x2.00 ->   -260.4 cyc
+keygen  basemul x2         GT   2160.7  Off   2412.7  x2.00 ->   -504.2 cyc
+keygen  tobytes (f,pk,hinv) GT   1930.2  Off   3240.8  x1.00 ->  -1310.6 cyc
+encaps  frombytes          GT    490.0  Off    732.0  x1.00 ->   -242.0 cyc
+encaps  cbd1               GT    365.8  Off    372.8  x1.00 ->     -7.0 cyc
+encaps  sotp_encode        GT    379.7  Off    384.7  x1.00 ->     -5.0 cyc
+encaps  forward NTT x2     GT   3383.1  Off   3741.7  x2.00 ->   -717.0 cyc
+encaps  basemul_add        GT   2152.2  Off   2882.7  x1.00 ->   -730.5 cyc
+encaps  tobytes (ct)       GT    526.5  Off   1079.8  x1.00 ->   -553.3 cyc
+keygen arithmetic  GT 22246.0  Off 25052.3  -2806.3 cyc
+encaps arithmetic  GT 10680.4  Off 12935.3  -2254.9 cyc
+frombytes (x3)     GT    501.4  Off    723.2  cyc  x3 ->   -665.3
+first product      GT   1725.8  Off   1732.0  cyc  x1 ->     -6.2
+inverse->ternary   GT   4598.6  Off   4567.2  cyc  x1 ->    +31.3
+forward NTT (x2)   GT   6759.0  Off   7595.0  cyc  x1 ->   -836.0
+sub                GT    196.8  Off    193.0  cyc  x1 ->     +3.8
+basemul            GT   2160.9  Off   2412.8  cyc  x1 ->   -251.9
+tobytes (small+full) GT   1412.0  Off   2162.9  cyc  x1 ->   -750.9
+sotp_decode        GT    368.5  Off    391.0  cyc  x1 ->    -22.4
+cbd1               GT    365.9  Off    373.9  cyc  x1 ->     -8.0
+NTRU+864 decaps arithmetic   GT 19091.8  Off 21597.3  cyc  (-2505.5)
+NTRU+1152   (Official in place, as its kem.c calls it)
+keygen  cbd1 (f,g)         GT    416.2  Off    464.7  x2.80 ->   -135.8 cyc
+keygen  triple (f,g)       GT    259.3  Off    293.6  x2.80 ->    -96.2 cyc
+keygen  forward NTT (f,g)  GT   4354.4  Off   4783.9  x2.80 ->  -1202.7 cyc
+keygen  baseinv (f,g)      GT   5361.8  Off   5275.8  x2.80 ->   +240.8 cyc
+keygen  basemul x2         GT   3115.8  Off   3384.7  x2.00 ->   -537.8 cyc
+keygen  tobytes (f,pk,hinv) GT   2306.5  Off   3378.3  x1.00 ->  -1071.8 cyc
+encaps  frombytes          GT    611.8  Off    487.9  x1.00 ->   +123.9 cyc
+encaps  cbd1               GT    416.2  Off    464.7  x1.00 ->    -48.5 cyc
+encaps  sotp_encode        GT    443.8  Off    487.7  x1.00 ->    -43.9 cyc
+encaps  forward NTT x2     GT   4354.5  Off   4783.8  x2.00 ->   -858.5 cyc
+encaps  basemul_add        GT   3123.5  Off   3332.7  x1.00 ->   -209.1 cyc
+encaps  tobytes (ct)       GT    628.5  Off   1128.8  x1.00 ->   -500.2 cyc
+keygen arithmetic  GT 37634.6  Off 40438.2  -2803.6 cyc
+encaps arithmetic  GT 13932.9  Off 15469.3  -1536.4 cyc
+frombytes (x3)     GT    613.4  Off    490.3  cyc  x3 ->   +369.3
+first product      GT   2667.5  Off   2525.9  cyc  x1 ->   +141.6
+inverse->ternary   GT   5178.3  Off   6218.3  cyc  x1 ->  -1040.0
+forward NTT (x2)   GT   8704.6  Off   9723.4  cyc  x1 ->  -1018.8
+sub                GT    194.4  Off    257.0  cyc  x1 ->    -62.6
+basemul            GT   3117.2  Off   3384.8  cyc  x1 ->   -267.7
+tobytes (small+full) GT   1683.7  Off   2253.0  cyc  x1 ->   -569.3
+sotp_decode        GT    470.1  Off    482.9  cyc  x1 ->    -12.8
+cbd1               GT    422.7  Off    464.0  cyc  x1 ->    -41.3
+NTRU+1152 decaps arithmetic   GT 24278.5  Off 26780.1  cyc  (-2501.6)
