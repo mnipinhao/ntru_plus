@@ -1,0 +1,182 @@
+{
+ "class": "Shoup BaseMul proof: symbolic + exhaustive per-term + triangle + mod-q basis (Phase A; no timing)",
+ "parameter": "NTRU+1152",
+ "verdict": "pass",
+ "asm": "asm/ntruplus1152_officialopt_basemul_shoup.s",
+ "asm_sha256": "8820c097a2e8402f9624295922b57a3659680cbe5ec04ec9241dcbc11ab9ab80",
+ "c_source": "src/ntruplus1152_officialopt_basemul_shoup.c",
+ "c_source_sha256": "03daf6b461c3db8b0a7c431e18efb956eec04746cb3eaba6606bd6f7ae1fb11a",
+ "sources_sha256": {
+  "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+  "basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+  "ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5"
+ },
+ "ht_forward_sha256": "20f3558e002826aca9701385229d5b52562fe7434bbb10bfcccaaa12804a87b1",
+ "tool_sha256": {
+  "avx2emu.py": "aa8bc39bc325e3158d1afcce78d5bda7a9d1b12e0dcdf7febe6583ae4ca2d370",
+  "common.py": "98509b4ef39d9d47f684d573dc841aaa4f4f1731b47437691df698ffaa994d62",
+  "difftest.py": "0b6ec6173d0e24793490b51fc0c74dbafe97365c92aafb292fa0d21a1f832e1f",
+  "ledger.py": "715b9c82ceba337090f2fcc3de866813635cd9b5470ee490f64c7da28fede9c9",
+  "prove_forward_lazy.py": "efd8e6be025d662668c40696da1b4562392ee438e9b864abb98db648cadf981e",
+  "images.c": "e155ab31180f9831f0036602b4ba48efc37b6a5fc22aa61ed68c4f5a4f6138b3",
+  "prove_ht.py": "6877510498035cef4c8aa96cb9ae086ca4413b6e9da4bfdb63330e136ff55a54",
+  "prove_basemul_shoup.py": "402f51e63f7e9d6d194079dff2f22773abdd024bb54856c0838bc8e7f9562567",
+  "shoup_bounds.c": "d2f9dd73ec5dabaa70e867c4d77e2e1b0355da18c6c9cd20fb29a18ca7ce8938",
+  "generate_basemul_shoup.py": "0bdb5272b1de3f96e6ff3223803ab4cda22f99aca4fb6918fa50b84384c8b443",
+  "symexec_ext.py": "e9db0645e759d06376f36d636750348a06b8ac074929692db61f3bd92208d6b6"
+ },
+ "symbolic": {
+  "output_words_equal_reference_forms": 1152,
+  "dynamic_instructions": 1961,
+  "stack_slot_offsets_from_entry_rsp": [
+   -192,
+   -160,
+   -128,
+   -96,
+   -64
+  ]
+ },
+ "per_base_lane_support": true,
+ "companion_constant": 38825,
+ "zeta_pairs": 288,
+ "callers": {
+  "encap": {
+   "a_envelope": [
+    -15580,
+    15580
+   ],
+   "b": [
+    0,
+    3456
+   ],
+   "data_term": [
+    -3344,
+    3344
+   ],
+   "s_ranges": {
+    "s0": [
+     -10032,
+     10032
+    ],
+    "s1": [
+     -6688,
+     6688
+    ],
+    "s2": [
+     -3344,
+     3344
+    ]
+   },
+   "zeta_term_ranges": {
+    "s0": [
+     -2243,
+     2243
+    ],
+    "s1": [
+     -2068,
+     2068
+    ],
+    "s2": [
+     -1896,
+     1896
+    ]
+   },
+   "output_ranges": {
+    "c0": [
+     -5587,
+     5587
+    ],
+    "c1": [
+     -8756,
+     8756
+    ],
+    "c2": [
+     -11928,
+     11928
+    ],
+    "c3": [
+     -13376,
+     13376
+    ]
+   },
+   "output_range": [
+    -13376,
+    13376
+   ]
+  },
+  "decap": {
+   "a_envelope": [
+    -16385,
+    19838
+   ],
+   "b": [
+    0,
+    3456
+   ],
+   "data_term": [
+    -3443,
+    3800
+   ],
+   "s_ranges": {
+    "s0": [
+     -10329,
+     11400
+    ],
+    "s1": [
+     -6886,
+     7600
+    ],
+    "s2": [
+     -3443,
+     3800
+    ]
+   },
+   "zeta_term_ranges": {
+    "s0": [
+     -2322,
+     2322
+    ],
+    "s1": [
+     -2116,
+     2116
+    ],
+    "s2": [
+     -1923,
+     1923
+    ]
+   },
+   "output_ranges": {
+    "c0": [
+     -5765,
+     6122
+    ],
+    "c1": [
+     -9002,
+     9716
+    ],
+    "c2": [
+     -12252,
+     13323
+    ],
+    "c3": [
+     -13772,
+     15200
+    ]
+   },
+   "output_range": [
+    -13772,
+    15200
+   ]
+  }
+ },
+ "encap_poly_add_c_m_hat": [
+  -28956,
+  28956
+ ],
+ "tobytes": {
+  "canonical_for_all_int16": true
+ },
+ "mod_q_basis_patterns": 16,
+ "mod_q_random_caller_inputs": 4000,
+ "conclusion": "ntruplus1152_officialopt_basemul_shoup(a, b) is the exact int16 a*b (mod q, canonical scale) per base for every a in the Encap/Decap caller envelopes and canonical b, == Official poly_basemul (mod q)"
+}

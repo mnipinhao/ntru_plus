@@ -1,0 +1,150 @@
+{
+ "bases": 12,
+ "companion_constant": 38825,
+ "compiler": {
+  "cc": "gcc",
+  "flags": [
+   "-O3",
+   "-mavx2",
+   "-mtune=alderlake",
+   "-fschedule-insns",
+   "-fsched-pressure",
+   "-fno-asynchronous-unwind-tables",
+   "-fcf-protection=none",
+   "-fno-stack-protector",
+   "-S"
+  ],
+  "version": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0"
+ },
+ "degree": 4,
+ "inputs_sha256": {
+  "upstream/supercop-avx2/basemul.s": "60b614a0f85b4de2dc02a44da0c1823be8b6a43ca720b29ea14eb39ef71e3fbe",
+  "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080"
+ },
+ "official_zeta_block_byte_offset": 1248,
+ "output_sha256": {
+  "asm/ntruplus768_officialopt_basemul_shoup.s": "6d07eb0048717402374a3508211630fa5738ffe87311be65dfe74843931e76ba",
+  "src/ntruplus768_officialopt_basemul_shoup.c": "19984a12b1545b8cb214f160e0be7517013bfcb5d5ebeb5a3cab0ac137403fa0"
+ },
+ "parameter": 768,
+ "symbolic": {
+  "dynamic_census": {
+   "addq": 12,
+   "andq": 1,
+   "cmpq": 12,
+   "jne": 12,
+   "leaq": 2,
+   "leave": 1,
+   "movl": 2,
+   "movq": 1,
+   "pushq": 1,
+   "ret": 1,
+   "subq": 37,
+   "vmovd": 2,
+   "vmovdqa": 218,
+   "vpaddw": 288,
+   "vpbroadcastd": 2,
+   "vpmulhrsw": 228,
+   "vpmulhuw": 48,
+   "vpmullw": 312,
+   "vpsllw": 48,
+   "vpsubw": 84,
+   "vzeroupper": 1
+  },
+  "dynamic_instructions": 1313,
+  "output_words_equal_reference_forms": 768,
+  "stack_slot_contents": {
+   "-128": "data",
+   "-160": "data",
+   "-192": "constant",
+   "-64": "constant",
+   "-96": "data"
+  },
+  "stack_slot_offsets_from_entry_rsp": [
+   -192,
+   -160,
+   -128,
+   -96,
+   -64
+  ]
+ },
+ "zeta_table": [
+  {
+   "companion": [
+    209,
+    16199,
+    -2607,
+    10502,
+    3355,
+    -16379,
+    -9175,
+    8133,
+    11574,
+    -2066,
+    2787,
+    -6938,
+    -10379,
+    8455,
+    15052,
+    -7384
+   ],
+   "zeta": [
+    22,
+    1709,
+    -275,
+    1108,
+    354,
+    -1728,
+    -968,
+    858,
+    1221,
+    -218,
+    294,
+    -732,
+    -1095,
+    892,
+    1588,
+    -779
+   ]
+  },
+  {
+   "companion": [
+    -209,
+    -16199,
+    2607,
+    -10502,
+    -3355,
+    16379,
+    9175,
+    -8133,
+    -11574,
+    2066,
+    -2787,
+    6938,
+    10379,
+    -8455,
+    -15052,
+    7384
+   ],
+   "zeta": [
+    -22,
+    -1709,
+    275,
+    -1108,
+    -354,
+    1728,
+    968,
+    -858,
+    -1221,
+    218,
+    -294,
+    732,
+    1095,
+    -892,
+    -1588,
+    779
+   ]
+  },
+  "..."
+ ]
+}

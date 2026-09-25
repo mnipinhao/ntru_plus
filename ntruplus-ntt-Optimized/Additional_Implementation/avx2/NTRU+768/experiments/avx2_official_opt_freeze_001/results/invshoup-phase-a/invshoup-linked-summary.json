@@ -1,0 +1,161 @@
+{
+  "class": "linked ELF audit (Phase A, correctness only; no timing)",
+  "parameter": "NTRU+768",
+  "elf": "build/test_kem_lazy_r2fold_shoup_freeze2op_keccak_ht_htinv",
+  "elf_sha256": "41ee61732dfc70a405145138d9c1bc4805c83b1e650a8aa7253aa6c29e571a30",
+  "asm_sha256": {
+    "ntruplus768_officialopt_basemul_shoup": "6d07eb0048717402374a3508211630fa5738ffe87311be65dfe74843931e76ba",
+    "ntruplus768_officialopt_invntt_crep": "6b2afdaa5074d8fae2b2551344fc256da457ae413cba902c8c1d36453367d84b"
+  },
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "entries": {
+    "ntruplus768_officialopt_invntt_crep": {
+      "address_mod_32": 0,
+      "size_bytes": 1747,
+      "instruction_rows": 335,
+      "opcode_counts": {
+        "add": 8,
+        "cmp": 4,
+        "jb": 4,
+        "lea": 7,
+        "ret": 1,
+        "sub": 2,
+        "vmovdqa": 48,
+        "vmovdqu": 2,
+        "vpaddw": 29,
+        "vpbroadcastd": 6,
+        "vperm2i128": 8,
+        "vpmulhrsw": 20,
+        "vpmulhw": 60,
+        "vpmullw": 41,
+        "vpsubw": 71,
+        "vpunpckhqdq": 4,
+        "vpunpckhwd": 8,
+        "vpunpcklqdq": 4,
+        "vpunpcklwd": 8
+      },
+      "linked_stream_equals_assembled_source": true,
+      "rip_symbols": [
+        "_16xNinv_scale",
+        "_16xNinv_scaleqinv",
+        "_16xq",
+        "_16xv",
+        "_16xw",
+        "_16xwqinv",
+        "ntruplus768_officialopt_invcrep_16x128",
+        "ntruplus768_officialopt_invcrep_16x4853",
+        "ntruplus768_officialopt_invcrep_16xinv3",
+        "ntruplus768_officialopt_invcrep_16xm1",
+        "ntruplus768_officialopt_invcrep_l1sigma",
+        "ntruplus768_officialopt_invcrep_zetas_b",
+        "zetas_inv"
+      ],
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0
+    },
+    "ntruplus768_officialopt_basemul_shoup": {
+      "address_mod_32": 0,
+      "size_bytes": 614,
+      "instruction_rows": 125,
+      "opcode_counts": {
+        "add": 1,
+        "and": 1,
+        "cmp": 1,
+        "jne": 1,
+        "lea": 2,
+        "leave": 1,
+        "mov": 3,
+        "push": 1,
+        "ret": 1,
+        "sub": 4,
+        "vmovd": 2,
+        "vmovdqa": 20,
+        "vpaddw": 24,
+        "vpbroadcastd": 2,
+        "vpmulhrsw": 19,
+        "vpmulhuw": 4,
+        "vpmullw": 26,
+        "vpsllw": 4,
+        "vpsubw": 7,
+        "vzeroupper": 1
+      },
+      "linked_stream_equals_assembled_source": true,
+      "rip_symbols": [
+        "ntruplus768_officialopt_basemul_shoup_zt"
+      ],
+      "calls": 0,
+      "vzeroupper": 1,
+      "conditional_branches": 1,
+      "loop_back_edge_only": true,
+      "index_register_operands": 0,
+      "frame": [
+        "and $0xffffffffffffffe0,%rsp",
+        "leave",
+        "mov %rsp,%rbp",
+        "push %rbp",
+        "sub $0x28,%rsp"
+      ],
+      "stack_memory_operands": 14,
+      "stack_memory_operand_forms": [
+        "%ymm11,-0x18(%rsp)",
+        "%ymm11,-0x58(%rsp)",
+        "%ymm15,-0x38(%rsp)",
+        "%ymm6,-0x78(%rsp)",
+        "%ymm7,0x8(%rsp)",
+        "-0x18(%rsp),%ymm11,%ymm11",
+        "-0x38(%rsp),%ymm5,%ymm5",
+        "-0x58(%rsp),%ymm4,%ymm4",
+        "-0x78(%rsp),%ymm1",
+        "0x8(%rsp),%ymm1,%ymm1",
+        "0x8(%rsp),%ymm10",
+        "0x8(%rsp),%ymm11,%ymm11",
+        "0x8(%rsp),%ymm12,%ymm12",
+        "0x8(%rsp),%ymm14,%ymm14"
+      ]
+    }
+  },
+  "kem_call_relocations": {
+    "kem_lazy_r2fold_invcrep_shoup_freeze2op_keccak_ht": {
+      "ntruplus768_officialopt_ntt_ht": 6,
+      "ntruplus768_officialopt_baseinv_r2fold": 2,
+      "ntruplus768_officialopt_basemul_nor2": 2,
+      "ntruplus768_officialopt_tobytes_freeze2op": 7,
+      "ntruplus_mlkfips202_shake256": 2,
+      "ntruplus768_keccak_hash_f": 2,
+      "ntruplus768_keccak_hash_g": 2,
+      "ntruplus768_keccak_hash_h": 2,
+      "poly_basemul_scale": 1,
+      "ntruplus768_officialopt_invntt_crep": 1,
+      "ntruplus768_officialopt_basemul_shoup": 2
+    },
+    "kem_lazy_r2fold_invcrep_freeze2op_keccak_ht": {
+      "ntruplus768_officialopt_ntt_ht": 6,
+      "ntruplus768_officialopt_baseinv_r2fold": 2,
+      "ntruplus768_officialopt_basemul_nor2": 2,
+      "poly_basemul": 2,
+      "ntruplus768_officialopt_tobytes_freeze2op": 7,
+      "ntruplus_mlkfips202_shake256": 2,
+      "ntruplus768_keccak_hash_f": 2,
+      "ntruplus768_keccak_hash_g": 2,
+      "ntruplus768_keccak_hash_h": 2,
+      "poly_basemul_scale": 1,
+      "ntruplus768_officialopt_invntt_crep": 1
+    },
+    "kem_lazy_r2fold_shoup_freeze2op_keccak_ht_htinv": {
+      "ntruplus768_officialopt_ntt_ht": 6,
+      "ntruplus768_officialopt_invntt_ht": 1,
+      "ntruplus768_officialopt_baseinv_r2fold": 2,
+      "ntruplus768_officialopt_basemul_nor2": 2,
+      "ntruplus768_officialopt_tobytes_freeze2op": 7,
+      "ntruplus_mlkfips202_shake256": 2,
+      "ntruplus768_keccak_hash_f": 2,
+      "ntruplus768_keccak_hash_g": 2,
+      "ntruplus768_keccak_hash_h": 2,
+      "poly_crepmod3": 1,
+      "poly_basemul_scale": 1,
+      "ntruplus768_officialopt_basemul_shoup": 2
+    }
+  },
+  "shoup_stack_note": "gcc spills (fixed %rsp offsets, red zone / realigned frame): see the generator's stack_slot_contents; data slots hold secret-derived intermediates and are not cleared, as with compiler spills in the C KEM code"
+}

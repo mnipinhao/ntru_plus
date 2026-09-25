@@ -1,0 +1,79 @@
+{
+ "class": "mutation check (Phase A)",
+ "parameter": "NTRU+1152",
+ "verdict": "pass",
+ "control_passes": {
+  "symbolic_inverse": true,
+  "c_inverse": true,
+  "symbolic_shoup": true,
+  "c_shoup": true
+ },
+ "mutants": [
+  {
+   "mutant": "sigma table word",
+   "file": "ntruplus1152_officialopt_invntt_crep.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "level-1 Montgomery companion",
+   "file": "ntruplus1152_officialopt_invntt_crep.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "level-1 sigma pointer advance dropped",
+   "file": "ntruplus1152_officialopt_invntt_crep.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "level-0 out_b = 2t -> t",
+   "file": "ntruplus1152_officialopt_invntt_crep.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "crep5 constant operand",
+   "file": "ntruplus1152_officialopt_invntt_crep.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "split reload dropped",
+   "file": "ntruplus1152_officialopt_invntt_crep.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "split zeta rewind",
+   "file": "ntruplus1152_officialopt_invntt_crep.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "zeta table word",
+   "file": "ntruplus1152_officialopt_basemul_shoup.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "b row load offset",
+   "file": "ntruplus1152_officialopt_basemul_shoup.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "final q*h multiply dropped",
+   "file": "ntruplus1152_officialopt_basemul_shoup.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  },
+  {
+   "mutant": "spill reload slot",
+   "file": "ntruplus1152_officialopt_basemul_shoup.s",
+   "symbolic_rejects": true,
+   "c_differential_rejects": true
+  }
+ ]
+}

@@ -1,0 +1,106 @@
+{
+ "crep5_constants": {
+  "i": -21845,
+  "k": 4853,
+  "m": -1,
+  "r": 128
+ },
+ "dynamic_census": {
+  "candidate": {
+   "add": 43,
+   "cmp": 32,
+   "jb": 32,
+   "lea": 8,
+   "ret": 1,
+   "sub": 2,
+   "vmovdqa": 332,
+   "vmovdqu": 2,
+   "vpaddw": 216,
+   "vpbroadcastd": 10,
+   "vperm2i128": 48,
+   "vpmulhrsw": 144,
+   "vpmulhw": 464,
+   "vpmullw": 304,
+   "vpsubw": 536,
+   "vpunpckhqdq": 24,
+   "vpunpckhwd": 48,
+   "vpunpcklqdq": 24,
+   "vpunpcklwd": 48
+  },
+  "official_invntt": {
+   "add": 52,
+   "cmp": 38,
+   "jb": 38,
+   "lea": 7,
+   "ret": 1,
+   "sub": 3,
+   "vmovdqa": 436,
+   "vmovdqu": 2,
+   "vpaddw": 192,
+   "vpblendd": 48,
+   "vpblendw": 48,
+   "vpbroadcastd": 22,
+   "vperm2i128": 48,
+   "vpmulhrsw": 64,
+   "vpmulhw": 480,
+   "vpmullw": 304,
+   "vpsllq": 48,
+   "vpsllw": 2,
+   "vpsrlq": 48,
+   "vpsubw": 536,
+   "vpunpckhqdq": 24,
+   "vpunpcklqdq": 24
+  }
+ },
+ "dynamic_instructions": {
+  "candidate": 2318,
+  "official_invntt": 2465,
+  "pre": 2074
+ },
+ "entry": "ntruplus768_officialopt_invntt_crep",
+ "inputs_sha256": {
+  "asm/ntruplus768_officialopt_invntt_ht.s": "999388bbad8f3fbf0ea35d40c9c88fa50104a97af44a92b13994f6f13106b499",
+  "upstream/supercop-avx2/consts.c": "52649ae464c507e80169367621ea4e07ec11a25dc7f162467bf1dd96dc6fb080",
+  "upstream/supercop-avx2/crepmod3.s": "87334090de02e4e451d36162870c357646d7bba095470fbc6ff106f29b5f5cd1",
+  "upstream/supercop-avx2/invntt.s": "991f13a75de92a1e33c5141aa81849f9619073606989a49b9c4627ea3d852b70"
+ },
+ "output_sha256": {
+  "asm/ntruplus768_officialopt_invntt_crep.s": "6b2afdaa5074d8fae2b2551344fc256da457ae413cba902c8c1d36453367d84b"
+ },
+ "parameter": 768,
+ "proof_symbolic": {
+  "candidate_equals_crep5_of_pre_all_words": 768,
+  "levels_6_to_2_equal_official_at_level1_entry_words": 768
+ },
+ "proof_variant_sha256": {
+  "768_pre.s": "d111fb0c19fda25e6712b0ea5f1c33d64b9ec1a69fddab1222de841b126e3279"
+ },
+ "sigma": {
+  "Ns": 1679,
+  "Ns_qinv": 15375,
+  "Rinv_mod_q": 2775,
+  "level1_iterations": 2,
+  "official_level0_zetas_inv_byte_offset": 1616,
+  "official_level1_zetas_inv_byte_offset": 1584,
+  "sigma_mod_q": -811,
+  "table_words": [
+   25896,
+   25896,
+   296,
+   296,
+   -27090,
+   -27090,
+   814,
+   814,
+   9024,
+   9024,
+   832,
+   832,
+   -25896,
+   -25896,
+   -296,
+   -296
+  ]
+ },
+ "source_levels_6_to_2": "asm/ntruplus768_officialopt_invntt_ht.s"
+}

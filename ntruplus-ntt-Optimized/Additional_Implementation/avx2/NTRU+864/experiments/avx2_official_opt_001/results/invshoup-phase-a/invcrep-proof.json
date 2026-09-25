@@ -1,0 +1,182 @@
+{
+ "class": "Inverse D proof: symbolic + interval + mod-q basis + crep domain (Phase A; no timing)",
+ "parameter": "NTRU+864",
+ "verdict": "pass",
+ "candidate_asm": "asm/ntruplus864_officialopt_invntt_crep.s",
+ "candidate_asm_sha256": "57c3c95b17b7dfdecd389af671d1a094d918ea3f584a961c648f84e677eb5546",
+ "generator": {
+  "symbolic": {
+   "candidate_equals_crep5_of_pre_all_words": 864,
+   "levels_6_to_2_equal_official_at_level1_entry_words": 864,
+   "candidate_equals_nosplit_all_words": 864
+  },
+  "sigma": {
+   "Ns": -33,
+   "Ns_qinv": 32095,
+   "Rinv_mod_q": 2775,
+   "sigma_mod_q": -1693,
+   "level1_iterations": 2,
+   "official_level1_zetas_inv_byte_offset": 2400,
+   "official_level0_zetas_inv_byte_offset": 2432
+  },
+  "proof_variant_sha256": {
+   "864_pre.s": "abd6b70aa0aca3236311816d9b70a1c4c8b2fd5b36b021f3a5e0b168c798d93b",
+   "864_nosplit.s": "6c93c4d016629378b0306abfb645920e969eed1b4711084e30ffb39465c51d4e"
+  }
+ },
+ "sources_sha256": {
+  "invntt.s": "2da75c486e34432e9b9759c0627541f3cee71e7ad7f177108bb1b7ed4c460078",
+  "crepmod3.s": "3a77881752003f2483330aa1177870ea5d862cb7816a98227073ad914ae89ac1",
+  "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+  "basemul.s": "42b9639d4d619ba2214fba73b86f9029a078b1711c5e77bf7b4a26c770d0e761"
+ },
+ "tool_sha256": {
+  "avx2emu.py": "aa8bc39bc325e3158d1afcce78d5bda7a9d1b12e0dcdf7febe6583ae4ca2d370",
+  "common.py": "98509b4ef39d9d47f684d573dc841aaa4f4f1731b47437691df698ffaa994d62",
+  "difftest.py": "0b6ec6173d0e24793490b51fc0c74dbafe97365c92aafb292fa0d21a1f832e1f",
+  "ledger.py": "715b9c82ceba337090f2fcc3de866813635cd9b5470ee490f64c7da28fede9c9",
+  "prove_forward_lazy.py": "efd8e6be025d662668c40696da1b4562392ee438e9b864abb98db648cadf981e",
+  "images.c": "e155ab31180f9831f0036602b4ba48efc37b6a5fc22aa61ed68c4f5a4f6138b3",
+  "prove_ht.py": "6877510498035cef4c8aa96cb9ae086ca4413b6e9da4bfdb63330e136ff55a54",
+  "prove_invntt_crep.py": "c6be65f29f484a1f3ab396ec1f9138f74fac5a9847fb7b13815f07b75dc14d1d",
+  "generate_invntt_crep.py": "1114f6e0642fb0b0314224a415cafa9afbe8f09e209575200ffdb30e2b0365e7",
+  "symexec_ext.py": "e9db0645e759d06376f36d636750348a06b8ac074929692db61f3bd92208d6b6"
+ },
+ "emulator_machine_differential_runs": 32,
+ "decap_domain": {
+  "input": "poly_basemul_scale(c, f), c and f from poly_frombytes: [0, q-1] (kem.c Decap)",
+  "input_range": [
+   -5231,
+   5730
+  ]
+ },
+ "interval": {
+  "official_invntt": {
+   "failures": 0,
+   "output_range": [
+    -1731,
+    1731
+   ],
+   "value_kinds": [
+    "add",
+    "barrett_in",
+    "mont_const",
+    "sub"
+   ],
+   "nonlinear_product_uses": 0
+  },
+  "pre": {
+   "failures": 0,
+   "output_range": [
+    -6123,
+    6123
+   ],
+   "value_kinds": [
+    "add",
+    "barrett_in",
+    "mont_const",
+    "sub"
+   ],
+   "nonlinear_product_uses": 0
+  }
+ },
+ "interval_levels_pre": {
+  "level6": {
+   "addsub_absmax": 11460,
+   "mont_out": 2005,
+   "mont_vec": 27,
+   "barrett_in": 11460,
+   "barrett_out": 2188,
+   "barrett_vec": 27,
+   "raw_product": null,
+   "entering_absmax": 5730
+  },
+  "level5": {
+   "addsub_absmax": 4376,
+   "mont_out": 1835,
+   "mont_vec": 27,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 2188
+  },
+  "level4": {
+   "addsub_absmax": 8752,
+   "mont_out": 1943,
+   "mont_vec": 27,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 4376
+  },
+  "level3": {
+   "addsub_absmax": 17504,
+   "mont_out": 2182,
+   "mont_vec": 27,
+   "barrett_in": 17504,
+   "barrett_out": 2556,
+   "barrett_vec": 27,
+   "raw_product": null,
+   "entering_absmax": 8752
+  },
+  "level2": {
+   "addsub_absmax": 7668,
+   "mont_out": 1890,
+   "mont_vec": 54,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 2556
+  },
+  "level1": {
+   "addsub_absmax": 23004,
+   "mont_out": 2164,
+   "mont_vec": 72,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 7668
+  },
+  "level0": {
+   "addsub_absmax": 6123,
+   "mont_out": 1821,
+   "mont_vec": 27,
+   "barrett_in": null,
+   "barrett_out": null,
+   "barrett_vec": 0,
+   "raw_product": null,
+   "entering_absmax": 2164
+  }
+ },
+ "basis_mod_q": {
+  "unit_vectors": 864,
+  "mismatching_words": 0,
+  "random_box_inputs": 2000
+ },
+ "crep5": {
+  "exact_domain": [
+   -16388,
+   16391
+  ],
+  "pre_output_range": [
+   -6123,
+   6123
+  ]
+ },
+ "official_crepmod3": {
+  "exact_domain": [
+   -5185,
+   5185
+  ],
+  "official_invntt_output_range": [
+   -1731,
+   1731
+  ]
+ },
+ "native_candidate_equals_crep5_of_pre_inputs": 2000,
+ "conclusion": "ntruplus864_officialopt_invntt_crep(x) == poly_crepmod3(poly_invntt_scale(x)) for every Decap input x (every per-lane value of poly_basemul_scale(c, f) with canonical c, f)"
+}

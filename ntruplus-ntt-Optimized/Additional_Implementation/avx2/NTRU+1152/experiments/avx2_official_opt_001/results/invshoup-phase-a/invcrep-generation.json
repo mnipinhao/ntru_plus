@@ -1,0 +1,109 @@
+{
+ "crep5_constants": {
+  "i": -21845,
+  "k": 4853,
+  "m": -1,
+  "r": 128
+ },
+ "dynamic_census": {
+  "candidate": {
+   "add": 114,
+   "cmp": 86,
+   "jb": 86,
+   "lea": 14,
+   "ret": 1,
+   "sub": 5,
+   "vmovdqa": 799,
+   "vmovdqu": 4,
+   "vpaddw": 360,
+   "vpblendd": 72,
+   "vpblendw": 72,
+   "vpbroadcastd": 34,
+   "vperm2i128": 72,
+   "vpmulhrsw": 216,
+   "vpmulhw": 768,
+   "vpmullw": 492,
+   "vpsllq": 72,
+   "vpsrlq": 72,
+   "vpsubw": 900,
+   "vpunpckhqdq": 36,
+   "vpunpcklqdq": 36
+  },
+  "official_invntt": {
+   "add": 94,
+   "cmp": 77,
+   "jb": 77,
+   "lea": 13,
+   "ret": 1,
+   "sub": 3,
+   "vmovdqa": 652,
+   "vmovdqu": 4,
+   "vpaddw": 324,
+   "vpblendd": 72,
+   "vpblendw": 72,
+   "vpbroadcastd": 34,
+   "vperm2i128": 72,
+   "vpmulhrsw": 96,
+   "vpmulhw": 792,
+   "vpmullw": 492,
+   "vpsllq": 72,
+   "vpsllw": 2,
+   "vpsrlq": 72,
+   "vpsubw": 900,
+   "vpunpckhqdq": 36,
+   "vpunpcklqdq": 36
+  }
+ },
+ "dynamic_instructions": {
+  "candidate": 4311,
+  "nosplit": 4129,
+  "official_invntt": 3993,
+  "pre": 3947
+ },
+ "entry": "ntruplus1152_officialopt_invntt_crep",
+ "inputs_sha256": {
+  "upstream/supercop-avx2/consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+  "upstream/supercop-avx2/crepmod3.s": "6e60a465409f262fb57fc217708eddcf8c60be0042be8293985177d305ede2ce",
+  "upstream/supercop-avx2/invntt.s": "129d462f9053839d817355dcf366555f0100ccee6620a72b0ecb4cea8f4ac37c"
+ },
+ "output_sha256": {
+  "asm/ntruplus1152_officialopt_invntt_crep.s": "2a02b944fb80b0ff144986e327ec706a5cffe04b5decc68660f425040ebdefa4"
+ },
+ "parameter": 1152,
+ "proof_symbolic": {
+  "candidate_equals_crep5_of_pre_all_words": 1152,
+  "candidate_equals_nosplit_all_words": 1152,
+  "levels_6_to_2_equal_official_at_level1_entry_words": 1152
+ },
+ "proof_variant_sha256": {
+  "1152_nosplit.s": "eeed7438de688fb798ddb52adea306970f025d24d0cd32953e967d7acd82515d",
+  "1152_pre.s": "05ab08b96bcfa1d2dc93ce4ec722b072cf3f078323ee61c45b5d05fd206d2063"
+ },
+ "sigma": {
+  "Ns": -33,
+  "Ns_qinv": 32095,
+  "Rinv_mod_q": 2775,
+  "level1_iterations": 2,
+  "official_level0_zetas_inv_byte_offset": 2432,
+  "official_level1_zetas_inv_byte_offset": 2400,
+  "sigma_mod_q": -1693,
+  "table_words": [
+   -9119,
+   -9119,
+   -1567,
+   -1567,
+   15829,
+   15829,
+   -1707,
+   -1707,
+   -24076,
+   -24076,
+   -12,
+   -12,
+   9119,
+   9119,
+   1567,
+   1567
+  ]
+ }
+}
