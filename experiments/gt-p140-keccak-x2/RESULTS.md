@@ -49,3 +49,29 @@ The saving (309 ns) exceeds two permutations (292 ns): the sponge work of the
 two calls is merged too.  864 and 1152 have the same key-generation shape
 (1152's seeds are three permutations each, and its retries fall back to x1),
 so a similar M2 gain is expected there.
+
+## Integration into all three trees (branch gt-keccak-x2-keygen, from main ccd62d55)
+
+`integrate.py` applies it to NTRU+768, NTRU+864 and NTRU+1152: the x2 file
+(identical in the three trees), `shake256_x2` in each `fips202.c` (inserted
+before `shake256_prefixed`, after the permutation selection), the key pair
+(864/1152 keep `ntruplus_declassify(&r)` on every attempt), the Makefiles
+(including `test_shake_prefixed`, which compiles `fips202.c` alone), 768's
+zeroization source gate, and the export lists (864/1152 do not export the
+x2 file, as they do not export `keccakf1600_v84a.S`; 768's Linux export
+preprocesses it to an empty file).
+
+- `make check` (KAT included) on macOS -- the two-state path, linked into
+  the KAT generator -- and on Linux -- the fallback -- for all three sets.
+- SUPERCOP TIMECOP=256 passes at -O/-O2/-O3/-Os for all three
+  (`timecop.sh`, `timecop256_pi.txt`).
+
+P129 harness, three sessions, each tree from its Makefile (`tree_ab3.sh`,
+`integ_m2.txt`, `integ_pi.txt`):
+
+| | keygen | encaps | decaps |
+|---|---|---|---|
+| M2 768 | 3,788 -> 3,485 ns (**-8.0%**) | +0.0% | +0.0% |
+| M2 864 | 4,127 -> 3,800 ns (**-7.9%**) | -0.0% | +0.0% |
+| M2 1152 | 6,448 -> 5,964 ns (**-7.5%**) | +0.0% | -0.1% |
+| A76 768 / 864 / 1152 | -0.18% / +0.05% / +0.01% | within 0.05% | within 0.1% |
