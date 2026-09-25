@@ -1,0 +1,204 @@
+{
+  "class": "linked ELF audit of the SUPERCOP-flat qualification export (Phase B, correctness only)",
+  "parameter": "NTRU+1152",
+  "elf": "build/test_is_flat",
+  "elf_sha256": "8d8d542f71da12e9a6b0e109434a7c6896ed488cc709a50b6c1fc61b9c10b79e",
+  "asm_sha256": {
+    "ntruplus1152_officialopt_basemul_shoup": "8820c097a2e8402f9624295922b57a3659680cbe5ec04ec9241dcbc11ab9ab80",
+    "ntruplus1152_officialopt_invntt_crep": "2a02b944fb80b0ff144986e327ec706a5cffe04b5decc68660f425040ebdefa4"
+  },
+  "compiler": "cc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "entries": {
+    "ntruplus1152_officialopt_invntt_crep": {
+      "address_mod_32": 0,
+      "size_bytes": 2131,
+      "instruction_rows": 389,
+      "opcode_counts": {
+        "add": 12,
+        "cmp": 7,
+        "jb": 7,
+        "lea": 8,
+        "ret": 1,
+        "sub": 5,
+        "vmovdqa": 71,
+        "vmovdqu": 4,
+        "vpaddw": 28,
+        "vpblendd": 8,
+        "vpblendw": 8,
+        "vpbroadcastd": 10,
+        "vperm2i128": 8,
+        "vpmulhrsw": 20,
+        "vpmulhw": 58,
+        "vpmullw": 40,
+        "vpsllq": 8,
+        "vpsrlq": 8,
+        "vpsubw": 70,
+        "vpunpckhqdq": 4,
+        "vpunpcklqdq": 4
+      },
+      "linked_stream_equals_assembled_source": true,
+      "rip_symbols": [
+        "_16xNinv_scale",
+        "_16xNinv_scaleqinv",
+        "_16xq",
+        "_16xv",
+        "_16xw",
+        "_16xwqinv",
+        "ntruplus1152_officialopt_invcrep_16x128",
+        "ntruplus1152_officialopt_invcrep_16x4853",
+        "ntruplus1152_officialopt_invcrep_16xinv3",
+        "ntruplus1152_officialopt_invcrep_16xm1",
+        "ntruplus1152_officialopt_invcrep_l1sigma",
+        "zetas_inv"
+      ],
+      "stack_references": 0,
+      "calls": 0,
+      "vzeroupper": 0
+    },
+    "ntruplus1152_officialopt_basemul_shoup": {
+      "address_mod_32": 0,
+      "size_bytes": 614,
+      "instruction_rows": 125,
+      "opcode_counts": {
+        "add": 1,
+        "and": 1,
+        "cmp": 1,
+        "jne": 1,
+        "lea": 2,
+        "leave": 1,
+        "mov": 3,
+        "push": 1,
+        "ret": 1,
+        "sub": 4,
+        "vmovd": 2,
+        "vmovdqa": 20,
+        "vpaddw": 24,
+        "vpbroadcastd": 2,
+        "vpmulhrsw": 19,
+        "vpmulhuw": 4,
+        "vpmullw": 26,
+        "vpsllw": 4,
+        "vpsubw": 7,
+        "vzeroupper": 1
+      },
+      "linked_stream_equals_assembled_source": true,
+      "rip_symbols": [
+        "ntruplus1152_officialopt_basemul_shoup_zt"
+      ],
+      "calls": 0,
+      "vzeroupper": 1,
+      "conditional_branches": 1,
+      "loop_back_edge_only": true,
+      "index_register_operands": 0,
+      "frame": [
+        "and $0xffffffffffffffe0,%rsp",
+        "leave",
+        "mov %rsp,%rbp",
+        "push %rbp",
+        "sub $0x28,%rsp"
+      ],
+      "stack_memory_operands": 14,
+      "stack_memory_operand_forms": [
+        "%ymm11,-0x18(%rsp)",
+        "%ymm11,-0x58(%rsp)",
+        "%ymm15,-0x38(%rsp)",
+        "%ymm6,-0x78(%rsp)",
+        "%ymm7,0x8(%rsp)",
+        "-0x18(%rsp),%ymm11,%ymm11",
+        "-0x38(%rsp),%ymm5,%ymm5",
+        "-0x58(%rsp),%ymm4,%ymm4",
+        "-0x78(%rsp),%ymm1",
+        "0x8(%rsp),%ymm1,%ymm1",
+        "0x8(%rsp),%ymm10",
+        "0x8(%rsp),%ymm11,%ymm11",
+        "0x8(%rsp),%ymm12,%ymm12",
+        "0x8(%rsp),%ymm14,%ymm14"
+      ]
+    }
+  },
+  "kem_call_relocations": {
+    "flat kem.c": {
+      "ntruplus1152_officialopt_ntt_ht": 6,
+      "ntruplus1152_officialopt_baseinv_r2fold": 2,
+      "ntruplus1152_officialopt_basemul_nor2": 2,
+      "ntruplus1152_officialopt_tobytes_freeze2op": 7,
+      "ntruplus_mlkfips202_shake256": 2,
+      "hash_f": 2,
+      "hash_g": 2,
+      "hash_h": 2,
+      "poly_basemul_scale": 1,
+      "ntruplus1152_officialopt_invntt_crep": 1,
+      "ntruplus1152_officialopt_basemul_shoup": 2
+    }
+  },
+  "shoup_stack_note": "gcc spills (fixed %rsp offsets, red zone / realigned frame): see the generator's stack_slot_contents; data slots hold secret-derived intermediates and are not cleared, as with compiler spills in the C KEM code",
+  "flat_root": "qualification/avx2-officialopt-lazy-freeze-keccak-ht-invd-shoup-qual001",
+  "flat_candidate": "kem_lazy_r2fold_invcrep_shoup_freeze2op_keccak_ht",
+  "phase_a_object_equivalence": {
+    "kem.o": {
+      "flat": "build/isflat/kem.o",
+      "phase_a": "build/kem_lazy_r2fold_invcrep_shoup_freeze2op_keccak_ht.o",
+      "flat_sha256": "af7d9830081bd96ba25bf04a18b26200fe0a1828815db95b0289cba23039952d",
+      "phase_a_sha256": "b70bbc6b4a150071d89bb0e1e2275685a9dc63c4d0b087e573c717724cfd6f8e",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus1152_keccak_hash_f->hash_f",
+        "ntruplus1152_keccak_hash_g->hash_g",
+        "ntruplus1152_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 297
+    },
+    "baseinv_r2fold.o": {
+      "flat": "build/isflat/baseinv_r2fold.o",
+      "phase_a": "build/ntruplus1152_officialopt_baseinv_r2fold.o",
+      "flat_sha256": "db45114d17ede7f957da90d1ce9e99da8108adcf2fec3f5fa63ed417e9b432e1",
+      "phase_a_sha256": "dada67e3f700404a9c40eeb209f7ae49987b47f66cf1768ba3bbc857040e8f31",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus1152_keccak_hash_f->hash_f",
+        "ntruplus1152_keccak_hash_g->hash_g",
+        "ntruplus1152_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 329
+    },
+    "symmetric.o": {
+      "flat": "build/isflat/symmetric.o",
+      "phase_a": "build/symmetric_keccak.o",
+      "flat_sha256": "f81cec050ce53549b6a26af47524eb87a3c681cf5f09d6e90ac5f5d244ec9bf6",
+      "phase_a_sha256": "3d628796bc43186a14973a754fe143e08d8ef0dc4fa017e7019c5e6cf58320fd",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus1152_keccak_hash_f->hash_f",
+        "ntruplus1152_keccak_hash_g->hash_g",
+        "ntruplus1152_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 88
+    },
+    "mlk_fips202.o": {
+      "flat": "build/isflat/mlk_fips202.o",
+      "phase_a": "build/mlk_fips202.o",
+      "flat_sha256": "6c7c8f477ac7e8c1c73d27803fb06b2b4651ceec35ea107c3decff45bef61946",
+      "phase_a_sha256": "da6e824e42a2ef95b2bde0d071dcc15ab41d5dcaa3ddd38cdd9ed5aea76feb1c",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus1152_keccak_hash_f->hash_f",
+        "ntruplus1152_keccak_hash_g->hash_g",
+        "ntruplus1152_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 208
+    },
+    "mlk_keccakf1600.o": {
+      "flat": "build/isflat/mlk_keccakf1600.o",
+      "phase_a": "build/mlk_keccakf1600.o",
+      "flat_sha256": "5e4f5dde13d79f58bd79936a796a3e459d324fc3762606a0cbbaf2f9589d7fcf",
+      "phase_a_sha256": "72c589cbf493c235266c282837e9b3f26ad7b88e253b24e0decadd8cbd19ff22",
+      "identical_modulo": [
+        "file symbol",
+        "ntruplus1152_keccak_hash_f->hash_f",
+        "ntruplus1152_keccak_hash_g->hash_g",
+        "ntruplus1152_keccak_hash_h->hash_h"
+      ],
+      "dump_lines": 492
+    }
+  }
+}

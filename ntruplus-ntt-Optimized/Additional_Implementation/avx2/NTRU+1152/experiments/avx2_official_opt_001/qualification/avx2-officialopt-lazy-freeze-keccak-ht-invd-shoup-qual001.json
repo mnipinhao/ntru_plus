@@ -1,0 +1,202 @@
+{
+  "added": {
+    "basemul_shoup.s": {
+      "from": "asm/ntruplus1152_officialopt_basemul_shoup.s",
+      "phase_a_record": "results/invshoup-phase-a/shoup-generation.json",
+      "phase_a_record_sha256": "6ccac39c06fd8ea65006ad3a8a0a6aae6629156d5073611e2f03857d5f1cdb10",
+      "sha256": "8820c097a2e8402f9624295922b57a3659680cbe5ec04ec9241dcbc11ab9ab80"
+    },
+    "invntt_crep.s": {
+      "from": "asm/ntruplus1152_officialopt_invntt_crep.s",
+      "phase_a_record": "results/invshoup-phase-a/invcrep-generation.json",
+      "phase_a_record_sha256": "6296686fa909713ff085d13e6c8815a5a0d5cfb3934068cd8e8c6cc32aa92c0f",
+      "sha256": "2a02b944fb80b0ff144986e327ec706a5cffe04b5decc68660f425040ebdefa4"
+    }
+  },
+  "base": {
+    "implementation": "avx2-officialopt-lazy-freeze-keccak-ht-qual001",
+    "kind": "ht-qualification-source",
+    "manifest": "qualification/avx2-officialopt-lazy-freeze-keccak-ht-qual001.json",
+    "manifest_sha256": "3cc1eda9fc97a68499e8c6cac329a6bc1bb0d3648f3643af98a00416b2571bf3",
+    "tree_sha256": "3aa2d6ae8b7590c72ca4d5339c71cca82d8dfadfcedf26c64679ef048b185473"
+  },
+  "dropped_from_base": [],
+  "exporter": {
+    "path": "common/official_opt_invshoup/tools/export_invshoup_flat.py",
+    "sha256": "31bebd4a0cf0139257c6dde566b3b84d5ba6df3690ad0846f8c17bd876b4480c"
+  },
+  "files_sha256": {
+    "LICENSE.mlkem-native": "1c730e3c2cd4f70e058519ef3e910d8bdd4ed822ae2ce689f3c63d32fc52314b",
+    "add.s": "7987e4ce2b09e064e4748b40501dabb121c20a671945c796f90a8874194ba582",
+    "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+    "architectures": "7c0e51663fa70af747fd24defc8d73c6de5f6478c70cb923b4641ef3f7dedf1b",
+    "baseinv.s": "bc88e6622f7e01f2280f38e75bcf413b7aa808e6159c9abb14dd3926f54189ed",
+    "baseinv_r2fold.c": "404ad4bde6f04078007333e241ab70b3cd11495a446fecbdc1464ae3916d9724",
+    "basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+    "basemul_nor2.s": "38d981adb5e2d35fcef27bd262f4e5ab153fe90ffdbdb436db04baa12945f687",
+    "basemul_shoup.s": "8820c097a2e8402f9624295922b57a3659680cbe5ec04ec9241dcbc11ab9ab80",
+    "cbd.s": "1040e0fece515c0419851d1700c699db01ee865879cb27d99d711437c1ad0be6",
+    "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+    "consts.h": "bc0a46e3d38da3a897c79f2c28898ebf5894816cf7cd161df7233151c0af2ee1",
+    "crepmod3.s": "6e60a465409f262fb57fc217708eddcf8c60be0042be8293985177d305ede2ce",
+    "fips202.h": "e9002ee1717aebf76d4c726615377b38c9fd8ca29ac0d37660fe7e63d447e405",
+    "goal-constbranch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "goal-constindex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "invntt.s": "129d462f9053839d817355dcf366555f0100ccee6620a72b0ecb4cea8f4ac37c",
+    "invntt_crep.s": "2a02b944fb80b0ff144986e327ec706a5cffe04b5decc68660f425040ebdefa4",
+    "kem.c": "161293f76e2f0a1a0e776a4e00d4fac640e82ac3955be71266523d4038e3f338",
+    "mlk_cbmc.h": "180bf239c5d7b84fa451727546d4fbc9595008382cfc86d4ae5791e0e5a6b910",
+    "mlk_common.h": "e3dd98611f232aaae62b420d11c6a51ed450a6f91e49b3df4cc7aca6e360d2b5",
+    "mlk_context.h": "e6788b29f4883f57752fd8327a80dfc978eb21ad72a0055cbbaaa7b433637edf",
+    "mlk_fips202.c": "7fcb319c0921f77435682b28e2404b25ca18f7c89c6427c529abae570241ab1e",
+    "mlk_fips202.h": "f0faeb4b918c05fd720ee655665c184af6b44f2859546b3799970a3536140c89",
+    "mlk_keccakf1600.c": "2db20cd996661c8812a6bd0343debc5bfc10b24675d2e4fdb431b7fdafb95372",
+    "mlk_keccakf1600.h": "db8ff646708279c27c94c19490da15930607411fd7fcfb82731162e3325add29",
+    "mlk_params.h": "450fe3e0e50496921920473ae4321660f178c23d51f1453f3c537ee63c4158cb",
+    "mlk_sys.h": "ead54b94f33dcedda50bc59dff65ad78cbe4428e0c3cf25c0b6c0ba3604a35b8",
+    "mlk_verify.h": "0a824bfe86cc26b2d2c94400e0fde57ea19b70a177f0cbc73ce6d426cc935eeb",
+    "mlkem_native_config.h": "3525493b885ce99ee41da72d08df27f97a4b745757f6fcd4944c870e4548cf09",
+    "ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+    "ntt_caller_lazy.s": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092",
+    "ntt_ht.s": "20f3558e002826aca9701385229d5b52562fe7434bbb10bfcccaaa12804a87b1",
+    "pack.s": "406e0d9cff4af069d8b8cc3cb028d11898a61f86d86cece9280fa81dafb11732",
+    "params.h": "3caa8223ce95acd081a2300e53ecdb9145c5b16215b414602954d117c06d78bd",
+    "poly.c": "5a6dd54dd5510dfda93cf7a8278ccc1214dfbfcd935251886422c68126ed1705",
+    "poly.h": "b846b09278195254f9daa1f85bec6db4361eee369c4243b31e1f5db511b812f3",
+    "symmetric.c": "49e7faa9501e3ced6bf6c8da519782adcb32371295ce4f351ebdbf63399f9e0c",
+    "symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+    "tobytes_freeze2op.s": "ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04",
+    "util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9"
+  },
+  "implementation": "avx2-officialopt-lazy-freeze-keccak-ht-invd-shoup-qual001",
+  "kem_c": {
+    "base_kem_c_sha256": "29c3edde0fe82c6b73829833cac39888355254cd569a2d17000491b50ef07f49",
+    "construction": "base export kem.c with its verbatim src/kem_lazy_r2fold.c body replaced by the verbatim src/kem_lazy_r2fold_invcrep_shoup.c body",
+    "diff_lines_added": 12,
+    "diff_lines_removed": 4,
+    "inserted_body": {
+      "path": "src/kem_lazy_r2fold_invcrep_shoup.c",
+      "sha256": "e0dbb6bf537adf55d9a8914498d6bcd98ba3a99aa07b7ee29e75b4a5acebbc58"
+    },
+    "phase_a_chain": [
+      "src/kem_lazy_r2fold_invcrep_shoup_freeze2op_keccak_ht.c",
+      "src/kem_lazy_r2fold_invcrep_shoup_freeze2op_keccak.c",
+      "src/kem_lazy_r2fold_invcrep_shoup.c"
+    ],
+    "phase_a_chain_equals_current_best_chain_with_includes_rebound": true,
+    "replaced_body": {
+      "path": "src/kem_lazy_r2fold.c",
+      "sha256": "113d48aa5b6b4f2ba3db1d829f15435ef8f7abcc98097ef01ed23dfd1dd5b809"
+    },
+    "textual_call_counts": {
+      "ntruplus1152_officialopt_baseinv_r2fold(": 3,
+      "ntruplus1152_officialopt_basemul_nor2(": 3,
+      "ntruplus1152_officialopt_basemul_shoup(": 3,
+      "ntruplus1152_officialopt_invntt_crep(": 2,
+      "ntruplus1152_officialopt_ntt_caller_lazy(": 7,
+      "poly_baseinv(": 0,
+      "poly_basemul(": 0,
+      "poly_basemul_scale(": 1,
+      "poly_crepmod3(": 0,
+      "poly_invntt_scale(": 0,
+      "poly_ntt(": 0
+    },
+    "unified_diff_vs_base": [
+      "--- avx2-officialopt-lazy-freeze-keccak-ht-qual001/kem.c",
+      "+++ avx2-officialopt-lazy-freeze-keccak-ht-invd-shoup-qual001/kem.c",
+      "@@ -17,0 +18,7 @@",
+      "+ * GENERATED by common/official_opt_invshoup/tools/generate_invshoup_kems.py --param 1152 -- do not edit.",
+      "+ * src/kem_lazy_r2fold.c (current-best KEM body) with",
+      "+ * the Decap poly_invntt_scale + poly_crepmod3 pair -> ntruplus1152_officialopt_invntt_crep (one call)",
+      "+ * and the Encap BaseMul and the second Decap BaseMul -> ntruplus1152_officialopt_basemul_shoup",
+      "+ * (out, lazy a, canonical b).  Every other line unchanged.",
+      "+ */",
+      "+/*",
+      "@@ -38,0 +46,2 @@",
+      "+void ntruplus1152_officialopt_invntt_crep(poly *);",
+      "+void ntruplus1152_officialopt_basemul_shoup(poly *, const poly *, const poly *);",
+      "@@ -261 +270 @@",
+      "-    poly_basemul(&c, &h, &r);",
+      "+    ntruplus1152_officialopt_basemul_shoup(&c, &r, &h);",
+      "@@ -345,2 +354 @@",
+      "-\tpoly_invntt_scale(&m);",
+      "-\tpoly_crepmod3(&m);",
+      "+\tntruplus1152_officialopt_invntt_crep(&m);",
+      "@@ -351 +359 @@",
+      "-\tpoly_basemul(&f, &c, &hinv);",
+      "+\tntruplus1152_officialopt_basemul_shoup(&f, &c, &hinv);"
+    ]
+  },
+  "kept_from_base_sha256": {
+    "LICENSE.mlkem-native": "1c730e3c2cd4f70e058519ef3e910d8bdd4ed822ae2ce689f3c63d32fc52314b",
+    "add.s": "7987e4ce2b09e064e4748b40501dabb121c20a671945c796f90a8874194ba582",
+    "api.h": "1912c6a38e7f1449321520570020266836a4cace70f7e5901d0e8c172a707865",
+    "architectures": "7c0e51663fa70af747fd24defc8d73c6de5f6478c70cb923b4641ef3f7dedf1b",
+    "baseinv.s": "bc88e6622f7e01f2280f38e75bcf413b7aa808e6159c9abb14dd3926f54189ed",
+    "baseinv_r2fold.c": "404ad4bde6f04078007333e241ab70b3cd11495a446fecbdc1464ae3916d9724",
+    "basemul.s": "966ce066ec26e0989ad11f83f2de3fbea990132ac2f7836c1c61a04fb987ca01",
+    "basemul_nor2.s": "38d981adb5e2d35fcef27bd262f4e5ab153fe90ffdbdb436db04baa12945f687",
+    "cbd.s": "1040e0fece515c0419851d1700c699db01ee865879cb27d99d711437c1ad0be6",
+    "consts.c": "0c60897a0d2e8264a75f44b5b7ef49bbaa7a5f55cf3019ffc1b0ac9864534412",
+    "consts.h": "bc0a46e3d38da3a897c79f2c28898ebf5894816cf7cd161df7233151c0af2ee1",
+    "crepmod3.s": "6e60a465409f262fb57fc217708eddcf8c60be0042be8293985177d305ede2ce",
+    "fips202.h": "e9002ee1717aebf76d4c726615377b38c9fd8ca29ac0d37660fe7e63d447e405",
+    "goal-constbranch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "goal-constindex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "invntt.s": "129d462f9053839d817355dcf366555f0100ccee6620a72b0ecb4cea8f4ac37c",
+    "mlk_cbmc.h": "180bf239c5d7b84fa451727546d4fbc9595008382cfc86d4ae5791e0e5a6b910",
+    "mlk_common.h": "e3dd98611f232aaae62b420d11c6a51ed450a6f91e49b3df4cc7aca6e360d2b5",
+    "mlk_context.h": "e6788b29f4883f57752fd8327a80dfc978eb21ad72a0055cbbaaa7b433637edf",
+    "mlk_fips202.c": "7fcb319c0921f77435682b28e2404b25ca18f7c89c6427c529abae570241ab1e",
+    "mlk_fips202.h": "f0faeb4b918c05fd720ee655665c184af6b44f2859546b3799970a3536140c89",
+    "mlk_keccakf1600.c": "2db20cd996661c8812a6bd0343debc5bfc10b24675d2e4fdb431b7fdafb95372",
+    "mlk_keccakf1600.h": "db8ff646708279c27c94c19490da15930607411fd7fcfb82731162e3325add29",
+    "mlk_params.h": "450fe3e0e50496921920473ae4321660f178c23d51f1453f3c537ee63c4158cb",
+    "mlk_sys.h": "ead54b94f33dcedda50bc59dff65ad78cbe4428e0c3cf25c0b6c0ba3604a35b8",
+    "mlk_verify.h": "0a824bfe86cc26b2d2c94400e0fde57ea19b70a177f0cbc73ce6d426cc935eeb",
+    "mlkem_native_config.h": "3525493b885ce99ee41da72d08df27f97a4b745757f6fcd4944c870e4548cf09",
+    "ntt.s": "23c851702f9ca399945c71ee90d6f26d0e6ebf6c602f4d1a7e09c4761bf1ede5",
+    "ntt_caller_lazy.s": "eb6a536cffef99339ee3b479a9a1299e54a50d15375daba68ac08ca1924be092",
+    "ntt_ht.s": "20f3558e002826aca9701385229d5b52562fe7434bbb10bfcccaaa12804a87b1",
+    "pack.s": "406e0d9cff4af069d8b8cc3cb028d11898a61f86d86cece9280fa81dafb11732",
+    "params.h": "3caa8223ce95acd081a2300e53ecdb9145c5b16215b414602954d117c06d78bd",
+    "poly.c": "5a6dd54dd5510dfda93cf7a8278ccc1214dfbfcd935251886422c68126ed1705",
+    "poly.h": "b846b09278195254f9daa1f85bec6db4361eee369c4243b31e1f5db511b812f3",
+    "symmetric.c": "49e7faa9501e3ced6bf6c8da519782adcb32371295ce4f351ebdbf63399f9e0c",
+    "symmetric.h": "d56d67dbf50c7b89de87eb5acbcfb11ece0fe90e7744762c0bc9a47350d80f65",
+    "tobytes_freeze2op.s": "ba41ded5c9c6f5534e6df7ba140f17b3b773786eb1909c1ddeca87291d45ab04",
+    "util.h": "0b8aeae3b5d7bd6e215bcc5ae7fdcabe42c5dd824591f84122badedb3aea77f9"
+  },
+  "kind": "invshoup-qualification-source",
+  "official_tree_sha256": "78daf6b9a6350c02d61cbd9f4dd1e717503b91183fe399005e1369eb5c365010",
+  "parameter": "1152",
+  "phase_a_candidate": "kem_lazy_r2fold_invcrep_shoup_freeze2op_keccak_ht",
+  "replaced_from_base": {
+    "kem.c": {
+      "base_sha256": "29c3edde0fe82c6b73829833cac39888355254cd569a2d17000491b50ef07f49",
+      "sha256": "161293f76e2f0a1a0e776a4e00d4fac640e82ac3955be71266523d4038e3f338"
+    }
+  },
+  "shoup_derivation_source": {
+    "compiler": {
+      "cc": "gcc",
+      "flags": [
+        "-O3",
+        "-mavx2",
+        "-mtune=alderlake",
+        "-fschedule-insns",
+        "-fsched-pressure",
+        "-fno-asynchronous-unwind-tables",
+        "-fcf-protection=none",
+        "-fno-stack-protector",
+        "-S"
+      ],
+      "version": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0"
+    },
+    "path": "src/ntruplus1152_officialopt_basemul_shoup.c",
+    "sha256": "03daf6b461c3db8b0a7c431e18efb956eec04746cb3eaba6606bd6f7ae1fb11a"
+  },
+  "supercop_version": "20260831",
+  "tree_sha256": "94fc539de23a604f00560016109d2f1fc4f1f921d2f569d1adf3176f82946b75",
+  "variant": "invcrep_shoup"
+}
