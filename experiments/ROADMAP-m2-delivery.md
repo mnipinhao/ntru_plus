@@ -58,7 +58,9 @@ generation -8.0 / -7.9 / -7.5% (768 / 864 / 1152); the A76 has no FEAT_SHA3
 and takes the two-call fallback, unchanged.  The margin tables above predate
 it.  **P141 (priced, open)**: 768's M2 serializers sit on their SIMD floor;
 `poly_basemul_add_encap` is 56 ns above its floor because its 72 `ld4` and 24
-`st4` cost ~8 SIMD slots each on M2 (and `ld4` 5.1 vs 2.0 cycles on the A76).
+`st4` cost ~8 SIMD slots each on M2 (and `ld4` 5.1 vs 2.0 cycles on the A76).  Moving h's
+deinterleave into the decoder only relocates it (net ~0, re-priced
+2026-09-26); the lever is a coefficient-major output from the forward NTT.
 
 ## Where things stand
 

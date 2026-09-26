@@ -50,3 +50,24 @@ basemul's `st4`, `tobytes_encap`.
 Upper bound about -55 ns (-1.4%) M2 encapsulation and -300 cycles (-1.0%)
 A76, most of it behind a change to the forward NTT's output layout; the first
 step alone is about -0.35% on both.
+
+## Correction (2026-09-26): the "h from the decoder" step is not free
+
+The table above priced the first step as if `poly_frombytes_encap` could emit
+any layout at no cost.  It cannot emit this one.  P135's decoder is cheap
+because each half of an output vector is four consecutive coefficients --
+one six-byte run -- so one two-register `tbl` builds a vector from two runs.
+The layout `ld4` produces (coefficient k of eight base elements in one
+vector) takes one lane from each of eight different runs:
+
+- decode as now and deinterleave in registers: 8 `uzp` per 32 coefficients,
+  192 SIMD ops a call -- about 48 cycles (~14 ns) on M2 and ~96 cycles on the
+  A76, against the ~12 ns / ~96 cycles the 24 `ld4` of h cost.  Net ~0: the
+  deinterleave moves from the basemul to the decoder;
+- gather directly: two four-register `tbl`/`tbx` per vector, 3-3.5x a
+  two-register `tbl` on both machines (P137).  Worse.
+
+So the step is dropped.  What would remove the cost is producers that write
+coefficient-major directly, with no deinterleave anywhere -- the forward NTT's
+output layout (the second row), which remains the only real lever, and a large
+one to pull.
