@@ -63,28 +63,28 @@ and fixed build contracts. The benchmark harness is under
 ## Performance
 
 Against the official implementation, `github.com/ntruplus/ntruplus` main at
-3991b2a (2026-08-14), measured 2026-09-25: on Apple M2 Pro its default build
+3991b2a (2026-08-14), measured 2026-09-26: on Apple M2 Pro its default build
 (SHA3 Keccak, `CE/`), on Cortex-A76 (Raspberry Pi 5, no FEAT_SHA3) its `NO_CE`
 build.  SUPERCOP 20260831 carries the `NO_CE` build from an earlier snapshot
 that differs from main only in `crepmod3.s`.  Both sides use the same harness
 and compiler; medians of three sessions.  Details are in
-`experiments/gt-p138-unified-margins/` and `experiments/gt-p139-report-data/` at
-tag `evidence/aarch64-20260925`.
+`experiments/gt-p142-margins-after-p140/` and `experiments/gt-p139-report-data/`
+at tag `evidence/aarch64-20260926`.
 
 | | key generation | encapsulation | decapsulation |
 |---|---:|---:|---:|
-| M2 Pro, vs Official (default build) | -9.0% | -15.5% | -16.1% |
-| Cortex-A76, vs Official (`NO_CE` build) | -18.0% | -24.1% | -19.0% |
-| M2 Pro, Keccak permutation held equal | -5.1% | -11.7% | -12.8% |
-| Cortex-A76, Keccak permutation held equal | -10.2% | -13.4% | -11.7% |
+| M2 Pro, vs Official (default build) | -16.3% | -15.6% | -16.1% |
+| Cortex-A76, vs Official (`NO_CE` build) | -18.1% | -24.0% | -19.1% |
+| M2 Pro, Keccak permutation held equal | -13.3% | -11.2% | -13.0% |
+| Cortex-A76, Keccak permutation held equal | -10.6% | -13.6% | -12.4% |
 
-"Keccak permutation held equal" links Official's sponge against GT's
-permutation (these two rows use the SUPERCOP revision of Official's code,
-which times within 0.6% of main).  That margin is not the arithmetic alone: it
-also contains GT's sponge code.  Separating the two (GT's arithmetic with
-Official's sponge), the sponge is 81-101% of it on M2 and 40-64% on
-Cortex-A76; the arithmetic is +2 to -88 ns an operation on M2 and -684 to -900
-ns on Cortex-A76.
+"Keccak permutation held equal" links Official's sponge (main's
+`CE/fips202.c`) against GT's permutation.  That margin is not the arithmetic
+alone: it also contains GT's hash layer -- its sponge, and on FEAT_SHA3 cores
+the two-state permutation that expands key generation's two seeds together.
+Separating the two (GT's arithmetic with Official's sponge), the hash layer is
+81-106% of it on M2 and 42-64% on Cortex-A76; the arithmetic is +33 to -88 ns
+an operation on M2 and -680 to -905 ns on Cortex-A76.
 
 SUPERCOP 20260831 itself on the Raspberry Pi 5 (unmodified `do-part`, six
 rotated rounds, medians, cycles; its Official is the `NO_CE` leaf):
@@ -100,10 +100,6 @@ Official's 19.2 KB, and one operation executes 45.3 / 22.4 / 25.0 KB of it
 (keygen / encaps / decaps) against 12.1 / 7.5 / 9.3 KB.  In steady state every
 operation fits the 64 KB L1I.  With every cache flushed before each operation
 the margins shrink to +3.3% / -6.4% / -4.3% (Cortex-A76).
-
-Not yet in these tables: key generation's f and g seeds now share one
-two-state Keccak permutation (`keccakf1600_x2_v84a.S`) on FEAT_SHA3 cores, M2
-key generation -8.0%; Cortex-A76 is unchanged.
 
 ## Build
 
