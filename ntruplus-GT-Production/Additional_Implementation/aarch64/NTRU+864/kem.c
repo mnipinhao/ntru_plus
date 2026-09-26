@@ -53,10 +53,8 @@ static inline int verify(const uint8_t *a, const uint8_t *b, size_t len)
 *
 * Returns 0 on success; non-zero if f is not invertible in the NTT domain.
 **************************************************/
-static inline int genf_derand(poly *f, poly *finv, uint8_t buf[NTRUPLUS_N / 4], const uint8_t *coins)
+static inline int genf_from_seed(poly *f, poly *finv, const uint8_t buf[NTRUPLUS_N / 4])
 {
-    shake256(buf, NTRUPLUS_N / 4, coins, 32);
-
     poly_cbd1(f, buf);
     poly_triple(f, f);
     f->coeffs[0] += 1;
@@ -79,10 +77,8 @@ static inline int genf_derand(poly *f, poly *finv, uint8_t buf[NTRUPLUS_N / 4], 
 *
 * Returns 0 on success; non-zero if g is not invertible in the NTT domain.
 **************************************************/
-static inline int geng_derand(poly *g, poly *ginv, uint8_t buf[NTRUPLUS_N / 4], const uint8_t *coins)
+static inline int geng_from_seed(poly *g, poly *ginv, const uint8_t buf[NTRUPLUS_N / 4])
 {
-    shake256(buf, NTRUPLUS_N / 4, coins, 32);
-
     poly_cbd1(g, buf);
     poly_triple(g, g);
 
@@ -141,25 +137,44 @@ static inline void crypto_kem_keypair_derand(uint8_t *pk, uint8_t *sk,
 **************************************************/
 int crypto_kem_keypair(uint8_t *pk, uint8_t *sk)
 {
-    uint8_t coins[NTRUPLUS_SYMBYTES];
-    /* Shared across retries, fully overwritten by SHAKE, erased on exit. */
-    uint8_t buf[NTRUPLUS_N / 4];
+    /*
+     * Coins are drawn and consumed in stream order, exactly as one draw per f
+     * attempt and then one per g attempt: while f is being tried, the next
+     * draw is certain to be used (by an f retry or by g), so it is drawn up
+     * front and both seeds are expanded in one two-state SHAKE256.
+     * randombytes sees the same calls in the same order.
+     */
+    uint8_t coins[2][NTRUPLUS_SYMBYTES];
+    /* Fully overwritten by SHAKE, erased on exit. */
+    uint8_t buf[2][NTRUPLUS_N / 4];
+    unsigned cur = 0;
     int r;
 
     poly f, finv;
     poly g, ginv;
 
-    do {
-        randombytes(coins, sizeof coins);
-        r = genf_derand(&f, &finv, buf, coins);
-        ntruplus_declassify(&r, sizeof r);
-    } while (r);
+    randombytes(coins[0], sizeof coins[0]);
+    randombytes(coins[1], sizeof coins[1]);
+    shake256_x2(buf[0], buf[1], NTRUPLUS_N / 4, coins[0], coins[1], 32);
 
-    do {
-        randombytes(coins, sizeof coins);
-        r = geng_derand(&g, &ginv, buf, coins);
+    for (;;) {
+        r = genf_from_seed(&f, &finv, buf[cur]);
         ntruplus_declassify(&r, sizeof r);
-    } while (r);
+        if (!r)
+            break;
+        cur ^= 1;
+        randombytes(coins[cur ^ 1], sizeof coins[0]);
+        shake256(buf[cur ^ 1], NTRUPLUS_N / 4, coins[cur ^ 1], 32);
+    }
+    cur ^= 1;
+    for (;;) {
+        r = geng_from_seed(&g, &ginv, buf[cur]);
+        ntruplus_declassify(&r, sizeof r);
+        if (!r)
+            break;
+        randombytes(coins[cur], sizeof coins[0]);
+        shake256(buf[cur], NTRUPLUS_N / 4, coins[cur], 32);
+    }
 
     crypto_kem_keypair_derand(pk, sk, &f, &finv, &g, &ginv);
     secure_clear(coins, sizeof coins);

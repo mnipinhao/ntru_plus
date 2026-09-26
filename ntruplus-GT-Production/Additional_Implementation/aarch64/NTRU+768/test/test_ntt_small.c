@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "ntt.h"
+#include "encap.h"
+#include "reference/poly_reference.h"
 static uint32_t state = 123;
 static uint32_t next(void) {
     state ^= state << 13; state ^= state >> 17; state ^= state << 5;

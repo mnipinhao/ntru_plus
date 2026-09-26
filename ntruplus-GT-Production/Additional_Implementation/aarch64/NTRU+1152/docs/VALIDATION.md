@@ -1,8 +1,8 @@
 # NTRU+1152 AArch64 — what `make check` verifies
 
-`experiments/...` paths below refer to the development branch (`gt864-1152-cleanup`
-and its ancestors), where the evidence and scripts live; this release tree does
-not carry them.
+`experiments/...` paths below refer to the development branch `gt864-1152-cleanup`,
+preserved at tag `evidence/aarch64-20260925`, where the evidence and scripts live; this release
+tree does not carry them.
 
 Every gate below runs from one `make check`, and each one fails the build rather
 than printing a warning.
@@ -20,6 +20,22 @@ than printing a warning.
 | `kat-check` | the generated KAT is byte-identical to `kat/expected/` |
 | `export-check` | the SUPERCOP leaf regenerates deterministically |
 
+## Two-state Keccak for key generation's seeds (P140, 2026-09-25)
+
+The f and g seeds (SHAKE256 of 32 coins each) are the only two independent
+hashes in the KEM; `shake256_x2` permutes both states at once, with FEAT_SHA3
+through `keccakf1600_x2_v84a.S` (mlkem-native's x2 routine, instructions
+unchanged; about the cost of one single-state call on Apple M2) and elsewhere
+as two single-state calls.  The key pair draws the next 32 coins before trying
+f -- that draw is certain to be used, by an f retry or by g -- so randombytes
+sees the same calls in the same order.
+
+- KAT byte-identical with the two-state path (macOS) and the fallback (Linux);
+  `make check` passes on both.
+- M2 key generation 6,448 -> 5,964 ns (-7.5%); encapsulation and decapsulation
+  unchanged; Cortex-A76 unchanged (the fallback path).
+- SUPERCOP TIMECOP (`TIMECOP=256`) passes at `-O`, `-O2`, `-O3` and `-Os`.
+
 ## A gate that exists because something was missed
 
 `zeroization-source-check` was added after a rewrite of `inverse_ntt.S` silently
@@ -33,6 +49,30 @@ A second gate, `check-inplace`, guarded the in-place overlay of the rebase
 buffer on the scratch.  It was retired with the rebase itself (P126):
 `packed_i9` now reads `basemul_rinv`'s output and writes the scratch, which do
 not overlap.
+
+## Decoder with two-register tbl (P137, 2026-09-24)
+
+`unpack.S` replaces the C decoder of `pack.c`.  A two-register `tbl` costs
+one `trn` on both Apple M2 and Cortex-A76 (measured), so one `tbl` per block
+pair and half does the transpose's first level and the byte expansion
+together: 40 SIMD operations a pair of groups against 48.  The file is
+generated from `codec_pairs.h` by `experiments/gt1152-p137-frombytes/gen_asm.py
+--imm --symbol frombytes_asm`; as assembly, the loads land in the `tbl`
+register pairs, where gcc's C code moves each pair (270 moves, one A76 vector
+op each).
+
+- Identical to the previous decoder on 200,000 inputs (half canonical, half
+  random) and, at every one of the 1,152 positions, on an out-of-range
+  coefficient; the input ends at a guard page.  M2 clang and A76 gcc.
+- Per call: M2 70.0 -> 54.6 ns, A76 612 -> 479 cycles (Official 54.6 ns / 486).
+- SUPERCOP 20260831 on the Pi 5, six rounds: decapsulation 43,405.5 -> 42,966.5
+  cycles (-1.01%, all six paired rounds negative), encapsulation -153 (-0.33%),
+  key generation within its retry noise.  M2: decapsulation -0.91%,
+  encapsulation -0.26%.
+- SUPERCOP TIMECOP (`TIMECOP=256`) passes at `-O`, `-O2`, `-O3` and `-Os`.
+- `export_supercop.py` now refuses to export when its source lists differ
+  from the Makefile's: the first SUPERCOP run of this change linked without
+  `unpack.S`, which `export-check` (a determinism check) could not see.
 
 ## Canonical reduction in the full serializer (P134, 2026-09-24)
 

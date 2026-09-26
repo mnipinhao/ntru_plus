@@ -35,6 +35,10 @@ __pycache__/
 # locally and are not part of the public repository.
 /docs/
 
+# Experiment records and generated candidates are local-only. Production and
+# published feature branches contain only the promoted source and tests.
+/experiments/
+
 # Reproducible benchmark and solver output. Keep source, contracts, summaries,
 # and generated assembly in git; regenerate raw logs when needed.
 ntruplus-ntt-Optimized/Additional_Implementation/aarch64/NTRU+768/experiments/**/*.log
@@ -62,3 +66,6 @@ ntruplus-ntt-Optimized/aarch64-bench/results/**/*.nm*.txt
 # Its exact revision and update procedure are recorded in third_party/README.md.
 /third_party/NTTRU/
 /third_party/NTRU_Prime_truncation/
+
+# Build output directories (Slothy runs, benchmark builds) are never sources.
+**/build/

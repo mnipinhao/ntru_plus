@@ -23,6 +23,34 @@ ASM_SOURCES = (
     "keccakf1600.S",
 )
 
+# keccakf1600_v84a.S and keccakf1600_x2_v84a.S are deliberately not exported: each is inside
+# #if defined(__ARM_FEATURE_SHA3), and SUPERCOP's aarch64 has no SHA3 gate.
+NOT_EXPORTED = {"keccakf1600_v84a.S", "keccakf1600_x2_v84a.S"}
+
+
+def makefile_sources() -> set:
+    """The sources behind the Makefile's KEM_OBJECTS."""
+    text = (ROOT / "Makefile").read_text().replace("\\\n", " ")
+    for line in text.splitlines():
+        if line.startswith("KEM_OBJECTS :="):
+            names = [Path(o).stem for o in line.split(":=", 1)[1].split()]
+            return {n + ".c" if (ROOT / (n + ".c")).is_file() else n + ".S"
+                    for n in names}
+    raise SystemExit("export-check: KEM_OBJECTS not found in the Makefile")
+
+
+# The leaf must build what the Makefile builds; a source added to one list and
+# not the other links locally and fails in SUPERCOP with undefined references
+# (NTRU+1152's first SUPERCOP run of its unpack.S did exactly that).
+_make = makefile_sources()
+_export = set(C_SOURCES) | set(ASM_SOURCES) | NOT_EXPORTED
+if _make != _export:
+    raise SystemExit(
+        "export-check: export lists differ from the Makefile's KEM_OBJECTS: "
+        f"only in Makefile {sorted(_make - _export)}, "
+        f"only in export {sorted(_export - _make)}")
+
+
 ASM_NOTICE_MARKERS = {
     "keccakf1600.S": b"\n/*yaml\n",
 }

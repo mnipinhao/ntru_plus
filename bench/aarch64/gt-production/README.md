@@ -1,17 +1,5 @@
 # GT-Production AArch64 Benchmark and Reports
 
-## Active Official baseline (2026-09-08)
-
-Use `/home/pi/supercop-20260831/crypto_kem/ntruplus864/aarch64/` for
-NTRU+864 comparisons on `pi@100.99.191.9`; 768/1152 use their corresponding
-`aarch64/` subdirectories. See [OFFICIAL-BASELINE.json](OFFICIAL-BASELINE.json)
-for source hashes and the user's current policy. The archived 20260627 tree
-is not the active baseline. Historical reports below remain historical.
-The runner still requires an explicit `--baseline-root`; do not reuse an old
-command's baseline path. Use `--baseline-supercop-flat` for the SUPERCOP shape.
-Do not run new PMU measurements concurrently with the active complete SUPERCOP
-job. This source snapshot has not been independently verified as upstream latest.
-
 This directory is the repository-level companion to the source-only
 GT-Production release. It contains:
 

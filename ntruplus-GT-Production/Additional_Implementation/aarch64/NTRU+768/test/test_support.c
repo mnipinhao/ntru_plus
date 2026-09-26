@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "poly.h"
+#include "reference/poly_reference.h"
 
 static int reference_mod3(int x)
 {

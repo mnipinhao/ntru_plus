@@ -11,7 +11,7 @@ PYTHON ?= python3
 CFLAGS ?= -O3 -std=c11 -D_DEFAULT_SOURCE -I. -DNTRUPLUS1152_ASM_BASEMUL_RINV -DNTRUPLUS1152_ASM_BASEINV_NUM -DNTRUPLUS1152_ASM_BASEINV_FINISH
 C_SRC := kem.c symmetric.c fips202.c hash_fixed.c base.c inverse.c \
          pack.c support.c api_glue.c
-ASM_SRC := keccakf1600.S keccakf1600_v84a.S basemul_rinv.S baseinv_num.S baseinv_finish.S ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
+ASM_SRC := keccakf1600.S keccakf1600_v84a.S keccakf1600_x2_v84a.S basemul_rinv.S unpack.S baseinv_num.S baseinv_finish.S ntt.S inverse16_tail.S ntt_top.S ntt_tail.S ntt9.S \
            inverse_ntt.S inverse9.S inverse16.S crepmod3_raw.S
 
 TESTS := test_kem test_canonical test_abi test_baseinv_fail
@@ -71,7 +71,7 @@ clean:
 
 shake-prefixed:
 	$(CC) $(CPPFLAGS) $(CFLAGS) -I. -o test_shake_prefixed \
-	  test/test_shake_prefixed.c fips202.c keccakf1600.S keccakf1600_v84a.S
+	  test/test_shake_prefixed.c fips202.c keccakf1600.S keccakf1600_v84a.S keccakf1600_x2_v84a.S
 	./test_shake_prefixed
 
 # Reports "skipped" rather than failing where the target has no FEAT_SHA3.

@@ -9,8 +9,8 @@ def require(relative, needles):
             raise SystemExit(f'{relative}: missing {needle!r}')
 require('util.h', ('GT_SECURE_CLEAR_AUDIT_HOOK', 'volatile uint8_t *cursor'))
 require('kem.c', (
-    'if (!genf_derand(&f, &finv, coins, buf))',
-    'if (!geng_derand(&g, &ginv, coins, buf))',
+    'while (genf_from_seed(&f, &finv, buf[cur]))',
+    'while (geng_from_seed(&g, &ginv, buf[cur]))',
     'secure_clear(buf, sizeof buf);', 'secure_clear(coins, sizeof coins);',
     'secure_clear(&f, sizeof f);', 'secure_clear(&finv, sizeof finv);',
     'secure_clear(&g, sizeof g);', 'secure_clear(&ginv, sizeof ginv);',
@@ -38,8 +38,8 @@ for backend in ('keccakf1600.S', 'keccakf1600_v84a.S'):
     text = (ROOT / backend).read_text()
     if 'fused' in text:
         raise SystemExit(f'{backend}: a fused sponge is back; re-audit its wipe')
-require('keccakf1600.S', ('ntruplus_keccak_f1600_x1_aarch64:',))
-require('keccakf1600_v84a.S', ('ntruplus_keccak_f1600_x1_v84a_aarch64:',))
+require('keccakf1600.S', ('C_SYM(ntruplus_keccak_f1600_x1_aarch64):',))
+require('keccakf1600_v84a.S', ('C_SYM(ntruplus_keccak_f1600_x1_v84a_aarch64):',))
 # hash_f and hash_h used to build 0x00||msg and 0x02||msg in a stack buffer and
 # (for hash_h) wipe it afterwards.  They now absorb through shake256_prefixed,
 # so there is no copy to wipe -- the same invariant hash_g already had above,

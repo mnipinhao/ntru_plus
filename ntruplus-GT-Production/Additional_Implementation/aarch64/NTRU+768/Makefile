@@ -29,33 +29,31 @@ NM_GLOBAL_FLAGS := -g --defined-only
 SIZE_FLAGS :=
 endif
 
-PUBLIC_ASM := \
+KEM_ASM := \
 	ntt.S \
+	decap_ntt.S \
+	decap_invntt.S \
 	base.S \
 	pack.S \
 	cbd.S \
-	crepmod3.S \
-	kem_api.S
-
-INTERNAL_ASM := \
 	add.S \
 	keccakf1600.S \
-	keccakf1600_v84a.S
+	keccakf1600_v84a.S \
+	keccakf1600_x2_v84a.S \
+	kem_api.S
 
-INTERNAL_C := \
-	keygen.c \
-	keygen_lambda.c \
-	basemul_lambda.c
-
-REFERENCE_ASM := test/reference/basemul.S test/reference/invntt.S
-
-KEM_SOURCES := \
+KEM_C := \
 	kem.c \
 	symmetric.c \
 	fips202.c \
-	$(INTERNAL_C) \
-	$(PUBLIC_ASM) \
-	$(INTERNAL_ASM)
+	keygen.c \
+	tables.c \
+	unpack.c
+
+REFERENCE_ASM := test/reference/basemul.S test/reference/invntt.S \
+	test/reference/crepmod3.S
+
+KEM_SOURCES := $(KEM_C) $(KEM_ASM)
 
 KAT_REQ := kat/expected/PQCkemKAT_2336.req
 KAT_RSP := kat/expected/PQCkemKAT_2336.rsp
@@ -104,7 +102,7 @@ test: check-release $(TEST_KEM) $(TEST_ABI)
 	$(TEST_KEM)
 	$(TEST_ABI)
 
-$(TEST_SUPPORT): test/test_support.c $(KEM_SOURCES) randombytes.c | $(BUILD_DIR)
+$(TEST_SUPPORT): test/test_support.c test/reference/crepmod3.S $(KEM_SOURCES) randombytes.c | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 .PHONY: support-check
@@ -134,7 +132,7 @@ kat-check: kat $(KAT_REQ) $(KAT_RSP)
 	shasum -a 256 $(GENERATED_KAT_RSP)
 
 $(TEST_SHAKE_PREFIXED): test/test_shake_prefixed.c fips202.c keccakf1600.S \
-  keccakf1600_v84a.S | $(BUILD_DIR)
+  keccakf1600_v84a.S keccakf1600_x2_v84a.S | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 shake-prefixed: $(TEST_SHAKE_PREFIXED)
