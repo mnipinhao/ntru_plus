@@ -1,6 +1,11 @@
-# NTRU+768 current production — 2026-09-25
+# NTRU+768 current production — 2026-09-26
 
-Production: `main` with P135 (branch `gt768-frombytes-encap`).  Encapsulation's
+Production: `main` with P140: key generation's f and g seeds go through one
+two-state Keccak call (`keccakf1600_x2_v84a.S`, mlkem-native's x2 FEAT_SHA3
+routine), about the cost of one state on M2; M2 key generation -8.0%, the A76
+(no FEAT_SHA3) unchanged.
+
+Before that, P135: encapsulation's
 public-key decoder `poly_frombytes_encap` is now `unpack.c`: each half of each
 block-major output vector is six contiguous wire bytes, so a vector is two
 loads, one `tbl`, a shift and a mask, with no transpose.  Per call it went
@@ -13,8 +18,8 @@ fed by the packed first product stored element-major; the cleanup
 (`gt768-cleanup`) was behaviour-preserving.
 
 Evidence lives on the development branch `gt864-1152-cleanup` (which contains
-`gt768-e4-inverse-integration`), preserved at tag `evidence/aarch64-20260925`:
-experiments P115-P120, P135, P138 and P139.
+`gt768-e4-inverse-integration`), preserved at tag `evidence/aarch64-20260926`:
+experiments P115-P120, P135, P138-P142.
 
 ## SUPERCOP 20260831, Raspberry Pi 5 (Cortex-A76)
 
@@ -38,10 +43,10 @@ of 400 blocks x 100, alternating runs:
 
 | | keygen | encaps | decaps |
 |---|---:|---:|---:|
-| M2 Pro, ns (clang, SHA3 backend) | 3,826 | 4,106 | 3,111 |
+| M2 Pro, ns (clang, SHA3 backend; P142) | 3,490 | 4,038 | 3,106 |
 | Pi 5, cycles (gcc, scalar backend) | 31,642 | 29,469 | 27,248 |
 
-## Against GitHub main (P138, 2026-09-25)
+## Against GitHub main (P142, 2026-09-26)
 
 The official implementation as published: `github.com/ntruplus/ntruplus` main
 at 3991b2a -- on M2 its default build (SHA3 Keccak, `CE/`), on the A76 its
@@ -51,29 +56,30 @@ output-checked:
 
 | | keygen | encaps | decaps |
 |---|---:|---:|---:|
-| M2 Pro, vs Official (default build) | -9.0% | -15.5% | -16.1% |
-| Cortex-A76, vs Official (`NO_CE`) | -18.0% | -24.1% | -19.0% |
+| M2 Pro, vs Official (default build) | -16.3% | -15.6% | -16.1% |
+| Cortex-A76, vs Official (`NO_CE`) | -18.1% | -24.0% | -19.1% |
 
-## Where the margin comes from (P138)
+## Where the margin comes from (P142)
 
-Holding only the Keccak permutation equal (Official's sponge calling GT's
-permutation) leaves -5.1 / -11.7 / -12.8% on M2 and -10.2 / -13.4 / -11.7% on
+Holding only the Keccak permutation equal (main's CE sponge calling GT's
+permutation) leaves -13.3 / -11.2 / -13.0% on M2 and -10.6 / -13.6 / -12.4% on
 the A76.  That is not the arithmetic alone.  A build of GT's arithmetic with
 Official's sponge separates the two:
 
 | | keygen | encaps | decaps |
 |---|---:|---:|---:|
-| M2: GT's sponge / arithmetic (ns) | -209 / +2 | -522 / -16 | -367 / -88 |
-| A76: GT's sponge / arithmetic (ns) | -600 / -900 | -1,191 / -684 | -713 / -788 |
+| M2: GT's hash layer / arithmetic (ns) | -548 / +14 | -543 / +33 | -377 / -88 |
+| A76: GT's hash layer / arithmetic (ns) | -651 / -905 | -1,233 / -680 | -744 / -864 |
 
-On M2 the sponge is nearly all of it.  GT's `shake256_prefixed` absorbs the
+GT's hash layer includes the two-state Keccak in key generation (M2 only).
+On M2 the hash layer is nearly all of it.  GT's `shake256_prefixed` absorbs the
 final partial block by whole lanes, where upstream's `CE/fips202.c` XORs it
 byte by byte into the state in memory (768's `hash_h` input, 129 bytes, is
 all tail).  On the A76 the upstream `load64` byte loop, which gcc vectorises
 into byte shuffles, is the larger part.  Applied to Official, the two fixes
 make it 4-9% faster on M2 (default build) and 2-5% on the A76; see
 `experiments/gt-p138-unified-margins/upstream_fix/` at tag
-`evidence/aarch64-20260925`.
+`evidence/aarch64-20260926`.
 The permutation itself is the same speed on M2 and 1.27x faster in GT's
 scalar assembly on the A76.
 
