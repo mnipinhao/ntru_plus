@@ -3,7 +3,7 @@
 Living document.  Started 2026-09-21 from P83 (corrected M2 baseline) and P84
 (attribution); rewritten 2026-09-22 after P86 through P90 landed; tables and
 the item list brought up to date 2026-09-23 after P123-P131; the current
-margins, against GitHub main, and the landings since are 2026-09-25 (P132-P138).
+margins, against GitHub main, and the landings since are 2026-09-25 (P132-P141).
 
 ## Current margins (P138, 2026-09-25)
 
@@ -50,6 +50,15 @@ report.
   **+3.3%** behind.
 - 768's component table; its M2 deficits are the codec and
   `poly_basemul_add_encap`.
+
+**P140 (2026-09-25, landed)**: key generation's f and g seeds -- the only two
+independent hashes in the KEM -- go through one two-state Keccak call
+(mlkem-native's x2 v84a, about the cost of one state on M2).  M2 key
+generation -8.0 / -7.9 / -7.5% (768 / 864 / 1152); the A76 has no FEAT_SHA3
+and takes the two-call fallback, unchanged.  The margin tables above predate
+it.  **P141 (priced, open)**: 768's M2 serializers sit on their SIMD floor;
+`poly_basemul_add_encap` is 56 ns above its floor because its 72 `ld4` and 24
+`st4` cost ~8 SIMD slots each on M2 (and `ld4` 5.1 vs 2.0 cycles on the A76).
 
 ## Where things stand
 
@@ -231,6 +240,7 @@ Encapsulation cannot beat -27 to -30% on M2 however good the arithmetic gets.
 
 | | |
 |---|---|
+| **P140** | Key generation's two seeds through one two-state Keccak (`keccakf1600_x2_v84a.S`, mlkem-native's x2 v84a).  Coins drawn in the same order (KAT unchanged).  M2 keygen **-8.0 / -7.9 / -7.5%**, A76 unchanged; TIMECOP=256 passes for all three. |
 | **P137** | 1152 decoder with two-register `tbl` (`unpack.S`, generated): the first transpose level and the byte expansion in one `tbl` per block pair, 40 SIMD ops a pair against 48; two-register `tbl` costs one `trn` on both machines.  Per call M2 70.0 -> 54.6 ns, A76 612 -> 479 cycles (Official 54.6 / 486).  SUPERCOP: decapsulation **-1.01%**, encapsulation -0.33%; M2 decapsulation -0.91%.  `export_supercop.py` now checks its lists against the Makefile (the first SUPERCOP run linked without `unpack.S`). |
 | **P136** | Component table on the current trees (no code change).  P128's tool charged Official a `poly` copy before every in-place `poly_ntt`/`poly_triple`; its kem.c copies once, in decapsulation.  Corrected, M2 arithmetic is 864 -39 / -39 / -40 ns, 1152 -113 / -8.5 / -25; the forward NTT is +12-13 ns a call on M2 (as P100/P105), -360 to -430 cycles on the A76. |
 | **P135** | 768 `poly_frombytes_encap` (NTRU+768 tree, noted here for completeness): each half of each block-major output vector is six contiguous bytes, so no transpose.  Per call M2 65.5 -> 37.9 ns, A76 503 -> 324 cycles; SUPERCOP encapsulation -0.55%. |
